@@ -205,7 +205,7 @@
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
         }
-        .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+        .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
             height: 37px;
             position: fixed;
@@ -213,6 +213,16 @@
             top: 0;
             width: 74px;
             z-index: 999;
+        }
+        .c9-mbar-round .mainlogo {
+            background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
+            display: block;
+            height: 26px;
+            left: 33px;
+            position: absolute;
+            text-indent: 100%;
+            top: 4px;
+            width: 37px;
         }
 
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
@@ -232,16 +242,6 @@
             width: 10px;
         }
 
-        .c9-menu-bar .mainlogo {
-            background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
-            display: block;
-            height: 26px;
-            left: 33px;
-            position: absolute;
-            text-indent: 100%;
-            top: 4px;
-            width: 37px;
-        }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
@@ -275,7 +275,7 @@
                         <div class="c9-mbar-cont"> </div>
                         
                         <div class="c9-mbar-round">
-                            <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
+                            <a href="http://c9.io/" class="mainlogo" target="_blank" title="Go to c9.io">c9.io</a>
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
@@ -2268,6 +2268,10 @@
         	right:31px;
         	top: 0;
         }
+        .deploy.c9-header-plus {
+            right: 1px;
+        }
+        
         .c9-header-plus.header-btnOver {
         	background-position: -30px -294px;
         }
@@ -2279,6 +2283,11 @@
             right: 1px;
             top: 0;
         }
+        
+        .deploy.c9-header-minus {
+            right: -30px;
+        }
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
@@ -3077,6 +3086,9 @@
         .grouped_checkbox_holder .chkHighlightMatches .checkbox { background-position: 50% -740px; }
         .grouped_checkbox_holder .chkHighlightMatches.cbcontainerChecked .checkbox { background-position: 50% -765px; }
         
+        .grouped_checkbox_holder .chkConsole .checkbox { background-position: 50% -1235px; }
+        .grouped_checkbox_holder .chkConsole.cbcontainerChecked .checkbox { background-position: 50% -1268px; }
+
         .grouped_checkbox_holder .cbcontainer span {
             display: none;
         }
@@ -3381,8 +3393,6 @@
 
         .ace_scroller {
           position: absolute;
-          overflow-x: scroll;
-          overflow-y: hidden;
           background-color: #fbfbfb;
           -webkit-border-top-left-radius: 6px;
           -moz-border-radius-topleft: 6px;
@@ -3399,14 +3409,35 @@
           user-select: none;
           z-index : 10001 !important;
         }
-
+ 
+         /* These nocorner classes apply to Search Results tab */
+        .nocorner .ace_gutter {
+            opacity: rgba(200, 200, 200, 0.3);
+        }
+        
+        .nocorner.ace_editor {
+            margin-top: 3px;
+        }
+        
+        .nocorner ace_fold-fold-widgets {
+            opacity: 1;
+        }
+        
+        .nocorner .ace_corner {
+            opacity : 0;
+        }
+        
+        .nocorner.ace-monokai .ace_scroller {
+            background: transparent;
+        }
+        
         .ace_gutter .ace_gutter_active_line {
             background: rgba(0, 0, 0, 0.07);
         }
         .dark .ace_gutter .ace_gutter_active_line {
             background: rgba(255, 255, 255, 0.07);
         }
-        
+               
         .ace_corner{
             position : absolute;
             left : 41px;
@@ -3472,34 +3503,34 @@
           background-repeat: no-repeat;
         }
 
-        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.png");
           background-position: 4px center;
-        }
+       }
         .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj_dark.png");
         }
 
-        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.arrow {
           background-image: url("icons/debugger/brkp_obj_current_line.png");
           background-position: 4px center;
-        }
+       }
         .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
           background-image: url("icons/debugger/brkp_obj_current_line_dark.png");
         }
 
-        .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+       .ace_gutter-layer .ace_gutter-cell.arrow {
           background-image: url("icons/debugger/current_line.png");
           background-position: 4px center;
-        }
+       }
         .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_arrow {
           background-image: url("icons/debugger/current_line_dark.png");
         }
 
-        .ace_gutter-layer .ace_gutter-cell.ace_stack {
+       .ace_gutter-layer .ace_gutter-cell.stack {
           background-image: url("icons/debugger/stack_co.png");
           background-position: 4px center;
-        }
+       }
 
         .ace_gutter-layer .ace_gutter-cell.ace_error {
             background-image: url(images/c9-no-repeat.png);
@@ -6973,7 +7004,8 @@
         <a:cover>
             <div class="bk-window-cover" opacity="1">
                 <div class="header"> </div>
-                <div class="logo"> </div>
+                <div class="c9-mbar-round"> <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
+                </div>
             </div>
         </a:cover>
     </a:presentation>
@@ -9094,6 +9126,7 @@
         display: block;
         height: 17px;
         left: -1px;
+        pointer-events: none;
         position: absolute;
         top: -17px;
         width: 19px;
@@ -9252,13 +9285,13 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -111px;
         background-repeat   : repeat-x;
-        border-top-left-radius: 1px;    
+    	border-top-left-radius: 1px;	
     }
     .dark .editor_tab.hidetabs .curbtn .tab_middle:before {
         background-position: 0 -1185px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:after {
-		display: none;
+    		display: none;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9349,7 +9382,7 @@
         background-repeat   : repeat-x;
         top                 : 0;
     }
-
+  
     .dark .editor_tab .step1 .curbtn .tab_middle:before,
     .dark .editor_tab .step2 .curbtn .tab_middle:before,
     .dark .editor_tab .step3 .curbtn .tab_middle:before,
@@ -9414,7 +9447,7 @@
         text-shadow: none;
         color: #d9d9d9;
     }
-    
+
     .editor_tab.offline .btnsesssioncontainer .btnclose strong{
         display : none;
     }
@@ -9428,7 +9461,7 @@
     .editor_tab .editor_bg {
         position : absolute;
         /* Old, from before merge
-	top : 0;
+        top : 0;
         margin : 0 auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
 	*/
@@ -10572,10 +10605,10 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[1]/input">
+        <a:main input="div[1]/div">
             <div class="tb_console">
                 <div class="sbtb_middle">
-                    <input type="text"/>
+                    <div class="input"/>
                 </div>
             </div>
         </a:main>
@@ -11315,7 +11348,7 @@
         .filemgr-tree.openfile .item {
             padding: 0 14px 0 0;
         }
-        .filemgr-tree.openfile .item SPAN {
+        .filemgr-tree.openfile .item SPAN{
             background: url(images/close_tab_btn.png) no-repeat -14px 0;
             cursor: default;
             display: block;
@@ -11342,10 +11375,10 @@
         }
         
         .filemgr-tree.openfile .item-fix.selected SPAN,
-        .filemgr-tree.openfile .item-fix.selected SPAN:hover {
+        .filemgr-tree.openfile .item-fix.selected SPAN:hover{
             background-position: -14px -14px;
         }
-        .filemgr-tree.openfile .item-fix.selected SPAN:active {
+        .filemgr-tree.openfile .item-fix.selected SPAN:active{
             background-position: -28px -14px;
         }
         
@@ -11868,7 +11901,6 @@
                 background-repeat: repeat-y, repeat;
                 box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
                 border-top: 1px solid #000;
-                padding: 7px;
             }
             
             .find-and-replace .rb_grey span{
@@ -11972,4 +12004,28 @@
             </a:main>
         </a:presentation>
     </a:textbox>
+
+
+    <a:codebox name="codebox">
+        <a:style><![CDATA[
+            .ace_one-line .ace_cursor.ace_hidden {
+                opacity: 0;
+            }
+            .ace_one-line .ace_scroller {
+                background: transparent;
+                border-radius: 0;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main input="div[1]/div" button="div[2]">
+                <div class="ace_searchbox tb_textbox searchbox searchTxt tb_console">
+                    <div class="sbtb_middle">
+                        <div class="input"> </div>
+                    </div>
+                    <div class="btnclose"> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:codebox>
 </a:skin>

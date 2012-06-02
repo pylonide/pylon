@@ -39,6 +39,7 @@
 define(function(require, exports, module) {
 "use strict";
 
+var ide = require("core/ide");
 var Editor = require("ace/editor").Editor;
 var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
@@ -47,6 +48,7 @@ var Range = require("ace/range").Range;
 var MultiSelect = require("ace/multi_select").MultiSelect;
 var ProxyDocument = require("ext/code/proxydocument");
 var Document = require("ace/document").Document;
+var dom = require("ace/lib/dom");
 
 require("ace/lib/fixoldbrowsers");
 
@@ -152,7 +154,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
             }
-            
+
             doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
               ? value
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
@@ -254,29 +256,28 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$updateBreakpoints = function(doc) {
         doc = doc || this.$editor.getSession();
 
-        doc.setBreakpoints([]);
-        if (!this.$breakpoints) {
-            return;
-        }
-
-        if (this.xmlRoot) {
-            var scriptName = this.xmlRoot.getAttribute("scriptname");
-            if (!scriptName)
-                return;
+        var rows = [];
+        if (this.xmlRoot && this.$breakpoints) {
+            var path = this.xmlRoot.getAttribute("path");
+            var scriptName = ide.workspaceDir + path.slice(ide.davPrefix.length);
 
             var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']");
 
-            var rows = [];
             for (var i=0; i<breakpoints.length; i++) {
                 rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
             }
-            if (rows.length)
-                doc.setBreakpoints(rows);
         }
+        doc.setBreakpoints(rows);
     };
 
-    this.$toggleBreakpoint = function(row, content) {
-        this.$debugger.toggleBreakpoint(this.xmlRoot, row, content);
+    this.$toggleBreakpoint = function(row, session) {
+        var bp = session.getBreakpoints();
+        bp[row] = !bp[row];
+        session.setBreakpoints(bp);
+        var script = this.xmlRoot;
+        script.setAttribute("scriptname",
+            ide.workspaceDir + script.getAttribute("path").slice(ide.davPrefix.length));
+        this.$debugger.toggleBreakpoint(script, row, session.getLine(row));
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -607,7 +608,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             function(width){
                 _self.$corner.style.left = (width - 5) + "px"
             });
-            
+
         if (apf.isTrue(this.getAttribute("globalcommands"))){
             if(this.$editor.keyBinding.setDefaultHandler)
                 this.$editor.keyBinding.setDefaultHandler(null);
@@ -621,14 +622,17 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.setProperty("overwrite", e.data);
         });
 
-        ed.addEventListener("gutterclick", function(e) {
-            if (_self.$debugger && e.clientX - ed.container.getBoundingClientRect().left < 20) {
-                _self.$toggleBreakpoint(e.getDocumentPosition().row,
-                    ed.getSession().getLine(e.getDocumentPosition().row));
+        ed.addEventListener("guttermousedown", function(e) {
+            if (_self.$debugger && ed.isFocused()) {
+                if (e.clientX - ed.container.getBoundingClientRect().left > 20)
+                    return;
+
+                var row = e.getDocumentPosition().row;
+                _self.$toggleBreakpoint(row, ed.getSession());
                 e.stop();
             }
             else {
-                _self.dispatchEvent("gutterclick", e);
+                _self.dispatchEvent("guttermousedown", e);
             }
         });
 
@@ -700,6 +704,188 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 apf.config.$inheritProperties["initial-message"] = 1;
 
 apf.aml.setElement("codeeditor", apf.codeeditor);
+
+
+apf.codebox = function(struct, tagName) {
+    this.$init(tagName || "codebox", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.$isTextInput = function(e){
+        return true;
+    };
+    this.$focussable = true; // This object can get the focus
+    this.$childProperty = "value";
+    this.value = "";
+
+    this.$draw = function(){
+        //Build Main Skin
+        this.$ext = this.$getExternal();
+        this.$input = this.$getLayoutNode("main", "input", this.$ext);
+        this.$button = this.$getLayoutNode("main", "button", this.$ext);
+        this.$inputInitFix = this.$getLayoutNode("main", "initialfix", this.$ext);
+
+        this.addEventListener("resize", function(e) {
+            this.$editor.resize();
+        });
+
+        this.$input.style.textShadow = "none";
+        var ace = this.createSingleLineAceEditor(this.$input);
+        
+        // disable unneded commands
+        ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline", "findnext", "findprevious"]);
+        // todo is there a property for these?
+        ace.commands.removeCommands(["indent", "outdent"])
+        
+        this.$editor = this.ace = ace;
+        ace.renderer.setPadding(0);
+        this.ace.codebox = this;
+        
+        ace.on("focus", function(){
+            if (ace.$isFocused)
+                return;
+            ace.$isFocused = true;
+            dom.removeCssClass(ace.codebox.$ext, "tb_textboxInitial");
+            
+            if (ace.renderer.initialMessageNode) {
+                ace.renderer.scroller.removeChild(ace.renderer.initialMessageNode);
+                ace.renderer.initialMessageNode = null;
+            }
+        });
+
+        function onBlur() {
+            ace.$isFocused = false;
+            if (ace.session.getValue())
+                return;
+            dom.addCssClass(ace.codebox.$ext, "tb_textboxInitial");
+            
+            if (ace.renderer.initialMessageNode)
+                return;
+            ace.renderer.initialMessageNode = document.createTextNode(ace.codebox["initial-message"]);
+            ace.renderer.scroller.appendChild(ace.renderer.initialMessageNode);
+        }
+        ace.on("blur", onBlur);
+        setTimeout(onBlur, function() { if (!ace.$isFocused)onBlur(); }, 100);
+        // todo should we do this here?
+        // ace.on("resize", function(){apf.layout.forceResize();});
+    },
+    this.getValue = function() {
+        return this.ace.session.getValue();
+    };
+    this.setValue = function(val) {
+        return this.ace.session.doc.setValue(val);
+    };
+    this.select = function() {
+        return this.ace.selectAll();
+    };
+    this.$focus = function(e){
+        if (!this.$ext || this.$ext.disabled)
+            return;
+
+        this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
+
+        this.$editor.focus();
+    };
+
+    this.execCommand = function(command) {
+        this.ace.commands.exec(command, this.ace);
+    };
+
+    this.createSingleLineAceEditor = function(el) {        
+        var renderer = new VirtualRenderer(el);
+        el.style.overflow = "hidden";
+        renderer.scrollBar.element.style.top = "0";
+        renderer.scrollBar.element.style.display = "none";
+        renderer.scrollBar.orginalWidth = renderer.scrollBar.width;
+        renderer.scrollBar.width = 0;
+        renderer.content.style.height = "auto"; 
+
+        renderer.screenToTextCoordinates = function(x, y) {
+            var pos = this.pixelToScreenCoordinates(x, y);
+            return this.session.screenToDocumentPosition(
+                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
+                Math.max(pos.column, 0)
+            );
+        };
+        
+        renderer.maxLines = 4;
+        renderer.$computeLayerConfigWithScroll = renderer.$computeLayerConfig;
+        renderer.$computeLayerConfig = function() {
+            var config = this.layerConfig;
+            var height = this.session.getScreenLength() * this.lineHeight;
+            if (config.height != height) {
+                var vScroll = height > this.maxLines * this.lineHeight;
+                
+                if (vScroll != this.$vScroll) {
+                    if (vScroll) {
+                        this.scrollBar.element.style.display = "";
+                        this.scrollBar.width = this.scrollBar.orginalWidth; 
+                        this.container.style.height = config.height + "px";
+                        height = config.height;
+                        this.scrollTop = height - this.maxLines * this.lineHeight;
+                    } else {
+                        this.scrollBar.element.style.display = "none";
+                        this.scrollBar.width = 0;
+                    }
+                    
+                    this.onResize();
+                    this.$vScroll = vScroll;
+                }                
+                
+                if (this.$vScroll)
+                    return renderer.$computeLayerConfigWithScroll();
+                
+                this.container.style.height = height + "px";
+                this.scroller.style.height = height + "px";
+                this.content.style.height = height + "px";
+                this._emit("resize");
+            }
+            
+            var longestLine = this.$getLongestLine();
+            var firstRow = 0;
+            var lastRow = this.session.getLength();
+
+            this.scrollTop = 0;            
+            config.width = longestLine;
+            config.padding = this.$padding;
+            config.firstRow = 0;
+            config.firstRowScreen = 0;
+            config.lastRow = lastRow;
+            config.lineHeight = this.lineHeight;
+            config.characterWidth = this.characterWidth;
+            config.minHeight = height;
+            config.maxHeight = height;
+            config.offset = 0;            
+            config.height = height;
+
+            this.$gutterLayer.element.style.marginTop = 0 + "px";
+            this.content.style.marginTop = 0 + "px";
+            this.content.style.width = longestLine + 2 * this.$padding + "px";
+        };
+        renderer.isScrollableBy = function(){return false};
+
+        renderer.setStyle("ace_one-line");
+        var editor = new Editor(renderer);
+        new MultiSelect(editor);
+        editor.session.setUndoManager(new UndoManager());
+
+        editor.setHighlightActiveLine(false);
+        editor.setShowPrintMargin(false);
+        editor.renderer.setShowGutter(false);
+        editor.renderer.setHighlightGutterLine(false);
+        
+        editor.$mouseHandler.$focusWaitTimout = 0;
+        
+        return editor;
+    },
+
+    this.$loadAml = function(){
+        if (typeof this["initial-message"] == "undefined")
+            this.$setInheritedAttribute("initial-message");
+    };
+
+}).call(apf.codebox.prototype = new apf.StandardBinding());
+apf.aml.setElement("codebox", apf.codebox);
 
 });
 // #endif

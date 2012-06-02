@@ -35,7 +35,7 @@ var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
-
+    
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
@@ -50,7 +50,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
-    
     isAutoSaveEnabled: false,
 
     /**
@@ -60,7 +59,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * needed with the server in single-user mode.
      */
     rawRevisions: {},
-    revisionsData: {},
     docChangeTimeout: null,
     docChangeListeners: {},
     /**
@@ -69,13 +67,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * confirmed to be saved.
      */
     revisionQueue: {},
-    /**
-     * Revisions#offlineQueue -> Array
-     * Contains the revisions that have been saved during Cloud9 being offline.
-     * Its items are not revision objects, but hold their own format (for
-     * example, they have a generated timestamp of the moment of saving).
-     */
-    offlineQueue: [],
 
     /** related to: Revisions#onExternalChange
      * Revisions#changedPaths -> Array
@@ -103,7 +94,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook: function() {
         var self = this;
-
         commands.addCommand({
             name: "revisionpanel",
             hint: "File Revision History...",
@@ -133,11 +123,11 @@ module.exports = ext.register("ext/revisions/revisions", {
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
-        
+
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
-                
+
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
@@ -171,7 +161,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-        ide.addEventListener("onafteronline", this.$onAfterOnline);
+        ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
@@ -186,7 +176,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
-        if (!this.isCollab() || window.cloud9config.hosted) {
+        if (window.cloud9config.hosted || !this.isCollab()) {
             apf.ajax("/api/context/getemail", {
                 method: "get",
                 callback: function(data, state, extra) {
@@ -199,32 +189,61 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
 
+        // Contains the revisions that have been saved during Cloud9 being offline.
+        // Its items are not revision objects, but hold their own format (for
+        // example, they have a generated timestamp of the moment of saving).
+        if (localStorage.offlineQueue) {
+            this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+        }
+        else {
+            this.offlineQueue = [];
+        }
+
         this.$initWorker();
     },
 
-    setSaveButtonCaption: function(caption, page) {
+    $initWorker: function() {
+        var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
+        worker.onmessage = this.onWorkerMessage.bind(this);
+        worker.onerror = function(error) {
+            throw(new Error("Error from worker:\n" + error.message));
+        };
+        // Preload diff libraries so they are available to the worker in case we
+        // go offline.
+        worker.postMessage({ type: "preloadlibs" });
+    },
+
+    setSaveButtonCaption: function(page) {
         if (!self.btnSave)
             return;
 
-        if (caption)
-            return btnSave.setCaption(caption);
+        var SAVING = 0;
+        var SAVED = 1;
 
         btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
-                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
-                return btnSave.setCaption("Saving");
+                if (btnSave.currentState !== SAVING) {
+                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                    apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                    btnSave.currentState = SAVING;
+                    btnSave.setCaption("Saving");
+                }
             }
             else if (!hasChanged) {
-                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
-                return btnSave.setCaption("Changes saved");
+                if (btnSave.currentState !== SAVED) {
+                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                    apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                    btnSave.currentState = SAVED;
+                    btnSave.setCaption("Changes saved");
+                }
             }
         }
-        btnSave.setCaption("");
+        else {
+            btnSave.setCaption("");
+        }
     },
 
     init: function() {
@@ -248,15 +267,13 @@ module.exports = ext.register("ext/revisions/revisions", {
             })
         );
 
-        apf.document.documentElement.appendChild(winQuestionRev);
-
-        /**
-         * @todo the panel should move to the active editor tab using
-         *       afterselect
-         */
         ide.addEventListener("init.ext/code/code", function(e) {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
+        });
+        
+         apf.addEventListener("exit", function() {
+            localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
@@ -268,18 +285,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
 
-        this.$setRevisionListClass();
-    },
+        this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
-    $initWorker: function() {
-        var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
-        worker.onmessage = this.onWorkerMessage.bind(this); //!
-        worker.onerror = function(error) {
-            throw(new Error("Error from worker:\n" + error.message));
-        };
-        // Preload diff libraries so they are available to the worker in case we
-        // go offline.
-        worker.postMessage({ type: "preloadlibs" });
+        this.$setRevisionListClass();
     },
 
     $switchToPageModel: function(page) {
@@ -292,14 +300,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.$restoreSelection(page, page.$mdlRevisions);
-        this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && lstRevisions && !this.isNewPage(page)) {
+        if (page.$showRevisions === true && window.lstRevisions && !this.isNewPage(page)) {
             var selection = lstRevisions.selection;
             var node = model.data.firstChild;
             if (selection && selection.length === 0 && page.$selectedRevision) {
@@ -320,6 +327,23 @@ module.exports = ext.register("ext/revisions/revisions", {
         return revObj;
     },
 
+    hideRevisionsInfo : function() {
+        if (!isInfoActive && window.revisionsInfo) {
+            setTimeout(function(e) {
+                if (!isInfoActive) {
+                    apf.tween.single(revisionsInfo, {
+                        from:1,
+                        to:0,
+                        steps: 10,
+                        type     : "opacity",
+                        anim     : apf.tween.easeInOutCubic,
+                        interval: 30
+                    });
+                }
+            }, 200);
+        }
+    },
+
     /////////////////////
     // Event listeners //
     /////////////////////
@@ -334,8 +358,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
-        ext.initExtension(this);
-
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -344,8 +366,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
 
-        if (winQuestionRev.visible !== true &&
-            !this.isCollab(tabEditors.getPage().$doc)) { // Only in single user mode
+        if (winQuestionRev.visible !== true && !this.isCollab()) { // Only in single user mode
             ide.send({
                 command: "revisions",
                 subCommand: "getRealFileContents",
@@ -353,25 +374,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
         return false;
-    },
-
-    hideRevisionsInfo : function() {
-        var self = this;
-        if (!isInfoActive) {
-            setTimeout(function(e) {
-                ext.initExtension(self);
-                if (!isInfoActive) {
-                    apf.tween.single(revisionsInfo, {
-                        from:1,
-                        to:0,
-                        steps: 10,
-                        type     : "opacity",
-                        anim     : apf.tween.easeInOutCubic,
-                        interval: 30
-                    });
-                }
-            }, 200);
-        }
     },
 
     onBeforeSaveWarning: function(e) {
@@ -414,7 +416,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
     },
-    
+
     onSwitchFile: function(e) {
         this.$switchToPageModel(e.nextPage);
     },
@@ -437,10 +439,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.hide(); 
+            btnSave.hide();
         else
-            this.setSaveButtonCaption(null, e.page);
-            
+            this.setSaveButtonCaption(e.page);
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -451,6 +453,11 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (self.docChangeListeners[path]) {
                 delete self.docChangeListeners[path];
             }
+
+            self.worker.postMessage({
+                type: "closefile",
+                path: path
+            });
 
             for (var rev in self.revisionQueue) {
                 var _path = self.revisionQueue[rev].path;
@@ -466,8 +473,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     $makeNewRevision: function(rev) {
         var revObj = this.$getRevisionObject(rev.path);
         rev.revisions = revObj.allRevisions;
-        // To not have to extract and sort timestamps from allRevisions
-        rev.timestamps = revObj.allTimestamps;
         this.worker.postMessage(rev);
     },
 
@@ -483,18 +488,20 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterOnline: function(e) {
-        var queue = this.offlineQueue;
-        if (!queue || !queue.length) {
+        if (!this.offlineQueue.length) {
             return;
         }
 
-        queue.forEach(function(rev, ind, _queue) {
+        this.offlineQueue.forEach(function(rev, ind, _queue) {
             var prev = _queue[ind - 1];
             if (prev) {
                 rev.applyOn = prev.ts;
             }
         });
-        this.$makeNewRevision(queue.shift()); // First item doesn't depend on anything
+        this.$makeNewRevision(this.offlineQueue.shift()); // First item doesn't depend on anything
+
+        localStorage.offlineQueue = "[]"; // Empty local storage
+        this.offlineQueue = [];
     },
 
     afterSelect: function(e) {
@@ -515,6 +522,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPage().$selectedRevision = id;
     },
 
+    // Gets called twice. Why??
     afterModelUpdate: function(e) {
         var model = e.currentTarget;
         if (!model || !model.data || model.data.childNodes.length === 0) {
@@ -527,7 +535,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    isSaving : false,
     onDocChange: function(e, doc) {
         if (e.data && e.data.delta) {
             var suffix = e.data.delta.suffix;
@@ -537,14 +544,16 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        var page = doc.$page, self = this;
+        var page = doc.$page;
+        var self = this;
         if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
             setTimeout(function(){
                 self.setSaveButtonCaption();
             });
-            
+
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
+                stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
@@ -576,6 +585,12 @@ module.exports = ext.register("ext/revisions/revisions", {
                 };
 
                 this.$saveExistingRevision(e.data.path, revision);
+                break;
+            case "newRevision.error":
+                var revObj = this.$getRevisionObject(e.data.path);
+                if (revObj) {
+                    revObj.hasBeenSentToWorker = false;
+                }
                 break;
             case "recovery":
                 if (e.data.revision.nextAction === "storeAsRevision") {
@@ -624,6 +639,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onMessage: function(e) {
+        var self = this;
         var message = e.message;
         if (message.type !== "revision") {
             return;
@@ -631,14 +647,13 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
-        
+
         // guided tour magic conflicts with revisions--skip it
         if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
-            
+
         switch (message.subtype) {
             case "confirmSave":
-                revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
                 // This could happen in edge cases, like the user having two browsers
                 // opened and active on the same file, and then saving. Only one
@@ -657,7 +672,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 var revision = this.revisionQueue[ts].revision;
                 if (revision) {
-                    revision.saved = true
+                    revision.saved = true;
                     // In the case that a new file has just been created and saved
                     // `allRevisions` won't be there (since there has never been
                     // a `getRevisionhistory` that creates it), so we create it.
@@ -668,18 +683,25 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
 
-                    this.generateCache(revObj);
+                    this.generateCompactRevisions(revObj);
                     ide.dispatchEvent("revisionSaved", {
                         ts: ts,
                         path: message.path,
                         revision: revision
                     });
 
-                    // If we are on the page for the doc, let's populate the model,
-                    // otherwise it is a waste of resources
-                    if (Util.getDocPath() === message.path) {
-                        this.populateModel(revObj, this.model);
-                    }
+                    // The following code inserts the confirmed revision as the
+                    // first (most recent) revision in the list, only if the model
+                    // has been populated before already
+                    var revisionString = this.getXmlStringFromRevision(revision);
+                    var page = tabEditors.getPage(ide.davPrefix + "/" + message.path);
+                    if (page) {
+                            var model = page.$mdlRevisions;
+                            if (model && model.data && model.data.childNodes.length) {
+                            var revisionNode = apf.getXml(revisionString);
+                            apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
+                            }
+                        }
                 }
                 break;
 
@@ -688,7 +710,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revObj.allRevisions = message.body.revisions;
                 }
 
-                this.generateCache(revObj);
+                this.generateCompactRevisions(revObj);
                 if (!message.nextAction || !message.id) {
                     if (page && Util.getDocPath(page) === message.path &&
                         page.$showRevisions === true) {
@@ -697,10 +719,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     break;
                 }
 
-                var group = {};
                 var data = {
                     id: message.id,
-                    group: group,
+                    group: {},
                     type: message.nextAction
                 };
 
@@ -710,31 +731,23 @@ module.exports = ext.register("ext/revisions/revisions", {
                         var groupedRevs = revObj.groupedRevisionIds[i];
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
                             groupedRevs.forEach(function(ts) {
-                                group[ts] = this.getRevision(ts);
+                                data.group[ts] = this.getRevision(ts);
                             }, this);
                             break;
                         }
                     }
 
-                    var keys = Object.keys(group)
-                        .map(function(key) { return parseInt(key, 10); })
-                        .sort(function(a, b) { return a - b; });
-
-                    if (keys.length > 1) {
-                        data.groupKeys = keys;
-                        data.data = this.getRevision(keys[0]);
+                    if (Object.keys(data.group).length > 1) {
                         this.worker.postMessage(data);
                         break;
                     }
                 }
 
-                group[message.id] = this.getRevision(message.id);
-                data.groupKeys = [parseInt(message.id, 10)];
+                data.group[message.id] = this.getRevision(message.id);
                 this.worker.postMessage(data);
                 break;
 
             case "getRealFileContents":
-                var self = this;
                 var pages = tabEditors.getPages();
                 pages.forEach(function(page) {
                     var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
@@ -744,23 +757,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                             type: "recovery",
                             lastContent: page.$doc.getValue(),
                             realContent: message.contents,
-                            revisions: revObj.allRevisions,
-                            path: message.path,
-                            // To not have to extract and sort timestamps from allRevisions
-                            timestamps: revObj.allTimestamps
+                            path: message.path
                         };
 
                         if (message.nextAction === "storeAsRevision") {
                             data.nextAction = "storeAsRevision";
                         }
-
                         self.worker.postMessage(data);
                     }
                 });
                 break;
         }
     },
-
 
     /**
      * Revisions#showQuestionWindow(data) -> Void
@@ -838,39 +846,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
     },
 
-    /**
-     * Revisions#generateTimestamps(page)
-     * - revObj(Object): Body of the message coming from the server
-     *
-     * This function is called every time the server sends an `update` message.
-     * It generates the revision objects and the revision timestamp arrays used
-     * throughout the extension.
-     **/
-    generateCache: function(revObj) {
-        if (!revObj.allRevisions)
-            return;
-
-        var getTsAndSort = function(obj) {
-            return Object.keys(obj)
-                .map(function(ts) { return parseInt(ts, 10); })
-                .sort(function(a, b) { return a - b; });
-        };
-
-        // Create an array of the numeric timestamps. `allTimestamps` will store
-        // the numeric array. This is the only place where `allTimestamps should
-        // be modified.
-        revObj.allTimestamps = getTsAndSort(revObj.allRevisions);
-
-        // Generate a compacted version of the revision list, where revisions are
-        // grouped by close periods of time. Changes `compactTimestamps` to
-        // reflect the ones in the compact list.
-        revObj.compactRevisions = this.getCompactRevisions(revObj);
-        revObj.compactTimestamps = getTsAndSort(revObj.compactRevisions);
-    },
-
     toggleListView: function(model) {
         var revObj = this.$getRevisionObject(Util.getDocPath());
-        revObj.useCompactList = !!!revObj.useCompactList;
+        revObj.useCompactList = !revObj.useCompactList;
 
         // We don't want to mix up compact/detailed preview caches
         revObj.previewCache = {};
@@ -901,43 +879,45 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
 
-        var revisions, timestamps;
-        if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
+        var revisions;
+        if (revObj.useCompactList && revObj.compactRevisions) {
             revisions = revObj.compactRevisions;
-            timestamps = revObj.compactTimestamps;
         }
         else {
             revisions = revObj.allRevisions;
-            timestamps = revObj.allTimestamps;
         }
+
+        var timestamps = Util.keysToSortedArray(revisions);
+        var revsXML = "";
+        for (var i = timestamps.length - 1; i >= 0; i--) {
+            revsXML += this.getXmlStringFromRevision(revisions[timestamps[i]]);
+        }
+        this.model.load("<revisions>" + revsXML + "</revisions>");
+    },
+
+    getXmlStringFromRevision: function(revision) {
+        if (!revision) { return; }
 
         var contributorToXml = function(c) {
             return "<contributor email='" + c + "' />";
         };
-        var revsXML = "";
-        for (var i = timestamps.length - 1; i >= 0; i--) {
-            var ts = timestamps[i];
-            var rev = revisions[ts];
-            var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
-            var restoring = rev.restoring || "";
-            var savedToDisk = rev.saved !== false;
 
-            revsXML += "<revision " +
-                "id='" + rev.ts + "' " +
+        var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
+        var restoring = revision.restoring || "";
+
+        var xmlString = "<revision " +
+                "id='" + revision.ts + "' " +
                 "name='" + friendlyDate + "' " +
-                "saved='" + savedToDisk + "' " +
-                "silentsave='" + rev.silentsave + "' " +
+                "silentsave='" + revision.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-            var contributors = "";
-            if (rev.contributors && rev.contributors.length) {
-                contributors = rev.contributors.map(contributorToXml).join("");
-            }
-
-            revsXML += "<contributors>" + contributors + "</contributors></revision>";
+        var contributors = "";
+        if (revision.contributors && revision.contributors.length) {
+            contributors = revision.contributors.map(contributorToXml).join("");
         }
 
-        this.model.load("<revisions>" + revsXML + "</revisions>");
+        xmlString += "<contributors>" + contributors + "</contributors></revision>";
+        return xmlString;
     },
 
     /**
@@ -957,20 +937,19 @@ module.exports = ext.register("ext/revisions/revisions", {
         id = parseInt(id, 10);
 
         var revObj = this.$getRevisionObject(Util.getDocPath());
-        var tstamps = revObj.allTimestamps.slice(0);
+        var tstamps = Util.keysToSortedArray(revObj.allRevisions);
         var revision = tstamps.indexOf(id);
 
-        if (revision !== -1) {
+        if (revision !== -1) { // If there is such revision
             var data = {
                 content: content,
                 id: id,
                 revision: revision,
-                ts: tstamps,
-                tsValues: {}
+                patchesByTS: {}
             };
 
             for (var t = 0, l = tstamps.length; t < l; t++) {
-                data.tsValues[tstamps[t]] = revObj.allRevisions[tstamps[t]].patch;
+                data.patchesByTS[tstamps[t]] = revObj.allRevisions[tstamps[t]].patch[0];
             }
             return data;
         }
@@ -1019,7 +998,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
-     * Revisions#getCompactRevisions() -> Object
+     * Revisions#generateCompactRevisions() -> Object
      *
      * Creates a compacted revisions object from the extended revisions object
      * returned from the server. A compacted revisions object (CRO) is a revision
@@ -1029,9 +1008,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      *
      * Assumes that `allRevisions` is populated at this point.
      **/
-    getCompactRevisions: function(revObj) {
-        var timestamps = revObj.allTimestamps.slice(0);
+    generateCompactRevisions: function(revObj) {
         var all = revObj.allRevisions;
+        if (!all)
+            return;
+
         var compactRevisions = {};
         var finalTS = [];
         var isRestoring = function(id) { return all[id] && all[id].restoring; };
@@ -1049,6 +1030,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return prev;
         };
 
+        var timestamps = Util.keysToSortedArray(revObj.allRevisions);
         Util.compactRevisions(timestamps).forEach(function(ts) {
             finalTS.push.apply(finalTS, ts.__reduce(repack, [[]]));
         });
@@ -1093,6 +1075,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             compactRevisions[id] = groupObj;
         });
 
+        revObj.compactRevisions = compactRevisions;
         return compactRevisions;
     },
 
@@ -1198,10 +1181,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
+        // Take advantage of the interval and dump our offlineQueue into
+        // localStorage.
+        localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
+
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
-        tabEditors.getPages().forEach(this.save, this);
+        this.save(tabEditors.getPage());
     },
 
     /**
@@ -1225,8 +1212,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        ext.initExtension(this); //Why???
-        Save.quicksave(page, function() {}, true);
+        Save.quicksave(page, function() {
+            stripws.enable();
+        }, true);
     },
 
     /**
@@ -1276,9 +1264,18 @@ module.exports = ext.register("ext/revisions/revisions", {
             else {
                 var revObj = this.$getRevisionObject(docPath);
                 data.revisions = revObj.allRevisions;
-                // To not have to extract and sort timestamps from allRevisions
-                data.timestamps = revObj.allTimestamps;
-                this.worker.postMessage(data);
+                if (revObj.hasBeenSentToWorker === true) {
+                    this.worker.postMessage({
+                        type: "newRevision",
+                        path: docPath,
+                        lastContent: data.lastContent,
+                        hasBeenSentToWorker: true
+                    });
+                }
+                else {
+                    this.worker.postMessage(data);
+                    revObj.hasBeenSentToWorker = true;
+                }
                 return;
             }
         }
@@ -1298,7 +1295,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     addUserToDocChangeList: function(user, doc) {
         if (user && doc) {
             var path = Util.getDocPath(doc.$page);
-            var stack = this.revisionsData[path];
+            var stack = this.rawRevisions[path];
             if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
                 stack.usersChanged.push(user.user.email);
             }
@@ -1343,18 +1340,17 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     $getEditingUsers: function(path) {
         var users = [];
-        var rev = this.revisionsData[path];
-        if (rev && rev.usersChanged) {
-            users = rev.usersChanged;
+        if (this.rawRevisions[path] && this.rawRevisions[path].usersChanged) {
+            users = this.rawRevisions[path].usersChanged;
         }
         return users;
     },
 
     $resetEditingUsers: function(path) {
-        if (this.revisionsData[path]) {
-            this.revisionsData[path] = [];
+        if (this.rawRevisions[path]) {
+            this.rawRevisions[path].usersChanged = [];
         }
-        return this.revisionsData[path];
+        return this.rawRevisions[path].usersChanged;
     },
 
     $setRevisionListClass: function() {
@@ -1372,9 +1368,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.populateModel(revObj, this.model);
     },
-    
+
     isNewPage: function(page) {
-        return parseInt(page.$model.getXml().getAttribute("newfile"), 10) === 1;
+        return parseInt(page.$model.data.getAttribute("newfile"), 10) === 1;
     },
 
     show: function() {
@@ -1411,7 +1407,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         if (model) {
-            if (!model.data || model.data.length === 0) {
+            if (!model.data || model.data.childNodes.length === 0) {
                 this.populateModel(this.rawRevisions[Util.getDocPath()], model);
             }
             else {
@@ -1520,12 +1516,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
             if (listener) {
-                page.$doc.removeEventListener(listener);
+                page.$doc.removeEventListener("change", listener);
                 if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener(listener);
+                    page.$doc.acedoc.removeEventListener("change", listener);
                 }
 
-                (page.$doc.acedoc || page.$doc).addEventListener(listener);
+                (page.$doc.acedoc || page.$doc).addEventListener("change", listener);
             }
         }, this);
 
@@ -1541,9 +1537,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
             if (listener) {
-                page.$doc.removeEventListener(listener);
+                page.$doc.removeEventListener("change", listener);
                 if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener(listener);
+                    page.$doc.acedoc.removeEventListener("change", listener);
                 }
             }
             if (page.$mdlRevisions) {
@@ -1569,9 +1565,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
             if (listener) {
-                page.$doc.removeEventListener(listener);
+                page.$doc.removeEventListener("change", listener);
                 if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener(listener);
+                    page.$doc.acedoc.removeEventListener("change", listener);
                 }
             }
             if (page.$mdlRevisions) {
