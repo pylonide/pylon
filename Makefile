@@ -24,7 +24,8 @@ pack_apf:
 
 # makes ace; at the moment, requires dryice@0.4.2
 ace:
-	cd node_modules/ace; make clean build
+	cd node_modules/ace; make clean pre_build; ./Makefile.dryice.js minimal
+
 
 # packages core
 core: ace
@@ -38,7 +39,6 @@ helper:
 # packages ext
 ext: 
 	node build/r.js -o build/app.build.js
-	echo "module = {exports: undefined};" | cat - plugins-client/lib.packed/www/packed.js > temp_file && mv temp_file plugins-client/lib.packed/www/packed.js
 
 # calls dryice on worker & packages it
 worker: plugins-client/lib.ace/www/worker/worker.js
@@ -75,7 +75,7 @@ theme:
 	mkdir -p plugins-client/lib.ace/www/theme
 	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"` plugins-client/lib.ace/www/theme
 
-min_ace:
+min_ace: 
 	for i in `ls ./node_modules/ace/build/src/worker*.js`; do \
 		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/worker/`echo $$i | sed 's/.*\///'` baseUrl=. ; \
 	done
@@ -89,12 +89,12 @@ min_ace:
 
 gzip_safe:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
-		gzip -9 -v -c -q $$i > $$i.gz ; \
+		gzip -9 -v -c -q -f $$i > $$i.gz ; \
 	done
 
 gzip:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
-		gzip -9 -v -q $$i ; \
+		gzip -9 -v -q -f $$i ; \
 	done
 
 c9core: apf ace core worker mode theme
