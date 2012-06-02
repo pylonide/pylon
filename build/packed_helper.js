@@ -20,13 +20,14 @@ for (var i in extensions) {
     }
 }
 
+clientMappings.push("ext/uploadfiles': 'plugins-client/ext.uploadfiles"); // TODO: why is this not automatically added?
 clientPlugins = "'" + clientPlugins.join("',\n\t'") + "'";
 clientMappings = "'" + clientMappings.join("',\n\t'") + "'";
 
 var appTemplate = fs.readFileSync("./build/app.build.tmpl.js", "utf8");
 
 // transform all variable paths out
-var appFile = appTemplate.replace(/%b/g, "build").replace(/%d/, "plugins-client").replace('"%s"', clientPlugins).replace('"%m"', clientMappings).replace('"%o"', '"../plugins-client/lib.packed/www/packed.js"');
+var appFile = appTemplate.replace(/%b/g, "build").replace(/%d/g, "plugins-client").replace('"%s"', clientPlugins).replace('"%m"', clientMappings).replace('"%o"', '"../plugins-client/lib.packed/www/packed.js"');
 
 fs.writeFile("./build/app.build.js", appFile, "utf8", function(err) {
     if (err) {

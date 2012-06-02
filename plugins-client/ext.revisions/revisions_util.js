@@ -2,7 +2,6 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require("ace/anchor").Anchor;
-var settings = require("ext/settings/settings");
 var ide = require("core/ide");
 
 var TIMELAPSE = 10 * 60 * 1000;
@@ -129,8 +128,7 @@ exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
     }
-    var model = page.getModel();
-    return model && model.queryValue("@changed") == 1;
+    return page.changed === 1;
 };
 
 exports.pageIsCode = function(page) {
@@ -165,6 +163,12 @@ exports.question = function(title, header, msg, onyesall, onnoall) {
     winQuestionRevMsg.$ext.innerHTML = msg;
     btnQuestionRevYesAll.onclick = onyesall;
     btnQuestionRevNoAll.onclick = onnoall;
+};
+
+exports.keysToSortedArray = function(obj) {
+    return Object.keys(obj)
+        .map(function(key) { return parseInt(key, 10); })
+        .sort(function(a, b) { return a - b; });
 };
 
 });
