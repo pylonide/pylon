@@ -308,22 +308,35 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     remove: function(path, callback) {
         var page = tabEditors.getPage(path);
-        if (page)
+        if (page) {
             tabEditors.remove(page);
+        }
+        
+        // This is a very expensive way to find out whether the item to be
+        // removed is a file or a folder, since it involves creating a new model
+        // with the filesystem listing data, since the file node has already 
+        // been removed from this module's model.
+        davProject.list(path, function(modelString) {
+            var model = new apf.model();
+            model.load(modelString);
 
-        var cb = function(data, state, extra) {
-            // In WebDAV, a 204 status from the DELETE verb means that the
-            // file was removed successfully.
-            if (extra && extra.status && extra.status === 204) {
-                ide.dispatchEvent("removefile", {
-                    path: path
-                });
-            }
-
-            if (callback)
-                callback(data, state, extra);
-        };
-        davProject.remove(path, false, cb);
+            var nodeToRemove = model.queryNode("//node()[@path='" + path + "']");
+            var isFolder = nodeToRemove && nodeToRemove.getAttribute("type") === "folder";
+            var cb = function(data, state, extra) {
+                // In WebDAV, a 204 status from the DELETE verb means that the
+                // file was removed successfully.
+                if (extra && extra.status && extra.status === 204) {
+                    ide.dispatchEvent("removefile", {
+                        path: path,
+                        isFolder: isFolder
+                    });
+                }
+    
+                if (callback)
+                    callback(data, state, extra);
+            };
+            davProject.remove(path, false, cb);
+        });
     },
 
     init : function() {

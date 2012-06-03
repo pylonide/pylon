@@ -11,6 +11,7 @@ var Diff_Match_Patch = require("./diff_match_patch");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Async = require("async");
+var Rimraf = require("./rimraf");
 var fs;
 
 /**
@@ -179,8 +180,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("No path sent for the file to be removed");
                     }
 
-                    var path = PathUtils.getAbsolutePath.call(this, message.path);
-                    Fs.unlink(path + "." + FILE_SUFFIX);
+                    var path = this.getRevisionsPath(path);
+                    if (message.isFolder === true) {
+                        Rimraf(path, function() {}, fs);
+                    }
+                    else {
+                        fs.unlink(path + "." + FILE_SUFFIX);
+                    }
                     break;
 
                 case "moveRevision":
@@ -188,27 +194,38 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("Not enough paths sent for the file to be moved");
                     }
 
-                    var fromPath = PathUtils.getAbsolutePath.call(this, message.path) + "." + FILE_SUFFIX;
-                    var toPath = PathUtils.getAbsolutePath.call(this, message.newPath) + "." + FILE_SUFFIX;
-
-                    Fs.readFile(fromPath, function(err, data) {
-                        if (err) {
-                            return console.error(err);
+                    var fromPath = this.getRevisionsPath(message.path);
+                    var toPath = this.getRevisionsPath(message.newPath);
+                    if (message.isFolder !== false) {
+                        fromPath += "." + FILE_SUFFIX;
+                        toPath += "." + FILE_SUFFIX;
+                    }
+                    
+                    Path.exists(fromPath, function(fromPathExists) {
+                        if (!fromPathExists) {
+                            return;
                         }
-                        // Check if the destination folder actually exists
-                        Path.exists(Path.dirname(toPath), function(exists) {
-                            if (exists) {
-                                Fs.writeFile(toPath, data, function(err) {
+                        Path.exists(Path.dirname(toPath), function(toPathExists) {
+                            var renameFn = function() {
+                                fs.rename(fromPath, toPath, function(err) {
                                     if (err) {
-                                        return console.error(err);
+                                        console.error("There was an error moving " + fromPath + " to " + toPath);
                                     }
-                                    // Remove revisions file for old file
-                                    Fs.unlink(fromPath);
+                                });
+                            }
+                            
+                            if (toPathExists) {
+                                renameFn();
+                            }
+                            else {
+                                fs.mkdirP(Path.dirname(toPath), "0755", function(err) {
+                                    if (!err) {
+                                        renameFn();
+                                    }
                                 });
                             }
                         });
                     });
-
                     break;
             }
         }

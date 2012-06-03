@@ -136,6 +136,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.send({
                 command: "revisions",
                 subCommand: "removeRevision",
+                isFolder: data.isFolder,
                 path: Util.stripWSFromPath(data.path)
             });
         });
