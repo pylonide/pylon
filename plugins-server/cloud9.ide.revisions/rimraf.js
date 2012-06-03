@@ -45,7 +45,7 @@ exports.BUSYTRIES_MAX = 3
 function rimraf (p, cb, _fs) {
 
   if (!cb) throw new Error("No callback passed to rimraf()")
-  if (!fs) throw new Error("No filesystem module passed to rimraf()")
+  if (!_fs) throw new Error("No filesystem module passed to rimraf()")
 
   fs = _fs;
 
@@ -135,7 +135,7 @@ function rm_ (p, s, didWritableCheck, cb) {
     asyncForEach(files.map(function (f) {
       return path.join(p, f)
     }), function (file, cb) {
-      rimraf(file, cb)
+      rimraf(file, cb, fs)
     }, function (er) {
       if (er) return cb(er)
       fs.rmdir(p, cb)

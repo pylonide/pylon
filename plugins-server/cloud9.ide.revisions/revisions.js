@@ -156,7 +156,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 case "getRealFileContents":
                     fs.readFile(message.path, "utf8", function (err, data) {
                           if (err) {
-                              console.log(err);
+                              console.error(err);
                           }
 
                           user.broadcast(JSON.stringify({
@@ -180,7 +180,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("No path sent for the file to be removed");
                     }
 
-                    var path = this.getRevisionsPath(path);
+                    var path = this.getRevisionsPath(message.path);
                     if (message.isFolder === true) {
                         Rimraf(path, function() {}, fs);
                     }
