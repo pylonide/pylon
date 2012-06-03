@@ -44,9 +44,9 @@
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/ed2b6ebb8a812de48f0dfb12b675b91c4e4b3170"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/f06d2074f60366a544aedd5dfa8100321c15b565"],
-        "jvm_features": ["npm", "git@github.com/ajaxorg/jvm_features.git#877f21bf0759d942e4779758c5171ae747b80f18"],
-        "jvm-run":      ["npm", "git@github.com/ajaxorg/javarunvm.git#c288c04e8bfe1b8af8a0b1f84c66b2d33c0460b4"],
-        "javadebug":    ["npm", "git@github.com/ajaxorg/lib-javadebug.git#9c37a749816d73cb32dd9f99118ee948e3fb5284"]
+        "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#877f21bf0759d942e4779758c5171ae747b80f18"],
+        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#c288c04e8bfe1b8af8a0b1f84c66b2d33c0460b4"],
+        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#9c37a749816d73cb32dd9f99118ee948e3fb5284"]
     },
 
     "repository" : {
