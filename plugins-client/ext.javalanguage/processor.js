@@ -12,8 +12,9 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 
 var getFilePath = function(filePath) {
-    if (filePath.indexOf("/workspace/") === 0)
-        filePath = filePath.substr(11);
+  var idx;
+    if ((idx = filePath.indexOf("/workspace/")) != -1)
+        filePath = filePath.substr(idx + 11);
     return filePath;
 };
 

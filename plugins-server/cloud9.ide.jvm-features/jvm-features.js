@@ -26,6 +26,7 @@ var JVMFeatures = function(ide, workspace) {
     this.name = name;
     // remove the project name
     this.workspaceDir  = Path.dirname(ide.workspaceDir);
+    this.projectId = Path.basename(ide.workspaceDir);
 };
 
 util.inherits(JVMFeatures, Plugin);
@@ -55,13 +56,13 @@ util.inherits(JVMFeatures, Plugin);
         var res = true;
         switch (subCmd) {
             case "complete":
-                this.eclipseClient.codeComplete(message.project, message.file, message.offset,
+                this.eclipseClient.codeComplete(this.projectId, message.file, message.offset,
                   resultSender);
               break;
 
             // get locations of a variable or funcion call in the same file
             case "get_locations":
-                this.eclipseClient.getLocations(message.project, message.file, message.offset, message.length,
+                this.eclipseClient.getLocations(this.projectId, message.file, message.offset, message.length,
                   function(data) {
                     var matches = data.body || [];
                     data.body = {
@@ -78,33 +79,33 @@ util.inherits(JVMFeatures, Plugin);
 
             // Do refactoring
             case "refactor":
-                this.eclipseClient.refactor(message.project, message.file,
+                this.eclipseClient.refactor(this.projectId, message.file,
                     message.newname, message.offset, message.length, resultSender);
               break;
 
             case "outline":
-                this.eclipseClient.outline(message.project, message.file, resultSender);
+                this.eclipseClient.outline(this.projectId, message.file, resultSender);
                 break;
 
             case "code_format":
-                this.eclipseClient.codeFormat(message.project, message.file, resultSender);
+                this.eclipseClient.codeFormat(this.projectId, message.file, resultSender);
                 break;
 
             case "analyze_file":
-              this.eclipseClient.analyzeFile(message.project, message.file, resultSender);
+              this.eclipseClient.analyzeFile(this.projectId, message.file, resultSender);
                 break;
 
             case "hierarchy":
-              this.eclipseClient.hierarchy(message.project, message.file, message.offset,
+              this.eclipseClient.hierarchy(this.projectId, message.file, message.offset,
                   message.type, resultSender);
                 break;
 
             case "build":
-              this.eclipseClient.buildProject(message.project, resultSender);
+              this.eclipseClient.buildProject(this.projectId, resultSender);
                 break;
 
             case "navigate":
-              this.eclipseClient.navigate(message.project, message.file, message.navType,
+              this.eclipseClient.navigate(this.projectId, message.file, message.navType,
                   message.offset, message.length, resultSender);
                 break;
 
