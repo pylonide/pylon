@@ -170,7 +170,7 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
+        var boxLength = this.matches.length || 1;
         var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
         
