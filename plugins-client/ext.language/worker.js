@@ -133,6 +133,32 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     });
 };
 
+exports.createUIWorkerClient = function() {
+    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
+    var result = new LanguageWorker(emitter);
+    result.on = function(name, f) {
+        emitter.on.call(result, name, f);
+    };
+    result.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+    result.send = function(cmd, args) {
+        setTimeout(function() { result[cmd].apply(result, args); }, 0);
+    };
+    result.emit = function(event, data) {
+        emitter._dispatchEvent.call(emitter, event, data);
+    };
+    emitter.emit = function(event, data) {
+        emitter._dispatchEvent.call(result, event, { data: data });
+    };
+    return result;
+};
+
 /**
  * Ensure that an event handler is called only once if multiple
  * events are received at the same time.
@@ -214,10 +240,20 @@ function asyncParForEach(array, fn, callback) {
      * Registers a handler by loading its code and adding it the handler array
      */
     this.register = function(path) {
-        var handler = require(path);
-        handler.proxy = this.serverProxy;
-        handler.sender = this.sender;
-        this.handlers.push(handler);
+        try {
+            var handler = require(path);
+            handler.proxy = this.serverProxy;
+            handler.sender = this.sender;
+            this.handlers.push(handler);
+        } catch (e) {
+            // In ?noworker=1 debugging mode, synchronous require doesn't work
+            var _self = this;
+            require([path], function(handler) {
+                handler.proxy = _self.serverProxy;
+                handler.sender = _self.sender;
+                _self.handlers.push(handler);
+            });
+        }
     };
 
     this.parse = function(callback) {
