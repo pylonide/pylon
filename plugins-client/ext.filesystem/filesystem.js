@@ -279,7 +279,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             newPath: newPath,
             filename: name && name[0],
             xmlNode: node,
-            replace: isReplaceAction
+            replace: isReplaceAction,
+            isFolder: node.getAttribute("type") === "folder"
         });
     },
 
@@ -300,7 +301,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         ide.dispatchEvent("updatefile", {
             path: path,
             newPath: newPath,
-            xmlNode: node
+            xmlNode: node,
+            isFolder: node.getAttribute("type") === "folder"
         });
 
         return true;

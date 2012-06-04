@@ -196,7 +196,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
                     var fromPath = this.getRevisionsPath(message.path);
                     var toPath = this.getRevisionsPath(message.newPath);
-                    if (message.isFolder !== false) {
+                    if (message.isFolder !== true) {
                         fromPath += "." + FILE_SUFFIX;
                         toPath += "." + FILE_SUFFIX;
                     }
