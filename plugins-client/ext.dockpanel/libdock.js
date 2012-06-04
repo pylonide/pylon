@@ -368,7 +368,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     };*/
     
     this.addTo = function(def, uniqueId) {
-        var item = lookup[uniqueId].data;
+        var item = lookup[uniqueId] && lookup[uniqueId].data;
+        if(!item)
+            return false;
         
         if (item.buttons) {
             item.buttons.push(def);
@@ -382,7 +384,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     };
     
     this.show = function(uniqueId, byUser){
-        var item  = lookup[uniqueId].data;
+        var item  = lookup[uniqueId] && lookup[uniqueId].data;
+        if(!item)
+            return;
+            
         var before;
         if (!item.bars && !item.sections) {
             var section = findParentState(lookup[uniqueId].data);
