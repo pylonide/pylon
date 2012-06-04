@@ -53,7 +53,7 @@
             height     : 36px;
             margin-right:164px;
         }
-        
+
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-mbar-round {
             position:absolute;
             overflow:hidden;

@@ -255,7 +255,23 @@
             top: 0;
             width: 10px;
         }
+        
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.on {
+            float:right;
+            overflow:hidden;
+            background:url(images/sync_toggle.png) no-repeat 0 0;
+            width:63px;
+            height:34px;
+        }
 
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.off {
+            float:right;
+            overflow:hidden;
+            background:url(images/sync_toggle.png) no-repeat 0 0;
+            width:63px;
+            height:34px;
+        }
+        
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
@@ -290,6 +306,7 @@
                         
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
+                            
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
                             <div class="c9-local"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
