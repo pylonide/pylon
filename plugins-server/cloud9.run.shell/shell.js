@@ -14,19 +14,28 @@ var exports = module.exports = function setup(options, imports, register) {
 
     imports.sandbox.getUnixId(function(err, unixId) {
         if (err) return register(err);
-
-        pm.addRunner("shell", exports.factory(unixId));
-
-        register(null, {
-            "run-shell": {}
+        
+        imports.sandbox.getProjectDir(function(err, projectDir) {
+            if (err) return register(err);
+            
+            pm.addRunner("shell", exports.factory(unixId, projectDir));
+    
+            register(null, {
+                "run-shell": {}
+            });
         });
     });
 };
 
-exports.factory = function(uid) {
+exports.factory = function(uid, defaultCwd) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
+        // set default cwd to the project dir
+        options.cwd = defaultCwd;
+        
+        // this mixin will overwrite it if present there as well
         c9util.extend(options, args);
+        
         options.uid = uid;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
@@ -41,10 +50,9 @@ var Runner = exports.Runner = function(options, callback) {
     this.command = options.command;
     this.args = options.args || [];
     this.extra = options.extra;
-
+    
     this.runOptions = {};
-    if (options.cwd)
-        this.runOptions.cwd = options.cwd;
+    this.runOptions.cwd = options.cwd;
 
     this.env = options.env || {};
     for (var key in process.env)
