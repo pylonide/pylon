@@ -267,7 +267,7 @@
         .c9-menu-bar.local .c9-mbar-bcont .c9-sync.off {
             float:right;
             overflow:hidden;
-            background:url(images/sync_toggle.png) no-repeat 0 0;
+            background:url(images/sync_toggle.png) no-repeat 0 -39px;
             width:63px;
             height:34px;
         }

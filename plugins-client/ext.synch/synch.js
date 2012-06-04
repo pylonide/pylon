@@ -39,18 +39,18 @@ module.exports = ext.register("ext/synch/synch", {
             
             var logoCorner = document.querySelector(".c9-mbar-cont");
             
-            apf.setStyleClass(chkSyncStatus.$ext, "on");
-            logoCorner.insertBefore(chkSyncStatus.$ext, logoCorner.childNodes[0]);
+            apf.setStyleClass(btnSyncStatus.$ext, "on");
+            logoCorner.insertBefore(btnSyncStatus.$ext, logoCorner.childNodes[0]);
         }
     },
     
     setSynch : function() {
         if (apf.isTrue(settings.model.queryValue("general/@synching"))) {
-            apf.setStyleClass(logobar.$ext, "", ["off"]);  
+            apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
             settings.model.setQueryValue("general/@synching", "false");
         }
         else {
-            apf.setStyleClass(logobar.$ext, "", ["on"]);  
+            apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
             settings.model.setQueryValue("general/@synching", "true");
         }
     },
