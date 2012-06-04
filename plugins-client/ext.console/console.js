@@ -398,25 +398,16 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    createNodeProcessLog : function(message_pid) {
-                var command_id = this.createOutputBlock("Running Node Process", true);
+    createNodeProcessLog: function(message_pid) {
+        var command_id = this.createOutputBlock("Running Node Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
-
-                var containerEl = this.getLogStreamOutObject(command_id).$ext;
-                containerEl.setAttribute("rel", command_id);
-                apf.setStyleClass(containerEl, "has_pid");
-
-                if (window.cloud9config.hosted) {
-                    var url = location.protocol + "//" +
-                        ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
-                        "." + location.host;
-                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
-                        "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
-                null, this.getLogStreamOutObject(message_pid, true), ide);
-                }
-
-                this.command_id_tracer++;
+    
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+    
+        this.command_id_tracer++;
         return command_id;
     },
 
