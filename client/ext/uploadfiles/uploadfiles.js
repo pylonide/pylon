@@ -16,6 +16,7 @@ var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var fs   = require("ext/filesystem/filesystem");
 
 var MAX_UPLOAD_SIZE_FILE = 52428800;
+var MAX_FTP_UPLOAD_SIZE_FILE = 268435;
 var MAX_OPENFILE_SIZE = 2097152;
 var MAX_CONCURRENT_FILES = 1000;
 
@@ -43,6 +44,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     hook : function(){
         var _self = this;
+        
         ide.addEventListener("init.ext/tree/tree", function(){
             _self.nodes.push(
                 ide.mnuFile.appendChild(new apf.item({
@@ -81,12 +83,14 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             ide.addEventListener("init.c9/ext/auth/auth", function(){
                 _self.nodes.push(
                     ide.mnuFile.appendChild(new apf.item({
+                        id: "mnuDownloadProject",
                         caption : "Download Project",
                         onclick : function(){
                             window.open("/api/project/download/zip/" + ide.projectName);
                         }
                     })),
                     winFilesViewer.insertBefore(new apf.button({
+                        id: "btnDownloadFiles",
                         top: "-22",
                         skin: "header-btn",
                         right: "56",
@@ -98,6 +102,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     }), btnTreeRefresh)
                 );
                 btnUploadFiles.setProperty("right", "81");
+            });
+            
+            ide.addEventListener("init.ext/ftp/ftp", function(){
+                _self.projectType = "ftp";
+                mnuDownloadProject.removeNode();
+                btnDownloadFiles.removeNode();
+                btnUploadFiles.setProperty("right", "56");
             });
         });
     },
@@ -145,7 +156,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             */
             vboxTreeContainer.appendChild(boxUploadActivity);
         });
-        
         
         lstUploadActivity.$ext.addEventListener("mouseover", function(e) {
             _self.lockHideQueue = true;
@@ -521,30 +531,40 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     checkUploadSize: function(files) {
         var file;
         var files_too_big = [];
+        var projectType = this.projectType; 
+        
+        var maxFileSize = projectType != "ftp" ? MAX_UPLOAD_SIZE_FILE : MAX_FTP_UPLOAD_SIZE_FILE;
         for (var filesize, totalsize = 0, i = 0, l = files.length; i < l; ++i) {
             file = files[i];
             filesize = file.size;
             totalsize += filesize;
 
-            if (filesize > MAX_UPLOAD_SIZE_FILE) {
+            if (filesize > maxFileSize) {
                 files_too_big.push(file.name)
             }
         }
         
         if (files_too_big.length) {
-            if (files_too_big.length == 1) {
-                util.alert(
-                    "Maximum file-size exceeded", "A file exceeds our upload limit of 50MB per file.",
-                    "Please remove the file '" + files_too_big[0] + "' from the list to continue."
-                );
+            if (projectType != "ftp") {
+                if (files_too_big.length == 1) {
+                    util.alert(
+                        "Maximum file-size exceeded", "A file exceeds our upload limit of 50MB per file.",
+                        "Please remove the file '" + files_too_big[0] + "' from the list to continue."
+                    );
+                }
+                else {
+                    util.alert(
+                        "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
+                        "Please remove all files larger than 50MB from the list to continue."
+                    );
+                }
             }
             else {
                 util.alert(
-                    "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                    "Please remove all files larger than 50MB from the list to continue."
+                    "Maximum file-size exceeded", "Sorry, we currently don't support FTP file upload for files larger than 256 kB. We'll increase this limit soon.",
+                    "Please remove all files larger than 256 kB from the list to continue."
                 );
-            }
-            
+            }            
             return false;
         }
         
