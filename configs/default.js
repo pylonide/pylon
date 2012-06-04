@@ -173,11 +173,12 @@ var config = {
             "./cloud9.ide.revisions",
             {
                 packagePath: "./cloud9.ide.settings",
-                settingsPath: projectDir + "/.settings"
+                settingsPath: ".settings"
             },
             "./cloud9.ide.shell",
             "./cloud9.ide.state",
-            "./cloud9.ide.watcher"
+            "./cloud9.ide.watcher",
+            "./cloud9.sandbox.fs"
             ]
         }
     }
