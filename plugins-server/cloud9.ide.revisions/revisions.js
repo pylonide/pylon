@@ -212,17 +212,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     function (next) {
                         var line = lines[lineCount];
                         if (line) {
-                    try {
-                            var revision = JSON.parse(lines[lineCount]);
-                            revObj[revision.ts] = revision;
-                        }
-                    catch(e) {
-                            error = e;
-                    }
+                            try {
+                                var revision = JSON.parse(line);
+                                revObj[revision.ts] = revision;
+                            }
+                            catch(e) {
+                                    error = e;
+                            }
                         }
                         lineCount++;
-                    next();
-                },
+                        next();
+                    },
                     function (e) {
                         callback(error, revObj);
                     }
