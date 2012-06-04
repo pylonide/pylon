@@ -144,19 +144,10 @@ var convertToHierarchyTree = function(doc, root) {
     };
 
     this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode /*null*/, callback) {
-        if (this.getVariablesInProgress)
-          return callback();
-        this.getVariablesInProgress = true;
-
+        
         var _self = this;
         var markers = [];
         var enableRefactorings = [];
-
-        var originalCallback = callback;
-        callback = function() {
-          originalCallback.apply(null, arguments);
-          _self.getVariablesInProgress = false;
-        };
 
         var line = doc.getLine(cursorPos.row);
         var identifier = completeUtil.retrieveFullIdentifier(line, cursorPos.column);
@@ -180,7 +171,6 @@ var convertToHierarchyTree = function(doc, root) {
             return callback();
 
           _self.proxy.once("result", "jvmfeatures:get_locations", function(message) {
-            _self.proxy.emitter.removeAllListeners("result:jvmfeatures:get_locations");
             if (! message.success)
               return callback();
             var v = message.body;
@@ -231,7 +221,6 @@ var convertToHierarchyTree = function(doc, root) {
     };
 
     this.getVariablePositions = function(doc, fullAst /*null*/, pos, currentNode /*null*/, callback) {
-
         var _self = this;
 
         var line = doc.getLine(pos.row);
@@ -250,9 +239,8 @@ var convertToHierarchyTree = function(doc, root) {
           if (! savingDone)
             return callback();
 
-          _self.proxy.once("result", "jvmfeatures:get_locations", function(message) {
-
-            _self.proxy.emitter.removeAllListeners("result:jvmfeatures:get_locations");
+            _self.proxy.once("result", "jvmfeatures:get_locations", function(message) {
+            
             if (! message.success)
               return callback();
             var v = message.body;
@@ -296,7 +284,7 @@ var convertToHierarchyTree = function(doc, root) {
           length: oldId.text.length
         };
 
-        console.log("finishRefactoring called");
+        // console.log("finishRefactoring called");
 
         this.proxy.once("result", "jvmfeatures:refactor", function(message) {
           _self.refactorInProgress = false;
@@ -387,7 +375,7 @@ var convertToHierarchyTree = function(doc, root) {
           file : getFilePath(_self.path)
         };
 
-        console.log("analyze_file called");
+        // console.log("analyze_file called");
 
         var doAnalyzeFile = function() {
           _self.proxy.once("result", "jvmfeatures:analyze_file", function(message) {

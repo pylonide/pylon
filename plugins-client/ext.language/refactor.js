@@ -43,6 +43,7 @@ module.exports = {
     
     hook: function(ext, worker) {
         var _self = this;
+        this.ext = ext;
         this.worker = worker;
 
         worker.on("enableRefactorings", function(event) {
@@ -124,8 +125,7 @@ module.exports = {
             ace.moveCursorTo(mainPos.row, mainPos.column);
         }
         p.showOtherMarkers();
-        var continuousCompletionWasEnabled = this.ext.isContinuousCompletionEnabled();
-        if(continuousCompletionWasEnabled)
+        if(this.ext.isContinuousCompletionEnabled())
             this.ext.setContinuousCompletion(false);
         
         // Monkey patch
@@ -140,7 +140,6 @@ module.exports = {
     },
 
     renameVariable: function() {
-        if(this.ext.disabled) return;
         var amlEditor = editors.currentEditor.amlEditor;
         var ace = amlEditor.$editor;
 

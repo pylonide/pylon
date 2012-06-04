@@ -214,7 +214,6 @@ module.exports = ext.register("ext/language/language", {
         this.worker.call("setWarningLevel", [settings.model.queryValue("language/@warnLevel") || "info"]);
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
-        this.worker.emit("cursormove", {data: cursorPos});
         isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") === "true";
         this.setPath();
     },
