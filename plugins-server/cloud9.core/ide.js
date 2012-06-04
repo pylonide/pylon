@@ -119,6 +119,11 @@ util.inherits(Ide, EventEmitter);
                 + staticUrl + '/ace/build/ace'
                 + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
+            var loadedDetectionScript = "";
+            if (_self.options.local) {
+                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' + _self.options.workspaceId + '"></script>';
+            }
+
             var replacements = {
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
@@ -139,7 +144,8 @@ util.inherits(Ide, EventEmitter);
                 hosted: _self.options.hosted.toString(),
                 packed: _self.options.packed,
                 packedName: _self.options.packedName,
-                local: _self.options.local
+                local: _self.options.local,
+                loadedDetectionScript: loadedDetectionScript
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
