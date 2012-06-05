@@ -54,7 +54,6 @@
           scrollbar    = "sbShared 2 2 2"
           viewport2    = "virtual"
           skin         = "revisions-list"
-          bufferselect = "true"
           each         = "[revision]">
             <a:caption><?lm
                 {
