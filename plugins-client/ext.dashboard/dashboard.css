@@ -65,3 +65,8 @@ div.loading {
 .error.button-colorless {
     color: #FFE4A1;
 }
+
+
+.large-textarea {
+    margin: 10px;
+}

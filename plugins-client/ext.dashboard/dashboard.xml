@@ -2,6 +2,7 @@
 <a:window 
   id = "dashboard"
   width = "900"
+  height = "800"
   center    = "true"
 >
     
@@ -35,7 +36,7 @@
               <a:item value="vm">FTP Server</a:item>
               <a:item value="vm">On my own private virtual machine</a:item>
           </a:dropdown>
-        <a:button caption="Pick a template" skin="button-link-dark" class="fleft"/>
+        <a:button caption="Pick a template" skin="button-link-dark" class="selected fleft"/>
         <a:button caption="Clone" skin="button-link-dark" class="fleft"/>
         <a:button caption="Upload" skin="button-link-dark" class="fleft"/>
     </a:bar>
@@ -69,6 +70,9 @@
       <a:label skin="label-tooltip" class="left error" height="35">Connection failed!<br />Please check the fields for errors.</a:label>
       <a:label skin="label-tooltip" class="left success" height="35">We are in.<br />You are good to go!</a:label>
       <a:label skin="label-tooltip" class="top" height="35">Now hit the green “Create” button to finish.</a:label>
+
+      <a:textbox skin="large-textarea" class="dark" height="50" width="460"/>
+      <a:textbox skin="large-textarea" />
    </a:bar>
    <!--
           
