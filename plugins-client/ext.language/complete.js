@@ -15,10 +15,11 @@ var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
-var drawCompletionBox;
 
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
+var SHOW_DOC_DELAY = 2000;
+var HIDE_DOC_DELAY = 1000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
 
@@ -28,13 +29,32 @@ var deferredInvoke = lang.deferredCall(function() {
     var line = editor.getSession().getDocument().getLine(pos.row);
     if(keyhandler.preceededByIdentifier(line, pos.column) ||
        line[pos.column - 1] === '.' ||
-       keyhandler.isRequireJSCall(line, pos.column))
+       keyhandler.isRequireJSCall(line, pos.column)) {
         module.exports.invoke(true);
-    else
+        updateDoc(true);
+    }
+    else {
         module.exports.closeCompletionBox();
+    }
     isInvokeScheduled = false;
 });
 var isInvokeScheduled = false;
+
+var drawDocInvoke = lang.deferredCall(function() {
+    if (barCompleterCont.$ext.style.display !== "none") {
+        isDocShown = true;
+        txtCompleterDoc.parentNode.show();
+    }
+    isDrawDocInvokeScheduled = false;
+});
+var isDrawDocInvokeScheduled = false;
+
+var undrawDocInvoke = lang.deferredCall(function() {
+    if (barCompleterCont.$ext.style.display === "none") {
+        isDocShown = false;
+        txtCompleterDoc.parentNode.hide();
+    }
+});
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
@@ -178,18 +198,16 @@ module.exports = {
         var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
-        setTimeout(drawCompletionBox = function() {
-            var completionBoxWidth = isDocShown ? MENU_WIDTH * 2 : MENU_WIDTH;
+        setTimeout(function() {
             apf.popup.show("completionBox", {
                 x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
                 y        : _self.cursorConfig.lineHeight,
                 height   : completionBoxHeight,
-                width    : completionBoxWidth,
+                width    : MENU_WIDTH,
                 animate  : false,
                 ref      : cursorLayer.cursor,
                 callback : function() {
                     barCompleterCont.setHeight(completionBoxHeight);
-                    barCompleterCont.setWidth(completionBoxWidth);
                     sbCompleter.$resize();
                     _self.completionElement.scrollTop = 0;
                 }
@@ -210,13 +228,9 @@ module.exports = {
             ace.keyBinding.onTextInput = oldOnTextInput;
         }
         oldCommandKey = oldOnTextInput = null;
-        setTimeout(function() {
-            if (!apf.popup.isShowing("completionBox"))
-                isDocShown = false;
-        }, 100);
+        undrawDocInvoke.schedule(HIDE_DOC_DELAY);
     },
         
-
     populateCompletionBox: function (matches) {
         var _self = this;
         _self.completionElement.innerHTML = "";
@@ -263,18 +277,20 @@ module.exports = {
         _self.updateDoc();
     },
     
-    updateDoc : function() {
+    updateDoc : function(delayPopup) {
         this.docElement.innerHTML = '<span class="codecompletedoc_body">';
         var selected = this.matches[this.selectedIdx];
 
         if (selected && selected.doc) {
-            if (!isDocShown) {
-                isDocShown = true;
-                if (drawCompletionBox)
-                    drawCompletionBox();
+            if (isDocShown) {
+                txtCompleterDoc.parentNode.show();
+            }
+            else {
+                txtCompleterDoc.parentNode.hide();
+                if (!isDrawDocInvokeScheduled || delayPopup)
+                    drawDocInvoke.schedule(SHOW_DOC_DELAY);
             }
             this.docElement.innerHTML += selected.doc + '</span>';
-            txtCompleterDoc.parentNode.show();   
         }
         else {
             txtCompleterDoc.parentNode.hide();   
@@ -340,7 +356,6 @@ module.exports = {
                 replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
                 e.preventDefault();
-                this.updateDoc();
                 break;
             case 40: // Down
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
