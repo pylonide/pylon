@@ -513,9 +513,9 @@
     </a:presentation>
 </a:bar>
 
-<a:bar name="darkOpaque">
+<a:bar name="dark-opaque">
     <a:style><![CDATA[
-        .darkOpaque {
+        .dark-opaque {
             background-color: #2D2D2D;
             background-image: -webkit-linear-gradient(top, #303030,#292929);
             background-image:    -moz-linear-gradient(top, #303030,#292929);
@@ -527,7 +527,7 @@
     ]]></a:style>
     <a:presentation>
         <a:main containter=".">
-            <div class="darkOpaque">
+            <div class="dark-opaque">
             </div>
         </a:main>
     </a:presentation>
@@ -5547,6 +5547,37 @@
     <a:presentation>
         <a:main caption="." for="@for" minheight="17">
             <div class="black_label"> </div>
+        </a:main>
+    </a:presentation>
+</a:label>
+<a:label name="label-tooltip">
+    <a:style><![CDATA[
+        .label-tooltip {
+            color: #6F6F6F;
+            font-size: 11px;
+            line-height: 14px;
+            text-shadow: 0 1px 0 #000000;
+        }
+        .success.label-tooltip {
+            color: #B8FFB1;
+        }
+        .error.label-tooltip {
+            color: #FF636F;
+        }
+        .left.label-tooltip {
+            background: url("images/label-tooltip/left.png") 0 50% no-repeat;
+            padding: 4px 0 3px 16px;
+        }
+        .top.label-tooltip {
+            background: url("images/label-tooltip/top.png") 50% 0 no-repeat;
+            padding: 12px 0 0;
+            text-align: center;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." for="@for">
+            <div class="label-tooltip"> </div>
         </a:main>
     </a:presentation>
 </a:label>
@@ -10800,6 +10831,38 @@
         </a:main>
     </a:presentation>
 </a:textbox>
+
+<a:textbox name="chromeless">
+    <a:style><![CDATA[
+        .chromeless input {
+            background: none;
+            border: 0 none;
+            color: #ededed;
+            font-family: Helvetica, Arial, sans;
+            font-size: inherit;
+            height: 1.3em;
+            line-height: 1.3em;
+            margin: 0;
+            outline: 0;
+            width: inherit;
+        }
+        .chromeless:hover {
+            background-color: rgba(255, 255, 255, .1);
+        }
+        .chromelessFocus {
+            background: #000 !important;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="input">
+            <div class="chromeless">
+                <input type="text"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
 <a:textbox name="textbox">
     <a:alias>input</a:alias>
     <a:alias>secret</a:alias>
@@ -12061,7 +12124,7 @@
             .button-colorless.grey {
                 background-color: #303030;
             }
-            .button-colorless.lightGrey {
+            .button-colorless.light-grey {
                 background-color: #494850
             }
             .button-colorless.red {
@@ -12070,7 +12133,7 @@
             .button-colorless.green {
                 background-color: #088E04;
             }
-            .button-colorless.lightBlue {
+            .button-colorless.light-blue {
                 background-color: #415566
             }
             .button-colorless.blue {

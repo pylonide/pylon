@@ -10,7 +10,7 @@
     height = "4"
   ></a:bar>
   <a:hbox
-    class = "darkOpaque"
+    class = "dark-opaque"
     height = "46"
     edge = "10"
   >
@@ -18,18 +18,19 @@
         align     = "center"
         skin      = "basic"
         padding   = "5">
-          <a:label class="new-project fleft">New project:</a:label>
           <a:textbox
             id           = "projectTitle"
             class        = "fleft"
             focusselect  = "true"
             height       = "25"
-            skin         = "textbox-on-dark"
-            width        = "214"
+            skin         = "chromeless"
+            style        = "font-size: 20px"
+            value        = "Untitled project"
+            width        = "260"
             />
           <a:label class="data fleft">Store my data:</a:label>
           <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy" class="fleft">
-              <a:item value="cloud9Git">On Cloud9 as a git repo</a:item>
+              <a:item value="cloud9Git">On Cloud9 as a Git Repo</a:item>
               <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
               <a:item value="vm">FTP Server</a:item>
               <a:item value="vm">On my own private virtual machine</a:item>
@@ -50,7 +51,7 @@
        `Y8bood8P'  o888o `Y8bod8P' o888o o888o `Y8bod8P'    o888o   d888b    `Y8bod8P' o888o o888o o888o       `YbodP'    o888o  o888o o888ooooood8 
                                                                                                                                                     
    -->
-   <a:hbox class="darkOpaque">
+   <a:bar class="clone-from-url dark-opaque">
       <a:label flex="1">Where is your data stored</a:label>
       <a:textbox
             id           = "cloneURL"
@@ -58,8 +59,17 @@
             flex         = "5"
             skin         = "textbox-on-dark"
             />
-      <a:button caption="Go" skin="button-colorless" flex="1" />
-   </a:hbox>
+      
+      <a:button caption="Clone it" class="clone dark green" height="28" skin="button-colorless" width="122" />
+      <a:button class="cloning dark light-grey" height="28" skin="button-colorless" width="122">
+        <div class="loading"></div>
+      </a:button>
+      <a:button caption="Cloning finished" class="cloned dark light-blue" height="28" skin="button-colorless" width="122" />
+      <a:button caption="Clone it" class="clone dark error green" height="28" skin="button-colorless" width="122" />
+      <a:label skin="label-tooltip" class="left error" height="35">Connection failed!<br />Please check the fields for errors.</a:label>
+      <a:label skin="label-tooltip" class="left success" height="35">We are in.<br />You are good to go!</a:label>
+      <a:label skin="label-tooltip" class="top" height="35">Now hit the green “Create” button to finish.</a:label>
+   </a:bar>
    <!--
           
           .oooooo.                                   oooooo     oooo ooo        ooooo 

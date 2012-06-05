@@ -21,3 +21,47 @@
     line-height: 27px;
     padding: 0 5px 0 10px;
 }
+
+
+.clone.button-colorless,
+.cloning.button-colorless {
+    position: relative;
+}
+.clone.button-colorless:after,
+.cloning.button-colorless:after {
+    background: url(/static/ext/main/style/images/button-clone.png) no-repeat 50% 0;
+    display: block;
+    content: "";
+    width: inherit;
+    height: inherit;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.cloning.button-colorless:after {
+    background-position: 50% -30px;
+}
+.clone.button-colorless {
+    text-indent: -24px;   
+}
+@-webkit-keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+   @-moz-keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+        @keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+
+div.loading {
+    -webkit-animation: loading .7s linear 0s infinite normal;
+       -moz-animation: loading .7s linear 0s infinite normal;
+            animation: loading .7s linear 0s infinite normal;
+
+    background: url(http://dl.dropbox.com/u/3269118/loading.png) no-repeat;
+    height: 27px;
+    left: 50%;
+    margin: -13px 0 0 -14px;
+    position: absolute;
+    top: 50%;
+    width: 28px;
+}
+.error.button-colorless {
+    color: #FFE4A1;
+}
