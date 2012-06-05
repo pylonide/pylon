@@ -249,6 +249,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (!state.bars) 
             return;
         
+        for (var i in state.bars) {
+            if(!state.bars[i])
+                delete state.bars[i];
+        }
+        
         state.bars.each(function(bar){
             bar.uniqueId = lookup.push({data: bar}) - 1;
             
@@ -263,7 +268,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         var bars = state.bars;
         for (var i = 0; i < bars.length; i++) {
-            addBarState.call(this, bars[i]);
+            if(bars[i])
+                addBarState.call(this, bars[i]);
         }
     };
     
@@ -2103,7 +2109,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 "class" : options["class"] || "",
                 draggable : drag,
                 onblur: function(){
-                console.log('blur')    
+                   
                 },
                 onmousedown  : function(){
                     btnLock = true;
