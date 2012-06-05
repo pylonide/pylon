@@ -60,7 +60,7 @@ function worker(project) {
                     'ext/jslanguage/narcissus_jshint',
                     'ext/jslanguage/narcissus_jshint',
                     'ext/jslanguage/debugger',
-                    'ext/jsinfer/complete'
+                    'ext/jsinfer/infer_completer'
                 ]
             })
         ],
