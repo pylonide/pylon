@@ -71,11 +71,11 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
             	var eventName = event.message.args.event.name;
 				if (eventName === "internet-available") {
 					var state = event.message.args.event.value;
-					if 	(state === false) {
+					/*if 	(state === false) {                 UNCOMMENT WHEN READY
 						ide.dispatchEvent("localOffline", event);	
 					}
 					else
-						ide.dispatchEvent("localOnline", event);
+						ide.dispatchEvent("localOnline", event);*/
 				}
             }
         }
