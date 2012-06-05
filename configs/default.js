@@ -133,8 +133,7 @@ var config = {
                     "ext/gitblame/gitblame",
                     //"ext/githistory/githistory",
                     "ext/revisions/revisions",
-                    "ext/language/liveinspect",
-                    "ext/jsinfer/jsinfer"
+                    "ext/language/liveinspect"
                     //"ext/splitview/splitview"
                     //"ext/minimap/minimap"
                     //"ext/acebugs/acebugs"
