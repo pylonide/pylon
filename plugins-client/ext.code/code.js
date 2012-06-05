@@ -104,8 +104,8 @@ var SupportedModes = {
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
     "text/x-sql": "sql",
-    "text/x-c9search" : "c9search",
-    "text/x-xquery": "xquery"
+    "text/x-xquery": "xquery",
+    "text/x-c9search" : "c9search"
 };
 
 var contentTypes = {

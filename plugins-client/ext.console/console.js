@@ -123,6 +123,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     getLogStreamOutObject: function(tracer_id, idIsPid, originalInput) {
+        if (typeof tracer_id === "undefined") {
+            return null;
+        }
+        
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
@@ -378,25 +382,16 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    createNodeProcessLog : function(message_pid) {
-                var command_id = this.createOutputBlock("Running Node Process", true);
+    createNodeProcessLog: function(message_pid) {
+        var command_id = this.createOutputBlock("Running Node Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
-
-                var containerEl = this.getLogStreamOutObject(command_id).$ext;
-                containerEl.setAttribute("rel", command_id);
-                apf.setStyleClass(containerEl, "has_pid");
-
-                if (window.cloud9config.hosted) {
-                    var url = location.protocol + "//" +
-                        ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
-                        "." + location.host;
-                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
-                        "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
-                null, this.getLogStreamOutObject(message_pid, true), ide);
-                }
-
-                this.command_id_tracer++;
+    
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+    
+        this.command_id_tracer++;
         return command_id;
     },
 
@@ -424,6 +419,47 @@ module.exports = ext.register("ext/console/console", {
                 this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
+                if (message.data && message.data.indexOf("Tip: you can") === 0) {
+                    (function () {
+                        var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
+                        if (!prjmatch) return;
+                        
+                        var user = prjmatch[2];
+                        var project = prjmatch[1];
+                        
+                        var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
+                        
+                        if (project !== ide.projectName) {
+                            // concurrency bug, project does not match
+                            apf.ajax("/api/debug", {
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    agent: navigator.userAgent,
+                                    type: "Concurrency bug, project does not match",
+                                    e: [user, project, urlPath],
+                                    workspaceId: ide.workspaceId
+                                })
+                            });
+                        }
+                        else if (urlPath.length && user !== urlPath[0]) {
+                            // concurrency bug, user does not match
+                            apf.ajax("/api/debug", {
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    agent: navigator.userAgent,
+                                    type: "Concurrency bug, user does not match",
+                                    e: [user, project, urlPath],
+                                    workspaceId: ide.workspaceId
+                                })
+                            });
+                        }
+                        
+                        return;
+                    }());
+                }
+                
                 logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
