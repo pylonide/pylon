@@ -31,7 +31,6 @@ var deferredInvoke = lang.deferredCall(function() {
        line[pos.column - 1] === '.' ||
        keyhandler.isRequireJSCall(line, pos.column)) {
         module.exports.invoke(true);
-        updateDoc(true);
     }
     else {
         module.exports.closeCompletionBox();
