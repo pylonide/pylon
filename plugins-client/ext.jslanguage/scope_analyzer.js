@@ -541,6 +541,8 @@ handler.analyze = function(doc, ast, callback) {
                 if (localVariables[i].uses.length === 0) {
                     var v = localVariables[i];
                     v.declarations.forEach(function(decl) {
+                        if (decl.value && decl.value === decl.value.toUpperCase())
+                            return;
                         markers.push({
                             pos: decl.getPos(),
                             type: 'unused',
