@@ -741,10 +741,7 @@ apf.codebox = function(struct, tagName) {
         ace.renderer.setPadding(0);
         this.ace.codebox = this;
         
-        ace.on("focus", function(){
-            if (ace.$isFocused)
-                return;
-            ace.$isFocused = true;
+        ace.on("focus", function() {
             dom.removeCssClass(ace.codebox.$ext, "tb_textboxInitial");
             
             if (ace.renderer.initialMessageNode) {
@@ -754,7 +751,6 @@ apf.codebox = function(struct, tagName) {
         });
 
         function onBlur() {
-            ace.$isFocused = false;
             if (ace.session.getValue())
                 return;
             dom.addCssClass(ace.codebox.$ext, "tb_textboxInitial");
@@ -768,7 +764,7 @@ apf.codebox = function(struct, tagName) {
         setTimeout(onBlur, function() { if (!ace.$isFocused)onBlur(); }, 100);
         // todo should we do this here?
         // ace.on("resize", function(){apf.layout.forceResize();});
-    },
+    };
     this.getValue = function() {
         return this.ace.session.getValue();
     };
