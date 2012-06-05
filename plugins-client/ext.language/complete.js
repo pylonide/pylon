@@ -20,6 +20,7 @@ var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 2000;
 var HIDE_DOC_DELAY = 1000;
+var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
 
@@ -53,6 +54,10 @@ var undrawDocInvoke = lang.deferredCall(function() {
         isDocShown = false;
         txtCompleterDoc.parentNode.hide();
     }
+});
+
+var killCrashedCompletionInvoke = lang.deferredCall(function() {
+    _self.closeCompletionBox();
 });
 
 function retrievePreceedingIdentifier(text, pos) {
@@ -419,22 +424,23 @@ module.exports = {
         });
         var _self = this;
         if(forceBox)
-            this.hideTimer = setTimeout(function() {
-                // Completion takes or crashed
-                _self.closeCompletionBox();
-            }, 4000);
+            killCrashedCompletionInvoke(CRASHED_COMPLETION_TIMEOUT);
     },
     
     onComplete: function(event) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
+        var eventPos = event.data.pos;
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);
     
         editor.removeEventListener("change", this.$onChange);
-        clearTimeout(this.hideTimer);
+        killCrashedCompletionInvoke.cancel();
+
+        if (pos.column !== eventPos.column || pos.row !== eventPos.row)
+            return;
     
-        var matches = event.data;
+        var matches = event.data.matches;
         
         // Remove out-of-date matches
         for (var i = 0; i < matches.length; i++) {
