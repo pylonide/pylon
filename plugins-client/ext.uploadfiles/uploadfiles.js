@@ -80,7 +80,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 )
             });
             
-            ide.addEventListener("init.ext/auth/auth", function(){
+            if(window.cloud9config.hosted) {
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
@@ -88,7 +88,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         }
                     }), 390)
                 );
-            });
+            }
         });
     },
     
@@ -452,7 +452,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     uploadNextFile: function() {
         if (this.cancelAllUploads)
-            return;
+            return this.uploadCanceled();
         
         var _self = this;
         uploadactivityNumFiles.$ext.innerHTML = "(" + this.totalNumUploads + ")";
@@ -630,7 +630,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     onProgress: function(perc) {
         if (this.cancelAllUploads)
-            return;
+            return this.uploadCanceled();
             
         if(!this.currentFile) return;    
         var total = Math.floor(perc * 100);
@@ -640,10 +640,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     onComplete: function() {
-        if (this.cancelAllUploads) {
-            this.cancelAllUploads = false;
-            return;
-        }
+        if (this.cancelAllUploads)
+            return this.uploadCanceled();
         
         var _self = this;
         var file = this.currentFile;
@@ -698,12 +696,22 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         this.uploadFiles = [];
         this.uploadQueue = [];
         
-        mdlUploadActivity.clear();
+        mdlUploadActivity.load("<data />");
         boxUploadActivity.hide();
         
         (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
         if (this.currentFile.treeNode)
             apf.xmldb.removeNode(this.currentFile.treeNode);
+    },
+    
+    uploadCanceled: function() {
+        this.uploadInProgress = false;
+        this.cancelAllUploads = false;
+        this.existingOverwriteAll = false;
+        this.existingSkipAll = false;
+        this.totalNumUploads = 0;
+        (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
+        require("ext/tree/tree").refresh();
     },
     
     getFormData: function(file) {

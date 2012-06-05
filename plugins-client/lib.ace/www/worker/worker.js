@@ -5240,7 +5240,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
-        var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
+        var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
         
         function cursorMoved() {
             asyncForEach(_self.handlers, function(handler, next) {
@@ -5255,8 +5255,13 @@ function asyncParForEach(array, fn, callback) {
                             aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
                         }
                         if (response.hint) {
-                            // Last one wins, support multiple?
-                            aggregateActions.hint = response.hint;
+                            if (aggregateActions.hint)
+                                aggregateActions.hint += "\n" + response.hint;
+                            else
+                                aggregateActions.hint = response.hint;
+                        }
+                        if (response.displayPos) {
+                            aggregateActions.displayPos = response.displayPos;
                         }
                         next();
                     });
@@ -5273,7 +5278,8 @@ function asyncParForEach(array, fn, callback) {
                 _self.setLastAggregateActions(aggregateActions);
                 _self.scheduleEmit("hint", {
                     pos: pos,
-                	message: hintMessage
+                    displayPos: aggregateActions.displayPos,
+                    message: hintMessage
                 });
             });
 
@@ -5438,7 +5444,13 @@ function asyncParForEach(array, fn, callback) {
                         return 1;
                     else if (a.score > b.score)
                         return -1;
-                    else if(a.name < b.name)
+                    else if (a.id && a.id === b.id) {
+                        if (a.isFunction)
+                            return -1;
+                        else if (b.isFunction)
+                            return 1;
+                    }
+                    if (a.name < b.name)
                         return -1;
                     else if(a.name > b.name)
                         return 1;
@@ -7302,7 +7314,7 @@ ConsNode.prototype.getPos = function() {
             pos.el = Math.max(pos.el, p.el);
             if(pos.el !== oldEl)
                 pos.ec = p.ec;
-            else
+            else if (pos.el === p.el)
                 pos.ec = Math.max(pos.ec, p.ec);
         }
     }
@@ -7319,7 +7331,7 @@ ConsNode.prototype.findNode = function(pos) {
                 var node = this[i].findNode(pos);
                 if(node)
                     return node instanceof StringNode ? this : node;
-                else if(p2.sl == p2.el)
+                else
                     return this[i];
             }
         }
@@ -9917,6 +9929,9 @@ require('treehugger/traverse');
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
+var KIND_EVENT = module.exports.KIND_EVENT = "event";
+var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
+var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -10231,12 +10246,20 @@ var Scope = module.exports.Scope = function Scope(parent) {
 /**
  * Declare a variable in the current scope
  */
-Scope.prototype.declare = function(name, resolveNode) {
-    if(!this.vars['_'+name]) 
-        this.vars['_'+name] = new Variable(resolveNode);
-    else if(resolveNode)
-        this.vars['_'+name].addDeclaration(resolveNode);
-    return this.vars['_'+name];
+Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidence, kind) {
+    var result;
+    if (!this.vars['_'+name]) {
+        result = this.vars['_'+name] = new Variable(resolveNode);
+    }
+    else if (resolveNode) {
+        result = this.vars['_'+name];
+        result.addDeclaration(resolveNode);
+    }
+    if (result) {
+        result.markProperDeclaration(properDeclarationConfidence);
+        result.kind = kind;
+    }
+    return result;
 };
 
 Scope.prototype.isDeclared = function(name) {
@@ -10299,19 +10322,19 @@ handler.analyze = function(doc, ast, callback) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x);
+                scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
             'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x);
+                scope.declare(b.x.value, b.x, PROPER);
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope.declare(b.x.value, b.x);
+                    scope.declare(b.x.value, b.x, PROPER);
                 }
                 return node;
             }

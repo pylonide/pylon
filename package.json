@@ -24,7 +24,8 @@
         "dryice": "0.4.2",
 
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4"
+        "amd-loader": "~0.0.4",
+        "async": "0.1.21"
     },
 
     "devDependencies": {

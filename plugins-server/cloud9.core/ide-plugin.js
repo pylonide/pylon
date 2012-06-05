@@ -6,6 +6,7 @@ var IdeServer = require("./ide");
 module.exports = function setup(options, imports, register) {
 
     assert(options.fsUrl, "option 'fsUrl' is required");
+    assert.equal(typeof options.hosted, "boolean", "option 'hosted' is required");
 
     var log = imports.log;
     var hub = imports.hub;
