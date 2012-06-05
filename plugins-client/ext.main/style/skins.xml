@@ -11431,7 +11431,7 @@
         }
         
         .filemgr-tree .loading .item {
-            background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
+            background : url(images/file-tree-load-spinner.gif) no-repeat 17px 1px;
         }
 
         .filemgr-tree .loading .item LABEL {
@@ -11439,7 +11439,7 @@
         }
 
         .filemgr-tree .loading.selected .item {
-            background : url(images/file-tree-load-spinner-selected.gif) no-repeat 16px 1px;
+            background : url(images/file-tree-load-spinner-selected.gif) no-repeat 17px 1px;
         }
 
         .filemgr-tree .ldng,
