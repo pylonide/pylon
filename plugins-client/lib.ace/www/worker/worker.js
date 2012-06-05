@@ -7314,7 +7314,7 @@ ConsNode.prototype.getPos = function() {
             pos.el = Math.max(pos.el, p.el);
             if(pos.el !== oldEl)
                 pos.ec = p.ec;
-            else if (pos.el === p.el)
+            else
                 pos.ec = Math.max(pos.ec, p.ec);
         }
     }
@@ -7331,7 +7331,7 @@ ConsNode.prototype.findNode = function(pos) {
                 var node = this[i].findNode(pos);
                 if(node)
                     return node instanceof StringNode ? this : node;
-                else
+                else if(p2.sl == p2.el)
                     return this[i];
             }
         }

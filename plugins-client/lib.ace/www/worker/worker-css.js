@@ -149,15 +149,25 @@ onmessage = function(e) {
 */
 
 define('ace/lib/fixoldbrowsers', ['require', 'exports', 'module' , 'ace/lib/regexp', 'ace/lib/es5-shim'], function(require, exports, module) {
-
+"use strict";
 
 require("./regexp");
 require("./es5-shim");
 
 });
+/*
+ *  Based on code from:
+ *
+ * XRegExp 1.5.0
+ * (c) 2007-2010 Steven Levithan
+ * MIT License
+ * <http://xregexp.com>
+ * Provides an augmented, extensible, cross-browser implementation of regular expressions,
+ * including support for additional syntax, flags, and methods
+ */
  
 define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
     //---------------------------------
     //  Private variables
@@ -1317,9 +1327,48 @@ var prepareString = "a"[0] != "a",
         return Object(o);
     };
 });
+/* vim:ts=4:sts=4:sw=4:
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *      Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)
+ *      Mike de Boer <mike AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/lib/event_emitter', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 var EventEmitter = {};
 
@@ -1399,9 +1448,45 @@ EventEmitter.removeAllListeners = function(eventName) {
 exports.EventEmitter = EventEmitter;
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/lib/oop', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 exports.inherits = (function() {
     var tempCtor = function() {};
@@ -1424,9 +1509,45 @@ exports.implement = function(proto, mixin) {
 };
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
  
 define('ace/mode/css_worker', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/worker/mirror', 'ace/mode/css/csslint'], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var Mirror = require("../worker/mirror").Mirror;
@@ -1455,7 +1576,7 @@ oop.inherits(Worker, Mirror);
 
 });
 define('ace/worker/mirror', ['require', 'exports', 'module' , 'ace/document', 'ace/lib/lang'], function(require, exports, module) {
-
+"use strict";
 
 var Document = require("../document").Document;
 var lang = require("../lib/lang");
@@ -1497,14 +1618,58 @@ var Mirror = exports.Mirror = function(sender) {
 }).call(Mirror.prototype);
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/document', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/event_emitter', 'ace/range', 'ace/anchor'], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
 var Range = require("./range").Range;
 var Anchor = require("./anchor").Anchor;
+
+/**
+ * class Document
+ *
+ * Contains the text of the document. Documents are controlled by a single [[EditSession `EditSession`]]. At its core, `Document`s are just an array of strings, with each row in the document matching up to the array index.
+ *
+ *
+ **/
 
  /**
  * new Document([text])
@@ -1530,17 +1695,48 @@ var Document = function(text) {
 (function() {
 
     oop.implement(this, EventEmitter);
+
+    /**
+    * Document.setValue(text) -> Void
+    * - text (String): The text to use
+    *
+    * Replaces all the lines in the current `Document` with the value of `text`.
+    **/
     this.setValue = function(text) {
         var len = this.getLength();
         this.remove(new Range(0, 0, len, this.getLine(len-1).length));
         this.insert({row: 0, column:0}, text);
     };
+
+    /**
+    * Document.getValue() -> String
+    * 
+    * Returns all the lines in the document as a single string, split by the new line character.
+    **/
     this.getValue = function() {
         return this.getAllLines().join(this.getNewLineCharacter());
     };
+
+    /** 
+    * Document.createAnchor(row, column) -> Anchor
+    * - row (Number): The row number to use
+    * - column (Number): The column number to use
+    *
+    * Creates a new `Anchor` to define a floating point in the document.
+    **/
     this.createAnchor = function(row, column) {
         return new Anchor(this, row, column);
     };
+
+    /** internal, hide
+    * Document.$split(text) -> [String]
+    * - text (String): The text to work with
+    * + ([String]): A String array, with each index containing a piece of the original `text` string.
+    * 
+    * Splits a string of text on any newline (`\n`) or carriage-return ('\r') characters.
+    *
+    *
+    **/
 
     // check for IE split bug
     if ("aaa".split(/a/).length == 0)
@@ -1551,6 +1747,13 @@ var Document = function(text) {
         this.$split = function(text) {
             return text.split(/\r\n|\r|\n/);
         };
+
+
+    /** internal, hide
+    * Document.$detectNewLine(text) -> Void
+    * 
+    * 
+    **/
     this.$detectNewLine = function(text) {
         var match = text.match(/^.*?(\r\n|\r|\n)/m);
         if (match) {
@@ -1559,6 +1762,18 @@ var Document = function(text) {
             this.$autoNewLine = "\n";
         }
     };
+
+    /**
+    * Document.getNewLineCharacter() -> String
+    * + (String): If `newLineMode == windows`, `\r\n` is returned.<br/>
+    *  If `newLineMode == unix`, `\n` is returned.<br/>
+    *  If `newLineMode == auto`, the value of `autoNewLine` is returned.
+    * 
+    * Returns the newline character that's being used, depending on the value of `newLineMode`. 
+    *
+    * 
+    * 
+    **/
     this.getNewLineCharacter = function() {
       switch (this.$newLineMode) {
           case "windows":
@@ -1574,30 +1789,87 @@ var Document = function(text) {
 
     this.$autoNewLine = "\n";
     this.$newLineMode = "auto";
+    /**
+     * Document.setNewLineMode(newLineMode) -> Void
+     * - newLineMode(String): [The newline mode to use; can be either `windows`, `unix`, or `auto`]{: #Document.setNewLineMode.param}
+     * 
+     * [Sets the new line mode.]{: #Document.setNewLineMode.desc}
+     **/
     this.setNewLineMode = function(newLineMode) {
         if (this.$newLineMode === newLineMode)
             return;
 
         this.$newLineMode = newLineMode;
     };
+
+    /**
+    * Document.getNewLineMode() -> String
+    * 
+    * [Returns the type of newlines being used; either `windows`, `unix`, or `auto`]{: #Document.getNewLineMode}
+    *
+    **/
     this.getNewLineMode = function() {
         return this.$newLineMode;
     };
+
+    /**
+    * Document.isNewLine(text) -> Boolean
+    * - text (String): The text to check
+    *
+    * Returns `true` if `text` is a newline character (either `\r\n`, `\r`, or `\n`).
+    *
+    **/
     this.isNewLine = function(text) {
         return (text == "\r\n" || text == "\r" || text == "\n");
     };
+
+    /**
+    * Document.getLine(row) -> String
+    * - row (Number): The row index to retrieve
+    * 
+    * Returns a verbatim copy of the given line as it is in the document
+    *
+    **/
     this.getLine = function(row) {
         return this.$lines[row] || "";
     };
+
+    /**
+    * Document.getLines(firstRow, lastRow) -> [String]
+    * - firstRow (Number): The first row index to retrieve
+    * - lastRow (Number): The final row index to retrieve
+    * 
+    * Returns an array of strings of the rows between `firstRow` and `lastRow`. This function is inclusive of `lastRow`.
+    *
+    **/
     this.getLines = function(firstRow, lastRow) {
         return this.$lines.slice(firstRow, lastRow + 1);
     };
+
+    /**
+    * Document.getAllLines() -> [String]
+    * 
+    * Returns all lines in the document as string array. Warning: The caller should not modify this array!
+    **/
     this.getAllLines = function() {
         return this.getLines(0, this.getLength());
     };
+
+    /**
+    * Document.getLength() -> Number
+    * 
+    * Returns the number of rows in the document.
+    **/
     this.getLength = function() {
         return this.$lines.length;
     };
+
+    /**
+    * Document.getTextRange(range) -> String
+    * - range (Range): The range to work with
+    * 
+    * [Given a range within the document, this function returns all the text within that range as a single string.]{: #Document.getTextRange.desc}
+    **/
     this.getTextRange = function(range) {
         if (range.start.row == range.end.row) {
             return this.$lines[range.start.row].substring(range.start.column,
@@ -1610,6 +1882,12 @@ var Document = function(text) {
             return lines.join(this.getNewLineCharacter());
         }
     };
+
+    /** internal, hide
+    * Document.$clipPosition(position) -> Number
+    * 
+    * 
+    **/
     this.$clipPosition = function(position) {
         var length = this.getLength();
         if (position.row >= length) {
@@ -1618,6 +1896,16 @@ var Document = function(text) {
         }
         return position;
     };
+
+    /**
+    * Document.insert(position, text) -> Number
+    * - position (Number): The position to start inserting at 
+    * - text (String): A chunk of text to insert
+    * + (Number): The position of the last line of `text`. If the length of `text` is 0, this function simply returns `position`. 
+    * Inserts a block of `text` and the indicated `position`.
+    *
+    * 
+    **/
     this.insert = function(position, text) {
         if (!text || text.length === 0)
             return position;
@@ -1640,6 +1928,20 @@ var Document = function(text) {
         }
         return position;
     };
+
+    /**
+    * Document.insertLines(row, lines) -> Object
+    * - row (Number): The index of the row to insert at
+    * - lines (Array): An array of strings
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *   ```{row: endRow, column: 0}```<br/>
+    *   If `lines` is empty, this function returns an object containing the current row, and column, like this:<br/>
+    *   ```{row: row, column: 0}```
+    *
+    * Inserts the elements in `lines` into the document, starting at the row index given by `row`. This method also triggers the `'change'` event.
+    *
+    *
+    **/
     this.insertLines = function(row, lines) {
         if (lines.length == 0)
             return {row: row, column: 0};
@@ -1664,6 +1966,18 @@ var Document = function(text) {
         this._emit("change", { data: delta });
         return end || range.end;
     };
+
+    /**
+    * Document.insertNewLine(position) -> Object
+    * - position (String): The position to insert at
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *    ```{row: endRow, column: 0}```
+    * 
+    * Inserts a new line into the document at the current row's `position`. This method also triggers the `'change'` event. 
+    *
+    *   
+    *
+    **/
     this.insertNewLine = function(position) {
         position = this.$clipPosition(position);
         var line = this.$lines[position.row] || "";
@@ -1685,6 +1999,20 @@ var Document = function(text) {
 
         return end;
     };
+
+    /**
+    * Document.insertInLine(position, text) -> Object | Number
+    * - position (Number): The position to insert at
+    * - text (String): A chunk of text
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *     ```{row: endRow, column: 0}```
+    * + (Number): If `text` is empty, this function returns the value of `position`
+    * 
+    * Inserts `text` into the `position` at the current row. This method also triggers the `'change'` event.
+    *
+    *
+    *
+    **/
     this.insertInLine = function(position, text) {
         if (text.length == 0)
             return position;
@@ -1708,6 +2036,16 @@ var Document = function(text) {
 
         return end;
     };
+
+    /**
+    * Document.remove(range) -> Object
+    * - range (Range): A specified Range to remove
+    * + (Object): Returns the new `start` property of the range, which contains `startRow` and `startColumn`. If `range` is empty, this function returns the unmodified value of `range.start`.
+    * 
+    * Removes the `range` from the document.
+    *
+    *
+    **/
     this.remove = function(range) {
         // clip to document
         range.start = this.$clipPosition(range.start);
@@ -1739,6 +2077,18 @@ var Document = function(text) {
         }
         return range.start;
     };
+
+    /**
+    * Document.removeInLine(row, startColumn, endColumn) -> Object
+    * - row (Number): The row to remove from
+    * - startColumn (Number): The column to start removing at 
+    * - endColumn (Number): The column to stop removing at
+    * + (Object): Returns an object containing `startRow` and `startColumn`, indicating the new row and column values.<br/>If `startColumn` is equal to `endColumn`, this function returns nothing.
+    *
+    * Removes the specified columns from the `row`. This method also triggers the `'change'` event.
+    *
+    * 
+    **/
     this.removeInLine = function(row, startColumn, endColumn) {
         if (startColumn == endColumn)
             return;
@@ -1757,6 +2107,17 @@ var Document = function(text) {
         this._emit("change", { data: delta });
         return range.start;
     };
+
+    /**
+    * Document.removeLines(firstRow, lastRow) -> [String]
+    * - firstRow (Number): The first row to be removed
+    * - lastRow (Number): The last row to be removed
+    * + ([String]): Returns all the removed lines.
+    * 
+    * Removes a range of full lines. This method also triggers the `'change'` event.
+    * 
+    *
+    **/
     this.removeLines = function(firstRow, lastRow) {
         var range = new Range(firstRow, 0, lastRow + 1, 0);
         var removed = this.$lines.splice(firstRow, lastRow - firstRow + 1);
@@ -1770,6 +2131,14 @@ var Document = function(text) {
         this._emit("change", { data: delta });
         return removed;
     };
+
+    /**
+    * Document.removeNewLine(row) -> Void
+    * - row (Number): The row to check
+    * 
+    * Removes the new line between `row` and the row immediately following it. This method also triggers the `'change'` event.
+    *
+    **/
     this.removeNewLine = function(row) {
         var firstLine = this.getLine(row);
         var secondLine = this.getLine(row+1);
@@ -1786,6 +2155,19 @@ var Document = function(text) {
         };
         this._emit("change", { data: delta });
     };
+
+    /**
+    * Document.replace(range, text) -> Object
+    * - range (Range): A specified Range to replace
+    * - text (String): The new text to use as a replacement
+    * + (Object): Returns an object containing the final row and column, like this:
+    *     {row: endRow, column: 0}
+    * If the text and range are empty, this function returns an object containing the current `range.start` value.
+    * If the text is the exact same as what currently exists, this function returns an object containing the current `range.end` value.
+    *
+    * Replaces a range in the document with the new `text`.
+    *
+    **/
     this.replace = function(range, text) {
         if (text.length == 0 && range.isEmpty())
             return range.start;
@@ -1805,6 +2187,12 @@ var Document = function(text) {
 
         return end;
     };
+
+    /**
+    * Document.applyDeltas(deltas) -> Void
+    * 
+    * Applies all the changes previously accumulated. These can be either `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+    **/
     this.applyDeltas = function(deltas) {
         for (var i=0; i<deltas.length; i++) {
             var delta = deltas[i];
@@ -1820,6 +2208,12 @@ var Document = function(text) {
                 this.remove(range);
         }
     };
+
+    /**
+    * Document.revertDeltas(deltas) -> Void
+    * 
+    * Reverts any changes previously applied. These can be either `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+    **/
     this.revertDeltas = function(deltas) {
         for (var i=deltas.length-1; i>=0; i--) {
             var delta = deltas[i];
@@ -1841,9 +2235,45 @@ var Document = function(text) {
 
 exports.Document = Document;
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/range', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 /**
  * class Range
@@ -1887,16 +2317,53 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             this.end.row == range.end.row &&
             this.start.column == range.start.column &&
             this.end.column == range.end.column
-    }; 
+    };
+
+    /**
+     * Range.toString() -> String
+     *
+     * Returns a string containing the range's row and column information, given like this:
+     *
+     *    [start.row/start.column] -> [end.row/end.column]
+     *
+     **/ 
 
     this.toString = function() {
         return ("Range: [" + this.start.row + "/" + this.start.column +
             "] -> [" + this.end.row + "/" + this.end.column + "]");
-    }; 
+    };
+
+    /** related to: Range.compare
+     * Range.contains(row, column) -> Boolean
+     * - row (Number): A row to check for
+     * - column (Number): A column to check for
+     *
+     * Returns `true` if the `row` and `column` provided are within the given range. This can better be expressed as returning `true` if:
+     *
+     *    this.start.row <= row <= this.end.row &&
+     *    this.start.column <= column <= this.end.column
+     *
+     **/ 
 
     this.contains = function(row, column) {
         return this.compare(row, column) == 0;
-    }; 
+    };
+
+    /** related to: Range.compare
+     * Range.compareRange(range) -> Number
+     * - range (Range): A range to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * <br/>
+     * * `-2`: (B) is in front of (A), and doesn't intersect with (A)<br/>
+     * * `-1`: (B) begins before (A) but ends inside of (A)<br/>
+     * * `0`: (B) is completely inside of (A) OR (A) is completely inside of (B)<br/>
+     * * `+1`: (B) begins inside of (A) but ends outside of (A)<br/>
+     * * `+2`: (B) is after (A) and doesn't intersect with (A)<br/>
+     * * `42`: FTW state: (B) ends in (A) but starts outside of (A)
+     * 
+     * Compares `this` range (A) with another range (B).
+     *
+     **/ 
     this.compareRange = function(range) {
         var cmp,
             end = range.end,
@@ -2133,6 +2600,30 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
 
         return 0;
     };
+
+    /**
+     * Range.compareStart(row, column) -> Number
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * <br/>
+     * * `0` if the two points are exactly equal<br/>
+     * * `-1` if `p.row` is less then the calling range<br/>
+     * * `1` if `p.row` is greater than the calling range, or if `isStart` is `true`.<br/>
+     * <br/>
+     * If the starting row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is greater than or equal to the calling range's starting column, this returns `0`<br/>
+     * * Otherwise, it returns -1<br/>
+     * <br/>
+     * If the ending row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is less than or equal to the calling range's ending column, this returns `0`<br/>
+     * * Otherwise, it returns 1
+     *
+     * Checks the row and column points with the row and column points of the calling range.
+     *
+     *
+     *
+     **/
     this.compareStart = function(row, column) {
         if (this.start.row == row && this.start.column == column) {
             return -1;
@@ -2233,6 +2724,15 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
         return Range.fromPoints(start || this.start, end || this.end);
     };
+
+   /** 
+     * Range.extend(row, column) -> Range
+     * - row (Number): A new row to extend to
+     * - column (Number): A new column to extend to
+     *
+     *  Changes the row and column points for the calling range for both the starting and ending points. This method returns that range with a new row.
+     *
+    **/
     this.extend = function(row, column) {
         var cmp = this.compare(row, column);
 
@@ -2249,18 +2749,46 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     this.isEmpty = function() {
         return (this.start.row == this.end.row && this.start.column == this.end.column);
     };
+
+   /** 
+     * Range.isMultiLine() -> Boolean
+     *
+     * Returns true if the range spans across multiple lines.
+     *
+    **/
     this.isMultiLine = function() {
         return (this.start.row !== this.end.row);
     };
+
+   /** 
+     * Range.clone() -> Range
+     *
+     * Returns a duplicate of the calling range.
+     *
+    **/
     this.clone = function() {
         return Range.fromPoints(this.start, this.end);
     };
+
+   /** 
+     * Range.collapseRows() -> Range
+     *
+     * Returns a range containing the starting and ending rows of the original range, but with a column value of `0`.
+     *
+    **/
     this.collapseRows = function() {
         if (this.end.column == 0)
             return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0)
         else
             return new Range(this.start.row, 0, this.end.row, 0)
     };
+
+   /** 
+     * Range.toScreenRange(session) -> Range
+     * - session (EditSession): The `EditSession` to retrieve coordinates from
+     * 
+     * Given the current `Range`, this function converts those starting and ending points into screen positions, and then returns a new `Range` object.
+    **/
     this.toScreenRange = function(session) {
         var screenPosStart =
             session.documentToScreenPosition(this.start);
@@ -2274,18 +2802,70 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     };
 
 }).call(Range.prototype);
+
+/** 
+ * Range.fromPoints(start, end) -> Range
+ * - start (Range): A starting point to use
+ * - end (Range): An ending point to use
+ * 
+ * Creates and returns a new `Range` based on the row and column of the given parameters.
+ *
+**/
 Range.fromPoints = function(start, end) {
     return new Range(start.row, start.column, end.row, end.column);
 };
 
 exports.Range = Range;
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/anchor', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/event_emitter'], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
+
+/**
+ * class Anchor
+ *
+ * Defines the floating pointer in the document. Whenever text is inserted or deleted before the cursor, the position of the cursor is updated
+ *
+ **/
 
 /**
  * new Anchor(doc, row, column)
@@ -2312,14 +2892,36 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 (function() {
 
     oop.implement(this, EventEmitter);
+    
+    /**
+     * Anchor.getPosition() -> Object
+     *
+     * Returns an object identifying the `row` and `column` position of the current anchor.
+     *
+     **/
 
     this.getPosition = function() {
         return this.$clipPositionToDocument(this.row, this.column);
     };
+ 
+     /**
+     * Anchor.getDocument() -> Document
+     *
+     * Returns the current document.
+     *
+     **/
         
     this.getDocument = function() {
         return this.document;
     };
+    
+     /**
+     * Anchor@onChange(e)
+     * - e (Event): Contains data about the event
+     *
+     * Fires whenever the anchor position changes. Events that can trigger this function include `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+     *
+     **/
 
     this.onChange = function(e) {
         var delta = e.data;
@@ -2386,6 +2988,16 @@ var Anchor = exports.Anchor = function(doc, row, column) {
         this.setPosition(row, column, true);
     };
 
+     /**
+     * Anchor.setPosition(row, column, noClip)
+     * - row (Number): The row index to move the anchor to
+     * - column (Number): The column index to move the anchor to
+     * - noClip (Boolean): Identifies if you want the position to be clipped
+     *
+     * Sets the anchor position to the specified row and column. If `noClip` is `true`, the position is not clipped.
+     *
+     **/
+
     this.setPosition = function(row, column, noClip) {
         var pos;
         if (noClip) {
@@ -2413,10 +3025,26 @@ var Anchor = exports.Anchor = function(doc, row, column) {
             value: pos
         });
     };
+    
+    /**
+     * Anchor.detach()
+     *
+     * When called, the `'change'` event listener is removed.
+     *
+     **/
 
     this.detach = function() {
         this.document.removeEventListener("change", this.$onChange);
     };
+    
+    /** internal, hide
+     * Anchor.clipPositionToDocument(row, column)
+     * - row (Number): The row index to clip the anchor to
+     * - column (Number): The column index to clip the anchor to
+     *
+     * Clips the anchor position to the specified row and column.
+     *
+     **/
 
     this.$clipPositionToDocument = function(row, column) {
         var pos = {};
@@ -2443,9 +3071,45 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 }).call(Anchor.prototype);
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/lib/lang', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 exports.stringReverse = function(string) {
     return string.split("").reverse().join("");
@@ -2509,6 +3173,10 @@ exports.arrayToMap = function(arr) {
     return map;
 
 };
+
+/*
+ * splice out of 'array' anything that === 'value'
+ */
 exports.arrayRemove = function(array, value) {
   for (var i = 0; i <= array.length; i++) {
     if (value === array[i]) {
@@ -2708,6 +3376,13 @@ EventTarget.prototype = {
         }            
     }
 };
+/**
+ * Convenient way to read through strings.
+ * @namespace parserlib.util
+ * @class StringReader
+ * @constructor
+ * @param {String} text The text to read.
+ */
 function StringReader(text){
 
     /**
@@ -2717,8 +3392,31 @@ function StringReader(text){
      * @private
      */
     this._input = text.replace(/\n\r?/g, "\n");
+
+
+    /**
+     * The row for the character to be read next.
+     * @property _line
+     * @type int
+     * @private
+     */
     this._line = 1;
+
+
+    /**
+     * The column for the character to be read next.
+     * @property _col
+     * @type int
+     * @private
+     */
     this._col = 1;
+
+    /**
+     * The index of the character in the input to be read next.
+     * @property _cursor
+     * @type int
+     * @private
+     */
     this._cursor = 0;
 }
 
@@ -2852,6 +3550,12 @@ StringReader.prototype = {
 
         var buffer = "",
             c;
+
+        /*
+         * First, buffer must be the same length as the pattern.
+         * Then, buffer must end with the pattern or else reach the
+         * end of the input.
+         */
         while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) != buffer.length - pattern.length){
             c = this.read();
             if (c){
@@ -2939,6 +3643,15 @@ StringReader.prototype = {
     }
 
 };
+/**
+ * Type to use when a syntax error occurs.
+ * @class SyntaxError
+ * @namespace parserlib.util
+ * @constructor
+ * @param {String} message The error message.
+ * @param {int} line The line at which the error occurred.
+ * @param {int} col The column at which the error occurred.
+ */
 function SyntaxError(message, line, col){
 
     /**
@@ -2947,13 +3660,34 @@ function SyntaxError(message, line, col){
      * @property col
      */
     this.col = col;
+
+    /**
+     * The line at which the error occurred.
+     * @type int
+     * @property line
+     */
     this.line = line;
+
+    /**
+     * The text representation of the unit.
+     * @type String
+     * @property text
+     */
     this.message = message;
 
 }
 
 //inherit from Error
 SyntaxError.prototype = new Error();
+/**
+ * Base type to represent a single syntactic unit.
+ * @class SyntaxUnit
+ * @namespace parserlib.util
+ * @constructor
+ * @param {String} text The text of the unit.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
 function SyntaxUnit(text, line, col, type){
 
 
@@ -2963,8 +3697,26 @@ function SyntaxUnit(text, line, col, type){
      * @property col
      */
     this.col = col;
+
+    /**
+     * The line of text on which the unit resides.
+     * @type int
+     * @property line
+     */
     this.line = line;
+
+    /**
+     * The text representation of the unit.
+     * @type String
+     * @property text
+     */
     this.text = text;
+
+    /**
+     * The type of syntax unit.
+     * @type int
+     * @property type
+     */
     this.type = type;
 }
 
@@ -3005,6 +3757,7 @@ SyntaxUnit.prototype = {
     }
 
 };
+/*global StringReader, SyntaxError*/
 
 /**
  * Generic TokenStream providing base functionality.
@@ -3023,9 +3776,37 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     this._reader = input ? new StringReader(input.toString()) : null;
-    this._token = null;
+    
+    /**
+     * Token object for the last consumed token.
+     * @type Token
+     * @property _token
+     * @private
+     */
+    this._token = null;    
+    
+    /**
+     * The array of token information.
+     * @type Array
+     * @property _tokenData
+     * @private
+     */
     this._tokenData = tokenData;
+    
+    /**
+     * Lookahead token buffer.
+     * @type Array
+     * @property _lt
+     * @private
+     */
     this._lt = [];
+    
+    /**
+     * Lookahead token buffer index.
+     * @type int
+     * @property _ltIndex
+     * @private
+     */
     this._ltIndex = 0;
     
     this._ltIndexCache = [];
@@ -3388,6 +4169,31 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
+
+
+/* 
+Parser-Lib
+Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
 /* Version v0.1.6, Build time: 2-March-2012 02:44:32 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
@@ -3539,6 +4345,7 @@ var Colors = {
     yellow          :"#ffff00",
     yellowgreen     :"#9acd32"
 };
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
@@ -3552,6 +4359,12 @@ var Colors = {
 function Combinator(text, line, col){
     
     SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
+
+    /**
+     * The type of modifier.
+     * @type String
+     * @property type
+     */
     this.type = "unknown";
     
     //pretty simple
@@ -3569,6 +4382,9 @@ function Combinator(text, line, col){
 
 Combinator.prototype = new SyntaxUnit();
 Combinator.prototype.constructor = Combinator;
+
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a media feature, such as max-width:500.
  * @namespace parserlib.css
@@ -3581,12 +4397,27 @@ Combinator.prototype.constructor = Combinator;
 function MediaFeature(name, value){
     
     SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol, Parser.MEDIA_FEATURE_TYPE);
+
+    /**
+     * The name of the media feature
+     * @type String
+     * @property name
+     */
     this.name = name;
+
+    /**
+     * The value for the feature or null if there is none.
+     * @type SyntaxUnit
+     * @property value
+     */
     this.value = value;
 }
 
 MediaFeature.prototype = new SyntaxUnit();
 MediaFeature.prototype.constructor = MediaFeature;
+
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents an individual media query.
  * @namespace parserlib.css
@@ -3602,14 +4433,37 @@ MediaFeature.prototype.constructor = MediaFeature;
 function MediaQuery(modifier, mediaType, features, line, col){
     
     SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
+
+    /**
+     * The media modifier ("not" or "only")
+     * @type String
+     * @property modifier
+     */
     this.modifier = modifier;
-    this.mediaType = mediaType;
+
+    /**
+     * The mediaType (i.e., "print")
+     * @type String
+     * @property mediaType
+     */
+    this.mediaType = mediaType;    
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property features
+     */
     this.features = features;
 
 }
 
 MediaQuery.prototype = new SyntaxUnit();
 MediaQuery.prototype.constructor = MediaQuery;
+
+
+/*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
+    PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
+    PropertyName, Combinator, MediaFeature, MediaQuery, EventTarget */
 
 /**
  * A CSS3 parser.
@@ -3911,6 +4765,9 @@ Parser.prototype = function(){
                 }
                 
                 tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
+                /*if (!tokenStream.match(Tokens.STRING)){
+                    tokenStream.mustMatch(Tokens.URI);
+                }*/
                 
                 //grab the URI value
                 uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
@@ -4425,6 +5282,12 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     tt,
                     selectors;
+
+
+                /*
+                 * Error Recovery: If even a single selector fails to parse,
+                 * then the entire ruleset should be thrown away.
+                 */
                 try {
                     selectors = this._selectors_group();
                 } catch (ex){
@@ -5803,6 +6666,14 @@ Parser.prototype = function(){
     
     return proto;
 }();
+
+
+/*
+nth
+  : S* [ ['-'|'+']? INTEGER? {N} [ S* ['-'|'+'] S* INTEGER ]? |
+         ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
+  ;
+*/
 /*global Validation, ValidationTypes, ValidationError*/
 var Properties = {
 
@@ -6281,6 +7152,7 @@ var Properties = {
     "z-index"                       : "<integer> | auto | inherit",
     "zoom"                          : "<number> | <percentage> | normal"
 };
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
@@ -6295,6 +7167,12 @@ var Properties = {
 function PropertyName(text, hack, line, col){
     
     SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_NAME_TYPE);
+
+    /**
+     * The type of IE hack applied ("*", "_", or null).
+     * @type String
+     * @property hack
+     */
     this.hack = hack;
 
 }
@@ -6304,6 +7182,8 @@ PropertyName.prototype.constructor = PropertyName;
 PropertyName.prototype.toString = function(){
     return (this.hack ? this.hack : "") + this.text;
 };
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just everything single part between ":" and ";". If there are multiple values
@@ -6319,12 +7199,21 @@ PropertyName.prototype.toString = function(){
 function PropertyValue(parts, line, col){
 
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property parts
+     */
     this.parts = parts;
     
 }
 
 PropertyValue.prototype = new SyntaxUnit();
 PropertyValue.prototype.constructor = PropertyValue;
+
+
+/*global SyntaxUnit, Parser*/
 /**
  * A utility class that allows for easy iteration over the various parts of a
  * property value.
@@ -6342,8 +7231,28 @@ function PropertyValueIterator(value){
      * @private
      */
     this._i = 0;
+    
+    /**
+     * The parts that make up the value.
+     * @type Array
+     * @property _parts
+     * @private
+     */
     this._parts = value.parts;
+    
+    /**
+     * Keeps track of bookmarks along the way.
+     * @type Array
+     * @property _marks
+     * @private
+     */
     this._marks = [];
+    
+    /**
+     * Holds the original property value.
+     * @type parserlib.css.PropertyValue
+     * @property value
+     */
     this.value = value;
     
 }
@@ -6356,29 +7265,81 @@ function PropertyValueIterator(value){
 PropertyValueIterator.prototype.count = function(){
     return this._parts.length;
 };
+
+/**
+ * Indicates if the iterator is positioned at the first item.
+ * @return {Boolean} True if positioned at first item, false if not.
+ * @method isFirst
+ */
 PropertyValueIterator.prototype.isFirst = function(){
     return this._i === 0;
 };
+
+/**
+ * Indicates if there are more parts of the property value.
+ * @return {Boolean} True if there are more parts, false if not.
+ * @method hasNext
+ */
 PropertyValueIterator.prototype.hasNext = function(){
     return (this._i < this._parts.length);
 };
+
+/**
+ * Marks the current spot in the iteration so it can be restored to
+ * later on.
+ * @return {void}
+ * @method mark
+ */
 PropertyValueIterator.prototype.mark = function(){
     this._marks.push(this._i);
 };
+
+/**
+ * Returns the next part of the property value or null if there is no next
+ * part. Does not move the internal counter forward.
+ * @return {parserlib.css.PropertyValuePart} The next part of the property value or null if there is no next
+ * part.
+ * @method peek
+ */
 PropertyValueIterator.prototype.peek = function(count){
     return this.hasNext() ? this._parts[this._i + (count || 0)] : null;
 };
+
+/**
+ * Returns the next part of the property value or null if there is no next
+ * part.
+ * @return {parserlib.css.PropertyValuePart} The next part of the property value or null if there is no next
+ * part.
+ * @method next
+ */
 PropertyValueIterator.prototype.next = function(){
     return this.hasNext() ? this._parts[this._i++] : null;
 };
+
+/**
+ * Returns the previous part of the property value or null if there is no
+ * previous part.
+ * @return {parserlib.css.PropertyValuePart} The previous part of the 
+ * property value or null if there is no next part.
+ * @method previous
+ */
 PropertyValueIterator.prototype.previous = function(){
     return this._i > 0 ? this._parts[--this._i] : null;
 };
+
+/**
+ * Restores the last saved bookmark.
+ * @return {void}
+ * @method restore
+ */
 PropertyValueIterator.prototype.restore = function(){
     if (this._marks.length){
         this._i = this._marks.pop();
     }
 };
+
+
+/*global SyntaxUnit, Parser, Colors*/
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just one part of the data between ":" and ";".
@@ -6393,6 +7354,12 @@ PropertyValueIterator.prototype.restore = function(){
 function PropertyValuePart(text, line, col){
 
     SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_VALUE_PART_TYPE);
+    
+    /**
+     * Indicates the type of value unit.
+     * @type String
+     * @property type
+     */
     this.type = "unknown";
 
     //figure out what type of data it is
@@ -6532,6 +7499,16 @@ function PropertyValuePart(text, line, col){
 
 PropertyValuePart.prototype = new SyntaxUnit();
 PropertyValuePart.prototype.constructor = PropertyValuePart;
+
+/**
+ * Create a new syntax unit based solely on the given token.
+ * Convenience method for creating a new syntax unit when
+ * it represents a single token instead of multiple.
+ * @param {Object} token The token object to represent.
+ * @return {parserlib.css.PropertyValuePart} The object representing the token.
+ * @static
+ * @method fromToken
+ */
 PropertyValuePart.fromToken = function(token){
     return new PropertyValuePart(token.value, token.startLine, token.startCol);
 };
@@ -6548,6 +7525,7 @@ Pseudos.CLASS = 2;
 Pseudos.isElement = function(pseudo){
     return pseudo.indexOf("::") === 0 || Pseudos[pseudo.toLowerCase()] == Pseudos.ELEMENT;
 };
+/*global SyntaxUnit, Parser, Specificity*/
 /**
  * Represents an entire single selector, including all parts but not
  * including multiple selectors (those separated by commas).
@@ -6562,13 +7540,28 @@ Pseudos.isElement = function(pseudo){
 function Selector(parts, line, col){
     
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property parts
+     */
     this.parts = parts;
+    
+    /**
+     * The specificity of the selector.
+     * @type parserlib.css.Specificity
+     * @property specificity
+     */
     this.specificity = Specificity.calculate(this);
 
 }
 
 Selector.prototype = new SyntaxUnit();
 Selector.prototype.constructor = Selector;
+
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a selector string, meaning a single set of
  * element name and modifiers. This does not include combinators such as
@@ -6588,13 +7581,30 @@ Selector.prototype.constructor = Selector;
 function SelectorPart(elementName, modifiers, text, line, col){
     
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
+
+    /**
+     * The tag name of the element to which this part
+     * of the selector affects.
+     * @type String
+     * @property elementName
+     */
     this.elementName = elementName;
+    
+    /**
+     * The parts that come after the element name, such as class names, IDs,
+     * pseudo classes/elements, etc.
+     * @type Array
+     * @property modifiers
+     */
     this.modifiers = modifiers;
 
 }
 
 SelectorPart.prototype = new SyntaxUnit();
 SelectorPart.prototype.constructor = SelectorPart;
+
+
+/*global SyntaxUnit, Parser*/
 /**
  * Represents a selector modifier string, meaning a class name, element name,
  * element ID, pseudo rule, etc.
@@ -6610,13 +7620,28 @@ SelectorPart.prototype.constructor = SelectorPart;
 function SelectorSubPart(text, type, line, col){
     
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
+
+    /**
+     * The type of modifier.
+     * @type String
+     * @property type
+     */
     this.type = type;
+    
+    /**
+     * Some subparts have arguments, this represents them.
+     * @type Array
+     * @property args
+     */
     this.args = [];
 
 }
 
 SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
+
+
+/*global Pseudos, SelectorPart*/
 /**
  * Represents a selector's specificity.
  * @namespace parserlib.css
@@ -6677,6 +7702,14 @@ Specificity.prototype = {
     }
 
 };
+
+/**
+ * Calculates the specificity of the given selector.
+ * @param {parserlib.css.Selector} The selector to calculate specificity for.
+ * @return {parserlib.css.Specificity} The specificity of the selector.
+ * @static
+ * @method calculate
+ */
 Specificity.calculate = function(selector){
 
     var i, len,
@@ -6731,6 +7764,8 @@ Specificity.calculate = function(selector){
     
     return new Specificity(0, b, c, d);
 };
+
+/*global Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
@@ -6833,6 +7868,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.charToken(c, startLine, startCol);
                     }
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - DASHMATCH
+                 * - INCLUDES
+                 * - PREFIXMATCH
+                 * - SUFFIXMATCH
+                 * - SUBSTRINGMATCH
+                 * - CHAR
+                 */
                 case "|":
                 case "~":
                 case "^":
@@ -6844,10 +7889,22 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.charToken(c, startLine, startCol);
                     }
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - STRING
+                 * - INVALID
+                 */
                 case "\"":
                 case "'":
                     token = this.stringToken(c, startLine, startCol);
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - HASH
+                 * - CHAR
+                 */
                 case "#":
                     if (isNameChar(reader.peek())){
                         token = this.hashToken(c, startLine, startCol);
@@ -6855,6 +7912,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.charToken(c, startLine, startCol);
                     }
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - DOT
+                 * - NUMBER
+                 * - DIMENSION
+                 * - PERCENTAGE
+                 */
                 case ".":
                     if (isDigit(reader.peek())){
                         token = this.numberToken(c, startLine, startCol);
@@ -6862,6 +7927,15 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.charToken(c, startLine, startCol);
                     }
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - CDC
+                 * - MINUS
+                 * - NUMBER
+                 * - DIMENSION
+                 * - PERCENTAGE
+                 */
                 case "-":
                     if (reader.peek() == "-"){  //could be closing HTML-style comment
                         token = this.htmlCommentEndToken(c, startLine, startCol);
@@ -6871,18 +7945,47 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.charToken(c, startLine, startCol);
                     }
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - IMPORTANT_SYM
+                 * - CHAR
+                 */
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
                     break;
+
+                /*
+                 * Any at-keyword or CHAR
+                 */
                 case "@":
                     token = this.atRuleToken(c, startLine, startCol);
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - NOT
+                 * - CHAR
+                 */
                 case ":":
                     token = this.notToken(c, startLine, startCol);
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - CDO
+                 * - CHAR
+                 */
                 case "<":
                     token = this.htmlCommentStartToken(c, startLine, startCol);
                     break;
+
+                /*
+                 * Potential tokens:
+                 * - UNICODE_RANGE
+                 * - URL
+                 * - CHAR
+                 */
                 case "U":
                 case "u":
                     if (reader.peek() == "+"){
@@ -7006,6 +8109,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             valid   = false,
             ident,
             c;
+
+        /*
+         * First, mark where we are. There are only four @ rules,
+         * so anything else is really just an invalid token.
+         * Basically, if this doesn't match one of the known @
+         * rules, just return '@' as an unknown token and allow
+         * parsing to continue after that point.
+         */
         reader.mark();
 
         //try to find the at-keyword
@@ -8030,6 +9141,15 @@ var Validation = {
     
 
 };
+/**
+ * Type to use when a validation error occurs.
+ * @class ValidationError
+ * @namespace parserlib.util
+ * @constructor
+ * @param {String} message The error message.
+ * @param {int} line The line at which the error occurred.
+ * @param {int} col The column at which the error occurred.
+ */
 function ValidationError(message, line, col){
 
     /**
@@ -8038,7 +9158,19 @@ function ValidationError(message, line, col){
      * @property col
      */
     this.col = col;
+
+    /**
+     * The line at which the error occurred.
+     * @type int
+     * @property line
+     */
     this.line = line;
+
+    /**
+     * The text representation of the unit.
+     * @type String
+     * @property text
+     */
     this.message = message;
 
 }
@@ -8395,6 +9527,15 @@ Tokens              :Tokens,
 ValidationError     :ValidationError
 };
 })();
+
+
+
+/**
+ * Main CSSLint object.
+ * @class CSSLint
+ * @static
+ * @extends parserlib.util.EventTarget
+ */
 /*global parserlib, Reporter*/
 var CSSLint = (function(){
 
@@ -8417,9 +9558,20 @@ var CSSLint = (function(){
         rules.push(rule);
         rules[rule.id] = rule;
     };
+
+    /**
+     * Clears all rule from the engine.
+     * @method clearRules
+     */
     api.clearRules = function(){
         rules = [];
     };
+    
+    /**
+     * Returns the rule objects.
+     * @return An array of rule objects.
+     * @method getRules
+     */
     api.getRules = function(){
         return [].concat(rules).sort(function(a,b){ 
             return a.id > b.id ? 1 : 0;
@@ -8439,9 +9591,26 @@ var CSSLint = (function(){
         // formatters.push(formatter);
         formatters[formatter.id] = formatter;
     };
+    
+    /**
+     * Retrieves a formatter for use.
+     * @param {String} formatId The name of the format to retrieve.
+     * @return {Object} The formatter or undefined.
+     * @method getFormatter
+     */
     api.getFormatter = function(formatId){
         return formatters[formatId];
     };
+    
+    /**
+     * Formats the results in a particular format for a single file.
+     * @param {Object} result The results returned from CSSLint.verify().
+     * @param {String} filename The filename for which the results apply.
+     * @param {String} formatId The name of the formatter to use.
+     * @param {Object} options (Optional) for special output handling.
+     * @return {String} A formatted string for the results.
+     * @method format
+     */
     api.format = function(results, filename, formatId, options) {
         var formatter = this.getFormatter(formatId),
             result = null;
@@ -8454,6 +9623,13 @@ var CSSLint = (function(){
         
         return result;
     };
+    
+    /**
+     * Indicates if the given format is supported.
+     * @param {String} formatId The ID of the format to check.
+     * @return {Boolean} True if the format exists, false if not.
+     * @method hasFormat
+     */
     api.hasFormat = function(formatId){
         return formatters.hasOwnProperty(formatId);
     };
@@ -8535,6 +9711,8 @@ var CSSLint = (function(){
     return api;
 
 })();
+
+/*global CSSLint*/
 /**
  * An instance of Report is used to report results of the
  * verification back to the main API.
@@ -8552,8 +9730,28 @@ function Reporter(lines, ruleset){
      * @type String[]
      */
     this.messages = [];
+
+    /**
+     * List of statistics being reported.
+     * @property stats
+     * @type String[]
+     */
     this.stats = [];
+
+    /**
+     * Lines of code being reported on. Used to provide contextual information
+     * for messages.
+     * @property lines
+     * @type String[]
+     */
     this.lines = lines;
+    
+    /**
+     * Information about the rules. Used to determine whether an issue is an
+     * error or warning.
+     * @property ruleset
+     * @type Object
+     */
     this.ruleset = ruleset;
 }
 
@@ -8676,6 +9874,8 @@ Reporter.prototype = {
 //expose for testing purposes
 CSSLint._Reporter = Reporter;
 
+/*global CSSLint*/
+
 /*
  * Utility functions that make life easier.
  */
@@ -8735,6 +9935,7 @@ CSSLint.Util = {
         }
     }
 };
+/*global CSSLint*/
 /*
  * Rule: Don't use adjoining classes (.foo.bar).
  */
@@ -8779,6 +9980,7 @@ CSSLint.addRule({
     }
 
 });
+/*global CSSLint*/
 
 /*
  * Rule: Don't use width or height when using padding or border. 
@@ -8871,6 +10073,7 @@ CSSLint.addRule({
     }
 
 });
+/*global CSSLint*/
 
 /*
  * Rule: box-sizing doesn't work in IE6 and IE7.
@@ -8898,6 +10101,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Include all compatible vendor prefixes to reach a wider
+ * range of users.
+ */
 /*global CSSLint*/ 
 CSSLint.addRule({
 
@@ -9065,6 +10272,13 @@ CSSLint.addRule({
         });
     }
 });
+/*
+ * Rule: Certain properties don't play well with certain display values. 
+ * - float should not be used with inline-block
+ * - height, width, margin-top, margin-bottom, float should not be used with inline
+ * - vertical-align should not be used with block
+ * - margin, float should not be used with table-*
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9175,6 +10389,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Disallow duplicate background-images (using url).
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9209,6 +10426,10 @@ CSSLint.addRule({
         });
     }
 });
+/*
+ * Rule: Duplicate properties must appear one after the other. If an already-defined
+ * property appears somewhere else in the rule, then it's likely an error.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9251,6 +10472,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Style rules without any properties defined should be removed.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9282,6 +10506,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: There should be no syntax errors. (Duh.)
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9302,6 +10529,8 @@ CSSLint.addRule({
     }
 
 });
+
+/*global CSSLint*/
 CSSLint.addRule({
 
     //rule information
@@ -9367,6 +10596,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: You shouldn't use more than 10 floats. If you do, there's probably
+ * room for some abstraction.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9399,6 +10632,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Avoid too many @font-face declarations in the same stylesheet.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9426,6 +10662,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: You shouldn't need more than 9 font-size declarations.
+ */
 
 /*global CSSLint*/
 CSSLint.addRule({
@@ -9458,6 +10697,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: When using a vendor-prefixed gradient, make sure to use them all.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9524,6 +10766,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Don't use IDs for selectors.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9571,6 +10816,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Don't use @import, use <link> instead.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9591,6 +10839,11 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Make sure !important is not overused, this could lead to specificity
+ * war. Display a warning on !important declarations, an error if it's
+ * used more at least 10 times.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9623,6 +10876,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Properties should be known (listed in CSS3 specification) or
+ * be a vendor-prefixed property.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -9936,6 +11193,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: outline: none or outline: 0 should only be used in a :focus rule
+ *       and only if there are other properties in the same rule.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10005,6 +11266,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Don't use classes or IDs with elements (a.foo or a#foo).
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10065,6 +11329,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Headings (h1-h6) should not be qualified (namespaced).
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10100,6 +11367,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Selectors that look like regular expressions are slow and should be avoided.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10141,6 +11411,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Total number of rules should not exceed x.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10166,6 +11439,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Use shorthand properties where possible.
+ * 
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10249,6 +11526,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Don't use text-indent for image replacement if you need to support rtl. 
+ * 
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10296,6 +11577,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Headings (h1-h6) should be defined only once.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10367,6 +11651,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Don't use universal selector because it's slow.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10399,6 +11686,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: Don't use unqualified attribute selectors because they're just like universal selectors.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10438,6 +11728,10 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: When using a vendor-prefixed property, make sure to
+ * include the standard one.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10577,6 +11871,9 @@ CSSLint.addRule({
     }
 
 });
+/*
+ * Rule: You don't need to specify units when a value is 0.
+ */
 /*global CSSLint*/
 CSSLint.addRule({
 
@@ -10608,6 +11905,7 @@ CSSLint.addRule({
     }
 
 });
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "checkstyle-xml",
@@ -10639,12 +11937,32 @@ CSSLint.addFormatter({
     formatResults: function(results, filename, options) {
         var messages = results.messages,
             output = [];
+
+        /**
+         * Generate a source string for a rule.
+         * Checkstyle source strings usually resemble Java class names e.g
+         * net.csslint.SomeRuleName
+         * @param {Object} rule
+         * @return rule source as {String}
+         */
         var generateSource = function(rule) {
             if (!rule || !('name' in rule)) {
                 return "";
             }
             return 'net.csslint.' + rule.name.replace(/\s/g,'');
         };
+
+        /**
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         *
+         * @param {String} message to escape
+         * @return escaped message as {String}
+         */
         var escapeSpecialCharacters = function(str) {
             if (!str || str.constructor !== String) {
                 return "";
@@ -10667,6 +11985,7 @@ CSSLint.addFormatter({
         return output.join("");
     }
 });
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "compact",
@@ -10699,6 +12018,12 @@ CSSLint.addFormatter({
         var messages = results.messages,
             output = "";
         options = options || {};
+
+        /**
+         * Capitalize and return given string.
+         * @param str {String} to capitalize
+         * @return {String} capitalized
+         */
         var capitalize = function(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         };
@@ -10719,6 +12044,7 @@ CSSLint.addFormatter({
         return output;
     }
 });
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "csslint-xml",
@@ -10750,6 +12076,18 @@ CSSLint.addFormatter({
     formatResults: function(results, filename, options) {
         var messages = results.messages,
             output = [];
+
+        /**
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         * 
+         * @param {String} message to escape
+         * @return escaped message as {String}
+         */
         var escapeSpecialCharacters = function(str) {
             if (!str || str.constructor !== String) {
                 return "";
@@ -10773,6 +12111,7 @@ CSSLint.addFormatter({
         return output.join("");
     }
 });
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "lint-xml",
@@ -10804,6 +12143,18 @@ CSSLint.addFormatter({
     formatResults: function(results, filename, options) {
         var messages = results.messages,
             output = [];
+
+        /**
+         * Replace special characters before write to output.
+         *
+         * Rules:
+         *  - single quotes is the escape sequence for double-quotes
+         *  - &lt; is the escape sequence for <
+         *  - &gt; is the escape sequence for >
+         * 
+         * @param {String} message to escape
+         * @return escaped message as {String}
+         */
         var escapeSpecialCharacters = function(str) {
             if (!str || str.constructor !== String) {
                 return "";
@@ -10828,6 +12179,7 @@ CSSLint.addFormatter({
         return output.join("");
     }
 });
+/*global CSSLint*/
 CSSLint.addFormatter({
     //format information
     id: "text",
