@@ -11,6 +11,7 @@ var editors = require("ext/editors/editors");
 exports.test = {};
 var MAX_LINES = 512;
 var RE_relwsp = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d+)(\:\d+)*/g;
+var RE_J_exception = /\s*at ([\w\_\$\.]+)\.[\w\_\$\]+\([\w\_\$]+\.java:(\d+)\)/;
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var RE_COLOR = /\u001b\[([\d;]+)?m/g;
 
@@ -30,12 +31,19 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     var workspaceDir = ide.workspaceDir;
     var davPrefix = ide.davPrefix;
     var wsRe = new RegExp(escRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
+    var matches;
 
     if ((line.search(RE_relwsp) !== -1) || (line.search(wsRe) !== -1)) {
         var html = "<a href='#' data-wsp='" + davPrefix + "/$1,$2,$3'>___$1$2$3</a>";
         line = line
             .replace(RE_relwsp, html.replace("___", ""))
             .replace(wsRe, html.replace("___", workspaceDir + "/"));
+    }
+    else if (matches = line.match(RE_J_exception)) {
+        var html = "<a href='#' data-wsp='" + davPrefix
+            + "/src/" + matches[1].replace(/\./g, "/") + ".java"
+            + ",:" + matches[2] + "'>___" + line + "</a>";
+        line = line.replace(RE_J_exception, html.replace("___", ""))
     }
     else if (line.search(RE_URL) !== -1) {
         line = line.replace(RE_URL, "<a href='$1' target='_blank'>$1</a>");
