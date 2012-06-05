@@ -14,7 +14,7 @@ var exports = module.exports = function setup(options, imports, register) {
     imports.sandbox.getUnixId(function(err, unixId) {
         if (err) return register(err);
 
-        pm.addRunner("npm", exports.factory(unixId));
+        pm.addRunner("npm", exports.factory(unixId, imports.sandbox));
 
         register(null, {
             "run-npm": {}
@@ -22,8 +22,8 @@ var exports = module.exports = function setup(options, imports, register) {
     });
 };
 
-exports.factory = function(uid) {
-    return function(args, eventEmitter, eventName) {
+exports.factory = function(uid, sandbox) {
+    return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.uid = uid;
@@ -31,12 +31,15 @@ exports.factory = function(uid) {
         options.eventName = eventName;
         options.args = args.args;
         options.command = "npm";
-        return new Runner(options);
+        
+        options.sandbox = sandbox;
+        
+        return new Runner(options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options) {
-    ShellRunner.call(this, options);
+var Runner = exports.Runner = function(options, callback) {
+    ShellRunner.call(this, options, callback);
 };
 
 util.inherits(Runner, ShellRunner);
