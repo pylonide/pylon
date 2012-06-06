@@ -28,14 +28,10 @@ module.exports = ext.register("ext/sync/sync", {
 
         ide.addEventListener("socketMessage", function (event) {
             if (event.message.type === "sync") {
-                _self.handleMessage(event);
+                _self.handleMessage(event.message);
             }
         });
 
-        // TEMPORARY (REMOVE WHEN HOOKED UP TO SYNC ENABLE/DISABLE TOGGLE)
-        window.tmpEnableSync = this.enableSync.bind(this);
-        window.tmpDisableSync = this.disableSync.bind(this);
-        
         apf.importCssString(cssString);
         
         ide.addEventListener("settings.load", function(e){ 
@@ -58,16 +54,26 @@ module.exports = ext.register("ext/sync/sync", {
         }
     },
  
-    handleMessage : function(event) {
-        if (event.message.action === "notify") {
-            console.log(event.message);
+    handleMessage : function(message) {
+        if (message.action === "notify") {
+            var event = message.args.event;
+            if (event.name === "enabled") {
+                if (event.value === true) {
+
+                    apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+                    settings.model.setQueryValue("general/@synching", "true");
+                    
+                } else {
+
+                    apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
+                    settings.model.setQueryValue("general/@synching", "false");
+                    
+                }
+            }
         }
     },
 
     enableSync: function() {
-        apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
-        settings.model.setQueryValue("general/@synching", "true");
-        
         apf.ajax("/api/sync/enable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -85,9 +91,6 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     disableSync: function() {
-        apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
-        settings.model.setQueryValue("general/@synching", "false");
-        
         apf.ajax("/api/sync/disable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
