@@ -1,7 +1,7 @@
 /**
- * Refactor Module for the Cloud9 IDE
+ * Synching for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -9,14 +9,19 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var settings = require("ext/settings/settings");
+
+var markup = require("text!ext/synch/synch.xml");
+var cssString = require("text!ext/synch/style.css");
 
 module.exports = ext.register("ext/sync/sync", {
-    dev    : "Ajax.org",
     name   : "Sync",
+    dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL,
 
     nodes : [],
+    markup : markup,
 
     init : function(amlNode){
         var _self = this;
@@ -30,13 +35,32 @@ module.exports = ext.register("ext/sync/sync", {
         // TEMPORARY (REMOVE WHEN HOOKED UP TO SYNC ENABLE/DISABLE TOGGLE)
         window.tmpEnableSync = this.enableSync.bind(this);
         window.tmpDisableSync = this.disableSync.bind(this);
+        
+        apf.importCssString(cssString);
+        
+        ide.addEventListener("settings.load", function(e){ 
+            settings.setDefaults("general", [
+                ["synching", "true"]
+            ]);
+        });
+        
+        ide.addEventListener("localUpdateAvailable", function(e) { 
+            apf.setStyleClass(logobar.$ext, "updateAvailable");
+        });
+        
+        if (ide.local) {
+            apf.setStyleClass(logobar.$ext, "local");
+            
+            var logoCorner = document.querySelector(".c9-mbar-cont");
+            
+            apf.setStyleClass(btnSyncStatus.$ext, "on");
+            logoCorner.insertBefore(btnSyncStatus.$ext, logoCorner.childNodes[0]);
+        }
     },
  
     handleMessage : function(event) {
         if (event.message.action === "notify") {
-
-console.log(event.message);
-
+            console.log(event.message);
         }
     },
 
@@ -72,7 +96,18 @@ console.log(event.message);
                 }
             }
         });
-    }
+    },
+    
+    setSynch : function() {
+        if (apf.isTrue(settings.model.queryValue("general/@synching"))) {
+            apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
+            settings.model.setQueryValue("general/@synching", "false");
+        }
+        else {
+            apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+            settings.model.setQueryValue("general/@synching", "true");
+        }
+    },
 
 });
 
