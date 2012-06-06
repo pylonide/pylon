@@ -45,8 +45,8 @@
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/f06d2074f60366a544aedd5dfa8100321c15b565"],
         "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#877f21bf0759d942e4779758c5171ae747b80f18"],
-        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#c288c04e8bfe1b8af8a0b1f84c66b2d33c0460b4"],
-        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#2781f6f56fb99e6325b41528cdff7f1445bbdaff"]
+        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#6b5d5096e840117d5837544bc4e1f3d720430de7"],
+        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#73fc3bb7825879518154325b236b0210fef8dd5a"]
     },
 
     "repository" : {
