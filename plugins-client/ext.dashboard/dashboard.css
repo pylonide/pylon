@@ -1,25 +1,65 @@
-.hbox:after {
-    clear: both;
+.fbox:after {
     content: "";
     display: block;
-    float: none
+    clear: both;
 }
 .fleft {
-    float: left;
+    float: left !important;
 }
-.new-project {
-    background: url(/static/ext/dashboard/images/new-project.png) no-repeat 50% 50%;
-    height: 27px;
+.fright {
+    float: right !important;
+}
+.chromeless {
+    margin-right: 10px;
+}
+.label-dashboard {
+    padding: 0 7px 0 0;
+}
+
+.new-project-options .button-link-dark {
+    line-height: 25px;
     overflow: hidden;
-    padding-right: 6px;
-    text-indent: 100%;
-    width: 101px;
+    padding-right: 24px;
+    text-align: center;
+    white-space: nowrap;
 }
-.label.data {
+.new-project-options .button-link-dark:last-child {
+    padding-right: 0;
+}
+
+/********************************************************************************
+ * Own VM
+ *******************************************************************************/
+.own-vm {
+    padding: 10px;
+    padding-top: 13px;
+}
+.own-vm .label-dashboard {
+    text-align: right;
+}
+.own-vm .button-close {
+    right: 8px;
+    position: absolute;
+    top: 8px;
+}
+.own-vm .hbox {
+    margin-bottom: 10px;
+}
+.own-vm .button-colorless {
+    left: 8px;
+    position: relative;
+    top: 44px;
+}
+.own-vm .vbox {
+    position: relative;
+}
+.own-vm .more-about-ssh {
     color: #C9C9C9;
-    font-size: 12px;
-    line-height: 27px;
-    padding: 0 5px 0 10px;
+    text-decoration: none;
+    font-size: 10px;
+    padding-top: 6px;
+    position: absolute;
+    right: 0;
 }
 
 
@@ -64,9 +104,4 @@ div.loading {
 }
 .error.button-colorless {
     color: #FFE4A1;
-}
-
-
-.large-textarea {
-    margin: 10px;
 }

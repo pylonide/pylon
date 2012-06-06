@@ -1,8 +1,8 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 <a:window 
   id = "dashboard"
-  width = "900"
-  height = "800"
+  width = "1100"
+  height = "600"
   center    = "true"
 >
     
@@ -12,35 +12,70 @@
   ></a:bar>
   <a:hbox
     class = "dark-opaque"
-    height = "46"
-    edge = "10"
+    height = "47"
+    edge = "9 10 10 10"
   >
-    <a:bar
-        align     = "center"
-        skin      = "basic"
-        padding   = "5">
-          <a:textbox
-            id           = "projectTitle"
-            class        = "fleft"
-            focusselect  = "true"
-            height       = "25"
-            skin         = "chromeless"
-            style        = "font-size: 20px"
-            value        = "Untitled project"
-            width        = "260"
-            />
-          <a:label class="data fleft">Store my data:</a:label>
-          <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy" class="fleft">
-              <a:item value="cloud9Git">On Cloud9 as a Git Repo</a:item>
-              <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
-              <a:item value="vm">FTP Server</a:item>
-              <a:item value="vm">On my own private virtual machine</a:item>
-          </a:dropdown>
-        <a:button caption="Pick a template" skin="button-link-dark" class="selected fleft"/>
-        <a:button caption="Clone" skin="button-link-dark" class="fleft"/>
-        <a:button caption="Upload" skin="button-link-dark" class="fleft"/>
-    </a:bar>
+    
+    <a:textbox
+      id           = "projectTitle"
+      focusselect  = "true"
+      height       = "25"
+      margin       = "0 10 0 0"
+      skin         = "chromeless"
+      style        = "font-size: 20px"
+      value        = "Untitled project"
+      width        = "260"
+      />
+    <a:label skin="label-dashboard">Store my data:</a:label>
+    <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy">
+        <a:item value="cloud9Git">On Cloud9 as a Git Repo</a:item>
+        <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
+        <a:item value="vm">FTP Server</a:item>
+        <a:item value="vm">On my own private virtual machine</a:item>
+    </a:dropdown>
+    <a:filler />
+    <a:hbox class="new-project-options" edge="1 0 0 0">
+      <a:button caption="Pick a template" skin="button-link-dark" class="selected" height="25" />
+      <a:button caption="Clone" skin="button-link-dark" height="25" />
+      <a:button caption="Upload" skin="button-link-dark" height="25" />
+    </a:hbox>
+    <a:filler />
+
+    <a:button caption="Create" class="create-project dark green" height="27" skin="button-colorless" width="110" />
   </a:hbox>
+  <a:bar
+    class = "dark-opaque own-vm"
+    height = "165"
+  >
+    <a:button caption="Close" skin="button-close" />
+    <a:hbox height="29" margin="0 0 12 0" width="955">
+      <a:label skin="label-dashboard" width="76">Host name:</a:label>
+      <a:textbox initial-message="localhost" height="27" skin="textbox-on-dark" width="260" />
+
+      <a:label skin="label-dashboard" width="79">User name:</a:label>
+      <a:textbox initial-message="root" height="27" skin="textbox-on-dark" width="143"/>
+
+      <a:label skin="label-dashboard" width="82">Initial Path:</a:label>
+      <a:textbox initial-message="optional" height="27" skin="textbox-on-dark" width="315"/>
+    </a:hbox>
+
+    <a:hbox margin="0 0 12 0" width="955">
+      <a:label skin="label-dashboard" width="76">Your key:</a:label>
+      <a:vbox>
+        <a:textbox skin="large-textarea" class="dark" height="72" width="482"/>
+        <a class="more-about-ssh" href="#">Learn how to configure your machine</a>
+      </a:vbox>
+
+      <a:label skin="label-dashboard" width="82">Port:</a:label>
+      <a:textbox initial-message="optional" height="27" skin="textbox-on-dark" width="92"/>
+
+      <a:button caption="Test your settings to continue" class="dark green" height="27" skin="button-colorless" width="215" />
+      
+    </a:hbox>
+
+</a:bar>
+
+
    <!--
         
         .oooooo.   oooo                                      .o88o.                                         ooooo     ooo ooooooooo.   ooooo        
@@ -54,12 +89,6 @@
    -->
    <a:bar class="clone-from-url dark-opaque">
       <a:label flex="1">Where is your data stored</a:label>
-      <a:textbox
-            id           = "cloneURL"
-            focusselect  = "true"
-            flex         = "5"
-            skin         = "textbox-on-dark"
-            />
       
       <a:button caption="Clone it" class="clone dark green" height="28" skin="button-colorless" width="122" />
       <a:button class="cloning dark light-grey" height="28" skin="button-colorless" width="122">
@@ -70,6 +99,8 @@
       <a:label skin="label-tooltip" class="left error" height="35">Connection failed!<br />Please check the fields for errors.</a:label>
       <a:label skin="label-tooltip" class="left success" height="35">We are in.<br />You are good to go!</a:label>
       <a:label skin="label-tooltip" class="top" height="35">Now hit the green “Create” button to finish.</a:label>
+
+      <a:button caption="Close" skin="button-close" />
 
       <a:textbox skin="large-textarea" class="dark" height="50" width="460"/>
       <a:textbox skin="large-textarea" />

@@ -517,9 +517,9 @@
     <a:style><![CDATA[
         .dark-opaque {
             background-color: #2D2D2D;
-            background-image: -webkit-linear-gradient(top, #303030,#292929);
-            background-image:    -moz-linear-gradient(top, #303030,#292929);
-            background-image:         linear-gradient(top, #303030,#292929);
+            background-image: -webkit-linear-gradient(top, #2B2B2B, #292929);
+            background-image:    -moz-linear-gradient(top, #2B2B2B, #292929);
+            background-image:         linear-gradient(top, #2B2B2B, #292929);
             border-top: 1px solid black;
             box-shadow: 0 1px 0 0 #353535 inset;
             color: #EDEDED;
@@ -5578,6 +5578,26 @@
     <a:presentation>
         <a:main caption="." for="@for">
             <div class="label-tooltip"> </div>
+        </a:main>
+    </a:presentation>
+</a:label>
+<a:label name="label-dashboard">
+    <a:style><![CDATA[
+        .label-dashboard{
+            color: #C9C9C9;
+            cursor: default;
+            font-family: Tahoma, Arial;
+            font-size: 12px;
+            line-height: 27px;
+            overflow: hidden;
+            white-space : nowrap;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." for="@for">
+            <div class="label-dashboard"> </div>
         </a:main>
     </a:presentation>
 </a:label>
@@ -10764,7 +10784,7 @@
 <a:textbox name="textbox-on-dark">
     <a:style><![CDATA[
         .textbox-on-dark {
-            background-color: #F3F3F3;
+            background-color: #f2f2f2;
             border: 1px solid #000000;
             border-radius: 3px;
             box-shadow: 0 1px 8px 0 rgba(0,0,0,.6),
@@ -10779,7 +10799,8 @@
         }
         .textbox-on-dark .textbox-on-dark-middle {
             box-sizing: border-box;
-            padding: 0 10px;
+            padding: 0 8px;
+            margin-top: -1px;
         }
         .textbox-on-dark input {
             background-color: transparent;
@@ -10788,6 +10809,13 @@
             outline: 0 !important;
             padding: 0;
         }
+    /*
+     * Initial
+     */
+    .textbox-on-darkInitial input {
+        color: #BABABA;
+        text-shadow: 1px solid #FFFFFF;
+    }
     /*
      * Focus
      */
@@ -10866,6 +10894,8 @@
 
 <a:textbox name="large-textarea">
     <a:style><![CDATA[
+        
+
         .large-textarea {
             background-color: #fff;
             border: 1px solid #B6B6B6;
@@ -10878,7 +10908,7 @@
             height: inherit;
             width: inherit;
         }
-        .dark .large-textarea {
+        .dark.large-textarea {
             background-color: #3E3E40;
             border-color: #202020;
             box-shadow: 0 1px 4px 0 rgba(0,0,0,.15) inset,
@@ -10888,10 +10918,8 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="textarea">
-            <div class="large-textarea-holder">
-                <textarea class="large-textarea"></textarea>
-            </div>
+        <a:main input=".">
+            <textarea class="large-textarea"></textarea>
         </a:main>
     </a:presentation>
 </a:textbox>
@@ -12182,17 +12210,25 @@
         </a:presentation>
     </a:button>
 
-    <a:button name="button-colorless">
+    <a:button name="button-close">
         <a:style><![CDATA[
             .button-close {
-                background: url(images/button-close.png) no-repeat 1px 50%;
+                background: url(images/button-close.png) no-repeat -1px 50%;
                 height: 18px;
+                overflow: hidden;
+                text-indent: 100%;
                 width: 18px;
+            }
+            .button-closeOver {
+                background-position: -20px 50%;
+            }
+            .button-closeDown {
+                background-position: -40px 50%;
             }
         ]]></a:style>
         <a:presentation>
             <a:main caption = ".">
-                <div class="button-close"> </div>
+                <div class="button-close" height="18" width="18"> </div>
             </a:main>
         </a:presentation>
     </a:button>
