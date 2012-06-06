@@ -148,7 +148,7 @@ module.exports = ext.register("ext/offline/offline", {
 		});
 
 		ide.addEventListener("localOnline", function(e) {
-			apf.setStyleClass(logobar.$ext, "", ["offline", "local"]);
+			apf.setStyleClass(logobar.$ext, "", ["offline"]);
 		});
 		
         /**** File System ****/
