@@ -105,6 +105,7 @@ apf.notifier = function(struct, tagName){
 };
 
 (function() {
+    var _self = this;
     this.timeout      = 2000;
     this.position     = "top-right";
     this.columnsize   = 300;
@@ -150,12 +151,12 @@ apf.notifier = function(struct, tagName){
                  ? margin[0]
                  : (x[0] == "bottom"
                      ? wh - nh - margin[2]
-                     : wh / 2 - nh / 2)) + scrolled[0] + this.startPadding,
+                     : wh / 2 - nh / 2)) + scrolled[0] + _self.startPadding,
              (x[1] == "left"
                  ? margin[3]
                  : (x[1] == "right"
                      ? ww - nw - margin[1]
-                     : ww / 2 - nw / 2)) + scrolled[1] + this.startPadding
+                     : ww / 2 - nw / 2)) + scrolled[1] + _self.startPadding
         ];
     }
 
