@@ -11,8 +11,8 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var settings = require("ext/settings/settings");
 
-var markup = require("text!ext/synch/synch.xml");
-var cssString = require("text!ext/synch/style.css");
+var markup = require("text!ext/sync/sync.xml");
+var cssString = require("text!ext/sync/style.css");
 
 module.exports = ext.register("ext/sync/sync", {
     name   : "Sync",
@@ -65,6 +65,9 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     enableSync: function() {
+        apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+        settings.model.setQueryValue("general/@synching", "true");
+        
         apf.ajax("/api/sync/enable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -82,6 +85,9 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     disableSync: function() {
+        apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
+        settings.model.setQueryValue("general/@synching", "false");
+        
         apf.ajax("/api/sync/disable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -98,14 +104,12 @@ module.exports = ext.register("ext/sync/sync", {
         });
     },
     
-    setSynch : function() {
+    setSync : function() {
         if (apf.isTrue(settings.model.queryValue("general/@synching"))) {
-            apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
-            settings.model.setQueryValue("general/@synching", "false");
+            this.disableSync();
         }
         else {
-            apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
-            settings.model.setQueryValue("general/@synching", "true");
+            this.enableSync();
         }
     },
 
