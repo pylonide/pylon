@@ -26,6 +26,14 @@ module.exports = ext.register("ext/sync/sync", {
     init : function(amlNode){
         var _self = this;
 
+        ide.addEventListener("socketMessage", function (event) {
+            if (event.message.type === "sync") {
+                _self.handleMessage(event.message);
+            }
+        });
+
+        apf.importCssString(cssString);
+        
         if (ide.local) {
             apf.setStyleClass(logobar.$ext, "local");
             
@@ -34,32 +42,27 @@ module.exports = ext.register("ext/sync/sync", {
             apf.setStyleClass(btnSyncStatus.$ext, "on");
             logoCorner.insertBefore(btnSyncStatus.$ext, logoCorner.childNodes[0]);
         }
-        
-        ide.addEventListener("socketMessage", function (event) {
-            if (event.message.type === "sync") {
-                _self.handleMessage(event);
-            }
-        });
-
-        // TEMPORARY (REMOVE WHEN HOOKED UP TO SYNC ENABLE/DISABLE TOGGLE)
-        window.tmpEnableSync = this.enableSync.bind(this);
-        window.tmpDisableSync = this.disableSync.bind(this);
-        
-        apf.importCssString(cssString);
-        
-        ide.addEventListener("localUpdateAvailable", function(e) { 
-            apf.setStyleClass(logobar.$ext, "updateAvailable");
-        });
     },
  
-    handleMessage : function(event) {
-        if (event.message.action === "notify") {
-            console.log(event.message);
+    handleMessage : function(message) {
+        if (message.action === "notify") {
+            var event = message.args.event;
+            if (event.name === "enabled") {
+                if (event.value === true) {
+
+                    apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+                    
+                } else {
+
+                    apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
+                    
+                }
+            }
         }
     },
 
     enableSync: function() {
-        apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+        apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);
         
         apf.ajax("/api/sync/enable", {
             method: "POST",

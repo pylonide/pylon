@@ -27,6 +27,10 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
         ide.addEventListener("socketMessage", function (event) {
             _self.handleMessage(event); 
         });
+        
+        ide.addEventListener("localUpdateAvailable", function(e) { 
+            apf.setStyleClass(logobar.$ext, "updateAvailable");
+        });
     },
 
     handleMessage : function(event) {
