@@ -26,24 +26,6 @@ module.exports = ext.register("ext/sync/sync", {
     init : function(amlNode){
         var _self = this;
 
-        ide.addEventListener("socketMessage", function (event) {
-            if (event.message.type === "sync") {
-                _self.handleMessage(event.message);
-            }
-        });
-
-        apf.importCssString(cssString);
-        
-        ide.addEventListener("settings.load", function(e){ 
-            settings.setDefaults("general", [
-                ["synching", "true"]
-            ]);
-        });
-        
-        ide.addEventListener("localUpdateAvailable", function(e) { 
-            apf.setStyleClass(logobar.$ext, "updateAvailable");
-        });
-        
         if (ide.local) {
             apf.setStyleClass(logobar.$ext, "local");
             
@@ -52,28 +34,33 @@ module.exports = ext.register("ext/sync/sync", {
             apf.setStyleClass(btnSyncStatus.$ext, "on");
             logoCorner.insertBefore(btnSyncStatus.$ext, logoCorner.childNodes[0]);
         }
+        
+        ide.addEventListener("socketMessage", function (event) {
+            if (event.message.type === "sync") {
+                _self.handleMessage(event);
+            }
+        });
+
+        // TEMPORARY (REMOVE WHEN HOOKED UP TO SYNC ENABLE/DISABLE TOGGLE)
+        window.tmpEnableSync = this.enableSync.bind(this);
+        window.tmpDisableSync = this.disableSync.bind(this);
+        
+        apf.importCssString(cssString);
+        
+        ide.addEventListener("localUpdateAvailable", function(e) { 
+            apf.setStyleClass(logobar.$ext, "updateAvailable");
+        });
     },
  
-    handleMessage : function(message) {
-        if (message.action === "notify") {
-            var event = message.args.event;
-            if (event.name === "enabled") {
-                if (event.value === true) {
-
-                    apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
-                    settings.model.setQueryValue("general/@synching", "true");
-                    
-                } else {
-
-                    apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
-                    settings.model.setQueryValue("general/@synching", "false");
-                    
-                }
-            }
+    handleMessage : function(event) {
+        if (event.message.action === "notify") {
+            console.log(event.message);
         }
     },
 
     enableSync: function() {
+        apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+        
         apf.ajax("/api/sync/enable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -91,6 +78,8 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     disableSync: function() {
+        apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
+        
         apf.ajax("/api/sync/disable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -108,7 +97,7 @@ module.exports = ext.register("ext/sync/sync", {
     },
     
     setSync : function() {
-        if (apf.isTrue(settings.model.queryValue("general/@synching"))) {
+        if (btnSyncStatus.$ext.getAttribute("class").indexOf("on") > -1) {
             this.disableSync();
         }
         else {
