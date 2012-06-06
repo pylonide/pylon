@@ -51,12 +51,10 @@ module.exports = ext.register("ext/sync/sync", {
                 if (event.value === true) {
 
                     apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
-                    settings.model.setQueryValue("general/@synching", "true");
                     
                 } else {
 
                     apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
-                    settings.model.setQueryValue("general/@synching", "false");
                     
                 }
             }
