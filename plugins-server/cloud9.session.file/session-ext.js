@@ -48,7 +48,7 @@ var FileStore = function(options) {
                             console.error(err);
                             return;
                         }
-                        if (data === "") {
+                        if (data.toString() === "") {
                             self.destroy(file);
                             return;
                         }
