@@ -53,6 +53,11 @@ var Runner = exports.Runner = function(options, callback) {
 
     this.runOptions.env = this.env;
 
+    this.encoding = options.encoding || "utf8";
+    if (this.encoding === "binary") {
+        this.encoding = null;
+     }
+
     this.eventEmitter = options.eventEmitter;
     this.eventName = options.eventName;
 
@@ -133,6 +138,11 @@ var Runner = exports.Runner = function(options, callback) {
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
 
+        if (self.encoding) {
+            child.stdout.setEncoding(self.encoding);
+            child.stderr.setEncoding(self.encoding);
+        }
+        
         function emit(msg) {
             self.eventEmitter.emit(self.eventName, msg);
         }
@@ -143,7 +153,7 @@ var Runner = exports.Runner = function(options, callback) {
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data.toString("utf8"),
+                    "data": data,
                     "extra": self.extra
                 });
             };

@@ -130,7 +130,7 @@ Main projects that we use as building blocks:
 
   * [async.js] by [fjakobs]
   * [jsDAV] by [mikedeboer]
-  * [connect] by [senchalabs](http://github,com/senchalabs)
+  * [connect] by [senchalabs](http://github.com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
   * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]

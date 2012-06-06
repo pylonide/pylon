@@ -29,11 +29,8 @@ module.exports = function (projectDir, unixId) {
      * Wrapper around Path.exists
      */
     this.exists = function (path, callback) {
-        var self = this;
-        
         callback = this.$normalizeCallback(callback);
-        
-        self.$resolvePath(path, function (err, path) {
+        this.$resolvePath(path, function (err, path) {
             if (err) return callback(err);
             
             Path.exists(path, function (exists) {
@@ -111,6 +108,31 @@ module.exports = function (projectDir, unixId) {
     };
     
     /**
+     * Wrapper around rename
+     */
+    this.rename = function () {
+        var self = this;
+        var args = arguments;
+        var callback = self.$normalizeCallback(args[args.length - 1]);
+        
+        // so the first argument will auto resolve
+        // the second parameter doesn't but it's required for a rename
+        if (args.length > 1 && typeof args[1] === "string") {
+            self.$resolvePath(args[1], function (err, renamePath) {
+                if (err) return callback(err);
+                
+                // swap arg[1]
+                args[1] = renamePath;
+                
+                self.$simpleWrapper.call(self, "rename", args);
+            });
+        }
+        else {
+            self.$simpleWrapper.call(self, "rename", args);
+        }
+    };    
+    
+    /**
      * Wrapper around readdir
      */
     this.readdir = function () {
@@ -143,5 +165,73 @@ module.exports = function (projectDir, unixId) {
      */
     this.mkdir = function () {
         return this.$chownWrapper.call(this, "mkdir", arguments);
+    };
+
+    /**
+     * Equivalent to "mkdir - p"
+     * Adapted from https://github.com/substack/node-mkdirp
+     */
+    this.mkdirP = function mkdirP(path, mode, f, made) {
+        var self = this;
+        if (typeof mode === "function" || mode === undefined) {
+            f = mode;
+            mode = 0777 & (~process.umask());
+        }
+
+        if (!made) {
+            made = null;
+        }
+
+        var cb = f || function () {};
+        if (typeof mode === "string") {
+            mode = parseInt(mode, 8);
+        }
+
+        self.mkdir(path, mode, function (er) {
+            if (!er) {
+                made = made || path;
+                return cb(null, made);
+            }
+
+            switch (er.code) {
+                case "ENOENT":
+                    mkdirP.call(self, Path.dirname(path), mode, function (er, made) {
+                        if (er) {
+                            cb(er, made);
+                        }
+                        else {
+                            mkdirP.call(self, path, mode, cb, made);
+                        }
+                    });
+                    break;
+
+                case "EROFS":
+                    // a read-only file system.
+                    // However, the dir could already exist, in which case
+                    // the EROFS error will be obscuring a EEXIST!
+                    // Fallthrough to that case.
+                case "EEXIST":
+                    Fs.stat(path, function (er2, stat) {
+                        // if the stat fails, then that's super weird.
+                        // let the original EEXIST be the failure reason.
+                        if (er2 || !stat.isDirectory()) {
+                            cb(er, made);
+                        }
+                        else cb(null, made);
+                    });
+                    break;
+
+                default:
+                    cb(er, made);
+                    break;
+            }
+        });
+    };
+    
+    /**
+     * Wrapper around unlink
+     */
+    this.unlink = function () {
+        return this.$simpleWrapper.call(this, "unlink", arguments);
     };
 };
