@@ -22,21 +22,41 @@ module.exports = ext.register("ext/sync/sync", {
 
         // TEMPORARY
         window.tmpEnableSync = this.enableSync.bind(this);
-        window.tmpDisableSync = this.enableSync.bind(this);
+        window.tmpDisableSync = this.disableSync.bind(this);
     },
 
     enableSync: function() {
-        
-//console.log("enable sync");
-
-
-
+        apf.ajax("/api/sync/enable", {
+            method: "POST",
+            data: "payload=" + encodeURIComponent(JSON.stringify({
+                workspaceId: window.cloud9config.workspaceId
+            })),
+            async: true,
+            callback: function( data, state ) {
+                if (state == apf.SUCCESS && JSON.parse(data).success === true) {
+                    // Success. Nothing more to do.
+                } else {
+                    // TODO: Display error?
+                }
+            }
+        });
     },
-    
-    disableSync: function() {
 
-//console.log("disable sync");
-        
+    disableSync: function() {
+        apf.ajax("/api/sync/disable", {
+            method: "POST",
+            data: "payload=" + encodeURIComponent(JSON.stringify({
+                workspaceId: window.cloud9config.workspaceId
+            })),
+            async: true,
+            callback: function( data, state ) {
+                if (state == apf.SUCCESS && JSON.parse(data).success === true) {
+                    // Success. Nothing more to do.
+                } else {
+                    // TODO: Display error?
+                }
+            }
+        });
     }
 
 });
