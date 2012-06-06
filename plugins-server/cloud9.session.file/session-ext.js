@@ -48,6 +48,10 @@ var FileStore = function(options) {
                             console.error(err);
                             return;
                         }
+                        if (data === "") {
+                            self.destroy(file);
+                            return;
+                        }
                         var sess;
                         try {
                             sess = JSON.parse(data);
