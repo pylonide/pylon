@@ -232,7 +232,11 @@ module.exports = ext.register("ext/editors/editors", {
             = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
             + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
 
-        tabEditors.$buttons.style.width = "100%";
+        tabEditors.$buttons.style.position = "absolute";
+        tabEditors.$buttons.style.left = "0";
+        tabEditors.$buttons.style.top = "0";
+        tabEditors.$buttons.style.right = "0";
+        tabEditors.$buttons.style.bottom = "0";
 
 //        var timer;
 //        tabEditors.$buttons.addEventListener("mouseover",function(e){

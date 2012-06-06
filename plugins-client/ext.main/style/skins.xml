@@ -8760,31 +8760,34 @@
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 0px 45px 0 21px;	
-        height: 27px;
-        overflow: visible;
-        white-space: nowrap;
+        padding : 5px 45px 0 21px;	
+        height: 22px;
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
         overflow : hidden;
-        /*border-bottom : 1px solid #000;*/
+       
         background: rgba(24,24,24,.9) url(images/c9-noise.png);
-        width : auto;
+        position : relative;
+        z-index : 100;
 
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
            -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
                 box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
 
-        position: relative;
+        display : -webkit-box;
+        display : -moz-box;
     }
         
     .editor_tab .btnsesssioncontainer > div {
         cursor: default;
-        display : inline-block;
+        
+        min-width : 17px;
+        max-width : 150px;
+        -webkit-box-flex : 1;
+        -moz-box-flex : 1;
         position : relative;
-        vertical-align : top;
-        top : 5px;
+        width : 0;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -8874,7 +8877,7 @@
         cursor      : default;
         height      : 22px;
         text-shadow : 0px 1px 0px rgba(255, 255, 255, .4);
-        top         : 1px;
+        /*top         : 1px;*/
         z-index     : 10;
     }
     .editor_tab .curbtn .tab_middle {
@@ -8931,10 +8934,6 @@
                 user-select: none;
     }
      
-    .editor_tab #q5 {
-        top: 2px !important;
-    }
-
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_icon {
         display: none;
     }
@@ -9446,9 +9445,7 @@
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
         background-color    : #303030;
         color               : #cecece;
-        -webkit-transition: background-color .1s linear;
-           -moz-transition: background-color .1s linear;
-                transition: background-color .1s linear;
+        /*-webkit-transition: background-color .1s linear;*/
     }
 
     .editor_tab .session_btn .tab_middle:before {
@@ -9515,9 +9512,7 @@
     <a:button
       caption   = "div[1]/div[2]/text()"
       container = "div"
-      icon      = "div[1]/div"
-      maxwidth  = "150"
-      minwidth  = "17">
+      icon      = "div[1]/div">
         <div class="session_btn">
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>

@@ -369,7 +369,6 @@ module.exports = ext.register("ext/menus/menus", {
      * - mnuXXX throughout C9 need to be using this plugin
      * - Architect submenus used in multiple location
      */
-    
     restore : function(preview){
         apf.setStyleClass(logobar.$ext, "", ["minimized"]);
         
