@@ -212,6 +212,7 @@ module.exports = {
                 ref      : cursorLayer.cursor,
                 callback : function() {
                     barCompleterCont.setHeight(completionBoxHeight);
+                    barCompleterCont.$ext.style.height = completionBoxHeight + "px";
                     sbCompleter.$resize();
                     _self.completionElement.scrollTop = 0;
                 }
