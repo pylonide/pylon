@@ -152,11 +152,13 @@ define(function(require, exports, module) {
 
             if (message.type === "error") {
                 // TODO: Don't display all errors?
-                util.alert(
-                    "Error on server",
-                    "Received following error from server:",
-                    JSON.stringify(message.message)
-                );
+                if (ide.dispatchEvent("showerrormessage", message) !== false) {
+                    util.alert(
+                        "Error on server",
+                        "Received following error from server:",
+                        JSON.stringify(message.message)
+                    );
+                }
             }
 
             ide.dispatchEvent("socketMessage", {
