@@ -27,7 +27,7 @@ var settings = require("ext/settings/settings");
 var isContinuousCompletionEnabled;
 
 module.exports = ext.register("ext/language/language", {
-    name    : "Javascript Outline",
+    name    : "Javascript Language Services",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, code],
