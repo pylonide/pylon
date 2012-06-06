@@ -57393,7 +57393,7 @@ apf.notifier = function(struct, tagName){
     };
     
     this.$propHandlers["start-padding"] = function(value) {
-        this.startPadding = value;
+        this.startPadding = parseInt(value);
     };
     
     this.$propHandlers["timeout"] = function(value) {
@@ -57407,7 +57407,7 @@ apf.notifier = function(struct, tagName){
         ];
     }
 
-    function getStartPosition(x, wh, ww, nh, nw, margin) {
+    function getStartPosition(x, wh, ww, nh, nw, margin, startPadding) {
         var scrolled = getPageScroll();
 
         return [
@@ -57415,12 +57415,12 @@ apf.notifier = function(struct, tagName){
                  ? margin[0]
                  : (x[0] == "bottom"
                      ? wh - nh - margin[2]
-                     : wh / 2 - nh / 2)) + scrolled[0] + this.startPadding,
+                     : wh / 2 - nh / 2)) + scrolled[0] + startPadding,
              (x[1] == "left"
                  ? margin[3]
                  : (x[1] == "right"
                      ? ww - nw - margin[1]
-                     : ww / 2 - nw / 2)) + scrolled[1] + this.startPadding
+                     : ww / 2 - nw / 2)) + scrolled[1]
         ];
     }
 
@@ -57486,7 +57486,7 @@ apf.notifier = function(struct, tagName){
 
         /* start positions */
         if (!this.lastPos) {
-            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin, this.startPadding);
             this.sign = 1;
             _reset = true;
         }
@@ -57549,12 +57549,12 @@ apf.notifier = function(struct, tagName){
         if (this.lastPos) {
             if ((this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[1])
               && this.arrange == "horizontal") {
-                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin, this.startPadding);
                 this.sign = 1;
             }
             if ((this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1])
               && this.arrange == "vertical") {
-                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin, this.startPadding);
                 this.sign = 1;
             }
         }  
