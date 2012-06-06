@@ -238,7 +238,9 @@
             top: 4px;
             width: 37px;
         }
-
+        .updateAvailable .c9-mbar-round .mainlogo {
+            background: url("images/c9-no-repeat.png") no-repeat -96px -44px;
+        }
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
         	height: 10px;

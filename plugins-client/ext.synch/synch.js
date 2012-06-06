@@ -34,6 +34,10 @@ module.exports = ext.register("ext/synch/synch", {
             ]);
         });
         
+        ide.addEventListener("localUpdateAvailable", function(e) { 
+            apf.setStyleClass(logobar.$ext, "updateAvailable");
+        });
+        
         if (ide.local) {
             apf.setStyleClass(logobar.$ext, "local");
             

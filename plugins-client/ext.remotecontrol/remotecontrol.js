@@ -68,15 +68,18 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 tabbehaviors.revealInTree(node);
             } 
             else if (event.message.action === "notify") {
-            	var eventName = event.message.args.event.name;
-				if (eventName === "internet-available") {
-					var state = event.message.args.event.value;
-					if 	(state === false) {
-						ide.dispatchEvent("localOffline", event);	
-					}
-					else
-						ide.dispatchEvent("localOnline", event);
-				}
+                var eventName = event.message.args.event.name;
+                if (eventName === "internet-available") {
+                    var state = event.message.args.event.value;
+                    
+                    if 	(state === false)
+                        ide.dispatchEvent("localOffline", event);
+                    else
+                        ide.dispatchEvent("localOnline", event);
+                }
+                else if (eventName == "c9local-update") {
+                    ide.dispatchEvent("localUpdateAvailable", event);
+                }
             }
         }
     },
