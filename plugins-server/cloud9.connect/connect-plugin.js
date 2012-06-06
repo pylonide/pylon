@@ -42,6 +42,9 @@ module.exports = function startup(options, imports, register) {
         if (buildVersion !== false) {
             res.setHeader("x-build-version", buildVersion);
         }
+        if(req.method === "POST" && req.headers["content-type"].indexOf("text/plain") === 0) {
+            req.headers["content-type"] = "application/x-www-form-urlencoded";
+        }
         next();
     });
 
