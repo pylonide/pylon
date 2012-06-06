@@ -22,6 +22,14 @@ module.exports = function setup(options, imports, register) {
     SETTINGS_PATH = options.settingsPath;
     fs = imports["sandbox.fs"];
 
+    // If absolute settings path option is set we use that path and NodeJS's FS.
+    // This is needed by c9local where settings file cannot be stored at `/.settings`.
+    if (typeof options.absoluteSettingsPath !== "undefined") {
+        fs = require("fs");
+        fs.exists = Path.exists;
+        SETTINGS_PATH = options.absoluteSettingsPath;
+    }
+
     imports.ide.register(name, SettingsPlugin, register);
 };
 
