@@ -9,8 +9,6 @@ var JVMInstance = jvm.JVMInstance;
 var ScriptJVMInstance = jvm.ScriptJVMInstance;
 var WebJVMInstance = jvm.WebJVMInstance;
 
-var WEBAPP_START_PORT = 10000;
-
 /**
  * Run JVM apps
  */
