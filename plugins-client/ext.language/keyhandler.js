@@ -82,7 +82,6 @@ function handleChar(ch) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
-        ext.closeCompletionBox(null, true);
         if(!preceededByIdentifier(line, pos.column, ch))
             return false;
         ext.deferredInvoke();
