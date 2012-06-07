@@ -3503,6 +3503,24 @@
           background-repeat: no-repeat;
         }
 
+        .ace_gutter-layer .ace_gutter-cell.ace_error {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px 0;
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_error {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -20px;
+        }
+
+        .ace_gutter-layer .ace_gutter-cell.ace_warning {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -40px;
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_warning {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -60px;
+        }
+
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.png");
           background-position: 4px center;
@@ -3531,24 +3549,6 @@
           background-image: url("icons/debugger/stack_co.png");
           background-position: 4px center;
        }
-
-        .ace_gutter-layer .ace_gutter-cell.ace_error {
-            background-image: url(images/c9-no-repeat.png);
-            background-position: -462px 0;
-        }
-        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_error {
-            background-image: url(images/c9-no-repeat.png);
-            background-position: -462px -20px;
-        }
-
-        .ace_gutter-layer .ace_gutter-cell.ace_warning {
-            background-image: url(images/c9-no-repeat.png);
-            background-position: -462px -40px;
-        }
-        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_warning {
-            background-image: url(images/c9-no-repeat.png);
-            background-position: -462px -60px;
-        }
 
         /* 
          * Themes
