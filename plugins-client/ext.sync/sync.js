@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var settings = require("ext/settings/settings");
+var util = require("core/util");
 
 var markup = require("text!ext/sync/sync.xml");
 var cssString = require("text!ext/sync/style.css");
@@ -62,8 +63,12 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     enableSync: function() {
-        apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);
-        
+
+        if (!ide.local) {
+            console.error("You should never get here as sync toggle can only be switched if `ide.local === true` for now. i.e. Sync toggle should not show if `ide.local !== true`.");
+            return;
+        }
+
         apf.ajax("/api/sync/enable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -71,8 +76,18 @@ module.exports = ext.register("ext/sync/sync", {
             })),
             async: true,
             callback: function( data, state ) {
-                if (state == apf.SUCCESS && JSON.parse(data).success === true) {
-                    // Success. Nothing more to do. (UI sync state will update via socket.io push event)
+                if (state == apf.SUCCESS) {
+                    data = JSON.parse(data);
+                    if (data.success === true) {
+                        // Success. Nothing more to do. (UI sync state will update via socket.io push event)
+                    }
+                    else if (data.workspaceNotEmpty === true) {
+                        // TODO: Make dialog look better.
+                        util.alert(
+                            "Sync Error",
+                            "Your workspace must be empty in order to start syncing with an online project! (Workspace dir may only contain settings file)"
+                        );
+                    }
                 } else {
                     // TODO: Display error?
                 }
@@ -81,8 +96,14 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     disableSync: function() {
-        apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
-        
+
+        if (!ide.local) {
+            console.error("You should never get here as sync toggle can only be switched if `ide.local === true` for now. i.e. Sync toggle should not show if `ide.local !== true`.");
+            return;
+        }
+
+        // TODO: Show dialog to verify that sync should be disabled. Only disable if "YES". Ignore of "NO".
+
         apf.ajax("/api/sync/disable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
