@@ -80,13 +80,20 @@ module.exports = ext.register("ext/themes/themes", {
                 _self.setThemedGUI(path);
             }, 10);
         }
+        // fixes a problem with Ace architect loading /lib/ace, 
+        // creating a conflict with themes
+        if (theme.isDark === undefined) {
+            return setTimeout(function(){
+                _self.setThemedGUI(path);
+            }, 10);
+        }
         
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;
         var tabsDiv = document.getElementsByClassName("btnsesssioncontainer")[0];
-        
-       editorDiv.setAttribute("id", "mainAceEditor");
+        editorDiv.setAttribute("id", "editorDiv");
+        tabsDiv.setAttribute("id", "tabsDiv");
         
         if (theme.isDark) {
             apf.setStyleClass(editorDiv, "dark");
@@ -101,7 +108,7 @@ module.exports = ext.register("ext/themes/themes", {
         
         if (_self.lastTheme) {
             apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
-            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+             apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
         apf.setStyleClass(editorDiv, _self.lastTheme = cssClass);
@@ -118,8 +125,8 @@ module.exports = ext.register("ext/themes/themes", {
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            ["#mainAceEditor." + cssClass + " > .vbox, "
-             + ".btnsesssioncontainer." + cssClass + " .editor_tab .curbtn .tab_middle, "
+            ["#editorDiv." + cssClass + " > .vbox, "
+             + "#tabsDiv." + cssClass + " .curbtn .tab_middle, "
              + "." + cssClass + " .codeditorHolder, "
              + "." + cssClass + " .winGoToFile, "
              + "." + cssClass + " .revisionsBar .topbar, "
