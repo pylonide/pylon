@@ -597,7 +597,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var node = page.$doc.getNode();
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
-                    xmlNode : node
+                    xmlNode : node,
+                    newPath: e.newPath
                 });
             }
         });

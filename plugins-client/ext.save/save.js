@@ -442,7 +442,9 @@ module.exports = ext.register("ext/save/save", {
 
         var at = page.$at
         at.undo_ptr = at.$undostack[at.$undostack.length-1];
-        page.$at.dispatchEvent("afterchange");
+        page.$at.dispatchEvent("afterchange", {
+            newPath: newPath
+        });
     },
 
     choosePath : function(path, select) {
