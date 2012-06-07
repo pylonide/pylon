@@ -17,7 +17,6 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
-require('treehugger/traverse');
 
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
@@ -342,11 +341,12 @@ var Scope = module.exports.Scope = function Scope(parent) {
  */
 Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidence, kind) {
     var result;
-    if (!this.vars['_'+name]) {
-        result = this.vars['_'+name] = new Variable(resolveNode);
+    var vars = this.getVars(kind);
+    if (!vars['_'+name]) {
+        result = vars['_'+name] = new Variable(resolveNode);
     }
     else if (resolveNode) {
-        result = this.vars['_'+name];
+        result = vars['_'+name];
         result.addDeclaration(resolveNode);
     }
     if (result) {
@@ -354,6 +354,13 @@ Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidenc
         result.kind = kind;
     }
     return result;
+};
+
+Scope.prototype.getVars = function(kind) {
+    if (kind)
+        return this.vars[kind] = this.vars[kind] || {};
+    else
+        return this.vars;
 };
 
 Scope.prototype.isDeclared = function(name) {
@@ -365,9 +372,10 @@ Scope.prototype.isDeclared = function(name) {
  * @param name name of variable
  * @return Variable instance 
  */
-Scope.prototype.get = function(name) {
-    if(this.vars['_'+name])
-        return this.vars['_'+name];
+Scope.prototype.get = function(name, kind) {
+    var vars = this.getVars(kind);
+    if(vars['_'+name])
+        return vars['_'+name];
     else if(this.parent)
         return this.parent.get(name);
 };
@@ -378,11 +386,12 @@ Scope.prototype.getVariableNames = function() {
 
 Scope.prototype.getNamesByKind = function(kind) {
     var results = [];
-    for (var v in this.vars) {
-        if (this.vars[v].kind == kind && this.vars.hasOwnProperty(v))
+    var vars = this.getVars(kind);
+    for (var v in vars) {
+        if (vars.hasOwnProperty(v))
             results.push(v.slice(1));
     }
-    if(this.parent) {
+    if (this.parent) {
         var namesFromParent = this.parent.getNamesByKind(kind);
         for (var i = 0; i < namesFromParent.length; i++) {
             results.push(namesFromParent[i]);
