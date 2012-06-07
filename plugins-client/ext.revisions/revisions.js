@@ -14,9 +14,9 @@ var menus = require("ext/menus/menus");
 var tooltip = require("ext/tooltip/tooltip");
 var commands = require("ext/commands/commands");
 
-//var TreeDocument = require("concorde/AceDocument");
+var TreeDocument = require("concorde/AceDocument");
 var Save = require("ext/save/save");
-//var Collab = require("c9/ext/collaborate/collaborate");
+var Collab = require("c9/ext/collaborate/collaborate");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/revisions/settings.xml");
@@ -963,9 +963,8 @@ module.exports = ext.register("ext/revisions/revisions", {
      * otherwise
      **/
     isCollab: function(doc) {
-        //var doc = (doc || tabEditors.getPage().$doc);
-        //return doc.acedoc.doc instanceof TreeDocument;
-        return false;
+        var doc = (doc || tabEditors.getPage().$doc);
+        return doc.acedoc.doc instanceof TreeDocument;
     },
 
     getRevision: function(id, content) {
@@ -1312,6 +1311,13 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
         }
+        else {
+            // We are collaborating! Let's check whether we are the master user
+            // (the one that has the 'true' document content)
+            if (this.iAmMaster()) {
+
+            }
+        }
 
         this.$resetEditingUsers(docPath);
     },
@@ -1335,27 +1341,20 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     getUser: function(suffix, doc) {
-        return null;
-
-        /*
         if (doc && doc.users && doc.users[suffix]) {
             var uid = doc.users[suffix].split("-")[0];
             if (Collab.users[uid]) {
                 return Collab.users[uid];
             }
         }
-        */
     },
 
     getUserColorByEmail: function(email) {
         var color;
-        /*
         var user = Collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
-        */
-        return color;
     },
 
     /**
