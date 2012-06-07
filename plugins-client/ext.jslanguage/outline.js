@@ -9,7 +9,7 @@ outlineHandler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
-outlineHandler.outline = function(ast) {
+outlineHandler.outline = function(doc, ast) {
     return extractOutline(ast);
 };
     

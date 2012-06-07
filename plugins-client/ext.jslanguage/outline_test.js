@@ -16,7 +16,7 @@ var assert = require("ace/test/assertions");
 module.exports = {
     "test basic outline" : function() {
         var node = parser.parse(""+require('text!ext/jslanguage/test/test1.js'));
-        var outline = handler.outline(node);
+        var outline = handler.outline(null, node);
         //console.log(""+node);
         //console.log(JSON.stringify(outline, null, 2));
         assert.equal(outline[0].name, 'simpleFunction()');
@@ -31,7 +31,7 @@ module.exports = {
         var node = parser.parse(""+require('text!jquery.js'));
         //console.log("Parsing time: " + (microtime.now() - now)/1000 + "ms");
         //var now = microtime.now();
-        var outline = handler.outline(node);
+        var outline = handler.outline(null, node);
         //console.log("Outline time: " + (microtime.now() - now)/1000 + "ms");
     }
 
