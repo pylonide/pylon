@@ -6,7 +6,8 @@
 
     "plugin": {
         "consumes": [
-            "ide"
+            "ide",
+            "sandbox.fs"
         ]
     }
 }

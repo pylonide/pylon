@@ -9,7 +9,7 @@ pack.stderr.on('data', function (data) {
 
 pack.on('exit', function (code) {
   if (code !== 0) {
-    console.error('grep process exited with code ' + code);
+    console.error('pack process exited with code ' + code);
     process.exit(code);
   }
 });
