@@ -19,10 +19,10 @@ var exports = module.exports = function (url, pm, sandbox, runJvm, usePortFlag, 
 
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
-        
+
         sandbox.getUnixId(function(err, unixId) {
             if (err) return callback(err);
-            
+
             init(projectDir, unixId, url);
         });
     });
@@ -35,7 +35,7 @@ var exports = module.exports = function (url, pm, sandbox, runJvm, usePortFlag, 
 };
 
 function setup (JvmRunner) {
-    exports.factory = function(sandbox, root, port, uid, url, usePortFlag) {
+    exports.factory = function(sandbox, root, uid, url, usePortFlag) {
         return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
@@ -52,9 +52,9 @@ function setup (JvmRunner) {
             options.eventName = eventName;
             options.url = url;
             options.usePortFlag = usePortFlag;
-            
+
             options.sandbox = sandbox;
-            
+
             return new Runner(options, callback);
         };
     };
@@ -69,15 +69,15 @@ function setup (JvmRunner) {
             if (err)
                 return callback("Could not find a free port");
 
-            var debugParams = '-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=localhost:'
-                    + port + ',server=y,suspend=';
+            var debugParams = "-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=localhost:"
+                    + port + ",server=y,suspend=";
 
             if (self.breakOnStart)
                 debugParams += "y";
             else
                 debugParams += "n";
 
-            options.jvmArgs = debugParams.split(' ');
+            options.jvmArgs = debugParams.split(" ");
 
             JvmRunner.call(self, options, function (err) {
                 if (err) return callback(err);
@@ -86,7 +86,7 @@ function setup (JvmRunner) {
 
                 // Start debug as soon as the "Listening for socket" message is printed
                 var startDebugListener = function (msg) {
-                    if (msg.type == "node-data" && /dt_socket/.test(msg.data)) {
+                    if ((msg.type == "node-debug-data" || msg.type == "node-data") && /dt_socket/.test(msg.data)) {
                         self._startDebug(port, options);
                         options.eventEmitter.removeListener(options.eventName, startDebugListener);
                     } else if (msg.type === "node-exit") {
@@ -134,7 +134,7 @@ function setup (JvmRunner) {
 
             var debugOptions = {
                 port: port,
-                sourcepath: Path.join(options.cwd, 'src')
+                sourcepath: Path.join(options.cwd, "src")
             };
 
             this.javaDebugProxy = new JavaDebugProxy(JAVA_DEBUG_PORT, debugOptions);
@@ -149,7 +149,7 @@ function setup (JvmRunner) {
             });
 
             this.javaDebugProxy.on("connection", function() {
-                // console.log('java debug proxy connected');
+                // console.log("java debug proxy connected");
                 send({
                     "type": "node-debug-ready",
                     "pid": self.pid,
@@ -159,7 +159,7 @@ function setup (JvmRunner) {
             });
 
             this.javaDebugProxy.on("end", function(err) {
-                // console.log('javaDebugProxy terminated');
+                // console.log("javaDebugProxy terminated");
                 if (err) {
                     // TODO send the error message back to the client
                     // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);

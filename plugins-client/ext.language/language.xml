@@ -2,7 +2,7 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barOutline" skinset="language_skin" skin="outline" width="300" visible="false">
+    <a:bar id="barOutline" skinset="language_skin" skin="codecomplete" width="300" visible="false">
         <a:vbox anchors="0 0 0 0">
             <a:toolbar>
                 <a:bar height = "36">
@@ -60,8 +60,7 @@
         </a:vbox>
     </a:bar>
 
-
-    <a:bar id="barHierarchy" skinset="language_skin" skin="outline" width="300" visible="false">
+    <a:bar id="barHierarchy" skinset="language_skin" skin="codecomplete" width="300" visible="false">
         <a:vbox anchors="0 0 0 0">
             <a:toolbar>
                 <a:bar height = "36">

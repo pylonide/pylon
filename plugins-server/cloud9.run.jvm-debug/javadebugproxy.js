@@ -2,10 +2,9 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var sys = require("sys");
+var util = require("util");
 var NodeSocket = require("v8debug").NodeSocket;
 var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
-var MessageReader = require("v8debug").MessageReader;
 
 var DebugProxy = module.exports = function(port, options) {
 
@@ -43,7 +42,7 @@ var DebugProxy = module.exports = function(port, options) {
     });
 };
 
-sys.inherits(DebugProxy, process.EventEmitter);
+util.inherits(DebugProxy, process.EventEmitter);
 
 (function() {
 
