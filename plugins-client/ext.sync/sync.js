@@ -69,30 +69,56 @@ module.exports = ext.register("ext/sync/sync", {
             return;
         }
 
-        apf.ajax("/api/sync/enable", {
+        // User needs to select which project to sync.
+        apf.ajax("/api/context/get", {
             method: "POST",
-            data: "payload=" + encodeURIComponent(JSON.stringify({
-                localWorkspaceId: ide.workspaceId
-            })),
             async: true,
             callback: function( data, state ) {
                 if (state == apf.SUCCESS) {
                     data = JSON.parse(data);
-                    if (data.success === true) {
-                        // Success. Nothing more to do. (UI sync state will update via socket.io push event)
-                    }
-                    else if (data.workspaceNotEmpty === true) {
-                        // TODO: Make dialog look better.
-                        util.alert(
-                            "Sync Error",
-                            "Your workspace must be empty in order to start syncing with an online project! (Workspace dir may only contain settings file)"
-                        );
-                    }
+
+                    // console.log("Projects", data.projects);
+
+                    // TODO: In dialog present list of cloned online projects.
+                    //       Once user selects close dialog and call `enable(onlineWorkspaceId)`
+                    //       where `onlineWorkspaceId` is `data.projects[<selected>].label`.
+                    //       User can also cancel dialog to abort.
+
+                    enable("sync-test");
+
                 } else {
                     // TODO: Display error?
                 }
             }
-        });
+        });        
+        
+        function enable(onlineWorkspaceId) {
+            apf.ajax("/api/sync/enable", {
+                method: "POST",
+                data: "payload=" + encodeURIComponent(JSON.stringify({
+                    localWorkspaceId: ide.workspaceId,
+                    onlineWorkspaceId: onlineWorkspaceId
+                })),
+                async: true,
+                callback: function( data, state ) {
+                    if (state == apf.SUCCESS) {
+                        data = JSON.parse(data);
+                        if (data.success === true) {
+                            // Success. Nothing more to do. (UI sync state will update via socket.io push event)
+                        }
+                        else if (data.workspaceNotEmpty === true) {
+                            // TODO: Make dialog look better.
+                            util.alert(
+                                "Sync Error",
+                                "Your workspace must be empty in order to start syncing with an online project! (Workspace dir may only contain settings file)"
+                            );
+                        }
+                    } else {
+                        // TODO: Display error?
+                    }
+                }
+            });
+        }
     },
 
     disableSync: function() {
