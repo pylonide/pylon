@@ -14,9 +14,9 @@ var menus = require("ext/menus/menus");
 var tooltip = require("ext/tooltip/tooltip");
 var commands = require("ext/commands/commands");
 
-//var TreeDocument = require("concorde/AceDocument");
+var TreeDocument = require("concorde/AceDocument");
 var Save = require("ext/save/save");
-//var Collab = require("c9/ext/collaborate/collaborate");
+var Collab = require("c9/ext/collaborate/collaborate");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/revisions/settings.xml");
@@ -35,7 +35,7 @@ var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
-    
+
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
@@ -129,6 +129,38 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
 
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+        });
+
+        // Remove the revision file if the file is removed.
+        ide.addEventListener("removefile", function(data) {
+            ide.send({
+                command: "revisions",
+                subCommand: "removeRevision",
+                isFolder: data.isFolder,
+                path: Util.stripWSFromPath(data.path)
+            });
+        });
+
+        // Rename/move the revision file if the file is renamed/moved
+        ide.addEventListener("updatefile", function(data) {
+            if (data && data.path && data.newPath) {
+                var path = Util.stripWSFromPath(data.path);
+                var newPath = Util.stripWSFromPath(data.newPath);
+
+                // Remove reference by path to old path in `rawRevisions and
+                // create reference with the new path.
+                if (self.rawRevisions[path]) {
+                    self.rawRevisions[newPath] = self.rawRevisions[path];
+                    delete self.rawRevisions[path];
+                }
+
+                ide.send({
+                    command: "revisions",
+                    subCommand: "moveRevision",
+                    path: path,
+                    newPath: newPath
+                });
+            }
         });
 
         btnSave.setAttribute("caption", "");
@@ -226,23 +258,23 @@ module.exports = ext.register("ext/revisions/revisions", {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
                 if (btnSave.currentState !== SAVING) {
-                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                    apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
                     btnSave.currentState = SAVING;
                     btnSave.setCaption("Saving");
                 }
             }
             else if (!hasChanged) {
                 if (btnSave.currentState !== SAVED) {
-                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                    apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
                     btnSave.currentState = SAVED;
                     btnSave.setCaption("Changes saved");
                 }
             }
         }
         else {
-            btnSave.setCaption("");
+        btnSave.setCaption("");
         }
     },
 
@@ -271,7 +303,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
-        
+
          apf.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
@@ -365,7 +397,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
-        
+
         // Force initialization of extension (so that UI is available)
         ext.initExtension(this);
 
@@ -704,7 +736,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                             var revisionNode = apf.getXml(revisionString);
                             apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
                             }
-                        }
+                    }
                 }
                 break;
 
@@ -914,10 +946,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                 "silentsave='" + revision.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-        var contributors = "";
+            var contributors = "";
         if (revision.contributors && revision.contributors.length) {
             contributors = revision.contributors.map(contributorToXml).join("");
-        }
+            }
 
         xmlString += "<contributors>" + contributors + "</contributors></revision>";
         return xmlString;
@@ -931,9 +963,8 @@ module.exports = ext.register("ext/revisions/revisions", {
      * otherwise
      **/
     isCollab: function(doc) {
-        //var doc = (doc || tabEditors.getPage().$doc);
-        //return doc.acedoc.doc instanceof TreeDocument;
-        return false;
+        var doc = (doc || tabEditors.getPage().$doc);
+        return doc.acedoc.doc instanceof TreeDocument;
     },
 
     getRevision: function(id, content) {
@@ -1242,8 +1273,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var data = {
-            command: "revisions",
-            subCommand: "saveRevisionFromMsg",
             path: docPath,
             silentsave: !!silentsave,
             restoring: restoring,
@@ -1266,7 +1295,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
             else {
                 var revObj = this.$getRevisionObject(docPath);
-                data.revisions = revObj.allRevisions;
                 if (revObj.hasBeenSentToWorker === true) {
                     this.worker.postMessage({
                         type: "newRevision",
@@ -1276,14 +1304,21 @@ module.exports = ext.register("ext/revisions/revisions", {
                     });
                 }
                 else {
+                    data.revisions = revObj.allRevisions;
                     this.worker.postMessage(data);
                     revObj.hasBeenSentToWorker = true;
                 }
                 return;
             }
         }
+        else {
+            // We are collaborating! Let's check whether we are the master user
+            // (the one that has the 'true' document content)
+            if (this.iAmMaster()) {
 
-        ide.send(data);
+            }
+        }
+
         this.$resetEditingUsers(docPath);
     },
 
@@ -1306,27 +1341,20 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     getUser: function(suffix, doc) {
-        return null;
-
-        /*
         if (doc && doc.users && doc.users[suffix]) {
             var uid = doc.users[suffix].split("-")[0];
             if (Collab.users[uid]) {
                 return Collab.users[uid];
             }
         }
-        */
     },
 
     getUserColorByEmail: function(email) {
         var color;
-        /*
         var user = Collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
-        */
-        return color;
     },
 
     /**
