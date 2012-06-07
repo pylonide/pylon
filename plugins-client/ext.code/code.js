@@ -317,6 +317,7 @@ module.exports = ext.register("ext/code/code", {
 
                 doc.acesession.setValue(e.value || "");
 
+                
                 if (doc.state)
                     _self.setState(doc, doc.state);
 
@@ -335,7 +336,7 @@ module.exports = ext.register("ext/code/code", {
             ceEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
-                if (this.editor != _self)
+                if (this.editor != _self || !doc)
                     return;
 
                 if (!doc.isInited)
@@ -831,9 +832,12 @@ module.exports = ext.register("ext/code/code", {
             setTimeout(function() {
                 var doc = page.$doc;
                 var syntax = _self.getSyntax(doc.getNode());
-                doc.acesession.setMode(ceEditor.getMode(syntax));
-                doc.acesession.syntax = syntax;
-            })
+                // This event is triggered also when closing files, so session may be gone already.
+                if(doc.acesession) {
+                    doc.acesession.setMode(ceEditor.getMode(syntax));
+                    doc.acesession.syntax = syntax;
+                }
+            });
         });
 
         ide.addEventListener("afteroffline", function(){
