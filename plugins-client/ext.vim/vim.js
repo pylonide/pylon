@@ -50,13 +50,14 @@ var _loadKeyboardHandler = function(path, callback) {
 
 var enableVim = function enableVim() {
     ext.initExtension(this);
-    
+
     ide.addEventListener("init.ext/code/code", function(){
         var editor = ceEditor.$editor;
         VIM_ENABLED = true;
 
         if (vimHandler) {
             editor.setKeyboardHandler(vimHandler);
+            editor.on("vimMode", vimHandler.$statusListener);
             ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
             require("ext/console/console").showInput();
         } else {
@@ -66,9 +67,10 @@ var enableVim = function enableVim() {
             _loadKeyboardHandler("ace/keyboard/vim", function(module) {
                 vimHandler = module.handler;
                 vimHandler.$statusListener = function(mode) {
-                    ide.dispatchEvent("vim.changeMode", { mode : "mode" });                
+                    ide.dispatchEvent("vim.changeMode", { mode : "mode" });
                 };
-                editor.setKeyboardHandler(vimHandler);                
+                editor.setKeyboardHandler(vimHandler);
+                editor.on("vimMode", vimHandler.$statusListener);
                 ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
                 require("ext/console/console").showInput();
                 cliCmds.addCommands(vimHandler);
@@ -79,7 +81,10 @@ var enableVim = function enableVim() {
 
 var disableVim = function() {
     var editor = ceEditor.$editor;
-    editor && editor.keyBinding.removeKeyboardHandler(vimHandler);
+    if (editor) {
+        editor.keyBinding.removeKeyboardHandler(vimHandler);
+        editor.removeEventListener("vimMode", vimHandler.$statusListener);
+    }
     ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
     VIM_ENABLED = false;
 };
@@ -99,9 +104,9 @@ module.exports = ext.register("ext/vim/vim", {
             checked: "[{require('core/settings').model}::editors/code/@vimmode]",
             onclick: function() { self.toggle(); }
         });
-        
+
         menus.addItemByPath("View/Vim Mode", menuItem, 150000);
-        
+
         ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [
                 ["vimmode", "false"]
@@ -152,7 +157,7 @@ module.exports = ext.register("ext/vim/vim", {
 
     destroy: function() {
         menus.remove("Tools/Vim mode");
-        
+
         this.nodes.forEach(function(item) { item.destroy(); });
         this.nodes = [];
     }
