@@ -72,7 +72,7 @@ module.exports = ext.register("ext/sync/sync", {
         apf.ajax("/api/sync/enable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
-                workspaceId: ide.workspaceId
+                localWorkspaceId: ide.workspaceId
             })),
             async: true,
             callback: function( data, state ) {
@@ -107,7 +107,7 @@ module.exports = ext.register("ext/sync/sync", {
         apf.ajax("/api/sync/disable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
-                workspaceId: ide.workspaceId
+                localWorkspaceId: ide.workspaceId
             })),
             async: true,
             callback: function( data, state ) {
