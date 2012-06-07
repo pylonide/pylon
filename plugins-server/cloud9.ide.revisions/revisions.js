@@ -21,14 +21,6 @@ var fs;
  **/
 var FILE_SUFFIX = "c9save";
 
-/** related to: Revisions#docQueue
- *  SAVE_INTERVAL = 1000
- *
- *  The queue will be inspected every SAVE_INTERVAL milliseconds for new documents
- *  to be saved.
- **/
-var SAVE_INTERVAL = 1000;
-
 /**
  * REV_FOLDER_NAME = ".c9revisions"
  *
@@ -46,7 +38,6 @@ var name = "revisions";
 
 module.exports = function setup(options, imports, register) {
     fs = imports["sandbox.fs"];
-
     imports.ide.register(name, RevisionsPlugin, register);
 };
 
@@ -54,7 +45,6 @@ var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) 
     Plugin.call(this, ide, workspace);
     var self = this;
     this.hooks = ["command"];
-    this.docQueue = [];
     this.name = name;
 
     // This queue makes sure that changes are saved asynchronously but orderly
@@ -63,8 +53,6 @@ var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) 
             callback(err, revisionInfo);
         });
     }, 1);
-
-    this.saveInterval = setInterval(this.saveQueue.bind(this), SAVE_INTERVAL);
 };
 
 require("util").inherits(RevisionsPlugin, Plugin);
@@ -78,17 +66,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var self = this;
         if (message.subCommand) {
             switch (message.subCommand) {
-                // Let the server save a revision. The client is requesting the
-                // server to save a revision, and the server will figure out the
-                // diff. The client sends a few parameters to the server in the
-                // `message` object.
-                case "saveRevisionFromMsg":
-                    if (!message.path) {
-                        return console.error("saveRevisionFromMsg: No path sent for the file to save");
-                    }
-                    this.enqueueDoc(user, message, client);
-                    break;
-
                 // Directly save a revision. The revision has been precomputed
                 // on the client as is merely passed to the server in order to
                 // save it.
@@ -200,7 +177,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         fromPath += "." + FILE_SUFFIX;
                         toPath += "." + FILE_SUFFIX;
                     }
-                    
+
                     Path.exists(fromPath, function(fromPathExists) {
                         if (!fromPathExists) {
                             return;
@@ -212,8 +189,8 @@ require("util").inherits(RevisionsPlugin, Plugin);
                                         console.error("There was an error moving " + fromPath + " to " + toPath);
                                     }
                                 });
-                            }
-                            
+                            };
+
                             if (toPathExists) {
                                 renameFn();
                             }
@@ -490,57 +467,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
             path: path,
             ts: ts
         }));
-    };
-
-    this.enqueueDoc = function(user, message, client) {
-        var path = message.path;
-        var docExists = this.docQueue.some(function(doc) {
-            return doc[1].path === path;
-        });
-
-        if (!docExists) {
-            this.docQueue.push([user, message]);
-        }
-    };
-
-    this.saveQueue = function() {
-        var f = function(){};
-        while (this.docQueue.length > 0) {
-            var doc = this.docQueue.shift();
-            this.saveRevisionFromMsg(doc[0], doc[1], f);
-        }
-    };
-
-    this.saveRevisionFromMsg = function(user, message, callback) {
-        var self = this;
-        var path = message.path;
-        var currentDoc = this.getCurrentDoc(path, message);
-
-        this.getPreviousRevisionContent(path, function(err, previousRev) {
-            if (err) {
-                return callback(err);
-            }
-
-            if (typeof currentDoc !== "string") {
-                return callback(new Error("The contents for document '" + path + "' could not be retrieved"));
-            }
-
-            var patch = Diff.patch_make(previousRev, currentDoc);
-            var revision = {
-                ts: Date.now(),
-                silentsave: message.silentsave,
-                restoring: message.restoring,
-                patch: [patch],
-                length: currentDoc.length
-            };
-
-            var contributors = message.contributors;
-            if ((!contributors || !contributors.length) && (user && user.data && user.data.email)) {
-                revision.contributors = [user.data.email];
-            }
-
-            self.pushPatch(path, revision, callback);
-        });
     };
 
     this.createNewRevisionsFile = function(path, callback) {

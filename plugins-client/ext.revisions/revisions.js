@@ -316,7 +316,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
-        
+
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
         this.$setRevisionListClass();
@@ -397,7 +397,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
-        
+
         // Force initialization of extension (so that UI is available)
         ext.initExtension(this);
 
@@ -474,10 +474,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.hide(); 
+            btnSave.hide();
         else
             this.setSaveButtonCaption(e.page);
-            
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -682,11 +682,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
-        
+
         // guided tour magic conflicts with revisions--skip it
         if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
-            
+
         switch (message.subtype) {
             case "confirmSave":
                 var ts = message.ts;
@@ -1274,8 +1274,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var data = {
-            command: "revisions",
-            subCommand: "saveRevisionFromMsg",
             path: docPath,
             silentsave: !!silentsave,
             restoring: restoring,
@@ -1298,7 +1296,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
             else {
                 var revObj = this.$getRevisionObject(docPath);
-                data.revisions = revObj.allRevisions;
                 if (revObj.hasBeenSentToWorker === true) {
                     this.worker.postMessage({
                         type: "newRevision",
@@ -1308,6 +1305,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     });
                 }
                 else {
+                    data.revisions = revObj.allRevisions;
                     this.worker.postMessage(data);
                     revObj.hasBeenSentToWorker = true;
                 }
@@ -1315,7 +1313,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        ide.send(data);
         this.$resetEditingUsers(docPath);
     },
 
