@@ -149,15 +149,25 @@ onmessage = function(e) {
 */
 
 define('ace/lib/fixoldbrowsers', ['require', 'exports', 'module' , 'ace/lib/regexp', 'ace/lib/es5-shim'], function(require, exports, module) {
-
+"use strict";
 
 require("./regexp");
 require("./es5-shim");
 
 });
+/*
+ *  Based on code from:
+ *
+ * XRegExp 1.5.0
+ * (c) 2007-2010 Steven Levithan
+ * MIT License
+ * <http://xregexp.com>
+ * Provides an augmented, extensible, cross-browser implementation of regular expressions,
+ * including support for additional syntax, flags, and methods
+ */
  
 define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
     //---------------------------------
     //  Private variables
@@ -1317,9 +1327,48 @@ var prepareString = "a"[0] != "a",
         return Object(o);
     };
 });
+/* vim:ts=4:sts=4:sw=4:
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *      Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)
+ *      Mike de Boer <mike AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/lib/event_emitter', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 var EventEmitter = {};
 
@@ -1399,9 +1448,45 @@ EventEmitter.removeAllListeners = function(eventName) {
 exports.EventEmitter = EventEmitter;
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/lib/oop', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 exports.inherits = (function() {
     var tempCtor = function() {};
@@ -1424,9 +1509,45 @@ exports.implement = function(proto, mixin) {
 };
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
  
 define('ace/mode/xquery_worker', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/worker/mirror', 'ace/mode/xquery/xquery', 'ace/tokenizer', 'ace/mode/xquery_highlight_rules'], function(require, exports, module) {
-
+"use strict";
     
 var oop = require("../lib/oop");
 var Mirror = require("../worker/mirror").Mirror;
@@ -1475,7 +1596,7 @@ oop.inherits(XQueryWorker, Mirror);
 
 });
 define('ace/worker/mirror', ['require', 'exports', 'module' , 'ace/document', 'ace/lib/lang'], function(require, exports, module) {
-
+"use strict";
 
 var Document = require("../document").Document;
 var lang = require("../lib/lang");
@@ -1517,14 +1638,58 @@ var Mirror = exports.Mirror = function(sender) {
 }).call(Mirror.prototype);
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/document', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/event_emitter', 'ace/range', 'ace/anchor'], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
 var Range = require("./range").Range;
 var Anchor = require("./anchor").Anchor;
+
+/**
+ * class Document
+ *
+ * Contains the text of the document. Documents are controlled by a single [[EditSession `EditSession`]]. At its core, `Document`s are just an array of strings, with each row in the document matching up to the array index.
+ *
+ *
+ **/
 
  /**
  * new Document([text])
@@ -1550,17 +1715,48 @@ var Document = function(text) {
 (function() {
 
     oop.implement(this, EventEmitter);
+
+    /**
+    * Document.setValue(text) -> Void
+    * - text (String): The text to use
+    *
+    * Replaces all the lines in the current `Document` with the value of `text`.
+    **/
     this.setValue = function(text) {
         var len = this.getLength();
         this.remove(new Range(0, 0, len, this.getLine(len-1).length));
         this.insert({row: 0, column:0}, text);
     };
+
+    /**
+    * Document.getValue() -> String
+    * 
+    * Returns all the lines in the document as a single string, split by the new line character.
+    **/
     this.getValue = function() {
         return this.getAllLines().join(this.getNewLineCharacter());
     };
+
+    /** 
+    * Document.createAnchor(row, column) -> Anchor
+    * - row (Number): The row number to use
+    * - column (Number): The column number to use
+    *
+    * Creates a new `Anchor` to define a floating point in the document.
+    **/
     this.createAnchor = function(row, column) {
         return new Anchor(this, row, column);
     };
+
+    /** internal, hide
+    * Document.$split(text) -> [String]
+    * - text (String): The text to work with
+    * + ([String]): A String array, with each index containing a piece of the original `text` string.
+    * 
+    * Splits a string of text on any newline (`\n`) or carriage-return ('\r') characters.
+    *
+    *
+    **/
 
     // check for IE split bug
     if ("aaa".split(/a/).length == 0)
@@ -1571,6 +1767,13 @@ var Document = function(text) {
         this.$split = function(text) {
             return text.split(/\r\n|\r|\n/);
         };
+
+
+    /** internal, hide
+    * Document.$detectNewLine(text) -> Void
+    * 
+    * 
+    **/
     this.$detectNewLine = function(text) {
         var match = text.match(/^.*?(\r\n|\r|\n)/m);
         if (match) {
@@ -1579,6 +1782,18 @@ var Document = function(text) {
             this.$autoNewLine = "\n";
         }
     };
+
+    /**
+    * Document.getNewLineCharacter() -> String
+    * + (String): If `newLineMode == windows`, `\r\n` is returned.<br/>
+    *  If `newLineMode == unix`, `\n` is returned.<br/>
+    *  If `newLineMode == auto`, the value of `autoNewLine` is returned.
+    * 
+    * Returns the newline character that's being used, depending on the value of `newLineMode`. 
+    *
+    * 
+    * 
+    **/
     this.getNewLineCharacter = function() {
       switch (this.$newLineMode) {
           case "windows":
@@ -1594,30 +1809,87 @@ var Document = function(text) {
 
     this.$autoNewLine = "\n";
     this.$newLineMode = "auto";
+    /**
+     * Document.setNewLineMode(newLineMode) -> Void
+     * - newLineMode(String): [The newline mode to use; can be either `windows`, `unix`, or `auto`]{: #Document.setNewLineMode.param}
+     * 
+     * [Sets the new line mode.]{: #Document.setNewLineMode.desc}
+     **/
     this.setNewLineMode = function(newLineMode) {
         if (this.$newLineMode === newLineMode)
             return;
 
         this.$newLineMode = newLineMode;
     };
+
+    /**
+    * Document.getNewLineMode() -> String
+    * 
+    * [Returns the type of newlines being used; either `windows`, `unix`, or `auto`]{: #Document.getNewLineMode}
+    *
+    **/
     this.getNewLineMode = function() {
         return this.$newLineMode;
     };
+
+    /**
+    * Document.isNewLine(text) -> Boolean
+    * - text (String): The text to check
+    *
+    * Returns `true` if `text` is a newline character (either `\r\n`, `\r`, or `\n`).
+    *
+    **/
     this.isNewLine = function(text) {
         return (text == "\r\n" || text == "\r" || text == "\n");
     };
+
+    /**
+    * Document.getLine(row) -> String
+    * - row (Number): The row index to retrieve
+    * 
+    * Returns a verbatim copy of the given line as it is in the document
+    *
+    **/
     this.getLine = function(row) {
         return this.$lines[row] || "";
     };
+
+    /**
+    * Document.getLines(firstRow, lastRow) -> [String]
+    * - firstRow (Number): The first row index to retrieve
+    * - lastRow (Number): The final row index to retrieve
+    * 
+    * Returns an array of strings of the rows between `firstRow` and `lastRow`. This function is inclusive of `lastRow`.
+    *
+    **/
     this.getLines = function(firstRow, lastRow) {
         return this.$lines.slice(firstRow, lastRow + 1);
     };
+
+    /**
+    * Document.getAllLines() -> [String]
+    * 
+    * Returns all lines in the document as string array. Warning: The caller should not modify this array!
+    **/
     this.getAllLines = function() {
         return this.getLines(0, this.getLength());
     };
+
+    /**
+    * Document.getLength() -> Number
+    * 
+    * Returns the number of rows in the document.
+    **/
     this.getLength = function() {
         return this.$lines.length;
     };
+
+    /**
+    * Document.getTextRange(range) -> String
+    * - range (Range): The range to work with
+    * 
+    * [Given a range within the document, this function returns all the text within that range as a single string.]{: #Document.getTextRange.desc}
+    **/
     this.getTextRange = function(range) {
         if (range.start.row == range.end.row) {
             return this.$lines[range.start.row].substring(range.start.column,
@@ -1630,6 +1902,12 @@ var Document = function(text) {
             return lines.join(this.getNewLineCharacter());
         }
     };
+
+    /** internal, hide
+    * Document.$clipPosition(position) -> Number
+    * 
+    * 
+    **/
     this.$clipPosition = function(position) {
         var length = this.getLength();
         if (position.row >= length) {
@@ -1638,6 +1916,16 @@ var Document = function(text) {
         }
         return position;
     };
+
+    /**
+    * Document.insert(position, text) -> Number
+    * - position (Number): The position to start inserting at 
+    * - text (String): A chunk of text to insert
+    * + (Number): The position of the last line of `text`. If the length of `text` is 0, this function simply returns `position`. 
+    * Inserts a block of `text` and the indicated `position`.
+    *
+    * 
+    **/
     this.insert = function(position, text) {
         if (!text || text.length === 0)
             return position;
@@ -1660,6 +1948,20 @@ var Document = function(text) {
         }
         return position;
     };
+
+    /**
+    * Document.insertLines(row, lines) -> Object
+    * - row (Number): The index of the row to insert at
+    * - lines (Array): An array of strings
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *   ```{row: endRow, column: 0}```<br/>
+    *   If `lines` is empty, this function returns an object containing the current row, and column, like this:<br/>
+    *   ```{row: row, column: 0}```
+    *
+    * Inserts the elements in `lines` into the document, starting at the row index given by `row`. This method also triggers the `'change'` event.
+    *
+    *
+    **/
     this.insertLines = function(row, lines) {
         if (lines.length == 0)
             return {row: row, column: 0};
@@ -1684,6 +1986,18 @@ var Document = function(text) {
         this._emit("change", { data: delta });
         return end || range.end;
     };
+
+    /**
+    * Document.insertNewLine(position) -> Object
+    * - position (String): The position to insert at
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *    ```{row: endRow, column: 0}```
+    * 
+    * Inserts a new line into the document at the current row's `position`. This method also triggers the `'change'` event. 
+    *
+    *   
+    *
+    **/
     this.insertNewLine = function(position) {
         position = this.$clipPosition(position);
         var line = this.$lines[position.row] || "";
@@ -1705,6 +2019,20 @@ var Document = function(text) {
 
         return end;
     };
+
+    /**
+    * Document.insertInLine(position, text) -> Object | Number
+    * - position (Number): The position to insert at
+    * - text (String): A chunk of text
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *     ```{row: endRow, column: 0}```
+    * + (Number): If `text` is empty, this function returns the value of `position`
+    * 
+    * Inserts `text` into the `position` at the current row. This method also triggers the `'change'` event.
+    *
+    *
+    *
+    **/
     this.insertInLine = function(position, text) {
         if (text.length == 0)
             return position;
@@ -1728,6 +2056,16 @@ var Document = function(text) {
 
         return end;
     };
+
+    /**
+    * Document.remove(range) -> Object
+    * - range (Range): A specified Range to remove
+    * + (Object): Returns the new `start` property of the range, which contains `startRow` and `startColumn`. If `range` is empty, this function returns the unmodified value of `range.start`.
+    * 
+    * Removes the `range` from the document.
+    *
+    *
+    **/
     this.remove = function(range) {
         // clip to document
         range.start = this.$clipPosition(range.start);
@@ -1759,6 +2097,18 @@ var Document = function(text) {
         }
         return range.start;
     };
+
+    /**
+    * Document.removeInLine(row, startColumn, endColumn) -> Object
+    * - row (Number): The row to remove from
+    * - startColumn (Number): The column to start removing at 
+    * - endColumn (Number): The column to stop removing at
+    * + (Object): Returns an object containing `startRow` and `startColumn`, indicating the new row and column values.<br/>If `startColumn` is equal to `endColumn`, this function returns nothing.
+    *
+    * Removes the specified columns from the `row`. This method also triggers the `'change'` event.
+    *
+    * 
+    **/
     this.removeInLine = function(row, startColumn, endColumn) {
         if (startColumn == endColumn)
             return;
@@ -1777,6 +2127,17 @@ var Document = function(text) {
         this._emit("change", { data: delta });
         return range.start;
     };
+
+    /**
+    * Document.removeLines(firstRow, lastRow) -> [String]
+    * - firstRow (Number): The first row to be removed
+    * - lastRow (Number): The last row to be removed
+    * + ([String]): Returns all the removed lines.
+    * 
+    * Removes a range of full lines. This method also triggers the `'change'` event.
+    * 
+    *
+    **/
     this.removeLines = function(firstRow, lastRow) {
         var range = new Range(firstRow, 0, lastRow + 1, 0);
         var removed = this.$lines.splice(firstRow, lastRow - firstRow + 1);
@@ -1790,6 +2151,14 @@ var Document = function(text) {
         this._emit("change", { data: delta });
         return removed;
     };
+
+    /**
+    * Document.removeNewLine(row) -> Void
+    * - row (Number): The row to check
+    * 
+    * Removes the new line between `row` and the row immediately following it. This method also triggers the `'change'` event.
+    *
+    **/
     this.removeNewLine = function(row) {
         var firstLine = this.getLine(row);
         var secondLine = this.getLine(row+1);
@@ -1806,6 +2175,19 @@ var Document = function(text) {
         };
         this._emit("change", { data: delta });
     };
+
+    /**
+    * Document.replace(range, text) -> Object
+    * - range (Range): A specified Range to replace
+    * - text (String): The new text to use as a replacement
+    * + (Object): Returns an object containing the final row and column, like this:
+    *     {row: endRow, column: 0}
+    * If the text and range are empty, this function returns an object containing the current `range.start` value.
+    * If the text is the exact same as what currently exists, this function returns an object containing the current `range.end` value.
+    *
+    * Replaces a range in the document with the new `text`.
+    *
+    **/
     this.replace = function(range, text) {
         if (text.length == 0 && range.isEmpty())
             return range.start;
@@ -1825,6 +2207,12 @@ var Document = function(text) {
 
         return end;
     };
+
+    /**
+    * Document.applyDeltas(deltas) -> Void
+    * 
+    * Applies all the changes previously accumulated. These can be either `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+    **/
     this.applyDeltas = function(deltas) {
         for (var i=0; i<deltas.length; i++) {
             var delta = deltas[i];
@@ -1840,6 +2228,12 @@ var Document = function(text) {
                 this.remove(range);
         }
     };
+
+    /**
+    * Document.revertDeltas(deltas) -> Void
+    * 
+    * Reverts any changes previously applied. These can be either `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+    **/
     this.revertDeltas = function(deltas) {
         for (var i=deltas.length-1; i>=0; i--) {
             var delta = deltas[i];
@@ -1861,9 +2255,45 @@ var Document = function(text) {
 
 exports.Document = Document;
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/range', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 /**
  * class Range
@@ -1907,16 +2337,53 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             this.end.row == range.end.row &&
             this.start.column == range.start.column &&
             this.end.column == range.end.column
-    }; 
+    };
+
+    /**
+     * Range.toString() -> String
+     *
+     * Returns a string containing the range's row and column information, given like this:
+     *
+     *    [start.row/start.column] -> [end.row/end.column]
+     *
+     **/ 
 
     this.toString = function() {
         return ("Range: [" + this.start.row + "/" + this.start.column +
             "] -> [" + this.end.row + "/" + this.end.column + "]");
-    }; 
+    };
+
+    /** related to: Range.compare
+     * Range.contains(row, column) -> Boolean
+     * - row (Number): A row to check for
+     * - column (Number): A column to check for
+     *
+     * Returns `true` if the `row` and `column` provided are within the given range. This can better be expressed as returning `true` if:
+     *
+     *    this.start.row <= row <= this.end.row &&
+     *    this.start.column <= column <= this.end.column
+     *
+     **/ 
 
     this.contains = function(row, column) {
         return this.compare(row, column) == 0;
-    }; 
+    };
+
+    /** related to: Range.compare
+     * Range.compareRange(range) -> Number
+     * - range (Range): A range to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * <br/>
+     * * `-2`: (B) is in front of (A), and doesn't intersect with (A)<br/>
+     * * `-1`: (B) begins before (A) but ends inside of (A)<br/>
+     * * `0`: (B) is completely inside of (A) OR (A) is completely inside of (B)<br/>
+     * * `+1`: (B) begins inside of (A) but ends outside of (A)<br/>
+     * * `+2`: (B) is after (A) and doesn't intersect with (A)<br/>
+     * * `42`: FTW state: (B) ends in (A) but starts outside of (A)
+     * 
+     * Compares `this` range (A) with another range (B).
+     *
+     **/ 
     this.compareRange = function(range) {
         var cmp,
             end = range.end,
@@ -2153,6 +2620,30 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
 
         return 0;
     };
+
+    /**
+     * Range.compareStart(row, column) -> Number
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * <br/>
+     * * `0` if the two points are exactly equal<br/>
+     * * `-1` if `p.row` is less then the calling range<br/>
+     * * `1` if `p.row` is greater than the calling range, or if `isStart` is `true`.<br/>
+     * <br/>
+     * If the starting row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is greater than or equal to the calling range's starting column, this returns `0`<br/>
+     * * Otherwise, it returns -1<br/>
+     * <br/>
+     * If the ending row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is less than or equal to the calling range's ending column, this returns `0`<br/>
+     * * Otherwise, it returns 1
+     *
+     * Checks the row and column points with the row and column points of the calling range.
+     *
+     *
+     *
+     **/
     this.compareStart = function(row, column) {
         if (this.start.row == row && this.start.column == column) {
             return -1;
@@ -2253,6 +2744,15 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
         return Range.fromPoints(start || this.start, end || this.end);
     };
+
+   /** 
+     * Range.extend(row, column) -> Range
+     * - row (Number): A new row to extend to
+     * - column (Number): A new column to extend to
+     *
+     *  Changes the row and column points for the calling range for both the starting and ending points. This method returns that range with a new row.
+     *
+    **/
     this.extend = function(row, column) {
         var cmp = this.compare(row, column);
 
@@ -2269,18 +2769,46 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     this.isEmpty = function() {
         return (this.start.row == this.end.row && this.start.column == this.end.column);
     };
+
+   /** 
+     * Range.isMultiLine() -> Boolean
+     *
+     * Returns true if the range spans across multiple lines.
+     *
+    **/
     this.isMultiLine = function() {
         return (this.start.row !== this.end.row);
     };
+
+   /** 
+     * Range.clone() -> Range
+     *
+     * Returns a duplicate of the calling range.
+     *
+    **/
     this.clone = function() {
         return Range.fromPoints(this.start, this.end);
     };
+
+   /** 
+     * Range.collapseRows() -> Range
+     *
+     * Returns a range containing the starting and ending rows of the original range, but with a column value of `0`.
+     *
+    **/
     this.collapseRows = function() {
         if (this.end.column == 0)
             return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0)
         else
             return new Range(this.start.row, 0, this.end.row, 0)
     };
+
+   /** 
+     * Range.toScreenRange(session) -> Range
+     * - session (EditSession): The `EditSession` to retrieve coordinates from
+     * 
+     * Given the current `Range`, this function converts those starting and ending points into screen positions, and then returns a new `Range` object.
+    **/
     this.toScreenRange = function(session) {
         var screenPosStart =
             session.documentToScreenPosition(this.start);
@@ -2294,18 +2822,70 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     };
 
 }).call(Range.prototype);
+
+/** 
+ * Range.fromPoints(start, end) -> Range
+ * - start (Range): A starting point to use
+ * - end (Range): An ending point to use
+ * 
+ * Creates and returns a new `Range` based on the row and column of the given parameters.
+ *
+**/
 Range.fromPoints = function(start, end) {
     return new Range(start.row, start.column, end.row, end.column);
 };
 
 exports.Range = Range;
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/anchor', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/event_emitter'], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
+
+/**
+ * class Anchor
+ *
+ * Defines the floating pointer in the document. Whenever text is inserted or deleted before the cursor, the position of the cursor is updated
+ *
+ **/
 
 /**
  * new Anchor(doc, row, column)
@@ -2332,14 +2912,36 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 (function() {
 
     oop.implement(this, EventEmitter);
+    
+    /**
+     * Anchor.getPosition() -> Object
+     *
+     * Returns an object identifying the `row` and `column` position of the current anchor.
+     *
+     **/
 
     this.getPosition = function() {
         return this.$clipPositionToDocument(this.row, this.column);
     };
+ 
+     /**
+     * Anchor.getDocument() -> Document
+     *
+     * Returns the current document.
+     *
+     **/
         
     this.getDocument = function() {
         return this.document;
     };
+    
+     /**
+     * Anchor@onChange(e)
+     * - e (Event): Contains data about the event
+     *
+     * Fires whenever the anchor position changes. Events that can trigger this function include `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+     *
+     **/
 
     this.onChange = function(e) {
         var delta = e.data;
@@ -2406,6 +3008,16 @@ var Anchor = exports.Anchor = function(doc, row, column) {
         this.setPosition(row, column, true);
     };
 
+     /**
+     * Anchor.setPosition(row, column, noClip)
+     * - row (Number): The row index to move the anchor to
+     * - column (Number): The column index to move the anchor to
+     * - noClip (Boolean): Identifies if you want the position to be clipped
+     *
+     * Sets the anchor position to the specified row and column. If `noClip` is `true`, the position is not clipped.
+     *
+     **/
+
     this.setPosition = function(row, column, noClip) {
         var pos;
         if (noClip) {
@@ -2433,10 +3045,26 @@ var Anchor = exports.Anchor = function(doc, row, column) {
             value: pos
         });
     };
+    
+    /**
+     * Anchor.detach()
+     *
+     * When called, the `'change'` event listener is removed.
+     *
+     **/
 
     this.detach = function() {
         this.document.removeEventListener("change", this.$onChange);
     };
+    
+    /** internal, hide
+     * Anchor.clipPositionToDocument(row, column)
+     * - row (Number): The row index to clip the anchor to
+     * - column (Number): The column index to clip the anchor to
+     *
+     * Clips the anchor position to the specified row and column.
+     *
+     **/
 
     this.$clipPositionToDocument = function(row, column) {
         var pos = {};
@@ -2463,9 +3091,45 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 }).call(Anchor.prototype);
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/lib/lang', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 exports.stringReverse = function(string) {
     return string.split("").reverse().join("");
@@ -2529,6 +3193,10 @@ exports.arrayToMap = function(arr) {
     return map;
 
 };
+
+/*
+ * splice out of 'array' anything that === 'value'
+ */
 exports.arrayRemove = function(array, value) {
   for (var i = 0; i <= array.length; i++) {
     if (value === array[i]) {
@@ -2587,6 +3255,42 @@ exports.deferredCall = function(fcn) {
 };
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
  
 define('ace/mode/xquery/xquery', ['require', 'exports', 'module' , 'ace/mode/xquery/antlr3-all', 'ace/mode/xquery/XQueryLexer', 'ace/mode/xquery/XQueryParser'], function(require, exports, module) {
 
@@ -2606,6 +3310,16 @@ define('ace/mode/xquery/xquery', ['require', 'exports', 'module' , 'ace/mode/xqu
     return parser;
   };
 });
+/*
+Copyright (c) 2003-2008 Terence Parr. All rights reserved.
+Code licensed under the BSD License:
+http://www.antlr.org/license.html
+
+Some parts of the ANTLR class:
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+*/
 /*
 Some portions:
 Copyright (c) 2008, Yahoo! Inc. All rights reserved.
@@ -2827,6 +3541,23 @@ if (typeof org.antlr == "undefined" || !org.antlr) {
 org.antlr.global = (function() {
     return this;
 }).call(null);
+
+/**
+ * Returns the namespace specified and creates it if it doesn't exist.
+ *
+ * Be careful when naming packages. Reserved words may work in some browsers
+ * and not others. For instance, the following will fail in Safari:
+ * <pre>
+ * org.antlr.namespace("really.long.nested.namespace");
+ * </pre>
+ * This fails because "long" is a future reserved word in ECMAScript
+ *
+ * @static
+ * @param  {String*} arguments 1-n namespaces to create 
+ * @return {Object}  A reference to the last namespace object created
+ * @example
+ * org.antlr.namespace("org.antlr.property.package");
+ */
 org.antlr.namespace = function() {
     var a=arguments, o=null, i, j, d;
     for (i=0; i<a.length; i=i+1) {
@@ -2842,13 +3573,30 @@ org.antlr.namespace = function() {
 
     return o;
 };
+
+/**
+ * org.antlr.env is used to keep track of what is known about the library and
+ * the browsing environment
+ * @namespace org.antlr.env
+ */
 org.antlr.env = org.antlr.env || {};
+
+/**
+ * JavaScript runtime library code.
+ * @name org.antlr.runtime
+ * @namespace
+ */
 /**
  * JavaScript runtime library tree parser code.
  * @name org.antlr.runtime.tree
  * @namespace
  */
 org.antlr.namespace("org.antlr.runtime.tree");
+
+/**
+ * Provides the language utilites and extensions used by the library
+ * @namespace org.antlr.lang
+ */
 org.antlr.lang = org.antlr.lang || /** @lends org.antlr.lang */ {
     /**
      * Determines whether or not the provided object is an array.
@@ -3099,6 +3847,13 @@ return (l.isObject(o) || l.isString(o) || l.isNumber(o) || l.isBoolean(o));
         }
     }
 };
+/** The set of fields needed by an abstract recognizer to recognize input
+ *  and recover from errors etc...  As a separate state object, it can be
+ *  shared among multiple grammars; e.g., when one grammar imports another.
+ *
+ *  These fields are publically visible but the actual state pointer per
+ *  parser is protected.
+ */
 org.antlr.runtime = {};
 org.antlr.runtime.RecognizerSharedState = function() {
     /** Track the set of token types that can follow any rule invocation.
@@ -3108,11 +3863,41 @@ org.antlr.runtime.RecognizerSharedState = function() {
     this.following = [];
 
     this._fsp = -1;
+
+    /** This is true when we see an error and before having successfully
+     *  matched a token.  Prevents generation of more than one error message
+     *  per error.
+     */
     this.errorRecovery = false;
+
+    /** The index into the input stream where the last error occurred.
+     *  This is used to prevent infinite loops where an error is found
+     *  but no token is consumed during recovery...another error is found,
+     *  ad naseum.  This is a failsafe mechanism to guarantee that at least
+     *  one token/tree node is consumed for two errors.
+     */
     this.lastErrorIndex = -1;
+
+    /** In lieu of a return value, this indicates that a rule or token
+     *  has failed to match.  Reset to false upon valid token match.
+     */
     this.failed = false;
+
+    /** Did the recognizer encounter a syntax error?  Track how many. */
     this.syntaxErrors = 0;
+
+    /** If 0, no backtracking is going on.  Safe to exec actions etc...
+     *  If >0 then it's the level of backtracking.
+     */
     this.backtracking = 0;
+
+    /** An array[size num rules] of Map<Integer,Integer> that tracks
+     *  the stop token index for each rule.  ruleMemo[ruleIndex] is
+     *  the memoization table for ruleIndex.  For key ruleStartIndex, you
+     *  get back the stop token for associated rule or MEMO_RULE_FAILED.
+     *
+     *  This is only used if rule memoization is on (which it is by default).
+     */
     this.ruleMemo = null;
 
 
@@ -3129,11 +3914,28 @@ org.antlr.runtime.RecognizerSharedState = function() {
      *  emit another token.
      */
     this.token = null;
+
+    /** What character index in the stream did the current token start at?
+     *  Needed, for example, to get the text for current token.  Set at
+     *  the start of nextToken.
+     */
     this.tokenStartCharIndex = -1;
+
+    /** The line on which the first character of the token resides */
     // this.tokenStartLine;
+
+    /** The character position of first character within the line */
     // this.tokenStartCharPositionInLine;
+
+    /** The channel number for the current token */
     // this.channel;
+
+    /** The token type for the current token */
     // this.type;
+
+    /** You can set the text for the current token to override what is in
+     *  the input char buffer.  Use setText() or can set this instance var.
+     */
     this.text = null;
 };
 org.antlr.runtime.IndexOutOfBoundsException = function(m) {
@@ -3143,6 +3945,36 @@ org.antlr.runtime.IndexOutOfBoundsException = function(m) {
 org.antlr.lang.extend(org.antlr.runtime.IndexOutOfBoundsException, Error, {
     name: "org.antlr.runtime.IndexOutOfBoundsException"
 });
+/** The root of the ANTLR exception hierarchy.
+ *
+ *  <p>To avoid English-only error messages and to generally make things
+ *  as flexible as possible, these exceptions are not created with strings,
+ *  but rather the information necessary to generate an error.  Then
+ *  the various reporting methods in Parser and Lexer can be overridden
+ *  to generate a localized error message.  For example, MismatchedToken
+ *  exceptions are built with the expected token type.
+ *  So, don't expect getMessage() to return anything.</p>
+ *
+ *  <p>ANTLR generates code that throws exceptions upon recognition error and
+ *  also generates code to catch these exceptions in each rule.  If you
+ *  want to quit upon first error, you can turn off the automatic error
+ *  handling mechanism using rulecatch action, but you still need to
+ *  override methods mismatch and recoverFromMismatchSet.</p>
+ *
+ *  <p>In general, the recognition exceptions can track where in a grammar a
+ *  problem occurred and/or what was the expected input.  While the parser
+ *  knows its state (such as current input symbol and line info) that
+ *  state can change before the exception is reported so current token index
+ *  is computed and stored at exception time.  From this info, you can
+ *  perhaps print an entire line of input not just a single token, for example.
+ *  Better to just say the recognizer had a problem and then let the parser
+ *  figure out a fancy report.</p>
+ *
+ *  @class
+ *  @param {org.antlr.runtime.CommonTokenStream|org.antlr.runtime.tree.TreeNodeStream|org.antlr.runtime.ANTLRStringStream} input input stream that has an exception.
+ *  @extends Error
+ *
+ */
 org.antlr.runtime.RecognitionException = function(input) {
     org.antlr.runtime.RecognitionException.superclass.constructor.call(this);
     this.input = input;
@@ -3313,6 +4145,7 @@ org.antlr.lang.extend(
     },
     name: "org.antlr.runtime.MismatchedTokenException"
 });
+/** An extra token while parsing a TokenStream */
 org.antlr.runtime.UnwantedTokenException = function(expecting, input) {
     if (arguments.length>0) {
         org.antlr.runtime.UnwantedTokenException.superclass.constructor.call(
@@ -3390,6 +4223,13 @@ org.antlr.lang.extend(
     },
     name: "org.antlr.runtime.NoViableAltException"
 });
+/** The recognizer did not match anything for a ()+ loop.
+ *
+ *  @class
+ *  @param {Number} decisionNumber
+ *  @param {org.antlr.runtime.CommonTokenStream|org.antlr.runtime.tree.TreeNodeStream|org.antlr.runtime.ANTLRStringStream} input input stream that has an exception.
+ *  @extends org.antlr.runtime.RecognitionException
+ */
 org.antlr.runtime.EarlyExitException = function(decisionNumber, input) {
     org.antlr.runtime.EarlyExitException.superclass.constructor.call(
             this, input);
@@ -3454,6 +4294,17 @@ org.antlr.lang.extend(
     },
     name: "org.antlr.runtime.MismatchedRangeException"
 });
+/** A semantic predicate failed during validation.  Validation of predicates
+ *  occurs when normally parsing the alternative just like matching a token.
+ *  Disambiguating predicate evaluation occurs when we hoist a predicate into
+ *  a prediction decision.
+ *
+ *  @class
+ *  @param {org.antlr.runtime.CommonTokenStream|org.antlr.runtime.tree.TreeNodeStream|org.antlr.runtime.ANTLRStringStream} input input stream that has an exception.
+ *  @param {String} ruleName name of the rule in which the exception occurred.
+ *  @param {String} predicateText the predicate that failed.
+ *  @extends org.antlr.runtime.RecognitionException
+ */
 org.antlr.runtime.FailedPredicateException = function(input, ruleName, predicateText){
     org.antlr.runtime.FailedPredicateException.superclass.constructor.call(this, input);
     this.ruleName = ruleName;
@@ -3477,6 +4328,19 @@ org.antlr.lang.extend(
      */
     name: "org.antlr.runtime.FailedPredicateException"
 });
+/**
+ * A BitSet similar to java.util.BitSet.
+ *
+ * <p>JavaScript Note: There is no good way to implement something like this in 
+ * JavaScript.  JS has no true int type, arrays are usually implemented as
+ * hashes, etc.  This class should probably be nixed for something that is
+ * similarly (in)efficient, but more clear.</p>
+ *
+ * @class
+ * @param {Number|Array} [bits] a 32 bit number or array of 32 bit numbers
+ *                              representing the bitset.  These are typically
+ *                              generated by the ANTLR Tool.
+ */
 org.antlr.runtime.BitSet = function(bits) {
     if (!bits) {
         bits = org.antlr.runtime.BitSet.BITS;
@@ -4215,6 +5079,14 @@ org.antlr.runtime.BitSet.prototype = {
     }
     */
 };
+
+/*
+ *
+ *
+org.antlr.runtime.IntervalSet = function() {
+        throw new Error("not implemented");
+};
+*/
 org.antlr.runtime.CharStream = {
     EOF: -1
 };
@@ -4404,6 +5276,11 @@ org.antlr.runtime.tree = {};
 org.antlr.runtime.tree.RewriteCardinalityException = function(elementDescription) {
     this.elementDescription = elementDescription;
 };
+
+/** Base class for all exceptions thrown during AST rewrite construction.
+ *  This signifies a case where the cardinality of two or more elements
+ *  in a subrule are different: (ID INT)+ where |ID|!=|INT|
+ */
 org.antlr.lang.extend(org.antlr.runtime.tree.RewriteCardinalityException, Error, {
     getMessage: function() {
 		if ( org.antlr.lang.isString(this.elementDescription) ) {
@@ -4415,6 +5292,7 @@ org.antlr.lang.extend(org.antlr.runtime.tree.RewriteCardinalityException, Error,
         return "org.antlr.runtime.tree.RewriteCardinalityException";
     }
 });
+/** Ref to ID or expr but no tokens in ID stream or subtrees in expr stream */
 org.antlr.runtime.tree.RewriteEmptyStreamException = function(elementDescription) {
     var sup = org.antlr.runtime.tree.RewriteEmptyStreamException.superclass; 
     sup.constructor.call(this, elementDescription);
@@ -4426,6 +5304,7 @@ org.antlr.lang.extend(org.antlr.runtime.tree.RewriteEmptyStreamException,
         return "org.antlr.runtime.tree.RewriteEmptyStreamException";
     }
 });
+/** No elements within a (...)+ in a rewrite rule */
 org.antlr.runtime.tree.RewriteEarlyExitException = function(elementDescription) {
     var sup = org.antlr.runtime.tree.RewriteEarlyExitException.superclass;
     if (org.antlr.lang.isUndefined(elementDescription)) {
@@ -4457,6 +5336,12 @@ org.antlr.lang.extend(
     },
     name: "org.antlr.runtime.MismatchedTreeNodeException"
 });
+/** A generic tree implementation with no payload.  You must subclass to
+ *  actually have any user data.  ANTLR v3 uses a list of children approach
+ *  instead of the child-sibling approach in v2.  A flat tree (a list) is
+ *  an empty node whose children represent the list.  An empty, but
+ *  non-null node is called "nil".
+ */
 org.antlr.runtime.tree.BaseTree = function() {};
 
 org.antlr.runtime.tree.BaseTree.prototype = {
@@ -4731,14 +5616,26 @@ org.antlr.runtime.tree.BaseTree.prototype = {
         return 0;
     }
 };
+/** A tree node that is wrapper for a Token object.  After 3.0 release
+ *  while building tree rewrite stuff, it became clear that computing
+ *  parent and child index is very difficult and cumbersome.  Better to
+ *  spend the space in every tree node.  If you don't want these extra
+ *  fields, it's easy to cut them out in your own BaseTree subclass.
+ */
 org.antlr.runtime.tree.CommonTree = function(node) {
     /** What token indexes bracket all tokens associated with this node
      *  and below?
      */
     this.startIndex = -1;
     this.stopIndex = -1;
+
+    /** What index is this node in the child list? Range: 0..n-1 */
     this.childIndex = -1;
+
+    /** Who is the parent node of this node; if null, implies node is root */
     this.parent = null;
+
+    /** A single token is the payload */
     this.token = null;
 
     if (node instanceof org.antlr.runtime.tree.CommonTree) {
@@ -4750,6 +5647,8 @@ org.antlr.runtime.tree.CommonTree = function(node) {
         this.token = node;
     }
 };
+
+/** A tree node that is wrapper for a Token object. */
 org.antlr.lang.extend(org.antlr.runtime.tree.CommonTree, org.antlr.runtime.tree.BaseTree, {
     getToken: function() {
         return this.token;
@@ -4848,6 +5747,16 @@ org.antlr.lang.extend(org.antlr.runtime.tree.CommonTree, org.antlr.runtime.tree.
         return this.token.getText();
     }
 });
+/** What does a tree look like?  ANTLR has a number of support classes
+ *  such as CommonTreeNodeStream that work on these kinds of trees.  You
+ *  don't have to make your trees implement this interface, but if you do,
+ *  you'll be able to use more support code.
+ *
+ *  NOTE: When constructing trees, ANTLR can build any kind of tree; it can
+ *  even use Token objects as trees if you add a child list to your tokens.
+ *
+ *  This is a tree node without any payload; just navigation and factory stuff.
+ */
 org.antlr.runtime.tree.Tree = {
     INVALID_NODE: new org.antlr.runtime.tree.CommonTree(org.antlr.runtime.Token.INVALID_TOKEN)
 };
@@ -4919,6 +5828,7 @@ org.antlr.lang.extend(org.antlr.runtime.tree.CommonErrorNode, org.antlr.runtime.
         return "<error: "+this.getText()+">";
     }
 });
+/** A TreeAdaptor that works with any Tree implementation. */
 org.antlr.runtime.tree.BaseTreeAdaptor = function() {
     this.uniqueNodeID = 1;
 };
@@ -5124,6 +6034,15 @@ org.antlr.runtime.tree.BaseTreeAdaptor.prototype = {
         // return System.identityHashCode(node);
     }
 };
+/** A TreeAdaptor that works with any Tree implementation.  It provides
+ *  really just factory methods; all the work is done by BaseTreeAdaptor.
+ *  If you would like to have different tokens created than ClassicToken
+ *  objects, you need to override this and then set the parser tree adaptor to
+ *  use your subclass.
+ *
+ *  To get your parser to build nodes of a different type, override
+ *  create(Token).
+ */
 org.antlr.runtime.tree.CommonTreeAdaptor = function() {};
 
 org.antlr.lang.extend(org.antlr.runtime.tree.CommonTreeAdaptor,
@@ -5286,6 +6205,12 @@ org.antlr.lang.extend(org.antlr.runtime.tree.CommonTreeAdaptor,
         }
     }
 });
+/**
+ * A stream of characters created from a JavaScript string that in turn gets
+ * fed to a lexer.
+ * @class
+ * @param {String} data the string from which this stream will be created.
+ */
 org.antlr.runtime.ANTLRStringStream = function(data) {
     /**
      * Location in the stream.
@@ -5294,12 +6219,59 @@ org.antlr.runtime.ANTLRStringStream = function(data) {
      * @type Number
      */
     this.p = 0;
+
+    /**
+     * The current line in the input.
+     * Ranges from 1 to (number of lines).
+     * @private
+     * @type Number
+     */
     this.line = 1;
+
+    /**
+     * The index of the character relative to the beginning of the line.
+     * Ranges from 0 to (length of line - 1).
+     * @private
+     * @type Number
+     */
     this.charPositionInLine = 0;
+
+    /**
+     * Tracks how deep mark() calls are nested
+     * @private
+     * @type Number
+     */
     this.markDepth = 0;
+
+    /**
+     * An Array of objects that tracks the stream state
+     * values line, charPositionInLine, and p that can change as you
+     * move through the input stream.  Indexed from 1..markDepth.
+     * A null is kept at index 0.  Created upon first call to mark().
+     * @private
+     * @type Array
+     */
     this.markers = null;
+
+    /**
+     * Track the last mark() call result value for use in rewind().
+     * @private
+     * @type Number
+     */
     this.lastMarker = null;
+
+    /**
+     * The data being scanned.
+     * @private
+     * @type String
+     */
     this.data = data;
+
+    /**
+     * The number of characters in the stream.
+     * @private
+     * @type Number
+     */
     this.n = data.length;
 };
 
@@ -5543,7 +6515,20 @@ org.antlr.runtime.ANTLRStringStream.prototype = {
         return null;
     }
 };
+
+/**
+ * Alias for {@link #LA}.
+ * @methodOf org.antlr.runtime.ANTLRStringStream.prototype
+ * @name LT
+ */
 org.antlr.runtime.ANTLRStringStream.LT = org.antlr.runtime.ANTLRStringStream.LA;
+/** The most common stream of tokens is one where every token is buffered up
+ *  and tokens are prefiltered for a certain channel (the parser will only
+ *  see these tokens and cannot change the filter channel number during the
+ *  parse).
+ *
+ *  TODO: how to access the full token stream?  How to track all tokens matched per rule?
+ */
 org.antlr.runtime.CommonTokenStream = function(tokenSource, channel) {
     this.p = -1;
     this.channel = org.antlr.runtime.Token.DEFAULT_CHANNEL;
@@ -5856,10 +6841,68 @@ org.antlr.runtime.CommonTokenStream.prototype = {
         return buf;
     }
 };
+/* Useful for dumping out the input stream after doing some
+ *  augmentation or other manipulations.
+ *
+ *  You can insert stuff, replace, and delete chunks.  Note that the
+ *  operations are done lazily--only if you convert the buffer to a
+ *  String.  This is very efficient because you are not moving data around
+ *  all the time.  As the buffer of tokens is converted to strings, the
+ *  toString() method(s) check to see if there is an operation at the
+ *  current index.  If so, the operation is done and then normal String
+ *  rendering continues on the buffer.  This is like having multiple Turing
+ *  machine instruction streams (programs) operating on a single input tape. :)
+ *
+ *  Since the operations are done lazily at toString-time, operations do not
+ *  screw up the token index values.  That is, an insert operation at token
+ *  index i does not change the index values for tokens i+1..n-1.
+ *
+ *  Because operations never actually alter the buffer, you may always get
+ *  the original token stream back without undoing anything.  Since
+ *  the instructions are queued up, you can easily simulate transactions and
+ *  roll back any changes if there is an error just by removing instructions.
+ *  For example,
+ *
+ *   CharStream input = new ANTLRFileStream("input");
+ *   TLexer lex = new TLexer(input);
+ *   TokenRewriteStream tokens = new TokenRewriteStream(lex);
+ *   T parser = new T(tokens);
+ *   parser.startRule();
+ *
+ *      Then in the rules, you can execute
+ *      Token t,u;
+ *      ...
+ *      input.insertAfter(t, "text to put after t");}
+ *         input.insertAfter(u, "text after u");}
+ *         System.out.println(tokens.toString());
+ *
+ *  Actually, you have to cast the 'input' to a TokenRewriteStream. :(
+ *
+ *  You can also have multiple "instruction streams" and get multiple
+ *  rewrites from a single pass over the input.  Just name the instruction
+ *  streams and use that name again when printing the buffer.  This could be
+ *  useful for generating a C file and also its header file--all from the
+ *  same buffer:
+ *
+ *      tokens.insertAfter("pass1", t, "text to put after t");}
+ *         tokens.insertAfter("pass2", u, "text after u");}
+ *         System.out.println(tokens.toString("pass1"));
+ *         System.out.println(tokens.toString("pass2"));
+ *
+ *  If you don't use named rewrite streams, a "default" stream is used as
+ *  the first example shows.
+ */
 
 org.antlr.runtime.TokenRewriteStream = function() {
     var sup = org.antlr.runtime.TokenRewriteStream.superclass;
+
+    /** You may have multiple, named streams of rewrite operations.
+     *  I'm calling these things "programs."
+     *  Maps String (name) -> rewrite (List)
+     */
     this.programs = null;
+
+    /** Map String (program name) -> Integer index */
     this.lastRewriteTokenIndexes = null;
 
 
@@ -5888,6 +6931,10 @@ trs.RewriteOperation = function(index, text) {
     this.index = index;
     this.text = text;
 };
+
+/** Execute the rewrite operation by possibly adding to the buffer.
+ *  Return the index of the next token to operate on.
+ */
 trs.RewriteOperation.prototype = {
     execute: function(buf) {
         return this.index;
@@ -5910,6 +6957,10 @@ org.antlr.lang.extend(trs.InsertBeforeOp, trs.RewriteOperation, {
         return this.index;
     }
 });
+
+/** I'm going to try replacing range from x..y with (y-x)+1 ReplaceOp
+ *  instructions.
+ */
 trs.ReplaceOp = function(from, to, text) {
     trs.ReplaceOp.superclass.constructor.call(this, from, text); 
     this.lastIndex = to;
@@ -6251,7 +7302,24 @@ org.antlr.lang.extend(trs, org.antlr.runtime.CommonTokenStream, {
 });
 
 })();
+/** A stream of tree nodes, accessing nodes from a tree of some kind */
 org.antlr.runtime.tree.TreeNodeStream = function() {};
+/** A buffered stream of tree nodes.  Nodes can be from a tree of ANY kind.
+ *
+ *  This node stream sucks all nodes out of the tree specified in
+ *  the constructor during construction and makes pointers into
+ *  the tree using an array of Object pointers. The stream necessarily
+ *  includes pointers to DOWN and UP and EOF nodes.
+ *
+ *  This stream knows how to mark/release for backtracking.
+ *
+ *  This stream is most suitable for tree interpreters that need to
+ *  jump around a lot or for tree parsers requiring speed (at cost of memory).
+ *  There is some duplicated functionality here with UnBufferedTreeNodeStream
+ *  but just in bookkeeping, not tree walking etc...
+ *
+ *  @see UnBufferedTreeNodeStream
+ */
 org.antlr.runtime.tree.CommonTreeNodeStream = function(adaptor,
                                                     tree,
                                                     initialBufferSize)
@@ -6267,6 +7335,10 @@ org.antlr.runtime.tree.CommonTreeNodeStream = function(adaptor,
 
     /** Reuse same DOWN, UP navigation nodes unless this is true */
     this.uniqueNavigationNodes = false;
+
+    /** The index into the nodes list of the current node (next node
+     *  to consume).  If -1, nodes array not filled yet.
+     */
     this.p = -1;
 
     var Token = org.antlr.runtime.Token;
@@ -6637,11 +7709,33 @@ org.antlr.lang.extend(org.antlr.runtime.tree.CommonTreeNodeStream,
         }
     }
 });
+/** A generic list of elements tracked in an alternative to be used in
+ *  a -> rewrite rule.  We need to subclass to fill in the next() method,
+ *  which returns either an AST node wrapped around a token payload or
+ *  an existing subtree.
+ *
+ *  Once you start next()ing, do not try to add more elements.  It will
+ *  break the cursor tracking I believe.
+ *
+ *  @see org.antlr.runtime.tree.RewriteRuleSubtreeStream
+ *  @see org.antlr.runtime.tree.RewriteRuleTokenStream
+ *
+ *  TODO: add mechanism to detect/puke on modification after reading from stream
+ */
 org.antlr.runtime.tree.RewriteRuleElementStream = function(adaptor, elementDescription, el) {
     /** Cursor 0..n-1.  If singleElement!=null, cursor is 0 until you next(),
      *  which bumps it to 1 meaning no more elements.
      */
     this.cursor = 0;
+
+    /** Once a node / subtree has been used in a stream, it must be dup'd
+     *  from then on.  Streams are reset after subrules so that the streams
+     *  can be reused in future subrules.  So, reset must set a dirty bit.
+     *  If dirty, then next() always returns a dup.
+     *
+     *  I wanted to use "naughty bit" here, but couldn't think of a way
+     *  to use "naughty".
+     */
     this.dirty = false;
 
     this.elementDescription = elementDescription;
@@ -6763,6 +7857,9 @@ org.antlr.runtime.tree.RewriteRuleElementStream.prototype = {
         return this.elementDescription;
     }
 };
+/** Queues up nodes matched on left side of -> in a tree parser. This is
+ *  the analog of RewriteRuleTokenStream for normal parsers. 
+ */
 org.antlr.runtime.tree.RewriteRuleNodeStream = function(adaptor, elementDescription, el) {
     org.antlr.runtime.tree.RewriteRuleNodeStream.superclass.constructor.apply(this, arguments);
 };
@@ -6849,7 +7946,18 @@ org.antlr.lang.extend(org.antlr.runtime.tree.RewriteRuleSubtreeStream,
     dup: function(el) {
 		return this.adaptor.dupTree(el);
 	}
-});
+});/** A generic recognizer that can handle recognizers generated from
+ *  lexer, parser, and tree grammars.  This is all the parsing
+ *  support code essentially; most of it is error recovery stuff and
+ *  backtracking.
+ *
+ *  <p>This class should not be instantiated directly.  Instead, use one of its
+ *  subclasses.</p>
+ *
+ *  @class
+ *  @param {org.antlr.runtime.RecognizerSharedState} [state] optional state object
+ *      with which to initialize this recognizer.
+ */
 org.antlr.runtime.BaseRecognizer = function(state) {
     /** State of a lexer, parser, or tree parser are collected into a state
      *  object so the state can be shared.  This sharing is needed to
@@ -6859,6 +7967,8 @@ org.antlr.runtime.BaseRecognizer = function(state) {
      */
     this.state = state || new org.antlr.runtime.RecognizerSharedState();
 };
+
+/* static vars, methods */
 org.antlr.lang.augmentObject(org.antlr.runtime.BaseRecognizer, {
     MEMO_RULE_FAILED: -2,
     MEMO_RULE_UNKNOWN: -1,
@@ -7711,6 +8821,11 @@ org.antlr.runtime.BaseRecognizer.prototype = {
         }
     }
 };
+/** A lexer is recognizer that draws input symbols from a character stream.
+ *  lexer grammars result in a subclass of this object. A Lexer object
+ *  uses simplified match() and error recovery mechanisms in the interest
+ *  of speed.
+ */
 org.antlr.runtime.Lexer = function(input, state) {
     if (state) {
         org.antlr.runtime.Lexer.superclass.constructor.call(this, state);
@@ -7990,17 +9105,43 @@ org.antlr.lang.extend(org.antlr.runtime.Lexer, org.antlr.runtime.BaseRecognizer,
 		org.antlr.runtime.Lexer.superclass.traceOut.call(this, ruleName, ruleIndex, inputSymbol);
 	}
 });
+/** Rules that return more than a single value must return an object
+ *  containing all the values.  Besides the properties defined in
+ *  RuleLabelScope.predefinedRulePropertiesScope there may be user-defined
+ *  return values.  This class simply defines the minimum properties that
+ *  are always defined and methods to access the others that might be
+ *  available depending on output option such as template and tree.
+ *
+ *  Note text is not an actual property of the return value, it is computed
+ *  from start and stop using the input stream's toString() method.  I
+ *  could add a ctor to this so that we can pass in and store the input
+ *  stream, but I'm not sure we want to do that.  It would seem to be undefined
+ *  to get the .text property anyway if the rule matches tokens from multiple
+ *  input streams.
+ *
+ *  I do not use getters for fields of objects that are used simply to
+ *  group values such as this aggregate.  The getters/setters are there to
+ *  satisfy the superclass interface.
+ */
 org.antlr.runtime.ParserRuleReturnScope = function() {};
 
 org.antlr.runtime.ParserRuleReturnScope.prototype = {
     getStart: function() { return this.start; },
     getStop: function() { return this.stop; }
 };
+/** This is identical to the ParserRuleReturnScope except that
+ *  the start property is a tree nodes not Token object
+ *  when you are parsing trees.  To be generic the tree node types
+ *  have to be Object.
+ */
 org.antlr.runtime.tree.TreeRuleReturnScope = function(){};
 
 org.antlr.runtime.tree.TreeRuleReturnScope.prototype = {
     getStart: function() { return this.start; }
 };
+/** A parser for TokenStreams.  "parser grammars" result in a subclass
+ *  of this.
+ */
 org.antlr.runtime.Parser = function(input, state) {
     org.antlr.runtime.Parser.superclass.constructor.call(this, state);
     this.setTokenStream(input);
@@ -8069,6 +9210,17 @@ org.antlr.lang.extend(org.antlr.runtime.Parser, org.antlr.runtime.BaseRecognizer
                 this, ruleName, ruleIndex, this.input.LT(1));
 	}
 });
+/** A DFA implemented as a set of transition tables.
+ *
+ *  Any state that has a semantic predicate edge is special; those states
+ *  are generated with if-then-else structures in a specialStateTransition()
+ *  which is generated by cyclicDFA template.
+ *
+ *  There are at most 32767 states (16-bit signed short).
+ *  Could get away with byte sometimes but would have to generate different
+ *  types and the simulation code too.  For a point of reference, the Java
+ *  lexer's Tokens rule DFA has 326 states roughly.
+ */
 org.antlr.runtime.DFA = function() {};
 
 org.antlr.runtime.DFA.prototype = {
@@ -8207,6 +9359,10 @@ org.antlr.lang.augmentObject(org.antlr.runtime.DFA, {
         return org.antlr.runtime.DFA.unpackEncodedString(encodedString);
     }
 });
+/** A parser for a stream of tree nodes.  "tree grammars" result in a subclass
+ *  of this.  All the error reporting and recovery is shared with Parser via
+ *  the BaseRecognizer superclass.
+*/
 org.antlr.runtime.tree.TreeParser = function(input) {
     org.antlr.runtime.tree.TreeParser.superclass.constructor.call(this, arguments[1]);
     this.setTreeNodeStream(input);
@@ -18532,6 +19688,7 @@ org.antlr.lang.extend(XQueryLexer.DFA19, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -18692,7 +19849,41 @@ org.antlr.lang.extend(XQueryLexer.DFA19, org.antlr.runtime.DFA, {
  
 })();
 exports.XQueryLexer = XQueryLexer;
-});
+});/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL. *
+ * ***** END LICENSE BLOCK ***** */
 define('ace/mode/xquery/XQDTLexer', ['require', 'exports', 'module' , 'ace/mode/xquery/antlr3-all'], function(require, exports, module) {
 
 var org =  require("./antlr3-all").org;
@@ -18942,6 +20133,10 @@ var XQueryParser = function(input, state) {
     this.dfa218 = new XQueryParser.DFA218(this);
     this.dfa237 = new XQueryParser.DFA237(this);
     this.dfa253 = new XQueryParser.DFA253(this);
+
+         
+
+    /* @todo only create adaptor if output=AST */
     this.adaptor = new org.antlr.runtime.tree.CommonTreeAdaptor();
 
 };
@@ -54964,6 +56159,7 @@ org.antlr.lang.extend(XQueryParser.DFA1, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -55112,6 +56308,7 @@ org.antlr.lang.extend(XQueryParser.DFA2, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -55275,6 +56472,7 @@ org.antlr.lang.extend(XQueryParser.DFA6, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -55423,6 +56621,7 @@ org.antlr.lang.extend(XQueryParser.DFA9, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -55629,6 +56828,7 @@ org.antlr.lang.extend(XQueryParser.DFA44, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -56982,6 +58182,7 @@ org.antlr.lang.extend(XQueryParser.DFA46, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -57206,6 +58407,7 @@ org.antlr.lang.extend(XQueryParser.DFA117, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -57370,6 +58572,7 @@ org.antlr.lang.extend(XQueryParser.DFA119, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -58852,6 +60055,7 @@ org.antlr.lang.extend(XQueryParser.DFA134, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -59077,6 +60281,7 @@ org.antlr.lang.extend(XQueryParser.DFA162, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -59429,6 +60634,7 @@ org.antlr.lang.extend(XQueryParser.DFA164, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -59851,6 +61057,7 @@ org.antlr.lang.extend(XQueryParser.DFA253, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -62578,6 +63785,7 @@ org.antlr.lang.extend(StringLexer.DFA8, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -65270,6 +66478,7 @@ org.antlr.lang.extend(XMLLexer.DFA16, org.antlr.runtime.DFA, {
     },
     specialStateTransition: function(s, input) {
         var _s = s;
+        /* bind to recognizer so semantic predicates can be evaluated */
         var retval = (function(s, input) {
             switch ( s ) {
                         case 0 : 
@@ -65910,7 +67119,41 @@ org.antlr.lang.extend(XMLLexer.DFA16, org.antlr.runtime.DFA, {
  
 })();
 exports.XMLLexer = XMLLexer;
-});
+});/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL. *
+ * ***** END LICENSE BLOCK ***** */
 define('ace/mode/xquery/XQDTParser', ['require', 'exports', 'module' , 'ace/mode/xquery/antlr3-all', 'ace/mode/xquery/XQuerySemanticHighlighter'], function(require, exports, module) {
 
 var org =  require("./antlr3-all").org;
@@ -65939,6 +67182,41 @@ org.antlr.lang.extend(XQDTParser, org.antlr.runtime.Parser, {
 });
 
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL. *
+ * ***** END LICENSE BLOCK ***** */
 define('ace/mode/xquery/XQuerySemanticHighlighter', ['require', 'exports', 'module' , 'ace/mode/xquery/Position'], function(require, exports, module) {
   
   var Position = require("./Position").Position;
@@ -66069,6 +67347,41 @@ define('ace/mode/xquery/XQuerySemanticHighlighter', ['require', 'exports', 'modu
       //console.log(type);
   };
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL. *
+ * ***** END LICENSE BLOCK ***** */
 define('ace/mode/xquery/Position', ['require', 'exports', 'module' ], function(require, exports, module) {
   var Position = exports.Position = function(line, offset, length)
   {
@@ -66092,10 +67405,46 @@ define('ace/mode/xquery/Position', ['require', 'exports', 'module' ], function(r
     };
   };
 
-});
+}); 
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/tokenizer', ['require', 'exports', 'module' ], function(require, exports, module) {
-
+"use strict";
 
 /**
  * class Tokenizer
@@ -66252,8 +67601,44 @@ var Tokenizer = function(rules, flag) {
 
 exports.Tokenizer = Tokenizer;
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      William Candillon <wcandillon AT gmail DOT com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 define('ace/mode/xquery_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/lang', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var lang = require("../lib/lang");
@@ -66374,9 +67759,45 @@ oop.inherits(XQueryHighlightRules, TextHighlightRules);
 
 exports.XQueryHighlightRules = XQueryHighlightRules;
 });
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 define('ace/mode/text_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/lang'], function(require, exports, module) {
-
+"use strict";
 
 var lang = require("../lib/lang");
 

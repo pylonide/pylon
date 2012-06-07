@@ -4,14 +4,12 @@
         <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
         <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
-          icon="arrow_left_search.png"
           right="29"
           top="7"
           focussable = "false"
           zindex="100"/>
         <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavRight" 
-          icon="arrow_right_search.png" 
           right="7"
           top="7"
           focussable = "false"

@@ -4990,6 +4990,157 @@
         </a:empty>
     </a:presentation>
 </a:dropdown>
+
+<a:dropdown name="dropdown-dark-glossy">
+    <a:style><![CDATA[
+    /* 
+     * Idle
+     */
+        .dropdown-dark-glossy {
+            background: #292929 url(images/dropdown-dark-glossy/background.png) repeat-x 50% 0;
+            border: 1px solid #010910;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 rgba(255, 255, 255, .10) inset,
+                        0 0 0 1px rgba(236, 245, 255, .10) inset,
+                        0 1px 0 0 rgba(237,237,237,.1);
+            max-height: 100px !important;
+            height: 27px;
+            padding: 0 18px 0 0;
+            position: relative;
+        }
+        .dropdown-dark-glossy .label {
+            color: #C0DABE;
+            display: inline-block;
+            font-size: 12px;
+            line-height: 27px;
+            overflow: hidden;
+            padding: 0 0 0 8px;
+        }
+        .dropdown-dark-glossy .button {
+            background: url(images/dropdown-dark-glossy/button.png) no-repeat 50% 0;
+            display: inline-block;
+            height: 25px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 16px;
+        }
+        .dropdown-dark-glossy .button:before {
+            background: url(images/dropdown-dark-glossy/divider.png) no-repeat 50% 0;
+            content: "";
+            display: block;
+            height: 25px;
+            left: -2px;
+            position: absolute;
+            top: 0;
+            width: 2px;
+        }
+    /*
+     * Hover
+     */
+        .dropdown-dark-glossyOver,
+        .dropdown-dark-glossyOver .button,
+        .dropdown-dark-glossyOver .button:before {
+            background-position: 50% -30px;
+        }
+    /*
+     * Down
+     */
+        .dropdown-dark-glossyDown,
+        .dropdown-dark-glossyDown .button,
+        .dropdown-dark-glossyDown .button:before {
+            background-position: 50% -60px;
+        }
+        .dropdown-dark-glossyDown {
+            box-shadow: 0 0 5px 1px rgba(0, 0, 0, .6) inset,
+                        0 0 0 1px rgba(0, 0, 0, .2) inset,
+                        0 1px 0 0 rgba(237,237,237,.04);
+        }
+    /*
+     * Disabled
+     */
+        .dropdown-dark-glossyDisabled,
+        .dropdown-dark-glossyDisabled .button,
+        .dropdown-dark-glossyDisabled .button:before {
+            background-position: 50% -90px;
+        }
+        .dropdown-dark-glossyDisabled {
+            background-color: transparent;
+            border-color: rgba(0, 0, 0, .34);
+            box-shadow: 0 1px 0 0 rgba(255, 255, 255, .02) inset;
+        }
+        .dropdown-dark-glossyDisabled .label {
+            color: rgba(255,255,255,.2);
+        }
+
+    /**
+     * Options list
+     */
+        .dropdown-dark-glossy-options {
+            box-sizing: border-box;
+            display: none;
+            padding: 2px 16px 0 1px;
+        }
+        .dropdown-dark-glossy-options.upward {
+            margin-top: -12px;
+        }
+        .dropdown-dark-glossy-options .list {
+            background: #494949;
+            border: 1px solid #000208;
+            padding: 3px 0;
+        }
+        .dropdown-dark-glossy-options .list .c9-dd-item {
+            color: #f1f1f1;
+            cursor: default;
+            font-size: 11px;
+            font-family: Tahoma, Arial;
+            height: 13px;
+            line-height: 14px;
+            overflow: hidden;
+            padding: 3px 5px 5px;
+            text-overflow: ellipsis-word;
+            white-space: nowrap;
+        }
+    /**
+     * Options list - HOVER
+     */
+        .dropdown-dark-glossy-options .list .c9-dd-item.hover {
+            background-color: #262626;
+            color: #F5B53C;
+        }
+    /**
+     * Options list - SELECTED
+     */
+        .dropdown-dark-glossy-options .list .c9-dd-item.selected {
+            color: #F5B53C;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[1]/text()" button="." width-diff="-1">
+            <div class="dropdown-dark-glossy">
+                <div class="label">-</div>
+                <div class="button"> </div>
+            </div>
+        </a:main>
+        <a:container contents="div[1]">
+            <div class="dropdown-dark-glossy-options">
+                <div class="list"> </div>
+            </div>
+        </a:container>
+        <a:item
+          class       = "."
+          caption     = "text()"
+          select      = "."
+          inherit     = "true">
+            <div class="c9-dd-item">-</div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
+
 <a:dropdown name="light_dropdown">
     <a:style><![CDATA[
         .light_dropdown {
@@ -11878,6 +12029,85 @@
             </a:main>
         </a:presentation>
     </a:img>
+
+    <a:button name="button-colorless">
+        <a:style><![CDATA[
+            .button-colorless {
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                border: 1px solid rgba(0,0,0,.1);
+                border-radius: 4px;
+                box-shadow: 0 1px 0px 0 rgba(237,237,237,.37) inset,
+                            0 1px 0 0 rgba(0,0,0,.08),
+                            0 1px 2px 1px rgba(0,0,0,.1);
+                color: #FFFFFF;
+                cursor: pointer;
+                font-family: Arial;
+                font-size: 13px;
+                height: 25px;
+                line-height: 25px;
+                text-align: center;
+                text-shadow: 0 1px 0 rgba(0,0,0,.25);
+            }
+
+            .button-colorlessOver {
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+            }
+            .button-colorlessDown {
+                background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+            }
+            .button-colorlessDisabled {
+                color: rgba(0,0,0,.5);
+                text-shadow: 0 1px 0 rgba(255,255,255,.15)
+            }
+            .button-colorlessFocus {
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
+                            0 0 2px 1px rgba(255,255,255,.2) inset,
+                            0 0 1px 0 rgba(255,255,255,.4) inset,
+                            0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Dark
+             */
+            .button-colorless.dark {
+                border: 1px solid rgba(0,0,0,.89);
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.37) inset,0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Colors
+             */
+            .button-colorless.grey {
+                background-color: #303030;
+            }
+            .button-colorless.light-grey {
+                background-color: #494850
+            }
+            .button-colorless.red {
+                background-color: #B60000;
+            }
+            .button-colorless.green {
+                background-color: #088E04;
+            }
+            .button-colorless.light-blue {
+                background-color: #415566
+            }
+            .button-colorless.blue {
+                background-color: #1473DA
+            }
+
+
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 
     <a:button name="blackbutton">
         <a:style><![CDATA[
