@@ -407,7 +407,7 @@ module.exports = ext.register("ext/code/code", {
 
             var isAvailable = command.isAvailable;
             command.isAvailable = function(editor, event) {
-				if (event instanceof KeyboardEvent &&
+                if (event instanceof KeyboardEvent &&
                  (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
                     return false;
 

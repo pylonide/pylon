@@ -12239,6 +12239,9 @@
 
     <a:codebox name="codebox">
         <a:style><![CDATA[
+            .ace_one-line .ace_cursor {
+                border-left-width: 1px;
+            }
             .ace_one-line .ace_cursor.ace_hidden {
                 opacity: 0;
             }
