@@ -378,6 +378,7 @@ module.exports = ext.register("ext/save/save", {
 
         var file = page.$model.data;
         var oldFile = file;
+        var oldPath = oldFile.getAttribute("path");
         var saving = parseInt(file.getAttribute("saving"), 10);
 
         if (saving) {
@@ -434,6 +435,7 @@ module.exports = ext.register("ext/save/save", {
                 node: node,
                 doc: doc,
                 value: value,
+                oldpath: oldPath,
                 silentsave: false // It is a forced save, comes from UI
             });
         });
