@@ -9,8 +9,8 @@ outlineHandler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
-outlineHandler.outline = function(doc, ast) {
-    return extractOutline(ast);
+outlineHandler.outline = function(doc, ast, callback) {
+    callback(extractOutline(ast));
 };
     
 function fargsToString(fargs) {
@@ -35,13 +35,13 @@ function expressionToName(node) {
 
 // This is where the fun stuff happens
 function extractOutline(node) {
-    var outline = [];
+    var results = [];
     node.traverseTopDown(
         // e.x = function(...) { ... }  -> name is x
         'Assign(e, Function(name, fargs, body))', function(b) {
             var name = expressionToName(b.e);
             if(!name) return false;
-            outline.push({
+            results.push({
                 type: 'function',
                 name: name + fargsToString(b.fargs),
                 pos: this[1].getPos(),
@@ -50,7 +50,7 @@ function extractOutline(node) {
             return this;
         },
         'VarDeclInit(x, Function(name, fargs, body))', function(b) {
-            outline.push({
+            results.push({
                 type: 'function',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
@@ -60,7 +60,7 @@ function extractOutline(node) {
         },
         // x : function(...) { ... } -> name is x
         'PropertyInit(x, Function(name, fargs, body))', function(b) {
-            outline.push({
+            results.push({
                 type: 'function',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
@@ -72,7 +72,7 @@ function extractOutline(node) {
         'Call(e, [String(s), Function(name, fargs, body)])', function(b) {
             var name = expressionToName(b.e);
             if(!name) return false;
-            outline.push({
+            results.push({
                 type: 'function',
                 name: name + '[' + b.s.value + ']' + fargsToString(b.fargs),
                 pos: this.getPos(),
@@ -89,7 +89,7 @@ function extractOutline(node) {
             b.args.each(
                 'Function(name, fargs, body)', function(b) {
                     if(b.name.value) return;
-                    outline.push({
+                    results.push({
                         type: 'function',
                         name: name + '[callback]' + fargsToString(b.fargs),
                         pos: this.getPos(),
@@ -102,7 +102,7 @@ function extractOutline(node) {
         },
         'Function(name, fargs, body)', function(b) {
             if(!b.name.value) return false;
-            outline.push({
+            results.push({
                 type: 'function',
                 name: b.name.value + fargsToString(b.fargs),
                 pos: this.getPos(),
@@ -111,7 +111,7 @@ function extractOutline(node) {
             return this;
         }
     );
-    return outline;
+    return { body: results };
 }
 
 });
