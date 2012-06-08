@@ -121,7 +121,8 @@ module.exports = ext.register("ext/newresource/newresource", {
 
         ide.dispatchEvent("openfile", {
             doc: doc,
-            type: "newfile"
+            type: "newfile",
+            origin: "newfile"
         });
         ide.dispatchEvent("track_action", {type: "template", template: type});
     },

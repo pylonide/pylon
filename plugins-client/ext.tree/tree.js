@@ -67,7 +67,7 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = colLeft;
 
         // Register this panel on the left-side panels
@@ -77,7 +77,7 @@ module.exports = ext.register("ext/tree/tree", {
             "class": "project_files",
             command: "opentreepanel"
         });
-        
+
         commands.addCommand({
             name: "opentreepanel",
             hint: "show the open settings panel",
@@ -200,14 +200,14 @@ module.exports = ext.register("ext/tree/tree", {
 
             var nodes   = parent.childNodes;
             var files   = e.files;
-            
+
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
                 for (var file in files) {
                     if (file.charAt(0) == '.')
                         delete files[file];
                 }
             }
-            
+
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
@@ -267,7 +267,7 @@ module.exports = ext.register("ext/tree/tree", {
             trFiles.selectable = false;
             //_self.button.enable();
         })
-        
+
         ide.addEventListener("afteronline", function(){
             trFiles.selectable = true;
         })
@@ -284,7 +284,7 @@ module.exports = ext.register("ext/tree/tree", {
                 setTimeout(function() {
                     _self.changed = true;
                     settings.save();
-                    
+
                     (davProject.realWebdav || davProject)
                         .setAttribute("showhidden", e.currentTarget.checked);
 
@@ -348,7 +348,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
             }
         });
-        
+
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
             var node = this.selected;
@@ -356,9 +356,9 @@ module.exports = ext.register("ext/tree/tree", {
                 !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
 
-            ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+            ide.dispatchEvent("openfile", {doc: ide.createDocument(node), origin: "tree"});
         });
-        
+
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
@@ -370,8 +370,8 @@ module.exports = ext.register("ext/tree/tree", {
             filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
             while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
                 filename = filename.replace(/\.(\d+)$/, "");
-                
-                var idx  = filename.lastIndexOf("."); 
+
+                var idx  = filename.lastIndexOf(".");
                 if (idx == -1) idx = filename.length;
 
                 var name = filename.substr(0, idx), ext = filename.substr(idx);
@@ -441,7 +441,7 @@ module.exports = ext.register("ext/tree/tree", {
                 apf.DragServer.stop();
             }
         });
-        
+
         trFiles.addEventListener("scroll", $trScroll);
 
         trFiles.addEventListener("beforeadd", $cancelWhenOffline);
@@ -491,7 +491,7 @@ module.exports = ext.register("ext/tree/tree", {
      * Loads the project tree based on expandedNodes, which is an array of
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
-     * 
+     *
      * @param boolean animateScrollOnFinish
      */
     loadProjectTree : function(animateScrollOnFinish) {
@@ -559,7 +559,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (numFoldersLoaded === _self.expandedNodes.length)
                 return onFinish();
         }
-        
+
         if (!this.expandedNodes.length)
             return onFinish();
 
@@ -662,7 +662,7 @@ module.exports = ext.register("ext/tree/tree", {
      */
     refresh : function(){
         settings.save(true);
-        
+
         // When we clear the model below, it dispatches a scroll event which
         // we don't want to process, so remove that event listener
         trFiles.removeEventListener("scroll", $trScroll);
@@ -685,7 +685,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Now re-attach the scroll listener
         trFiles.addEventListener("scroll", $trScroll);
     },
-    
+
     show : function(e) {
         if (!this.panel || !this.panel.visible) {
             panels.activate(this);
@@ -694,7 +694,7 @@ module.exports = ext.register("ext/tree/tree", {
         else {
             panels.deactivate(null, true);
         }
-        
+
         return false;
     },
 
@@ -712,7 +712,7 @@ module.exports = ext.register("ext/tree/tree", {
 
     destroy : function(){
         commands.removeCommandByName("opentreepanel");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
