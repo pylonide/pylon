@@ -173,7 +173,7 @@ var contentTypes = {
 
     "sh": "application/x-sh",
     "bash": "application/x-sh",
-    
+
     "xq": "text/x-xquery"
 };
 
@@ -264,12 +264,12 @@ module.exports = ext.register("ext/code/code", {
 
         return "text";
     },
-    
+
     getContentType : function(node) {
         var syntax = this.getSyntax(node);
         if (!syntax)
             return "auto";
-        
+
         return contentTypes[syntax] || (syntax == "text" ? "text/plain" : "auto");
     },
 
@@ -285,7 +285,7 @@ module.exports = ext.register("ext/code/code", {
         return this.amlEditor.getSession();
     },
 
-    setDocument : function(doc, actiontracker){
+    setDocument : function(doc, actiontracker, isLazy){
         var _self = this;
 
         var ceEditor = this.amlEditor;
@@ -311,13 +311,13 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
-                
+
                 if (!doc || !doc.acesession)
                     return; //This is probably a deconstructed document
 
                 doc.acesession.setValue(e.value || "");
 
-                
+
                 if (doc.state)
                     _self.setState(doc, doc.state);
 
@@ -333,7 +333,8 @@ module.exports = ext.register("ext/code/code", {
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
 
-            ceEditor.setProperty("value", doc.acesession || "");
+            if (!isLazy)
+                ceEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self || !doc)
@@ -372,7 +373,7 @@ module.exports = ext.register("ext/code/code", {
                     //??? call doc.$page.destroy()
                 });
             });
-            
+
             doc.dispatchEvent("init");
         }
 
@@ -725,11 +726,11 @@ module.exports = ext.register("ext/code/code", {
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;
-                        
+
                     var page = tabEditors.getPage();
-                    if (page.$model) 
+                    if (page.$model)
                         return apf.isTrue(page.$model.queryValue("@wrapmode"));
-                    
+
                     return false;
                 }
             }), 600000)

@@ -914,7 +914,8 @@ module.exports = ext.register("ext/editors/editors", {
                         forceOpen: true,
                         active   : active
                             ? active == node.getAttribute("path")
-                            : i == l - 1
+                            : i == l - 1,
+                        origin: "settings"
                     });
 
                     checkExpand(node.getAttribute("path"), doc);
@@ -1013,7 +1014,8 @@ module.exports = ext.register("ext/editors/editors", {
             // send it to the dispatcher
             ide.dispatchEvent("openfile", {
                 doc: doc,
-                active: true
+                active: true,
+                origin: "hash"
             });
             // and expand the tree
             checkExpand(path, doc);
@@ -1091,7 +1093,8 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!hasData)
             ide.dispatchEvent("openfile", {
-                doc: doc || ide.createDocument(fileEl)
+                doc: doc || ide.createDocument(fileEl),
+                origin: "jump"
             });
         else
             tabs.set(path);

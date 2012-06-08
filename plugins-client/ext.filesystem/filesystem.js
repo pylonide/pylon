@@ -225,7 +225,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     else {
                         node.setAttribute("name", filename);
                         node.setAttribute("path", path + "/" + filename);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:"newfile"});
+                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:"newfile", origin: "newfile"});
                     }
                 }
             };
@@ -446,7 +446,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             // otherwise go on loading
             else {
                 // add a way to hook into loading of files
-                if (ide.dispatchEvent("readfile", {doc: doc, node: node}) === false)
+                if (ide.dispatchEvent("readfile", {doc: doc, node: node, origin: e.origin || "fs"}) === false)
                     return;
 
                 var path = node.getAttribute("path");
