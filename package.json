@@ -44,7 +44,7 @@
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/ed2b6ebb8a812de48f0dfb12b675b91c4e4b3170"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/f06d2074f60366a544aedd5dfa8100321c15b565"],
-        "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#877f21bf0759d942e4779758c5171ae747b80f18"],
+        "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#5ec56b85f0416c9437912bdd72c3ab0e8b58c21e"],
         "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#6b5d5096e840117d5837544bc4e1f3d720430de7"],
         "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#73fc3bb7825879518154325b236b0210fef8dd5a"]
     },

@@ -59,6 +59,12 @@ Comment the line with -configuration and -dev attributes
 
     $ bin/cloud9.sh -w ~/jvm_workspace/${projectName}
 
+11- For C9 infra running and environment variable passing through sudo
+
+Edit /etc/sudoers and add the line
+
+Defaults        env_keep += "C9_PATH ECLIPSE_PATH"
+
 Now, the full java stack SHOULD BE ready for testing :)
 
 ## More files to care about

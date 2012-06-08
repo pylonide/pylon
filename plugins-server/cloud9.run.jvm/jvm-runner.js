@@ -69,7 +69,7 @@ function getJVMInstance(options, callback) {
             var javaClass = srcToJavaClass(file);
             return buildApp(new JVMInstance(cwd, javaClass));
 
-        case "java-web":    
+        case "java-web":
             return buildApp(new WebJVMInstance(cwd, 'j2ee', options.port));
 
         case "jpy":
@@ -93,12 +93,13 @@ function getJVMInstance(options, callback) {
             if (err)  return callback(err);
 
             // If no errors found, we can start
-            if (compilationProblems.filter(function (problem) {
-                return problem.type == "error"; }).length == 0) {
+            var numErrors = compilationProblems.filter(function (problem) {
+                return problem.type == "error"; }).length;
+            if (numErrors === 0) {
                 callback(null, jvmInstance);
             }
             else {
-                console.log("Found " + compilationProblems.length + " compilation errors");
+                console.log("Found " + numErrors + " compilation errors !");
                 // send compilation errors to the user
                 options.eventEmitter.emit(options.eventName, {
                     type: "jvm-build",
@@ -111,7 +112,7 @@ function getJVMInstance(options, callback) {
             }
         }, "build");
     }
-};
+}
 
 var Runner = exports.Runner = function(options, callback) {
     var self = this;
@@ -151,7 +152,7 @@ var Runner = exports.Runner = function(options, callback) {
         }
         else {
             startProcess(options.url, port);
-        }        
+        }
     });
     
     function startProcess (url, port) {
@@ -171,7 +172,7 @@ var Runner = exports.Runner = function(options, callback) {
 
             if (msg.type === "node-start") {
                 options.eventEmitter.emit(options.eventName, {
-                    type: "node-debug-data",
+                    type: "node-data",
                     stream: "stdout",
                     data: "Tip: you can access long running processes, like a server, at '" + url + "'.",
                     extra: null,
