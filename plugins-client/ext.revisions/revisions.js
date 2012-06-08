@@ -1309,9 +1309,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
 
-            // We should get here regardless if (we are in collab AND we are
-            // master), OR if we are in single mode. In both situations, we just
-            // want the current user to save its docs contents
+            // We should get here if we are in collab AND we are master, OR if
+            // we are in single mode. In both situations, we just want the
+            // current user to save its docs contents
             var revObj = this.$getRevisionObject(docPath);
             if (revObj.hasBeenSentToWorker === true) {
                 this.worker.postMessage({
