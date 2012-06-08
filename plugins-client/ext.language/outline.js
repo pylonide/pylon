@@ -58,7 +58,7 @@ module.exports = {
     renderOutline : function(event) {
         var ace = editors.currentEditor.amlEditor.$editor;
         var data = event.data;
-        if (! data.success) {
+        if (data.error) {
             // TODO pop up an error dialog
             return;
         }
