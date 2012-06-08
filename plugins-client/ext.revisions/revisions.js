@@ -580,9 +580,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var page = doc.$page;
-        var self = this;
         if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
-            setTimeout(function(){
+            var self = this;
+            setTimeout(function() {
                 self.setSaveButtonCaption();
             });
 
@@ -967,6 +967,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         return doc.acedoc.doc instanceof TreeDocument;
     },
 
+    /**
+     * Revisions#iAmMaster() -> Boolean
+     *
+     * Returns true if the current user is the "master" document in a collab
+     * session. That means that the contents of his document will be the ones
+     * saved in the collab session.
+     **/
+    iAmMaster: function(doc) {
+        // Has to be implemented.
+        return true;
+    },
+
     getRevision: function(id, content) {
         id = parseInt(id, 10);
 
@@ -1276,46 +1288,42 @@ module.exports = ext.register("ext/revisions/revisions", {
             path: docPath,
             silentsave: !!silentsave,
             restoring: restoring,
-            contributors: contributors
+            contributors: contributors,
+            type: "newRevision",
+            lastContent: doc.getValue()
         };
 
         this.setSaveButtonCaption();
 
-        // If we are not in a collaboration document we do all the processing
-        // in a worker istead of sending over to the server. Later on, we'll
-        // send the new revision to the server.
-        if (!this.isCollab(doc)) {
-            data.type = "newRevision";
-            data.lastContent = doc.getValue();
-
-            if (ide.onLine === false) {
-                data.ts = Date.now();
-                this.offlineQueue.push(data);
-                return;
-            }
-            else {
-                var revObj = this.$getRevisionObject(docPath);
-                if (revObj.hasBeenSentToWorker === true) {
-                    this.worker.postMessage({
-                        type: "newRevision",
-                        path: docPath,
-                        lastContent: data.lastContent,
-                        hasBeenSentToWorker: true
-                    });
-                }
-                else {
-                    data.revisions = revObj.allRevisions;
-                    this.worker.postMessage(data);
-                    revObj.hasBeenSentToWorker = true;
-                }
-                return;
-            }
+        if (ide.onLine === false) {
+            data.ts = Date.now();
+            this.offlineQueue.push(data);
         }
         else {
-            // We are collaborating! Let's check whether we are the master user
-            // (the one that has the 'true' document content)
-            if (this.iAmMaster()) {
+            if (this.isCollab() && !this.iAmMaster()) {
+                // We are not master, so we want to tell the server to tell
+                // master to save for us. For now, since the master is saving
+                // every .5 seconds and auto-save is mandatory, we are not
+                // taking care of it
+                return;
+            }
 
+            // We should get here regardless if (we are in collab AND we are
+            // master), OR if we are in single mode. In both situations, we just
+            // want the current user to save its docs contents
+            var revObj = this.$getRevisionObject(docPath);
+            if (revObj.hasBeenSentToWorker === true) {
+                this.worker.postMessage({
+                    type: "newRevision",
+                    path: docPath,
+                    lastContent: data.lastContent,
+                    hasBeenSentToWorker: true
+                });
+            }
+            else {
+                data.revisions = revObj.allRevisions;
+                this.worker.postMessage(data);
+                revObj.hasBeenSentToWorker = true;
             }
         }
 

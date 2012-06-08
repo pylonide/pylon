@@ -82,28 +82,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
                             return console.error(err);
                         }
 
-                        if (!self.isCollab()) {
-                            self.broadcastConfirmSave(message.path, revisionInfo.revision);
-                            if (message.forceRevisionListResponse === true) {
-                                self.getAllRevisions(revisionInfo.absPath, function(err, revObj) {
-                                    if (err) {
-                                        return console.error(err);
-                                    }
-
-                                    self.broadcastRevisions.call(self, revObj, user, {
-                                        path: message.path
-                                    });
-                                });
-                            }
-                        }
-                        else {
-                            this.getRevisions(message.path, function(err, revObj) {
-                                if (err) {
-                                    return console.error("There was a problem retrieving revisions" +
-                                        " for the file " + message.path + ":\n", err);
+                        self.broadcastConfirmSave(message.path, revisionInfo.revision);
+                        if (message.forceRevisionListResponse === true) {
+                            self.getAllRevisions(revisionInfo.absPath, function(_err, revObj) {
+                                if (_err) {
+                                    return console.error(_err);
                                 }
 
-                                self.broadcastRevisions.call(self, revObj, null, {
+                                self.broadcastRevisions.call(self, revObj, user, {
                                     path: message.path
                                 });
                             });
@@ -248,7 +234,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                                 revObj[revision.ts] = revision;
                             }
                             catch(e) {
-                                    error = e;
+                                error = e;
                             }
                         }
                         lineCount++;
@@ -445,10 +431,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
         if (docSession && docSession.getDocument) {
             return (docSession.getDocument() || "").toString();
         }
-    };
-
-    this.isCollab = function() {
-        return false;
     };
 
     /**
