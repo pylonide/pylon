@@ -33,10 +33,6 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
         ide.addEventListener("socketMessage", function (event) {
             _self.loadFileOrFolder(event); 
         });
-        
-        ide.addEventListener("panels.activateDefault", function (event) {
-            _self.loadFileOrFolder(event); 
-        });
     },
 
     loadFileOrFolder : function(event) {
