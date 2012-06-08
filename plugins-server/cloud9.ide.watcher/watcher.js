@@ -70,7 +70,7 @@ util.inherits(WatcherPlugin, Plugin);
         var type = message.type;
 
         path = this.basePath + (path ? "/" + path : "");
-
+return
         switch (type) {
             case "watchFile":
                 if (this.filenames[path])

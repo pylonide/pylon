@@ -59683,7 +59683,7 @@ apf.scrollbar = function(struct, tagName){
 
     this.$propHandlers["showonscroll"] = function(value){
         clearTimeout(this.$hideOnScrollTimer);
-        
+        value=false
         if (value) {
             this.$ext.style.display = "none";
         }
@@ -59937,6 +59937,7 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.animHideScrollbar = function(timeout, cb){
+    return
         var _self = this;
         return setTimeout(function(){
             if (_self.$hideOnScrollControl
@@ -60272,7 +60273,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                 if (apf.getStyle(pNode, "position") == "static") 
                     pNode.style.position = "relative";
                     
-                sb.setProperty("showonscroll", true);
+                //sb.setProperty("showonscroll", true);
                 sb.$ext.style.display = "block";
                 sb.setAttribute("top", top);
                 sb.setAttribute("right", right);
