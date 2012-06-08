@@ -16,6 +16,7 @@ var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
+var outline = require('ext/language/outline');
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
@@ -80,6 +81,7 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
