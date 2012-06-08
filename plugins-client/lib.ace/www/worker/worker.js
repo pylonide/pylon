@@ -4948,7 +4948,7 @@ exports.parenFreeMode = false;
  * delegate messages it receives to the various handlers that have registered
  * themselves with the worker.
  */
-define('ext/language/worker', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/worker/mirror', 'treehugger/tree'], function(require, exports, module) {
+define('ext/language/worker', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/worker/mirror', 'treehugger/tree', 'ace/lib/event_emitter'], function(require, exports, module) {
 
 var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
@@ -4997,6 +4997,32 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
+};
+
+exports.createUIWorkerClient = function() {
+    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
+    var result = new LanguageWorker(emitter);
+    result.on = function(name, f) {
+        emitter.on.call(result, name, f);
+    };
+    result.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+    result.send = function(cmd, args) {
+        setTimeout(function() { result[cmd].apply(result, args); }, 0);
+    };
+    result.emit = function(event, data) {
+        emitter._dispatchEvent.call(emitter, event, data);
+    };
+    emitter.emit = function(event, data) {
+        emitter._dispatchEvent.call(result, event, { data: data });
+    };
+    return result;
 };
 
 /**
@@ -5080,8 +5106,16 @@ function asyncParForEach(array, fn, callback) {
      * Registers a handler by loading its code and adding it the handler array
      */
     this.register = function(path) {
-        var handler = require(path);
-        this.handlers.push(handler);
+        try {
+            var handler = require(path);
+            this.handlers.push(handler);
+        } catch (e) {
+            // In ?noworker=1 debugging mode, synchronous require doesn't work
+            var _self = this;
+            require([path], function(handler) {
+                _self.handlers.push(handler);
+            });
+        }   
     };
 
     this.parse = function(callback) {
