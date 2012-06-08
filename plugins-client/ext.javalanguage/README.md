@@ -18,7 +18,9 @@ The debug is now ready for cloud9 debug connections
 
     $ cd node_modules/jvm-run && ant
 
-5- Download eclipse hellios sr2 - j2ee version - for your platform and extract it somewhere.
+5- Download eclipse hellios sr2 - j2ee version - for your platform, and extract it somewhere:
+
+   http://www.eclipse.org/downloads/packages/eclipse-classic-362/heliossr2
 
 6- Set C9_PATH and ECLIPSE_PATH environment variables to the location of your cloud9 folder and the location of your eclipse installation folder respectively.
 
