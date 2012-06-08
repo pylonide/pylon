@@ -75,6 +75,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var pgModel = e.doc.$page.$model;
             pgModel.addEventListener("update", 
               pgModel.$lstOpenFilesListener = function(){
+                  if (!pgModel.data)
+                       return;
+                  
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
                       apf.xmldb.setAttribute(node, "changed", changed);
@@ -118,7 +121,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
-            
+
             if (!self.trFiles)
                 return;
 
@@ -127,7 +130,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 return;
             }
             
-            var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
+            var path = (e.newPath || e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
 
