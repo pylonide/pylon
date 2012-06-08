@@ -91,7 +91,7 @@ module.exports = ext.register("ext/themes/themes", {
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;
-        var tabsDiv = document.getElementsByClassName("btnsesssioncontainer")[0];
+        var tabsDiv = tabEditors.$buttons;
         editorDiv.setAttribute("id", "editorDiv");
         tabsDiv.setAttribute("id", "tabsDiv");
         
