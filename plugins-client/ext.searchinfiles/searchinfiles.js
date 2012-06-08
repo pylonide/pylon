@@ -383,7 +383,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
                     activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
                     gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
-                    showinvisibles    : "[{require('core/settings').model}::editors/code/@showinvisibles]",
+                    showinvisibles    : "false",
                     showprintmargin   : "false",
                     softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
                     tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",

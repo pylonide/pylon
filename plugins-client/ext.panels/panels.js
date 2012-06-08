@@ -68,18 +68,12 @@ module.exports = ext.register("ext/panels/panels", {
             }
         });
         
-        var setDefaultPanel = function (e){
+        // for local version
+        if (ide.dispatchEvent("panels.activateDefault") !== false) {
             var active = settings.model.queryValue("auto/panels/@active");
-        	if ((panelExt["default"] && !active || active == panelExt.path) 
-              && (!e || e.currentTarget.workspaceId !== "generic"))
-            	_self.activate(panelExt, null, true);
+            if ((panelExt["default"] && !active || active == panelExt.path))
+                _self.activate(panelExt, null, true);
         }
-        
-        if (cloud9config.local) {
-            ide.addEventListener("init.ext/remotecontrol/remotecontrol", setDefaultPanel);
-        }
-        else
-            setDefaultPanel();
     },
     
     animate : function(win, toWin, toWidth){
