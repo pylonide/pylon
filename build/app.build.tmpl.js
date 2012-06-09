@@ -12,6 +12,7 @@
 		"treehugger" : "empty:",
 		"debug": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
+		"ace/worker": "node_modules/ace/lib/ace/worker",
 		"%m"
 	},
     
