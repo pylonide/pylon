@@ -398,7 +398,7 @@ module.exports = ext.register("ext/tree/tree", {
     
                 var count = 0;
                 filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-                while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
+                while (args[0].selectSingleNode('node()[@name=' + escapeXpathString(filename) + ']')) {
                     filename = filename.replace(/\.(\d+)$/, "");
                     
                     var idx  = filename.lastIndexOf("."); 
