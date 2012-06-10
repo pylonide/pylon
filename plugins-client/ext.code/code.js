@@ -406,8 +406,9 @@ module.exports = ext.register("ext/code/code", {
             command.focusContext = true;
 
             var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor){
-                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
                     return false;
 
                 return isAvailable ? isAvailable(editor) : true;
@@ -438,7 +439,7 @@ module.exports = ext.register("ext/code/code", {
                 ["overwrite", "false"],
                 ["selectstyle", "line"],
                 ["activeline", "true"],
-                ["gutterline", "false"],
+                ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],
