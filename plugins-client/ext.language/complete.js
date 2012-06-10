@@ -90,7 +90,6 @@ function replaceText(editor, prefix, match) {
     var doc = editor.getSession().getDocument();
     
     if (match.replaceText === "require(^^)") {
-        console.log("require");
         newText = "require(\"^^\")";
         setTimeout(module.exports.deferredInvoke, 0);
     }   
