@@ -7,6 +7,8 @@ var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var ide = require("core/ide");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
+var gotofile = require("ext/gotofile/gotofile");
 
 module.exports = {
     hook: function(ext, worker) {
@@ -15,13 +17,25 @@ module.exports = {
         worker.on("outline", function(event) {
             _self.renderOutline(event);
         });
+        
+        commands.addCommand({
+            name: "outline",
+            hint: "search for a definition and jump to it",
+            bindKey: {mac: "Command-Shift-E", win: "Ctrl-Shift-E"},
+            isAvailable : function(editor) {
+                return editor && editor.ceEditor;
+            },
+            exec: function () {
+                worker.emit("outline", {data: {}});
+            }
+        });
+
+        var mnuItem = new apf.item({
+            command : "outline"
+	    });
 
         ext.nodes.push(
-            menus.addItemByPath("View/Outline", new apf.item({
-                onclick: function() {
-                    worker.emit("outline", {data: {}});
-                }
-            }))
+            menus.addItemByPath("View/Outline", mnuItem)
         );
     },
 
@@ -33,7 +47,7 @@ module.exports = {
                 xmlS.push('" icon="' + elem.icon);
                 xmlS.push('" sl="'); xmlS.push(elem.pos.sl);
                 xmlS.push('" el="'); xmlS.push(elem.pos.el);
-                xmlS.push('" sc="'); xmlS.push(elem.pos.sc)
+                xmlS.push('" sc="'); xmlS.push(elem.pos.sc);
                 xmlS.push('" ec="'); xmlS.push(elem.pos.ec);
             elem.meta && xmlS.push('" meta="') && xmlS.push(elem.meta);
                 elem === selected && xmlS.push('" selected="true');
@@ -59,10 +73,15 @@ module.exports = {
         var ace = editors.currentEditor.amlEditor.$editor;
         var data = event.data;
         if (data.error) {
-            // TODO pop up an error dialog
+            // TODO: show error in outline?
+            console.log("Oh noes! " + data.error);
             return;
         }
         var outline = data.body;
+        
+        gotofile.toggleDialog(-1);
+        dgGoToFile.setSelection("@");
+        return;
         
         barOutline.setAttribute('visible', true);
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
