@@ -140,6 +140,12 @@ module.exports = ext.register("ext/editors/editors", {
                     onclose : function(e){
                         if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
                             return false;
+                        
+                        if (this.length == 1) {
+                            btn.$ext.style.position = "absolute";
+                            btn.$ext.style.right = "5px";
+                            btn.$ext.style.top = "6px";
+                        }
 
                         e.page.addEventListener("afterclose", _self.$close);
                     },
@@ -148,6 +154,7 @@ module.exports = ext.register("ext/editors/editors", {
                             id : "plus_tab_button",
                             "class" : "plus_tab_button",
                             skin : "btn_icon_only",
+                            style : "position:absolute;right:5px;top:6px",
                             onclick : function(){
                                 require("ext/newresource/newresource").newfile();
                             }
@@ -199,19 +206,13 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (e.relatedNode == this && e.currentTarget.localName == "page") {
-                tabs.appendChild(btn);
                 tabs.$buttons.appendChild(btn.$ext);
-                btn.$ext.style.position = "";
-                btn.$ext.style.right = "";
-                btn.$ext.style.top = "";
-            }
-        });
-
-        tabs.addEventListener("DOMNodeRemoved",function(e){
-            if (e.relatedNode == this && this.getPages().length == 1) {
-                btn.$ext.style.position = "absolute";
-                btn.$ext.style.right = "5px";
-                btn.$ext.style.top = "8px";
+                if (btn.$ext.style.position) {
+                    //tabs.appendChild(btn);
+                    btn.$ext.style.position = "";
+                    btn.$ext.style.right = "";
+                    btn.$ext.style.top = "";
+                }
             }
         });
 
@@ -555,7 +556,7 @@ module.exports = ext.register("ext/editors/editors", {
             doc: doc
         });
 
-        if (init && !active)
+        if (active === false) // init && !
             return;
 
         //Set active page
@@ -663,7 +664,7 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.history.setHash("");
             }*/
             //apf.history.setHash("");
-
+            
             editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
         }
@@ -682,29 +683,31 @@ module.exports = ext.register("ext/editors/editors", {
     beforeswitch : function(e) {
         var page       = e.nextPage;
         var editorPage = tabEditors.getPage(page.type);
+        
         if (!editorPage) return;
 
         // fire this event BEFORE editor sessions are swapped.
-        ide.dispatchEvent("beforeeditorswitch", {
+        if (ide.dispatchEvent("tab.beforeswitch", {
             previousPage: e.previousPage,
             nextPage: e.nextPage
-        });
+        }) === false)
+            return false;
 
         if (editorPage.model != page.$model)
             editorPage.setAttribute("model", page.$model);
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
 
-        if (ide.dispatchEvent("editorswitch", {
-            previousPage: e.previousPage,
-            nextPage: e.nextPage
-        }) !== false) {
-            page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
-        }
+        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
-        var page = e.nextPage;
+        var _self = this;
+        var page  = e.nextPage;
+        
+        if (this.switchLoop == page.id)
+            return;
+        
         var fromHandler, toHandler = ext.extLut[page.type];
 
         if (e.previousPage && e.previousPage != e.nextPage)
@@ -762,6 +765,16 @@ module.exports = ext.register("ext/editors/editors", {
             app.navigateTo(page.appid + "/" + page.id);
         else if (!page.id)
             app.navigateTo(app.loc || (app.loc = "myhome"));*/
+
+        
+        setTimeout(function(){
+            _self.switchLoop = page.id;
+            
+            ide.dispatchEvent("tab.afterswitch", {
+                previousPage: e.previousPage,
+                nextPage: e.nextPage
+            });
+        }, 150);
     },
 
     /**** Init ****/
@@ -918,7 +931,7 @@ module.exports = ext.register("ext/editors/editors", {
                             .replace(/\\n/g, "\n");
                     }
 
-                    ide.dispatchEvent("openfile", {
+                    _self.gotoDocument({
                         doc      : doc,
                         init     : true,
                         forceOpen: true,
@@ -1021,10 +1034,11 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             // send it to the dispatcher
-            ide.dispatchEvent("openfile", {
-                doc: doc,
-                active: true
+            editors.gotoDocument({
+                node : node,
+                active : true
             });
+            
             // and expand the tree
             checkExpand(path, doc);
 
@@ -1056,17 +1070,29 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$scaleinit(null, "sync");
         }, 300);
     },
+    
+    gotoDocument : function(options) {
+        if (!options.node && options.path)
+            options.node = this.createFileNodeFromPath(options.path)
 
-    showFile : function(path, row, column, text) {
-        var node = this.createFileNodeFromPath(path);
-
-        this.jump(node, row, column, text);
+        this.jump(options);
     },
 
-    jump : function(fileEl, row, column, text, doc, page) {
-        var path    = fileEl.getAttribute("path");
-        var tabs    = tabEditors;
-        var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+    jump : function(options) {
+        var row     = options.row;
+        var column  = options.column;
+        var text    = options.text;
+        var page    = options.page;
+        
+        var hasData;
+        if (!options.doc) {
+            var node    = options.node;
+            var path    = node.getAttribute("path");
+            var tabs    = tabEditors;
+            
+            hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+        }
+        
         var _self   = this;
 
         if (row !== undefined) {
@@ -1097,10 +1123,12 @@ module.exports = ext.register("ext/editors/editors", {
                 });
         }
 
-        if (!hasData)
-            ide.dispatchEvent("openfile", {
-                doc: doc || ide.createDocument(fileEl)
-            });
+        if (!hasData) {
+            if (!options.doc)
+                options.doc = ide.createDocument(options.node);
+
+            ide.dispatchEvent("openfile", options);
+        }
         else
             tabs.set(path);
     },

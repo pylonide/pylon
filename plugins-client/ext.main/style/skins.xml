@@ -8945,7 +8945,7 @@
     	display: inline-block;
 		height: 17px;
 		margin: 0px 0px 0 12px;
-		top: 6px;
+		top: 2px;
 		width: 30px;
         vertical-align : top;
     }

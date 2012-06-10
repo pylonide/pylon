@@ -34,7 +34,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                         tabbehaviors.revealInTree(node);
                     }
 
-                    editors.showFile(event.message.args.path);
+                    editors.gotoDocument({path: event.message.args.path});
                 }
                 else if (event.message.action === "opendir") {
                     

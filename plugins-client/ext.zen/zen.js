@@ -96,7 +96,7 @@ module.exports = ext.register("ext/zen/zen", {
         });
 
         ide.addEventListener("init.ext/editors/editors", function(){
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 if (e.nextPage.type != "ext/code/code")
                     return;
     
@@ -152,7 +152,7 @@ module.exports = ext.register("ext/zen/zen", {
         if (page.fake)
             page = page.relPage;
         page.appendChild(button);
-        ide.addEventListener("editorswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage ? e.nextPage.fake ? e.nextPage.relPage : e.nextPage : null;
             if (page && button.parentNode != page)
                 page.appendChild(button);

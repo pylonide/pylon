@@ -212,7 +212,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         ide.addEventListener("init.ext/editors/editors", function(e) {
             setActiveFile(tabEditors.getPage());
 
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 setActiveFile(e.nextPage);
             });
 

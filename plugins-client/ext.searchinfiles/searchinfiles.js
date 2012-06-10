@@ -406,7 +406,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                         text = apf.queryValue(node, "node()/@query");
                     }
 
-                    editors.showFile(ide.davPrefix + "/" + path, line, 0, text);
+                    editors.gotoDocument({
+                        path: ide.davPrefix + "/" + path, 
+                        row: line, 
+                        col: 0, 
+                        text: text
+                    });
                 });
             });
 

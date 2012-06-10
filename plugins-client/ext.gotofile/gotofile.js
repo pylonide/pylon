@@ -152,6 +152,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1, true);
         });
         
+        ide.addEventListener("beforewatcherchange", function(){
+            _self.dirty = true;
+        });
+        
         this.updateDatagrid();
         
         this.nodes.push(winGoToFile);
@@ -181,36 +185,38 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.arrayCache = array;
             
             if (self.winGoToFile && _self.lastSearch) {
-                winGoToFile.addEventListener("prop.visible", function(){
-                    var search = _self.lastSearch;
-                    _self.lastSearch = null; //invalidate cache
-                    
-                    var sel = [];
-                    dgGoToFile.getSelection().forEach(function(node){
-                        var i = node.firstChild.nodeValue;
-                        sel.push(_self.arraySearchResults[i]);
-                    })
-                    
-                    var state = {
-                        sel : sel, //store previous selection
-                        caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
-                        scrollTop : dgGoToFile.$viewport.getScrollTop()
-                    };
-
-                    _self.model.load(data);
-                    _self.filter(search, state.sel.length);
-                    
-                    if (state.sel.length && state.sel.length < 100) {
-                        var list = [], sel = state.sel;
-                        for (var i = 0, l = sel.length; i < l; i++) {
-                            list.push(dgGoToFile.queryNode("//d:href[text()='" 
-                                + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                winGoToFile.addEventListener("prop.visible", function(e){
+                    if (e.value) {
+                        var search = _self.lastSearch;
+                        _self.lastSearch = null; //invalidate cache
+                        
+                        var sel = [];
+                        dgGoToFile.getSelection().forEach(function(node){
+                            var i = node.firstChild.nodeValue;
+                            sel.push(_self.arraySearchResults[i]);
+                        })
+                        
+                        var state = {
+                            sel : sel, //store previous selection
+                            caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
+                            scrollTop : dgGoToFile.$viewport.getScrollTop()
+                        };
+    
+                        _self.model.load(data);
+                        _self.filter(search, state.sel.length);
+                        
+                        if (state.sel.length && state.sel.length < 100) {
+                            var list = [], sel = state.sel;
+                            for (var i = 0, l = sel.length; i < l; i++) {
+                                list.push(dgGoToFile.queryNode("//d:href[text()='" 
+                                    + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                            }
+                            dgGoToFile.selectList(list);
+                            if (state.caret)
+                                dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
+                                    + _self.arraySearchResults.indexOf(state.caret) + "']"));
+                            dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                         }
-                        dgGoToFile.selectList(list);
-                        if (state.caret)
-                            dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
-                                + _self.arraySearchResults.indexOf(state.caret) + "']"));
-                        dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                     }
                     
                     winGoToFile.removeEventListener("prop.visible", arguments.callee);
@@ -230,7 +236,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      * Searches through the dataset
      * 
      */
-    filter : function(keyword, nosel){
+    filter : function(keyword, nosel, force){
         if (!this.model.data) {
             this.lastSearch = keyword;
             return;
@@ -330,12 +336,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         var _self = this;
         this.toggleDialog(-1, noanim, function(){
-            for (var i = 0; i < nodes.length; i++) {
-                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                    + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
-                editors.showFile(path);
-                ide.dispatchEvent("track_action", {type: "fileopen"});
-            }
+            setTimeout(function(){
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                        + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
+                    
+                    editors.gotoDocument({path: path, active : i == l - 1});
+                    
+                    ide.dispatchEvent("track_action", {type: "fileopen"});
+                }
+            }, 10);
         });
     },
     
@@ -385,7 +395,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             txtGoToFile.select();
             txtGoToFile.focus();
-            this.dirty = true; //@todo this can be optimized by only marking as dirty on certain events
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {

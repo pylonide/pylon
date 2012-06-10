@@ -132,7 +132,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                     node.setAttribute("name", def.caption);
                     node.setAttribute("path", def.value);
 
-                    ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+                    editors.gotoDocument({doc: ide.createDocument(node)});
                 }
             }), this.menu.firstChild);
         }

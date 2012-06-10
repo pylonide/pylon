@@ -498,6 +498,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.clear = function(){
         this.$propHandlers["value"].call(this, "", null, true);
         this.$editor.resize();
+        this.$editor.renderer.updateFull(true);
 
         this.dispatchEvent("clear");//@todo this should work via value change
     };

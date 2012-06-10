@@ -52,6 +52,11 @@ module.exports = function(filelist, keyword, cache) {
         if ((j = name.lastIndexOf(keyword)) > -1) {
             cache.push(name);
             
+            if (klen < 3) {
+                res.push(name);
+                continue;
+            }
+            
             value = 0;
             
             // We prioritize ones that have the name in the filename
@@ -86,7 +91,7 @@ module.exports = function(filelist, keyword, cache) {
             //Check extension
             s = name.lastIndexOf(".");
             if (s > -1)
-                value -= fileTypes[name.substr(s+1)] || 20;
+                value -= 10 * (fileTypes[name.substr(s+1)] || 0) || 20;
             else
                 value -= 20;
         
@@ -101,8 +106,11 @@ module.exports = function(filelist, keyword, cache) {
 
     if (!res.length)
         return [];
-        
-    if (klen > 1 && res.length < 10000)
+    
+    if (klen < 3)
+        return res;
+    
+    if (klen > 2 && res.length < 10000)
         res.sort();
     
     var type = "name";

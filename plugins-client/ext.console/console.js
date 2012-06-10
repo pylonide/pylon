@@ -731,7 +731,7 @@ module.exports = ext.register("ext/console/console", {
             if (!editors)
                 editors = require("ext/editors/editors");
             if (data.isfile) {
-                editors.showFile(path);
+                editors.gotoDocument({path: path});
             }
             else {
                 // @TODO Update

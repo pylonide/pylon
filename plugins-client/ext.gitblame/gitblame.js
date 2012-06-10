@@ -31,7 +31,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
-        tabEditors.addEventListener("beforeswitch", function(e){
+        ide.addEventListener("tab.beforeswitch", function(e){
             if (editors.currentEditor) {
                 editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
                 editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");

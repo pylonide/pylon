@@ -478,7 +478,7 @@ module.exports = ext.register("ext/code/code", {
             }
         });
 
-        tabEditors.addEventListener("afterswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var editor = _self.amlEditor;
             if (typeof editor != "undefined")
                 editor.afterOpenFile(editor.getSession());

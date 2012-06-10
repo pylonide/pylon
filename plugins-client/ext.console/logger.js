@@ -17,7 +17,11 @@ var RE_COLOR = /\u001b\[([\d;]+)?m/g;
 var openLinkedFile = function(path, row, column) {
     row = parseInt(row.slice(1), 10);
     column = column ? parseInt(column.slice(1), 10) : 0;
-    editors.showFile(path, row, column);
+    editors.gotoDocument({
+        path: path, 
+        row: row, 
+        column: column
+    });
 };
 
 var strRepeat = function(s, t) { return new Array(t + 1).join(s); };

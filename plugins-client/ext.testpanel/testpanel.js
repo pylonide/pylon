@@ -14,6 +14,7 @@ var panels = require("ext/panels/panels");
 var markup = require("text!ext/testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("core/settings");
+var editors = require("ext/editors/editors");
 
 function escapeXpathString(name){
     if (name.indexOf('"') > -1) {
@@ -134,7 +135,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                   || !ide.onLine && !ide.offlineFileSystemSupport)
                     return;
                         
-                ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+                editors.gotoDocument({doc: ide.createDocument(node)});
                 
                 //@todo choose a test or an assert should select that code
                 //      inside ace.
@@ -199,7 +200,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         var doc = ide.createDocument(node);
         doc.cachedValue = pattern;
                     
-        ide.dispatchEvent("openfile", {doc: doc, node: node});
+        editors.gotoDocument({doc: doc, node: node});
         
         ide.addEventListener("beforefilesave", function(e){
             if (e.node == node) {

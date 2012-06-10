@@ -112,7 +112,7 @@ module.exports = ext.register("ext/newresource/newresource", {
         if (value)
             doc.cachedValue = value;
 
-        ide.dispatchEvent("openfile", {
+        require("ext/editors/editors").gotoDocument({
             doc: doc,
             type: "newfile"
         });

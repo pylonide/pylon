@@ -15,6 +15,7 @@ var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
 var commands = require("ext/commands/commands");
+var editors = require("ext/editors/editors");
 
 var showHideScrollPos;
 
@@ -354,7 +355,7 @@ module.exports = ext.register("ext/tree/tree", {
                 !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
 
-            ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+            editors.gotoDocument({node: node});
         });
         
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {

@@ -242,7 +242,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         var cycleKey = apf.isMac ? 18 : 17;
-        tabEditors.addEventListener("afterswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage;
 
             if (!_self.cycleKeyPressed) {
