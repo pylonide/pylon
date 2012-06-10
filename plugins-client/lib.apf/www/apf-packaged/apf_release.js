@@ -6250,7 +6250,7 @@ apf.getChildNumber = function(node, fromList){
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){
     if (typeof parentNode != "object")
-        parentNode = getElementById(parentNode);
+        parentNode = apf.xmldb.getElementById(parentNode);
 
     if (options && options.clearContents) {
         //Signal listening elements
@@ -6328,6 +6328,9 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
+        
+        if (options.filter)
+            nodes = options.filter(parentNode, nodes);
 
         if (parentNode.ownerDocument.importNode) {
             doc = parentNode.ownerDocument;
@@ -22820,7 +22823,10 @@ apf.DataBinding = function(){
         //Integrate XMLTree with parentNode
         if (typeof options.copyAttributes == "undefined")
             options.copyAttributes = true;
-            
+        
+        if (this.filterUnique)
+            options.filter = this.filterUnique;
+        
         var newNode = apf.mergeXml(xmlNode, insertPoint, options);
         
         this.$isLoading = true; //Optimization for simpledata
@@ -30465,25 +30471,49 @@ apf.BaseTab = function(){
     //Add an element
     function animAddTab(tab, callback){
         var t = tab.$button;
-        var p = t.previousSibling;
-        var tb = (p.offsetWidth - apf.getWidthDiff(p));
-        t.style.maxWidth = "0px";
 
-        setTimeout(function(){
-            t.style[apf.CSSPREFIX + "TransitionProperty"] = "max-width";
-            t.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
-            t.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
-            
-            t.style.maxWidth = tb + "px";
+        var animateWidth = (t.offsetWidth 
+            - apf.getWidthDiff(t)) < parseInt(apf.getStyle(t, "maxWidth"));
+        
+        if (animateWidth) {
+            var p = tab.parentNode.getPages()[0] == tab 
+                ? null 
+                : t.previousElementSibling;
+            var tb = p 
+                ? (p.offsetWidth - apf.getWidthDiff(p)) 
+                : parseInt(apf.getStyle(t, "maxWidth"));
+            t.style.maxWidth = "0px";
+        }
+
+        t.style.marginTop = (t.offsetHeight + 2) + "px";
+        
+        function animateToTop(){
+            t.style.marginTop = "0px";
             
             setTimeout(function(){
                 t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
                 t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 t.style[apf.CSSPREFIX + "TimingFunction"] = "";
                 
-                t.style.maxWidth = "";
+                t.style.marginTop = "";
+                
+                if (animateWidth)
+                    t.style.maxWidth = "";
+                
                 callback(tab);
             }, 150);
+        }
+        
+        setTimeout(function(){
+            t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width";
+            t.style[apf.CSSPREFIX + "TransitionDuration"] = "100ms, 50ms";
+            t.style[apf.CSSPREFIX + "TimingFunction"] = "cubic-bezier(.10, .10, .25, .90), cubic-bezier(.10, .10, .25, .90)";
+            
+            if (animateWidth) {
+                t.style.maxWidth = tb + "px";
+                setTimeout(animateToTop, 50);
+            }
+            else animateToTop();
         });
     }
     
@@ -30499,6 +30529,7 @@ apf.BaseTab = function(){
         t.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out, ease-out, ease-out";
         
         t.style.marginTop = (tb + 2) + "px";
+        t.style.padding = 0;
 
         var p = t.parentNode;
         if (apf.isGecko) p = p.parentNode;
@@ -30661,8 +30692,10 @@ apf.BaseTab = function(){
                     _self.set(ln || rn);
             }
             
-            if (isCur)
+            if (isCur) {
                 apf.setStyleClass(node.$button, "curbtn");
+                node.$button.style.zIndex = 0;
+            }
             
             animRemoveTab(node, isLast, isContracted, onfinish);
             
@@ -32304,7 +32337,7 @@ apf.BaseTree = function(){
     };
     
     this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
-        if (!self.apf.debug && !htmlNode) 
+        if (!apf.debug && !htmlNode) 
             return;
             
         var container;
@@ -32316,15 +32349,22 @@ apf.BaseTree = function(){
             return;
         }
         
+        var nSibling = this.getNextTraverse(xmlNode),
+            beforeNode = nSibling
+                ? apf.xmldb.getHtmlNode(nSibling, this)
+                : null;
+        
+        var next = htmlNode.nextSibling;
+        if (next.tagName != htmlNode.tagName)
+            next = next.nextSibling;
+        if (beforeNode == next)
+            return;
+        
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
         
-            nSibling = this.getNextTraverse(xmlNode),
-            beforeNode = nSibling
-                ? apf.xmldb.getHtmlNode(nSibling, this)
-                : null,
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
@@ -62454,13 +62494,13 @@ apf.vsplitbox = function(struct, tagName){
                 //One flex child (first)
                 if (this.flexChild1 == firstChild) {
                     this.flexChild1.$ext.style.right =   
-                        (this.fixedChild.width + value + this.$edge[1]) + "px";
+                        (parseInt(this.fixedChild.width) + value + this.$edge[1]) + "px";
                 }
                     
                 //One flex child (last)
                 else if (this.flexChild1 == lastChild) {
                     this.flexChild1.$ext.style.left = 
-                        (this.fixedChild.width + value + this.$edge[3]) + "px";
+                        (parseInt(this.fixedChild.width) + value + this.$edge[3]) + "px";
                 }
             }
         }
@@ -66844,8 +66884,8 @@ apf.webdav = function(struct, tagName){
                     return; // 401's are handled by the browser already, so no need for additional processing...
 
                 var sResponse = (extra.http.responseText || "");
-                if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
-                  && sResponse.indexOf("<?xml version=") == 0) {
+                if ((sResponse.length > 10 || sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != "")
+                  && sResponse.substr(0, 14) == "<?xml version=") {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
                             ? apf.xmlParseError(extra.http.responseXML)
