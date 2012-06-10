@@ -24,6 +24,12 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     init : function(amlNode) {
         var _self = this;
         
+        ide.addEventListener("panels.activateDefault", function (e) {
+            if (e.currentTarget.workspaceId === "generic")
+                return false;
+            return true;
+        });
+        
         ide.addEventListener("socketMessage", function (event) {
             _self.loadFileOrFolder(event); 
         });

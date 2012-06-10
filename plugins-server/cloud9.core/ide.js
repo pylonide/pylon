@@ -24,7 +24,7 @@ var Ide = module.exports = function(options) {
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert(options.socketIoUrl, "option 'socketIoUrl' is required");
     assert(options.socketIoTransports, "option 'socketIoTransports' is required");
-    assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
+   // assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
 

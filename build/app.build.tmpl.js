@@ -12,8 +12,10 @@
 		"treehugger" : "empty:",
 		"debug": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
+		"ace/worker": "%a",
 		"%m"
 	},
+    
 	include: ["%b/src/core.packed", 
 	"apf/elements/codeeditor", 
 	"apf/elements/debugger", 

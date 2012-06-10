@@ -85,6 +85,7 @@
                     trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
+            <a:divider />
             <a:item match="[file|folder[not(@root)]]" command="cut">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" command="copy">Copy</a:item>
             <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" command="paste">Paste</a:item>
