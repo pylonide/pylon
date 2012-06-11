@@ -127,7 +127,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         
         txtSFFind.ace.session.on("change", function() {
-            _self.checkRegExp(txtSFFind, tooltipSearchInFiles, winSearchInFiles)
+            if (chkSFRegEx.checked)
+                _self.checkRegExp(txtSFFind, tooltipSearchInFiles, winSearchInFiles);
         });
         this.addSearchKeyboardHandler(txtSFFind, "searchfiles");
                 
@@ -163,6 +164,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 }
             });
         });
+        
+        var blur = function(e) {
+            if ( self.winSearchInFiles && !apf.isChildOf(winSearchInFiles, e.toElement))
+                _self.toggleDialog(-1, null, true);
+        }
+
+        winSearchInFiles.addEventListener("blur", blur);
     },
 
     setSearchSelection: function(e){
@@ -372,9 +380,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                      
                 tabConsole.set(_self.pageID);
                 
-                this.codeEditor = this.$panel.appendChild(new apf.codeeditor({
+                this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
                     syntax            : "c9search",
-                    "class"           : "nocorner",
+                    "class"           : "nocorner aceSearchConsole",
                     anchors           : "0 0 0 0",
                     theme             : "ace/theme/monokai",
                     overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
@@ -398,8 +406,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     wrapmodeViewport  : "true"
                 }));
                 
-                this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
-                    _self.launchFileFromSearch(_self.codeEditor.$editor);
+                this.searchConsole.$editor.$readOnly = true;
+                
+                this.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+                    _self.launchFileFromSearch(_self.searchConsole.$editor);
                 });
                 
                 this.$panel.addEventListener("afterclose", function(){
@@ -410,6 +420,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             else {
                 tabConsole.appendChild(this.$panel);
                 tabConsole.set(this.pageID);
+                this.searchConsole.$editor.session.getDocument().setValue("");
             }
         }
         
@@ -457,17 +468,17 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (chkSFConsole.checked) {
             if (_self.consoleacedoc !== undefined && _self.consoleacedoc.$lines !== undefined && _self.consoleacedoc.$lines.length > 0) { // append to tab editor if it exists
                 _self.appendLines(_self.consoleacedoc, messageHeader);
-                _self.codeEditor.$editor.gotoLine(_self.consoleacedoc.getLength() + 2);
+                _self.searchConsole.$editor.gotoLine(_self.consoleacedoc.getLength() + 2);
             }
             else {
-                _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
-                _self.consoleacedoc = _self.codeEditor.$editor.session.getDocument().doc; // store a reference to the doc
+                _self.searchConsole.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
+                _self.consoleacedoc = _self.searchConsole.$editor.session.getDocument().doc; // store a reference to the doc
                 
                 // set tab editor commands here
-                _self.codeEditor.$editor.commands._defaultHandlers = commands._defaultHandlers;
-                _self.codeEditor.$editor.commands.commands = commands.commands;
-                _self.codeEditor.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
-                _self.codeEditor.$editor.getSession().setUndoManager(new apf.actiontracker());
+                _self.searchConsole.$editor.commands._defaultHandlers = commands._defaultHandlers;
+                _self.searchConsole.$editor.commands.commands = commands.commands;
+                _self.searchConsole.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
+                _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
         }
         else {
@@ -483,7 +494,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 this.appendLines(_self.tabacedoc, messageHeader);
                 tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
                 
-                _self.searcheditor.gotoLine(_self.tabacedoc.getLength() + 2);
+                _self.searcheditor.scrollToLine(_self.tabacedoc.getLength() + 2, true);
             } 
         }
         

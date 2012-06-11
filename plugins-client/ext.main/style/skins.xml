@@ -3430,6 +3430,12 @@
         .nocorner.ace-monokai .ace_scroller {
             background: transparent;
         }
+        .aceSearchConsole div.ace_gutter {
+            background: rgba(0,0,0,0.1);
+        }
+        .aceSearchConsole .nocorner.ace_editor {
+            margin-top: 0px;
+        }
         
         .ace_gutter .ace_gutter_active_line {
             background-color: rgba(0, 0, 0, 0.07);
