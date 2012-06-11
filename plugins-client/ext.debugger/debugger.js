@@ -107,6 +107,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 {
                     height     : 30,
                     width      : 150,
+                    minHeight  : 30,
                     noflex     : true,
                     draggable  : false,
                     resizable  : false,
