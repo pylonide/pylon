@@ -377,7 +377,7 @@ Scope.prototype.get = function(name, kind) {
     if(vars['_'+name])
         return vars['_'+name];
     else if(this.parent)
-        return this.parent.get(name);
+        return this.parent.get(name, kind);
 };
 
 Scope.prototype.getVariableNames = function() {
