@@ -14,9 +14,9 @@ var menus = require("ext/menus/menus");
 var tooltip = require("ext/tooltip/tooltip");
 var commands = require("ext/commands/commands");
 
-var TreeDocument = require("concorde/AceDocument");
+var TreeDocument = require("concorde/ace_document");
 var Save = require("ext/save/save");
-var Collab = require("c9/ext/collaborate/collaborate");
+var Collab = require("ext/collaborate/collaborate");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/revisions/settings.xml");
