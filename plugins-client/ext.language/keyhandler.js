@@ -92,9 +92,9 @@ function handleChar(ch) {
 /**
  * Ensure that code completion is not triggered.
  */
-function inCompletableCodeContext(line, column) {
+function inCompletableCodeContext(line, column, id) {
     var inMode = null;
-    if(line.match(/^\s*\*.+/))
+    if (line.match(/^\s*\*.+/))
         return false;
     for (var i = 0; i < column; i++) {
         if(line[i] === '"' && !inMode)
@@ -128,7 +128,16 @@ function inCompletableCodeContext(line, column) {
 function preceededByIdentifier(line, column, postfix) {
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     if(postfix) id += postfix;
-    return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
+    return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column, id);
+}
+
+function isRequireJSCall(line, column) {
+    if (editors.currentEditor.amlEditor.syntax !== "javascript" || !isInferAvailable())
+        return false;
+    var id = completionUtil.retrievePreceedingIdentifier(line, column);
+    var LENGTH = 'require("'.length;
+    var start = column - id.length - LENGTH;
+    return start >= 0 && line.substring(start, LENGTH) === 'require("';
 }
 
 exports.hook = hook;
@@ -140,4 +149,5 @@ exports.typeAlongComplete = typeAlongComplete;
 exports.composeHandlers = composeHandlers;
 exports.inCompletableCodeContext = inCompletableCodeContext;
 exports.preceededByIdentifier = preceededByIdentifier;
+exports.isRequireJSCall = isRequireJSCall;
 });
