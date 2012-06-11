@@ -74,7 +74,8 @@ module.exports = function setup(options, imports, register) {
                 }
             },
             "fs": {
-                addListener: filewatch.on.bind(filewatch)
+                addListener: filewatch.on.bind(filewatch),
+                removeListener: filewatch.removeListener.bind(filewatch)
             },
             "codesearch": {},
             "filesearch": {}
