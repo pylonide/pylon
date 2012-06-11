@@ -388,7 +388,7 @@ Scope.prototype.getNamesByKind = function(kind) {
     var results = [];
     var vars = this.getVars(kind);
     for (var v in vars) {
-        if (vars.hasOwnProperty(v))
+        if (vars.hasOwnProperty(v) && v !== KIND_HIDDEN && v !== KIND_PACKAGE)
             results.push(v.slice(1));
     }
     if (this.parent) {
