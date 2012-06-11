@@ -28,7 +28,7 @@ define(function(require, exports, module) {
         skin: {
             id: "help-skin",
             data: skin,
-            "media-path": "/static/ext/help/images/"
+            "media-path": ide.staticPrefix + "/ext/help/images/"
         },
         showingAll: true,
 

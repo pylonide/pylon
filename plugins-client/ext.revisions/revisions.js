@@ -203,14 +203,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $initWorker: function() {
-        var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
+        var worker = this.worker = new Worker(ide.staticPrefix + "/ext/revisions/revisions_worker.js");
         worker.onmessage = this.onWorkerMessage.bind(this);
         worker.onerror = function(error) {
             throw(new Error("Error from worker:\n" + error.message));
         };
         // Preload diff libraries so they are available to the worker in case we
         // go offline.
-        worker.postMessage({ type: "preloadlibs" });
+        worker.postMessage({ type: "preloadlibs", prefix: ide.staticPrefix });
     },
 
     setSaveButtonCaption: function(page) {
