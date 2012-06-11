@@ -20,6 +20,9 @@ var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 2000;
 var HIDE_DOC_DELAY = 1000;
+var AUTO_OPEN_DELAY = 50;
+var AUTO_UPDATE_DELAY = 200;
+var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
 
@@ -40,7 +43,7 @@ var deferredInvoke = lang.deferredCall(function() {
 var isInvokeScheduled = false;
 
 var drawDocInvoke = lang.deferredCall(function() {
-    if (barCompleterCont.$ext.style.display !== "none") {
+    if (isPopupVisible()) {
         isDocShown = true;
         txtCompleterDoc.parentNode.show();
     }
@@ -49,11 +52,19 @@ var drawDocInvoke = lang.deferredCall(function() {
 var isDrawDocInvokeScheduled = false;
 
 var undrawDocInvoke = lang.deferredCall(function() {
-    if (barCompleterCont.$ext.style.display === "none") {
+    if (!isPopupVisible()) {
         isDocShown = false;
         txtCompleterDoc.parentNode.hide();
     }
 });
+
+var killCrashedCompletionInvoke = lang.deferredCall(function() {
+    _self.closeCompletionBox();
+});
+
+function isPopupVisible() {
+    return barCompleterCont.$ext.style.display !== "none";
+}
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
@@ -91,7 +102,9 @@ function replaceText(editor, prefix, match) {
     
     if (match.replaceText === "require(^^)") {
         newText = "require(\"^^\")";
-        setTimeout(module.exports.deferredInvoke, 0);
+        if (!isInvokeScheduled)
+            setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
+        isInvokeScheduled = true;
     }   
     
     // Ensure cursor marker
@@ -223,7 +236,7 @@ module.exports = {
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
         
         if(oldCommandKey) {
-        ace.keyBinding.onCommandKey = oldCommandKey;
+            ace.keyBinding.onCommandKey = oldCommandKey;
             ace.keyBinding.onTextInput = oldOnTextInput;
         }
         oldCommandKey = oldOnTextInput = null;
@@ -302,13 +315,11 @@ module.exports = {
     onTextInput : function(text, pasted) {
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
         oldOnTextInput.apply(keyBinding, arguments);
-        if(!pasted) {
-            if(text.match(/[^A-Za-z0-9_\$\.]/))
+        if (!pasted) {
+            if (!text.match(ID_REGEX))
                 this.closeCompletionBox();
-            else {
-                this.closeCompletionBox(null, true);
-                deferredInvoke();
-            }
+            else
+                this.deferredInvoke();
         }
     },
 
@@ -338,10 +349,7 @@ module.exports = {
                 break;
             case 8: // Backspace
                 oldCommandKey.apply(keyBinding, arguments);
-                setTimeout(function() {
-                    _self.closeCompletionBox(null, true);
-                    deferredInvoke();
-                }, 100);
+                deferredInvoke();
                 e.preventDefault();
                 break;
             case 37:
@@ -394,10 +402,10 @@ module.exports = {
     },
 
     deferredInvoke: function() {
-       if (isInvokeScheduled)
+        if (isInvokeScheduled)
             return;
         isInvokeScheduled = true;
-        deferredInvoke.schedule(200);
+        deferredInvoke.schedule(isPopupVisible() ? AUTO_UPDATE_DELAY : AUTO_OPEN_DELAY);
     },
     
     onChange: function() {
@@ -419,22 +427,23 @@ module.exports = {
         });
         var _self = this;
         if(forceBox)
-            this.hideTimer = setTimeout(function() {
-                // Completion takes or crashed
-                _self.closeCompletionBox();
-            }, 4000);
+            killCrashedCompletionInvoke(CRASHED_COMPLETION_TIMEOUT);
     },
     
     onComplete: function(event) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
+        var eventPos = event.data.pos;
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);
     
         editor.removeEventListener("change", this.$onChange);
-        clearTimeout(this.hideTimer);
+        killCrashedCompletionInvoke.cancel();
+
+        if (pos.column !== eventPos.column || pos.row !== eventPos.row)
+            return;
     
-        var matches = event.data;
+        var matches = event.data.matches;
         
         // Remove out-of-date matches
         for (var i = 0; i < matches.length; i++) {
