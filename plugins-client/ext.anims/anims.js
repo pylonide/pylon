@@ -46,7 +46,7 @@ module.exports = ext.register("ext/anims/anims", {
         var isFirst, oNode = (isFirst = aNode == firstChild) ? lastChild : firstChild;
         if (oNode == aNode || !oNode.visible)
             throw new Error("animating object that has no partner");
-            
+        
         var to2;
         if (pNode.$vbox) {
             to2 = { timingFunction : options.timingFunction };
@@ -64,6 +64,15 @@ module.exports = ext.register("ext/anims/anims", {
         }
         
         if (shouldAnimate && !options.immediate) {
+            
+            ide.dispatchEvent("animate", {
+                type: "splitbox",
+                which: aNode,
+                other: oNode,
+                options: options,
+                options2: to2
+            });
+            
             Firmin.animate(aNode.$ext, options, options.duration || 0.2, function() {
                 aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();

@@ -11116,7 +11116,8 @@
             color:white;
         }
 
-        .filemgr-treeFocus > .item-fix.selected:first-child {
+        .filemgr-treeFocus > .item-fix.selected:first-child,
+        .filemgr-tree.openfile > .item-fix.selected:first-child {
         	border-top-color:#166CAD;
         }
 

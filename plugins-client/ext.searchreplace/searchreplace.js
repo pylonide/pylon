@@ -368,7 +368,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (!editor || !editor.amlEditor)
             return;
 
-        var wasVisible  = winSearchReplace.visible;
+        var wasVisible  = !!winSearchReplace.parentNode;//visible;
         var stateChange = isReplace != undefined && this.$lastState != isReplace;
         
         tooltipSearchReplace.$ext.style.display = "none";
@@ -416,6 +416,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 }
             }
 
+            searchRow.appendChild(winSearchReplace);
             winSearchReplace.show();
             txtFind.focus();
             txtFind.select();
@@ -472,6 +473,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 }, function(){
                     winSearchReplace.visible = true;
                     winSearchReplace.hide();
+                    winSearchReplace.parentNode.removeChild(winSearchReplace);
                     
                     if (!noselect)
                         editor.ceEditor.focus();
@@ -484,6 +486,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             else {
                 winSearchReplace.visible = true;
                 winSearchReplace.hide();
+                winSearchReplace.parentNode.removeChild(winSearchReplace);
                 if (!noselect)
                     editor.ceEditor.focus();
                 

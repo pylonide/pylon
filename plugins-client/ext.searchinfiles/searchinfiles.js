@@ -21,6 +21,7 @@ var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     name     : "Search in files",
@@ -42,7 +43,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
     hook : function(){
         var _self = this;
-
+        
+        this.markupInsertionPoint = searchRow;
+        
         commands.addCommand({
             name: "searchinfiles",
             hint: "search for a string through all files in the current workspace",
@@ -82,14 +85,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
         });
         
-        ide.addEventListener("init.ext/console/console", function(e){
-            searchRow.insertBefore(winSearchInFiles, e.ext.splitter);
-        });
-        if (winSearchInFiles.parentNode != searchRow) {
-            searchRow.insertBefore(winSearchInFiles, 
-                self.winDbgConsole && winDbgConsole.previousSibling || null);
-        }
-
         winSearchInFiles.addEventListener("prop.visible", function(e) {
             if (e.value) {
                 if (self.trFiles)
@@ -276,6 +271,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 }
             }
 
+            searchRow.appendChild(winSearchInFiles);
             winSearchInFiles.show();
             txtSFFind.focus();
             txtSFFind.select();
@@ -285,10 +281,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             //Animate
             if (animate) {
-                Firmin.animate(winSearchInFiles.$ext, {
+                anims.animateSplitBoxNode(winSearchInFiles, {
                     height: "102px",
-                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-                }, 0.2, function() {
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)",
+                    duration: 0.2
+                }, function() {
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                     winSearchInFiles.$ext.style.height = "";
                     
@@ -306,7 +303,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
             
-            
             //Animate
             if (animate) {
                 winSearchInFiles.visible = false;
@@ -314,12 +310,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 winSearchInFiles.$ext.style.height 
                     = winSearchInFiles.$ext.offsetHeight + "px";
 
-                Firmin.animate(winSearchInFiles.$ext, {
+                anims.animateSplitBoxNode(winSearchInFiles, {
                     height: "0px",
-                    timingFunction: "ease-in-out"
-                }, 0.2, function(){
+                    timingFunction: "ease-in-out",
+                    duration : 0.2
+                }, function(){
                     winSearchInFiles.visible = true;
                     winSearchInFiles.hide();
+                    winSearchInFiles.parentNode.removeChild(winSearchInFiles);
                     
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
     
@@ -335,6 +333,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             else {
                 winSearchInFiles.hide();
+                winSearchInFiles.parentNode.removeChild(winSearchInFiles);
+                
                 callback 
                     ? callback()
                     : apf.layout.forceResize();

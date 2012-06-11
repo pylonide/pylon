@@ -81,12 +81,10 @@ module.exports = ext.register("ext/save/save", {
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("close", _self.$close = function(e) {
                 var at = e.page.$at;
-                if (!at.undo_ptr)
-                    at.undo_ptr = at.$undostack[0];
                 var node = e.page.$doc.getNode();
-                if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-                  || !at.undo_ptr && node.getAttribute("changed") == 1
-                  && e.page.$doc.getValue()) {
+                if (node && (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
+                  || !at.undo_ptr && node.getAttribute("changed") == 1)
+                  && (!node.getAttribute("newfile") || e.page.$doc.getValue())) {
     
                     ext.initExtension(_self);
     

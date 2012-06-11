@@ -766,14 +766,16 @@ module.exports = ext.register("ext/editors/editors", {
         else if (!page.id)
             app.navigateTo(app.loc || (app.loc = "myhome"));*/
 
-        
-        setTimeout(function(){
+        clearTimeout(this.afterswitchTimeout);
+        this.afterswitchTimeout = setTimeout(function(){
             _self.switchLoop = page.id;
             
             ide.dispatchEvent("tab.afterswitch", {
                 previousPage: e.previousPage,
                 nextPage: e.nextPage
             });
+            
+            delete _self.switchLoop;
         }, 150);
     },
 

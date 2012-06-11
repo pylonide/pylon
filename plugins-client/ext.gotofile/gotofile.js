@@ -15,6 +15,7 @@ var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
 var filelist = require("ext/filelist/filelist");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -408,22 +409,18 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 winGoToFile.visible = false;
                 
                 //Animate
-                apf.tween.single(winGoToFile, {
-                    type     : "fade",
-                    from     : 1,
-                    to       : 0,
-                    steps    : 5,
-                    interval : 0,
-                    control  : (this.control = {}),
-                    onfinish : function(){
-                        winGoToFile.visible = true;
-                        winGoToFile.hide();
-                        
-                        if (editors.currentEditor && editors.currentEditor.ceEditor)
-                            editors.currentEditor.ceEditor.focus();
-                        
-                        callback && callback();
-                    }
+                anims.animate(winGoToFile, {
+                    opacity: "0", 
+                    timingFunction: "linear",
+                    duration : 0.025
+                }, function(){
+                    winGoToFile.visible = true;
+                    winGoToFile.hide();
+                    
+                    if (editors.currentEditor && editors.currentEditor.ceEditor)
+                        editors.currentEditor.ceEditor.focus();
+                    
+                    callback && callback();
                 });
             }
             else {
