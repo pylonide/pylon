@@ -934,11 +934,13 @@ module.exports = ext.register("ext/editors/editors", {
 
             if (pages.length) {
                 var active = tabEditors.activepage;
-                e.model.setQueryValue("auto/files/@active", active);
+                
+                if (tabEditors.getPage(active).$doc.getNode().getAttribute("ignore") !== "1")
+                    e.model.setQueryValue("auto/files/@active", active);
 
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
-                    if (!pages[i] || !pages[i].$model)
+                    if (!pages[i] || !pages[i].$model || pages[i].$doc.getNode().getAttribute("ignore") == "1")
                         continue;
 
                     var file = pages[i].$model.data;

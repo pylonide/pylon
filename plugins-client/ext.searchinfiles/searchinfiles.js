@@ -22,9 +22,6 @@ var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
 
-var searchFilePath = ide.davPrefix + "/search_results.c9search";
-var searchContentType = "c9search";
-
 // Ace dependencies
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
@@ -49,7 +46,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     nodes    : [],
     
     searchPage : null,
-
+    searchFilePath : ide.davPrefix + "/search_results.c9search",
+    searchContentType : "c9search",
+    
     hook : function(){
         var _self = this;
 
@@ -124,7 +123,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         ide.addEventListener("init.ext/tree/tree", function(){
             trFiles.addEventListener("afterselect", _self.setSearchSelection);
         });
-
         
         txtSFFind.ace.session.on("change", function() {
             if (chkSFRegEx.checked)
@@ -374,54 +372,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             // show the console
             ideConsole.show();
             
-            if (!this.$panel) {
-                this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-                this.$panel.setAttribute("closebtn", true);
-                     
-                tabConsole.set(_self.pageID);
-                
-                this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
-                    syntax            : "c9search",
-                    "class"           : "nocorner aceSearchConsole",
-                    anchors           : "0 0 0 0",
-                    theme             : "ace/theme/monokai",
-                    overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
-                    folding           : "true",
-                    behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
-                    selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
-                    activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
-                    gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
-                    showinvisibles    : "false",
-                    showprintmargin   : "false",
-                    softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
-                    tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",
-                    scrollspeed       : "[{require('core/settings').model}::editors/code/@scrollspeed]",
-                    newlinemode       : "[{require('core/settings').model}::editors/code/@newlinemode]",
-                    animatedscroll    : "[{require('core/settings').model}::editors/code/@animatedscroll]",
-                    fontsize          : "[{require('core/settings').model}::editors/code/@fontsize]",
-                    gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
-                    highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
-                    autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
-                    fadefoldwidgets   : "false",
-                    wrapmodeViewport  : "true"
-                }));
-                
-                this.searchConsole.$editor.$readOnly = true;
-                
-                this.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
-                    _self.launchFileFromSearch(_self.searchConsole.$editor);
-                });
-                
-                this.$panel.addEventListener("afterclose", function(){
-                    this.removeNode();
-                    return false;
-                });
-            }
-            else {
-                tabConsole.appendChild(this.$panel);
-                tabConsole.set(this.pageID);
-                this.searchConsole.$editor.session.getDocument().setValue("");
-            }
+            this.makeSearchResultsPanel();
         }
         
         // Determine the scope of the search
@@ -454,10 +405,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         // prepare new Ace document to handle search results
         var node = apf.getXml("<file />");
         node.setAttribute("name", "Search Results");
-        node.setAttribute("path", searchFilePath);
-        node.setAttribute("customtype", util.getContentType(searchContentType));
+        node.setAttribute("path", this.searchFilePath);
+        node.setAttribute("customtype", util.getContentType(this.searchContentType));
         node.setAttribute("tooltip", "Search Results");
-        //node.setAttribute("newfile", "1");
+        node.setAttribute("newfile", "0");
+        node.setAttribute("ignore", "1");
         node.setAttribute("saving", "1");
         
         var doc = ide.createDocument(node);
@@ -466,6 +418,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var messageHeader = this.messageHeader(path, options);
         
         if (chkSFConsole.checked) {
+            // the search results already exist
             if (_self.consoleacedoc !== undefined && _self.consoleacedoc.$lines !== undefined && _self.consoleacedoc.$lines.length > 0) { // append to tab editor if it exists
                 _self.appendLines(_self.consoleacedoc, messageHeader);
                 _self.searchConsole.$editor.gotoLine(_self.consoleacedoc.getLength() + 2);
@@ -489,6 +442,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searchPage = tabEditors.getPage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
+                
+                this.setLaunchEvents(_self.searchPage, false);
             }
             else {
                 this.appendLines(_self.tabacedoc, messageHeader);
@@ -545,7 +500,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (clickedLine.length < 2) // not a line number with text row
             return;
         
-        while (currRow > 0 && session.getTokenAt(currRow, 0).type != "string") {
+        // "string" type is the parent filename
+        while (currRow > 0 && session.getTokenAt(currRow, 0).type.indexOf("string") < 0) {
           currRow--;
         }
         
@@ -604,7 +560,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         }
         
         var replacement = "";
-        if (options.replacement.length > 0)
+        if (this.replaceAll)
             replacement = "', replaced as '" + options.replacement ;
         
         return "Searching for '" + options.query + replacement + "' in " + path + optionsDesc + "\n";    
@@ -618,6 +574,91 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         message += (countJSON.filecount > 1 || countJSON.filecount == 0) ? " files" : " file";
             
         return message;
+    },
+    
+    makeSearchResultsPanel : function() {
+        var _self = this;
+        // create editor if it does not exist
+        if (!this.$panel) {
+            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+            this.$panel.setAttribute("closebtn", true);
+                 
+            tabConsole.set(_self.pageID);
+            
+            this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
+                syntax            : "c9search",
+                "class"           : "nocorner aceSearchConsole",
+                anchors           : "0 0 0 0",
+                theme             : "ace/theme/monokai",
+                overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
+                folding           : "true",
+                behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
+                selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
+                activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
+                gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
+                showinvisibles    : "false",
+                showprintmargin   : "false",
+                softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
+                tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",
+                scrollspeed       : "[{require('core/settings').model}::editors/code/@scrollspeed]",
+                newlinemode       : "[{require('core/settings').model}::editors/code/@newlinemode]",
+                animatedscroll    : "[{require('core/settings').model}::editors/code/@animatedscroll]",
+                fontsize          : "[{require('core/settings').model}::editors/code/@fontsize]",
+                gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
+                highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
+                autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
+                fadefoldwidgets   : "false",
+                wrapmodeViewport  : "true"
+            }));
+            
+            this.setLaunchEvents(_self.searchConsole.$editor, true);
+            
+            this.searchConsole.$editor.renderer.scroller.addEventListener("mousemove", function(e) {
+                var x = 3;
+                
+                var y = 3 + 5;
+            });
+            
+            this.$panel.addEventListener("afterclose", function(){
+                this.removeNode();
+                return false;
+            });
+        }
+        else {
+            tabConsole.appendChild(this.$panel);
+            tabConsole.set(this.pageID);
+            this.searchConsole.$editor.session.getDocument().setValue("");
+        }
+    },
+    
+    setLaunchEvents : function(editor, isConsole) {
+        var _self = this;
+        function enterHandler(e) {
+            if (e.keyCode == 13) {
+                if (e.altKey === false) {
+                    _self.launchFileFromSearch(editor);
+                }
+                else {
+                    editor.insert("\n");
+                }
+                return false;
+            }
+        };
+        
+        if (isConsole) {
+            this.searchConsole.addEventListener("keydown", enterHandler);
+            
+            this.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function() {
+                _self.launchFileFromSearch(editor);
+            });
+        }
+        else {
+            this.searchPage.addEventListener("keydown", enterHandler);
+            
+            this.searchPage.addEventListener("dblclick", function() {
+                _self.launchFileFromSearch(editor);
+            });
+        }
     },
     
     cancelFind : function() {
