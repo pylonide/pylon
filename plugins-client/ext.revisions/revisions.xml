@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:skin id="revisions"
         src = "{require('ext/revisions/revisions').skin}"
-        media-path = "{require('core/ide').staticPrefix}/ext/revisions/images/" />
+        media-path = "{ide.staticPrefix}/ext/revisions/images/" />
 
     <a:window
       id        = "winQuestionRev"

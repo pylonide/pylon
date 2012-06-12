@@ -18,6 +18,8 @@ var css = require("text!ext/consolehints/consolehints.css");
 var c9console = require("ext/console/console");
 var commands = require("ext/commands/commands");
 
+css = css.replace(/\{ide\.staticPrefix\}/g, ide.staticPrefix);
+
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 
