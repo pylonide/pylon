@@ -751,7 +751,7 @@ apf.codebox = function(struct, tagName) {
         });
 
         function onBlur() {
-            if (ace.session.getValue())
+            if (ace.$isFocused || ace.session.getValue())
                 return;
             dom.addCssClass(ace.codebox.$ext, "tb_textboxInitial");
             
@@ -761,7 +761,7 @@ apf.codebox = function(struct, tagName) {
             ace.renderer.scroller.appendChild(ace.renderer.initialMessageNode);
         }
         ace.on("blur", onBlur);
-        setTimeout(onBlur, function() { if (!ace.$isFocused)onBlur(); }, 100);
+        setTimeout(onBlur, 100);
         // todo should we do this here?
         // ace.on("resize", function(){apf.layout.forceResize();});
     };
