@@ -3252,7 +3252,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main label="span/text()" minheight="18" minwidth="18">
+        <a:main label="span" minheight="18" minwidth="18" title="span/text()">
             <div class='cbcontainer cbblack'>
                 <div class='checkbox'> </div>
                 <span>-</span>
@@ -4968,7 +4968,7 @@
             color: #C0DABE;
             display: inline-block;
             font-size: 12px;
-            line-height: 27px;
+            line-height: 23px;
             overflow: hidden;
             padding: 0 0 0 8px;
         }
@@ -4979,7 +4979,7 @@
             position: absolute;
             right: 0;
             top: 0;
-            width: 16px;
+            width: 18px;
         }
         .dropdown-dark-glossy .button:before {
             background: url(images/dropdown-dark-glossy/divider.png) no-repeat 50% 0;
@@ -5586,7 +5586,7 @@
         .label-dashboard{
             color: #C9C9C9;
             cursor: default;
-            font-family: Tahoma, Arial;
+            font-family: Helvetica, Arial, sans-serif;
             font-size: 12px;
             line-height: 27px;
             overflow: hidden;
@@ -10786,7 +10786,7 @@
         .textbox-on-dark {
             background-color: #f2f2f2;
             border: 1px solid #000000;
-            border-radius: 3px;
+            border-radius: 4px;
             box-shadow: 0 1px 8px 0 rgba(0,0,0,.6),
                         0 1px 4px 0 #7E7E7E inset;
             overflow: hidden;
@@ -10805,6 +10805,8 @@
         .textbox-on-dark input {
             background-color: transparent;
             border: 0 none;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
             margin: 0;
             outline: 0 !important;
             padding: 0;
@@ -10814,14 +10816,14 @@
      */
     .textbox-on-darkInitial input {
         color: #BABABA;
-        text-shadow: 1px solid #FFFFFF;
+        text-shadow: 0 1px 0 #FFFFFF;
     }
     /*
      * Focus
      */
     .textbox-on-darkFocus {
-        outline: -webkit-focus-ring-color auto 5px;
-        outline-offset: -2px;
+        box-shadow: 0px 0px 6px #03DC7D;
+        border-color: #03DC7D;
     }
     .textbox-on-darkFocus input {
         outline-width: 0;
@@ -10866,6 +10868,7 @@
         .chromeless input {
             background: none;
             border: 0 none;
+            box-sizing: border-box;
             color: #ededed;
             font-family: Helvetica, Arial, sans;
             font-size: inherit;
@@ -10873,7 +10876,8 @@
             line-height: 1.3em;
             margin: 0;
             outline: 0;
-            width: inherit;
+            padding-right: 2px;
+            width: 100%;
         }
         .chromeless:hover {
             background-color: rgba(255, 255, 255, .1);
@@ -12210,6 +12214,66 @@
         </a:presentation>
     </a:button>
 
+    <a:button name="thumbnail-colorless">
+        <a:style><![CDATA[
+            .thumbnail-colorless {
+                background-color: #373839;
+                background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.09) 100%);
+                background-image:    -moz-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.09) 100%);
+                background-image:         linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.09) 100%);
+                border: 1px solid #191F19;
+                border-radius: 5px;
+                box-shadow: 0 1px 5px 1px rgba(0,0,0,.332),
+                            inset 0 0 0 1px rgba(255,255,255,.12);
+                cursor: pointer;
+                position: relative;
+                -webkit-transition: background-color .1s linear;
+                   -moz-transition: background-color .1s linear;
+                        transition: background-color .1s linear;
+            }
+            .thumbnail-colorlessOver {
+                background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:    -moz-linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:         linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+            }
+            .thumbnail-colorlessDown {
+                background-image: -webkit-linear-gradient(-90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:    -moz-linear-gradient(-90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:         linear-gradient(-90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+            }
+            .thumbnail-colorlessDisabled {
+                cursor: default;
+                opacity: 0.2;
+            }
+            
+            /********************************************************************************
+             * Icon
+             *******************************************************************************/
+            .thumbnail-colorless:after {
+                background-position: 50% 50%;
+                background-repeat: no-repeat;
+                content: "";
+                display: block;
+                height: inherit;
+                left: 0;
+                position: absolute;
+                top: 0;
+                width: inherit;
+            }
+            .java.thumbnail-colorless:after {
+                background-image: url(images/project/java.png);
+            }
+            .cloud9.thumbnail-colorless:after {
+                background-image: url(images/project/cloud9.png);
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="thumbnail-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+
     <a:button name="button-close">
         <a:style><![CDATA[
             .button-close {
@@ -12236,7 +12300,7 @@
     <a:button name="button-link-dark">
         <a:style><![CDATA[
             .button-link-dark {
-                color: #555555;
+                color: #DDDCDC;
                 cursor: pointer;
                 font-size: 11px;
                 text-shadow: 0 1px 1px #242424;
@@ -12245,14 +12309,14 @@
 
             .button-link-darkFocus,
             .button-link-darkOver {
-                color: #C9C9C9;
+                color: #eee;
             }
             .button-link-darkDown {
                 color: #aaa;   
             }
+            
             .button-link-darkDisabled {
-                color: #434343;
-                cursor: default;
+                color: #555555;
             }
             .button-link-dark.selected {
                 color: #C0DABF;

@@ -1,82 +1,158 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 <a:window 
-  id = "dashboard"
-  width = "1100"
-  height = "600"
-  center    = "true"
+    id = "dashboard"
+    class = "dashboard"
+    width = "1000"
+    height = "600"
+    center = "true"
+    resizable = "true"
 >
     
-  <a:bar 
-    class = "c9-menu-bar"
-    height = "4"
-  ></a:bar>
-  <a:hbox
+<a:bar class="c9-menu-bar" height="4"></a:bar>
+<a:hbox
     class = "dark-opaque"
     height = "47"
     edge = "9 10 10 10"
-  >
+>
     
     <a:textbox
-      id           = "projectTitle"
-      focusselect  = "true"
-      height       = "25"
-      margin       = "0 10 0 0"
-      skin         = "chromeless"
-      style        = "font-size: 20px"
-      value        = "Untitled project"
-      width        = "260"
-      />
-    <a:label skin="label-dashboard">Store my data:</a:label>
-    <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy">
-        <a:item value="cloud9Git">On Cloud9 as a Git Repo</a:item>
-        <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
-        <a:item value="vm">FTP Server</a:item>
-        <a:item value="vm">On my own private virtual machine</a:item>
-    </a:dropdown>
-    <a:filler />
-    <a:hbox class="new-project-options" edge="1 0 0 0">
-      <a:button caption="Pick a template" skin="button-link-dark" class="selected" height="25" />
-      <a:button caption="Clone" skin="button-link-dark" height="25" />
-      <a:button caption="Upload" skin="button-link-dark" height="25" />
+        id           = "projectTitle"
+        focusselect  = "true"
+        height       = "25"
+        margin       = "0 10 0 -2"
+        skin         = "chromeless"
+        style        = "font-size: 20px"
+        value        = "Untitled project"
+        flex         = "1"
+    />
+    <a:hbox width="292">
+        <a:label skin="label-dashboard">Store my data:</a:label>
+        <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy">
+            <a:item value="cloud9Git">On Cloud9 as a Git Repo</a:item>
+            <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
+            <a:item value="vm">FTP Server</a:item>
+            <a:item value="vm">On my own private virtual machine</a:item>
+        </a:dropdown>
     </a:hbox>
-    <a:filler />
-
+    <a:hbox flex="2">
+        <a:checkbox label="Make private" value="" margin="4 0 0 5" skin="checkbox_black" tooltip="You need to be a premium user to make projects private." />
+        <a:filler />
+        <a:hbox class="new-project-options" edge="1 0 0 0">
+            <a:button caption="Pick a template" skin="button-link-dark" class="selected" height="25" />
+            <a:button caption="Clone" skin="button-link-dark" height="25" />
+            <a:button caption="Upload" skin="button-link-dark" height="25" />
+        </a:hbox>
+        <a:filler />
+    </a:hbox>
     <a:button caption="Create" class="create-project dark green" height="27" skin="button-colorless" width="110" />
-  </a:hbox>
-  <a:bar
-    class = "dark-opaque own-vm"
-    height = "165"
-  >
-    <a:button caption="Close" skin="button-close" />
-    <a:hbox height="29" margin="0 0 12 0" width="955">
-      <a:label skin="label-dashboard" width="76">Host name:</a:label>
-      <a:textbox initial-message="localhost" height="27" skin="textbox-on-dark" width="260" />
+</a:hbox>
+  
+  <!--
+    ooooooooooooo                                        oooo                .             
+    8'   888   `8                                        `888              .o8             
+         888       .ooooo.  ooo. .oo.  .oo.   oo.ooooo.   888   .oooo.   .o888oo  .ooooo.  
+         888      d88' `88b `888P"Y88bP"Y88b   888' `88b  888  `P  )88b    888   d88' `88b 
+         888      888ooo888  888   888   888   888   888  888   .oP"888    888   888ooo888 
+         888      888    .o  888   888   888   888   888  888  d8(  888    888 . 888    .o 
+        o888o     `Y8bod8P' o888o o888o o888o  888bod8P' o888o `Y888""8o   "888" `Y8bod8P' 
+                                               888                                         
+                                              o888o                                        
+  -->
+  <a:vbox class="dark-opaque pick-template">
+      <a:button caption="Close" skin="button-close" height="18" width="18" />
+      <a:hbox class="controls">
+              <a:button caption="Cancel" class="cancel" skin="button-link-dark" height="28"/>
+              <a:button caption="Use Template" class="create-project dark green" height="28" margin="0 0 0 13" skin="button-colorless" width="112" />
+      </a:hbox>
+      <a:hbox>
+        <a:filler />
+            <a:hbox class="categories" height="32" edge="0 29">
+                <a:button caption="Java" skin="button-link-dark" height="25" />
+                <a:button caption="Node.JS" skin="button-link-dark" class="selected" height="25" />
+                <a:button caption="Javascript" skin="button-link-dark" height="25" />
+                <a:button caption="APF" skin="button-link-dark" height="25" />
+                <a:button caption="ACE" skin="button-link-dark" height="25" />
+            </a:hbox>
+        <a:filler />
+      </a:hbox>
 
-      <a:label skin="label-dashboard" width="79">User name:</a:label>
-      <a:textbox initial-message="root" height="27" skin="textbox-on-dark" width="143"/>
+      <a:hbox class="template-list" edge="11 0 7">
+        <a:filler />
+            <a:vbox edge="0 4">
+                <a:button class="cloud9" height="57" skin="thumbnail-colorless" width="90" />
+                <a:button caption="iPhone App" skin="button-link-dark" class="selected" height="18" margin="5 0 0 0"/>
+            </a:vbox>
+            <a:vbox edge="0 4">
+                <a:button class="java" height="57" skin="thumbnail-colorless" width="90" />
+                <a:button caption="Template name" skin="button-link-dark" class="selected" height="18" margin="5 0 0 0"/>
+            </a:vbox>
+            <a:vbox edge="0 4">
+                <a:button class="java" height="57" skin="thumbnail-colorless" width="90" />
+                <a:button caption="Template name" skin="button-link-dark" class="selected" height="18" margin="5 0 0 0"/>
+            </a:vbox>
+            <a:vbox edge="0 4" class="selected">
+                <a:button class="cloud9" height="57" skin="thumbnail-colorless" width="90" />
+                <a:button caption="Counters" skin="button-link-dark" class="selected" height="18" margin="5 0 0 0"/>
+            </a:vbox>
+            <a:vbox edge="0 4">
+                <a:button class="java" height="57" skin="thumbnail-colorless" width="90" />
+                <a:button caption="Template name" skin="button-link-dark" class="selected" height="18" margin="5 0 0 0"/>
+            </a:vbox>
+        <a:filler />
+      </a:hbox>
+  </a:vbox>
 
-      <a:label skin="label-dashboard" width="82">Initial Path:</a:label>
-      <a:textbox initial-message="optional" height="27" skin="textbox-on-dark" width="315"/>
+  <!--
+      oooooooooooo ooooooooooooo ooooooooo.   
+      `888'     `8 8'   888   `8 `888   `Y88. 
+       888              888       888   .d88' 
+       888oooo8         888       888ooo88P'  
+       888    "         888       888         
+       888              888       888         
+      o888o            o888o     o888o        
+  -->
+  <a:vbox class="dark-opaque ftp" edge="13 11" height="91">
+    <a:button caption="Close" skin="button-close" height="18" width="18" />
+    <a:hbox margin="0 0 8 0">
+        <a:label skin="label-dashboard" width="64">Hostname:</a:label>
+        <a:textbox initial-message="localhost" height="27" skin="textbox-on-dark" width="290" />
+
+        <a:label skin="label-dashboard" margin="0 0 0 10" width="33">Port:</a:label>
+        <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="72" />
+
+        <a:label skin="label-dashboard" margin="0 0 0 12">Initial Path:</a:label>
+        <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="285" />
+
     </a:hbox>
+    <a:hbox edge="3 0 0 0">
+        <a:label class="tar" skin="label-dashboard" width="64">Username:</a:label>
+        <a:textbox initial-message="root" height="27" skin="textbox-on-dark" width="164"/>
 
-    <a:hbox margin="0 0 12 0" width="955">
-      <a:label skin="label-dashboard" width="76">Your key:</a:label>
-      <a:vbox>
-        <a:textbox skin="large-textarea" class="dark" height="72" width="482"/>
-        <a class="more-about-ssh" href="#">Learn how to configure your machine</a>
-      </a:vbox>
+        <a:label skin="label-dashboard" margin="0 0 0 10" width="67">Password:</a:label>
+        <a:textbox initial-message="" height="27" skin="textbox-on-dark" width="165" />
 
-      <a:label skin="label-dashboard" width="82">Port:</a:label>
-      <a:textbox initial-message="optional" height="27" skin="textbox-on-dark" width="92"/>
+        <a:radiobutton
+          group  = "connection-method"
+          label  = "FTP" 
+          margin = "3 0 0 83"
+          selected = "true"
+          skin   = "radio_black"
+          value  = "ftp"
+        />
+        <a:radiobutton
+          group  = "connection-method"
+          label  = "HTTP"
+          margin = "3 0 0 2"
+          skin   = "radio_black"
+          value  = "HTTP"
+        />
 
-      <a:button caption="Test your settings to continue" class="dark green" height="27" skin="button-colorless" width="215" />
-      
+        <a:button caption="Login test" class="dark green" height="27" margin="-1 0 0 34" skin="button-colorless" width="135" />
+        <a:label skin="label-tooltip" class="left error" height="28" margin="0 0 0 4" >There was an error<br />when trying to connect.</a:label>
     </a:hbox>
+  </a:vbox>
 
-</a:bar>
-
-
-   <!--
+  <!--
         
         .oooooo.   oooo                                      .o88o.                                         ooooo     ooo ooooooooo.   ooooo        
        d8P'  `Y8b  `888                                      888 `"                                         `888'     `8' `888   `Y88. `888'        
@@ -87,41 +163,149 @@
        `Y8bood8P'  o888o `Y8bod8P' o888o o888o `Y8bod8P'    o888o   d888b    `Y8bod8P' o888o o888o o888o       `YbodP'    o888o  o888o o888ooooood8 
                                                                                                                                                     
    -->
-   <a:bar class="clone-from-url dark-opaque">
-      <a:label flex="1">Where is your data stored</a:label>
+  <a:hbox class="dark-opaque clone-from-url" edge="10 10 10 11" height="47">
+    <a:button caption="Close" skin="button-close" height="18" width="18" />
+    <a:label skin="label-dashboard">URL to Clone from:</a:label>
+    <a:textbox initial-message="Paste your Git URL in here" height="27" skin="textbox-on-dark" width="479" />
+    <a:button caption="Clone it" class="clone dark green" height="27" margin="0 0 0 8" skin="button-colorless" width="122" />
+    <a:label skin="label-tooltip" class="left error" height="28" margin="0 0 0 4" style="line-height: 19px">There was an error.</a:label>
+  </a:hbox>
+<!--
+<a:bar class="clone-from-url dark-opaque">
+-      <a:label flex="1">Where is your data stored</a:label>
+-      
+-      <a:button caption="Clone it" class="clone dark green" height="28" skin="button-colorless" width="122" />
+-      <a:button class="cloning dark light-grey" height="28" skin="button-colorless" width="122">
+-        <div class="loading"></div>
+-      </a:button>
+-      <a:button caption="Cloning finished" class="cloned dark light-blue" height="28" skin="button-colorless" width="122" />
+-      <a:button caption="Clone it" class="clone dark error green" height="28" skin="button-colorless" width="122" />
+-      <a:label skin="label-tooltip" class="left error" height="35">Connection failed!<br />Please check the fields for errors.</a:label>
+-      <a:label skin="label-tooltip" class="left success" height="35">We are in.<br />You are good to go!</a:label>
+-      <a:label skin="label-tooltip" class="top" height="35">Now hit the green “Create” button to finish.</a:label>
+-
+-      <a:button caption="Close" skin="button-close" />
+-
+-      <a:textbox skin="large-textarea" class="dark" height="50" width="460"/>
+-      <a:textbox skin="large-textarea" />
+-   </a:bar>
+-->
+  <!--
+      .oooooo.                                   oooooo     oooo ooo        ooooo 
+     d8P'  `Y8b                                   `888.     .8'  `88.       .888' 
+    888      888 oooo oooo    ooo ooo. .oo.        `888.   .8'    888b     d'888  
+    888      888  `88. `88.  .8'  `888P"Y88b        `888. .8'     8 Y88. .P  888  
+    888      888   `88..]88..8'    888   888         `888.8'      8  `888'   888  
+    `88b    d88'    `888'`888'     888   888          `888'       8    Y     888  
+     `Y8bood8P'      `8'  `8'     o888o o888o          `8'       o8o        o888o 
+  -->
+
+<a:vbox
+    class = "dark-opaque own-vm"
+    edge = "13 11"
+    height = "153"
+>
+    <a:button caption="Close" skin="button-close" height="18" width="18" />
+    <a:hbox height="29" margin="0 0 10 0" width="955">
+        <a:label skin="label-dashboard" width="64">Hostname:</a:label>
+        <a:textbox initial-message="localhost" height="27" skin="textbox-on-dark" width="260" />
+
+        <a:label skin="label-dashboard" width="68" margin="0 0 0 11">Username:</a:label>
+        <a:textbox initial-message="root" height="27" skin="textbox-on-dark" width="143"/>
+
+        <a:label skin="label-dashboard" width="67" margin="0 0 0 15">Initial Path:</a:label>
+        <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="297"/>
+    </a:hbox>
+
+    <a:hbox margin="0 0 8 0" width="955">
+        <a:label skin="label-dashboard" class="tar" width="64">Your key:</a:label>
+        <a:vbox>
+            <a:textbox skin="large-textarea" class="dark" height="72" value="AAAAB3NzaC1yc2EAAAABIwAAAIEA728zWkotiSuyyfLKJIQuTRgoCO/TL0e4YJ8FpEtK38vrVcY1ilWt9ReNTaPH62zQ72PbiI9jS+5hLehdtSmHWHlIfMliNzm0MS23hCOpGdKOZ3C51nPDwW8nb5aF+BOEYhbDBvYABVsg1U6SmehzYUNaq/UkR53kVozI1mnv/SU" width="481"/>
+            <a class="more-about-ssh" href="#">Learn how to configure your machine</a>
+        </a:vbox>
+
+      <a:vbox>
+        <a:hbox>
+            <a:label skin="label-dashboard" width="70" margin="0 0 0 12">Port:</a:label>
+            <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="72"/>
+
+            <a:button caption="Test your settings to continue" class="dark green" height="27" margin="45 0 0 11" skin="button-colorless" width="215" />
+        </a:hbox>
+        <a:hbox edge="0 0 0 0">
+            <a:label skin="label-tooltip" class="top error test-connection-label" height="35" width="233">Something went wrong, please check for errors.</a:label>
+        </a:hbox>
+      </a:vbox>
       
-      <a:button caption="Clone it" class="clone dark green" height="28" skin="button-colorless" width="122" />
-      <a:button class="cloning dark light-grey" height="28" skin="button-colorless" width="122">
-        <div class="loading"></div>
-      </a:button>
-      <a:button caption="Cloning finished" class="cloned dark light-blue" height="28" skin="button-colorless" width="122" />
-      <a:button caption="Clone it" class="clone dark error green" height="28" skin="button-colorless" width="122" />
-      <a:label skin="label-tooltip" class="left error" height="35">Connection failed!<br />Please check the fields for errors.</a:label>
-      <a:label skin="label-tooltip" class="left success" height="35">We are in.<br />You are good to go!</a:label>
-      <a:label skin="label-tooltip" class="top" height="35">Now hit the green “Create” button to finish.</a:label>
+    </a:hbox>
+</a:vbox>
 
-      <a:button caption="Close" skin="button-close" />
-
-      <a:textbox skin="large-textarea" class="dark" height="50" width="460"/>
-      <a:textbox skin="large-textarea" />
-   </a:bar>
-   <!--
-          
-          .oooooo.                                   oooooo     oooo ooo        ooooo 
-         d8P'  `Y8b                                   `888.     .8'  `88.       .888' 
-        888      888 oooo oooo    ooo ooo. .oo.        `888.   .8'    888b     d'888  
-        888      888  `88. `88.  .8'  `888P"Y88b        `888. .8'     8 Y88. .P  888  
-        888      888   `88..]88..8'    888   888         `888.8'      8  `888'   888  
-        `88b    d88'    `888'`888'     888   888          `888'       8    Y     888  
-         `Y8bood8P'      `8'  `8'     o888o o888o          `8'       o8o        o888o 
-                                                                                      
-   -->
-   <a:hbox>
-
-   </a:hbox>
-
-   <a:hbox>
-   </a:hbox>
 
 </a:window>
+
+<a:window 
+    id = "profile"
+    class = "profile"
+    width = "1000"
+    height = "300"
+    center = "true"
+    resizable = "true"
+>
+  <a:hbox class="dark-opaque own-vm" edge="20">
+      <a:button caption="Close" skin="button-close" height="18" width="18" />
+      <a:vbox class="account" height="185" width="438">
+          <a:hbox class="header" height="33" edge="10">
+              <div class="label" height="33" margin="-10 0 0 0" width="101">My Account</div>
+              <a:filler />
+              <a:button caption="Manage subscriptions" height="13" skin="button-link-dark" margin="0 8 0 0" />
+              <a:button caption="Your SSH key" height="13" skin="button-link-dark" margin="0 8 0 0" />
+              <a:button caption="Delete account" height="13" skin="button-link-dark" />
+          </a:hbox>
+          <a:hbox edge="7 8">
+            <a:hbox class="content" edge="9" height="127" width="424">
+              <div class="avatar-holder">
+                <img src="http://open.bekk.no/wp-content/uploads/2011/01/cloud9ide-293x300.png" alt="" class="avatar" height="84" width="84" />
+              </div>
+              <a:vbox>
+                <a:textbox
+                    height       = "25"
+                    margin       = "0 10 0 -2"
+                    skin         = "chromeless"
+                    value        = "Click here to set your full name"
+                />
+                <div class="public-url">Public URL: c9.io/<div class="custom">username</div></div>
+                <a:hbox>
+                  <div>Share what you love</div>
+                    <a class="social-button Twitter">Twitter</a>
+                    <a class="social-button google">Google</a>
+                    <a class="social-button facebook">Facebook</a>
+                    <a class="social-button mail">Mail</a>
+                </a:hbox>
+              </a:vbox>
+            </a:hbox>
+          </a:hbox>
+      </a:vbox>
+          
+      <a:vbox>
+        <div>Linked services</div>
+        <a:checkbox label="Github(vlad@c9.io)" value="" skin="checkbox_black" />
+        <a:checkbox label="" value="" skin="checkbox_black" ></a:checkbox>
+        <div>Linking to other services gives you instant access to your external projects!</div>
+      </a:vbox>
+      <a:vbox>
+        <h3>Your email address:</h3>
+        <a:hbox>
+            <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
+            <a:button caption="Save" class="dark green" height="27" margin="0 0 0 11" skin="button-colorless" />
+        </a:hbox>
+        <h3>Change your password:</h3>
+        <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
+        <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
+        <a:hbox>
+            <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
+            <a:button caption="Save" class="dark green" height="27" margin="0 0 0 11" skin="button-colorless" />
+        </a:hbox>
+      </a:vbox>
+  </a:hbox>
+</a:window>
+
 </a:application>

@@ -1,3 +1,7 @@
+/********************************************************************************
+ * Tools
+ *******************************************************************************/
+
 .fbox:after {
     content: "";
     display: block;
@@ -9,6 +13,39 @@
 .fright {
     float: right !important;
 }
+.tar {
+    text-align: right !important;
+}
+
+/********************************************************************************
+ * Loading animation
+ *******************************************************************************/
+@-webkit-keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+   @-moz-keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+        @keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+
+div.loading {
+    -webkit-animation: loading .7s linear 0s infinite normal;
+       -moz-animation: loading .7s linear 0s infinite normal;
+            animation: loading .7s linear 0s infinite normal;
+
+    background: url(http://dl.dropbox.com/u/3269118/loading.png) no-repeat;
+    height: 27px;
+    left: 50%;
+    margin: -13px 0 0 -14px;
+    position: absolute;
+    top: 50%;
+    width: 28px;
+}
+
+/********************************************************************************
+ * General styles
+ *******************************************************************************/
+
+.error.button-colorless {
+    color: #FFE4A1;
+}
+
 .chromeless {
     margin-right: 10px;
 }
@@ -27,28 +64,16 @@
     padding-right: 0;
 }
 
-/********************************************************************************
- * Own VM
- *******************************************************************************/
-.own-vm {
-    padding: 10px;
-    padding-top: 13px;
-}
-.own-vm .label-dashboard {
-    text-align: right;
-}
-.own-vm .button-close {
+.dashboard .button-close {
     right: 8px;
     position: absolute;
     top: 8px;
 }
-.own-vm .hbox {
-    margin-bottom: 10px;
-}
-.own-vm .button-colorless {
-    left: 8px;
-    position: relative;
-    top: 44px;
+/********************************************************************************
+ * Own VM
+ *******************************************************************************/
+.own-vm {
+    padding: 11px;
 }
 .own-vm .vbox {
     position: relative;
@@ -62,6 +87,14 @@
     right: 0;
 }
 
+.test-connection-label {
+    position: absolute;
+    right: -9px;
+}
+
+/********************************************************************************
+ * Clone
+ *******************************************************************************/
 
 .clone.button-colorless,
 .cloning.button-colorless {
@@ -85,23 +118,172 @@
 .clone.button-colorless {
     text-indent: -24px;   
 }
-@-webkit-keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
-   @-moz-keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
-        @keyframes loading { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
 
-div.loading {
-    -webkit-animation: loading .7s linear 0s infinite normal;
-       -moz-animation: loading .7s linear 0s infinite normal;
-            animation: loading .7s linear 0s infinite normal;
-
-    background: url(http://dl.dropbox.com/u/3269118/loading.png) no-repeat;
-    height: 27px;
-    left: 50%;
-    margin: -13px 0 0 -14px;
-    position: absolute;
-    top: 50%;
-    width: 28px;
+/********************************************************************************
+ * FTP
+ *******************************************************************************/
+.ftp .rb_black span {
+    color: #C9C9C9;
+    font-family: Arial, sans;
+    font-size: 12px;
 }
-.error.button-colorless {
-    color: #FFE4A1;
+
+.ftp .left.label-tooltip {
+    padding-top: 0;
+}
+
+/********************************************************************************
+ * Pick a template
+ *******************************************************************************/
+.pick-template {
+    box-shadow: 0 -1px 0 #111,
+                inset 0 1px 0 rgba(255,255,255,.07);
+    background-image:    -moz-linear-gradient(90deg, #292929 0%, #303030 100%);
+    background-image: -webkit-linear-gradient(90deg, #292929 0%, #303030 100%);
+    background-image:         linear-gradient(90deg, #292929 0%, #303030 100%);
+    position: relative;
+}
+.pick-template .categories {
+    border-bottom: 1px solid black;
+    box-shadow: 0 1px 0 0 #353535;
+}
+.pick-template .categories .button-link-dark {
+    color: #C9C9C9;
+    font-size: 14px;
+    padding: 7px 17px 13px;
+}
+.pick-template .categories .button-link-dark.selected {
+    color: #FCB520;
+}
+
+.pick-template .template-list .vbox .button-link-dark {
+    color: #C9C9C9;
+    text-align: center;
+}
+.pick-template .template-list .vbox.selected .button-link-dark {
+    color: #F4CE85;
+}
+.pick-template .template-list .vbox.selected .thumbnail-colorless {
+    background-color: #665A43;
+    background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.16) 100%);
+    background-image:    -moz-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.16) 100%);
+    background-image:         linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.16) 100%);
+    box-shadow: 0 1px 5px rgba(0,0,0,.31),
+                inset 0 0 0 1px rgba(255,255,255,.2);
+}
+.pick-template .controls {
+    position: absolute;
+    top: 59px;
+    right: 35px;
+}
+.pick-template .controls .cancel {
+    font-size: 13px;
+    line-height: 28px;
+}
+
+/********************************************************************************
+ * Profile
+
+    ooooooooo.                       .o88o.  o8o  oooo            
+    `888   `Y88.                     888 `"  `"'  `888            
+     888   .d88' oooo d8b  .ooooo.  o888oo  oooo   888   .ooooo.  
+     888ooo88P'  `888""8P d88' `88b  888    `888   888  d88' `88b 
+     888          888     888   888  888     888   888  888ooo888 
+     888          888     888   888  888     888   888  888    .o 
+    o888o        d888b    `Y8bod8P' o888o   o888o o888o `Y8bod8P' 
+                                                                  
+ *******************************************************************************/
+.profile .account {
+    background-color: rgba(60,61,63,.7);
+    background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.08) 100%);
+    background-image:    -moz-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.08) 100%);
+    background-image:         linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.08) 100%);
+    border-radius: 5px;
+    border: 1px solid rgba(0,4,10,.45);
+    box-shadow: 0 1px 5px rgba(0,0,0,.31), inset 0 0 0 1px #5e5e5e;
+
+}
+.profile .account .header {
+    background-color: #d2654c;
+    background-image: -webkit-linear-gradient(90deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,0) 100%);
+    background-image:    -moz-linear-gradient(90deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,0) 100%);
+    background-image:         linear-gradient(90deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,0) 100%);
+    border-bottom: 1px solid rgba(0,0,0,.6);
+    border-radius: 5px 5px 0 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18),
+                inset 0 0 2px rgba(243,242,240,.15),
+                0 1px 0 0 #5E5E5E;
+}
+.profile .account .header .label {
+    background: url(/static/ext/dashboard/images/label-my-account.png) no-repeat 3px 50%;
+    overflow: hidden;
+    text-indent: 100%;
+}
+.profile .account .header .button-link-dark {
+    box-shadow: 3px 0px 0 -2px #F9E0DA;
+    color: #f9e0da;
+    font-size: 11px;
+    margin-right: 7px;
+    padding-right: 6px;
+    text-shadow: 0 1px 0 #a8533e;
+}
+.profile .account .header .button-link-darkOver {
+    color: white;
+}
+.profile .account .header .button-link-dark:last-child {
+    box-shadow: none;
+    padding-right: 0;
+}
+.profile .account .content {
+    background-color: #e5e3e1;
+    background-image: -webkit-linear-gradient(90deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,0) 100%);
+    background-image:    -moz-linear-gradient(90deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,0) 100%);
+    background-image:         linear-gradient(90deg, rgba(0,0,0,.05) 0%, rgba(0,0,0,0) 100%);
+    border: 2px solid rgba(42,42,42,.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.81);
+}
+.profile .content .avatar-holder {
+    background: url(/static/ext/dashboard/images/avatar.png) no-repeat 50% 0;
+    height: 104px;
+    overflow: hidden;
+    padding: 8px 9px;
+    width: 101px;
+}
+
+.profile .content .chromeless input {
+    color: #575654;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    text-shadow: 0 1px 0 #f9f5f2;
+}
+.profile .content .chromeless {
+    border: 1px dotted transparent;
+    border-radius: 4px;
+}
+.profile .content .chromeless:hover,
+.profile .content .chromelessFocus {
+    border: 1px dotted #BBB;
+}
+.profile .content .chromelessFocus {
+    background-color: rgba(255,255,255,.5) !important;
+    border-style: solid !important;
+}
+.profile .content .public-url {
+    color: #575654;
+    font-family: Georgia, serif;
+    font-size: 13px;
+    font-style: italic;
+    text-shadow: 0 1px 0 #f9f5f2;
+}
+.profile .content .public-url .custom {
+    color: #51813A;
+    display: inline-block;
+}
+.profile .content .share {
+    background: url(/static/ext/dashboard/images/heart.png) no-repeat 0 50%;
+    color: #865032;
+    font-size: 12px;
+    padding-left: 15px;
+    text-shadow: 0 1px 0 #efebe8;
 }
