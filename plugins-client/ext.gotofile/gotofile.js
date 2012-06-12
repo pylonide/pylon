@@ -30,6 +30,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     nodes   : [],
     
     arraySearchResults : [],
+    arrayCache : [],
+    arrayCacheLastSearch : [],
+    outlineArrayCache : [],
 
     hook : function(){
         var _self = this;
@@ -160,6 +163,19 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.updateDatagrid();
         
         this.nodes.push(winGoToFile);
+    },
+    
+    setOutlineData : function(nodes) {
+        if (!txtGoToFile.value.match(/^@/))
+            return;
+        this.lastSearch = "@";
+        this.arrayCacheLastSearch = nodes;
+        this.filter(txtGoToFile.value, 1);
+        this._dirty = true;
+        
+        if (this.dgGoToFile) {
+            this.updateDatagrid();
+        }
     },
     
     updateFileCache : function(isDirty){

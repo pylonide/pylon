@@ -208,16 +208,19 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    this.outline = function() {
+    this.outline = function(event) {
         var _self = this;
         this.parse(function(ast) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
-                        if(outline)
+                        if (outline) {
+                            outline.showNow = event.data.showNow;
                             return _self.sender.emit("outline", outline);
-                        else
+                        }
+                        else {
                             next();
+                        }
                     });
                 }
                 else

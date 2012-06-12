@@ -12,12 +12,26 @@ var gotofile = require("ext/gotofile/gotofile");
 
 module.exports = {
     hook: function(ext, worker) {
+        this.worker = worker;
         var _self = this;
         
         worker.on("outline", function(event) {
             _self.renderOutline(event);
-        });
+        }); 
         
+        // TODO: properly register this event listener
+        // TODO: only call fetchOutline() once
+        var setListener = function() {
+            if (typeof txtGoToFile === "undefined") {
+                setTimeout(setListener, 1000);
+                return;
+            }
+            txtGoToFile.addEventListener("afterchange", function(e) {
+                if (txtGoToFile.value.match(/^@/))
+                    _self.fetchOutline(false);
+            });
+        };
+        setListener();               
         commands.addCommand({
             name: "outline",
             hint: "search for a definition and jump to it",
@@ -26,13 +40,13 @@ module.exports = {
                 return editor && editor.ceEditor;
             },
             exec: function () {
-                worker.emit("outline", {data: {}});
+                _self.fetchOutline(true);
             }
         });
 
         var mnuItem = new apf.item({
             command : "outline"
-	    });
+        });
 
         ext.nodes.push(
             menus.addItemByPath("View/Outline", mnuItem)
@@ -57,6 +71,10 @@ module.exports = {
         }
         return xmlS.join('');
     },
+    
+    fetchOutline : function(showNow) {
+        this.worker.emit("outline", { data : { showNow: showNow } });
+    },
 
     findCursorInOutline: function(json, cursor) {
         for (var i = 0; i < json.length; i++) {
@@ -77,43 +95,27 @@ module.exports = {
             console.log("Oh noes! " + data.error);
             return;
         }
-        var outline = data.body;
+        var results = [];
+        this.extractResults(data, results);
         
-        gotofile.toggleDialog(-1);
-        dgGoToFile.setSelection("@");
-        return;
-        
-        barOutline.setAttribute('visible', true);
-        var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
-        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline.items, selected, 'entries') + '</data>'));
-        
-        var node = mdlOutline.queryNode("//entry[@selected]");
-        if(node) {
-            treeOutline.select(node);
-            var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
-            htmlNode.scrollIntoView();
+        if (event.data.showNow) {
+            gotofile.toggleDialog(1);
+            if (!txtGoToFile.value.match(/^@/))
+                txtGoToFile.setValue("@");
+            txtGoToFile.$input.selectionStart = 1;
         }
-        //document.addEventListener("click", this.closeOutline);
-        ace.container.addEventListener("DOMMouseScroll", this.closeOutline);
-        ace.container.addEventListener("mousewheel", this.closeOutline);
-
-        apf.popup.setContent("outline", barOutline.$ext);
-        setTimeout(function() {
-            apf.popup.show("outline", {
-                x        : editors.currentEditor.amlEditor.getWidth()/2 - 150,
-                y        : 0,
-                animate  : false,
-                ref      : ace.container,
-                callback : function() {
-                    barOutline.setHeight(300);
-                    barOutline.setWidth(300);
-                    sbOutline.$resize();
-                    setTimeout(function() {
-                        treeOutline.focus();
-                    }, 100);
-                }
-            });
-        }, 0);
+        gotofile.setOutlineData(results);
+    },
+    
+    extractResults: function(outlineItem, results) {
+        if (outlineItem.name)
+            results.push("@" + outlineItem.name);
+        var body = outlineItem.body;
+        if (!body)
+            return;
+        for (var i = 0; i < body.length; i++)
+            this.extractResults(body[i], results);
+        
     },
 
     jumpTo: function(el) {
