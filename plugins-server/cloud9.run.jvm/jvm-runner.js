@@ -24,7 +24,7 @@ var exports = module.exports = function (url, pm, sandbox, usePortFlag, callback
         });
     });
 
-    function init(projectDir, port, unixId, url) {
+    function init(projectDir, unixId, url) {
         pm.addRunner("jvm", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
 
         callback();
