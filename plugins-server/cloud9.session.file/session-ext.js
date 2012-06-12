@@ -48,7 +48,17 @@ var FileStore = function(options) {
                             console.error(err);
                             return;
                         }
-                        var sess = JSON.parse(data);
+                        if (data.toString() === "") {
+                            self.destroy(file);
+                            return;
+                        }
+                        var sess;
+                        try {
+                            sess = JSON.parse(data);
+                        } catch(err) {
+                            console.warn("Error '" + err + "' while reading session from file: " + self.basePath + "/" + file);
+                            return;
+                        }
                         var expires = (typeof sess.cookie.expires === 'string')
                             ? new Date(sess.cookie.expires)
                             : sess.cookie.expires;

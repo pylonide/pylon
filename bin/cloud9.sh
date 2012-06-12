@@ -1,6 +1,8 @@
 #!/bin/sh
 
-cd `dirname $0`/..
+CMD="$0"
+CMD_DIR=`dirname "$CMD"`
+cd "$CMD_DIR/.."
 
 make update
 
