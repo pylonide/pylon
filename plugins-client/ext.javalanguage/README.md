@@ -34,32 +34,27 @@ On MacOSX, you can do
 
 7- Build the plugin
 
+a- Build the plugin jar
     $ cd cloud9/node_modules/jvm_features
     $ java -jar $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar -application org.eclipse.ant.core.antRunner
 
 Ref: [Eclipse plugin headless build](http://eclipse.dzone.com/articles/headless-build-beginners-part)
 
-b-
+b- Move the jar to eclipse
     $ rm -f $ECLIPSE_PATH/plugins/CodeCompletePlugin*
     $ cp CodeCompletePlugin* $ECLIPSE_PATH/plugins/
 
-c- test it with:
+c- Test it with:
 
     $ java -cp $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar org.eclipse.equinox.launcher.Main -application CodeCompletePlugin.Cloud9Eclipse -consoleLog
 
-8- Open the init config file in: cloud9/node_modules/jvm_features/js/lib/eclipse/config.js
+8- Clear your browser cache and start The IDE
 
-Comment the line with -configuration and -dev attributes
-
-9- Build worker files
-
-    $ make worker
-
-10- Clear your browser cache and start The IDE:
+(Note that the worker files should be automatically built)
 
     $ bin/cloud9.sh -w ~/jvm_workspace/${projectName}
 
-11- For C9 infra running and environment variable passing through sudo
+9- For C9 infra running and environment variable passing through sudo
 
 Edit /etc/sudoers and add the line
 
