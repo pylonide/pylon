@@ -35,12 +35,14 @@ On MacOSX, you can do
 7- Build the plugin
 
 a- Build the plugin jar
+
     $ cd cloud9/node_modules/jvm_features
     $ java -jar $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar -application org.eclipse.ant.core.antRunner
 
 Ref: [Eclipse plugin headless build](http://eclipse.dzone.com/articles/headless-build-beginners-part)
 
 b- Move the jar to eclipse
+
     $ rm -f $ECLIPSE_PATH/plugins/CodeCompletePlugin*
     $ cp CodeCompletePlugin* $ECLIPSE_PATH/plugins/
 
