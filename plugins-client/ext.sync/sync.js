@@ -50,14 +50,14 @@ module.exports = ext.register("ext/sync/sync", {
             var event = message.args.event;
             if (event.name === "enabled") {
                 if (event.value === true) {
-
                     apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
-                    
                 } else {
-
                     apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
-                    
                 }
+            }
+            else if (event.name === "status") {
+                // TODO: Update global sync status indicator.
+                console.log("[SYNC] STATUS", event.value);
             }
         }
         else if (message.action === "notify-file") {
