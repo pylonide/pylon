@@ -24,6 +24,11 @@ module.exports = ext.register("ext/sync/sync", {
     nodes : [],
     markup : markup,
 
+    syncEnabled: undefined,
+
+    // Only applicable if running in infra.
+    syncClients: {},
+
     init : function(amlNode){
         var _self = this;
 
@@ -46,11 +51,17 @@ module.exports = ext.register("ext/sync/sync", {
     },
  
     handleMessage : function(message) {
+        var _self = this;
+
         if (message.action === "notify") {
             var event = message.args.event;
             if (event.name === "enabled") {
-                if (event.value === true) {
+                _self.syncEnabled = event.value;
+                if (_self.syncEnabled === true) {
                     apf.setStyleClass(btnSyncStatus.$ext, "on", ["off"]);  
+                    if (!ide.local && typeof message.args.clients !== "undefined") {
+                        _self.syncClients = message.args.clients;
+                    }
                 } else {
                     apf.setStyleClass(btnSyncStatus.$ext, "off", ["on"]);  
                 }
@@ -80,10 +91,28 @@ module.exports = ext.register("ext/sync/sync", {
         }
     },
 
+    displayMasterStatus: function() {
+        var _self = this;
+
+        if (_self.syncEnabled === true) {
+            // TODO: Show dialog listing clients (`_self.syncClients`) configured to sync this workspace and their respective sync status (`_self.syncClients[].status`).
+            console.log("TODO: Show dialog listing clients configured to sync this workspace and their respective sync status.", _self.syncClients);
+        }
+        else if (_self.syncEnabled === false) {
+            // TODO: Show dialog with instructions on how to setup local version.
+            console.log("TODO: Show dialog with instructions on how to setup local version.");
+        }
+        else {
+            // Do nothing as we don't know if sync is enabled or disabled yet
+            // (sync toggle should be grayed out and not be clickable at all so we should never get here in the first place).
+        }
+    },
+
     enableSync: function() {
+        var _self = this;
 
         if (!ide.local) {
-            console.error("You should never get here as sync toggle can only be switched if `ide.local === true` for now. i.e. Sync toggle should not show if `ide.local !== true`.");
+            _self.displayMasterStatus();
             return;
         }
 
@@ -140,9 +169,10 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     disableSync: function() {
+        var _self = this;
 
         if (!ide.local) {
-            console.error("You should never get here as sync toggle can only be switched if `ide.local === true` for now. i.e. Sync toggle should not show if `ide.local !== true`.");
+            _self.displayMasterStatus();
             return;
         }
 
