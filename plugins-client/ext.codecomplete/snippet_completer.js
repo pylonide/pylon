@@ -4,6 +4,7 @@ define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
 var baseLanguageHandler = require('ext/language/base_handler');
+var ide = require("core/ide");
 
 var completer = module.exports = Object.create(baseLanguageHandler);
 
@@ -15,7 +16,7 @@ completer.handlesLanguage = function(language) {
 
 completer.fetchText = function(path) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', "/static/" + path, false);
+    xhr.open('GET', ide.staticPrefix + "/" + path, false);
     xhr.send();
     if(xhr.status === 200)
         return xhr.responseText;

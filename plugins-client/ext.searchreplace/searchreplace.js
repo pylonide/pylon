@@ -28,7 +28,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    css     : css,
+    css     : css.replace(/\{ide\.staticPrefix\}/g, ide.staticPrefix),
     markup  : markup,
 
     skin    : {

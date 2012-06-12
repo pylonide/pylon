@@ -1,3 +1,4 @@
+
 var fs = require('fs');
 
 var extensions = require("../configs/default.js").containers.master.plugins;
@@ -27,7 +28,7 @@ clientMappings = "'" + clientMappings.join("',\n\t'") + "'";
 var appTemplate = fs.readFileSync("./build/app.build.tmpl.js", "utf8");
 
 // transform all variable paths out
-var appFile = appTemplate.replace(/%b/g, "build").replace(/%d/g, "plugins-client").replace('"%s"', clientPlugins).replace('"%m"', clientMappings).replace('"%o"', '"../plugins-client/lib.packed/www/packed.js"');
+var appFile = appTemplate.replace(/%b/g, "build").replace(/%d/g, "plugins-client").replace('"%a"', '"node_modules/ace/lib/ace/worker"').replace('"%s"', clientPlugins).replace('"%m"', clientMappings).replace('"%o"', '"../plugins-client/lib.packed/www/packed.js"');
 
 fs.writeFile("./build/app.build.js", appFile, "utf8", function(err) {
     if (err) {

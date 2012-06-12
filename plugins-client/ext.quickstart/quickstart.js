@@ -25,10 +25,10 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    skin    : {
+    skin     : {
         id   : "quickstart",
         data : skin,
-        "media-path" : "/static/ext/quickstart/images/"
+        "media-path" : ide.staticPrefix + "/ext/quickstart/images/"
     },
     nodes : [],
 

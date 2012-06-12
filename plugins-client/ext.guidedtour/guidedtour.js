@@ -38,7 +38,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     skin    : {
         id   : "guidedtour",
         data : skin,
-        "media-path" : "/static/ext/guidedtour/images/"
+        "media-path" : ide.staticPrefix + "/ext/guidedtour/images/"
     },
     currentStep: -1,
     currentEl: null,

@@ -890,6 +890,13 @@ module.exports = ext.register("ext/editors/editors", {
                     var state = node.getAttribute("state");
                     var doc   = ide.createDocument(node);
 
+                    // for some reason c9local can aggresively cache open files; this prevents
+                    // open files from one workspace appearing in another
+                    if (ide.local) {
+                        if (node.getAttribute("path").split("/")[2] !== ide.workspaceId)
+                            continue;
+                    }
+                    
                     try {
                         if (state)
                             doc.state = JSON.parse(state);
