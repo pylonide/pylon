@@ -60,6 +60,24 @@ module.exports = ext.register("ext/sync/sync", {
                 }
             }
         }
+        else if (message.action === "notify-file") {
+            if (message.args.event === "added") {
+                // TODO: Update tree & reload file if open.
+                console.log("[SYNC] file added", message.args.path, message.args.mtime);
+            }
+            else if (message.args.event === "modified") {
+                // TODO: Update tree & reload file if open.
+                console.log("[SYNC] file modified", message.args.path, message.args.mtime);
+            }
+            else if (message.args.event === "moved") {
+                // TODO: Update tree & reload file if open.
+                console.log("[SYNC] file moved", message.args.oldPath, " -> ", message.args.path);
+            }
+            else if (message.args.event === "removed") {
+                // TODO: Update tree & reload file if open.
+                console.log("[SYNC] file removed", message.args.path);
+            }
+        }
     },
 
     enableSync: function() {
