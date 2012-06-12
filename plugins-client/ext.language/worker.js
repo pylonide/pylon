@@ -195,6 +195,8 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
+                    if (e instanceof TypeError)
+                        throw e;
                     // Ignore parse errors
                     next();
                 }
