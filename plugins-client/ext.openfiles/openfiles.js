@@ -75,6 +75,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var pgModel = e.doc.$page.$model;
             pgModel.addEventListener("update", 
               pgModel.$lstOpenFilesListener = function(){
+                  if (!pgModel.data)
+                       return;
+                  
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
                       apf.xmldb.setAttribute(node, "changed", changed);
@@ -118,7 +121,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
-            
+
             if (!self.trFiles)
                 return;
 
@@ -127,24 +130,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 return;
             }
             
-            var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
+            var path = (e.newPath || e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
 
-            if (!e.replace)
-                var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
             if (node && fNode && trNode) {
                 if (e.path)
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
-                    trNode && apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
-                if (e.filename) {
+                if (e.filename)
                     apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
-                    trNode && apf.xmldb.setAttribute(trNode, "name", apf.getFilename(e.filename));
-                }
-                if (e.changed != undefined) {
+                if (e.changed != undefined)
                     apf.xmldb.setAttribute(fNode, "changed", e.changed);
-                    trNode && apf.xmldb.setAttribute(trNode, "changed", e.changed);
-                }
             }
         });
     },

@@ -356,34 +356,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         this.model.setAttribute("whitespace", false);
 
-        var processing = {};
-        this.model.addEventListener("update", function(e){
-            // Resort on move, copy, rename, add
-            if (e.action === "attribute" || e.action === "add" || e.action === "move") {
-                var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
-                if (processing[xmlNode.getAttribute("a_id")]) {
-                    return;
-                }
-                processing[xmlNode.getAttribute("a_id")] = true;
-
-                var sort = new apf.Sort();
-                sort.set({
-                    xpath: "@name",
-                    method: "filesort"
-                });
-                var nodes = sort.apply(pNode.childNodes);
-
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    if (nodes[i] == xmlNode) {
-                        if (xmlNode.nextSibling != nodes[i+1]) {
-                            apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
         this.webdav = apf.document.documentElement.appendChild(new apf.webdav({
             id  : "davProject",

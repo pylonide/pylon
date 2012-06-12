@@ -131,10 +131,12 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + " .winGoToFile, "
              + "." + cssClass + " .revisionsBar .topbar, "
              + "." + cssClass + " .revisionsBar .revisionsHolder, "
+             + "." + cssClass + " .code_complete_text_holder, "
              + "." + cssClass + " .session_page", 
              "color:" + fg + " !important; background-color: " + bg + " !important"],
             ["." + cssClass + " .searchresults > div > span, "
              + "." + cssClass + ".dark .revisions-list .revision, "
+             + "." + cssClass + ".dark .cc_complete_option, "
              + "." + cssClass + " .searchresults > div",
             "color:" + fg + ";"],
             ["." + cssClass + " .ace_corner", 

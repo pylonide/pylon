@@ -9616,7 +9616,6 @@
                           url(images/c9-noise-light-10.png);
     }
     .editor_tab .editor_bg {
-        height : 100%;
         position : absolute;
         /* Old, from before merge
         top : 0;
