@@ -18,7 +18,7 @@ var refactor = require('ext/language/refactor');
 var outline = require('ext/language/outline');
 var hierarchy = require('ext/language/hierarchy');
 var format = require('ext/language/format');
-var save = require("ext/save/save");
+var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
@@ -87,13 +87,25 @@ module.exports = ext.register("ext/language/language", {
             worker.on("commandRequest", function(e) {
                 var cmd = e.data;
                 if (cmd.command == "save") {
-                  save.quicksave(tabEditors.getPage(), function() {
-                    worker.emit("commandComplete", {
-                     data: {
-                      command: cmd.command,
-                      success: true
-                    }});
-                  });
+                    var page = tabEditors.getPage();
+                    if (!page)
+                        return;
+                    var doc  = page.$doc;
+                    var node = doc.getNode();
+                    var path = node.getAttribute("path");
+                    var value = doc.getValue();
+
+                    fs.saveFile(path, value, function(data, state, extra) {
+                        if (state != apf.SUCCESS)
+                            return console.error("Couldn't save file: " + extra.message);
+                        apf.xmldb.removeAttribute(node, "saving");
+                        worker.emit("commandComplete", {
+                            data: {
+                                command: cmd.command,
+                                success: true
+                            }
+                        });
+                    });
                 }
             });
 

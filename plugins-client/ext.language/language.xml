@@ -46,7 +46,7 @@
                         <a:caption>
                           <?lm [@name]{!![@meta] ? "<cpde style='color:gray;'> : [@meta]</code>" : ""} ?>
                         </a:caption>
-                        <a:icon value="/static/ext/language/img/[@icon].png" />
+                        <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
                     </a:each>
                 </a:tree>
                 <a:scrollbar
@@ -110,7 +110,7 @@
                         <a:caption>
                           <?lm [@name]{!![@meta] ? "<code style='color:gray;'> - [@meta]</code>" : ""} ?>
                         </a:caption>
-                        <a:icon value="/static/ext/language/img/[@icon].png" />
+                        <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
                     </a:each>
                 </a:tree>
                 <a:scrollbar
