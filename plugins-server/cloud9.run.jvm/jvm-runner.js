@@ -89,7 +89,7 @@ function getJVMInstance(options, callback) {
     }
 
     function buildApp(jvmInstance) {
-        jvm.build(cwd, function(err, compilationProblems) {
+        jvm.build(cwd, options.uid, "build", function(err, compilationProblems) {
             if (err)  return callback(err);
 
             // If no errors found, we can start
@@ -110,7 +110,7 @@ function getJVMInstance(options, callback) {
                     }
                 });
             }
-        }, "build");
+        });
     }
 }
 
