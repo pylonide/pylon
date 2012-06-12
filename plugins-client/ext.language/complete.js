@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
+var completionUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
@@ -250,6 +251,7 @@ module.exports = {
             if (match.icon)
                 hasIcons = true;
         });
+        var isInferAvailable = completionUtil.isInferAvailable();
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? CLASS_SELECTED : CLASS_UNSELECTED;
@@ -257,12 +259,17 @@ module.exports = {
             
             if (match.icon)
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
-            if (!hasIcons || match.icon) {
+                
+            if (!isInferAvailable || match.icon) {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             }
-            else {
-                html += '<span class="main"><span class="deferred">' + match.name + '</span>';
+            else if (hasIcons) {
+                html += '<span class="main"><span class="deferred">' + _self.name + match.name.substring(_self.prefix.length) + '</span>';
             }
+            else {
+                html += '<span class="main"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
+            }
+            
             if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
             }

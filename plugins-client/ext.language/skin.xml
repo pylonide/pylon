@@ -59,7 +59,7 @@
             }
 
             .code_complete_bar .deferred {
-                opacity: .8;
+                opacity: .7;
             }
 
             .code_complete_bar .main u {
