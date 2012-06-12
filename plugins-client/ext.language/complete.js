@@ -209,22 +209,20 @@ module.exports = {
         var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
-        setTimeout(function() {
-            apf.popup.show("completionBox", {
-                x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
-                y        : _self.cursorConfig.lineHeight,
-                height   : completionBoxHeight,
-                width    : MENU_WIDTH,
-                animate  : false,
-                ref      : cursorLayer.cursor,
-                callback : function() {
-                    barCompleterCont.setHeight(completionBoxHeight);
-                    barCompleterCont.$ext.style.height = completionBoxHeight + "px";
-                    sbCompleter.$resize();
-                    _self.completionElement.scrollTop = 0;
-                }
-            });
-        }, 0);
+        apf.popup.show("completionBox", {
+            x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
+            y        : _self.cursorConfig.lineHeight,
+            height   : completionBoxHeight,
+            width    : MENU_WIDTH,
+            animate  : false,
+            ref      : cursorLayer.cursor,
+            callback : function() {
+                barCompleterCont.setHeight(completionBoxHeight);
+                barCompleterCont.$ext.style.height = completionBoxHeight + "px";
+                sbCompleter.$resize();
+                _self.completionElement.scrollTop = 0;
+            }
+        });
     },
 
     closeCompletionBox : function(event, doNotHide) {
