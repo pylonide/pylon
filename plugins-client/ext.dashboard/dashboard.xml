@@ -252,33 +252,34 @@
 >
   <a:hbox class="dark-opaque own-vm" edge="20">
       <a:button caption="Close" skin="button-close" height="18" width="18" />
-      <a:vbox class="account" height="185" width="438">
-          <a:hbox class="header" height="33" edge="10">
+      <a:vbox class="account" height="177" width="440">
+          <a:hbox class="header" height="33" edge="10 11 10 10">
               <div class="label" height="33" margin="-10 0 0 0" width="101">My Account</div>
               <a:filler />
               <a:button caption="Manage subscriptions" height="13" skin="button-link-dark" margin="0 8 0 0" />
               <a:button caption="Your SSH key" height="13" skin="button-link-dark" margin="0 8 0 0" />
               <a:button caption="Delete account" height="13" skin="button-link-dark" />
           </a:hbox>
-          <a:hbox edge="7 8">
-            <a:hbox class="content" edge="9" height="127" width="424">
+          <a:hbox edge="6 7">
+            <a:hbox class="content" edge="6 5" height="127" width="424">
               <div class="avatar-holder">
-                <img src="http://open.bekk.no/wp-content/uploads/2011/01/cloud9ide-293x300.png" alt="" class="avatar" height="84" width="84" />
+                <img src="http://cl.ly/400I2c3f1X14453c3Y20/Untitled-1.png" alt="" class="avatar" height="84" width="84" />
               </div>
               <a:vbox>
                 <a:textbox
                     height       = "25"
-                    margin       = "0 10 0 -2"
+                    margin       = "11 0 0 9"
                     skin         = "chromeless"
                     value        = "Click here to set your full name"
+                    width        = "260"
                 />
-                <div class="public-url">Public URL: c9.io/<div class="custom">username</div></div>
-                <a:hbox>
-                  <div>Share what you love</div>
-                    <a class="social-button Twitter">Twitter</a>
-                    <a class="social-button google">Google</a>
-                    <a class="social-button facebook">Facebook</a>
-                    <a class="social-button mail">Mail</a>
+                <div class="public-url" margin="6 0 0 13">Public URL: c9.io/<div class="custom">username</div></div>
+                <a:hbox class="share" height="19" edge="0 0 0 24" margin="10 0 0 9">
+                  <div margin="0 7 0 0">Share what you love:</div>
+                    <a:button caption="Twitter" class="button-social twitter" height="20" margin="-2 5 0 0" skin="button-social" width="20" />
+                    <a:button caption="Google Plus" class="button-social google-plus" height="20" margin="-2 5 0 0" skin="button-social" width="20" />
+                    <a:button caption="Facebook" class="button-social facebook" height="20" margin="-2 5 0 0" skin="button-social" width="20" />
+                    <a:button caption="Mail" class="button-social mail" height="20" margin="-2 0 0 0" skin="button-social" width="20" />
                 </a:hbox>
               </a:vbox>
             </a:hbox>
