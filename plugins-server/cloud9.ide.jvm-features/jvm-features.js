@@ -14,14 +14,17 @@ var EclipseClient = require("jvm_features").EclipseClient;
 
 var ECLIPSE_START_PORT = 10000;
 var name = "jvm-features";
+var Sandbox;
 
 module.exports = function setup(options, imports, register) {
+    Sandbox = imports.sandbox;
     imports.ide.register(name, JVMFeatures, register);
 };
 
 var JVMFeatures = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
+    this.sandbox = Sandbox;
     this.hooks = ["connect", "disconnect", "command"];
     this.name = name;
     // remove the project name
@@ -134,11 +137,13 @@ util.inherits(JVMFeatures, Plugin);
           function(err, port) {
             if (err)
               return _self.$error("Could not find a free port", 1, err);
-            var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
-               _self.workspaceDir);
-            eclipseClient.on("output", console.log);
-            eclipseClient.on("err", console.error);
-            eclipseClient.initEclipseSession();
+            _self.sandbox.getUnixId(function (unixId) {
+                var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
+                    _self.workspaceDir, unixId);
+                eclipseClient.on("output", console.log);
+                eclipseClient.on("err", console.error);
+                eclipseClient.initEclipseSession();
+            });
         });
         return true;
     };
