@@ -8049,7 +8049,7 @@ completer.handlesLanguage = function(language) {
 
 completer.fetchText = function(path) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', "/static/" + path, false);
+    xhr.open('GET', ide.staticPrefix + "/" + path, false);
     xhr.send();
     if(xhr.status === 200)
         return xhr.responseText;
