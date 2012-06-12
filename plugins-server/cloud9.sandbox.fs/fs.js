@@ -168,6 +168,13 @@ module.exports = function (projectDir, unixId) {
     };
 
     /**
+     * Wrapper around stat
+     */
+    this.stat = function () {
+        return this.$simpleWrapper.call(this, "stat", arguments);
+    };
+    
+    /**
      * Equivalent to "mkdir - p"
      * Adapted from https://github.com/substack/node-mkdirp
      */
