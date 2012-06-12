@@ -441,7 +441,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 
                 _self.searchPage = tabEditors.getPage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
+                _self.apfeditor = _self.searchPage.$editor.ceEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
+                
+                apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults")
                 
                 this.setLaunchEvents(_self.searchPage, false);
             }
@@ -587,7 +590,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
                 syntax            : "c9search",
-                "class"           : "nocorner aceSearchConsole",
+                "class"           : "nocorner aceSearchConsole aceSearchResults",
                 anchors           : "0 0 0 0",
                 theme             : "ace/theme/monokai",
                 overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
@@ -637,6 +640,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             if (e.keyCode == 13) {
                 if (e.altKey === false) {
                     _self.launchFileFromSearch(editor);
+                    if (e.shiftKey === true) {
+                        _self.searchConsole.focus();
+                    }
                 }
                 else {
                     editor.insert("\n");
@@ -653,7 +659,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             });
         }
         else {
-            this.searchPage.addEventListener("keydown", enterHandler);
+            this.apfeditor.addEventListener("keydown", enterHandler);
             
             this.searchPage.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(editor);

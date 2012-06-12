@@ -3410,11 +3410,7 @@
           z-index : 10001 !important;
         }
  
-         /* These nocorner classes apply to Search Results tab */
-        .nocorner .ace_gutter {
-            opacity: rgba(200, 200, 200, 0.3);
-        }
-        
+         /* These nocorner classes apply to Search Results tab in the console*/
         .nocorner.ace_editor {
             margin-top: 3px;
         }
@@ -3436,8 +3432,17 @@
         .aceSearchConsole .nocorner.ace_editor {
             margin-top: 0px;
         }
+        .aceSearchResults .ace_text-layer {
+            pointer-events: auto;
+        }
+        .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
+            cursor: pointer;
+        }
+        .aceSearchResults .ace_line::selection, .aceSearchResults .ace_line::-moz-selection {
+           cursor: text;
+	    }
         
-        .ace_gutter .ace_gutter_active_line {
+        .ace_gutter .ace_gutter_active_line, .aceSearchConsole .ace_gutter .ace_gutter_active_line {
             background-color: rgba(0, 0, 0, 0.07);
         }
         .dark .ace_gutter .ace_gutter_active_line {
