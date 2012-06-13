@@ -334,6 +334,13 @@ BODY {
 .green-label {
     color: #d2f4c7;
 }
+.yellow-label {
+    color: #ffb017;
+}
+.white-label {
+    color: #e9f8fd;
+    font-size: 13px;
+}
 
 .nodecor-link {
     text-decoration: none;

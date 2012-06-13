@@ -191,7 +191,15 @@
             width: 74px;
             z-index: 999;
         }
-
+        
+        .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+            top: 55px;
+        }
+        
+        .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+            top: 35px;
+        }
+        
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
             background : url(images/c9-no-repeat.png) no-repeat -84px 0;
             height: 10px;

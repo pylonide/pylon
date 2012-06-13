@@ -28,21 +28,30 @@
     />
 
     <a:vbox anchors="0 0 0 0" id="vbMain">
-        <a:hbox id="view-mode-box" visible="false" height="55" class="view-mode-box" align="center" edge="0 10">
+        <a:hbox id="view-mode-box-not-loggedin" visible="false" height="55" class="view-mode-box" align="center" edge="0 10">
             <a href="http://c9.io" class="c9-logo-view-mode"></a>
             <a:filler />
             <a:hbox align="center">
-                <span class="green-label">You are in view mode. </span> To edit
-                <a:button skin="button-colorless" class="dark blue" onclick="winLogin.show()" margin="0 10" width="65">sign in</a:button>
-                or
+                <span class="yellow-label">You are in Guest mode <span class="blue-label">(no editing)</span></span>
                 <a href="http://c9.io/site/pricing/" target="_blank" class="nodecor-link">
-                    <a:button skin="button-colorless" class="dark orange" onclick="" margin="0 10" width="65">sign up</a:button>
+                    <a:button skin="button-colorless" class="dark" onclick="" margin="0 10" width="65">Sign up</a:button>
                 </a>
+                or
+                <a:button skin="button-colorless" class="dark green" onclick="winLogin.show()" margin="0 10" width="115">Sign in to edit*</a:button>
+            </a:hbox>
+        </a:hbox>
+        <a:hbox id="view-mode-box-readonly" visible="false" height="35" class="view-mode-box" align="center" edge="0 10">
+            <span class="blue-label">This project you are viewing is owned by <span id="lblPrjUser" class="yellow-label"></span></span>
+            <a:filler />
+            <a:hbox align="center">
+                <span class="blue-label">Need edit-rights? Simply 
+                    <a id="chatWithUser" href="javascript:void(0)" class="green-label" 
+                        onclick="">chat</a> with the project owner!</span>
             </a:hbox>
             <a:filler />
-            <div align="end" class="blue-label">You might have to request editing rights to project admins.</div>
+            <a href="javascript:void(0)" class="white-label nodecor-link" onclick="self['view-mode-box-readonly'].hide()">Hide this!</a>
         </a:hbox>
-
+        
         <a:bar skin="c9-menu-bar" id="logobar">
             <a:hbox>
                 <a:hbox id="barTools" edge="0 0 0 0" padding="3" align="center">
