@@ -139,6 +139,7 @@ var contentTypes = {
     "php": "application/x-httpd-php",
     "phtml": "application/x-httpd-php",
     "html": "text/html",
+    "tpl": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
     "*Cakefile": "text/x-script.coffeescript",
