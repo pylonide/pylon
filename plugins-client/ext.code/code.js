@@ -46,8 +46,10 @@ var ModesCaption = {
     "Coldfusion" : "text/x-coldfusion",
     "CSS" : "text/css",
     "Groovy" : "text/x-groovy",
+    "haXe" : "text/hx",
     "Java" : "text/x-java-source",
     "JavaScript" : "application/javascript",
+    "JSON" : "application/json",
     "Latex" : "application/x-latex",
     "Script" : "text/x-script",
     "Less" : "text/x-less",
@@ -58,21 +60,19 @@ var ModesCaption = {
     "Perl" : "text/x-script.perl",
     "Powershell" : "text/x-script.powershell",
     "Python" : "text/x-script.python",
+    "pqSQL" : "text/x-sql",
     "Ruby" : "text/x-script.ruby",
     "Scala" : "text/x-scala",
     "SCSS" : "text/x-scss",
+    "SH" : "application/x-sh",
     "SQL" : "text/x-sql",
+    "SVG" : "image/svg+xml",
     "Textile" : "text/x-web-textile",
     "HTML" : "text/html",
     "XML" : "application/xml",
     "XQuery" : "text/x-xquery",
     "Go" : "text/x-go",
-    "haXe" : "text/hx",
-    "JSON" : "application/json",
-    "SH" : "application/x-sh",
-    "SVG" : "image/svg+xml",
-    "YAML" : "application/x-yaml",
-    "pqSQL" : "text/x-sql"
+    "YAML" : "application/x-yaml"    
 };
 
 var SupportedModes = {
