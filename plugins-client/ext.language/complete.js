@@ -458,7 +458,7 @@ module.exports = {
         }
         else {
             if(typeof barCompleterCont !== 'undefined')
-                barCompleterCont.$ext.style.display = "none";
+               this.closeCompletionBox();
         }
     },
     
