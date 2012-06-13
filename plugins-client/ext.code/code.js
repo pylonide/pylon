@@ -45,6 +45,7 @@ var ModesCaption = {
     "CoffeeScript" : "text/x-script.coffeescript",
     "Coldfusion" : "text/x-coldfusion",
     "CSS" : "text/css",
+    "Go" : "text/x-go",
     "Groovy" : "text/x-groovy",
     "haXe" : "text/hx",
     "Java" : "text/x-java-source",
@@ -71,7 +72,6 @@ var ModesCaption = {
     "HTML" : "text/html",
     "XML" : "application/xml",
     "XQuery" : "text/x-xquery",
-    "Go" : "text/x-go",
     "YAML" : "application/x-yaml"    
 };
 
