@@ -120,52 +120,51 @@ module.exports = ext.register("ext/sync/sync", {
         apf.ajax("/api/context/get", {
             method: "POST",
             async: true,
-            callback: function( data, state ) {
-                if (state == apf.SUCCESS) {
-                    data = JSON.parse(data);
-
-                    // console.log("Projects", data.projects);
-
-                    // TODO: In dialog present list of cloned online projects.
-                    //       Once user selects close dialog and call `enable(onlineWorkspaceId)`
-                    //       where `onlineWorkspaceId` is `data.projects[<selected>].label`.
-                    //       User can also cancel dialog to abort.
-
-                    enable("sync-test");
-
-                } else {
-                    // TODO: Display error?
+            callback: function( data, state, extra) {
+                if (state != apf.SUCCESS) {
+                    return util.alert("Unable to get available projects", "An error occurred while getting available projects for sync", extra.http.responseText);
                 }
+                
+                data = JSON.parse(data);
+                console.log("Projects", data);
+                winAlert.show();
+                
+                // TODO: In dialog present list of cloned online projects.
+                //       Once user selects close dialog and call `enable(onlineWorkspaceId)`
+                //       where `onlineWorkspaceId` is `data.projects[<selected>].label`.
+                //       User can also cancel dialog to abort.
+                
+                //enable("sync-test");
             }
         });        
-        
-        function enable(onlineWorkspaceId) {
-            apf.ajax("/api/sync/enable", {
+    },
+    
+    syncProjecct: function(onlineWorkspaceId){
+        apf.ajax("/api/sync/enable", {
                 method: "POST",
                 data: "payload=" + encodeURIComponent(JSON.stringify({
                     localWorkspaceId: ide.workspaceId,
                     onlineWorkspaceId: onlineWorkspaceId
                 })),
                 async: true,
-                callback: function( data, state ) {
-                    if (state == apf.SUCCESS) {
-                        data = JSON.parse(data);
-                        if (data.success === true) {
-                            // Success. Nothing more to do. (UI sync state will update via socket.io push event)
-                        }
-                        else if (data.workspaceNotEmpty === true) {
-                            // TODO: Make dialog look better.
-                            util.alert(
-                                "Sync Error",
-                                "Your workspace must be empty in order to start syncing with an online project! (Workspace dir may only contain settings file)"
-                            );
-                        }
-                    } else {
-                        // TODO: Display error?
+                callback: function( data, state, extra) {
+                    if (state != apf.SUCCESS) {
+                        return util.alert("Unable to enable sync", "An error occurred while sync for project " + onlineWorkspaceId, extra.http.responseText);
+                    }
+                    
+                    data = JSON.parse(data);
+                    if (data.success === true) {
+                        // Success. Nothing more to do. (UI sync state will update via socket.io push event)
+                    }
+                    else if (data.workspaceNotEmpty === true) {
+                        // TODO: Make dialog look better.
+                        util.alert(
+                            "Sync Error",
+                            "Your workspace must be empty in order to start syncing with an online project! (Workspace dir may only contain settings file)"
+                        );
                     }
                 }
             });
-        }
     },
 
     disableSync: function() {
@@ -184,12 +183,11 @@ module.exports = ext.register("ext/sync/sync", {
                 localWorkspaceId: ide.workspaceId
             })),
             async: true,
-            callback: function( data, state ) {
-                if (state == apf.SUCCESS && JSON.parse(data).success === true) {
-                    // Success. Nothing more to do. (UI sync state will update via socket.io push event)
-                } else {
-                    // TODO: Display error?
+            callback: function( data, state, extra ) {
+                if (state != apf.SUCCESS || JSON.parse(data).success !== true) {
+                    return util.alert("Unable to disable syncing", "An error occurred while disabling sync", extra.http.responseText);
                 }
+                // Success. Nothing more to do. (UI sync state will update via socket.io push event)
             }
         });
     },
