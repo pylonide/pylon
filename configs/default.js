@@ -159,7 +159,7 @@ var config = {
                 secret: "v1234"
             }, {
                 packagePath: "connect-architect/connect.session.file",
-                sessionsPath: __dirname + "/../.architect/sessions"
+                sessionsPath: __dirname + "/../.sessions"
             },
             "./cloud9.permissions",
             {
