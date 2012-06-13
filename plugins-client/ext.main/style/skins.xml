@@ -10304,6 +10304,20 @@
         .docktab .page.curpage{
             display : block;
         }
+        
+        /**
+         * blink 182
+         */
+        @-webkit-keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
+        @-moz-keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
+        @keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
+        
+        .un-read-message .tab_title {
+            -webkit-animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
+            -moz-animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
+            animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
+        }
+
     ]]></a:style>
     <a:style condition="apf.isWebkit">
         .docktab .btncontainer .btntab {
@@ -10328,7 +10342,7 @@
             </div>
         </a:main>
         <a:button
-          caption   = "div[1]/text()"
+          caption   = "div[1]"
           container = "."
           maxwidth  = "100"
           minwidth  = "10">

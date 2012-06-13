@@ -411,7 +411,23 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var btnPage = btnObj.$dockpage;
         if(!btnPage.initCaption)
             btnPage.initCaption = btnPage.getAttribute("caption");
-        btnPage.setAttribute("caption", btnPage.initCaption + (count > 0 ? " (" + count + ")" : ""));
+            
+        var caption = btnPage.initCaption;
+        
+        if(!btnPage.$active) {
+            if (count > 0) {
+                caption += " (" + count + ")";
+                apf.setStyleClass(btnPage.$button, "un-read-message");
+            }
+            else {
+                apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+            }
+            btnPage.setAttribute("caption", caption);
+        }
+        else {
+            btnPage.setAttribute("caption", caption);
+            apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+        }
         
         return true;
     }

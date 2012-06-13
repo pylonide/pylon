@@ -815,7 +815,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         apf.setOpacity(dragged.$ext, 0.2);
         
-        apf.setStyleClass(dragged.$ext, 'dragging');
+        apf.setStyleClass(dragged.$ext, "dragging");
         
         var lastBar   = this.$getLastBar();
         var leftEdge  = apf.getAbsolutePosition(lastBar.$ext)[0];
@@ -1118,7 +1118,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 default:
                     indicator.style.display = "none";
                     //apf.setOpacity(dragged.$ext, 1);
-                    apf.setStyleClass(dragged.$ext, '', ['dragging']);
+                    apf.setStyleClass(dragged.$ext, "", ["dragging"]);
                     break;
             }
             
