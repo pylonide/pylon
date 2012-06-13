@@ -456,6 +456,10 @@ handler.analyze = function(doc, ast, callback) {
                 'VarDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
+                'VarDeclInit(x, Function(_, _, _))', function() {
+                    // Allow unused function declarations
+                    return this;
+                },
                 'VarDeclInit(x, _)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
