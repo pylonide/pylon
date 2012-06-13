@@ -22,7 +22,7 @@ module.exports = ext.register("ext/dashboard/dashboard", {
     alone       : true,
     type        : ext.GENERAL,
     markup      : markup,
-    css         : css,
+    css         : css.replace(/\{ide\.staticPrefix\}/g, ide.staticPrefix),
     deps        : [fs],
     offline     : true,
 
@@ -36,7 +36,7 @@ module.exports = ext.register("ext/dashboard/dashboard", {
     init : function(amlNode){
         apf.importCssString(this.css || "");
 
-        dashboard.show();
+        profile.show();
     },
 
     enable : function(){

@@ -29,7 +29,7 @@ div.loading {
        -moz-animation: loading .7s linear 0s infinite normal;
             animation: loading .7s linear 0s infinite normal;
 
-    background: url(http://dl.dropbox.com/u/3269118/loading.png) no-repeat;
+    background: url({ide.staticPrefix}/ext/main/style/images/loading.png) no-repeat;
     height: 27px;
     left: 50%;
     margin: -13px 0 0 -14px;
@@ -102,7 +102,7 @@ div.loading {
 }
 .clone.button-colorless:after,
 .cloning.button-colorless:after {
-    background: url(/static/ext/main/style/images/button-clone.png) no-repeat 50% 0;
+    background: url({ide.staticPrefix}/ext/main/style/images/button-clone.png) no-repeat 50% 0;
     display: block;
     content: "";
     width: inherit;
@@ -205,7 +205,7 @@ div.loading {
 }
 .profile .account .header {
     background-color: #d2654c;
-    background-image: url(/static/ext/dashboard/images/header.png);
+    background-image: url({ide.staticPrefix}/ext/dashboard/images/header.png);
     border-bottom: 1px solid rgba(0,0,0,.6);
     border-radius: 5px 5px 0 0;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.18),
@@ -213,7 +213,7 @@ div.loading {
                 0 1px 0 0 #5E5E5E;
 }
 .profile .account .header .label {
-    background: url(/static/ext/dashboard/images/label-my-account.png) no-repeat 3px 50%;
+    background: url({ide.staticPrefix}/ext/dashboard/images/label-my-account.png) no-repeat 3px 50%;
     overflow: hidden;
     text-indent: 100%;
 }
@@ -241,7 +241,7 @@ div.loading {
     box-shadow: inset 0 1px 0 rgba(255,255,255,.81);
 }
 .profile .content .avatar-holder {
-    background: url(/static/ext/dashboard/images/avatar.png) no-repeat 50% 0;
+    background: url({ide.staticPrefix}/ext/dashboard/images/avatar.png) no-repeat 50% 0;
     height: 104px;
     overflow: hidden;
     padding: 8px 9px;
@@ -279,7 +279,7 @@ div.loading {
     display: inline-block;
 }
 .profile .content .share {
-    background: url(/static/ext/dashboard/images/heart.png) no-repeat 0 50%;
+    background: url({ide.staticPrefix}/ext/dashboard/images/heart.png) no-repeat 0 50%;
     color: #865032;
     font-size: 12px;
     line-height: 19px;
