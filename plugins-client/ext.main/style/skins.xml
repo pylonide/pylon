@@ -3436,7 +3436,7 @@
             pointer-events: auto;
         }
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
-            cursor: pointer;
+            cursor: cursor;
         }
         .aceSearchResults .ace_line::selection, .aceSearchResults .ace_line::-moz-selection {
            cursor: text;

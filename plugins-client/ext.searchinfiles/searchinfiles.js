@@ -456,32 +456,44 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             } 
         }
         
-        var firstStream = false;
+        var dataCompleted = false, lastLine = "", start = 0, http;
         this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {   
-            firstStream = true;
-            if (!chkSFConsole.checked)
-                _self.appendLines(_self.tabacedoc, data);
-            else
-                _self.appendLines(_self.consoleacedoc, data);
+            dataCompleted = true;
+            http          = extra.http;
         });
 
         // Start streaming
-        var start = 0;
-        this.timer = setInterval(function() {  
-            var q = davProject.realWebdav.queue[_self.id];
+        this.timer = setInterval(function() {
+            if (!http) {
+                var q = davProject.realWebdav.queue[_self.id];
+                http = q && q.http;
+            }
+            
+            if (http) {
+                var data = lastLine + http.responseText;
+                if (!data.length)
+                    return;
                 
-            if (firstStream && !q) {
+                var lines = (data).split("\n");
+                lastLine = lines.pop();
+                
+                if (!chkSFConsole.checked)
+                    _self.appendLines(_self.tabacedoc, lines);
+                else
+                    _self.appendLines(_self.consoleacedoc, lines);
+            }
+            
+            if (dataCompleted && !q) {
+                http     = null;
+                lastLine = "";
+                
                 if (!chkSFConsole.checked) {
-                    node.setAttribute("saving", "0");
+                    apf.xmldb.removeAttribute(node, "saving");
                     node.setAttribute("changed", "0");
                 }
                 btnSFFind.$ext.innerText = "Find";
                 return clearInterval(_self.timer);
             }
-            
-            // client not streaming atm
-            //var str = q.http.responseText;   
-            //console.log(str.substr(start).length);
         }, 50);
         
         this.saveHistory(options.query, "searchfiles");
@@ -523,7 +535,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
         var currLength = doc.getLength();
         
-        var contentArray = content.split("\n");
+        var contentArray = typeof content == "string" 
+            ? content.split("\n")
+            : content;
         var contentLength = contentArray.length;
         
         // reached the end of grep
