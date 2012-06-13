@@ -10,7 +10,7 @@ outlineHandler.handlesLanguage = function(language) {
 };
     
 outlineHandler.outline = function(doc, ast, callback) {
-    callback(extractOutline(ast));
+    callback({ body : extractOutline(ast) });
 };
     
 function fargsToString(fargs) {
@@ -111,7 +111,7 @@ function extractOutline(node) {
             return this;
         }
     );
-    return { body: results };
+    return results;
 }
 
 });

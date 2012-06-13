@@ -97,8 +97,6 @@ module.exports = {
             console.log("Oh noes! " + data.error);
             return;
         }
-        var results = [];
-        this.extractResults(data, results);
         
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
@@ -106,18 +104,7 @@ module.exports = {
                 txtGoToFile.setValue("@");
             txtGoToFile.$input.selectionStart = 1;
         }
-        gotofile.setOutlineData(results);
-    },
-    
-    extractResults: function(outlineItem, results) {
-        if (outlineItem.name)
-            results.push("@" + outlineItem.name);
-        var body = outlineItem.body;
-        if (!body)
-            return;
-        for (var i = 0; i < body.length; i++)
-            this.extractResults(body[i], results);
-        
+        gotofile.setOutlineData(data.body);
     },
 
     jumpTo: function(el) {

@@ -170,6 +170,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             return;
         this.lastSearch = "@";
         this.arrayCacheLastSearch = nodes;
+        this.outlineArrayCache = nodes;
         this.filter(txtGoToFile.value, 1);
         this._dirty = true;
         
@@ -269,12 +270,18 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 nodes = this.arrayCacheLastSearch;
             else
                 nodes = this.arrayCache;
+            
+            if (keyword.indexOf("@") === 0)
+                keyword = keyword.substring(1);
                 
             var cache = []
 
             dgGoToFile.$viewport.setScrollTop(0);
 
-            this.arraySearchResults = search(nodes, keyword, cache);
+            if (nodes[0] && nodes[0].name && nodes[0].name.lastIndexOf)
+                this.arraySearchResults = search.treeSearch(nodes, keyword, cache);
+            else
+                this.arraySearchResults = search.fileSearch(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
         }
         
