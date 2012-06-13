@@ -27,7 +27,8 @@ var Ide = module.exports = function(options) {
    // assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
-
+    var workerUrl = options.workerUrl || "/static";
+    
     this.workspaceDir = options.workspaceDir;
 
     options.plugins = options.plugins || [];
@@ -39,6 +40,7 @@ var Ide = module.exports = function(options) {
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         debug: (options.debug === true) ? true : false,
+        workerUrl: workerUrl,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
         plugins: options.plugins,
@@ -115,6 +117,7 @@ util.inherits(Ide, EventEmitter);
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
+            var workerUrl = _self.options.workerUrl;
             var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
                 + staticUrl + '/ace/build/ace'
                 + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
@@ -128,6 +131,7 @@ util.inherits(Ide, EventEmitter);
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
                 debug: _self.options.debug,
+                workerUrl: workerUrl,
                 staticUrl: staticUrl,
                 socketIoUrl: _self.options.socketIoUrl,
                 socketIoTransports: _self.options.socketIoTransports,

@@ -20,9 +20,8 @@ module.exports = ext.register("ext/sync/sync", {
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL,
-
-    nodes : [],
     markup : markup,
+    nodes : [],
 
     syncEnabled: undefined,
 
@@ -53,6 +52,9 @@ module.exports = ext.register("ext/sync/sync", {
     handleMessage : function(message) {
         var _self = this;
 
+        if (!ide.local)
+            return;
+            
         if (message.action === "notify") {
             var event = message.args.event;
             if (event.name === "enabled") {

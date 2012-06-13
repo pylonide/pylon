@@ -28,6 +28,7 @@
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
+                workerUrl: "[%workerUrl%]",
                 staticUrl: "[%staticUrl%]",
                 socketIoUrl: <%socketIoUrl%>,
                 socketIoTransports: <%socketIoTransports%>,
@@ -80,7 +81,7 @@
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
-                    aceConfig.set("workerPath", "[%staticUrl%]/ace/worker");
+                    aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
                     

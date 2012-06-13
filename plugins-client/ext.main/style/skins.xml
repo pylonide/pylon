@@ -258,6 +258,14 @@
             width: 10px;
         }
 
+        .c9-menu-bar .c9-mbar-bcont .c9-sync {
+            display:none;
+        }
+
+        .c9-menu-bar .c9-mbar-bcont .c9-sync {
+            display: block;
+        }
+        
         .c9-menu-bar.local .c9-mbar-bcont .c9-sync.on {
             float:right;
             overflow:hidden;
