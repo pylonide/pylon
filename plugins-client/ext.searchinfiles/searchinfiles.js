@@ -411,7 +411,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         node.setAttribute("newfile", "0");
         node.setAttribute("ignore", "1");
         node.setAttribute("saving", "1");
-        
+        node.setAttribute("changed", "0");
+                    
         var doc = ide.createDocument(node);
         
         // arrange beginning message

@@ -3428,6 +3428,7 @@
         }
         .aceSearchConsole div.ace_gutter {
             background: rgba(0,0,0,0.1);
+            color: #999;
         }
         .aceSearchConsole .nocorner.ace_editor {
             margin-top: 0px;
@@ -3436,10 +3437,10 @@
             pointer-events: auto;
         }
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
-            cursor: cursor;
+            cursor: default;
         }
         .aceSearchResults .ace_line::selection, .aceSearchResults .ace_line::-moz-selection {
-           cursor: text;
+            cursor: text;
 	    }
         
         .ace_gutter .ace_gutter_active_line, .aceSearchConsole .ace_gutter .ace_gutter_active_line {
