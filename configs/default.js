@@ -134,7 +134,7 @@ var config = {
                     "ext/colorpicker/colorpicker",
                     "ext/gitblame/gitblame",
                     //"ext/githistory/githistory",
-                    "ext/revisions/revisions",
+                    //"ext/revisions/revisions",
                     "ext/quicksearch/quicksearch",
                     "ext/language/liveinspect"
                     //"ext/splitview/splitview"
@@ -186,15 +186,14 @@ var config = {
                 allowShell: true
             },
             "./cloud9.ide.run-python",
-            "./cloud9.ide.revisions",
+            //"./cloud9.ide.revisions",
             {
                 packagePath: "./cloud9.ide.settings",
-                settingsPath: ".settings"
+                settingsPath: path.join(projectDir, ".settings")
             },
             "./cloud9.ide.shell",
             "./cloud9.ide.state",
-            "./cloud9.ide.watcher",
-            "./cloud9.sandbox.fs"
+            "./cloud9.ide.watcher"
             ]
         }
     }
