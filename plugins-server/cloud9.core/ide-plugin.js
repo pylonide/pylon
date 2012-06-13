@@ -16,7 +16,7 @@ module.exports = function setup(options, imports, register) {
     var sandbox = imports.sandbox;
     var baseUrl = options.baseUrl || "";
     var staticPrefix = imports.static.getStaticPrefix();
-    var workerPrefix = options.workerPrefix || "/static";
+    var workerPrefix = imports.static.getWorkerPrefix() || "/static";
     
     var socketUrl = options.socketUrl || "/socket.io";
 

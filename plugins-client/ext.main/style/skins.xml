@@ -258,11 +258,11 @@
             width: 10px;
         }
 
-        .c9-menu-bar .c9-mbar-bcont .c9-sync {
+        .c9-sync {
             display:none;
         }
 
-        .c9-menu-bar .c9-mbar-bcont .c9-sync {
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync {
             display: block;
         }
         

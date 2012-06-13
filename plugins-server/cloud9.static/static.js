@@ -4,7 +4,8 @@ module.exports = function startup(options, imports, register) {
 
     var rjs = {};
     var prefix = options.prefix || "/static";
-
+    var workerPrefix = options.workerPrefix || "/static";
+    
     var staticServer = connect.createServer();
     imports.connect.useMain(options.bindPrefix || prefix, staticServer)
 
@@ -30,6 +31,10 @@ module.exports = function startup(options, imports, register) {
 
             getStaticPrefix: function() {
                 return prefix;
+            },
+            
+            getWorkerPrefix: function() {
+                return workerPrefix;
             }
         }
     });
