@@ -67,11 +67,11 @@ util.inherits(Socket, EventEmitter);
 
             self._getSession(message.sessionId, function(err, session) {
                 if (err) {
-                    return client.send({
+                    return client.send(JSON.stringify({
                         "type": "error",
                         "code": err.code,
                         "message": err.message
-                    });
+                    }));
                 }
 
                 message.session = session;

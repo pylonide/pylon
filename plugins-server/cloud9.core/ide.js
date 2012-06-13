@@ -57,7 +57,7 @@ var Ide = module.exports = function(options) {
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-    
+
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -98,7 +98,7 @@ util.inherits(Ide, EventEmitter);
                 "cache-control": "no-transform",
                 "Content-Type": "text/html"
             });
-            
+
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
@@ -212,13 +212,13 @@ util.inherits(Ide, EventEmitter);
 
     this.getPermissions = function(req) {
         var user = this.getUser(req);
-        
+
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
             return user.getPermissions();
     };
-    
+
     this.hasUser = function(username) {
         return !!this.$users[username];
     };
