@@ -1,6 +1,7 @@
 define(function(require, exports, module) {
 
-require("treehugger/traverse");
+require("treehugger/traverse"); // add traversal functions to trees
+
 var baseLanguageHandler = require('ext/language/base_handler');
 
 var outlineHandler = module.exports = Object.create(baseLanguageHandler);
