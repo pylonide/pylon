@@ -49,7 +49,9 @@ module.exports = {
         });
 
         ext.nodes.push(
-            menus.addItemByPath("View/Outline", mnuItem)
+            menus.addItemByPath("View/Outline", mnuItem, 190),
+            // menus.addItemByPath("File/Open definition...", mnuItem.cloneNode(false), 500),
+            menus.addItemByPath("Goto/Goto Definition...", mnuItem.cloneNode(false), 110)
         );
     },
 
