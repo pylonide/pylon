@@ -34,7 +34,10 @@
     "devDependencies": {
         "nodeunit": "~0.7.4",
         "sinon": "~1.3.4",
-        "rimraf": "~2.0.1"
+        "rimraf": "~2.0.1",
+        "async": "~0.1.21",
+        "vfs-local": "~0.0.0",
+        "vfs-nodefs-adapter": "~0.0.1"
     },
 
     "mappings": {
