@@ -449,15 +449,15 @@ handler.analyze = function(doc, ast, callback) {
     
     function scopeAnalyzer(scope, node, parentLocalVars) {
         preDeclareHoisted(scope, node);
-        var localVariables = parentLocalVars || [];
+        var mustUseVars = parentLocalVars || [];
         node.setAnnotation("scope", scope);
         function analyze(scope, node) {
             node.traverseTopDown(
                 'VarDecl(x)', function(b) {
-                    localVariables.push(scope.get(b.x.value));
+                    mustUseVars.push(scope.get(b.x.value));
                 },
                 'VarDeclInit(x, _)', function(b) {
-                    localVariables.push(scope.get(b.x.value));
+                    mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
                     if(!scope.isDeclared(b.x.value)) {
@@ -509,7 +509,7 @@ handler.analyze = function(doc, ast, callback) {
                         farg.setAnnotation("scope", newScope);
                         var v = newScope.declare(farg[0].value, farg);
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
-                            localVariables.push(v);
+                            mustUseVars.push(v);
                     });
                     scopeAnalyzer(newScope, b.body);
                     return node;
@@ -518,7 +518,7 @@ handler.analyze = function(doc, ast, callback) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
                     scope.vars["_" + b.x.value] = new Variable(b.x);
-                    scopeAnalyzer(scope, b.body, localVariables);
+                    scopeAnalyzer(scope, b.body, mustUseVars);
                     // Put back
                     scope.vars["_" + b.x.value] = oldVar;
                     return node;
@@ -546,9 +546,9 @@ handler.analyze = function(doc, ast, callback) {
         }
         analyze(scope, node);
         if(!parentLocalVars) {
-            for (var i = 0; i < localVariables.length; i++) {
-                if (localVariables[i].uses.length === 0) {
-                    var v = localVariables[i];
+            for (var i = 0; i < mustUseVars.length; i++) {
+                if (mustUseVars[i].uses.length === 0) {
+                    var v = mustUseVars[i];
                     v.declarations.forEach(function(decl) {
                         if (decl.value && decl.value === decl.value.toUpperCase())
                             return;
