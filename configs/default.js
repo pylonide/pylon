@@ -142,16 +142,8 @@ var config = {
                     //"ext/acebugs/acebugs"
                 ]
             }, {
-                packagePath: "vfs-architect/child",
-                umask: parseInt("0750", 8),
-                root: "/",
-
-                uid: 501,
-                gid: 20,
-
-//                packagePath: "vfs-architect/ssh",
-//                host: "fjakobs@localhost",
-//                nodePath: process.execPath,
+                packagePath: "vfs-architect/local",
+                root: "/"
             }, {
                 packagePath: "vfs-architect/http-adapter",
                 mount: vfsUrl,
