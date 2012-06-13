@@ -136,7 +136,7 @@ function isRequireJSCall(line, column) {
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     var LENGTH = 'require("'.length;
     var start = column - id.length - LENGTH;
-    return start >= 0 && line.substring(start, LENGTH) === 'require("';
+    return start >= 0 && line.substr(start, LENGTH) === 'require("';
 }
 
 exports.hook = hook;
