@@ -1,7 +1,7 @@
 "use strict";
 
 var util = require("util");
-var netutil = require("../cloud9.core/netutil");
+var netutil = require("netutil");
 var c9util = require("../cloud9.core/util");
 var NodeDebugProxy = require("./nodedebugproxy");
 

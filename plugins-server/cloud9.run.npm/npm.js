@@ -2,6 +2,7 @@
 
 var util = require("util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
+var c9util = require("../cloud9.core/util");
 
 /**
  * Run node scripts with restricted user rights

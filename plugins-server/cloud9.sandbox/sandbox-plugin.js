@@ -1,7 +1,7 @@
 "use strict";
 
 var assert = require("assert");
-var netutil = require("../cloud9.core/netutil");
+var netutil = require("netutil");
 
 module.exports = function(options, imports, register) {
 
