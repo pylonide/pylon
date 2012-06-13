@@ -408,6 +408,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         else
             btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
         
+        var btnPage = btnObj.$dockpage;
+        if(!btnPage.initCaption)
+            btnPage.initCaption = btnPage.getAttribute("caption");
+        btnPage.setAttribute("caption", btnPage.initCaption + (count > 0 ? " (" + count + ")" : ""));
+        
         return true;
     }
 });
