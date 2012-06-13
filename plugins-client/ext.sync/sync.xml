@@ -1,3 +1,57 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:button id="btnSyncStatus" class="c9-sync" value="[general/@synching]" onclick="require('ext/sync/sync').setSync()" />
+    
+    <a:model id="mdlSyncPrj" />
+    
+    <a:window
+      id        = "winSyncPrj"
+      title     = "Select project"
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "close"
+      modal     = "false"
+      skin      = "bk-window"
+      width     = "500"
+      height    = "300"
+      kbclose   = "true"
+      draggable = "true">
+        <a:vbox anchors="0 0 0 0" edge="0 0 11 0">
+            <a:datagrid id = "dgSyncPrj"
+              flex       = "1"
+
+              model      = "mdlSyncPrj"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
+              autoselect = "false"
+              each       = "[project]"
+              eachvalue  = "[@name]"
+              empty-message = "No Projects to sync">
+                <a:column width="25%" value="[@name]" caption="Name" />
+                <a:column width="10%" value="[@scm]" caption="Type" />
+                <a:column width="25%" value="[@url]" caption="Url" /> 
+                <a:column width="20%" value="[@tagline]" caption="Tagline" /> 
+                <a:column width="20%" value="[@desc]" caption="Description" /> 
+            </a:datagrid>
+            <a:hbox edge="11 10 0 0" pack="end">
+                <a:button
+                  skin     = "btn-default-css3"
+                  caption  = "Cancel"
+                  onclick = "winSyncPrj.close()"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Done"
+                  margin = "0 0 0 10"
+                  skin = "btn-default-css3"
+                  onclick = "
+                    if(dgSyncPrj.selected) {
+                        require('ext/sync/sync').syncProjecct(dgSyncPrj.selected.getAttribute('name'));
+                        winSyncPrj.close();
+                    }
+                  "
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:window>
 </a:application>                                                                     
