@@ -65,8 +65,15 @@ var ModesCaption = {
     "Textile" : "text/x-web-textile",
     "HTML" : "text/html",
     "XML" : "application/xml",
-    "XQuery" : "text/x-xquery"
-}
+    "XQuery" : "text/x-xquery",
+    "Go" : "text/x-go",
+    "haXe" : "text/hx",
+    "JSON" : "application/json",
+    "SH" : "application/x-sh",
+    "SVG" : "image/svg+xml",
+    "YAML" : "application/x-yaml",
+    "pqSQL" : "text/x-sql"
+};
 
 var SupportedModes = {
     "application/javascript": "javascript",
@@ -105,7 +112,10 @@ var SupportedModes = {
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
     "text/x-sql": "sql",
-    "text/x-xquery": "xquery"
+    "text/x-xquery": "xquery",
+    "text/x-go": "go",
+    "text/hx": "hx",
+    "application/x-yaml": "yaml"
 };
 
 var contentTypes = {
@@ -171,12 +181,22 @@ var contentTypes = {
 
     "ps1": "text/x-script.powershell",
     "cfm": "text/x-coldfusion",
+    "cfc": "text/x-coldfusion",
     "sql": "text/x-sql",
+    "pqsql": "text/x-sql",
 
     "sh": "application/x-sh",
     "bash": "application/x-sh",
     
-    "xq": "text/x-xquery"
+    "xq": "text/x-xquery",
+    
+    "patch": "text/diff",
+    
+    "go": "text/x-go",
+    
+    "hx": "text/hx",
+    
+    "yaml": "application/x-yaml"
 };
 
 module.exports = ext.register("ext/code/code", {
