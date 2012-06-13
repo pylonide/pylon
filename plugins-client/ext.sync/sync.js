@@ -139,13 +139,14 @@ module.exports = ext.register("ext/sync/sync", {
         var project;
         for(var i = 0; i < projects.length; i++) {
             project = projects[i];
-            xmlStr += '<project name="' + project.name + '" pid="' + (project.pid || "") 
-                + '" scm="' + (project.scm || "git") 
-                + '" desc="' + (project.desc || "") 
-                + '" tagline="' + (project.tagline || "") 
-                + '" url="' + (project.url || "") + '" />';
+            if (project.local !== true) {
+                xmlStr += '<project name="' + project.name + '" pid="' + (project.pid || "") 
+                    + '" scm="' + (project.scm || "git") 
+                    + '" desc="' + (project.desc || "") 
+                    + '" tagline="' + (project.tagline || "") 
+                    + '" url="' + (project.url || "") + '" />';
+            }
         }
-        
         xmlStr += "</projects>";
         return xmlStr;
     },
