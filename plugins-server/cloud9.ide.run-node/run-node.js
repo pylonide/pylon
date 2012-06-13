@@ -111,7 +111,8 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 args: args,
                 env: env,
                 nodeVersion: version,
-                extra: message.extra
+                extra: message.extra,
+                encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     self.error(err, 1, message, client);

@@ -11,6 +11,7 @@ var Diff_Match_Patch = require("./diff_match_patch");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Async = require("async");
+var fsnode = require("vfs-nodefs-adapter");
 var fs;
 
 /**
@@ -30,7 +31,7 @@ var SAVE_INTERVAL = 1000;
 
 /**
  * REV_FOLDER_NAME = ".c9revisions"
- * 
+ *
  * Folder to save revisions into
  */
 var REV_FOLDER_NAME = ".c9revisions";
@@ -44,9 +45,12 @@ var Diff = new Diff_Match_Patch();
 var name = "revisions";
 
 module.exports = function setup(options, imports, register) {
-    fs = imports["sandbox.fs"];
-    
-    imports.ide.register(name, RevisionsPlugin, register);    
+    imports.sandbox.getProjectDir(function(err, projectDir) {
+        if (err) return register(err);
+
+        fs = fsnode(imports.vfs, projectDir);
+        imports.ide.register(name, RevisionsPlugin, register);
+    });
 };
 
 var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) {
@@ -103,7 +107,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         if (err) {
                             return console.error(err);
                         }
-                    
+
                         if (!self.isCollab()) {
                             self.broadcastConfirmSave(message.path, revisionInfo.revision);
                             if (message.forceRevisionListResponse === true) {
@@ -124,7 +128,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                                     return console.error("There was a problem retrieving revisions" +
                                         " for the file " + message.path + ":\n", err);
                                 }
-                    
+
                                 self.broadcastRevisions.call(self, revObj, null, {
                                     path: message.path
                                 });
@@ -230,11 +234,11 @@ require("util").inherits(RevisionsPlugin, Plugin);
             }
         });
     };
-    
+
     /**
      * RevisionsPlugin#getRevisionsPath(filePath)
      * - filePath (String): relative path of the actual file
-     * 
+     *
      * Creates the path to a relevant revisions file for a given file
      **/
     this.getRevisionsPath = function(filePath) {
@@ -264,12 +268,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var parentDir = this.getRevisionsPath(Path.dirname(filePath));
 
         var self = this;
-        
-        // does the revisions file exists?
-        fs.exists(absPath, function (err, exists) {
-            if (err)
-                return callback(err);
 
+        // does the revisions file exists?
+        fs.exists(absPath, function (exists) {
             if (exists) {
                 self.getAllRevisions(absPath, callback);
             }
@@ -279,17 +280,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     if (err) {
                         return callback(err);
                     }
-                    
+
                     // create a parent dir if not exists
-                    fs.exists(parentDir, function(err, exists) {
+                    fs.exists(parentDir, function(exists) {
                         if (err) {
                             return callback(err);
                         }
-                    
+
                         // and create the first version of a revisions file
                         var createRevisionsFile = function(err) {
                             if (err) return callback(err);
-                
+
                             // We just created the revisions file. Since we
                             // don't have a 'previous revision, our first revision will
                             // consist of the previous contents of the file.
@@ -305,7 +306,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                             var revisionString = JSON.stringify(revision);
                             var revObj = {};
                             revObj[ts] = revision;
-                
+
                             fs.writeFile(absPath, revisionString + "\n", function(err) {
                                 if (err) {
                                     return callback(err);
@@ -313,7 +314,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                                 callback(null, revObj);
                             });
                         };
-                    
+
                         if (!exists) {
                             fs.mkdirP(parentDir, "0755", createRevisionsFile);
                         }
@@ -514,10 +515,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
             if (err) {
                 return callback(err);
             }
-            
+
             var writeFile = function (err) {
                 if (err) return callback(err);
-                
+
                 // We just created the revisions file. Since we
                 // don't have a 'previous revision, our first revision will
                 // consist of the previous contents of the file.
@@ -541,10 +542,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     callback(null, revObj);
                 });
             };
-            
+
             fs.exists(parentDir, function (err, exists) {
                 if (err) return callback(err);
-                
+
                 if (exists) {
                     writeFile();
                 }
@@ -576,15 +577,15 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
         var absPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
         fs.exists(absPath, function(err, exists) {
-            if (err) 
+            if (err)
                 return callback(err);
-            
+
             if (!exists)
                 return callback(new Error("Backup file path doesn't exist:" + absPath));
 
             fs.open(absPath, "a", 666, function(err, id) {
                 if (err) return callback(err);
-                
+
                 fs.write(id, JSON.stringify(revision) + "\n", null, "utf8", function(err, written, buffer) {
                     if (err) {
                         callback(new Error("Could not save backup file" + absPath));

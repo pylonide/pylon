@@ -6,7 +6,7 @@
  */
 
 var Plugin = require("../cloud9.core/plugin");
-var fsnode = require("vfs/nodefs-adapter");
+var fsnode = require("vfs-nodefs-adapter");
 var util = require("util");
 
 var name = "npm-runtime";

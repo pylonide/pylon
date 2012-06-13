@@ -17,10 +17,10 @@ var exports = module.exports = function (url, pm, sandbox, runNode, usePortFlag,
 
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
-        
+
         sandbox.getUnixId(function(err, unixId) {
             if (err) return callback(err);
-            
+
             init(projectDir, unixId, url);
         });
     });
@@ -50,60 +50,60 @@ function setup (NodeRunner) {
             options.eventName = eventName;
             options.url = url;
             options.usePortFlag = usePortFlag;
-            
+
             options.sandbox = sandbox;
-            
+
             return new Runner(options, callback);
         };
     };
-    
+
     var Runner = exports.Runner = function(options, callback) {
         NodeRunner.call(this, options, callback);
         this.breakOnStart = options.breakOnStart;
         this.msgQueue = [];
     };
-    
+
     util.inherits(Runner, NodeRunner);
     mixin(Runner, NodeRunner);
-    
+
     function mixin(Class, Parent) {
-    
+
         Class.prototype = Class.prototype || {};
         var proto = Class.prototype;
-    
+
         proto.name = "node-debug";
         proto.NODE_DEBUG_PORT = 5858;
-    
+
         proto.createChild = function(callback) {
             var self = this;
-    
+
             netutil.findFreePort(this.NODE_DEBUG_PORT, 64000, "localhost", function(err, port) {
                 if (err)
                     return callback("Could not find a free port");
-                    
-    
+
+
                 if (self.breakOnStart)
                     self.nodeArgs.push("--debug-brk=" + port);
                 else
                     self.nodeArgs.push("--debug=" + port);
-    
+
                 Parent.prototype.createChild.call(self, callback);
-    
+
                 setTimeout(function() {
                     self._startDebug(port);
                 }, 100);
             });
         };
-    
+
         proto.debugCommand = function(msg) {
             this.msgQueue.push(msg);
-    
+
             if (!this.nodeDebugProxy)
                 return;
-    
+
             this._flushSendQueue();
         };
-    
+
         proto._flushSendQueue = function() {
             if (this.msgQueue.length) {
                 for (var i = 0; i < this.msgQueue.length; i++) {
@@ -115,16 +115,16 @@ function setup (NodeRunner) {
                     }
                 }
             }
-    
+
             this.msgQueue = [];
         };
-    
+
         proto._startDebug = function(port) {
             var self = this;
             function send(msg) {
                 self.eventEmitter.emit(self.eventName, msg);
             }
-    
+
             this.nodeDebugProxy = new NodeDebugProxy(port);
             this.nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
@@ -135,7 +135,7 @@ function setup (NodeRunner) {
                     "extra": self.extra
                 });
             });
-    
+
             this.nodeDebugProxy.on("connection", function() {
                 send({
                     "type": "node-debug-ready",
@@ -144,10 +144,10 @@ function setup (NodeRunner) {
                 });
                 self._flushSendQueue();
             });
-    
+
             this.nodeDebugProxy.connect();
         };
     }
-    
+
     exports.mixin = mixin;
 }

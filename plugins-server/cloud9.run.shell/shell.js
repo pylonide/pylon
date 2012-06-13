@@ -1,6 +1,7 @@
 "use strict";
 
-var nodefs = require("vfs/nodefs-adapter");
+var nodefs = require("vfs-nodefs-adapter");
+var c9util = require("../cloud9.core/util");
 
 /**
  * Run shell commands
@@ -17,17 +18,15 @@ var exports = module.exports = function setup(options, imports, register) {
 };
 
 exports.factory = function(vfs) {
-    return function(args, eventEmitter, eventName) {
-        return new Runner(vfs, {
-            command: args.command,
-            args: args.args,
-            cwd: args.cwd,
-            env: args.env,
-            encoding: args.encoding,
-            extra: args.extra,
-            eventEmitter: eventEmitter,
-            eventName: eventName
-        });
+    return function(args, eventEmitter, eventName, callback) {
+        var options = {};
+
+        c9util.extend(options, args);
+        options.eventEmitter = eventEmitter;
+        options.eventName = eventName;
+        options.args = args.args;
+
+        return new Runner(vfs, options, callback);
     };
 };
 
@@ -38,6 +37,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     this.command = options.command;
     this.args = options.args || [];
     this.extra = options.extra;
+    this.encoding = options.encoding;
 
     this.runOptions = {};
     if (options.cwd)

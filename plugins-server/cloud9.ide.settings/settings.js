@@ -8,8 +8,7 @@
 "use strict";
 
 var Plugin = require("../cloud9.core/plugin");
-var Path = require("path");
-var fsnode = require("vfs/nodefs-adapter");
+var fsnode = require("vfs-nodefs-adapter");
 var util = require("util");
 var assert = require("assert");
 
