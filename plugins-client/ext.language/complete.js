@@ -20,7 +20,7 @@ var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 2000;
 var HIDE_DOC_DELAY = 1000;
-var AUTO_OPEN_DELAY = 50;
+var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
@@ -209,28 +209,25 @@ module.exports = {
         var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
-        setTimeout(function() {
-            apf.popup.show("completionBox", {
-                x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
-                y        : _self.cursorConfig.lineHeight,
-                height   : completionBoxHeight,
-                width    : MENU_WIDTH,
-                animate  : false,
-                ref      : cursorLayer.cursor,
-                callback : function() {
-                    barCompleterCont.setHeight(completionBoxHeight);
-                    barCompleterCont.$ext.style.height = completionBoxHeight + "px";
-                    sbCompleter.$resize();
-                    _self.completionElement.scrollTop = 0;
-                }
-            });
-        }, 0);
+        apf.popup.show("completionBox", {
+            x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
+            y        : _self.cursorConfig.lineHeight,
+            height   : completionBoxHeight,
+            width    : MENU_WIDTH,
+            animate  : false,
+            ref      : cursorLayer.cursor,
+            callback : function() {
+                barCompleterCont.setHeight(completionBoxHeight);
+                barCompleterCont.$ext.style.height = completionBoxHeight + "px";
+                sbCompleter.$resize();
+                _self.completionElement.scrollTop = 0;
+            }
+        });
     },
 
-    closeCompletionBox : function(event, doNotHide) {
+    closeCompletionBox : function(event) {
+        barCompleterCont.$ext.style.display = "none";
         var ace = editors.currentEditor.amlEditor.$editor;
-        if (!doNotHide)
-            barCompleterCont.$ext.style.display = "none";
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
@@ -461,7 +458,7 @@ module.exports = {
         }
         else {
             if(typeof barCompleterCont !== 'undefined')
-                barCompleterCont.$ext.style.display = "none";
+               this.closeCompletionBox();
         }
     },
     
