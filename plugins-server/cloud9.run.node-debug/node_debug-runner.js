@@ -1,7 +1,6 @@
 "use strict";
 
 var util = require("util");
-var netutil = require("netutil");
 var c9util = require("../cloud9.core/util");
 var NodeDebugProxy = require("./nodedebugproxy");
 
@@ -9,7 +8,7 @@ var NodeDebugProxy = require("./nodedebugproxy");
  * debug node scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, pm, sandbox, runNode, usePortFlag, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, callback) {
     var NodeRunner = runNode.Runner;
 
     // create methods on exports, that take a reference from NodeRunner
@@ -18,27 +17,22 @@ var exports = module.exports = function (url, pm, sandbox, runNode, usePortFlag,
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
 
-        sandbox.getUnixId(function(err, unixId) {
-            if (err) return callback(err);
-
-            init(projectDir, unixId, url);
-        });
+        init(projectDir, url);
     });
 
-    function init(projectDir, unixId, url) {
-        pm.addRunner("node-debug", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
+    function init(projectDir, url) {
+        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, usePortFlag));
 
         callback();
     }
 };
 
 function setup (NodeRunner) {
-    exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+    exports.factory = function(vfs, sandbox, root, url, usePortFlag) {
         return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
             options.root = root;
-            options.uid = uid;
             options.file = args.file;
             options.args = args.args;
             options.cwd = args.cwd;
@@ -53,12 +47,12 @@ function setup (NodeRunner) {
 
             options.sandbox = sandbox;
 
-            return new Runner(options, callback);
+            return new Runner(vfs, options, callback);
         };
     };
 
-    var Runner = exports.Runner = function(options, callback) {
-        NodeRunner.call(this, options, callback);
+    var Runner = exports.Runner = function(vfs, options, callback) {
+        NodeRunner.call(this, vfs, options, callback);
         this.breakOnStart = options.breakOnStart;
         this.msgQueue = [];
     };
@@ -77,22 +71,18 @@ function setup (NodeRunner) {
         proto.createChild = function(callback) {
             var self = this;
 
-            netutil.findFreePort(this.NODE_DEBUG_PORT, 64000, "localhost", function(err, port) {
-                if (err)
-                    return callback("Could not find a free port");
+            var port = this.NODE_DEBUG_PORT;
 
+            if (self.breakOnStart)
+                self.nodeArgs.push("--debug-brk=" + port);
+            else
+                self.nodeArgs.push("--debug=" + port);
 
-                if (self.breakOnStart)
-                    self.nodeArgs.push("--debug-brk=" + port);
-                else
-                    self.nodeArgs.push("--debug=" + port);
+            Parent.prototype.createChild.call(self, callback);
 
-                Parent.prototype.createChild.call(self, callback);
-
-                setTimeout(function() {
-                    self._startDebug(port);
-                }, 100);
-            });
+            setTimeout(function() {
+                self._startDebug(port);
+            }, 100);
         };
 
         proto.debugCommand = function(msg) {
@@ -125,7 +115,7 @@ function setup (NodeRunner) {
                 self.eventEmitter.emit(self.eventName, msg);
             }
 
-            this.nodeDebugProxy = new NodeDebugProxy(port);
+            this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
             this.nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
                 send({
