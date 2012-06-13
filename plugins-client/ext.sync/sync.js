@@ -124,19 +124,28 @@ module.exports = ext.register("ext/sync/sync", {
                 if (state != apf.SUCCESS) {
                     return util.alert("Unable to get available projects", "An error occurred while getting available projects for sync", extra.http.responseText);
                 }
-                
+
                 data = JSON.parse(data);
-                console.log("Projects", data);
-                winAlert.show();
-                
-                // TODO: In dialog present list of cloned online projects.
-                //       Once user selects close dialog and call `enable(onlineWorkspaceId)`
-                //       where `onlineWorkspaceId` is `data.projects[<selected>].label`.
-                //       User can also cancel dialog to abort.
-                
-                //enable("sync-test");
+                mdlSyncPrj.load(apf.getXml(_self.createSyncProjectsXml(data.projects)))
+                winSyncPrj.show();
             }
         });        
+    },
+    
+    createSyncProjectsXml: function(projects){
+        var xmlStr = "<projects>"; 
+        var project;
+        for(var i = 0; i < projects.length; i++) {
+            project = projects[i];
+            xmlStr += '<project name="' + project.name + '" pid="' + (project.pid || "") 
+                + '" scm="' + (project.scm || "git") 
+                + '" desc="' + (project.desc || "") 
+                + '" tagline="' + (project.tagline || "") 
+                + '" url="' + (project.url || "") + '" />';
+        }
+        
+        xmlStr += "</projects>";
+        return xmlStr;
     },
     
     syncProjecct: function(onlineWorkspaceId){

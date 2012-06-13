@@ -12,50 +12,43 @@
       buttons   = "close"
       modal     = "false"
       skin      = "bk-window"
-      width     = "750"
-      height    = "400"
+      width     = "500"
+      height    = "300"
       kbclose   = "true"
       draggable = "true">
         <a:vbox anchors="0 0 0 0" edge="0 0 11 0">
-            <a:vbox anchors="10 10 10 10">
-                <a:hbox align="center" edge="0 0 5 0" padding="5">
-                    <a:textbox id="tbSyncPrjName" flex="1" 
-                      realtime="true" />
-                </a:hbox>
-                <a:datagrid id = "dgSyncPrj"
-                  flex       = "1"
-                  model      = "mdlSyncPrj"
-                  class      = "noscrollbar"
-                  scrollbar  = "sbShared 20 2 2"
-                  autoselect = "false"
-                  each       = "[plugin[@userext='1']]"
-                  onafterselect = "require('ext/extmgr/extmgr').updateEnableBtnState()"
-                  eachvalue  = "[@path]"
-                  empty-message = "No user extensions">
-                    <a:column width="20%" value="[@name]" caption="Name" />
-                    <a:column width="30%" value="[@path]" caption="Path" />
-                    <a:column width="8%" value="[@type]" caption="Type" /> 
-                    <a:column width="8%" value="[@dev]" caption="Developer" /> 
-                    <a:column width="8%" value="[@hook]ms" caption="Hook" align="right" data-type="number" /> 
-                    <a:column width="8%" value="{[@init] ? [@init] + 'ms' : ''}" caption="Init" align="right" data-type="number" /> 
-                    <a:column width="8%" value="[@total]ms" caption="Total" align="right" data-type="number" /> 
-                    <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
-                </a:datagrid>
-                
-            </a:vbox>
+            <a:datagrid id = "dgSyncPrj"
+              flex       = "1"
+
+              model      = "mdlSyncPrj"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
+              autoselect = "false"
+              each       = "[project]"
+              eachvalue  = "[@name]"
+              empty-message = "No Projects to sync">
+                <a:column width="25%" value="[@name]" caption="Name" />
+                <a:column width="10%" value="[@scm]" caption="Type" />
+                <a:column width="25%" value="[@url]" caption="Url" /> 
+                <a:column width="20%" value="[@tagline]" caption="Tagline" /> 
+                <a:column width="20%" value="[@desc]" caption="Description" /> 
+            </a:datagrid>
             <a:hbox edge="11 10 0 0" pack="end">
                 <a:button
                   skin     = "btn-default-css3"
                   caption  = "Cancel"
-                  onclick = "winExt.close()"
+                  onclick = "winSyncPrj.close()"
                 />
                 <a:button
+                  class   = "btn-green"
                   caption = "Done"
                   margin = "0 0 0 10"
                   skin = "btn-default-css3"
                   onclick = "
-                    if(dgSyncPrj.selected)
-                        require('ext/sync/sync').syncProjecct(dgSyncPrj.selected)
+                    if(dgSyncPrj.selected) {
+                        require('ext/sync/sync').syncProjecct(dgSyncPrj.selected.getAttribute('name'));
+                        winSyncPrj.close();
+                    }
                   "
                 />
             </a:hbox>
