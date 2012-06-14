@@ -5,7 +5,7 @@
     
     <a:window
       id        = "winSyncPrj"
-      title     = "Select project"
+      title     = "Select Project"
       icon      = ""
       center    = "true"
       resizable = "true"

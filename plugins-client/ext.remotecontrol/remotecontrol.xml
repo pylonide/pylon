@@ -1,0 +1,24 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:window
+      id        = "winUpdate"
+      title     = "Update Availble"
+      icon      = ""
+      center    = "true"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "600"
+      skin      = "bk-window2"
+      render    = "runtime"
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3 id="winQuestionHeader">An update to Cloud9 Local is Available!</h3>
+            <div id="winQuestionMsg" class="alertMsg">Would you like to download it?</div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnQuestionNo" onclick = "winUpdate.hide()" default="3" skin="btn-default-css3">Not now</a:button>
+            <a:button id="btnQuestionYes" onclick = "require('ext/remotecontrol/remotecontrol').getUpdate()" skin="btn-default-css3" class="btn-green">Okay!</a:button>
+        </a:hbox>
+    </a:window>
+</a:application>                                                                     

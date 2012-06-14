@@ -13,6 +13,7 @@ var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var editors = require("ext/editors/editors");
+var markup = require("text!ext/remotecontrol/remotecontrol.xml");
 
 module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     name   : "Remote Control",
@@ -20,7 +21,8 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     type   : ext.GENERAL,
     alone  : true,
     deps   : [],
-
+    markup : markup,
+    
     init : function(amlNode) {
         var _self = this;
         
@@ -36,6 +38,9 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
         
         ide.addEventListener("localUpdateAvailable", function(e) { 
             apf.setStyleClass(logobar.$ext, "updateAvailable");
+            backToC9.setAttribute("onclick", "winUpdate.show();");
+            backToC9.setAttribute("title", "Update available");
+            backToC9.removeAttribute("href");
         });
     },
 
@@ -92,6 +97,11 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
             }
         }
+    },
+    
+    getUpdate : function() {
+        winUpdate.hide();
+        alert("yep.");
     },
     
     enable : function(){
