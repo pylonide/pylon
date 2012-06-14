@@ -240,6 +240,7 @@
         .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
             height: 37px;
+            pointer-events: none;
             position: fixed;
             right: 0;
             top: 0;
@@ -251,6 +252,7 @@
             display: block;
             height: 26px;
             left: 33px;
+            pointer-events: all;
             position: absolute;
             text-indent: 100%;
             top: 4px;
@@ -261,6 +263,7 @@
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
         	height: 10px;
         	left: 24px;
+            pointer-events: all;
         	position: absolute;
         	top: 4px;
         	width: 10px;
