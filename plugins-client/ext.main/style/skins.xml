@@ -1266,13 +1266,20 @@
             right       : 1px;
             width       : 12px;
             text-align  : center;
-            background  : url('images/dock_notification_bg.png') 0px 0px no-repeat;
             color       : #fff;
-            font-size   : 5pt;
-            padding     : 0px 1px 1px 3px;
-            text-shadow : 1px 1px 0px #000;
             letter-spacing: 1px;
-            line-height : 9pt;
+            
+            border      : 1px solid #891010;
+            border-radius: 11px;
+            box-shadow: 0px 2px 2px black;
+            background  : #CE0E0F url('images/bg_counter.png') repeat-x 0px 0px;
+            
+            font-size: 9px;
+            height: 10px;
+            line-height: 11px;
+            padding     : 2px 1px 1px 1px;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+            display: none;
         }
 
         .dockButton .dock_icon_image {
@@ -1285,6 +1292,7 @@
             left                  : 3px;
             width                 : 34px;
             height                : 33px;
+            cursor: default;
         }
 
         .dockButton .dock_icon_image.dii_primary {

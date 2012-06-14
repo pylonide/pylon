@@ -402,11 +402,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      */
     updateNotificationElement: function(btnObj, count){
         var countInner = count === 0 ? "" : count;
-
+        var notificationEl = btnObj.$ext.getElementsByClassName("dock_notification")[0];
         if (apf.isGecko)
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
+            notificationEl.textContent = countInner;
         else
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
+            notificationEl.innerText = countInner;
+        
+        if (count > 0)
+            notificationEl.style.display = "block";
+        else
+            notificationEl.style.display = "none";
         
         var btnPage = btnObj.$dockpage;
         if(!btnPage.initCaption)
