@@ -9649,7 +9649,7 @@
         margin : 0 auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
 	*/
-        top : 25%;
+        top : 45%;
         margin: -100px auto 0 auto;
         /*background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;*/
         /*border-bottom: 1px solid #8c8c8c;
