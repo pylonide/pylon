@@ -122,13 +122,13 @@ apf.vsplitbox = function(struct, tagName){
                 //One flex child (first)
                 if (this.flexChild1 == firstChild) {
                     this.flexChild1.$ext.style.right =   
-                        (this.fixedChild.width + value + this.$edge[1]) + "px";
+                        (parseInt(this.fixedChild.width) + value + this.$edge[1]) + "px";
                 }
                     
                 //One flex child (last)
                 else if (this.flexChild1 == lastChild) {
                     this.flexChild1.$ext.style.left = 
-                        (this.fixedChild.width + value + this.$edge[3]) + "px";
+                        (parseInt(this.fixedChild.width) + value + this.$edge[3]) + "px";
                 }
             }
         }
@@ -265,6 +265,9 @@ apf.vsplitbox = function(struct, tagName){
                 fNode.$ext.style.bottom = this.$edge[2] + "px";
                 fNode.$ext.style.height = "";
             }
+            
+            if (this.$handle)
+                this.$handle.hide();
         }
         
         if (setSize === true) {
@@ -406,9 +409,6 @@ apf.vsplitbox = function(struct, tagName){
             this.$propHandlers["padding"].call(this, this.padding);
             this.$propHandlers["edge"].call(this, this.edge);
         }
-        
-        //if (this.$handle)
-            //this.insertBefore(this.$handle, this.lastChild);
     }
     
     this.unregister = function(amlNode){

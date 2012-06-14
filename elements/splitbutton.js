@@ -83,7 +83,10 @@ apf.splitbutton = function(struct, tagName){
             if (!self[value].$splitInited) {
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
-                    this.$ext.style.marginLeft = "-" + split.$button1.$ext.offsetWidth + "px";
+                    var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
+                        - apf.getAbsolutePosition(split.$button1.$ext)[0];
+                    
+                    this.$ext.style.marginLeft = "-" + diff + "px";
                 });
                 self[value].$splitInited = true;
             }
