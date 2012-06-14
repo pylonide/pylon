@@ -274,7 +274,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             anims.animate(winGotoLine, {
                 top: top + "px", 
                 timingFunction: "cubic-bezier(.11, .93, .84, 1)",
-                duration : 0.15
+                duration : 0.25
             });
         }
         else {

@@ -23,8 +23,8 @@ module.exports = ext.register("ext/anims/anims", {
         var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
         
         if (shouldAnimate) {
-            Firmin.animate(aNode.$ext, options, options.duration || 0.2, function() {
-                aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+            Firmin.animate(aNode.$ext || aNode, options, options.duration || 0.2, function() {
+                (aNode.$ext || aNode).style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();
                 
                 finish && finish(); //setTimeout(finish, 30);
@@ -64,7 +64,6 @@ module.exports = ext.register("ext/anims/anims", {
         }
         
         if (shouldAnimate && !options.immediate) {
-            
             ide.dispatchEvent("animate", {
                 type: "splitbox",
                 which: aNode,

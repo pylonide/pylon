@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/recentfiles/recentfiles", {
     dev         : "Ajax.org",

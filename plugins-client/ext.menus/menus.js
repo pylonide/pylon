@@ -33,7 +33,7 @@ module.exports = ext.register("ext/menus/menus", {
         this.nodes.push(
             this.menubar = logobar.insertBefore(new apf.bar({
                 "class" : "fakehbox aligncenter",
-                style : "padding : 0 5px 0 5px;",
+                style : "padding : 0 5px 0 5px;position:static",
             }), logobar.firstChild),
 
             //this.setRootMenu("Project", 10),
@@ -395,7 +395,8 @@ module.exports = ext.register("ext/menus/menus", {
         anims.animateSplitBoxNode(logobar, {
             height: "12px", 
             timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
-            duration: 0.3
+            duration: 0.3,
+            immediate: noAnim
         }, function(){
             apf.setStyleClass(logobar.$ext, "minimized");
             apf.layout.forceResize();

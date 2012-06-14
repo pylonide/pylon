@@ -50,6 +50,10 @@
         .fakehbox.padding3>div{
             margin-left : 3px;
         }
+        
+        .fakehbox.static{
+            position : static;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -102,7 +106,6 @@
          * c9 Menu Bar expanded
          * --------------------------------------------------------------------------------------- */
         .c9-menu-bar {
-            padding-top: 4px;
             position      : relative;
             overflow      : visible;
             background    : url(images/c9-repeat-x.png) repeat-x 0 0 #49a8fa;
@@ -125,6 +128,10 @@
 
         .c9-menu-bar.offline .c9-mbar-bcont .c9-offline {
             display:block;
+        }
+        
+        .c9-mbar-logo{
+            padding-top: 4px;
         }
         
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
@@ -197,7 +204,7 @@
             left: 0;
             position : absolute;
             top: 0px;
-            width: 21px;
+            width: 20px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
@@ -291,21 +298,13 @@
 			border-bottom : 1px solid black;
 			height        : 26px !important;
 			overflow      : hidden;
-			padding       : 0 5px 0 0px !important;
+			padding       : 0 0 0 0px !important;
 			position      : relative;
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
 			min-width : 196px;
             z-index   : 1000;
         }
-
-        /*.deploy.mnubtn {
-            border-bottom : none;
-        }
-
-        .deploy.mnubtn.mnubtnDown {
-            border-bottom: 1px solid #3F3F41;
-        }*/
 
         .black-menu-bar .c9menulogo {
             width    : 65px;
@@ -1558,7 +1557,7 @@
 <a:button name="c9-menu-btn">
     <a:style><![CDATA[
         .c9-menu-btn {
-            height             : 24px;
+            height             : 25px;
             overflow           : visible;
             cursor             : default;
             position           : relative;
@@ -1915,6 +1914,10 @@
         }
         .c9-toolbarbutton-glossyDown .c9-label:after {
             background-position: -476px -490px; 
+        }
+        
+        .c9-toolbarbutton-glossyDisabled .c9-label{
+            color : #999;
         }
 
         .c9-toolbarbutton-glossyIcon .c9-icon {
@@ -5697,9 +5700,6 @@
             color: gray;
             text-shadow : none;
         }
-        .menu>div.menu_item.disabled>span{
-            opacity: 0.2;
-        }
 
         .menu>div.menu_item>u{
             width: 16px;
@@ -8760,7 +8760,7 @@
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 5px 45px 0 21px;	
+        padding : 5px 4px 0 21px;	
         height: 22px;
         color: #f5f5f5;
         font-family : Arial;
@@ -8777,6 +8777,10 @@
 
         display : -webkit-box;
         display : -moz-box;
+    }
+    
+    .editor_tab .btnsesssioncontainer.morepadding{
+        padding-right : 75px;
     }
         
     .editor_tab .btnsesssioncontainer > div {

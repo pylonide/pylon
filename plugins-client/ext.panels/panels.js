@@ -161,11 +161,12 @@ module.exports = ext.register("ext/panels/panels", {
             if (toWin) {
                 var options = { 
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
-                    duration: 0.3 
+                    duration: 0.15 
                 };
                 
                 apf.setOpacity(toWin.$ext, 0);
                 anims.animate(toWin, apf.extend({ opacity: 1 }, options), onfinish);
+                anims.animate(win, apf.extend({ opacity: 0 }, options), onfinish);
                 //anims.animate(toWin, apf.extend({ width: toWidth }, options));
                 //anims.animate(win, apf.extend({ width: toWidth }, options));
                 anims.animateSplitBoxNode(colLeft, 
@@ -176,7 +177,7 @@ module.exports = ext.register("ext/panels/panels", {
                 winExt.style.left = "";
                 anims.animateSplitBoxNode(colLeft, {
                     width : 0,
-                    duration : 0.3,
+                    duration : 0.15,
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)" //@todo
                 }, onfinish);
             }
@@ -189,7 +190,7 @@ module.exports = ext.register("ext/panels/panels", {
             toWinExt.style.left = "";
             anims.animateSplitBoxNode(colLeft, {
                 width : toWidth + "px",
-                duration : 0.3,
+                duration : 0.15,
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)" //@todo
             }, onfinish);
         }
@@ -223,8 +224,12 @@ module.exports = ext.register("ext/panels/panels", {
             
             apf.layout.forceResize();
         }
-        else if (!noAnim)
-            this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
+        else if (!noAnim) {
+            var _self = this;
+            setTimeout(function(){
+                _self.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
+            }, 10);
+        }
         
         if (!noButton && panelExt.button)
             panelExt.button.setValue(true);

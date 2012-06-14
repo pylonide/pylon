@@ -13,6 +13,7 @@ var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -855,14 +856,32 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
         });
 
-//        var vbox  = colMiddle;
-//        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
-
         this.$itmGroup = new apf.group();
 
         this.nodes.push(this.addTabSection());
 
-        //this.panel = this.hbox;
+        ide.addEventListener("animate", function(e){
+            if (self.logobar && e.which == logobar) {
+                if (e.options.height == "12px") {
+                    anims.animate(tabEditors.$buttons, {
+                        paddingRight: "75px",
+                        timingFunction: e.options.timingFunction,
+                        duration: e.options.duration
+                    }, function(){
+                        apf.setStyleClass(tabEditors.$buttons, "morepadding");
+                    });
+                }
+                else {
+                    anims.animate(tabEditors.$buttons, {
+                        paddingRight: "4px",
+                        timingFunction: e.options.timingFunction,
+                        duration: e.options.duration
+                    }, function(){
+                        apf.setStyleClass(tabEditors.$buttons, "", ["morepadding"]);
+                    });
+                }
+            }
+        });
 
         /**** Support for state preservation ****/
 
@@ -872,6 +891,10 @@ module.exports = ext.register("ext/editors/editors", {
             settings.setDefaults("auto/tabs", [["show", "true"]]);
 
             _self.loadedSettings = false;
+            
+            if (apf.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
+                apf.setStyleClass(tabEditors.$buttons, "morepadding");
+            }
 
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.showTabs = apf.isTrue(showTab);

@@ -12,6 +12,12 @@ var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
 var anims = require("ext/anims/anims");
 
+var shadowOpen = "0px 1px 0px rgba(255, 255, 255, 0.05) inset, "
+    + "-1px 0px 0px 0px black inset, "
+    + "1px 0px 0px 0px #353535";
+
+var shadowClosed = "0px 1px 0px rgba(255, 255, 255, 0.05) inset";
+
 module.exports = ext.register("ext/sidebar/sidebar", {
     name     : "Side Bar",
     dev      : "Cloud9 IDE, Inc.",
@@ -28,14 +34,17 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 panels.deactivate(null, true);
             else if (panels.lastPanel)
                 panels.activate(panels.lastPanel);
-            else
+            else {
                 navbar.childNodes[1].dispatchEvent("mousedown")
+                navbar.childNodes[1].setValue(true);
+            }
         }
-
+        
         this.nodes.push(
             hboxTabBar.insertBefore(new apf.hbox({
                 id: "navbar",
                 "class": "black-menu-bar",
+                style: "box-shadow: " + shadowOpen,
                 "minwidth": "45",
                 childNodes : [
                     new apf.button({
@@ -45,6 +54,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     }),
                     this.btnArrow = new apf.button({
                         skin    : "mnubtn",
+                        visible : "false",
                         "class" : "toggle-black-menu-bar",
                         onclick : btnClick
                     })
@@ -53,33 +63,33 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         );
     
         var timer;
-        navbar.$ext.addEventListener("mouseover", function(e){
-            clearTimeout(timer);
-            
-            if (!_self.animating 
-              && navbar.getWidth() >= navbar.$int.scrollWidth)
-              //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
-                return;
-            
-            if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
-                timer = setTimeout(function(){
-                    _self.animateToFullWidth();
-                }, 150);
-            }
-        });
-        
-        navbar.$ext.addEventListener("mouseout", function(e){
-            if (!_self.animating
-              && apf.isChildOf(navbar.$ext, e.toElement, true))
-                return;
-            
-            clearTimeout(timer);
-            if (colLeft.getWidth() != navbar.getWidth()) {
-                timer = setTimeout(function(){
-                    _self.animateToDefaultWidth();
-                }, 300);
-            }
-        });
+//        navbar.$ext.addEventListener("mouseover", function(e){
+//            clearTimeout(timer);
+//            
+//            if (!_self.collapsed && !_self.animating 
+//              && navbar.getWidth() >= navbar.$int.scrollWidth)
+//              //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
+//                return;
+//            
+//            if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
+//                timer = setTimeout(function(){
+//                    _self.animateToFullWidth();
+//                }, 150);
+//            }
+//        });
+//        
+//        navbar.$ext.addEventListener("mouseout", function(e){
+//            if (!_self.collapsed || !_self.animating
+//              && apf.isChildOf(navbar.$ext, e.toElement, true))
+//                return;
+//            
+//            clearTimeout(timer);
+//            if (colLeft.getWidth() != navbar.getWidth()) {
+//                timer = setTimeout(function(){
+//                    _self.animateToDefaultWidth();
+//                }, 300);
+//            }
+//        });
         
         ide.addEventListener("panels.animate", function(e){
             if (e.noanim) {
@@ -108,41 +118,58 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             
 //            e.tweens.push(tween);
 
-            anims.animateSplitBoxNode(navbar, {
-                width: parseInt(e.toWidth) + "px", 
-                timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
-                duration: 0.3 
-            }, function(){
-                if (e.toWidth == 0)
+            var l = navbar.$ext.lastChild.previousSibling;
+            var w = l.offsetLeft + l.offsetWidth + (_self.btnArrow.visible ? 1 : 6);
+            
+            setTimeout(function(){
+                if (!e.toWidth) {
                     apf.setStyleClass(navbar.$ext, "closed");
-                else 
+                    navbar.$ext.style.boxShadow = shadowClosed;
+                    _self.btnArrow.show();
+                    panels.lastPanel.button.$setState("Out", {});
+                }
+                else {
                     apf.setStyleClass(navbar.$ext, "", ["closed"]);
-                
-                panels.lastPanel.button.$setState("Out", {});
-                
+                    navbar.$ext.style.boxShadow = shadowOpen;
+                    _self.btnArrow.hide();
+                }
+            }, 50);
+
+            anims.animateSplitBoxNode(navbar, {
+                width: (e.toWidth ? (Math.max(parseInt(e.toWidth), w)) : 45) + "px", 
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+                duration: 0.15
+            }, function(){
                 _self.animating = false;
             });
         });
 
         splitterPanelLeft.addEventListener("dragmove", function(e){
-            navbar.setWidth(colLeft.getWidth());
+            _self.setExpandedSize();
         });
         splitterPanelLeft.addEventListener("dragdrop", function(e){
-            navbar.setWidth(colLeft.getWidth());
+            _self.setExpandedSize();
         });
         
         ide.addEventListener("settings.load", function(e){
             var activePanel = e.model.queryValue("auto/panels/@active");
             if (activePanel == "none") {
-                navbar.setWidth(0);
+                navbar.setWidth(45);
                 apf.setStyleClass(navbar.$ext, "closed");
+                navbar.$ext.style.boxShadow = shadowClosed;
+                _self.btnArrow.show();
             } else {
                 ide.addEventListener("init." + activePanel, function(e){
-                    if (colLeft.visible)
-                        navbar.setWidth(colLeft.getWidth());
+                    if (e.ext.button)
+                        e.ext.button.setValue(true);
+                    
+                    if (colLeft.visible) {
+                        _self.setExpandedSize();
+                    }
                     else {
                         colLeft.addEventListener("prop.visible", function(){
-                            navbar.setWidth(colLeft.getWidth());
+                            _self.setExpandedSize();
+                            
                             colLeft.removeEventListener("prop.visible", arguments.callee);
                         });
                     }
@@ -151,6 +178,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             
             var showTabs = e.model.queryValue("auto/tabs/@show");
             navbar.setAttribute("minwidth", apf.isTrue(showTabs) ? 45 : 0);
+            
+            _self.settingsLoaded = true;
         });
         
         ide.addEventListener("tabs.visible", function(e){
@@ -168,7 +197,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
     animateToFullWidth : function(){
         editors.pauseTabResize();
         
-        var toWidth = navbar.$int.scrollWidth + (editors.showTabs? 6 : 9);
+        var toWidth = navbar.$int.scrollWidth + (editors.showTabs ? 6 : 9);
         anims.animateSplitBoxNode(navbar, {
             width: toWidth + "px", 
             timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
@@ -190,6 +219,12 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             apf.layout.forceResize();
             editors.continueTabResize();
         });
+    },
+    
+    setExpandedSize : function (){
+        var l = navbar.$ext.lastChild.previousSibling;
+        var w = l.offsetLeft + l.offsetWidth + (this.btnArrow.visible ? 6 : 1);
+        navbar.setWidth(Math.max(w, colLeft.getWidth()));
     },
     
     add : function(panelExt, options) {
@@ -242,6 +277,11 @@ module.exports = ext.register("ext/sidebar/sidebar", {
 
             panels.activate(panelExt, true);
         });
+        
+        if (this.settingsLoaded 
+          && settings.model.queryValue("auto/panels/@active") != "none") {
+            this.setExpandedSize();
+        }
         
         panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
     },

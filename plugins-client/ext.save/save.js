@@ -113,12 +113,14 @@ module.exports = ext.register("ext/save/save", {
                                 if (!(page=winCloseConfirm.page))
                                     return;
     
-                                tabEditors.remove(page, true, page.noAnim);
+                                delete winCloseConfirm.page;
                                 delete page.noAnim;
+                                
+                                page.dispatchEvent("aftersavedialogclosed");
+                                
+                                tabEditors.remove(page, true, page.noAnim);
                                 if (resetUndo)
                                     page.$at.undo(-1);
-                                delete winCloseConfirm.page;
-                                page.dispatchEvent("aftersavedialogclosed");
                             };
     
                             if (winCloseConfirm.all == -200)

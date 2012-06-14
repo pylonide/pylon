@@ -29,8 +29,8 @@
 
     <a:vsplitbox anchors="0 0 0 0" id="vbMain">
         <a:bar skin="c9-menu-bar" id="logobar" height="31">
-            <a:bar class="fakehbox aligncenter padding3" id="barTools">
-                <a:divider skin="c9-divider-double" />
+            <a:bar class="fakehbox aligncenter padding3" id="barTools" height="25" style="padding-top:1px">
+                <a:divider skin="c9-divider-double" style="margin-left:-1px" />
             </a:bar>
             <a:bar style="float:right;" class="fakehbox aligncenter padding3" id="barExtras">
                 <a:divider skin="c9-divider" visible="false" />
@@ -42,10 +42,10 @@
                 <a:vsplitbox id="searchRow">
                     <a:vsplitbox id="editorRow">
                         <a:hsplitbox id="hboxTabBar" height="27">
-                            <a:bar id="barButtonContainer" class="editor_tab" />
+                            <a:bar id="barButtonContainer" class="editor_tab"/>
                         </a:hsplitbox>
                         <a:hsplitbox id="hboxMain" splitter="true">
-                            <a:bar id="colLeft" width="200" minwidth="105" visible="false" />
+                            <a:bar id="colLeft" width="1" minwidth="105" visible="false" />
                             <a:vsplitbox id="colMiddle" padding="3" />
                         </a:hsplitbox>
                     </a:vsplitbox>

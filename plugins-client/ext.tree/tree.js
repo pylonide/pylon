@@ -238,10 +238,16 @@ module.exports = ext.register("ext/tree/tree", {
     onReady : function() {
         var _self = this;
         trFiles.setAttribute("model", this.model);
+        
         if (this.loadedSettings === 1) {
-            //setTimeout(function() {
+            if (ide.inited) {
+                setTimeout(function() {
+                    _self.loadProjectTree();
+                }, 50);
+            }
+            else {
                 _self.loadProjectTree();
-            //}, 1000);
+            }
         }
 
         // If no settings were found, then we set the "get" attribute of
