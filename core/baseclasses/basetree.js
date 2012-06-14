@@ -732,7 +732,7 @@ apf.BaseTree = function(){
     };
     
     this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
-        if (!self.apf.debug && !htmlNode) 
+        if (!apf.debug && !htmlNode) 
             return;
             
         var container;
@@ -744,15 +744,22 @@ apf.BaseTree = function(){
             return;
         }
         
+        var nSibling = this.getNextTraverse(xmlNode),
+            beforeNode = nSibling
+                ? apf.xmldb.getHtmlNode(nSibling, this)
+                : null;
+        
+        var next = htmlNode.nextSibling;
+        if (next.tagName != htmlNode.tagName)
+            next = next.nextSibling;
+        if (beforeNode == next)
+            return;
+        
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
         
-            nSibling = this.getNextTraverse(xmlNode),
-            beforeNode = nSibling
-                ? apf.xmldb.getHtmlNode(nSibling, this)
-                : null,
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
