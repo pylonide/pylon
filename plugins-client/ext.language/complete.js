@@ -264,7 +264,7 @@ module.exports = {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             }
             else if (hasIcons) {
-                html += '<span class="main"><span class="deferred">' + _self.name + match.name.substring(_self.prefix.length) + '</span>';
+                html += '<span class="main"><span class="deferred">' + match.name + '</span>';
             }
             else {
                 html += '<span class="main"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
