@@ -10896,6 +10896,45 @@
     </a:presentation>
 </a:textbox>
 
+<a:textbox name="simple-dark">
+    <a:style><![CDATA[
+        .simple-dark input {
+            background: rgba(0,0,0,.2);
+            border: 0 none;
+            box-sizing: border-box;
+            color: #81AFCD;
+            font-size: 11px;
+            height: inherit;
+            margin: 0;
+            outline: 0;
+            overflow: hidden;
+            padding: 0 5px;
+            width: 100%;
+            -webkit-transition: all .1s linear;
+               -moz-transition: all .1s linear;
+                    transition: all .1s linear;
+        }
+        .simple-darkFocus input {
+            color: #D1D1D1
+        }
+        .simple-darkInitial input {
+            color: #5d5d5d;
+        }
+        .simple-darkError input {
+            background-color: #A42733;
+            color: #FFA9AF;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="input">
+            <div class="simple-dark">
+                <input type="text"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
 <a:textbox name="large-textarea">
     <a:style><![CDATA[
         
@@ -12143,7 +12182,7 @@
                 background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
                 border: 1px solid rgba(0,0,0,.1);
                 border-radius: 4px;
-                box-shadow: 0 1px 0px 0 rgba(237,237,237,.37) inset,
+                box-shadow: 0 1px 0px 0 rgba(237,237,237,.2) inset,
                             0 1px 0 0 rgba(0,0,0,.08),
                             0 1px 2px 1px rgba(0,0,0,.1);
                 color: #FFFFFF;
@@ -12181,7 +12220,7 @@
              */
             .button-colorless.dark {
                 border: 1px solid rgba(0,0,0,.89);
-                box-shadow: 0 1px 0 0 rgba(237,237,237,.37) inset,0 1px 0 0 rgba(0,0,0,.23);
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.2) inset,0 1px 0 0 rgba(0,0,0,.23);
             }
             /*
              * Colors

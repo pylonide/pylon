@@ -242,6 +242,19 @@
 
 </a:window>
 
+<!--
+
+    ooooooooo.                       .o88o.  o8o  oooo            
+    `888   `Y88.                     888 `"  `"'  `888            
+     888   .d88' oooo d8b  .ooooo.  o888oo  oooo   888   .ooooo.  
+     888ooo88P'  `888""8P d88' `88b  888    `888   888  d88' `88b 
+     888          888     888   888  888     888   888  888ooo888 
+     888          888     888   888  888     888   888  888    .o 
+    o888o        d888b    `Y8bod8P' o888o   o888o o888o `Y8bod8P' 
+                                                                  
+-->
+
+
 <a:window 
     id = "profile"
     class = "profile"
@@ -273,8 +286,8 @@
                     value        = "Click here to set your full name"
                     width        = "260"
                 />
-                <div class="public-url" margin="6 0 0 13">Public URL: c9.io/<div class="custom">username</div></div>
-                <a:hbox class="share" height="19" edge="0 0 0 24" margin="10 0 0 9">
+                <div class="public-url" margin="6 0 0 12">Public URL: c9.io/<div class="custom">username</div></div>
+                <a:hbox class="share" height="19" edge="0 0 0 24" margin="12 0 0 9">
                   <div margin="0 7 0 0">Share what you love:</div>
                     <a:button caption="Twitter" class="button-social twitter" height="20" margin="-2 5 0 0" skin="button-social" width="20" />
                     <a:button caption="Google Plus" class="button-social google-plus" height="20" margin="-2 5 0 0" skin="button-social" width="20" />
@@ -283,30 +296,75 @@
                 </a:hbox>
               </a:vbox>
             </a:hbox>
+            <div class="emboss-pattern" height="4" width="430"></div>
           </a:hbox>
       </a:vbox>
           
-      <a:vbox>
-        <div>Linked services</div>
-        <a:checkbox label="Github(vlad@c9.io)" value="" skin="checkbox_black" />
-        <a:checkbox label="" value="" skin="checkbox_black" ></a:checkbox>
-        <div>Linking to other services gives you instant access to your external projects!</div>
-      </a:vbox>
-      <a:vbox>
-        <h3>Your email address:</h3>
+      <a:vbox class="linked-services" margin="11 0 0 31" width="205">
+        <div class="title" margin="0 0 0 3">Linked Services</div>
         <a:hbox>
-            <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
-            <a:button caption="Save" class="dark green" height="27" margin="0 0 0 11" skin="button-colorless" />
+          <a:checkbox value="" skin="checkbox_black" margin="8 0 0 0">
+              <span class="fake-button github">Github</span>
+              <span class="label">Github</span>
+          </a:checkbox>
+          <div class="email">(vlad@c9.io)</div>
         </a:hbox>
-        <h3>Change your password:</h3>
-        <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
-        <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
         <a:hbox>
-            <a:textbox id="profileEmail" initial-message="Optional" height="27" skin="textbox-on-dark"/>
-            <a:button caption="Save" class="dark green" height="27" margin="0 0 0 11" skin="button-colorless" />
+          <a:checkbox value="" skin="checkbox_black" disabled="true" margin="-4 0 0 0">
+              <span class="fake-button bitbucket">bitbucket</span>
+              <span class="label">Bitbucket</span>
+          </a:checkbox>
+          <a:button caption="Activate" height="12" margin="1 0 0 -1" skin="button-link-dark" />
+        </a:hbox>
+        <div class="info">Linking to other services gives you instant access to your external projects!</div>
+      </a:vbox>
+      <a:filler />
+      <a:vbox class="settings" margin="8 0 0 0">
+        <h3>Your email address:</h3>
+        <a:hbox margin="5 0 0 0">
+            <a:textbox id="profileEmail" initial-message="vlad@c9.io" height="23" skin="simple-dark" width="184"/>
+            <a:button disabled="true" caption="Save" class="dark light-grey" height="23" margin="0 0 0 5" skin="button-colorless" width="48" />
+        </a:hbox>
+        <h3 margin="15 0 0 0">Change your password:</h3>
+        <a:textbox class="simple-darkError" id="profileEmail" initial-message="Old password" height="23" margin="5 0 0 0" mask="password" skin="simple-dark" width="184"/>
+        <a:textbox id="profileEmail" initial-message="Your new password" height="23" margin="5 0 0 0" mask="password" skin="simple-dark" width="184"/>
+        <a:hbox margin="5 0 0 0">
+            <a:textbox id="profileEmail" initial-message="Repeat your new password" height="23" skin="simple-dark" mask="password" width="184"/>
+            <a:button disabled="true" caption="Save" class="dark light-grey" height="23" margin="0 0 0 6" skin="button-colorless" width="48" />
         </a:hbox>
       </a:vbox>
   </a:hbox>
 </a:window>
 
+<!--
+    ooooooooo.                          o8o                         .                                                   .                      
+    `888   `Y88.                        `"'                       .o8                                                 .o8                      
+     888   .d88' oooo d8b  .ooooo.     oooo  .ooooo.   .ooooo.  .o888oo  .oooo.o     .ooooo.   .ooooo.  ooo. .oo.   .o888oo  .ooooo.  oooo d8b 
+     888ooo88P'  `888""8P d88' `88b    `888 d88' `88b d88' `"Y8   888   d88(  "8    d88' `"Y8 d88' `88b `888P"Y88b    888   d88' `88b `888""8P 
+     888          888     888   888     888 888ooo888 888         888   `"Y88b.     888       888ooo888  888   888    888   888ooo888  888     
+     888          888     888   888     888 888    .o 888   .o8   888 . o.  )88b    888   .o8 888    .o  888   888    888 . 888    .o  888     
+    o888o        d888b    `Y8bod8P'     888 `Y8bod8P' `Y8bod8P'   "888" 8""888P'    `Y8bod8P' `Y8bod8P' o888o o888o   "888" `Y8bod8P' d888b    
+                                        888                                                                                                    
+                                    .o. 88P                                                                                                    
+                                    `Y888P                                                                                                     
+-->
+<a:window 
+    id = "projectsCenter"
+    class = "profile"
+    width = "1000"
+    height = "300"
+    center = "true"
+    resizable = "true"
+>
+  <a:hbox>
+    <a:button caption="Create new project" skin="" />
+    <a:button caption="Grid view" skin="" />
+    <a:button caption="List view" skin="" />
+    <div>Sort by:</div>
+    <a:button caption="Name" skin="" />
+    <a:button caption="Date" skin="" />
+    <a:filler />
+    
+  </a:hbox>
+</a:window>
 </a:application>
