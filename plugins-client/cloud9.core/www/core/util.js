@@ -8,6 +8,18 @@ define(function(require, exports, module) {
     
 var markup = require("text!core/util.xml");
 
+exports.escapeXpathString = function(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
+
+
 exports.alert = function(title, header, msg, onhide) {
     if (!self.winAlert)
         apf.document.documentElement.insertMarkup(markup);
