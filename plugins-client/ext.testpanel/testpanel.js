@@ -15,17 +15,6 @@ var markup = require("text!ext/testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("core/settings");
 
-function escapeXpathString(name){
-    if (name.indexOf('"') > -1) {
-        var out = [], parts = name.split('"');
-        parts.each(function(part) {
-            out.push(part == '' ? "'\"'" : '"' + part + '"');
-        })
-        return "concat(" + out.join(", ") + ")";
-    }
-    return '"' + name + '"';
-}
-
 module.exports = ext.register("ext/testpanel/testpanel", {
     name            : "Test Panel",
     dev             : "Ajax.org",
@@ -86,7 +75,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 var nodes = [], node;
                 list.forEach(function(path){
                     node = mdlTests.queryNode("//node()[@path=" 
-                        + escapeXpathString(path) + "]");
+                        + util.escapeXpathString(path) + "]");
                     if (node)
                         nodes.push(node);
                 });

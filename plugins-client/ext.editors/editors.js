@@ -13,6 +13,7 @@ var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
+var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -1000,7 +1001,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (rawState) {
             // build the real path, as the one in the hash is relative
             var path = ide.davPrefix.replace(/\/$/, "") + "/" + rawState[1];
-            var doc = ide.createDocument(this.createFileNodeFromPath(path));
+            var doc = ide.createDocument(fs.createFileNodeFromPath(path));
 
             // if selection information was added, add that to the state
             if (rawState[2] && rawState[3]) {
@@ -1028,26 +1029,6 @@ module.exports = ext.register("ext/editors/editors", {
         return null;
     },
 
-    createFileNodeFromPath : function (path) {
-        var name = path.split("/").pop();
-        var node = apf.n("<file />")
-            .attr("name", name)
-            .attr("contenttype", util.getContentType(name))
-            .attr("path", path)
-            .node();
-        return node;
-    },
-
-    createFolderNodeFromPath : function (path) {
-        var name = path.split("/").pop();
-        var node = apf.n("<folder />")
-            .attr("name", name)
-            .attr("contenttype", util.getContentType(name))
-            .attr("path", path)
-            .node();
-        return node;
-    },
-
     pauseTabResize : function(){
         return;
         tabEditors.setAttribute("buttons", "close,order");
@@ -1063,7 +1044,7 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     showFile : function(path, row, column, text) {
-        var node = this.createFileNodeFromPath(path);
+        var node = fs.createFileNodeFromPath(path);
 
         this.jump(node, row, column, text);
     },

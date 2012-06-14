@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var filesystem = require("ext/filesystem/filesystem");
+var fs = require("ext/filesystem/filesystem");
 var tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var editors = require("ext/editors/editors");
 
@@ -49,7 +49,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 
                 // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
                 if (event.message.args.options.noexist === true) {
-                    var node = editors.createFileNodeFromPath( event.message.args.path);
+                    var node = fs.createFileNodeFromPath( event.message.args.path);
                     node.setAttribute("newfile", "1");
                     node.setAttribute("cli", "1"); // blocks Save As dialog
     				
@@ -63,16 +63,16 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                     
                     // Workspace case: the file is found in tree, expand it
                     if (event.message.args.options.name !== "generic") {
-                        var node = editors.createFileNodeFromPath(event.message.args.path);
+                        var node = fs.createFileNodeFromPath(event.message.args.path);
                         
                         tabbehaviors.revealInTree(node);
                     }
                 }
             }
             else if (event.message.action === "opendir") {
-                var node = filesystem.model.queryNode("//folder[@path='" + event.message.args.path + "']");
+                var node = fs.model.queryNode("//folder[@path='" + event.message.args.path + "']");
                 if (!node) {
-                    node = editors.createFolderNodeFromPath(event.message.args.path);
+                    node = fs.createFolderNodeFromPath(event.message.args.path);
                 }
                 
                 tabbehaviors.revealInTree(node);

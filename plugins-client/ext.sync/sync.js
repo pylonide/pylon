@@ -11,6 +11,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var settings = require("ext/settings/settings");
 var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
 
 var markup = require("text!ext/sync/sync.xml");
 var cssString = require("text!ext/sync/style.css");
@@ -75,24 +76,127 @@ module.exports = ext.register("ext/sync/sync", {
         }
         else if (message.action === "notify-file") {
             if (message.args.event === "added") {
-                // TODO: Update tree & reload file if open.
-                console.log("[SYNC] file added", message.args.path, message.args.mtime);
+                if (cloud9config.debug)
+                    console.log("[SYNC] file added", message.args.path, message.args.mtime);
+                
+                this.createSyncFile(message.args.path, message.args.mtime);
             }
             else if (message.args.event === "modified") {
-                // TODO: Update tree & reload file if open.
-                console.log("[SYNC] file modified", message.args.path, message.args.mtime);
+                if (cloud9config.debug)
+                    console.log("[SYNC] file modified", message.args.path, message.args.mtime);
             }
             else if (message.args.event === "moved") {
-                // TODO: Update tree & reload file if open.
-                console.log("[SYNC] file moved", message.args.oldPath, " -> ", message.args.path);
+                if (cloud9config.debug)
+                    console.log("[SYNC] file moved", message.args.oldPath, " -> ", message.args.path);
+                
+                this.moveSyncFile(message.args.oldPath, message.args.path);
             }
             else if (message.args.event === "removed") {
-                // TODO: Update tree & reload file if open.
-                console.log("[SYNC] file removed", message.args.path);
+                if (cloud9config.debug)
+                    console.log("[SYNC] file removed", message.args.path);
+                
+                this.removeSyncFile(message.args.path);
             }
         }
     },
 
+    createSyncFile: function(path, mtime) {
+        var ps = path.split("/"); 
+        ps.pop();
+        var p = ide.davPrefix + ps.join("/");
+        
+        var newDir = fs.model.queryNode("//node()[@path=" + util.escapeXpathString(p) + "]") === null;
+        
+        if (newDir) {
+            this.createFolderTree(newDir, p);
+        }
+        
+        fs.model.appendXml(fs.createFileNodeFromPath(path, { "modifieddate": mtime }), "//node()[@path=" + util.escapeXpathString(p) + "]");
+    },
+    
+    createFolderTree : function(newDir, p) {
+        if (newDir) { // this dir does not exist, keeping checking parents and make them first
+            var dirsToMake = [];
+            while (newDir) {
+                dirsToMake.unshift(p);
+                p = p.substr(0, p.lastIndexOf("/"));
+                
+                newDir = fs.model.queryNode("//node()[@path=" + util.escapeXpathString(p) + "]") === null;
+            }
+            
+            dirsToMake.forEach(function(dir, idx, dirs) {
+                var parentDir = "";
+                if (idx > 0)
+                    parentDir = dirs[idx - 1];
+                else {
+                    parentDir = dir.substring(0, dir.lastIndexOf("/"));
+                }
+                fs.model.appendXml(fs.createFolderNodeFromPath(dir), "//node()[@path=" + util.escapeXpathString(parentDir) + "]");
+            });
+        }
+    },
+    
+    moveSyncFile : function(oldPath, newPath) {
+        var root = "";
+        
+        // newPath is inside oldPath
+        if (newPath.indexOf(oldPath) >= 0) {
+            root = newPath.substring(0, newPath.indexOf(oldPath));
+        }
+        
+        var prevThing = null;
+        var dirs = oldPath.split("/");
+        dirs.shift(); // dirs[0] element is blank
+        
+        // it's a whole list of dirs
+        if (dirs.length > 1) {
+            dirs.reverse();
+            
+            var list = oldPath;
+            // construct folder heirarchy
+            do {
+                var newChild = "";
+                
+                var attr = { "oldpath" : ide.davPrefix + list };
+                newChild = list.indexOf(".") >= 0 ? fs.createFileNodeFromPath(ide.davPrefix + list, attr) : newChild = fs.createFolderNodeFromPath(ide.davPrefix + list, attr);
+                
+                if (prevThing != null) {
+                    newChild.appendChild(prevThing);
+                    prevThing = newChild;
+                }
+                else
+                    prevThing = newChild;
+                    
+                list = list.substr(0, list.lastIndexOf("/"));
+            } while (list.length > 0);
+        }
+        else {
+            prevThing = fs.createFileNodeFromPath(ide.davPrefix + oldPath);
+        }
+        
+        if (prevThing.parentNode == null) {
+            var workspaceNode = fs.createFolderNodeFromPath(ide.davPrefix);
+            prevThing = workspaceNode.appendChild(prevThing);
+        }
+        
+        var ps = newPath.split("/"); 
+        ps.pop();
+        var p = ide.davPrefix + ps.join("/");
+        
+        var newDir = fs.model.queryNode("//node()[@path=" + util.escapeXpathString(newPath) + "]") === null;
+        
+        if (newDir) {
+            this.createFolderTree(newPath, p);
+        }
+        
+        apf.xmldb.moveNode(fs.createFolderNodeFromPath(ide.davPrefix + root), prevThing);
+    },
+    
+    removeSyncFile: function(path) {
+        var p = ide.davPrefix + path;
+        fs.model.removeXml("//node()[@path=" + util.escapeXpathString(p) + "]");
+    },
+    
     displayMasterStatus: function() {
         var _self = this;
 
@@ -151,7 +255,7 @@ module.exports = ext.register("ext/sync/sync", {
         return xmlStr;
     },
     
-    syncProjecct: function(onlineWorkspaceId){
+    syncProject: function(onlineWorkspaceId){
         apf.ajax("/api/sync/enable", {
                 method: "POST",
                 data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -169,16 +273,21 @@ module.exports = ext.register("ext/sync/sync", {
                         // Success. Nothing more to do. (UI sync state will update via socket.io push event)
                     }
                     else if (data.workspaceNotEmpty === true) {
-                        // TODO: Make dialog look better.
-                        util.alert(
-                            "Sync Error",
-                            "Your workspace must be empty in order to start syncing with an online project! (Workspace dir may only contain settings file)"
-                        );
+                        winCannotSync.show();
                     }
                 }
             });
     },
 
+    removeAndEnableSync: function() {
+        alert("TODO");
+        /*var workspaceChildren = fs.model.queryNode("//node()[@path='" + ide.davPrefix + "']").childNodes;
+        
+        workspaceChildren.forEach(function(el) {
+            fs.model.removeXml("//node()[@path=" + el.getAttribute("path") + "]");
+        });*/
+    },
+    
     disableSync: function() {
         var _self = this;
 
@@ -186,9 +295,9 @@ module.exports = ext.register("ext/sync/sync", {
             _self.displayMasterStatus();
             return;
         }
-
-        // TODO: Show dialog to verify that sync should be disabled. Only disable if "YES". Ignore of "NO".
-
+        
+        winConfirmSyncOff.close();
+        
         apf.ajax("/api/sync/disable", {
             method: "POST",
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -206,7 +315,7 @@ module.exports = ext.register("ext/sync/sync", {
     
     setSync : function() {
         if (btnSyncStatus.$ext.getAttribute("class").indexOf("on") > -1) {
-            this.disableSync();
+            winConfirmSyncOff.show();
         }
         else {
             this.enableSync();
