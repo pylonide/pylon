@@ -191,15 +191,15 @@
             width: 74px;
             z-index: 999;
         }
-        
+
         .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
             top: 55px;
         }
-        
+
         .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
             top: 35px;
         }
-        
+
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
             background : url(images/c9-no-repeat.png) no-repeat -84px 0;
             height: 10px;
@@ -2248,7 +2248,7 @@
         .deploy.c9-header-plus {
             right: 1px;
         }
-        
+
         .c9-header-plus.header-btnOver {
             background-position: -30px -294px;
         }
@@ -2260,11 +2260,11 @@
             right: 1px;
             top: 0;
         }
-        
+
         .deploy.c9-header-minus {
             right: -30px;
         }
-        
+
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
@@ -5752,7 +5752,7 @@
             color         : #f1f1f1;
             cursor:default;
         }
-        
+
         .menu-bk.share-url {
             text-align: center;
             background-image: linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
@@ -5761,7 +5761,7 @@
             background-image: -webkit-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
             background-image: -ms-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
         }
-        
+
         .menu-bk.moveleft {
             margin-left: 6px;
         }
@@ -5774,17 +5774,17 @@
         .menu-bk.downward {
             margin-top: 30px;
         }
-        
+
         .menu-bk.share-url.upward {
             margin-top: -12px !important;
             margin-left: 5px !important;
         }
-        
+
         .menu-bk.share-url.downward {
             margin-top: 9px !important;
             margin-left: 5px !important;
         }
-        
+
         .menu-bk.moveright {
             margin-left: -8px;
         }
@@ -5808,7 +5808,7 @@
             width: 20px;
             background-position: -22px -45px;
         }
-        
+
         .menu-bk>div.menu_item{
             padding: 3px 16px 5px 23px;
             white-space: nowrap;
@@ -5915,7 +5915,7 @@
             left : 50%;
             margin-left : -12px;
         }
-        
+
         .menu-bk.share-url .arrow {
             right: 10px;
             left: auto;
@@ -6107,82 +6107,82 @@
 </a:menu>
 
 <a:modalwindow name="fm-window">
-        <a:style><![CDATA[
-            .fm-window {
-                position : relative;
-                overflow : hidden;
-                z-index  : 10000;
-                padding  : 30px 0 0 0;
-                border-right: 1px solid rgba(43,43,43,0.5);
-                -moz-user-select: -moz-none;
-                -khtml-user-select: none;
-                -webkit-user-select: none;
-                -o-user-select: none;
-                user-select: none;
-            }
+    <a:style><![CDATA[
+        .fm-window {
+            position : relative;
+            overflow : hidden;
+            z-index  : 10000;
+            padding  : 30px 0 0 0;
+            border-right: 1px solid rgba(43,43,43,0.5);
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
 
-            .fm-window .fm-header {
-                position : relative;
-                overflow : hidden;
-                height   : 32px;
-                top      : -30px;
-            }
+        .fm-window .fm-header {
+            position : relative;
+            overflow : hidden;
+            height   : 32px;
+            top      : -30px;
+        }
 
-            .fm-window .fm-header .hcontent {
-                background    : url(images/c9-repeat-x.png)  repeat-x 0 -138px;
-                position      : relative;
-                overflow      : hidden;
-                height        : 26px;
-                padding       : 7px 0 0 7px;
-                font-family   : Arial;
-                font-size     : 11.3px;
-                line-height   : 14px;
-                color         : #595959;
-                text-shadow   : #fff 0px 1px 0px;
-                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.8) inset;
-                text-transform : uppercase;
-            }
+        .fm-window .fm-header .hcontent {
+            background    : url(images/c9-repeat-x.png)  repeat-x 0 -138px;
+            position      : relative;
+            overflow      : hidden;
+            height        : 26px;
+            padding       : 7px 0 0 7px;
+            font-family   : Arial;
+            font-size     : 11.3px;
+            line-height   : 14px;
+            color         : #595959;
+            text-shadow   : #fff 0px 1px 0px;
+            box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.8) inset;
+            text-transform : uppercase;
+        }
 
-            .fm-window .fm-content {
-                position:absolute;
-                overflow:visible;
-                left : 0;
-                top  : 32px;
-                right : 0;
-                bottom : 0;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
-                            -1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
-                background-color: rgba(220, 220, 220, 0.8);
-                background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
-                                    url(images/c9-noise-light-10.png),
-                                    url(images/c9-noise-light-10.png),
-                                    url(images/c9-noise-light-10.png),
-                                    url(images/c9-noise-light-10.png);
-            }
-        ]]></a:style>
+        .fm-window .fm-content {
+            position:absolute;
+            overflow:visible;
+            left : 0;
+            top  : 32px;
+            right : 0;
+            bottom : 0;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
+                        -1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
+            background-color: rgba(220, 220, 220, 0.8);
+            background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
+                                url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png);
+        }
+    ]]></a:style>
 
-        <a:presentation>
-            <a:main
-              collapsed-height = "30"
-              minheight        = "30"
-              minwidth         = "60"
-              container        = "div[2]"
-              drag             = "div[2]"
-              title            = "div[1]/div[1]/text()"
-              icon             = "div[1]/div[1]/div[1]"
-              buttons          = "div[1]/div[1]/div[2]">
-                <div class="fm-window">
-                    <div class="fm-header">
-                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
-                    </div>
-                    <div class="fm-content"> </div>
+    <a:presentation>
+        <a:main
+          collapsed-height = "30"
+          minheight        = "30"
+          minwidth         = "60"
+          container        = "div[2]"
+          drag             = "div[2]"
+          title            = "div[1]/div[1]/text()"
+          icon             = "div[1]/div[1]/div[1]"
+          buttons          = "div[1]/div[1]/div[2]">
+            <div class="fm-window">
+                <div class="fm-header">
+                    <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
                 </div>
-            </a:main>
-            <a:button>
-                <div> </div>
-            </a:button>
-        </a:presentation>
-    </a:modalwindow>
+                <div class="fm-content"> </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div> </div>
+        </a:button>
+    </a:presentation>
+</a:modalwindow>
 <a:scrollbar name="sbios">
     <a:style><![CDATA[
         .sbios {
@@ -7007,6 +7007,20 @@
             right: 0;
             left: 0;
             z-index: 0;
+        }
+
+        .bk-win-noisebg .text-header {
+            font-size: 18px;
+        }
+
+        .bk-win-noisebg .text-content {
+            font-size: 13px;
+        }
+
+        .bk-win-noisebg .smile-icon {
+            width: 45px;
+            height: 46px;
+            background: url(images/smile-image.png) no-repeat 0 0;
         }
 
         .bk-window-cover {
@@ -11957,13 +11971,19 @@
                 background-color: #303030;
             }
             .button-colorless.lightGrey {
-                background-color: #494850
+                background-color: #494850;
+            }
+            .button-colorless.lighterGrey {
+                background-color: #7d7d7d;
             }
             .button-colorless.red {
                 background-color: #B60000;
             }
             .button-colorless.green {
                 background-color: #088E04;
+            }
+            .button-colorless.lightGreen {
+                background-color: #7ca734;
             }
             .button-colorless.lightBlue {
                 background-color: #415566;
@@ -11975,6 +11995,12 @@
                 background-color: #bb3411;
             }
 
+            /* larger buttons */
+            .button-colorless.large {
+                height: 42px;
+                line-height: 42px;
+                font-size: 14px;
+            }
         ]]></a:style>
         <a:presentation>
             <a:main caption = ".">
