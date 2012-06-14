@@ -36,7 +36,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     replaceAll : false,
     markup   : markup,
     skin     : {
-        id   : "searchinfiles",
+        id   : "sear_chinfiles",
         data : skin,
         "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
     },
@@ -414,7 +414,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             // the search results already exist
             if (_self.consoleacedoc !== undefined && _self.consoleacedoc.$lines !== undefined && _self.consoleacedoc.$lines.length > 0) { // append to tab editor if it exists
                 _self.appendLines(_self.consoleacedoc, messageHeader);
-                _self.searchConsole.$editor.gotoLine(_self.consoleacedoc.getLength() + 2);
             }
             else {
                 _self.searchConsole.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
@@ -426,9 +425,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searchConsole.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
                 _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
+            
+            _self.searchConsole.$editor.focus();
         }
         else {
-            if (this.searchPage === null) { // the results are not open, create a new page
+            if (_self.searchPage === null) { // the results are not open, create a new page
                 doc.cachedValue = messageHeader;
                 ide.dispatchEvent("openfile", {doc: doc, node: node});
                 
@@ -442,17 +443,16 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 this.setLaunchEvents(_self.searchPage, false);
             }
             else {
-                this.appendLines(_self.tabacedoc, messageHeader);
+                _self.appendLines(_self.tabacedoc, messageHeader);
                 tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
-                
-                _self.searcheditor.scrollToLine(_self.tabacedoc.getLength() + 2, true);
             } 
         }
         
-        var dataCompleted = false, lastLine = "", start = 0, http;
+        var firstRun = false, dataCompleted = false, lastLine = "", start = 0, finalText = undefined, http = null;
         this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {   
             dataCompleted = true;
             http          = extra.http;
+            finalText     = extra.http.responseText;
         });
 
         // Start streaming
@@ -463,15 +463,24 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             
             if (http) {
-                var data = lastLine + http.responseText;
+                var data = finalText || lastLine + http.responseText;
+                
                 if (!data.length)
                     return;
                 
                 var lines = (data).split("\n");
                 lastLine = lines.pop();
                 
-                if (!chkSFConsole.checked)
+                if (!chkSFConsole.checked) {
+                    if (_self.tabacedoc.getLength() <= 3)
+                        firstRun = true;
+                    var currLength = _self.tabacedoc.getLength() - 4; // the distance to the last message
                     _self.appendLines(_self.tabacedoc, lines);
+                    if (!firstRun) {
+                        _self.searcheditor.scrollToLine(currLength, false, true);
+                        firstRun = true;
+                    }
+                }
                 else
                     _self.appendLines(_self.consoleacedoc, lines);
             }
@@ -495,7 +504,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
     
-    launchFileFromSearch : function(editor) {
+    launchFileFromSearch : function(editor, preview) {
         var session = editor.getSession();
         var currRow = editor.getCursorPosition().row;
         var path = null;
@@ -544,7 +553,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         if (content.length > 0)
             doc.insertLines(currLength, contentArray);
-        
+            
         if (countJSON !== undefined)
             doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
     },
@@ -588,7 +597,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     
     makeSearchResultsPanel : function() {
         var _self = this;
-        // create editor if it does not exist
+        // crea te editor if it does not exist
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.setAttribute("closebtn", true);
@@ -621,8 +630,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 wrapmodeViewport  : "true"
             }));
             
-            this.setLaunchEvents(_self.searchConsole.$editor, true);
-            
             this.searchConsole.$editor.renderer.scroller.addEventListener("mousemove", function(e) {
                 var x = 3;
                 
@@ -639,27 +646,29 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             tabConsole.set(this.pageID);
             this.searchConsole.$editor.session.getDocument().setValue("");
         }
+        
+        this.setLaunchEvents(_self.searchConsole.$editor, true);
     },
     
     setLaunchEvents : function(editor, isConsole) {
         var _self = this;
-        function enterHandler(e) {
-            if (e.keyCode == 13) {
-                if (e.altKey === false) {
-                    _self.launchFileFromSearch(editor);
-                    if (e.shiftKey === true) {
-                        _self.searchConsole.focus();
-                    }
-                }
-                else {
-                    editor.insert("\n");
-                }
-                return false;
-            }
-        };
-        
+
         if (isConsole) {
-            this.searchConsole.addEventListener("keydown", enterHandler);
+            this.searchConsole.addEventListener("keydown", function(e) {
+                if (e.keyCode == 13) {
+                    if (e.altKey === false) {
+                        _self.launchFileFromSearch(editor);
+                        if (e.shiftKey === true) {
+                            //_self.searchConsole.$editor.focus();
+                            _self.searchConsole.$focus();
+                        }
+                    }
+                    else {
+                        editor.insert("\n");
+                    }
+                    return false;
+                }
+            });
             
             this.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(editor);
