@@ -555,7 +555,10 @@ function asyncParForEach(array, fn, callback) {
                 });
                 
                 matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", matches);
+                _self.sender.emit("complete", {
+                    pos: pos,
+                    matches: matches
+                });
             });
         });
     };
