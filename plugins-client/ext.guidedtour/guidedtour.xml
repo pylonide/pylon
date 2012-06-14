@@ -21,7 +21,7 @@
             <a:button id="winTourButtonClose" 
               default = "2"  
               skin    = "btn-default-simple" 
-              onclick = "winTourGuide.hide();" >Cancel</a:button>
+              onclick = "winTourGuide.hide();" >Return to the IDE</a:button>
             <a:button id="winTourButtonStart" 
               default = "2" 
               class   = "btn-green" 

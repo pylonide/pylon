@@ -7,8 +7,12 @@
 define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
-var language = require("ext/language/language");
 var completionUtil = require("ext/codecomplete/complete_util");
+var language;
+
+function hook(ext) {
+    language = ext;
+}
 
 function composeHandlers(mainHandler, fallbackHandler) {
     return function onKeyPress() {
@@ -21,7 +25,7 @@ function composeHandlers(mainHandler, fallbackHandler) {
 function onTextInput(text, pasted) {
     if (language.disabled)
         return false;
-    if (language.isContinuousCompletionEnabled)
+    if (language.isContinuousCompletionEnabled())
         typeAlongCompleteTextInput(text, pasted);
     else
         inputTriggerComplete(text, pasted);
@@ -31,8 +35,10 @@ function onTextInput(text, pasted) {
 function onCommandKey(e) {
     if (language.disabled)
         return false;
-    if (language.isContinuousCompletionEnabled)
+    if (language.isContinuousCompletionEnabled())
         typeAlongComplete(e);
+    if (e.keyCode == 27) // Esc
+        require("ext/language/marker").hideToolTip();
     return false;
 }
 
@@ -42,13 +48,13 @@ function typeAlongComplete(e) {
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
     if(e.keyCode === 8) { // Backspace
-        var ext = require("ext/language/complete");
+        var complete = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
         if(!preceededByIdentifier(line, pos.column))
             return false;
-        ext.deferredInvoke();
+        complete.deferredInvoke();
     }
 }
 
@@ -76,7 +82,6 @@ function handleChar(ch) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
-        ext.closeCompletionBox(null, true);
         if(!preceededByIdentifier(line, pos.column, ch))
             return false;
         ext.deferredInvoke();
@@ -86,9 +91,9 @@ function handleChar(ch) {
 /**
  * Ensure that code completion is not triggered.
  */
-function inCompletableCodeContext(line, column) {
+function inCompletableCodeContext(line, column, id) {
     var inMode = null;
-    if(line.match(/^\s*\*.+/))
+    if (line.match(/^\s*\*.+/))
         return false;
     for (var i = 0; i < column; i++) {
         if(line[i] === '"' && !inMode)
@@ -122,9 +127,19 @@ function inCompletableCodeContext(line, column) {
 function preceededByIdentifier(line, column, postfix) {
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     if(postfix) id += postfix;
-    return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
+    return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column, id);
 }
 
+function isRequireJSCall(line, column) {
+    if (editors.currentEditor.amlEditor.syntax !== "javascript" || !isInferAvailable())
+        return false;
+    var id = completionUtil.retrievePreceedingIdentifier(line, column);
+    var LENGTH = 'require("'.length;
+    var start = column - id.length - LENGTH;
+    return start >= 0 && line.substr(start, LENGTH) === 'require("';
+}
+
+exports.hook = hook;
 exports.onTextInput = onTextInput;
 exports.onCommandKey = onCommandKey;
 exports.inputTriggerComplete = inputTriggerComplete;
@@ -133,4 +148,5 @@ exports.typeAlongComplete = typeAlongComplete;
 exports.composeHandlers = composeHandlers;
 exports.inCompletableCodeContext = inCompletableCodeContext;
 exports.preceededByIdentifier = preceededByIdentifier;
+exports.isRequireJSCall = isRequireJSCall;
 });

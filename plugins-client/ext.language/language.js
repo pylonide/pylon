@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
+var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
@@ -48,8 +49,16 @@ module.exports = ext.register("ext/language/language", {
         });
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
-        ide.addEventListener("extload", function(){
-            var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
+        ide.addEventListener("extload", function() {
+            var worker;
+            if (window.location.search.match(/[?&]noworker=1/)) {
+                worker = _self.worker = createUIWorkerClient();
+            }
+            else {
+                worker = _self.worker = new WorkerClient(
+                    ["treehugger", "ext", "ace", "c9"], "worker.js",
+                    "ext/language/worker", "LanguageWorker");
+            }
             complete.setWorker(worker);
 
             ide.addEventListener("afteropenfile", function(event){
@@ -71,6 +80,7 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            keyhandler.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
@@ -154,8 +164,8 @@ module.exports = ext.register("ext/language/language", {
         return isContinuousCompletionEnabled;
     },
     
-    setContinuousCompletion: function() {
-        isContinuousCompletionEnabled = false;
+    setContinuousCompletionEnabled: function(value) {
+        isContinuousCompletionEnabled = value;
     },
     
     updateSettings: function() {

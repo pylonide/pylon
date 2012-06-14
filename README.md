@@ -36,10 +36,16 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS `>= 0.6.15` & NPM `>= 1.1.16`
-  * Sourcemint: `npm install -g sm`
+  * NodeJS `>= 0.6.15`
+  * NPM `>= 1.1.16`
 
 Install:
+
+    # Be sure you have sourcemint installed:
+
+    npm install -g sm
+    
+    # Then:
 
     sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
     
@@ -124,7 +130,7 @@ Main projects that we use as building blocks:
 
   * [async.js] by [fjakobs]
   * [jsDAV] by [mikedeboer]
-  * [connect] by [senchalabs](http://github,com/senchalabs)
+  * [connect] by [senchalabs](http://github.com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
   * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]

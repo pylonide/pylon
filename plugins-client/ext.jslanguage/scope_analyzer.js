@@ -17,7 +17,15 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
-require('treehugger/traverse');
+require("treehugger/traverse"); // add traversal functions to trees
+
+var PROPER = module.exports.PROPER = 80;
+var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
+var NOT_PROPER = module.exports.NOT_PROPER = 0;
+var KIND_EVENT = module.exports.KIND_EVENT = "event";
+var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
+var KIND_HIDDEN = module.exports.KIND_HIDDEN = "hidden";
+var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -306,6 +314,19 @@ Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
 };
 
+Variable.prototype.markProperDeclaration = function(confidence) {
+    if (!confidence)
+        return;
+    else if (!this.properDeclarationConfidence)
+        this.properDeclarationConfidence = confidence;
+    else if (this.properDeclarationConfidence < PROPER)
+        this.properDeclarationConfidence += confidence;
+};
+
+Variable.prototype.isProperDeclaration = function() {
+    return this.properDeclarationConfidence > MAYBE_PROPER;
+};
+
 /**
  * Implements Javascript's scoping mechanism using a hashmap with parent
  * pointers.
@@ -319,12 +340,28 @@ var Scope = module.exports.Scope = function Scope(parent) {
 /**
  * Declare a variable in the current scope
  */
-Scope.prototype.declare = function(name, resolveNode) {
-    if(!this.vars['_'+name]) 
-        this.vars['_'+name] = new Variable(resolveNode);
-    else if(resolveNode)
-        this.vars['_'+name].addDeclaration(resolveNode);
-    return this.vars['_'+name];
+Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidence, kind) {
+    var result;
+    var vars = this.getVars(kind);
+    if (!vars['_'+name]) {
+        result = vars['_'+name] = new Variable(resolveNode);
+    }
+    else if (resolveNode) {
+        result = vars['_'+name];
+        result.addDeclaration(resolveNode);
+    }
+    if (result) {
+        result.markProperDeclaration(properDeclarationConfidence);
+        result.kind = kind;
+    }
+    return result;
+};
+
+Scope.prototype.getVars = function(kind) {
+    if (kind)
+        return this.vars[kind] = this.vars[kind] || {};
+    else
+        return this.vars;
 };
 
 Scope.prototype.isDeclared = function(name) {
@@ -336,27 +373,32 @@ Scope.prototype.isDeclared = function(name) {
  * @param name name of variable
  * @return Variable instance 
  */
-Scope.prototype.get = function(name) {
-    if(this.vars['_'+name])
-        return this.vars['_'+name];
+Scope.prototype.get = function(name, kind) {
+    var vars = this.getVars(kind);
+    if(vars['_'+name])
+        return vars['_'+name];
     else if(this.parent)
-        return this.parent.get(name);
+        return this.parent.get(name, kind);
 };
 
 Scope.prototype.getVariableNames = function() {
-    var names = [];
-    for(var p in this.vars) {
-        if(this.vars.hasOwnProperty(p)) {
-            names.push(p.slice(1));
-        }
+    return this.getNamesByKind(KIND_DEFAULT);
+};
+
+Scope.prototype.getNamesByKind = function(kind) {
+    var results = [];
+    var vars = this.getVars(kind);
+    for (var v in vars) {
+        if (vars.hasOwnProperty(v) && v !== KIND_HIDDEN && v !== KIND_PACKAGE)
+            results.push(v.slice(1));
     }
-    if(this.parent) {
-        var namesFromParent = this.parent.getVariableNames();
+    if (this.parent) {
+        var namesFromParent = this.parent.getNamesByKind(kind);
         for (var i = 0; i < namesFromParent.length; i++) {
-            names.push(namesFromParent[i]);
+            results.push(namesFromParent[i]);
         }
     }
-    return names;
+    return results;
 };
 
 var GLOBALS_ARRAY = Object.keys(GLOBALS);
@@ -387,19 +429,19 @@ handler.analyze = function(doc, ast, callback) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x);
+                scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
             'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x);
+                scope.declare(b.x.value, b.x, PROPER);
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope.declare(b.x.value, b.x);
+                    scope.declare(b.x.value, b.x, PROPER);
                 }
                 return node;
             }
@@ -476,10 +518,10 @@ handler.analyze = function(doc, ast, callback) {
                 'Catch(x, body)', function(b, node) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
-                    scope.vars[b.x.value] = new Variable(b.x);
+                    scope.vars["_" + b.x.value] = new Variable(b.x);
                     scopeAnalyzer(scope, b.body, localVariables);
                     // Put back
-                    scope.vars[b.x.value] = oldVar;
+                    scope.vars["_" + b.x.value] = oldVar;
                     return node;
                 },
                 'PropAccess(_, "lenght")', function(b, node) {
@@ -509,6 +551,8 @@ handler.analyze = function(doc, ast, callback) {
                 if (localVariables[i].uses.length === 0) {
                     var v = localVariables[i];
                     v.declarations.forEach(function(decl) {
+                        if (decl.value && decl.value === decl.value.toUpperCase())
+                            return;
                         markers.push({
                             pos: decl.getPos(),
                             type: 'unused',

@@ -15,10 +15,12 @@ var skin = require("text!ext/uploadfiles/skin.xml");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var fs   = require("ext/filesystem/filesystem");
 var menus = require("ext/menus/menus");
+var settings = require('ext/settings/settings');
 
-var MAX_UPLOAD_SIZE_FILE = 52428800;
-var MAX_OPENFILE_SIZE = 2097152;
-var MAX_CONCURRENT_FILES = 1000;
+var MAX_UPLOAD_SIZE_FILE = 52428800; // max size accepted for one file
+var MAX_OPENFILE_SIZE = 2097152; // max size of file that is openen in the editor on drop
+var MAX_VISIBLE_UPLOADS = 20; // max number of files added to upload activity list
+var MAX_OPEN_FILES_EDITOR = 5; // max number of files that can be opened in the editor
 
 module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     dev         : "Ajax.org",
@@ -39,8 +41,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     currentSettings : [],
     nodes       : [],
     
-    uploadQueue : [], // list of all files that are queued for upload
+    uploadFiles: [], // list of all files that are queued for upload
+    uploadQueue : [], // shortlist of files next in queue for upload
     lockHideQueueItems: [], // list of completed downloads that still needs to be removed from the upload queue
+    
+    ignoreFiles: [".", ".DS_Store"],
     
     hook : function(){
         var _self = this;
@@ -74,7 +79,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 )
             });
             
-            if(ide.infraEnv) {
+            if(window.cloud9config.hosted) {
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
@@ -82,7 +87,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         }
                     }), 390)
                 );
-                btnUploadFiles.setProperty("right", "81");
             }
         });
     },
@@ -112,22 +116,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         function handleFileSelect(e){
             var files = e.target.files;
-            
-            if (!(_self.checkUploadSize(files) && _self.checkNumberOfFiles(files)))
-                return false;
-        
             _self.startUpload(files);
         };
         
         ide.addEventListener("init.ext/tree/tree", function(){
-            /*
-            winFilesViewer.appendChild(new apf.vbox({
-                id : "vboxTreeContainer",
-                anchors: "0 0 0 0"
-            }));
-        
-            vboxTreeContainer.appendChild(trFiles);
-            */
             vboxTreeContainer.appendChild(boxUploadActivity);
         });
         
@@ -145,6 +137,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
             _self.lockHideQueue = false;
             _self.clearCompletedUploads();
+        });
+        
+        cbToggleUploadQueue.addEventListener("click", function(e) {
+            if (!e.currentTarget.checked)
+                lstUploadActivity.hide();
+            else
+                lstUploadActivity.show();
         });
     },
     
@@ -173,6 +172,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     break;
                 case "debug":
                     console.log(JSON.stringify(data));
+                    break;
+                case "canceled":
+                    this.cancelAllUploads = false;
+                    break;
                 default:
                     console.log("unknown message from uploadworker: ", data.type);
             }
@@ -218,7 +221,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     /* upload functionality */
     onBeforeDrop: function(e) {
-        if (!(window.File && window.FileReader/* && window.FormData*/)) {
+        if (!(window.File && window.FileReader)) {
             util.alert(
                 "Could not upload file(s)", "An error occurred while dropping this file(s)",
                 "Your browser does not offer support for drag and drop for file uploads. " +
@@ -226,24 +229,35 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             return false;
         }
-        
-        /** Dropped item is a folder */
-        if (e.dataTransfer.files.length == 0) {
+        var files = e.dataTransfer.files;
+        // Dropped item is a folder, second condition is for FireFox
+        if (!files.length || !files[0].size) {
             ext.initExtension(this);
             
             winNoFolderSupport.show();
             
+            // only in Chrome display button to upload dialog with select folder 
             if (!apf.isWebkit)
                 btnNoFolderSupportOpenDialog.hide();
             
             return false;
         }
-        var files = e.dataTransfer.files;
-        if (!(this.checkUploadSize(files) && this.checkNumberOfFiles(files)))
+        
+        var filesLength = files.length;
+        if (filesLength < 1)
             return false;
         
-        if (e.dataTransfer.files.length < 1)
-            return false;
+        // if dropped on editor open file
+        if (e.currentTarget.id == "tabEditorsDropArea") {
+            if (filesLength <= MAX_OPEN_FILES_EDITOR)
+                this.openOnUpload = true;
+            else {
+                return util.alert(
+                    "Maximum files exceeded", "The number of files dropped in the editor exceeds the limit.",
+                    "Please update your selection to " + MAX_OPEN_FILES_EDITOR + " files to continue."
+                );
+            }
+        }
         
         this.onDrop(e);
         
@@ -253,14 +267,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     onDrop: function(e) {
         ext.initExtension(this);
         
-        var dt = e.dataTransfer;
-        var files = dt.files;
-
-        this.startUpload(files);
+        this.startUpload(e.dataTransfer.files);
     },
 
     startUpload: function(files) {
-        var _self = this;
         this.numFilesUploaded = files.length;
         
         var node = trFiles.selected;
@@ -274,87 +284,75 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (winUploadFiles.visible)
             winUploadFiles.hide();
             
-        // show upload activity list
-        boxUploadActivity.show();
-        
         // set hidden files to true to support hidden files and folders
         (davProject.realWebdav || davProject).setAttribute("showhidden", true);
         
-        // loop through all files to create the upload queue and create subfolders
-        apf.asyncForEach(files, function(file, next) {
-            file.targetFolder = node;
-            
-            var folders = file.webkitRelativePath && file.webkitRelativePath.split("/");
-            
-            if (!folders || !folders.length) {
-                addFile(file);
-                return next();
-            }
-            
-            // a folder is uploaded
-            else {
-                //davProject.setProperty("showhidden", true);
-                folders.pop(); // remove filename from path
-                
-                var targetPath = folders.join("/");
-                var nodePath = node.getAttribute("path");
-                var targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(nodePath) + "/" + apf.escapeXML(targetPath) + "']");
-                
-                // check if folder with specified path already exists
-                if (targetFolder) {
-                    // this is a folder, no need to add to upload queue
-                    if (file.name == ".")
-                        return next();
+        var filesToAddToQueue = [];
+        var files_too_big = [];
+        var filename;
+        this.uploadIndex = -1;
+        if (!this.totalNumUploads)
+            this.totalNumUploads = 0;
+        var fileIndex = -1;
+        var filesInQueue = this.uploadInProgress ? (mdlUploadActivity.data && mdlUploadActivity.data.childNodes.length) : 0;
 
-                    addFile(file, targetFolder);
-                    return next();
+        var file;
+        for (var i = 0, l = files.length; i < l; i++) {
+            file = files[i];
+            fileIndex++;
+            
+            filename = file.name;
+            if (this.ignoreFiles.indexOf(filename) == -1) {
+                if (file.size > MAX_UPLOAD_SIZE_FILE) {
+                    files_too_big.push(filename)
                 }
-                // target folder not created yet, create first
-                else {
-                    var subfolder;
-                    var currentPath = nodePath;
-                    apf.asyncForEach(folders, function(folder, next2) {
-                        currentPath += "/" + folder;
-                        subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(currentPath) + "']");
-                        
-                        // subfolder is already created
-                        if (subfolder) {
-                            trFiles.select(subfolder);
-                            next2();
-                        }
-                        // subfolder does not exists, create first
-                        else {
-                            fs.createFolder(folder, trFiles, true, function(folder) {
-                                if (!folder) {
-                                    _self.removeFromQueue(file.name);
-                                    next();
-                                }
-                                // check if there are subfolders to be created
-                                trFiles.select(folder);
-                                subfolder = folder;
-                                next2();
-                            });
-                        }
-                    }, function() {
-                        // this is a folder, no need to add to upload queue
-                        if (file.name == ".")
-                            return next();
-                            
-                        addFile(file, subfolder);
-                        next();
-                    });
-                }
+                
+                // if more then one file is too big there is no need to check any further
+                if (files_too_big.length > 1)
+                    return this.showFilesTooBigDialog(files_too_big);
+                
+                this.totalNumUploads++;
+                if (filesInQueue < MAX_VISIBLE_UPLOADS) {
+                    this.uploadIndex = fileIndex;
+                    filesInQueue++;
+                    filesToAddToQueue.push(file);
+                } 
             }
-        }, function() {
-            if (!_self.uploadInProgress)
-                _self.uploadNextFile();
-        });
+        }
         
-        // add a file to the upload queue 
-        function addFile(file, targetFolder) {
-            if (targetFolder)
-                file.targetFolder = targetFolder;
-            _self.addToQueue(file);
+        if (files_too_big.length)
+            return this.showFilesTooBigDialog(files_too_big);
+
+        this.uploadFiles.push({
+            targetFolder: node,
+            queue: files
+        });
+        if ((l=filesToAddToQueue.length)) {
+            for (i = 0; i < l; i++) {
+                this.addToQueue(filesToAddToQueue[i], node);
+            }
+        }
+        if (!this.uploadInProgress) {
+            // show upload activity list
+            boxUploadActivity.show();
+            btnCancelUploads.show();
+            
+            this.uploadNextFile();
+        }
+    },
+    
+    showFilesTooBigDialog: function(files) {
+        if (files.length == 1) {
+            util.alert(
+                "Maximum file-size exceeded", "A file exceeds our upload limit of 50MB per file.",
+                "Please remove the file '" + files[0] + "' from the list to continue."
+            );
+        }
+        else {
+            util.alert(
+                "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
+                "Please remove all files larger than 50MB from the list to continue."
+            );
         }
     },
     
@@ -363,28 +361,53 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             return false;
     },
     
-    addToQueue: function(file) {
+    addToQueue: function(file, targetFolder, callback) {
         // add files in dirty state
-        var parent = file.targetFolder;
-        var path = parent.getAttribute("path");
+        file.targetFolder = targetFolder;
+        var path = file.targetFolder.getAttribute("path");
         
-        // expand target folder in tree
-        trFiles.slideOpen(null, parent, true);
+        var filepath;
+        if (file.webkitRelativePath) {
+            filepath = file.webkitRelativePath && file.webkitRelativePath.split("/");
+            filepath.pop(); // remove filename from path
+            filepath = filepath.join("/");
+        }
         
-        // add node to file tree
+        if (!filepath)
+            file.path = path;
+        else
+            file.path = path + "/" + filepath;
+        
+        // add file to upload activity list
+        this.addToQueueList(file);
+        this.uploadQueue.push(file);
+        
+        callback && callback();
+    },
+    
+    // add file to file tree
+    addToFileTree: function(file) {
+        var filename = apf.escapeXML(file.name)
+        var path = apf.escapeXML(file.path);
+        
+        var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
+        if (treeNode)
+            apf.xmldb.removeNode(treeNode);
+            
         var xmlNode = "<file type='fileupload'" +
-            " name='" + apf.escapeXML(file.name) + "'" +
-            " path='" + apf.escapeXML(path) + "/" + apf.escapeXML(file.name) + "'" +
+            " name='" + filename + "'" +
+            " path='" + path + "/" + filename + "'" +
         "/>";
         
-        file.treeNode = trFiles.add(xmlNode, parent);
-        file.path = path;
-        // add file to upload activity list
+        apf.xmldb.appendChild(file.targetFolder, apf.getXml(xmlNode));
+        //trFiles.add(xmlNode, file.targetFolder);
+        file.treeNode = trFiles.queryNode("//file[@path='" + path + "/" + filename + "'][@name='" + filename + "']");	
+    },
+    
+    //add file to upload activity list
+    addToQueueList: function(file) {
         var queueNode = '<file name="' + apf.escapeXML(file.name) + '" />';
-        
         file.queueNode = mdlUploadActivity.appendXml(queueNode);
-        
-        this.uploadQueue.push(file);
     },
     
     removeFromQueue: function(name) {
@@ -393,16 +416,17 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             file = this.uploadQueue[i];
             if (file.name == name) {
                 this.uploadQueue.splice(i, 1);
-                this.removeCurrentUploadFile(name);
+                apf.xmldb.removeNode(file.queueNode);
+                uploadactivityNumFiles.$ext.innerHTML = "(" + --this.totalNumUploads + ")";
                 break;
             }
         }
     },
     
-    removeCurrentUploadFile: function(name) {
+    removeCurrentUploadFile: function() {
         var file = this.currentFile;
         apf.xmldb.removeNode(file.queueNode);
-        apf.xmldb.removeNode(file.treeNode);
+        //apf.xmldb.removeNode(file.treeNode);
         if (!mdlUploadActivity.data.childNodes.length) {
             boxUploadActivity.hide();
         }
@@ -426,18 +450,29 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     uploadNextFile: function() {
+        if (this.cancelAllUploads)
+            return this.uploadCanceled();
+        
         var _self = this;
-
+        uploadactivityNumFiles.$ext.innerHTML = "(" + this.totalNumUploads + ")";
         var file = this.currentFile = this.uploadQueue.shift();
         
         // check if there is a file to upload
         if (file) {
+            var targetPath = file.targetFolder.getAttribute("path");
+            var filepath;
+            if (file.webkitRelativePath) {
+                filepath = file.webkitRelativePath && file.webkitRelativePath.split("/");
+                filepath.pop(); // remove filename from path
+                filepath = filepath.join("/");
+            }
             this.uploadInProgress = true;
+            
             if (this.hideUploadActivityTimeout) {
                 clearTimeout(this.hideUploadActivityTimeout);
                 this.hideUploadActivityTimeout = null;
             }
-            
+        
             /** Chrome, Firefox */
             if (apf.hasFileApi) {
                 function checkFileExists(exists) {
@@ -446,7 +481,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             _self.overwrite();
                         }
                         else if (_self.existingSkipAll) {
-                            _self.removeCurrentUploadFile(file.name);
+                            _self.removeCurrentUploadFile();
                             _self.uploadNextFile();
                         }
                         else {
@@ -463,88 +498,110 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         }
                     }
                     else {
-                        upload(file);
+                        upload();
                     }
                 }
                 
-                function upload(file) {
-                    var file = file || _self.currentFile;
-                    var node = file.queueNode;
-                    apf.xmldb.setAttribute(node, "progress", 0);
+                function upload() {
+                    var file = _self.currentFile;
                     
-                    if (!_self.worker)
-                        _self.initWorker();
-                    _self.worker.postMessage({cmd: 'connect', id: file.name, file: file, path: file.path});
+                    var targetFolder;
+                    if (filepath) {
+                        targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(targetPath + "/" + filepath) + "/" + apf.escapeXML(filepath) + "']");
+                        
+                        // folder not exist yet, create first
+                        if (!targetFolder) {
+                            var subfolder;
+                            var currentPath = targetPath;
+                            
+                            var folders = filepath.split("/");
+                            apf.asyncForEach(folders, function(folder, next) {
+                                currentPath += "/" + folder;
+                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(currentPath) + "']");
+                        
+                                // subfolder is already created
+                                if (subfolder) {
+                                    trFiles.select(subfolder);
+                                    next();
+                                }
+                                // subfolder does not exists, create first
+                                else {
+                                    fs.createFolder(folder, trFiles, true, function(folder) {
+                                        if (!folder) {
+                                            _self.removeFromQueue(file.name);
+                                            _self.uploadNextFile();
+                                        }
+                                        // check if there are subfolders to be created
+                                        subfolder = folder;
+                                        next();
+                                    });
+                                }
+                            }, function() {
+                                if (_self.ignoreFiles.indexOf(file.name) > -1)
+                                    return _self.uploadNextFile();
+                                    
+                                uploadNext(subfolder);
+                            });
+                        }
+                        else {
+                            uploadNext(targetFolder);
+                        }
+                    }
+                    else {
+                        uploadNext();
+                    }
+                    
+                    function uploadNext(targetFolder) {
+                        if (targetFolder)
+                            file.targetFolder = targetFolder;
+                        
+                        _self.addToFileTree(file);
+                        
+                        var node = file.queueNode;
+                        apf.xmldb.setAttribute(node, "progress", 0);
+                        
+                        if (!_self.worker)
+                            _self.initWorker();
+                            
+                        _self.worker.postMessage({cmd: 'connect', id: file.name, file: file, path: file.targetFolder.getAttribute("path")});
+                    }
                 }
                 _self.upload = upload;
                 
-                fs.exists(file.path + "/" + file.name, checkFileExists);
+                // check if file already exists in gotofile arraySearchResults
+                /*
+                var rootPath = trFiles.root.firstChild.getAttribute("path");
+                var checkFilepath = (targetPath + (filepath ? "/" + filepath : "")).replace(rootPath, "") || "/";
+                if (require("ext/gotofile/gotofile").arraySearchResults.indexOf(checkFilepath + file.name) > -1)
+                    checkFileExists(true);
+                else
+                    upload();
+                */
+                
+                fs.exists(apf.escapeXML(targetPath + (filepath ? "/" + filepath : "")) + "/" + file.name, checkFileExists);
             }
         }
         // no files in queue, upload completed
         else {
+            uploadDone();
+        }
+        
+        function uploadDone() {
             _self.uploadInProgress = false;
             _self.existingOverwriteAll = false;
             _self.existingSkipAll = false;
-            (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
-            this.hideUploadActivityTimeout = setTimeout(function() {
+            btnCancelUploads.hide();
+            (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
+            require("ext/tree/tree").refresh();
+            _self.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
             }, 5000);
         }
     },
     
-    /** Check for files exceeding filesize limit */
-    checkUploadSize: function(files) {
-        var file;
-        var files_too_big = [];
-        for (var filesize, totalsize = 0, i = 0, l = files.length; i < l; ++i) {
-            file = files[i];
-            filesize = file.size;
-            totalsize += filesize;
-
-            if (filesize > MAX_UPLOAD_SIZE_FILE) {
-                files_too_big.push(file.name)
-            }
-        }
-        
-        if (files_too_big.length) {
-            if (files_too_big.length == 1) {
-                util.alert(
-                    "Maximum file-size exceeded", "A file exceeds our upload limit of 50MB per file.",
-                    "Please remove the file '" + files_too_big[0] + "' from the list to continue."
-                );
-            }
-            else {
-                util.alert(
-                    "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                    "Please remove any files larger than 50MB from the list to continue."
-                );
-            }
-            
-            return false;
-        }
-        
-        return true;
-    },
-    
-    /** Check the number of dropped files exceeds the limit */
-    checkNumberOfFiles: function(files) {
-        if (files.length > MAX_CONCURRENT_FILES) {
-            util.alert(
-                "Could not upload files", "An error occurred while dropping these files",
-                "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
-                "Please try again with " + MAX_CONCURRENT_FILES + " or fewer files."
-            );
-            
-            return false;
-        }
-        
-        return true;
-    },
-    
     skip: function() {
-        this.removeCurrentUploadFile(this.currentFile.name);
+        this.removeCurrentUploadFile();
         this.uploadNextFile();
     },
     
@@ -558,8 +615,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var node = file.targetFolder;
         var path     = node.getAttribute("path");
         var filename = file.name;
-        
-        apf.xmldb.removeNode(file.treeNode);
+        var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
+        if (treeNode)
+            apf.xmldb.removeNode(treeNode);
+
         fs.remove(path + "/" + filename, this.upload);
     },
     
@@ -569,6 +628,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     onProgress: function(perc) {
+        if (this.cancelAllUploads)
+            return this.uploadCanceled();
+            
         if(!this.currentFile) return;    
         var total = Math.floor(perc * 100);
         var node = this.currentFile.queueNode;
@@ -577,39 +639,78 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     onComplete: function() {
+        if (this.cancelAllUploads)
+            return this.uploadCanceled();
+        
         var _self = this;
         var file = this.currentFile;
-        var path = file.path;
-        
+        //var path = file.targetFolder.getAttribute("path");
+        this.totalNumUploads--;
         apf.xmldb.setAttribute(file.queueNode, "progress", "100");
-        fs.webdav.exec("readdir", [path], function(data) {
-            if (data instanceof Error) {
-                // @todo: in case of error, show nice alert dialog.
-                return _self.uploadNextFile();
-            }
+        
+        apf.xmldb.setAttribute(file.treeNode, "type", "file");
+        
+        if (_self.openOnUpload) {
+            if (file.size < MAX_OPENFILE_SIZE)
+                ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
+        }
+        
+        setTimeout(function() {
+            if (!_self.lockHideQueue && file.queueNode)
+                apf.xmldb.removeNode(file.queueNode);
+            else
+                _self.lockHideQueueItems.push(file);
+        }, 1000);
+        
+        this.addNextFileToQueue();
+        
+        return _self.uploadNextFile();
+    },
+    
+    addNextFileToQueue: function() {
+        if (!this.uploadFiles[0] || !this.uploadFiles[0].queue[this.uploadIndex])
+            this.uploadFiles.shift();
+        
+        if (!this.uploadFiles.length)
+            return;
             
-            var strXml = data.match(new RegExp(("(<file path='" + apf.escapeXML(path) +
-                "/" + apf.escapeXML(file.name) + "'.*?>)").replace(/\//g, "\\/"))) ||
-                data.match(new RegExp(('(<file path="' + apf.escapeXML(path) +
-                "/" + apf.escapeXML(file.name) + '".*?>)').replace(/\//g, "\\/")));;
-            
-            if(!strXml) {
-                _self.uploadNextFile();
-            }
+        // add next file to queue
+        var nextfile;
+        if (nextfile = this.uploadFiles[0].queue[++this.uploadIndex]) {
+            if (this.ignoreFiles.indexOf(nextfile.name) > -1)
+                return this.addNextFileToQueue();
 
-            // change file from uploading to file to regular file in tree
-            apf.xmldb.setAttribute(file.treeNode, "type", "file");
-            
-            // remove file from upload activity lilst
-            setTimeout(function() {
-                if (!_self.lockHideQueue)
-                    apf.xmldb.removeNode(file.queueNode);
-                else
-                    _self.lockHideQueueItems.push(file);
-            }, 2000);
-            
-            _self.uploadNextFile();
-        });
+            this.addToQueue(nextfile, this.uploadFiles[0].targetFolder);
+        }
+        else {
+            this.uploadFiles.shift();
+            this.uploadIndex = 0;
+            return this.addNextFileToQueue();
+        }
+    },
+    
+    cancelAll: function() {
+        this.cancelAllUploads = true;
+        this.worker.postMessage({cmd: 'cancelall'});
+        this.uploadFiles = [];
+        this.uploadQueue = [];
+        
+        mdlUploadActivity.load("<data />");
+        boxUploadActivity.hide();
+        
+        (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
+        if (this.currentFile.treeNode)
+            apf.xmldb.removeNode(this.currentFile.treeNode);
+    },
+    
+    uploadCanceled: function() {
+        this.uploadInProgress = false;
+        this.cancelAllUploads = false;
+        this.existingOverwriteAll = false;
+        this.existingSkipAll = false;
+        this.totalNumUploads = 0;
+        (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
+        require("ext/tree/tree").refresh();
     },
     
     getFormData: function(file) {

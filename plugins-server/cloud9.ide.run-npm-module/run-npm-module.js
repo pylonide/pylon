@@ -7,15 +7,17 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var fs = require("fs");
 
 var name = "npm-runtime";
 var ProcessManager;
 var EventBus;
+var Fs;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
+    Fs = imports["sandbox.fs"];
+    
     imports.ide.register(name, NpmRuntimePlugin, register);
 };
 
@@ -24,10 +26,8 @@ var NpmRuntimePlugin = function(ide, workspace) {
     this.pm = ProcessManager;
     this.eventbus = EventBus;
     this.workspace = workspace;
-    this.workspaceId = workspace.workspaceId;
+    this.channel = workspace.workspaceId + "::npm-runtime"; // wtf this should not be needed
     this.children = {};
-
-    this.channel = this.workspaceId + "::npm-runtime";
 
     this.hooks = ["command"];
     this.name = name;
@@ -66,14 +66,15 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
     this.$run = function(file, args, env, version, message, client) {
         var self = this;
-
+        
         this.pm.spawn("run-npm", {
             file: file,
             args: args,
             env: env,
             nodeVersion: version,
-            extra: message.extra
-        }, this.channel, function(err, pid, child) {
+            extra: message.extra,
+            cwd: message.cwd
+        }, self.channel, function(err, pid, child) {
             if (err)
                 return self.error(err, 1, message, client);
 
@@ -102,14 +103,14 @@ util.inherits(NpmRuntimePlugin, Plugin);
     };
 
     this.searchForModuleHook = function(command, cb) {
-        var baseDir = this.ide.workspaceDir + "/node_modules";
+        var baseDir = "node_modules";
 
         function searchModules(dirs, it) {
             if (!dirs[it])
                 return cb(false);
 
             var currentDir = baseDir + "/" + dirs[it];
-            fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
+            Fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
                 if (err)
                     return searchModules(dirs, it+1);
 
@@ -132,7 +133,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             });
         }
 
-        fs.readdir(baseDir, function(err, res) {
+        Fs.readdir(baseDir, function(err, res) {
             if (err)
                 return cb(false);
 

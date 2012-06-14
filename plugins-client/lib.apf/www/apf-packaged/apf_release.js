@@ -30631,8 +30631,10 @@ apf.BaseTab = function(){
         }
         else if (type == "remove") {
             var onfinish = function(){
-                if (node.dispatchEvent("afterclose") !== false)
-                    callback();
+                if (node.dispatchEvent("afterclose") === false)
+                    return;
+                    
+                callback();
 
                 if (!isLast && isContracted) {
                     var pages = _self.getPages();
@@ -30646,7 +30648,6 @@ apf.BaseTab = function(){
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
                     delete _self.$waitForMouseOut;
-//                    _self.$scaleinit(null, "sync");
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
@@ -30696,6 +30697,9 @@ apf.BaseTab = function(){
                 apf.setStyleClass(node.$button, "curbtn");
                 node.$button.style.zIndex = 0;
             }
+            
+            if (pages.length == 1)
+                (node.relPage || node).$ext.style.display = "none";
             
             animRemoveTab(node, isLast, isContracted, onfinish);
             
@@ -30824,7 +30828,7 @@ apf.BaseTab = function(){
             //page.removeNode();
             if (page.dispatchEvent("afterclose") !== false)
             	page.destroy(true, true);
-
+            
             
             //@todo this is wrong, we can also use removeChild
             //this.setScrollerState();
@@ -31211,6 +31215,9 @@ apf.BaseTab = function(){
             return;
         
         if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            if (!this.getPage(this.nextTabInLine))
+                this.nextTabInLine = null;
+            
             if (this.nextTabInLine)
                 this.set(this.nextTabInLine);
             
@@ -57459,6 +57466,11 @@ apf.page = function(struct, tagName){
             }
         }
     });
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        if (this.fake && this.parentNode.$activepage == this)
+            this.$deactivate();
+    });
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
@@ -57506,6 +57518,9 @@ apf.page = function(struct, tagName){
 
     this.$deactivate = function(fakeOther){
         this.$active = false;
+
+        if (!this.parentNode)
+            return;
 
         if (this.parentNode.$hasButtons) {
             if (this.$position > 0)
@@ -62637,6 +62652,9 @@ apf.vsplitbox = function(struct, tagName){
                 fNode.$ext.style.bottom = this.$edge[2] + "px";
                 fNode.$ext.style.height = "";
             }
+            
+            if (this.$handle)
+                this.$handle.hide();
         }
         
         if (setSize === true) {
@@ -62778,9 +62796,6 @@ apf.vsplitbox = function(struct, tagName){
             this.$propHandlers["padding"].call(this, this.padding);
             this.$propHandlers["edge"].call(this, this.edge);
         }
-        
-        //if (this.$handle)
-            //this.insertBefore(this.$handle, this.lastChild);
     }
     
     this.unregister = function(amlNode){
@@ -62973,7 +62988,10 @@ apf.splitbutton = function(struct, tagName){
             if (!self[value].$splitInited) {
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
-                    this.$ext.style.marginLeft = "-" + split.$button1.$ext.offsetWidth + "px";
+                    var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
+                        - apf.getAbsolutePosition(split.$button1.$ext)[0];
+                    
+                    this.$ext.style.marginLeft = "-" + diff + "px";
                 });
                 self[value].$splitInited = true;
             }
@@ -67390,7 +67408,8 @@ apf.webdav = function(struct, tagName){
         aCont.push("</D:", reportName, ">");
 
         this.method = "REPORT";
-        this.doRequest(function(data, state, extra) {
+        
+        return this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status, 10);
             if (state != apf.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to fetch report on '" + sPath

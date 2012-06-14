@@ -803,7 +803,7 @@ var CstyleBehaviour = function () {
                 }
 
                 // Find what token we're inside.
-                var tokens = session.getTokens(selection.start.row, selection.start.row)[0].tokens;
+                var tokens = session.getTokens(selection.start.row);
                 var col = 0, token;
                 var quotepos = -1; // Track whether we're inside an open quote.
 
@@ -974,9 +974,9 @@ var FoldMode = exports.FoldMode = function() {};
         }
     };
 
-    this.openingBracketBlock = function(session, bracket, row, column) {
+    this.openingBracketBlock = function(session, bracket, row, column, typeRe, allowBlankLine) {
         var start = {row: row, column: column + 1};
-        var end = session.$findClosingBracket(bracket, start);
+        var end = session.$findClosingBracket(bracket, start, typeRe, allowBlankLine);
         if (!end)
             return;
 
@@ -1070,6 +1070,14 @@ var GroovyHighlightRules = function() {
                 token : "string.regexp",
                 regex : "[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/]\\w*\\s*(?=[).,;]|$)"
             }, {
+                token : "string",
+                regex : '"""',
+                next  : "qqstring"
+            }, {
+                token : "string",
+                regex : "'''",
+                next  : "qstring"
+            }, {
                 token : "string", // single line
                 regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
             }, {
@@ -1125,6 +1133,38 @@ var GroovyHighlightRules = function() {
                 token : "comment", // comment spanning whole line
                 merge : true,
                 regex : ".+"
+            }
+        ],
+        "qqstring" : [
+            {
+                token : "constant.language.escape",
+                regex : /\\(?:u[0-9A-Fa-f]{4}|.|$)/
+            }, {
+                token : "constant.language.escape",
+                regex : /\$[\w\d]+/
+            }, {
+                token : "constant.language.escape",
+                regex : /\$\{[^"\}]+\}?/
+            }, {
+                token : "string",
+                regex : '"{3,5}',
+                next : "start"
+            }, {
+                token : "string",
+                regex : '.+?'
+            }
+        ],
+        "qstring" : [
+            {
+                token : "constant.language.escape",
+                regex : /\\(?:u[0-9A-Fa-f]{4}|.|$)/
+            }, {
+                token : "string",
+                regex : "'{3,5}",
+                next : "start"
+            }, {
+                token : "string",
+                regex : ".+?"
             }
         ]
     };

@@ -42,6 +42,17 @@ function $cancelWhenOffline() {
         return false;
 }
 
+function escapeXpathString(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
+
 module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
     dev              : "Cloud9 IDE, Inc.",
@@ -162,16 +173,20 @@ module.exports = ext.register("ext/tree/tree", {
 
             // This checks that each expanded folder has a root that's already
             // been saved
+            var splitPrefix = ide.davPrefix.split("/");
+            splitPrefix.pop();
+            var rootPrefixNodes = splitPrefix.length;
+            var rootPrefix = splitPrefix.join("/");
             var cc, parts;
             for (path in lut) {
-                parts = path.split("/");
-                cc = parts.shift();
-                do {
+                parts = path.split("/").splice(rootPrefixNodes);
+                cc = rootPrefix + "/" + parts.shift();
+                while(lut[cc]) {
                     if (!parts.length)
                         break;
 
                     cc += "/" + parts.shift();
-                } while(lut[cc]);
+                }
 
                 if (!parts.length)
                     _self.expandedNodes.push(path);
@@ -231,8 +246,6 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.add(xmlNode, parent);
             }
         });
-        
-        //ext.initExtension(this);
     },
 
     onReady : function() {
@@ -297,6 +310,16 @@ module.exports = ext.register("ext/tree/tree", {
                 });
             }
         }));
+        
+        trFiles.filterUnique = function(pNode, nodes){
+            var filtered = [];
+            for (i = 0, l = nodes.length; i < l; i++) {
+                if (!pNode.selectSingleNode("node()[@path=" 
+                  + escapeXpathString(nodes[i].getAttribute("path")) + "]"))
+                    filtered.push(nodes[i]);
+            }
+            return filtered;
+        }
 
         this.setupTreeListeners();
 
@@ -368,28 +391,35 @@ module.exports = ext.register("ext/tree/tree", {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
 
-            var args     = e.args[0].args,
-                filename = args[1].getAttribute("name");
-
-            var count = 0;
-            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-            while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
-                filename = filename.replace(/\.(\d+)$/, "");
-                
-                var idx  = filename.lastIndexOf("."); 
-                if (idx == -1) idx = filename.length;
-
-                var name = filename.substr(0, idx), ext = filename.substr(idx);
-                filename = name + "." + ++count + ext;
+            function rename(pNode, node, filename, isReplaceAction){
+                setTimeout(function () {
+                    fs.beforeRename(pNode, null,
+                        node.getAttribute("path").replace(/[\/]+$/, "") +
+                        "/" + filename, true, isReplaceAction);
+                    pNode.removeAttribute("newname");
+                });
             }
-            args[1].setAttribute("newname", filename);
 
-            setTimeout(function () {
-                fs.beforeRename(args[1], null,
-                    args[0].getAttribute("path").replace(/[\/]+$/, "") +
-                    "/" + filename, true, count > 0);
-                args[1].removeAttribute("newname");
-            });
+            var args, filename;
+            for (var i = 0, l = e.args.length; i < l; i++) {
+                args     = e.args[i].args;
+                filename = args[1].getAttribute("name");
+    
+                var count = 0;
+                filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
+                while (args[0].selectSingleNode('node()[@name=' + escapeXpathString(filename) + ']')) {
+                    filename = filename.replace(/\.(\d+)$/, "");
+                    
+                    var idx  = filename.lastIndexOf("."); 
+                    if (idx == -1) idx = filename.length;
+    
+                    var name = filename.substr(0, idx), ext = filename.substr(idx);
+                    filename = name + "." + ++count + ext;
+                }
+                args[1].setAttribute("newname", filename);
+    
+                rename(args[1], args[0], filename, count > 0);
+            }
         });
 
         trFiles.addEventListener("beforestoprename", this.$beforestoprename = function(e) {
@@ -472,12 +502,12 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("collapse", this.$collapse = function(e){
             if (!e.xmlNode)
                 return;
-            delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
 
-            if (!_self.loading) {
-                _self.changed = true;
-                settings.save();
-            }
+            var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+            delete _self.expandedList[id];
+
+            _self.changed = true;
+            settings.save();
         });
     },
 
@@ -627,7 +657,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             _self.loading = false;
-
+            
             // Re-select the last selected item
             if(_self.treeSelection.path) {
                 var xmlNode = trFiles.$model.queryNode('//node()[@path="' +

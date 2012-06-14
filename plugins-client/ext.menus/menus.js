@@ -156,6 +156,16 @@ module.exports = ext.register("ext/menus/menus", {
                     self["req"+"uire"]("ext/editors/editors").currentEditor.focus();
             } || null;
         }
+        
+        //update c9 main logo link
+        if(window.cloud9config.hosted) {
+            var mainlogo = logobar.$ext.getElementsByClassName('mainlogo');
+            if(mainlogo && (mainlogo = mainlogo[0])) {
+                mainlogo.title = "back to dashboard";
+                mainlogo.href = "/dashboard.html";
+                mainlogo.innerHTML = "Dashboard";
+            }
+        }
     },
     
     $insertByIndex : function(parent, item, index) {
@@ -297,7 +307,6 @@ module.exports = ext.register("ext/menus/menus", {
         }
         
         //index...
-//        if (name.indexOf("Tools/B") > -1) debugger;
         if (typeof index == "number")
             this.$insertByIndex(parent, item, index);
         else
@@ -364,11 +373,6 @@ module.exports = ext.register("ext/menus/menus", {
         return menu.id;
     },
     
-    /**
-     * - Bug in APF, appendChild children while not parent attached dont render
-     * - mnuXXX throughout C9 need to be using this plugin
-     * - Architect submenus used in multiple location
-     */
     restore : function(preview){
         apf.setStyleClass(logobar.$ext, "", ["minimized"]);
         
@@ -386,6 +390,8 @@ module.exports = ext.register("ext/menus/menus", {
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "false");
             this.minimized = false;
+            
+            ide.dispatchEvent("menus.restore");
         }
     },
     
@@ -406,6 +412,8 @@ module.exports = ext.register("ext/menus/menus", {
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "true");
             this.minimized = true;
+            
+            ide.dispatchEvent("menus.minimize");
         }
     },
 

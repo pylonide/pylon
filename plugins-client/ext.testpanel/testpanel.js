@@ -52,7 +52,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/testpanel", [
-                ["autorun", "none"]
+                ["autorun", "none"],
+                ["type", "all"],
+                ["showlibraries", "true"],
+                ["autoexpand", "true"]
             ]);
         });
         
@@ -65,7 +68,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             if (autoRun == "none")
                 return;
             
-            if (autoRun == "selection") {
+            if (autoRun == "selection" && _self.dgTestProject) {
                 var sel = dgTestProject.getSelection();
                 if (sel.length)
                     _self.run(sel);
@@ -383,6 +386,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     toggleSubmodules : function(value){
         this.showSubmodules = value;
         
+        settings.model.setQueryValue('auto/testpanel/@showlibraries', this.showSubmodules);
+        
         if (value) {
             dgTestProject.setAttribute("each", 
                 "[" + dgTestProject.each.replace(/repo\[1\]/, "repo") + "]");
@@ -396,6 +401,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     expandTests : true,
     toggleExpandTests : function(value){
         this.expandTests = value;
+        
+        settings.model.setQueryValue('auto/testpanel/@autoexpand', this.expandTests);
         
         if (value) {
             if (!expTestRule.parentNode)

@@ -77,8 +77,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             name: "closealltotheright",
             isAvailable : function(){
                 return ide.onLine && tabEditors.length > 1 
-                  && mnuContextTabs.$page.nextSibling
-                  && mnuContextTabs.$page.nextSibling.localName == "page";
+                  && tabEditors.getPage().nextSibling
+                  && tabEditors.getPage().nextSibling.localName == "page";
             },
             exec: function (editor, args) { 
                 _self.closealltotheright(args[0]); 

@@ -35,24 +35,24 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(500);
     
-    sender.on("complete", function(pos) {
+    sender.on("complete", applyEventOnce(function(pos) {
         _self.complete(pos);
-    });
+    }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
     });
-    sender.on("analyze", function(event) {
+    sender.on("analyze", applyEventOnce(function(event) {
         _self.analyze(function() { });
-    });
+    }));
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
     });
-    sender.on("inspect", function(event) {
+    sender.on("inspect", applyEventOnce(function(event) {
         _self.inspect(event);
-    });
-    sender.on("change", function() {
+    }));
+    sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
-    });
+    }));
     sender.on("jumpToDefinition", function(event) {
         _self.jumpToDefinition(event);
     });
@@ -60,6 +60,46 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.sendVariablePositions(event);
     });
 };
+
+exports.createUIWorkerClient = function() {
+    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
+    var result = new LanguageWorker(emitter);
+    result.on = function(name, f) {
+        emitter.on.call(result, name, f);
+    };
+    result.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+    result.send = function(cmd, args) {
+        setTimeout(function() { result[cmd].apply(result, args); }, 0);
+    };
+    result.emit = function(event, data) {
+        emitter._dispatchEvent.call(emitter, event, data);
+    };
+    emitter.emit = function(event, data) {
+        emitter._dispatchEvent.call(result, event, { data: data });
+    };
+    return result;
+};
+
+/**
+ * Ensure that an event handler is called only once if multiple
+ * events are received at the same time.
+ **/
+function applyEventOnce(eventHandler) {
+    var timer;
+    return function() {
+        var _arguments = arguments;
+        if (timer)
+            clearTimeout(timer);
+        timer = setTimeout(function() { eventHandler.apply(eventHandler, _arguments); }, 0);
+    };
+}
 
 oop.inherits(LanguageWorker, Mirror);
 
@@ -128,8 +168,16 @@ function asyncParForEach(array, fn, callback) {
      * Registers a handler by loading its code and adding it the handler array
      */
     this.register = function(path) {
-        var handler = require(path);
-        this.handlers.push(handler);
+        try {
+            var handler = require(path);
+            this.handlers.push(handler);
+        } catch (e) {
+            // In ?noworker=1 debugging mode, synchronous require doesn't work
+            var _self = this;
+            require([path], function(handler) {
+                _self.handlers.push(handler);
+            });
+        }   
     };
 
     this.parse = function(callback) {
@@ -189,6 +237,9 @@ function asyncParForEach(array, fn, callback) {
                             markers = markers.concat(result);
                         next();
                     });
+                }
+                else {
+                    next();
                 }
             }, function() {
                 var extendedMakers = markers;
@@ -285,7 +336,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
-        var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
+        var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
         
         function cursorMoved() {
             asyncForEach(_self.handlers, function(handler, next) {
@@ -300,8 +351,13 @@ function asyncParForEach(array, fn, callback) {
                             aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
                         }
                         if (response.hint) {
-                            // Last one wins, support multiple?
-                            aggregateActions.hint = response.hint;
+                            if (aggregateActions.hint)
+                                aggregateActions.hint += "\n" + response.hint;
+                            else
+                                aggregateActions.hint = response.hint;
+                        }
+                        if (response.displayPos) {
+                            aggregateActions.displayPos = response.displayPos;
                         }
                         next();
                     });
@@ -318,7 +374,8 @@ function asyncParForEach(array, fn, callback) {
                 _self.setLastAggregateActions(aggregateActions);
                 _self.scheduleEmit("hint", {
                     pos: pos,
-                	message: hintMessage
+                    displayPos: aggregateActions.displayPos,
+                    message: hintMessage
                 });
             });
 
@@ -483,7 +540,13 @@ function asyncParForEach(array, fn, callback) {
                         return 1;
                     else if (a.score > b.score)
                         return -1;
-                    else if(a.name < b.name)
+                    else if (a.id && a.id === b.id) {
+                        if (a.isFunction)
+                            return -1;
+                        else if (b.isFunction)
+                            return 1;
+                    }
+                    if (a.name < b.name)
                         return -1;
                     else if(a.name > b.name)
                         return 1;
@@ -492,7 +555,10 @@ function asyncParForEach(array, fn, callback) {
                 });
                 
                 matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", matches);
+                _self.sender.emit("complete", {
+                    pos: pos,
+                    matches: matches
+                });
             });
         });
     };

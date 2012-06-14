@@ -59,6 +59,9 @@ module.exports = ext.register("ext/panels/panels", {
         });
         
         ide.addEventListener("settings.load", function(){
+            if (apf.isGecko)
+                settings.model.setQueryValue("general/@animateui", false);
+                
             if (!settings.model.queryNode("auto/panels/panel[@path='" 
                 + panelExt.path + "']")) {
                 settings.model.appendXml("<panel path='" 
@@ -67,9 +70,12 @@ module.exports = ext.register("ext/panels/panels", {
             }
         });
         
-        var active = settings.model.queryValue("auto/panels/@active");
-        if (panelExt["default"] && !active || active == panelExt.path)
-            _self.activate(panelExt, null, true);
+        // for local version
+        if (ide.dispatchEvent("panels.activateDefault") !== false) {
+            var active = settings.model.queryValue("auto/panels/@active");
+            if ((panelExt["default"] && !active || active == panelExt.path))
+                _self.activate(panelExt, null, true);
+        }
     },
     
     animate : function(win, toWin, toWidth){

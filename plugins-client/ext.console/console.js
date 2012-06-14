@@ -52,7 +52,6 @@ module.exports = ext.register("ext/console/console", {
 
     autoOpen : true,
     excludeParent : true,
-    keyEvents: {},
 
     pageIdToPidMap : {},
 
@@ -125,6 +124,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     getLogStreamOutObject: function(tracer_id, idIsPid, originalInput) {
+        if (typeof tracer_id === "undefined") {
+            return null;
+        }
+        
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
@@ -210,21 +213,6 @@ module.exports = ext.register("ext/console/console", {
         });
     },
 
-    commandTextHandler: function(e) {
-        if (this.keyEvents[e.keyCode])
-            this.keyEvents[e.keyCode](e.currentTarget);
-    },
-
-    keyupHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) !== -1)
-            return this.commandTextHandler(e);
-    },
-
-    keydownHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) === -1)
-            return this.commandTextHandler(e);
-    },
-
     createOutputBlock: function(line, useOutput, tracerIdFromServer) {
         var command_id_tracer = tracerIdFromServer || this.command_id_tracer;
         var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', command_id_tracer,
@@ -280,7 +268,7 @@ module.exports = ext.register("ext/console/console", {
         this.cliInputHistory.push(line);
 
         if (line !== "clear" && line !== "newtab")
-            this.createOutputBlock(this.getPrompt(line));
+        this.createOutputBlock(this.getPrompt(line));
 
         var showConsole = true;
         var cmd = argv[0];
@@ -372,7 +360,7 @@ module.exports = ext.register("ext/console/console", {
             var pNode = spinnerElement.parentNode;
 
             var page = apf.findHost(pNode.parentNode.parentNode);
-            if (page.id !== "pgOutput")
+            if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
             if (pNode.className.indexOf("quitting") !== -1) {
@@ -388,38 +376,29 @@ module.exports = ext.register("ext/console/console", {
                     spinnerElement = document.getElementById("spinner" + id);
                     pNode = spinnerElement.parentNode;
                     apf.setStyleClass(pNode, "loaded", ["loading"]);
-                    spinnerElement.setAttribute("style", "");
+                spinnerElement.setAttribute("style", "");
                     spinnerElement.style.opacity = "1";
                 }, 300);
             }, 200);
         }
     },
 
-    createNodeProcessLog : function(message_pid) {
+    createNodeProcessLog: function(message_pid) {
         var command_id = this.createOutputBlock("Running Node Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
-
+    
         var containerEl = this.getLogStreamOutObject(command_id).$ext;
         containerEl.setAttribute("rel", command_id);
         apf.setStyleClass(containerEl, "has_pid");
-
-        if (window.cloud9config.hosted) {
-            var url = location.protocol + "//" +
-                ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
-                "." + location.host;
-            logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
-                "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
-                null, this.getLogStreamOutObject(message_pid, true), ide);
-        }
-
+    
         this.command_id_tracer++;
         return command_id;
     },
 
     onMessage: function(e) {
         if (!e.message.type)
-            return;
+                return;
 
         var message = e.message;
         //console.log(message.type, message);
@@ -434,16 +413,55 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
-        switch(message.type) {
+        switch (message.type) {
             case "node-start":
-                var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-                if (apf.isTrue(clearOnRun) && window["txtOutput"])
-                    txtOutput.clear();
+                //var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
+                //if (apf.isTrue(clearOnRun) && window["txtOutput"]) txtOutput.clear();
                 this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
-                logger.logNodeStream(message.data, message.stream,
-                    this.getLogStreamOutObject(message.pid, true), ide);
+                if (message.data && message.data.indexOf("Tip: you can") === 0) {
+                    (function () {
+                        var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
+                        if (!prjmatch) return;
+                        
+                        var user = prjmatch[2];
+                        var project = prjmatch[1];
+                        
+                        var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
+                        
+                        if (project !== ide.projectName) {
+                            // concurrency bug, project does not match
+                            apf.ajax("/api/debug", {
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    agent: navigator.userAgent,
+                                    type: "Concurrency bug, project does not match",
+                                    e: [user, project, urlPath],
+                                    workspaceId: ide.workspaceId
+                                })
+                            });
+                        }
+                        else if (urlPath.length && user !== urlPath[0]) {
+                            // concurrency bug, user does not match
+                            apf.ajax("/api/debug", {
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    agent: navigator.userAgent,
+                                    type: "Concurrency bug, user does not match",
+                                    e: [user, project, urlPath],
+                                    workspaceId: ide.workspaceId
+                                })
+                            });
+                        }
+                        
+                        return;
+                    }());
+                }
+                
+                logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
                 this.markProcessAsCompleted(message.pid, true);
@@ -478,52 +496,49 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "kill":
                 if (message.err) {
-                    logger.logNodeStream(message.err, null,
-                        this.getLogStreamOutObject(extra.command_id), ide);
+                    logger.logNodeStream(message.err, null, this.getLogStreamOutObject(extra.command_id), ide);
                 }
                 break;
             default:
                 break;
         }
-
+        
         if (message.type.match(/-start$/)) {
             var command_id = extra && extra.command_id;
-            // @TODO Check from Merge 9966d812455546e7d53c60f4aab5ffa0ffbb5b99
-            //if (!command_id)
-            //    return;
-
+        
+            if (!command_id) {
+                return;
+            }
+        
             this.tracerToPidMap[command_id] = message.pid;
             this.pidToTracerMap[message.pid] = command_id;
-
+        
             var containerEl = this.getLogStreamOutObject(command_id, null, extra.original_line).$ext;
             containerEl.setAttribute("rel", command_id);
             apf.setStyleClass(containerEl, "has_pid");
             return;
         }
-
+        
         if (message.type.match(/-data$/)) {
             var type = "tracer";
             var id = extra && extra.command_id;
-            if (!command_id) {
+        
+            if (!id) {
                 type = "pid";
                 id = message.pid;
             }
-
-            logger.logNodeStream(message.data, message.stream,
-                this.getLogStreamOutObject(id, type === "pid"), ide);
+        
+            logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(id, type === "pid"), ide);
             return;
         }
-
+        
         if (message.type.match(/-exit$/)) {
-            if (extra.command_id)
-                this.markProcessAsCompleted(extra.command_id);
-            else
-                this.markProcessAsCompleted(message.pid, true);
+            if (extra && extra.command_id) this.markProcessAsCompleted(extra.command_id);
+            else this.markProcessAsCompleted(message.pid, true);
             return;
         }
-
-        if (message.type !== "result")
-            return;
+        
+        if (message.type !== "result") return;
 
         var outputElDetails;
         if (extra)
@@ -670,7 +685,7 @@ module.exports = ext.register("ext/console/console", {
                             _self.showInput();
                             txtConsoleInput.setValue(def[1]);
                             if (!def[4]) {
-                                _self.keyEvents[KEY_CR](txtConsoleInput);
+                                txtConsoleInput.execCommand("Return");
                                 txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
                             }
                             txtConsoleInput.focus();
@@ -681,8 +696,8 @@ module.exports = ext.register("ext/console/console", {
 
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/console", [
-                ["autoshow", "true"],
-                ["clearonrun", "true"]
+                ["autoshow", "true"]
+                //["clearonrun", "true"]
             ]);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
@@ -739,9 +754,6 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
-        txtConsoleInput.addEventListener("keydown", this.keydownHandler.bind(this));
-
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
               && !e.shiftKey && apf.isCharacter(e.keyCode))
@@ -787,21 +799,18 @@ module.exports = ext.register("ext/console/console", {
 
         this.nodes.push(winDbgConsole);
 
-        this.keyEvents[KEY_UP] = function(input) {
-            var newVal = _self.cliInputHistory.getPrev() || "";
-            input.setValue(newVal);
-        };
-        this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = _self.cliInputHistory.getNext() || "";
-            input.setValue(newVal);
-        };
-        this.keyEvents[KEY_CR] = function(input) {
-            var inputVal = input.getValue().trim();
-            if (inputVal === "/?")
-                return false;
-            _self.evalInputCommand(inputVal);
-            input.setValue("");
-        };
+        
+        txtConsoleInput.ace.commands.bindKeys({
+            "up": function(input) {input.setValue(_self.cliInputHistory.getPrev(), 1);},
+            "down": function(input) {input.setValue(_self.cliInputHistory.getNext(), 1);},
+            "Return": function(input) {
+                var inputVal = input.getValue().trim();
+                if (inputVal === "/?")
+                    return false;
+                _self.evalInputCommand(inputVal);
+                input.setValue("");
+            },
+        })
 
         if (this.logged.length) {
             this.logged.forEach(function(text){

@@ -13,6 +13,8 @@ var util = require("core/util");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 
+require("ext/main/main"); //Make sure apf is inited.
+
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
     dev    : "Ajax.org",
@@ -316,11 +318,20 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var page = tabEditors.getPage(path);
         if (page)
             tabEditors.remove(page);
-        
-        if(!callback)
-            callback = function() {};
-            
-        davProject.remove(path, false, callback);
+
+        var cb = function(data, state, extra) {
+            // In WebDAV, a 204 status from the DELETE verb means that the
+            // file was removed successfully.
+            if (extra && extra.status && extra.status === 204) {
+                ide.dispatchEvent("removefile", {
+                    path: path
+                });
+            }
+
+            if (callback)
+                callback(data, state, extra);
+        };
+        davProject.remove(path, false, cb);
     },
 
     /**** Init ****/
@@ -347,42 +358,14 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         this.model.setAttribute("whitespace", false);
 
-        var processing = {};
-        this.model.addEventListener("update", function(e){
-            // Resort on move, copy, rename, add
-            if (e.action === "attribute" || e.action === "add" || e.action === "move") {
-                var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
-                if (processing[xmlNode.getAttribute("a_id")]) {
-                    return;
-                }
-                processing[xmlNode.getAttribute("a_id")] = true;
-
-                var sort = new apf.Sort();
-                sort.set({
-                    xpath: "@name",
-                    method: "filesort"
-                });
-                var nodes = sort.apply(pNode.childNodes);
-
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    if (nodes[i] == xmlNode) {
-                        if (xmlNode.nextSibling != nodes[i+1]) {
-                            apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
-        this.webdav = new apf.webdav({
+        this.webdav = apf.document.documentElement.appendChild(new apf.webdav({
             id  : "davProject",
             url : dav_url,
             onauthfailure: function() {
                 ide.dispatchEvent("authrequired");
             }
-        });
+        }));
 
         function openHandler(e) {
             ide.send({
