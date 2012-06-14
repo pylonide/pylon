@@ -381,7 +381,7 @@ module.exports = ext.register("ext/menus/menus", {
         anims.animateSplitBoxNode(logobar, {
             height: "31px", 
             timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
-            duration: 0.3
+            duration: 0.2
         }, function(){
             apf.layout.forceResize(tabEditors.$ext);
             logobar.$ext.style.overflow = "";
@@ -401,7 +401,7 @@ module.exports = ext.register("ext/menus/menus", {
         anims.animateSplitBoxNode(logobar, {
             height: "12px", 
             timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
-            duration: 0.3,
+            duration: 0.2,
             immediate: noAnim
         }, function(){
             apf.setStyleClass(logobar.$ext, "minimized");

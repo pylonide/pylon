@@ -51,7 +51,7 @@
                     </a:vsplitbox>
                 </a:vsplitbox>
             </a:vsplitbox>
-            <a:hbox id="hboxDockPanel" class="hboxdockpanel" visible="false" width="39" />
+            <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" />
         </a:hsplitbox>
     </a:vsplitbox>
 </a:application>

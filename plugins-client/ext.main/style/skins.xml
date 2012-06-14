@@ -9096,7 +9096,7 @@
     }
     
     .editor_tab .btnsesssioncontainer.morepadding{
-        padding-right : 75px;
+        padding-right : 53px;
     }
     .dark .editor_tab .btnsesssioncontainer {
         box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset; /*, 0 1px 0 0 rgba(255, 255, 255, .1);*/

@@ -867,7 +867,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (self.logobar && e.which == logobar) {
                 if (e.options.height == "12px") {
                     anims.animate(tabEditors.$buttons, {
-                        paddingRight: "75px",
+                        paddingRight: "53px",
                         timingFunction: e.options.timingFunction,
                         duration: e.options.duration
                     }, function(){

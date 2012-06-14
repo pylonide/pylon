@@ -119,6 +119,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     barParent.vbox.removeNode();//destroy(true, true);
                     barParent.splitter.removeNode();//destroy(true, true);
                 }
+                
+                //Resize hbox
+                this.resizeMainHbox();
             }
             /*else {
                 barParent.$dockData.sections.remove(btnPNode.$dockData);
@@ -126,7 +129,22 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
     }
     
-    function checkBars(){
+    this.resizeMainHbox = function(){
+        var hboxParent = this.$parentHBox;
+        var l = hboxParent.lastChild;
+        while (l && !l.visible) {
+            l = l.previousSibling
+        }
+        
+        if (!l) {
+            hboxParent.setWidth(0);
+            return;
+        }
+        
+        hboxParent.setWidth(l.$ext.offsetLeft + l.$ext.offsetWidth);
+    }
+    
+    this.checkBars = function (){
         var bar, bars = state.bars;
         for (var i = bars.length - 1; i >= 0; i--) {
             bar = bars[i];
@@ -136,6 +154,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 //bars.remove(bar);
             }
         }
+        
+        this.resizeMainHbox();
     }
     
     function registerLookup(node){
@@ -719,6 +739,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         bar.$dockData.expanded = byUser ? 2 : 1;
         
         this.$cbChange();
+        this.resizeMainHbox();
     };
     
     /**
@@ -767,6 +788,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         bar.firstChild.$ext.onmousemove({});
         
         this.$cbChange();
+        this.resizeMainHbox();
     };
     
     this.$isLastBar = function(aml) {
@@ -1574,7 +1596,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 i = b.push(button.$dockData);
             
             tableCleanup(pNode, btnPNode, oldMenu, b);
-            checkBars();
+            this.checkBars();
         }
         else if (dragAml.localName == "divider") {
             var buttons = dragAml.parentNode && dragAml.parentNode.selectNodes("button");
@@ -1583,7 +1605,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 this.$moveTo(submenu, button, aml, beforeButton, parentNode, position, tab, pNode, true);
             }
             
-            checkBars();
+            this.checkBars();
         }
         
         if (!ignoreEvent)
@@ -1780,6 +1802,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 state.bars.insertIndex(bar.$dockData, 
                   before ? state.bars.indexOf(before.$dockData) : state.bars.length);
         }
+        
+        this.resizeMainHbox();
         
         registerLookup.call(this, bar);
         
@@ -2176,7 +2200,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 
                 //Upgrade to container if only 1 element
                 if (this.parentNode.selectNodes("button").length == 1) {
-                    this.parentNode.firstChild.dispatchEvent("beforedrag", e);
+                    this.parentNode.firstChild.dispatchEvent("beforedrag", {htmlEvent: e.htmlEvent});
                     return false;
                 }
                 
