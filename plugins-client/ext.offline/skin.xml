@@ -13,7 +13,8 @@
       model     = "true">
         <a:vbox padding="10" edge="15">
 	            <a:text id="offlineNotifyText" class="tgDesc modal_text">
-	            	Your local runtime has stopped. To restore the IDE, type <em>c9</em> on the command line.
+	            	<h4>Your local runtime has stopped.</h4>
+                    <p>To restore the IDE, type <em>c9</em> on the command line.</p>
 	            </a:text>
 	    </a:vbox>
     </a:window>
