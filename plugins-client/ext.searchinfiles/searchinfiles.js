@@ -162,13 +162,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 }
             });
         });
-        
-        var blur = function(e) {
-            if ( self.winSearchInFiles && !apf.isChildOf(winSearchInFiles, e.toElement))
-                _self.toggleDialog(-1, null, true);
-        }
-
-        winSearchInFiles.addEventListener("blur", blur);
     },
 
     setSearchSelection: function(e){
@@ -293,8 +286,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         else if (winSearchInFiles.visible) {
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
-            
-            
+                    
             //Animate
             if (animate && !apf.isGecko) {
             winSearchInFiles.visible = false;
@@ -674,12 +666,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             });
         }
         else {
-            this.apfeditor.addEventListener("keydown", enterHandler);
-            
             this.searchPage.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(editor);
             });
         }
+        
+        _self.toggleDialog(-1, null, true);
     },
     
     cancelFind : function() {
