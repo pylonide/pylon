@@ -1262,21 +1262,20 @@
 
         .dockButton .dock_notification {
             position    : absolute;
-            top         : 1px;
+            top         : 2px;
             right       : 1px;
-            width       : 12px;
+            width       : 11px;
             text-align  : center;
             color       : #fff;
             letter-spacing: 1px;
-            
-            border      : 1px solid #891010;
+
             border-radius: 11px;
-            box-shadow: 0px 2px 2px black;
+            box-shadow: 0px 1px 1px black;
             background  : #CE0E0F url('images/bg_counter.png') repeat-x 0px 0px;
-            
+
             font-size: 9px;
-            height: 10px;
-            line-height: 11px;
+            height: 8px;
+            line-height: 8px;
             padding     : 2px 1px 1px 1px;
             text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
             display: none;
@@ -10326,14 +10325,14 @@
         .docktab .page.curpage{
             display : block;
         }
-        
+
         /**
          * blink 182
          */
         @-webkit-keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
         @-moz-keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
         @keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
-        
+
         .un-read-message .tab_title {
             -webkit-animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
             -moz-animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
