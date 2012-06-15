@@ -4955,7 +4955,7 @@
         .dropdown-dark-glossy {
             background: #292929 url(images/dropdown-dark-glossy/background.png) repeat-x 50% 0;
             border: 1px solid #010910;
-            border-radius: 3px;
+            border-radius: 4px;
             box-shadow: 0 1px 0 0 rgba(255, 255, 255, .10) inset,
                         0 0 0 1px rgba(236, 245, 255, .10) inset,
                         0 1px 0 0 rgba(237,237,237,.1);
@@ -10947,7 +10947,7 @@
             font-size: 10px;
             line-height: 14px;
             outline: 0;
-            padding: 10px;
+            padding: 8px 11px;
             height: inherit;
             width: inherit;
         }

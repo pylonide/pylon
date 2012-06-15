@@ -2,7 +2,7 @@
 <a:window 
     id = "dashboard"
     class = "dashboard"
-    width = "1000"
+    width = "1127"
     height = "600"
     center = "true"
     resizable = "true"
@@ -10,32 +10,33 @@
     
 <a:bar class="c9-menu-bar" height="4"></a:bar>
 <a:hbox
-    class = "dark-opaque"
+    class = "dark-opaque new-project"
     height = "47"
     edge = "9 10 10 10"
 >
     
     <a:textbox
-        id           = "projectTitle"
-        focusselect  = "true"
-        height       = "25"
-        margin       = "0 10 0 -2"
-        skin         = "chromeless"
-        style        = "font-size: 20px"
-        value        = "Untitled project"
-        flex         = "1"
+        id              = "projectTitle"
+        focusselect     = "true"
+        height          = "25"
+        initial-message = "Untitled project"
+        margin          = "0 10 0 -2"
+        skin            = "chromeless"
+        style           = "font-size: 20px"
+        value           = "Untitled Project"
+        flex            = "4"
     />
     <a:hbox width="292">
-        <a:label skin="label-dashboard">Store my data:</a:label>
-        <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy">
+        <a:label skin="label-dashboard" class="store-my-data">Store my data:</a:label>
+        <a:dropdown value="auto" width="208" height="27" skin="dropdown-dark-glossy">
             <a:item value="cloud9Git">On Cloud9 as a Git Repo</a:item>
             <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
             <a:item value="vm">FTP Server</a:item>
             <a:item value="vm">On my own private virtual machine</a:item>
         </a:dropdown>
     </a:hbox>
-    <a:hbox flex="2">
-        <a:checkbox label="Make private" value="" margin="4 0 0 5" skin="checkbox_black" tooltip="You need to be a premium user to make projects private." />
+    <a:hbox flex="6">
+        <a:checkbox label="Make private" value="" margin="4 0 0 6" skin="checkbox_black" tooltip="You need to be a premium user to make projects private." />
         <a:filler />
         <a:hbox class="new-project-options" edge="1 0 0 0">
             <a:button caption="Pick a template" skin="button-link-dark" class="selected" height="25" />
@@ -120,7 +121,7 @@
         <a:label skin="label-dashboard" margin="0 0 0 10" width="33">Port:</a:label>
         <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="72" />
 
-        <a:label skin="label-dashboard" margin="0 0 0 12">Initial Path:</a:label>
+        <a:label skin="label-dashboard" margin="0 4 0 12">Initial Path:</a:label>
         <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="285" />
 
     </a:hbox>
@@ -134,7 +135,7 @@
         <a:radiobutton
           group  = "connection-method"
           label  = "FTP" 
-          margin = "3 0 0 83"
+          margin = "3 0 0 86"
           selected = "true"
           skin   = "radio_black"
           value  = "ftp"
@@ -147,7 +148,7 @@
           value  = "HTTP"
         />
 
-        <a:button caption="Login test" class="dark green" height="27" margin="-1 0 0 34" skin="button-colorless" width="135" />
+        <a:button caption="Login test" class="dark green" height="27" margin="-1 0 0 31" skin="button-colorless" width="135" />
         <a:label skin="label-tooltip" class="left error" height="28" margin="0 0 0 4" >There was an error<br />when trying to connect.</a:label>
     </a:hbox>
   </a:vbox>
@@ -166,8 +167,8 @@
   <a:hbox class="dark-opaque clone-from-url" edge="10 10 10 11" height="47">
     <a:button caption="Close" skin="button-close" height="18" width="18" />
     <a:label skin="label-dashboard">URL to Clone from:</a:label>
-    <a:textbox initial-message="Paste your Git URL in here" height="27" skin="textbox-on-dark" width="479" />
-    <a:button caption="Clone it" class="clone dark green" height="27" margin="0 0 0 8" skin="button-colorless" width="122" />
+    <a:textbox initial-message="Paste your Git URL in here" height="27" skin="textbox-on-dark" width="598" />
+    <a:button caption="Clone it" class="clone dark green" height="27" margin="0 0 0 5" skin="button-colorless" width="122" />
     <a:label skin="label-tooltip" class="left error" height="28" margin="0 0 0 4" style="line-height: 19px">There was an error.</a:label>
   </a:hbox>
 <!--
@@ -214,7 +215,7 @@
         <a:textbox initial-message="root" height="27" skin="textbox-on-dark" width="143"/>
 
         <a:label skin="label-dashboard" width="67" margin="0 0 0 15">Initial Path:</a:label>
-        <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="297"/>
+        <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="315"/>
     </a:hbox>
 
     <a:hbox margin="0 0 8 0" width="955">
@@ -227,9 +228,9 @@
       <a:vbox>
         <a:hbox>
             <a:label skin="label-dashboard" width="70" margin="0 0 0 12">Port:</a:label>
-            <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="72"/>
+            <a:textbox initial-message="Optional" height="27" skin="textbox-on-dark" width="93"/>
 
-            <a:button caption="Test your settings to continue" class="dark green" height="27" margin="45 0 0 11" skin="button-colorless" width="215" />
+            <a:button caption="Test your settings to continue" class="dark green" height="27" margin="45 0 0 8" skin="button-colorless" width="215" />
         </a:hbox>
         <a:hbox edge="0 0 0 0">
             <a:label skin="label-tooltip" class="top error test-connection-label" height="35" width="233">Something went wrong, please check for errors.</a:label>
@@ -258,12 +259,12 @@
 <a:window 
     id = "profile"
     class = "profile"
-    width = "1000"
+    width = "1127"
     height = "300"
     center = "true"
     resizable = "true"
 >
-  <a:hbox class="dark-opaque own-vm" edge="20">
+  <a:hbox class="dark-opaque" edge="17 33 19 19">
       <a:button caption="Close" skin="button-close" height="18" width="18" />
       <a:vbox class="account" height="177" width="440">
           <a:hbox class="header" height="33" edge="10 11 10 10">
@@ -319,7 +320,7 @@
         <div class="info">Linking to other services gives you instant access to your external projects!</div>
       </a:vbox>
       <a:filler />
-      <a:vbox class="settings" margin="8 0 0 0">
+      <a:vbox class="settings" margin="11 0 0 0">
         <h3>Your email address:</h3>
         <a:hbox margin="5 0 0 0">
             <a:textbox id="profileEmail" initial-message="vlad@c9.io" height="23" skin="simple-dark" width="184"/>
@@ -351,7 +352,7 @@
 <a:window 
     id = "projectsCenter"
     class = "profile"
-    width = "1000"
+    width = "1127"
     height = "300"
     center = "true"
     resizable = "true"
