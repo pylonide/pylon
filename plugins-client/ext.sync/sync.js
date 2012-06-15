@@ -52,9 +52,6 @@ module.exports = ext.register("ext/sync/sync", {
  
     handleMessage : function(message) {
         var _self = this;
-
-        if (!ide.local)
-            return;
             
         if (message.action === "notify") {
             var event = message.args.event;
