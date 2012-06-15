@@ -5,10 +5,10 @@ define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
-var ide = require("core/ide");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var gotofile = require("ext/gotofile/gotofile");
+var search = require("ext/gotofile/search");
 
 module.exports = {
     hook: function(ext, worker) {
@@ -16,7 +16,7 @@ module.exports = {
         var _self = this;
         
         worker.on("outline", function(event) {
-            _self.renderOutline(event);
+            _self.openOutline(event);
         }); 
         
         // TODO: properly register this event listener
@@ -27,7 +27,7 @@ module.exports = {
                 return;
             }
             txtGoToFile.addEventListener("afterchange", function(e) {
-                if (txtGoToFile.value.match(/^@/))
+                if (gotofile.isOutlineEnabled())
                     _self.fetchOutline(false);
             });
         };
@@ -89,8 +89,7 @@ module.exports = {
         return null;
     },
 
-    renderOutline : function(event) {
-        var ace = editors.currentEditor.amlEditor.$editor;
+    openOutline : function(event) {
         var data = event.data;
         if (data.error) {
             // TODO: show error in outline?
@@ -104,7 +103,12 @@ module.exports = {
                 txtGoToFile.setValue("@");
             txtGoToFile.$input.selectionStart = 1;
         }
-        gotofile.setOutlineData(data.body);
+        gotofile.setOutline(data.body, this.renderOutline);
+    },
+    
+    renderOutline : function() {
+        var ace = editors.currentEditor.amlEditor.$editor;
+        // TODO
     },
 
     jumpTo: function(el) {

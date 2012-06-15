@@ -32,7 +32,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     arraySearchResults : [],
     arrayCache : [],
     arrayCacheLastSearch : [],
+    
     outlineArrayCache : [],
+    renderOutline : function() {},
 
     hook : function(){
         var _self = this;
@@ -165,18 +167,22 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.nodes.push(winGoToFile);
     },
     
-    setOutlineData : function(nodes) {
-        if (!txtGoToFile.value.match(/^@/))
+    setOutline : function(nodes, renderOutline) {
+        this.outlineArrayCache = nodes;
+        this.renderOutline = renderOutline;
+        if (!this.isOutlineEnabled())
             return;
         this.lastSearch = "@";
         this.arrayCacheLastSearch = nodes;
-        this.outlineArrayCache = nodes;
         this.filter(txtGoToFile.value, 1);
         this._dirty = true;
         
-        if (this.dgGoToFile) {
+        if (this.dgGoToFile)
             this.updateDatagrid();
-        }
+    },
+    
+    isOutlineEnabled: function() {
+        return txtGoToFile.value.match(/^@/);
     },
     
     updateFileCache : function(isDirty){
@@ -268,13 +274,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             // Optimization reusing smaller result if possible
             if (this.lastSearch && keyword.indexOf(this.lastSearch) > -1)
                 nodes = this.arrayCacheLastSearch;
+            else if (this.isOutlineEnabled())
+                nodes = this.outlineArrayCache || [];
             else
                 nodes = this.arrayCache;
             
-            if (keyword.indexOf("@") === 0)
+            if (this.isOutlineEnabled())
                 keyword = keyword.substring(1);
                 
-            var cache = []
+            var cache = [];
 
             dgGoToFile.$viewport.setScrollTop(0);
 
@@ -481,3 +489,4 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 });
 
 });
+
