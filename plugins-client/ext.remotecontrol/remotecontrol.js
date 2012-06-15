@@ -96,7 +96,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                     ide.dispatchEvent("localUpdateAvailable", event);
                 }
                 else if (eventName === "workspace-deleted") {
-                    console.log("TODO: Lock UI and display dialog that workspace has been deleted and should be closed.");
+                    winWSDeleted.show();
                 }
             }
         }
