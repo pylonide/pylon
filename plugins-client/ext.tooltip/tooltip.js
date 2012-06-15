@@ -128,7 +128,6 @@ module.exports = ext.register("ext/tooltip/tooltip", {
     },
     
     $mouseout : function(e){
-        var tooltip = require("ext/tooltip/tooltip");
         var options = this.$c9tooltipOptions;
         
         clearTimeout(options.timer);
@@ -155,7 +154,6 @@ module.exports = ext.register("ext/tooltip/tooltip", {
     },
     
     $mousedown : function(e){
-        var tooltip = require("ext/tooltip/tooltip");
         var options = this.$c9tooltipOptions;
         
         clearTimeout(options.timer);
