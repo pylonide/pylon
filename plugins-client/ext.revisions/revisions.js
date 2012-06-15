@@ -105,7 +105,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                 self.toggle();
             }
         });
-
+        commands.addCommand({
+            name: "refreshfile",
+            hint: "Refresh the current file",
+            bindKey: { mac: "Shift-Cmd-R", win: "Shift-Alt-R" },
+            isAvailable: function(editor) {
+                return editor && !!editor.ceEditor;
+            },
+            exec: function () {
+                self.refreshfile();
+            }
+        });
+        
         this.nodes.push(
             this.mnuSave = new apf.menu({ id: "mnuSave" }),
             menus.addItemByPath("File/~", new apf.divider(), 800),
@@ -114,6 +125,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                 checked: "[{require('ext/settings/settings').model}::general/@revisionsvisible]",
                 disabled: "{!tabEditors.length}",
                 command: "revisionpanel"
+            }), 900),
+            menus.addItemByPath("File/Refresh Current File", new apf.item({
+                type: "check",
+                disabled: "{!tabEditors.length}",
+                command: "refreshfile"
             }), 900),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
@@ -1329,6 +1345,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         return color;
     },
 
+    refreshfile : function() {
+        this.onExternalChange( { "path": tabEditors.getPage().$doc.getNode().getAttribute("path") });
+    },
+    
     /**
      * Revisions#$setRevisionNodeAttribute()
      *
@@ -1558,7 +1578,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.remove("File/~", 1000);
 
         commands.removeCommandByName("revisionpanel");
-
+        commands.removeCommandByName("refreshfile");
+        
         if (this.saveInterval) {
             clearInterval(this.saveInterval);
         }
