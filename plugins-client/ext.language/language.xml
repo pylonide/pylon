@@ -2,7 +2,7 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barOutline" skinset="language_skin" skin="codecomplete" width="300" visible="false">
+    <a:bar id="barOutline" skinset="language_skin" skin="codecomplete" visible="false">
         <a:vbox anchors="0 0 0 0">
             <a:toolbar>
                 <a:bar height = "36">
@@ -34,12 +34,11 @@
                   model           = "mdlOutline"
                   openadd         = "false"
                   startcollapsed  = "false"
-                  empty-message   = "No outline avaialble"
-                  flex            = "1"
-                  anchors = "0 0 0 0">
+                  empty-message   = "No outline available"
+                  scrollbar       = "sbShared 32 7 7">
                     <a:each
                       match         = "[entries|entry]"
-                      filter        = "{tbOutlineSearch.value}"
+                      filter        = "{txtGoToFile.value}"
                       filter-groups = "entries"
                       filter-fields = "@name"
                     >
@@ -49,13 +48,6 @@
                         <a:icon value="/static/ext/language/img/[@icon].png" />
                     </a:each>
                 </a:tree>
-                <a:scrollbar
-                  for      = "treeOutline"
-                  id       = "sbOutline"
-                  margin   = "2"
-                  skin     = "sbios"
-                  width    = "7"
-                  overflow2 = "auto"/>
               </a:hbox>
         </a:vbox>
     </a:bar>

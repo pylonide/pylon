@@ -3,6 +3,8 @@
  */
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
+var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var menus = require("ext/menus/menus");
@@ -11,7 +13,10 @@ var gotofile = require("ext/gotofile/gotofile");
 var search = require("ext/gotofile/search");
 
 module.exports = {
-    hook: function(ext, worker) {
+    nodes: [],
+    cachedOutlineTree : [],
+    
+    hook: function(oExt, worker) {
         this.worker = worker;
         var _self = this;
         
@@ -31,6 +36,7 @@ module.exports = {
                     _self.fetchOutline(false);
             });
         };
+        //gotofile.setOutline(this);
         setListener();               
         commands.addCommand({
             name: "outline",
@@ -43,16 +49,20 @@ module.exports = {
                 _self.fetchOutline(true);
             }
         });
-
+        
         var mnuItem = new apf.item({
             command : "outline"
         });
 
-        ext.nodes.push(
+        this.nodes.push(
             menus.addItemByPath("View/Outline", mnuItem, 190),
             // menus.addItemByPath("File/Open definition...", mnuItem.cloneNode(false), 500),
             menus.addItemByPath("Goto/Goto Definition...", mnuItem.cloneNode(false), 110)
         );
+        
+        ide.addEventListener("init.ext/gotofile/gotofile", function(e) {
+            dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
+        });
     },
 
     outlineJsonToXml: function(array, selected, tag) {
@@ -99,15 +109,39 @@ module.exports = {
         
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
-            if (!txtGoToFile.value.match(/^@/))
-                txtGoToFile.setValue("@");
-            txtGoToFile.$input.selectionStart = 1;
+            //if (!txtGoToFile.value.match(/^@/))
+            //    txtGoToFile.setValue("@");
+            //txtGoToFile.$input.selectionStart = 1;
+            dgGoToFile.hide();
+            treeOutline.show();
         }
-        gotofile.setOutline(data.body, this.renderOutline);
+        //gotofile.setOutline(data.body, this.renderOutline);
+        this.cachedOutlineTree = event.data.body;
+        this.renderOutline();
     },
     
     renderOutline : function() {
+        var outline = this.cachedOutlineTree;
+        if (outline.items)
+            outline = outline.items;
         var ace = editors.currentEditor.amlEditor.$editor;
+        
+        //barOutline.setAttribute('visible', true);
+        var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
+        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
+        
+        var node = mdlOutline.queryNode("//entry[@selected]");
+        if(node) {
+            treeOutline.select(node);
+            var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
+            htmlNode.scrollIntoView();
+        }
+        //document.addEventListener("click", this.closeOutline);
+        ace.container.addEventListener("DOMMouseScroll", this.closeOutline);
+        ace.container.addEventListener("mousewheel", this.closeOutline);
+    },
+    
+    filterOutline : function() {
         // TODO
     },
 
