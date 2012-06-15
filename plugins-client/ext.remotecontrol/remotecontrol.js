@@ -92,8 +92,11 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                     else
                         ide.dispatchEvent("localOnline", event);
                 }
-                else if (eventName == "c9local-update") {
+                else if (eventName === "c9local-update") {
                     ide.dispatchEvent("localUpdateAvailable", event);
+                }
+                else if (eventName === "workspace-deleted") {
+                    console.log("TODO: Lock UI and display dialog that workspace has been deleted and should be closed.");
                 }
             }
         }
