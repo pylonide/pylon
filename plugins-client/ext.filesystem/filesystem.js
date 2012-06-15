@@ -273,6 +273,36 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
     },
 
+    checkPathExists : function(path) {
+        var ps = path.split("/"); 
+        ps.pop();
+        var p = ide.davPrefix + ps.join("/");
+        
+        return this.model.queryNode("//node()[@path=" + util.escapeXpathString(p) + "]") === null;
+    },
+    
+    // this path does not exist, keeping checking parents and make them first
+    createFolderTree : function(path) {
+        var newDir = true;
+        var dirsToMake = [];
+        while (newDir) {
+            dirsToMake.unshift(path);
+            path = path.substr(0, path.lastIndexOf("/"));
+            
+            newDir = this.model.queryNode("//node()[@path=" + util.escapeXpathString(path) + "]") === null;
+        }
+        
+        dirsToMake.forEach(function(dir, idx, dirs) {
+            var parentDir = "";
+            if (idx > 0)
+                parentDir = dirs[idx - 1];
+            else {
+                parentDir = dir.substring(0, dir.lastIndexOf("/"));
+            }
+            this.model.appendXml(this.createFolderNodeFromPath(dir), "//node()[@path=" + util.escapeXpathString(parentDir) + "]");
+        });
+    },
+    
     beforeStopRename : function(name) {
         // Returning false from this function will cancel the rename. We do this
         // when the name to which the file is to be renamed contains invalid

@@ -101,95 +101,17 @@ module.exports = ext.register("ext/sync/sync", {
     },
 
     createSyncFile: function(path, mtime) {
-        var ps = path.split("/"); 
-        ps.pop();
-        var p = ide.davPrefix + ps.join("/");
-        
-        var newDir = fs.model.queryNode("//node()[@path=" + util.escapeXpathString(p) + "]") === null;
-        
-        if (newDir) {
-            this.createFolderTree(newDir, p);
-        }
-        
-        fs.model.appendXml(fs.createFileNodeFromPath(path, { "modifieddate": mtime }), "//node()[@path=" + util.escapeXpathString(p) + "]");
-    },
-    
-    createFolderTree : function(newDir, p) {
-        if (newDir) { // this dir does not exist, keeping checking parents and make them first
-            var dirsToMake = [];
-            while (newDir) {
-                dirsToMake.unshift(p);
-                p = p.substr(0, p.lastIndexOf("/"));
-                
-                newDir = fs.model.queryNode("//node()[@path=" + util.escapeXpathString(p) + "]") === null;
-            }
+        if (fs.checkPathExists(path))
+            fs.createFolderTree(path);
             
-            dirsToMake.forEach(function(dir, idx, dirs) {
-                var parentDir = "";
-                if (idx > 0)
-                    parentDir = dirs[idx - 1];
-                else {
-                    parentDir = dir.substring(0, dir.lastIndexOf("/"));
-                }
-                fs.model.appendXml(fs.createFolderNodeFromPath(dir), "//node()[@path=" + util.escapeXpathString(parentDir) + "]");
-            });
-        }
-    },
+        fs.model.appendXml(fs.createFileNodeFromPath(path, { "modifieddate": mtime }), "//node()[@path=" + util.escapeXpathString(path) + "]");
+    },    
     
     moveSyncFile : function(oldPath, newPath) {
-        var root = "";
+        if (fs.checkPathExists(newPath))
+            fs.createFolderTree(newPath);
         
-        // newPath is inside oldPath
-        if (newPath.indexOf(oldPath) >= 0) {
-            root = newPath.substring(0, newPath.indexOf(oldPath));
-        }
-        
-        var prevThing = null;
-        var dirs = oldPath.split("/");
-        dirs.shift(); // dirs[0] element is blank
-        
-        // it's a whole list of dirs
-        if (dirs.length > 1) {
-            dirs.reverse();
-            
-            var list = oldPath;
-            // construct folder heirarchy
-            do {
-                var newChild = "";
-                
-                var attr = { "oldpath" : ide.davPrefix + list };
-                newChild = list.indexOf(".") >= 0 ? fs.createFileNodeFromPath(ide.davPrefix + list, attr) : newChild = fs.createFolderNodeFromPath(ide.davPrefix + list, attr);
-                
-                if (prevThing != null) {
-                    newChild.appendChild(prevThing);
-                    prevThing = newChild;
-                }
-                else
-                    prevThing = newChild;
-                    
-                list = list.substr(0, list.lastIndexOf("/"));
-            } while (list.length > 0);
-        }
-        else {
-            prevThing = fs.createFileNodeFromPath(ide.davPrefix + oldPath);
-        }
-        
-        if (prevThing.parentNode == null) {
-            var workspaceNode = fs.createFolderNodeFromPath(ide.davPrefix);
-            prevThing = workspaceNode.appendChild(prevThing);
-        }
-        
-        var ps = newPath.split("/"); 
-        ps.pop();
-        var p = ide.davPrefix + ps.join("/");
-        
-        var newDir = fs.model.queryNode("//node()[@path=" + util.escapeXpathString(newPath) + "]") === null;
-        
-        if (newDir) {
-            this.createFolderTree(newPath, p);
-        }
-        
-        apf.xmldb.moveNode(fs.createFolderNodeFromPath(ide.davPrefix + root), prevThing);
+        apf.xmldb.moveNode(fs.createFileNodeFromPath(ide.davPrefix + newPath.substr(0, newPath.lastIndexOf("/"))), fs.model.queryNode("//node()[@path=" + util.escapeXpathString(ide.davPrefix + oldPath) + "]"));
     },
     
     removeSyncFile: function(path) {

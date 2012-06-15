@@ -78,7 +78,7 @@
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
             <a:button id="btnQuestionNo" onclick = "require('ext/sync/sync').removeAndEnableSync()" default="3" skin="btn-default-css3" class="btn-red">Delete everything and synch</a:button>
-            <a:button id="btnQuestionYes" onclick = "require('ext/sync/sync').winCannotSync()" skin="btn-default-css3" class="btn-green">Okay</a:button>
+            <a:button id="btnQuestionYes" onclick = "winCannotSync.hide()" skin="btn-default-css3" class="btn-green">Okay</a:button>
         </a:hbox>
     </a:window>
     
