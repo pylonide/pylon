@@ -1,5 +1,25 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:button id="btnSyncStatus" class="c9-sync" value="[general/@synching]" onclick="require('ext/sync/sync').setSync()" />
+    <a:button id="btnSyncStatus" margin="3 0 0 0" class="c9-sync" value="[general/@synching]" onclick="require('ext/sync/sync').setSync()" />
+    
+    <div id="mnuSyncInfo" class="menu-bk downward menu-bkFocus c9-tooltip sync-info-tooltip">
+        <div>
+            <a class="close-sync-info" href="javascript:void(0)" onclick="document.getElementById('mnuSyncInfo').style.display='none'"></a>
+            Sync for offline use in progress...
+            <div id="syncProgressBar" class="progress-bar"></div>
+            <a:hbox>
+                <div id="syncFileName" class="sync-file-label" flex="1">Server.js</div>
+                <a:filler/>
+                <a:button id="btnPauseSync" 
+                  pack="end"
+                  skin="btn-default-css3" 
+                  width="37"
+                  height="25"
+                  class="pause-sync" 
+                  onclick=""/>
+            </a:hbox>
+        </div>
+        <div class="arrow"></div>
+    </div>
     
     <a:model id="mdlSyncPrj" />
     

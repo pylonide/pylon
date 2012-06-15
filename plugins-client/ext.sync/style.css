@@ -4,3 +4,31 @@
 .c9-menu-bar.local .c9-sync.btn .lbl{
     background-image: none;  
 }
+
+.sync-info-tooltip {
+    color: #d6d6d6;
+    text-shadow : rgba(0, 0, 0, .60) 0px 1px 0px;
+    position: absolute;
+    width: 250px;
+}
+.sync-info-tooltip .close-sync-info {
+    background: url(/static/ext/main/style/images/close-btn.png) no-repeat 0 0;
+    heigth: 14px;
+    widht: 13px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.sync-info-tooltip .progress-bar {
+
+}
+
+.sync-info-tooltip .sync-file-label {
+    color: #818080;
+}
+
+.sync-info-tooltip .pause-sync .caption {
+    background: url(/static/ext/main/style/images/pause-icon.png) no-repeat 0 0;
+    height: 13px;
+}
