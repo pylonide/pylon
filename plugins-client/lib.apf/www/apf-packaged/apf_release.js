@@ -984,11 +984,11 @@ VERSION:'3.0beta',
         if (type)
             elScript.setAttribute("_apf_type", type);
         if (text) {
-			if (apf.isIE)
-				window.execScript(text);
-			else
-				elScript.text = text;
-		}
+            if (apf.isIE)
+                window.execScript(text);
+            else
+                elScript.text = text;
+        }
         else 
             elScript.src   = sSrc;
         head.appendChild(elScript);
@@ -22239,7 +22239,7 @@ apf.DataBinding = function(){
     this.queryValue = function(xpath, type){
         return apf.queryValue(this[type || 'xmlRoot'], xpath );
     };
-	/**
+    /**
      * Queries the bound data for an array of string values
      *
      * @param {String} xpath the xpath statement which queries on the data this element is bound on.
@@ -22253,7 +22253,7 @@ apf.DataBinding = function(){
     this.queryValues = function(xpath, type){
         return apf.queryValues(this[type || 'xmlRoot'], xpath );
     };
-	
+    
     /**
      * Executes an xpath statement on the data of this model
      *
@@ -22267,7 +22267,7 @@ apf.DataBinding = function(){
      */
     this.queryNode = function(xpath, type){
         var n = this[type||'xmlRoot'];
-		return n ? n.selectSingleNode(xpath) : null;
+        return n ? n.selectSingleNode(xpath) : null;
     };
 
     /**
@@ -22283,9 +22283,9 @@ apf.DataBinding = function(){
      */
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
-		return n ? n.selectNodes(xpath) : [];
+        return n ? n.selectNodes(xpath) : [];
     };
-	
+    
     this.$checkLoadQueue = function(){
         // Load from queued load request
         if (this.$loadqueue) {
@@ -24793,16 +24793,16 @@ apf.StandardBinding = function(){
         
         var b, lrule, rule, bRules, bRule, value;
         if (b = this.$bindings) {
-	        for (rule in b) {
-	            lrule = rule.toLowerCase();
-	            if (this.$supportedProperties.indexOf(lrule) > -1) {
-	                bRule = (bRules = b[lrule]).length == 1 
+            for (rule in b) {
+                lrule = rule.toLowerCase();
+                if (this.$supportedProperties.indexOf(lrule) > -1) {
+                    bRule = (bRules = b[lrule]).length == 1 
                       ? bRules[0] 
                       : this.$getBindRule(lrule, xmlNode);
 
                     value = bRule.value || bRule.match;
 
-	                
+                    
                     //Remove any bounds if relevant
                     this.$clearDynamicProperty(lrule);
             
@@ -24812,9 +24812,9 @@ apf.StandardBinding = function(){
                     
                     if (this.setProperty)
                         this.setProperty(lrule, value, true);
-	            }
-	        }
-	    }
+                }
+            }
+        }
         
 
         //Think should be set in the event by the Validation Class
@@ -24856,16 +24856,16 @@ apf.StandardBinding = function(){
         
         var b, lrule, rule, bRules, bRule, value;
         if (b = this.$bindings) {
-	        for (rule in b) {
-	            lrule = rule.toLowerCase();
-	            if (this.$supportedProperties.indexOf(lrule) > -1) {
+            for (rule in b) {
+                lrule = rule.toLowerCase();
+                if (this.$supportedProperties.indexOf(lrule) > -1) {
                     bRule = (bRules = b[lrule]).length == 1 
                       ? bRules[0] 
                       : this.$getBindRule(lrule, xmlNode);
 
                     value = bRule.value || bRule.match;
 
-	                
+                    
                     //Remove any bounds if relevant
                     this.$clearDynamicProperty(lrule);
             
@@ -24875,9 +24875,9 @@ apf.StandardBinding = function(){
                     
                     if (this.setProperty)
                         this.setProperty(lrule, value);
-	            }
-	        }
-	    }
+                }
+            }
+        }
         
 
         //@todo Think should be set in the event by the Validation Class
@@ -25517,12 +25517,12 @@ apf.MultiSelect = function(){
             //Don't select on context menu
             if (fakeselect == 2) {
                 fakeselect = true;
-    	      	userAction = true;
+                userAction = true;
             }
             else {
-    	      	fakeselect = false;
-    	      	userAction = true;
-    	    }
+                fakeselect = false;
+                userAction = true;
+            }
         }
 
         if (this.$skipSelect) {
@@ -29075,10 +29075,10 @@ apf.BaseList = function(){
         oItem.setAttribute("id", Lid);
 
         elSelect.setAttribute("onmouseover",   "var o = apf.lookup(" + this.$uniqueId 
-        	+ "); o.$setStyleClass(this, 'hover', null, true);");
+            + "); o.$setStyleClass(this, 'hover', null, true);");
         elSelect.setAttribute("onselectstart", "return false;");
         elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") 
-        	+ ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
+            + ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
 
         if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
             elSelect.setAttribute("ondblclick", "var o = apf.lookup(" + this.$uniqueId + "); " +
@@ -29087,7 +29087,7 @@ apf.BaseList = function(){
                 
                 " o.choose()");
             elSelect.setAttribute("onmouseout", "var o = apf.lookup(" + this.$uniqueId + ");\
-            	  o.$setStyleClass(this, '', ['hover'], true);\
+                  o.$setStyleClass(this, '', ['hover'], true);\
                 this.hasPassedDown = false;");
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = apf.lookup(' + this.$uniqueId + ');\
@@ -30796,7 +30796,7 @@ apf.BaseTab = function(){
         {
             //page.removeNode();
             if (page.dispatchEvent("afterclose") !== false)
-            	page.destroy(true, true);
+                page.destroy(true, true);
 
             
             //@todo this is wrong, we can also use removeChild
@@ -32310,7 +32310,7 @@ apf.BaseTree = function(){
     };
     
     this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
-        if (!apf.debug && !htmlNode) 
+        if (!self.apf.debug && !htmlNode) 
             return;
             
         var container;
@@ -32322,22 +32322,15 @@ apf.BaseTree = function(){
             return;
         }
         
-        var nSibling = this.getNextTraverse(xmlNode),
-            beforeNode = nSibling
-                ? apf.xmldb.getHtmlNode(nSibling, this)
-                : null;
-        
-        var next = htmlNode.nextSibling;
-        if (next.tagName != htmlNode.tagName)
-            next = next.nextSibling;
-        if (beforeNode == next)
-            return;
-        
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
         
+            nSibling = this.getNextTraverse(xmlNode),
+            beforeNode = nSibling
+                ? apf.xmldb.getHtmlNode(nSibling, this)
+                : null,
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
@@ -37906,10 +37899,10 @@ apf.window = function(){
             if (e.preventDefault)
                 e.preventDefault();
            
-	        try{  
+            try{  
                 if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
                     document.activeElement.blur();
-    	    }catch(e){}
+            }catch(e){}
         }
     });
 
@@ -38633,8 +38626,8 @@ apf.runIE = function(){
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s){
         var str;
         if (nodeList) {
-	        for (str = [], i = 0, l = nodeList.length; i < l; i++)
-	            str[i] = nodeList[i].xml;
+            for (str = [], i = 0, l = nodeList.length; i < l; i++)
+                str[i] = nodeList[i].xml;
         }
         str = s || apf.html_entity_decode(str.join(""));
         
@@ -39283,12 +39276,12 @@ apf.runWebkit = function(){
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
         var node, frag, a, i, l;
         if (nodeList) {
-	        frag = document.createDocumentFragment();
-	        a = [], i = 0, l = nodeList.length;
-	        for (; i < l; i++) {
-	            if (!(node = nodeList[i])) continue;
-	            frag.appendChild(node);
-	        }
+            frag = document.createDocumentFragment();
+            a = [], i = 0, l = nodeList.length;
+            for (; i < l; i++) {
+                if (!(node = nodeList[i])) continue;
+                frag.appendChild(node);
+            }
         }
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
@@ -51253,7 +51246,7 @@ apf.dropdown = function(struct, tagName){
                 
             break;
             default:
-                if (key == 9 || !this.xmlRoot) return;	
+                if (key == 9 || !this.xmlRoot) return;  
             
                 //if(key > 64 && key < 
                 if (!this.lookup || new Date().getTime() - this.lookup.date.getTime() > 1000)
@@ -53089,8 +53082,8 @@ apf.preview = function(struct, tagName){
     };
 
     this.refetch = function(){
-	this.$propHandlers["value"].call(this, "")
-	this.$propHandlers["value"].call(this, this.value || this.src)
+    this.$propHandlers["value"].call(this, "")
+    this.$propHandlers["value"].call(this, this.value || this.src)
     }
     
     this.addEventListener("$clear", function(){
@@ -56485,20 +56478,20 @@ apf.model = function(struct, tagName){
         
         return apf.queryValue(this.data, xpath);
     };
-	
+    
     /**
      * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
      *
      * @param  {String}  xpath  the xpath used to select a XMLNode.
      * @return  {String}  value of the XMLNode
-     */	
+     */ 
     this.queryValues = function(xpath){
         if (!this.data)
             return [];
         
         return apf.queryValue(this.data, xpath);
     };
-	
+    
     /**
      * Executes an xpath statement on the data of this model
      *
@@ -66857,8 +66850,8 @@ apf.webdav = function(struct, tagName){
                     return; // 401's are handled by the browser already, so no need for additional processing...
 
                 var sResponse = (extra.http.responseText || "");
-                if ((sResponse.length > 10 || sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != "")
-                  && sResponse.substr(0, 14) == "<?xml version=") {
+                if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
+                  && sResponse.indexOf("<?xml version=") == 0) {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
                             ? apf.xmlParseError(extra.http.responseXML)
@@ -69365,7 +69358,7 @@ apf.textbox.masking = function(){
             if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
             for (i = this.getValue().length - 1; i >= 0; i--)
                 deletePosition(i);
-            setPosition(0);	
+            setPosition(0); 
             return;
         }
         
