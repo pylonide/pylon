@@ -126,9 +126,8 @@ define(function(require, exports, module) {
                         retryTimer(5000);
                     } else {
                         var sock = ide.socket.socket;
-                        if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn) {
+                        if (!sock.connecting && !sock.reconnecting && !ide.testOffline)
                             sock.connect();
-                        }
                     }
                 }, delay);
             }
