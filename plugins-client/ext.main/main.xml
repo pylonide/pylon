@@ -45,11 +45,13 @@
             <a:filler />
             <a:hbox align="center">
                 <span class="blue-label">Need edit-rights? Simply 
-                    <a id="chatWithUser" href="javascript:void(0)" class="green-label" 
-                        onclick="">chat</a> with the project owner!</span>
+                    <a id="chatWithUser" href="javascript:void(0)" class="green-label">chat</a> with the project owner!</span>
             </a:hbox>
             <a:filler />
-            <a href="javascript:void(0)" class="white-label nodecor-link" onclick="self['view-mode-box-readonly'].hide()">Hide this!</a>
+            <a href="javascript:void(0)" class="white-label nodecor-link" 
+              onclick="self['view-mode-box-readonly'].hide();self['view-mode-box-readonly'].noshow=true;apf.setStyleClass(vbMain.$ext, '', ['readonly']);">
+                Hide this!
+            </a>
         </a:hbox>
         
         <a:bar skin="c9-menu-bar" id="logobar">
