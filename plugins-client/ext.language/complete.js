@@ -86,7 +86,9 @@ function replaceText(editor, prefix, newText) {
     
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
+    setTimeout(function() {
+        editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
+    }, 50);
 }
 
 var menus = require("ext/menus/menus");
