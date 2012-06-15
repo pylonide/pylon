@@ -397,13 +397,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         // prepare new Ace document to handle search results
         var node = apf.getXml("<file />");
         node.setAttribute("name", "Search Results");
-        node.setAttribute("path", this.searchFilePath);
+        node.setAttribute("path", "Search Results");
         node.setAttribute("customtype", util.getContentType(this.searchContentType));
         node.setAttribute("tooltip", "Search Results");
         node.setAttribute("newfile", "0");
         node.setAttribute("ignore", "1");
         node.setAttribute("saving", "1");
-        node.setAttribute("changed", "0");
                     
         var doc = ide.createDocument(node);
         
@@ -490,8 +489,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 lastLine = "";
                 
                 if (!chkSFConsole.checked) {
-                    apf.xmldb.removeAttribute(node, "saving");
-                    node.setAttribute("changed", "0");
+                    apf.xmldb.setAttribute(node, "saving", "0");
+                    apf.xmldb.setAttribute(node, "changed", "0");
                 }
                 btnSFFind.$ext.innerText = "Find";
                 return clearInterval(_self.timer);
@@ -514,7 +513,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         var clickedLine = session.getLine(currRow).trim().split(":"); // number:text
         
-        if (clickedLine.length < 2) // not a line number with text row
+        if (clickedLine.length < 2) // some other part of the editor
             return;
         
         // "string" type is the parent filename
@@ -528,7 +527,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             path = path.substring(0, path.length-1);
         
         if (path !== undefined && path.length > 0)
-            editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
+            editors.showFile(ide.davPrefix + "/" + path, clickedLine[1].length ? clickedLine[0] : 0, 0, clickedLine[1]);
     },
 
     appendLines : function(doc, content) {
@@ -659,7 +658,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     if (e.altKey === false) {
                         _self.launchFileFromSearch(editor);
                         if (e.shiftKey === true) {
-                            //_self.searchConsole.$editor.focus();
                             _self.searchConsole.$focus();
                         }
                     }

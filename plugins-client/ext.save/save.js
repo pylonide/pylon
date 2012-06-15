@@ -85,7 +85,7 @@ module.exports = ext.register("ext/save/save", {
                     at.undo_ptr = at.$undostack[0];
                 var node = e.page.$doc.getNode();
                 if (node && (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-                  || !at.undo_ptr && node.getAttribute("changed") == 1
+                  || !at.undo_ptr && node.getAttribute("changed") == 1 && node.getAttribute("ignore") !== "1"
                   && e.page.$doc.getValue())) {
     
                     ext.initExtension(_self);
@@ -302,7 +302,7 @@ module.exports = ext.register("ext/save/save", {
         if (ide.dispatchEvent("beforefilesave", {node: node, doc: doc }) === false)
             return;
 
-        if (node.getAttribute("newfile") && !node.getAttribute("cli")){
+        if (node.getAttribute("newfile") && !node.getAttribute("cli") && !node.getAttribute("ignore") !== "1"){
             this.saveas(page, callback);
             return;
         }
