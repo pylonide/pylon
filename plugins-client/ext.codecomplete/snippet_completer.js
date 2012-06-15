@@ -4,7 +4,6 @@ define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
 var baseLanguageHandler = require('ext/language/base_handler');
-var ide = require("core/ide");
 
 var completer = module.exports = Object.create(baseLanguageHandler);
 
