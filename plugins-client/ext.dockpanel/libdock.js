@@ -37,7 +37,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     var state, lookup; //@todo wrong use of scope. 
     
     function findParentState(data, forceSearch){
-        var uniqueId = data.uniqueId;
+        var uniqueId = (data || {}).uniqueId;
         if (!uniqueId)
             return;
         var node = lookup[uniqueId].node;
@@ -476,6 +476,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         var bar = findParentState(findParentState(lookup[uniqueId].data));
+        
+        if(!bar)
+            return -1;
+            
         return lookup[bar.uniqueId].data.expanded;
     };
     
