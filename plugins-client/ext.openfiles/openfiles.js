@@ -65,7 +65,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var node = model.queryNode('//node()[@path="'
                 + e.node.getAttribute("path").replace(/"/g, "&quot;") + '"]');
 
-            if (!e.doc.$page)
+            if (!e.doc.$page || !node)
                 return;
 
             var pgModel = e.doc.$page.$model;

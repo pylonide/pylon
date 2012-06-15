@@ -481,10 +481,41 @@ module.exports = ext.register("ext/tree/tree", {
             return false;
     },
 
-    moveFile : function(path, newpath){
-        davProject.move(path, newpath);
+    moveFile : function(node, newpath){
+        var path = node.getAttribute("path");
+        davProject.move(path, newpath, true, false, function(data, state, extra) {
+            if (state !== apf.SUCCESS) {
+                // TODO: revert the move!!
+                return;
+            }
+
+            ide.dispatchEvent("afterupdatefile", {
+                path: node.getAttribute("oldpath"),
+                newPath: path,
+                xmlNode: node,
+                isFolder: node.getAttribute("type") === "folder"
+            });
+        });
         trFiles.enable();
         trFiles.focus();
+    },
+
+    renameFile : function(node) {
+        var path = node.getAttribute("path");
+        var oldpath = node.getAttribute("oldpath");
+        davProject.rename(oldpath, path, true, false, function(data, state, extra) {
+            if (state !== apf.SUCCESS) {
+                // TODO: revert the rename!!
+                return;
+            }
+
+            ide.dispatchEvent("afterupdatefile", {
+                path: oldpath,
+                newPath: path,
+                xmlNode: node,
+                isFolder: node.getAttribute("type") === "folder"
+            });
+        });
     },
 
     /**

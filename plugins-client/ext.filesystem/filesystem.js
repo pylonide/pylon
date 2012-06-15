@@ -287,6 +287,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     beforeMove: function(parent, node, tree) {
         var path = node.getAttribute("path");
         var newPath = parent.getAttribute("path") + "/" + node.getAttribute("name");
+        node.setAttribute("oldpath", path);
         node.setAttribute("path", newPath);
 
         var page = tabEditors.getPage(path);
@@ -313,10 +314,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         if (page) {
             tabEditors.remove(page);
         }
-        
+
         // This is a very expensive way to find out whether the item to be
         // removed is a file or a folder, since it involves creating a new model
-        // with the filesystem listing data, since the file node has already 
+        // with the filesystem listing data, since the file node has already
         // been removed from this module's model.
         davProject.list(path, function(modelString) {
             var model = new apf.model();
@@ -333,7 +334,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         isFolder: isFolder
                     });
                 }
-    
+
                 if (callback)
                     callback(data, state, extra);
             };
