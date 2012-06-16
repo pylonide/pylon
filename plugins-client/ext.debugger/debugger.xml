@@ -84,9 +84,8 @@
                       icon       = "debugger/file_obj.gif" />
                 </a:bar>
             </a:toolbar>
-            <a:vbox anchors="29 0 0 0" flex="1" splitters="true">
+            <a:vsplitbox anchors="29 0 0 0" splitter="true">
                 <a:codeeditor id="txtCode" 
-                  flex              = "1"
                   disabled          = "{stRunning.active || !stDebugProcessRunning.active}"
                   onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime          = "true"
@@ -107,12 +106,12 @@
                   printmargincolumn = "0" />
                 <a:text id="txtInteractiveOutput"
                   class      = "interactive_output"
-                  flex       = "1"
+                  height     = "150"
                   scrolldown = "true"
                   focussable = "true"
                   textselect = "true" 
                   scrollbar  = "sbShared 20 2 2" />
-            </a:vbox>
+            </a:vsplitbox>
         </a:page>
         <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"

@@ -690,9 +690,45 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             }), bar.vbox);
             
-            if (!ps)
-                bar.splitter.setAttribute("parent", bar.parentNode.parentNode.parentNode);
-            
+            bar.splitter.addEventListener("dragstart", function(){
+                if (!this.previousSibling) {
+                    if (!bar.splitter.parent) {
+                        bar.splitter.setAttribute("parent", bar.parentNode.parentNode);
+                        apf.extend(bar.splitter, apf.splitter.templates.splitbox);
+                        bar.splitter.decorate();
+                        bar.splitter.$ext.onmousedown();
+                        return false;
+                    }
+                    
+                    bar.vbox.setAttribute("width", "");
+                    bar.vbox.setAttribute("flex", "1");
+                }
+                else if (bar.splitter.parent) {
+                    bar.splitter.removeAttribute("parent");
+                    apf.extend(bar.splitter, apf.splitter.templates.box);
+                    bar.splitter.decorate();
+                    bar.splitter.$ext.onmousedown();
+                    return false;
+                }
+            });
+            bar.splitter.addEventListener("dragdrop", function(){
+                if (!this.previousSibling) {
+                    var w = bar.vbox.getWidth();
+                    bar.vbox.removeAttribute("flex");
+                    bar.vbox.setWidth(w);
+                }
+            });
+            bar.splitter.addEventListener("dragmove", function(){
+                if (this.previousSibling) {
+                    var p = bar.parentNode;
+                    var l = p.lastChild;
+                    var f = p.firstChild;
+                    while (l && !l.visible) l = l.previousSibling;
+                    while (f && !f.visible) f = f.nextSibling;
+                    p.setWidth(l.getLeft() + l.getWidth() - (l == f ? 0 : f.getLeft()));
+                }
+            });
+
             bar.splitter.bar = 
             bar.vbox.bar     = bar;
         }
@@ -1595,7 +1631,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             else
                 i = b.push(button.$dockData);
             
-            tableCleanup(pNode, btnPNode, oldMenu, b);
+            tableCleanup.call(this, pNode, btnPNode, oldMenu, b);
             this.checkBars();
         }
         else if (dragAml.localName == "divider") {
@@ -1929,7 +1965,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
                 button.$dockData.hidden = 2;
 
-                tableCleanup(pNode, btnPNode, pNode.parentNode.localName == "menu" 
+                tableCleanup.call(_self, pNode, btnPNode, pNode.parentNode.localName == "menu" 
                     ? pNode.parentNode 
                     : self[button.submenu]);
                     
