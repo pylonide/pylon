@@ -45,6 +45,9 @@
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
+            if (cloud9config.local)
+                document.title += " Local";
+                
             if (!cloud9config.packed) {
                 var RELEASE = "release";
                 var DEBUG   = "debug";

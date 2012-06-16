@@ -40,7 +40,7 @@ module.exports = ext.register("ext/sync/sync", {
 
         apf.importCssString(cssString);
         
-        if (ide.local) {
+        if (ide.local || cloud9config.hosted) {
             apf.setStyleClass(logobar.$ext, "local");
             
             var logoCorner = document.querySelector(".c9-mbar-cont");
