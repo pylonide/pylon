@@ -18,6 +18,7 @@
                 background: rgba(255, 255, 255, 0.4);
                 border-bottom: 1px solid rgba(0, 0, 0, 0.1);
                 border-top: 1px solid rgba(255, 255, 255, 0.8);
+                -moz-box-sizing: border-box;
                 box-sizing: border-box;
                 cursor: default;
                 overflow: hidden;
@@ -108,6 +109,10 @@
             .dark .code_complete_text_holder {
                 border-width: 0 2px 2px 2px;
                 box-shadow: 0 2px 7px rgba(0, 0, 0, 0.7);
+            }
+
+            .code_complete_text_holder > div {
+                padding: 0 !important;
             }
 
             .code_complete_bar.upward .code_complete_text_holder {
