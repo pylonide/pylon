@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:bar id="winDbgConsole" height="0" zindex="1000">
         <a:vsplitbox anchors="0 0 0 0">
-            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="scale,order"
+            <a:tab id="tabConsole" skin="tab_console" visible="false" render2="runtime" buttons="scale,order"
               onclose="return require('ext/console/console').checkIfPageCanClose(event)">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"

@@ -8428,6 +8428,10 @@
             position : relative;
             z-index  : 8000;
         }
+        
+        .topsplitter .splitter{
+            z-index : 100000;
+        }
 
         .splitterFocus {
         }

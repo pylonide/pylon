@@ -84,7 +84,7 @@
                       icon       = "debugger/file_obj.gif" />
                 </a:bar>
             </a:toolbar>
-            <a:vsplitbox anchors="29 0 0 0" splitter="true">
+            <a:vsplitbox anchors="29 0 0 0" splitter="true" class="topsplitter">
                 <a:codeeditor id="txtCode" 
                   disabled          = "{stRunning.active || !stDebugProcessRunning.active}"
                   onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
