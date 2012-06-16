@@ -180,6 +180,7 @@ var config = {
             "./cloud9.ide.gittools",
             "./cloud9.ide.hg",
             "./cloud9.ide.npm",
+            "./cloud9.ide.search",
             "./cloud9.ide.run-node",
             {
                 packagePath: "./cloud9.ide.run-npm-module",

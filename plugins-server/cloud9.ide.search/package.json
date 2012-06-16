@@ -1,0 +1,13 @@
+{
+    "name": "cloud9.ide.search",
+    "version": "0.0.1",
+
+    "main": "./search.js",
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "vfs"
+        ]
+    }
+}

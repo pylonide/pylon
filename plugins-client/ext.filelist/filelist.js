@@ -12,10 +12,10 @@ var ext = require("core/ext");
 
 /**
  * Keeps a record of all files in the repository
- * 
+ *
  * In the future the filelist could keep track of all changes from the watcher
- * and locally to update the file list. It would then only need to refresh 
- * after CLI commands and other running processs. This would be purely an 
+ * and locally to update the file list. It would then only need to refresh
+ * after CLI commands and other running processs. This would be purely an
  * optimization.
  */
 module.exports = ext.register("ext/filelist/filelist", {
@@ -26,42 +26,48 @@ module.exports = ext.register("ext/filelist/filelist", {
     queue : [],
 
     init : function(){
-        var _self = this;
     },
-    
+
+    onMessage : function(e) {
+        var message = e.message;
+        if (message.type != "filelist")
+            return false;
+
+        var data = message.result;
+        var state = message.state == "error" ? apf.ERROR : apf.SUCCESS;
+        this.cache = data;
+
+        var queue = this.queue;
+        this.queue = [];
+        this.retrieving = false;
+
+        queue.forEach(function(cb){ cb(data, state) });
+
+        ide.removeEventListener("socketMessage", this.$onMessage);
+        this.$onMessage = null;
+        return true;
+    },
+
     getFileList : function(retrieveNewFromServer, callback){
         if (!retrieveNewFromServer && this.cached)
             return callback(this.cached, apf.SUCCESS);
-    
+
+        this.queue.push(callback);
         if (this.retrieving)
-            return this.queue.push(callback);
-    
-        var _self = this;
-        davProject.report(ide.davPrefix, 'filelist', {
-            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
-          }, 
-          function(data, state, extra){
-            if (state == apf.ERROR) {
-                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
-                    return callback(null, state);
-                }
+            return;
 
-                //@todo
-                return;
-            }
-            if (state == apf.TIMEOUT)
-                return callback(null, state); //@todo
+        if (!this.$onMessage) {
+            this.$onMessage = this.onMessage.bind(this)
+            ide.addEventListener("socketMessage", this.$onMessage);
+        }
 
-            _self.cache = data;
-            callback(data, state);
-            
-            var queue = _self.queue;
-            _self.queue = [];
-            _self.retrieving = false;
-            
-            queue.forEach(function(cb){ cb(data, state) });
+        ide.send({
+            command: "search",
+            type: "filelist",
+            path: ide.davPrefix,
+            showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
         });
-        
+
         this.retrieving = true;
     },
 

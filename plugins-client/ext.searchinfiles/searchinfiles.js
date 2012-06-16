@@ -337,9 +337,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             query: txtSFFind.getValue(),
             needle: txtSFFind.getValue(),
             pattern: txtSFPatterns.getValue(),
-            casesensitive: chkSFMatchCase.checked ? "1" : "0",
-            regexp: chkSFRegEx.checked ? "1" : "0",
-            replaceAll: _self.replaceAll ? "true" : "false",
+            casesensitive: chkSFMatchCase.checked,
+            regexp: chkSFRegEx.checked,
+            replaceAll: _self.replaceAll,
             replacement: txtSFReplace.getValue(),
             wholeword: chkSFWholeWords.checked
         };
@@ -487,38 +487,43 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             } 
         }
         
-        var firstStream = false;
-        this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {   
-            firstStream = true;
-            if (!chkSFConsole.checked)
-                _self.appendLines(_self.tabacedoc, data);
-            else
-                _self.appendLines(_self.consoleacedoc, data);
-        });
+        if (!this.$onMessage) {
+            this.$onMessage = this.onMessage.bind(this)
+            ide.addEventListener("socketMessage", this.$onMessage);
+        }
 
-        // Start streaming
-        var start = 0;
-        this.timer = setInterval(function() {  
-            var q = davProject.realWebdav.queue[_self.id];
-                
-            if (firstStream && !q) {
-                if (!chkSFConsole.checked) {
-                    node.setAttribute("saving", "0");
-                    node.setAttribute("changed", "0");
-                }
-                btnSFFind.$ext.innerText = "Find";
-                return clearInterval(_self.timer);
-            }
-            
-            // client not streaming atm
-            //var str = q.http.responseText;   
-            //console.log(str.substr(start).length);
-        }, 50);
-        
+        options.command = "search";
+        options.type = "codesearch";
+        options.path = path;
+        ide.send(options);
+
         this.saveHistory(options.query, "searchfiles");
         this.position = 0;
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
+
+        this.tabacedoc.node = node;
+    },
+
+    onMessage : function(e) {
+        var message = e.message;
+        if (message.type != "codesearch")
+            return false;
+
+        if (!chkSFConsole.checked)
+            this.appendLines(this.tabacedoc, message.result);
+        else
+            this.appendLines(this.consoleacedoc, message.result);
+
+        // finish
+        if (message.status == 1) {
+            if (!chkSFConsole.checked) {
+                var node = this.tabacedoc.node;
+                node.setAttribute("saving", "0");
+                node.setAttribute("changed", "0");
+            }
+            btnSFFind.$ext.innerText = "Find";
+        }
     },
     
     launchFileFromSearch : function(editor) {
