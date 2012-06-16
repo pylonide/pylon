@@ -16,7 +16,7 @@ var name = "settings";
 
 var SETTINGS_PATH;
 var trimFilePrefix;
-var locationsToSwap = ['files active="', 'file path="', 'tree_selection path="'];  
+var locationsToSwap = {"files" : "active", "file" : "path", "tree_selection": "path" };  
 var propertiesToSwap= ["projecttree", "tabcycle", "recentfiles"];
 
 var fs;
@@ -84,20 +84,27 @@ util.inherits(SettingsPlugin, Plugin);
                     
                     // for local version, we need to pluck the paths in settings prepended with username + workspace id (short)
                     if (trimFilePrefix !== undefined) {
-                        locationsToSwap.forEach(function(el, idx, arr) { 
-                            settings = settings.replace(new RegExp(el, "g"), el + trimFilePrefix);
-                        });
-                        propertiesToSwap.forEach(function (el, idx, arr) {
-                            var openTagPos= settings.indexOf("<" + el + ">");
-                            var closeTagPos= settings.indexOf("</" + el + ">");
+                        var attrSet = '="';
+                        
+                        for (var l in locationsToSwap) {
+                            var attribute = locationsToSwap[l] + attrSet;
                             
+                            settings = settings.replace(new RegExp(attribute + "/workspace", "g"), attribute + trimFilePrefix + "/workspace");
+                        }
+                        
+                        propertiesToSwap.forEach(function (el, idx, arr) {
+                            var openTagPos= settings.indexOf("<" + el);
+                            var closeTagPos= settings.indexOf("</" + el + ">");
+    
                             if (openTagPos > 0 && closeTagPos > 0) {
                                 var originalPath = settings.substring(openTagPos, closeTagPos);
                                 var newPath = originalPath.replace(new RegExp("/workspace", "g"), trimFilePrefix + "/workspace");
+
                                 settings = settings.replace(originalPath, newPath);
                             }
                         });
                     }
+                    
                     callback(err, settings);
                 });
             }
@@ -115,11 +122,16 @@ util.inherits(SettingsPlugin, Plugin);
 
         // for local version, we need to rewrite the paths in settings to store as "/workspace"
         if (trimFilePrefix !== undefined) {
-            locationsToSwap.forEach(function (el, idx, arr) {
-                settings = settings.replace(new RegExp(el + trimFilePrefix, "g"), el);
-            });
+            var attrSet = '="';
+            
+            for (var l in locationsToSwap) {
+                var attribute = locationsToSwap[l] + attrSet;
+                
+                settings = settings.replace(new RegExp(attribute + trimFilePrefix, "g"), attribute);
+            }
+            
             propertiesToSwap.forEach(function (el, idx, arr) {
-                var openTagPos= settings.indexOf("<" + el + ">");
+                var openTagPos= settings.indexOf("<" + el);
                 var closeTagPos= settings.indexOf("</" + el + ">");
                 
                 if (openTagPos > 0 && closeTagPos > 0) {
