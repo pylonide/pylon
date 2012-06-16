@@ -132,16 +132,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.resizeMainHbox = function(){
         var hboxParent = this.$parentHBox;
         var l = hboxParent.lastChild;
-        while (l && !l.visible) {
-            l = l.previousSibling
-        }
+        var f = hboxParent.firstChild;
+        while (l && !l.visible) l = l.previousSibling;
+        while (f && !f.visible) f = f.nextSibling;
         
         if (!l) {
             hboxParent.setWidth(0);
             return;
         }
         
-        hboxParent.setWidth(l.$ext.offsetLeft + l.$ext.offsetWidth);
+        hboxParent.setWidth(l.getLeft() + l.getWidth() - f.getLeft());
     }
     
     this.checkBars = function (){
@@ -725,7 +725,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     var f = p.firstChild;
                     while (l && !l.visible) l = l.previousSibling;
                     while (f && !f.visible) f = f.nextSibling;
-                    p.setWidth(l.getLeft() + l.getWidth() - (l == f ? 0 : f.getLeft()));
+                    p.setWidth(l.getLeft() + l.getWidth() - f.getLeft());
                 }
             });
 
