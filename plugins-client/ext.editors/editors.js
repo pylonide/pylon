@@ -1057,13 +1057,13 @@ module.exports = ext.register("ext/editors/editors", {
         }, 300);
     },
 
-    showFile : function(path, row, column, text) {
+    showFile : function(path, row, column, text, doc, page, nofocus) {
         var node = this.createFileNodeFromPath(path);
 
-        this.jump(node, row, column, text);
+        this.jump(node, row, column, text, doc, page, nofocus);
     },
 
-    jump : function(fileEl, row, column, text, doc, page) {
+    jump : function(fileEl, row, column, text, doc, page, nofocus) {
         var path    = fileEl.getAttribute("path");
         var tabs    = tabEditors;
         var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
@@ -1078,7 +1078,8 @@ module.exports = ext.register("ext/editors/editors", {
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
                         editor.$editor.find(text, null, false);
-                    editor.focus();
+                    if (!nofocus)
+                        editor.focus();
                 }, 100);
             };
 

@@ -425,7 +425,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
             
-            _self.searchConsole.$editor.focus();
+            _self.searchConsole.focus();
         }
         else {
             if (_self.searchPage === null) { // the results are not open, create a new page
@@ -445,6 +445,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.appendLines(_self.tabacedoc, messageHeader);
                 tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
             } 
+        }
+        
+        if (options.query.length == 0) {
+            btnSFFind.$ext.innerText == "Find"
+            return;
         }
         
         var firstRun = false, dataCompleted = false, lastLine = "", start = 0, finalText = undefined, http = null;
@@ -503,7 +508,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
     
-    launchFileFromSearch : function(editor, preview) {
+    launchFileFromSearch : function(editor, nofocus) {
         var session = editor.getSession();
         var currRow = editor.getCursorPosition().row;
         var path = null;
@@ -526,8 +531,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (path.charAt(path.length - 1) == ":")
             path = path.substring(0, path.length-1);
         
-        if (path !== undefined && path.length > 0)
-            editors.showFile(ide.davPrefix + "/" + path, clickedLine[1].length ? clickedLine[0] : 0, 0, clickedLine[1]);
+        if (path && path.length > 0)
+            editors.showFile(ide.davPrefix + "/" + path, clickedLine[1].length ? clickedLine[0] : 0, 0, clickedLine[1], null, null, nofocus);
     },
 
     appendLines : function(doc, content) {
@@ -596,7 +601,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     
     makeSearchResultsPanel : function() {
         var _self = this;
-        // crea te editor if it does not exist
+        // create editor if it does not exist
         if (!this.$panel) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.setAttribute("closebtn", true);
@@ -629,12 +634,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 wrapmodeViewport  : "true"
             }));
             
-            this.searchConsole.$editor.renderer.scroller.addEventListener("mousemove", function(e) {
-                var x = 3;
-                
-                var y = 3 + 5;
-            });
-            
             this.$panel.addEventListener("afterclose", function(){
                 this.removeNode();
                 return false;
@@ -654,12 +653,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         if (isConsole) {
             this.searchConsole.addEventListener("keydown", function(e) {
-                if (e.keyCode == 13) {
+                if (e.keyCode == 13) { // ENTER
                     if (e.altKey === false) {
                         _self.launchFileFromSearch(editor);
-                        if (e.shiftKey === true) {
-                            _self.searchConsole.$focus();
-                        }
                     }
                     else {
                         editor.insert("\n");
@@ -667,13 +663,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     return false;
                 }
             });
+
+            this.searchConsole.addEventListener("keyup", function(e) {
+                if (e.keyCode == 38 || e.keyCode == 40) { // KEYUP or KEYDOWN
+                    _self.launchFileFromSearch(editor, true);
+                    return false;
+                }
+            });
             
-            this.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function() {
+            this.searchConsole.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(editor);
             });
         }
         else {
-            this.searchPage.addEventListener("dblclick", function() {
+            this.searchPage.$editor.ceEditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(editor);
             });
         }
