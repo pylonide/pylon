@@ -34,8 +34,8 @@
       width     = "360"
       draggable = "false"
       model     = "true">
-        <a:vbox padding="10" edge="0 15 15 15">
-            <a:text class="tgDesc modal_text">
+        <a:vbox padding="10" edge="0 15 0 15">
+            <a:text height="180" class="tgDesc modal_text">
 	            <h4>Your workspace was deleted.</h4>
                 <p>Please close this tab. You can launch <em>c9</em> on the command line to recreate a new workspace.</p>
 	       </a:text>
