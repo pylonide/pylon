@@ -267,7 +267,7 @@
             display: block;
         }
         
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.on {
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnChecked {
             float:right;
             overflow:hidden;
             background:url(images/sync_toggle.png) no-repeat 0 0;
@@ -275,7 +275,7 @@
             height:20px;
         }
 
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.off {
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync {
             float:right;
             overflow:hidden;
             background:url(images/sync_toggle.png) no-repeat 0 -20px;
@@ -7514,7 +7514,7 @@
             line-height: 13px;
             white-space: nowrap;
             text-overflow: ellipsis;
-            color: #333;
+            color: #f1f1f1;
         }
 
         .rb_blackFocus span {

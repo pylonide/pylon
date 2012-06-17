@@ -91,9 +91,9 @@ module.exports = ext.register("ext/themes/themes", {
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;
-        var tabsDiv = tabEditors.$buttons;
-        editorDiv.setAttribute("id", "editorDiv");
-        tabsDiv.setAttribute("id", "tabsDiv");
+        var tabsDiv = tabEditors.$buttons.parentNode;
+//        editorDiv.setAttribute("id", "editorDiv");
+//        tabsDiv.setAttribute("id", "tabsDiv");
         
         if (theme.isDark) {
             apf.setStyleClass(editorDiv, "dark");
@@ -113,7 +113,7 @@ module.exports = ext.register("ext/themes/themes", {
         
         apf.setStyleClass(editorDiv, _self.lastTheme = cssClass);
         apf.setStyleClass(tabsDiv, _self.lastTheme = cssClass);
-        
+
         if (_self.loaded[path])
             return;
             
@@ -125,8 +125,8 @@ module.exports = ext.register("ext/themes/themes", {
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            ["#editorDiv." + cssClass + " > .vbox, "
-             + "#tabsDiv." + cssClass + " .curbtn .tab_middle, "
+            ["." + cssClass + " > .vbox, "
+             + "." + cssClass + " .curbtn .tab_middle, "
              + "." + cssClass + " .codeditorHolder, "
              + "." + cssClass + " .winGoToFile, "
              + "." + cssClass + " .revisionsBar .topbar, "

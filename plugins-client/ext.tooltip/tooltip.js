@@ -24,7 +24,8 @@ module.exports = ext.register("ext/tooltip/tooltip", {
     create : function(options, oHtml){
         var div = document.body.appendChild(document.createElement("div"));
         div.className = "menu-bk downward menu-bkFocus c9-tooltip";
-        div.style.width = (options.width || "250px");
+        if (options.width)
+            div.style.width = options.width;
         div.style.position = "absolute";
         div.innerHTML = "<div></div>";
         

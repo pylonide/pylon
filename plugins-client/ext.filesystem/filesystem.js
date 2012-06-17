@@ -273,33 +273,28 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    checkPathExists : function(path) {
-        var ps = path.split("/"); 
-        ps.pop();
-        var p = ide.davPrefix + ps.join("/");
-        
-        return this.model.queryNode("//node()[@path=" + util.escapeXpathString(p) + "]") === null;
+    pathExists : function(path) {
+        return !!this.model.queryNode("//node()[@path=" 
+            + util.escapeXpathString(path) + "]");
     },
     
     // this path does not exist, keeping checking parents and make them first
     createFolderTree : function(path) {
-        var newDir = true;
+        var _self = this;
         var dirsToMake = [];
-        while (newDir) {
+        
+        do {
             dirsToMake.unshift(path);
             path = path.substr(0, path.lastIndexOf("/"));
-            
-            newDir = this.model.queryNode("//node()[@path=" + util.escapeXpathString(path) + "]") === null;
-        }
+        } while (this.model.queryNode("//node()[@path=" 
+            + util.escapeXpathString(path) + "]") === null 
+            && path && path != ide.davPrefix);
         
-        dirsToMake.forEach(function(dir, idx, dirs) {
-            var parentDir = "";
-            if (idx > 0)
-                parentDir = dirs[idx - 1];
-            else {
-                parentDir = dir.substring(0, dir.lastIndexOf("/"));
-            }
-            this.model.appendXml(this.createFolderNodeFromPath(dir), "//node()[@path=" + util.escapeXpathString(parentDir) + "]");
+        dirsToMake.forEach(function(dir) {
+            var parentDir = dir.substring(0, dir.lastIndexOf("/"));
+
+            _self.model.appendXml(_self.createFolderNodeFromPath(dir), 
+              "//node()[@path=" + util.escapeXpathString(parentDir) + "]");
         });
     },
     
@@ -356,7 +351,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
     },
 
-    beforeMove: function(parent, node, tree) {
+    beforeMove: function(parent, node) {
         var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
         var newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
