@@ -13,13 +13,13 @@
             <a:hbox>
                 <div id="syncFileName" class="sync-file-label" flex="1"></div>
                 <a:filler/>
-                <!--a:button id="btnPauseSync" 
+                <a:button id="btnPauseSync" 
                   pack="end"
                   skin="btn-default-css3" 
                   width="37"
                   height="25"
                   class="pause-sync" 
-                  onclick=""/-->
+                  onclick=""/>
             </a:hbox>
         </div>
         <div class="arrow"></div>
