@@ -12,7 +12,7 @@
     width: 250px;
 }
 .sync-info-tooltip .close-sync-info {
-    background: url("{ide.staticPrefix}/ext/main/style/images//close-btn.png") no-repeat 0 0;
+    background: url("{ide.staticPrefix}/ext/main/style/images/close-btn.png") no-repeat 0 0;
     heigth: 14px;
     widht: 13px;
     position: absolute;
@@ -30,7 +30,7 @@
 }
 
 .sync-info-tooltip .pause-sync .caption {
-    background: url("{ide.staticPrefix}/ext/main/style/images//pause-icon.png") no-repeat 13px 5px;
+    background: url("{ide.staticPrefix}/ext/main/style/images/pause-icon.png") no-repeat 13px 5px;
     height: 13px;
 }
 

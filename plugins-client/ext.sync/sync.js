@@ -204,8 +204,7 @@ module.exports = ext.register("ext/sync/sync", {
                 if (cloud9config.debug)
                     console.log("[SYNC] file added", message.args.path, message.args.mtime);
                 
-                var path = message.args.path;
-                this.createSyncFile(path, message.args.mtime);
+                this.createSyncFile(message.args.path, message.args.mtime);
             }
             else if (message.args.event === "modified") {
                 if (cloud9config.debug)
@@ -224,13 +223,6 @@ module.exports = ext.register("ext/sync/sync", {
                 this.removeSyncFile(message.args.path);
             }
         }
-    },
-    
-    updateSyncInfoLabel: function(path){
-        if(!this.syncFilelabel)
-            this.syncFilelabel = document.getElementBy("syncFileName");
-        
-        this.syncFilelabel.innerHTML = path;
     },
 
     createSyncFile: function(path, mtime) {
