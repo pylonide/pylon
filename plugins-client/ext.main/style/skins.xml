@@ -3439,9 +3439,6 @@
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
             cursor: default;
         }
-        .aceSearchResults .ace_line::selection, .aceSearchResults .ace_line::-moz-selection {
-            cursor: text;
-	    }
         
         .ace_gutter .ace_gutter_active_line, .aceSearchConsole .ace_gutter .ace_gutter_active_line {
             background-color: rgba(0, 0, 0, 0.07);

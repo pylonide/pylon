@@ -558,8 +558,10 @@ module.exports = ext.register("ext/editors/editors", {
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            if (typeof editor.amlEditor !== "undefined")
+            if (typeof editor.amlEditor !== "undefined") {
                 editor.amlEditor.focus();
+                ide.dispatchEvent("aftereditorfocus");
+            }
         }, 100);
 
         settings.save();
@@ -1057,13 +1059,13 @@ module.exports = ext.register("ext/editors/editors", {
         }, 300);
     },
 
-    showFile : function(path, row, column, text, doc, page, nofocus) {
+    showFile : function(path, row, column, text, doc, page) {
         var node = this.createFileNodeFromPath(path);
 
-        this.jump(node, row, column, text, doc, page, nofocus);
+        this.jump(node, row, column, text, doc, page);
     },
 
-    jump : function(fileEl, row, column, text, doc, page, nofocus) {
+    jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
         var tabs    = tabEditors;
         var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
@@ -1078,8 +1080,9 @@ module.exports = ext.register("ext/editors/editors", {
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
                         editor.$editor.find(text, null, false);
-                    if (!nofocus)
-                        editor.focus();
+
+                    editor.focus();
+                    ide.dispatchEvent("aftereditorfocus");
                 }, 100);
             };
 
