@@ -86,10 +86,10 @@ module.exports = ext.register("ext/sync/sync", {
             }
         });
 
-        tooltip.add(this.btnSyncStatus, {
-            hideonclick : true,
-            tooltip : mnuSyncInfo.$ext
-        });
+//        tooltip.add(this.btnSyncStatus, {
+//            hideonclick : true,
+//            tooltip : mnuSyncInfo.$ext
+//        });
 
         btnSyncOK.addEventListener("click", function(){
             if (ddSyncPrj.selected) {
