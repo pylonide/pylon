@@ -26,9 +26,13 @@
 
 .sync-info-tooltip .sync-file-label {
     color: #818080;
+    padding-top: 6px;
 }
 
 .sync-info-tooltip .pause-sync .caption {
     background: url({ide.staticPrefix}/ext/main/style/images/pause-icon.png) no-repeat 0 0;
     height: 13px;
+}
+.sync-info-tooltip.menu-bk.c9-tooltip .arrow {
+    left: 65%;
 }

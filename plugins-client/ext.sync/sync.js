@@ -20,6 +20,8 @@ var tooltip = require("ext/tooltip/tooltip");
 var markup = require("text!ext/sync/sync.xml");
 var cssString = require("text!ext/sync/style.css");
 
+cssString = cssString.replace(/\{ide\.staticPrefix\}/g, ide.staticPrefix);
+
 module.exports = ext.register("ext/sync/sync", {
     name   : "Sync",
     dev    : "Ajax.org",
