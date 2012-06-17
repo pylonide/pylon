@@ -22801,7 +22801,10 @@ apf.DataBinding = function(){
         //Integrate XMLTree with parentNode
         if (typeof options.copyAttributes == "undefined")
             options.copyAttributes = true;
-            
+        
+        if (this.filterUnique)
+            options.filter = this.filterUnique;
+        
         var newNode = apf.mergeXml(xmlNode, insertPoint, options);
         
         this.$isLoading = true; //Optimization for simpledata
@@ -32259,7 +32262,7 @@ apf.BaseTree = function(){
     };
     
     this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
-        if (!self.apf.debug && !htmlNode) 
+        if (!apf.debug && !htmlNode) 
             return;
             
         var container;
@@ -32271,15 +32274,22 @@ apf.BaseTree = function(){
             return;
         }
         
+        var nSibling = this.getNextTraverse(xmlNode),
+            beforeNode = nSibling
+                ? apf.xmldb.getHtmlNode(nSibling, this)
+                : null;
+        
+        var next = htmlNode.nextSibling;
+        if (next.tagName != htmlNode.tagName)
+            next = next.nextSibling;
+        if (beforeNode == next)
+            return;
+        
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
         
-            nSibling = this.getNextTraverse(xmlNode),
-            beforeNode = nSibling
-                ? apf.xmldb.getHtmlNode(nSibling, this)
-                : null,
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
@@ -66092,8 +66102,8 @@ apf.webdav = function(struct, tagName){
                     return; // 401's are handled by the browser already, so no need for additional processing...
 
                 var sResponse = (extra.http.responseText || "");
-                if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
-                  && sResponse.indexOf("<?xml version=") == 0) {
+                if ((sResponse.length > 10 || sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != "")
+                  && sResponse.substr(0, 14) == "<?xml version=") {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
                             ? apf.xmlParseError(extra.http.responseXML)

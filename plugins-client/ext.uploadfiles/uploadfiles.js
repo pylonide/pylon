@@ -32,7 +32,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         "media-path" : ide.staticPrefix + "/ext/uploadfiles/style/images/"
     },
     type        : ext.GENERAL,
-    css         : css,
+    css         : util.replaceStaticPrefix(css),
     markup      : markup,
     deps        : [],
     offline     : false,
@@ -151,7 +151,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     initWorker: function() {
         var _self = this;
         
-        this.worker = new Worker('/static/ext/uploadfiles/uploadworker.js');
+        this.worker = new Worker(ide.workerPrefix + '/ext/uploadfiles/uploadworker.js');
         this.worker.onmessage = function(e) {  
             var data = e.data;
             if (!data.type) {

@@ -348,6 +348,10 @@ exports.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
+exports.replaceStaticPrefix = function (string) {
+    return string.replace(new RegExp("{ide.staticPrefix}", "g"), window.cloud9config.staticUrl);
+};
+
 /*
  * JavaScript Linkify - v0.3 - 6/27/2009
  * http://benalman.com/projects/javascript-linkify/

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var util = require("core/util");
 var settings = require("ext/settings/settings");
 var menus = require("ext/menus/menus");
 var util = require("core/util");
@@ -38,7 +39,7 @@ module.exports = ext.register("ext/sync/sync", {
         if (ide.local || cloud9config.hosted) {
             apf.setStyleClass(logobar.$ext, "local");
             
-            apf.importCssString(cssString);
+            apf.importCssString(util.replaceStaticPrefix(cssString));
             
             this.btnSyncStatus = barExtras.appendChild(new apf.button({
                 margin  : "1 0 0 0" ,

@@ -256,7 +256,7 @@ module.exports = {
             var html = "";
             
             if (match.icon)
-                html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
+                html = "<img src='" + ide.staticPrefix + "/ext/language/img/" + match.icon + ".png'/>";
             if (!hasIcons || match.icon) {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             }
