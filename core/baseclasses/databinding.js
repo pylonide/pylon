@@ -847,7 +847,10 @@ apf.DataBinding = function(){
         //Integrate XMLTree with parentNode
         if (typeof options.copyAttributes == "undefined")
             options.copyAttributes = true;
-            
+        
+        if (this.filterUnique)
+            options.filter = this.filterUnique;
+        
         var newNode = apf.mergeXml(xmlNode, insertPoint, options);
         
         this.$isLoading = true; //Optimization for simpledata
