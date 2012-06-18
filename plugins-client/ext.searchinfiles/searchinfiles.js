@@ -419,6 +419,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searchConsole.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
                 _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
+            
+            _self.searchConsole.$editor.session.highlight(options.query);
         }
         else {
             if (_self.searchPage === null) { // the results are not open, create a new page
@@ -432,7 +434,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 
                 apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults")
                 
-                _self.searchPage.$editor.ceEditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
+                _self.apfeditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
                     _self.launchFileFromSearch(editor);
                 });
             }
@@ -440,14 +442,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.appendLines(_self.tabacedoc, messageHeader);
                 tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
             }
+            
+            _self.searcheditor.session.highlight(options.query);
         }
         
         _self.toggleDialog(-1, null, true);
         
-        if (options.query.length == 0) {
-            btnSFFind.$ext.innerText == "Find"
+        if (options.query.length == 0)
             return;
-        }
         
         var firstRun = false, dataCompleted = false, lastLine = "", start = 0, finalText = undefined, http = null;
         this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {   
@@ -558,7 +560,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             doc.insertLines(currLength, contentArray);
             
         if (countJSON !== undefined)
-            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
+            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n", "\n"]);
     },
     
     messageHeader : function(path, options) {
