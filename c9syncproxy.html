@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			html { background : red }
+		</style>
+	
+		<script src="/static/dev/apf-packaged/apf_release.js"></script>
+	    <script>//<!--
+	        window.onload = function(){
+	            var timer;
+	        
+	            window.addEventListener("message", function(e) {
+//                    if (e.origin !== window.parent.location.origin)
+//                        return;
+	                
+	                try {
+	                    var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
+	                } catch (e) { return; }
+	                
+	                switch (json.type) {
+	                	case "hostname":
+	                	return "";
+	                	case "api":
+	                		apf.ajax(json.url, {
+					            method: json.method,
+					            headers: json.headers,
+					            data: json.data,
+					            async: true,
+					            callback: function( data, state, extra ) {
+					                window.parent.postMessage({
+					                	type: "response",
+					                	data: data,
+					                	state: state,
+					                	extra: {
+					                		message : extra.message,
+					                		http : {
+					                			responseText: extra.http.responseText
+					                		}
+					                	},
+					                	uid: json.uid
+					                }, "*");
+					            }
+					        });
+	                	break;
+	                }
+	            }, false);
+	            
+                window.parent.postMessage({connected:1, type:"connect"}, "*");
+	        }
+	    //--></script>
+    </head>
+    <body>
+    
+    </body>
+</html>

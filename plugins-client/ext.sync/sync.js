@@ -20,7 +20,7 @@ var tooltip = require("ext/tooltip/tooltip");
 var markup = require("text!ext/sync/sync.xml");
 var cssString = require("text!ext/sync/style.css");
 
-cssString = cssString.replace(/\{ide\.staticPrefix\}/g, ide.staticPrefix);
+cssString = cssString;
 
 module.exports = ext.register("ext/sync/sync", {
     name   : "Sync",
@@ -89,10 +89,21 @@ module.exports = ext.register("ext/sync/sync", {
             }
         });
 
-//        tooltip.add(this.btnSyncStatus, {
-//            hideonclick : true,
-//            tooltip : mnuSyncInfo.$ext
-//        });
+        tooltip.add(this.btnSyncStatus, {
+            hideonclick : true,
+            tooltip : mnuSyncInfo.$ext,
+            getPosition : function(){
+            	mnuSyncInfo.show();
+            	
+            	var pos = apf.getAbsolutePosition(_self.btnSyncStatus.$ext);
+            	pos[0] -= mnuSyncInfo.getWidth() - _self.btnSyncStatus.getWidth();
+            	pos[1] += _self.btnSyncStatus.getHeight();
+            	return pos;
+            },
+            isAvailable : function(){
+            	return !!_self.syncInfoAvailable;
+            }
+        });
 
         btnSyncOK.addEventListener("click", function(){
             if (ddSyncPrj.selected) {
@@ -129,21 +140,21 @@ module.exports = ext.register("ext/sync/sync", {
     showSyncInfo : function(force){
         var _self = this;
         
-        if (_self.syncInfoTimer && !force)
+        if (_self.syncInfoTimer && !force || mnuSyncInfo.visible)
             return;
         
         clearTimeout(_self.syncInfoHideTimer);
         clearTimeout(_self.syncInfoTimer);
         _self.syncInfoAvailable = true;
         
-        _self.syncInfoTimer = setTimeout(function(){
-            mnuSyncInfo.display(null, null, false, _self.btnSyncStatus);
+        //_self.syncInfoTimer = setTimeout(function(){
+            mnuSyncInfo.display(null, null, true, _self.btnSyncStatus);
             
-            if (!force)
-                _self.hideSyncInfo(true);
+//            if (!force)
+//                _self.hideSyncInfo(true);
                 
             delete _self.syncInfoTimer;
-        }, force ? 0 : 2000);
+        //}, force ? 0 : 0);
     },
     
     updateSyncInfo : function(info){
@@ -166,7 +177,37 @@ module.exports = ext.register("ext/sync/sync", {
             mnuSyncInfo.hide();
         }, long ? 5000 : 500);
     },
- 
+
+	isFSNodeVisibleInTree : function(path){
+		var xmlNode = fs.model.queryNode("//node()[@path=" 
+            + util.escapeXpathString(path) + "]")
+		if (!xmlNode) return false;
+		
+		var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
+		if (!htmlNode) return false;
+		
+		return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
+	},
+	
+	createFolderInTreeIfVisible : function(path){
+		var file, li;
+        do {
+        	li   = path.lastIndexOf("/");
+        	file = path.substr(li + 1);
+        	path = path.substr(0, li);
+        	
+            if (this.isFSNodeVisibleInTree(path)) {
+            	if (!fs.model.queryNode("//node()[@path=" 
+            	  + util.escapeXpathString(path + "/" + file) + "]")) {
+	            	fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
+	              		"//node()[@path=" + util.escapeXpathString(path) + "]");
+            	}
+              	
+              	break;
+            }
+        } while (path && path != ide.davPrefix);
+	},
+
     handleMessage : function(message) {
         var _self = this;
             
@@ -177,14 +218,13 @@ module.exports = ext.register("ext/sync/sync", {
                 _self.btnSyncStatus.enable();
                 
                 if (_self.syncEnabled === true) {
-                    //apf.setStyleClass(_self.btnSyncStatus.$ext, "on", ["off"]);  
                     _self.btnSyncStatus.setValue(true);
                     
                     if (!ide.local && typeof message.args.clients !== "undefined") {
                         _self.syncClients = message.args.clients;
                     }
-                } else {
-                    //apf.setStyleClass(_self.btnSyncStatus.$ext, "off", ["on"]);  
+                } 
+                else {
                     _self.btnSyncStatus.setValue(false);
                 }
             }
@@ -229,31 +269,41 @@ module.exports = ext.register("ext/sync/sync", {
     createSyncFile: function(path, mtime) {
         var parentPath = ide.davPrefix + path.substring(0, path.lastIndexOf("/"));
         
-        if (!fs.pathExists(parentPath))
-            fs.createFolderTree(parentPath);
-            
-        fs.model.appendXml(fs.createFileNodeFromPath(ide.davPrefix + path, 
-            { "modifieddate": mtime }), 
-            "//node()[@path=" + util.escapeXpathString(parentPath) + "]");
+        if (this.isFSNodeVisibleInTree(parentPath)) {
+	        if (!fs.pathExists(parentPath))
+	            fs.createFolderTree(parentPath);
+	            
+	        fs.model.appendXml(fs.createFileNodeFromPath(ide.davPrefix + path, 
+	            { "modifieddate": mtime }), 
+	            "//node()[@path=" + util.escapeXpathString(parentPath) + "]");
+        }
+        else {
+        	this.createFolderInTreeIfVisible(parentPath);
+        }
     },    
     
     moveSyncFile : function(oldPath, newPath) {
         var parentPath = ide.davPrefix + newPath.substring(0, newPath.lastIndexOf("/"));
         
-        if (!fs.pathExists(parentPath))
-            fs.createFolderTree(parentPath);
-        
-        var file = fs.model.queryNode("//node()[@path=" 
-            + util.escapeXpathString(ide.davPrefix + oldPath) + "]");
-        var parent = fs.model.queryNode("//node()[@path=" 
-                + util.escapeXpathString(parentPath) + "]");
-
-        if (file) {
-            apf.xmldb.moveNode(parent, file);
-            fs.beforeMove(parent, file);
+        if (this.isFSNodeVisibleInTree(parentPath)) {
+	        if (!fs.pathExists(parentPath))
+	            fs.createFolderTree(parentPath);
+	        
+	        var file = fs.model.queryNode("//node()[@path=" 
+	            + util.escapeXpathString(ide.davPrefix + oldPath) + "]");
+	        var parent = fs.model.queryNode("//node()[@path=" 
+	                + util.escapeXpathString(parentPath) + "]");
+	
+	        if (file) {
+	            apf.xmldb.moveNode(parent, file);
+	            fs.beforeMove(parent, file);
+	        }
+	        else
+	            apf.xmldb.appendChild(parent, fs.createFileNodeFromPath(newPath));
         }
-        else
-            apf.xmldb.appendChild(parent, fs.createFileNodeFromPath(newPath));
+        else {
+        	this.createFolderInTreeIfVisible(parentPath);
+        }
     },
     
     removeSyncFile: function(path) {
@@ -265,15 +315,8 @@ module.exports = ext.register("ext/sync/sync", {
         var _self = this;
 
         if (!ide.local) {
-            if (_self.syncEnabled === true) {
-                // TODO: Show dialog listing clients (`_self.syncClients`) configured to sync 
-                // this workspace and their respective sync status (`_self.syncClients[].status`).
-                console.log("TODO: Show dialog listing clients configured to sync this workspace and their respective sync status.", _self.syncClients);
-            }
-            else {
-                // TODO: Show dialog with instructions on how to setup local version.
-                console.log("TODO: Show dialog with instructions on how to setup local version.");
-            }
+            // TODO: Show dialog with instructions on how to setup local version.
+            console.log("TODO: Show dialog with instructions on how to setup local version.");
         }
         else {
             this.showSyncDialog(function(data){
@@ -301,6 +344,81 @@ module.exports = ext.register("ext/sync/sync", {
                 ddSyncPrj.select(xmlNode);
             });
         }
+    },
+    
+    disableSync: function() {
+        var _self = this;
+
+        winConfirmSyncOff.close();
+        
+        var message = {
+            method: "POST",
+            headers: {"Content-type": "application/x-www-form-urlencoded"},
+            data: "payload=" + encodeURIComponent(JSON.stringify({
+	            localWorkspaceId: ide.workspaceId
+	        })),
+            async: true,
+            callback: function( data, state, extra ) {
+                if (state != apf.SUCCESS || JSON.parse(data).success !== true) {
+                    return util.alert("Unable to disable syncing", "An error occurred while disabling sync", extra.http.responseText);
+                }
+                // Success. Nothing more to do. (UI sync state will update via socket.io push event)
+                
+                _self.btnSyncStatus.setValue(false);
+            }
+        };
+        
+        var url = "/api/sync/disable";
+        
+        if (!ide.local) {
+        	message.type = "api";
+        	message.url = "/api/sync/disable";
+        	this.sendMessageToLocal(message);
+        }
+        else
+        	apf.ajax(url, message);
+    },
+    
+    callbacks : [],
+    queue : [],
+    sendMessageToLocal : function(message){
+    	var _self = this;
+    	
+    	if (message.callback) {
+    		message.uid = this.callbacks.push(message.callback) - 1;
+    		delete message.callback;
+    	}
+    	
+    	if (!this.$iframe) {
+    		window.addEventListener("message", function(e) {
+    			try {
+                    var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
+                } catch (e) { return; }
+                
+                switch (json.type) {
+                	case "connect":
+                		_self.$iframe.connected = true;
+                		_self.queue.forEach(function(message){
+                			_self.$iframe.contentWindow.postMessage(message, "*");
+                		});
+                	break;
+                	case "response":
+                		if (_self.callbacks[json.uid])
+                			_self.callbacks[json.uid](json.data, json.state, json.extra);
+                	break;
+                }
+    		});
+    		
+    		this.$iframe = document.body.appendChild(document.createElement("iframe"));
+    		this.$iframe.src = "http://localhost:13338/gjtorikian/a572318b/workspace/c9syncproxy.html";
+    	}
+    	
+    	if (!this.$iframe.connected) {
+    		this.queue.push(message);
+    		return;
+    	}
+    	
+    	this.$iframe.contentWindow.postMessage(message, "*");
     },
     
     showSyncDialog : function(callback){
@@ -377,6 +495,8 @@ module.exports = ext.register("ext/sync/sync", {
     },
     
     syncProject: function(onlineWorkspaceId){
+    	var _self = this;
+    	
         apf.ajax("/api/sync/enable", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
@@ -393,6 +513,8 @@ module.exports = ext.register("ext/sync/sync", {
                 data = JSON.parse(data);
                 if (data.success === true) {
                     // Success. Nothing more to do. (UI sync state will update via socket.io push event)
+                    
+                    _self.showSyncInfo(true);
                 }
                 else if (data.workspaceNotEmpty === true) {
                     winCannotSync.show();
@@ -408,34 +530,6 @@ module.exports = ext.register("ext/sync/sync", {
         workspaceChildren.forEach(function(el) {
             fs.model.removeXml("//node()[@path=" + el.getAttribute("path") + "]");
         });*/
-    },
-    
-    disableSync: function() {
-        var _self = this;
-
-        if (!ide.local) {
-            _self.displayMasterStatus();
-            return;
-        }
-        
-        winConfirmSyncOff.close();
-        
-        apf.ajax("/api/sync/disable", {
-            method: "POST",
-            headers: {"Content-type": "application/x-www-form-urlencoded"},
-            data: "payload=" + encodeURIComponent(JSON.stringify({
-                localWorkspaceId: ide.workspaceId
-            })),
-            async: true,
-            callback: function( data, state, extra ) {
-                if (state != apf.SUCCESS || JSON.parse(data).success !== true) {
-                    return util.alert("Unable to disable syncing", "An error occurred while disabling sync", extra.http.responseText);
-                }
-                // Success. Nothing more to do. (UI sync state will update via socket.io push event)
-                
-                _self.btnSyncStatus.setValue(false);
-            }
-        });
     },
     
     setSync : function() {

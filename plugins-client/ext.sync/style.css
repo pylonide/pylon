@@ -5,11 +5,14 @@
     background-image: none;  
 }
 
-.sync-info-tooltip {
+.menu-bk.sync-info-tooltip {
     color: #d6d6d6;
     text-shadow : rgba(0, 0, 0, .60) 0px 1px 0px;
-    position: absolute;
-    width: 250px;
+    
+    margin-top:8px;
+    margin-left:8px;
+    padding:7px 10px 10px 12px;
+    line-height:17px;
 }
 .sync-info-tooltip .close-sync-info {
     background: url({ide.staticPrefix}/ext/main/style/images/close-btn.png) no-repeat 0 0;
@@ -27,6 +30,9 @@
 .sync-info-tooltip .sync-file-label {
     color: #818080;
     padding-top: 6px;
+    white-space : nowrap;
+    overflow : hidden;
+    text-overflow : ellipsis;
 }
 
 .sync-info-tooltip .pause-sync .caption {

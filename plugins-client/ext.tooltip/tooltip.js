@@ -22,22 +22,29 @@ module.exports = ext.register("ext/tooltip/tooltip", {
     init: function () {},
 
     create : function(options, oHtml){
-        var div = document.body.appendChild(document.createElement("div"));
-        div.className = "menu-bk downward menu-bkFocus c9-tooltip";
-        if (options.width)
-            div.style.width = options.width;
-        div.style.position = "absolute";
-        div.innerHTML = "<div></div>";
-        
-        var arrow = div.appendChild(document.createElement("div"));
-        arrow.className = "arrow revisionsInfoArrow";
-        
+    	var div;
+    	
+    	if (!options.tooltip) {
+	        div = document.body.appendChild(document.createElement("div"));
+	        div.className = "menu-bk downward menu-bkFocus c9-tooltip";
+	        if (options.width)
+	            div.style.width = options.width;
+	        div.style.position = "absolute";
+	        div.innerHTML = "<div></div>";
+	        
+	        var arrow = div.appendChild(document.createElement("div"));
+	        arrow.className = "arrow revisionsInfoArrow";
+	        
+	        options.tooltip = div;
+    	}
+    	else {
+    		div = options.tooltip;
+    	}
+    	
         div.addEventListener("mouseover", this.$ttmouseover);
         div.addEventListener("mouseout", this.$ttmouseout);
         
         div.companion = oHtml;
-        
-        return div;
     },
 
     add : function(oHtml, options){
@@ -81,8 +88,12 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         apf.setOpacity(this, 1);
     },
     
-    $ttmouseout : function(){
+    $ttmouseout : function(e){
         var tooltip = require("ext/tooltip/tooltip");
+        
+    	if (apf.isChildOf(this, e.target, true))
+    		return;
+    	
         tooltip.$mouseout.call(this.companion);
     },
     
@@ -94,13 +105,15 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         if (options.tooltip)
             clearTimeout(options.tooltip.timer);
         
+        if (options.isAvailable && options.isAvailable() === false)
+        	return;
+        
         var _self = this;
         options.timer = setTimeout(function(){
             if (options.control)
                 options.control.stop();
             
-            if (!options.tooltip)
-                options.tooltip = tooltip.create(options, _self);
+            tooltip.create(options, _self);
 
             options.tooltip.style.display = "block";
             
@@ -115,7 +128,8 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             options.tooltip.style.left = pos[0] + "px";
             options.tooltip.style.top = pos[1] + "px";
             
-            (options.tooltip.firstElementChild || options.tooltip).innerHTML = options.message;
+            if (options.message)
+            	(options.tooltip.firstElementChild || options.tooltip).innerHTML = options.message;
             
             if (options.animate !== false) {
                 apf.tween.single(options.tooltip, 
