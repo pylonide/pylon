@@ -4,9 +4,9 @@
       skin      = "menu-bk"
       width     = "350"
       pinned    = "true"
-      class     = "sync-info-tooltip">
+      class     = "downward sync-info-tooltip">
         <div>
-            <a class="close-sync-info" href="javascript:void(0)" onclick="document.getElementById('mnuSyncInfo').style.display='none'"></a>
+            <a class="close-sync-info" href="javascript:void(0)" onclick="mnuSyncInfo.hide()"></a>
             Sync for offline use in progress...
             <div id="syncProgressBar" class="progress-bar"></div>
             <a:hbox>
@@ -17,7 +17,7 @@
                   width="37"
                   height="25"
                   class="pause-sync" 
-                  onclick=""/>
+                  onclick="require('ext/sync/sync').setSync();"/>
             </a:hbox>
         </div>
         <div class="arrow"></div>

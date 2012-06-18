@@ -15,12 +15,14 @@
     line-height:17px;
 }
 .sync-info-tooltip .close-sync-info {
-    background: url({ide.staticPrefix}/ext/main/style/images/close-btn.png) no-repeat 0 0;
-    heigth: 14px;
-    widht: 13px;
+    background: url("{ide.staticPrefix}/ext/main/style/images/close-btn.png") no-repeat 0 0;
+    height: 14px;
+    width: 13px;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 3px;
+    right: 3px;
+    cursor: default;
+    display: block;
 }
 
 .sync-info-tooltip .progress-bar {
