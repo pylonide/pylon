@@ -336,7 +336,7 @@
 			min-width : 196px;
             z-index   : 1000;
         }
-
+        
         .black-menu-bar .c9menulogo {
             width    : 65px;
             height   : 32px;
@@ -4700,8 +4700,8 @@
         
         .dark .divider-status-bar {
             background: none;
-            border-left: 1px solid rgba(0,0,0,.3);   
-            border-right: 1px solid rgba(255,255,255,.05);
+            border-left: 1px solid rgba(0,0,0,.3);
+            border-right: 1px solid rgba(255,255,255,.1);
         }
         
         .ace_dark .divider-status-bar {
@@ -6426,6 +6426,9 @@
                 padding  : 30px 0 0 0;
                 border-right: 1px solid rgba(43,43,43,0.4);
             }
+            .dark .fm-window {
+                border-right: 1px solid rgba(128,128,128,0.7);
+            }
 
             .fm-window .fm-header {
                 position : relative;
@@ -6453,6 +6456,10 @@
                 text-shadow   : #fff 0px 1px 0px;
                 box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
                 text-transform : uppercase;
+            }
+            
+            .dark .fm-window .fm-header .hcontent{
+                background-position: 0 -1318px, 0 0;
             }
 
             .fm-window .fm-content {
@@ -9082,7 +9089,13 @@
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
-        overflow : hidden;
+        /*overflow : hidden;*/
+       
+        /* 
+            this fixes the tab being over the white line 
+            shadow while not having overflow:hidden 
+        */
+        clip: rect(0px 3000px 28px 0px); 
        
         background: rgba(24,24,24,.9) url(images/c9-noise.png);
         position : relative;
@@ -9092,7 +9105,7 @@
            -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
                 box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;*/
         
-        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset; /*, 0 1px 0 0 rgba(255, 255, 255, .9);*/
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
         margin-bottom: 1px;
 
         display : -webkit-box;
@@ -9103,7 +9116,7 @@
         padding-right : 53px;
     }
     .dark .editor_tab .btnsesssioncontainer {
-        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset; /*, 0 1px 0 0 rgba(255, 255, 255, .1);*/
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
     }
     .editor_tab.hidetabs .btnsesssioncontainer {
         padding-right: 80px;
@@ -9389,7 +9402,6 @@
      * END LEGACY CODE
      * --------------------------------------------------------------------------------------- */
 
-
     /* ------------------------------------------------------------------------------------------
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
@@ -9414,7 +9426,7 @@
     	border-bottom: 2px solid transparent;
         height: 5px;
     	overflow: hidden;
-        top : 5px;
+        top : 0px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -9461,7 +9473,7 @@
     .editor_tab.hidetabs .curbtn {
     	height: 8px;
     	overflow: hidden;
-        top : 5px;
+        top : 0px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
@@ -9528,80 +9540,79 @@
      * Animation steps
      * --------------------------------------------------------------------------------------- */
     
-    .editor_tab .step1 .tab_middle:after 
+    .editor_tab.step1 .tab_middle:after 
         { -webkit-mask-position : -164px    0px; top : 0; width : 17px; right: -17px; display: block;}
-    .editor_tab .step2 .tab_middle:after 
+    .editor_tab.step2 .tab_middle:after 
         { -webkit-mask-position : -164px  -32px; top : 0; width : 14px; right: -14px; display: block;}
-    .editor_tab .step3 .tab_middle:after 
+    .editor_tab.step3 .tab_middle:after 
         { -webkit-mask-position : -164px  -64px; top : 0; width : 11px; right: -11px; display: block;}
-    .editor_tab .step4 .tab_middle:after 
+    .editor_tab.step4 .tab_middle:after 
         { -webkit-mask-position : -164px  -96px; top : 0; width : 7px;  right: -7px;  display: block;}
-    .editor_tab .step5 .tab_middle:after,
-    .editor_tab .step6 .tab_middle:after 
+    .editor_tab.step5 .tab_middle:after,
+    .editor_tab.step6 .tab_middle:after 
         { -webkit-mask-position : -164px -128px; top : 0; width : 0px;  right: 0;     display: block;}
     
-    .editor_tab .step1 .tab_middle:before 
+    .editor_tab.step1 .tab_middle:before 
         { -webkit-mask-position : -137px    0px; width : 17px; }
-    .editor_tab .step2 .tab_middle:before 
+    .editor_tab.step2 .tab_middle:before 
         { -webkit-mask-position : -137px  -32px; width : 17px; }
-    .editor_tab .step3 .tab_middle:before 
+    .editor_tab.step3 .tab_middle:before 
         { -webkit-mask-position : -137px  -64px; width : 18px; }
-    .editor_tab .step4 .tab_middle:before 
+    .editor_tab.step4 .tab_middle:before 
         { -webkit-mask-position : -137px  -96px; width : 18px; }
-    .editor_tab .step5 .tab_middle:before 
+    .editor_tab.step5 .tab_middle:before 
         { -webkit-mask-position : -137px -128px; width : 19px; }
-    .editor_tab .step6 .tab_middle:before 
+    .editor_tab.step6 .tab_middle:before 
         { -webkit-mask-position : -137px -128px; width : 19px; }
     
-    .editor_tab .step1 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step2 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step3 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step4 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle:before {
+    .editor_tab.step1 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step2 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step3 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step4 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step5 .session_btn:not(.curbtn) .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -79px;
         background-repeat   : repeat-x;
         top                 : 0;
     }
-    .editor_tab .step1 .curbtn .tab_middle:before,
-    .editor_tab .step2 .curbtn .tab_middle:before,
-    .editor_tab .step3 .curbtn .tab_middle:before,
-    .editor_tab .step4 .curbtn .tab_middle:before,
-    .editor_tab .step5 .curbtn .tab_middle:before {
+    .editor_tab.step1 .curbtn .tab_middle:before,
+    .editor_tab.step2 .curbtn .tab_middle:before,
+    .editor_tab.step3 .curbtn .tab_middle:before,
+    .editor_tab.step4 .curbtn .tab_middle:before,
+    .editor_tab.step5 .curbtn .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
         top                 : 0;
     }
   
-    .dark .editor_tab .step1 .curbtn .tab_middle:before,
-    .dark .editor_tab .step2 .curbtn .tab_middle:before,
-    .dark .editor_tab .step3 .curbtn .tab_middle:before,
-    .dark .editor_tab .step4 .curbtn .tab_middle:before,
-    .dark .editor_tab .step5 .curbtn .tab_middle:before {
+    .dark .editor_tab.step1 .curbtn .tab_middle:before,
+    .dark .editor_tab.step2 .curbtn .tab_middle:before,
+    .dark .editor_tab.step3 .curbtn .tab_middle:before,
+    .dark .editor_tab.step4 .curbtn .tab_middle:before,
+    .dark .editor_tab.step5 .curbtn .tab_middle:before {
         background-position : 0 -1126px;
     }
   
-
-    .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle:before 
+    .editor_tab.step5 .session_btn:not(.curbtn) .tab_middle:before 
         { height : 8px; }
-    .editor_tab .step6 .session_btn:not(.curbtn) .tab_middle:before 
+    .editor_tab.step6 .session_btn:not(.curbtn) .tab_middle:before 
         { height : 5px; }
     
-    .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle 
+    .editor_tab.step5 .session_btn:not(.curbtn) .tab_middle 
         { height : 3px; }
-    .editor_tab .step6 .session_btn:not(.curbtn) .tab_middle
+    .editor_tab.step6 .session_btn:not(.curbtn) .tab_middle
         { height : 0px; }
 
-    .editor_tab .step1 .tab_middle *
+    .editor_tab.step1 .tab_middle *
         { opacity: 0.8; }
-    .editor_tab .step2 .tab_middle *
+    .editor_tab.step2 .tab_middle *
         { opacity: 0.6; }
-    .editor_tab .step3 .tab_middle *
+    .editor_tab.step3 .tab_middle *
         { opacity: 0.4; }
-    .editor_tab .step4 .tab_middle *
+    .editor_tab.step4 .tab_middle *
         { opacity: 0.2; }
-    .editor_tab .step5 .tab_middle *
+    .editor_tab.step5 .tab_middle *
         { opacity: 0; }
 
 
@@ -9612,11 +9623,6 @@
         background-repeat: no-repeat;
         background-position: 0 0;
     }
-
-
-    
-
-    
 
     /*.editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
         background-image: url(images/save-indicator-active-tab.gif);
@@ -9656,8 +9662,8 @@
         margin : 0 auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
 	*/
-        top : 45%;
-        margin: -100px auto 0 auto;
+        top : 25%;
+        margin: 0px auto 0 auto;
         /*background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;*/
         /*border-bottom: 1px solid #8c8c8c;
         border-left: 1px solid #8c8c8c;
@@ -9752,6 +9758,10 @@
         /*border-bottom: 1px solid #8C8C8C;*/
         padding-top:6px;
         clear: both;
+        box-shadow: 0 1px 0 0 rgba(255, 255, 255, .9) inset;
+    }
+    .dark .editor_tab .session_page {
+        box-shadow: 0 1px 0 0 rgba(255, 255, 255, .1) inset;
     }
 
     .editor_tab .session_page.curpage{
@@ -9775,10 +9785,10 @@
 ]]></a:style>
 <a:style condition="apf.isGecko">
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
-        top: 6px;
+        top: 0px;
     }
     .editor_tab.hidetabs .curbtn {
-        top: 5px;
+        top: 0px;
     }
 
     .editor_tab .tab_middle {

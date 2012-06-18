@@ -66,7 +66,7 @@
         
         <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active}}" render="runtime">
             <a:item match="[file]" class="strong"  onclick="
-                require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
+                require('ext/tree/tree').openSelection();
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>

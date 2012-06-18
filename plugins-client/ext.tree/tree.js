@@ -379,12 +379,7 @@ module.exports = ext.register("ext/tree/tree", {
         
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
-            var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 ||
-                !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
-                    return;
-
-            editors.gotoDocument({node: node});
+            _self.openSelection();
         });
         
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
@@ -514,6 +509,19 @@ module.exports = ext.register("ext/tree/tree", {
     $cancelWhenOffline : function() {
         if (!ide.onLine && !ide.offlineFileSystemSupport)
             return false;
+    },
+    
+    openSelection : function(){
+        if (!ide.onLine && !ide.offlineFileSystemSupport)
+            return;
+        
+        var sel = trFiles.getSelection();
+        sel.forEach(function(node){
+            if (!node || node.tagName != "file")
+                return;
+        
+            editors.gotoDocument({node: node});
+        });
     },
 
     moveFile : function(path, newpath){

@@ -860,7 +860,11 @@ module.exports = ext.register("ext/code/code", {
         });
         
         ide.addEventListener("animate", function(e){
-            if (e.type == "splitbox") {
+            if (e.type == "editor") {
+                var renderer = ceEditor.$editor.renderer;e.delta
+                renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
+            }
+            else if (e.type == "splitbox") {
                 if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getHeight() - parseInt(e.options.height);
                     if (delta < 0) return;

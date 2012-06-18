@@ -19,6 +19,31 @@ module.exports = ext.register("ext/anims/anims", {
     alone   : true,
     type    : ext.GENERAL,
     
+    animateMultiple : function(tweens, finish) {
+        var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        
+        if (shouldAnimate) {
+            var duration = 0;
+            tweens.forEach(function(options) { 
+                var node = options.node;
+                Firmin.animate(node.$ext || node, options, options.duration || 0.2, function() {
+                    (node.$ext || node).style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    //apf.layout.forceResize();
+                });
+                duration = Math.max(duration, options.duration || 0.2);
+            });
+            
+            setTimeout(function(){
+                finish && finish();
+            }, (duration * 1000) + 50);
+        }
+        else {
+            //@todo set value
+            
+            finish && finish();
+        }
+    },
+    
     animate : function(aNode, options, finish){
         var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
         

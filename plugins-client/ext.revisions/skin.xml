@@ -13,14 +13,14 @@
                 .dark .revisionsBar {
                     border-left-color: rgba(43,43,43,0.4);
                 }
-                body:not(.dark) .revisionsHolder {
+                #editorDiv:not(.dark) .revisionsHolder {
                     background-color: #f8f8f8;
                     background-image: -webkit-linear-gradient(0, rgba(242,242,242,.9) 1px, rgba(242,242,242,0) 10px);
                     background-image:    -moz-linear-gradient(0, rgba(242,242,242,.9) 1px, rgba(242,242,242,0) 10px);
                     background-image:         linear-gradient(0, rgba(242,242,242,.9) 1px, rgba(242,242,242,0) 10px);
                     border-left: 1px solid #fff;
                 }
-                body.ace-solarized-light .revisionsHolder {
+                #editorDiv.ace-solarized-light .revisionsHolder {
                     background-image: -webkit-linear-gradient(0, rgba(251,241,211,1) 1px, rgba(251,241,211,0) 10px);
                     background-image:    -moz-linear-gradient(0, rgba(251,241,211,1) 1px, rgba(251,241,211,0) 10px);
                     background-image:         linear-gradient(0, rgba(251,241,211,1) 1px, rgba(251,241,211,0) 10px);

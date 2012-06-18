@@ -93,7 +93,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 1);
-            apf.layout.forceResize(barButtonContainer.$ext);
+            //apf.layout.forceResize(barButtonContainer.$ext);
         }
         else {
             if (!preview) {
@@ -103,7 +103,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 0);
-            apf.layout.forceResize(barButtonContainer.$ext);
+            //apf.layout.forceResize(barButtonContainer.$ext);
         }
 
     },
@@ -146,6 +146,7 @@ module.exports = ext.register("ext/editors/editors", {
                             btn.$ext.style.position = "absolute";
                             btn.$ext.style.right = "5px";
                             btn.$ext.style.top = "6px";
+                            btn.$ext.parentNode.style.overflow = "hidden";
                         }
 
                         e.page.addEventListener("afterclose", _self.$close);
@@ -298,10 +299,8 @@ module.exports = ext.register("ext/editors/editors", {
      * out of zen mode
      */
     setTabResizeValues : function(ext, preview, animate, mouse, dir) {
-        return;
-        
         var ph;
-        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
+        var pos = apf.getAbsolutePosition(ph = tabEditors.$buttons);
         var d = apf.getDiff(ext);
         var _self = this;
 
@@ -316,62 +315,70 @@ module.exports = ext.register("ext/editors/editors", {
 
             if (dir == undefined)
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
-            var steps = mouse ? 10 : 5;
-            var i = dir ? steps + 1 : 0;
-            var div = mouse ? 2 : 1;
+            var duration = mouse ? 0.2 : 0.2;
+
+            tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
-                tabEditors.$buttons.style.height = "8px";
+//                tabEditors.$buttons.style.height = "8px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
-                apf.setStyleClass(tabEditors.$buttons, "step6");
+                apf.setStyleClass(tabEditors.$buttons.parentNode, "step5");
             }
-
-            apf.tween.multi(ext, {
-                anim : mouse ? apf.tween.easeOutCubic : apf.tween.easeOutCubic,
-                steps : steps,
-                interval : apf.isWebkit ? 0 : 10,
-                control : this.animateControl = {},
-                tweens : [
-                    { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
-                    { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" },
-                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 27 : 12), type: "height" },
-                    { oHtml: this.buttons.add, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
-                    { oHtml: this.buttons.add, from: dir ? 10 : 17, to : dir ? 17 : 10, type: "height" },
-                    { oHtml: this.buttons.menu, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
-                    { oHtml: this.buttons.menu, from: dir ? 10 : 17, to : dir ? 17 : 10, type: "height" }
-                ],
-                oneach : function(){
-                    apf.setStyleClass(tabEditors.$buttons,
-                        "step" + Math.ceil((dir ? --i : ++i) / div),
-                        ["step" + Math.ceil((dir ? i + 1 : i-1) / div)]);
-
-                    if (tabEditors.getPage())
-                        apf.layout.forceResize(tabEditors.getPage().$ext);
-                },
-                onfinish : function(e){
-                    apf.setStyleClass(tabEditors.$buttons, "",
-                        ["step" + Math.ceil(i / div)]);
-
-                    _self.animating = false;
-
-                    if (!dir) {
-                        apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
+            else {
+                //@todo this is a bit hacky
+                ide.dispatchEvent("animate", {
+                    type: "editor",
+                    delta: 16
+                });
+            }
+            
+            var i = dir ? 6 : 0, j = 0;
+            [1,2,3,4,5,6].forEach(function(x){
+                setTimeout(function(){
+                    if (x == 6) {
+                        if (!dir)
+                            apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
+                        
+                        return;
                     }
+                    
+                    apf.setStyleClass(tabEditors.$buttons.parentNode,
+                        "step" + (dir ? --i : ++i),
+                        ["step" + (dir ? i + 1 : i-1)]);
+        
+//                    if (tabEditors.getPage())
+//                        apf.layout.forceResize(tabEditors.getPage().$ext);
+                }, ++j * (duration / 6) * 1000);
+            });
+            
+            anims.animateMultiple([
+                { duration : duration, node: ext, top : (this.showTabs || preview ? 0 : -16) + "px"},
+                //{ duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
+                { duration : duration, node: tabEditors.$buttons, height: (this.showTabs || preview ? 22 : 7) + "px"},
+                { duration : duration, node: this.buttons.add, opacity : dir ? 1 : 0},
+                { duration : duration, node: this.buttons.add, height : (dir ? 17 : 10) + "px"},
+                { duration : duration, node: this.buttons.menu, opacity : dir ? 1 : 0},
+                { duration : duration, node: this.buttons.menu, height : (dir ? 17 : 10) + "px"}
+            ], function(e){
+                apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
 
-                    if (tabEditors.getPage())
-                        apf.layout.forceResize(tabEditors.getPage().$ext);
-                }
-            })
+                _self.animating = false;
+
+                tabEditors.$buttons.style.overflow = "";
+
+//                if (tabEditors.getPage())
+//                    apf.layout.forceResize(tabEditors.getPage().$ext);
+            });
         }
         else {
             if (this.showTabs || preview) {
-                tabEditors.$buttons.style.height = "27px";
+                tabEditors.$buttons.style.height = "22px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
             }
             else {
-                tabEditors.$buttons.style.height = "12px";
+                tabEditors.$buttons.style.height = "7px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
@@ -524,6 +531,8 @@ module.exports = ext.register("ext/editors/editors", {
         //Create Fake Page
         if (init)
             tabs.setAttribute("buttons", "close");
+        
+        tabEditors.$buttons.style.overflow = "visible";
 
         var model = new apf.model();
         var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
@@ -823,13 +832,13 @@ module.exports = ext.register("ext/editors/editors", {
 
         commands.addCommand({
             name: "toggleTabs",
-            bindKey : { mac : "Ctrl-M", wind: "Ctrl-M" },
+            bindKey : { mac : "Ctrl-M", win : "Ctrl-M" },
             exec: function(e){
                  _self.toggleTabs(!_self.showTabs ? 1 : -1);
             }
         });
 
-        menus.addItemByPath("View/Tab Button", new apf.item({
+        menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
             checked : "[{require('core/settings').model}::auto/tabs/@show]",
             command : "toggleTabs"

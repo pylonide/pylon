@@ -14,7 +14,7 @@ var anims = require("ext/anims/anims");
 
 var shadowOpen = "0px 1px 0px rgba(255, 255, 255, 0.05) inset, "
     + "-1px 0px 0px 0px black inset, "
-    + "1px 0px 0px 0px #353535";
+    + "1px 0px 0px 0px rgba(255, 255, 255, 0.06)";
 
 var shadowClosed = "0px 1px 0px rgba(255, 255, 255, 0.05) inset";
 
@@ -44,7 +44,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             hboxTabBar.insertBefore(new apf.hbox({
                 id: "navbar",
                 "class": "black-menu-bar",
-                style: "box-shadow: " + shadowOpen,
+                style: "background:rgba(24,24,24,.9) url(" + ide.staticPrefix 
+                    + "/ext/main/style/images/c9-noise.png);box-shadow: " 
+                    + shadowOpen,
                 "minwidth": "45",
                 childNodes : [
                     new apf.button({
