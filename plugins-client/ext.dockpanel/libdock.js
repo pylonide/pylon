@@ -2135,6 +2135,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                                 icoState.x + 'px ' 
                                 + icoState.y + 'px';
                         }
+                        if(!this.value) {
+                            if(options.cbOnPageShow)
+                                options.cbOnPageShow();
+                        }
+                        else {
+                            if(options.cbOnPageHide)
+                                options.cbOnPageHide();
+                        }
                     }
                     
                     setTimeout(function(){
