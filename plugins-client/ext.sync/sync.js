@@ -43,6 +43,8 @@ module.exports = ext.register("ext/sync/sync", {
             
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
+            
+            
             this.btnSyncStatus = barExtras.appendChild(new apf.button({
                 margin  : "1 0 0 0" ,
                 "class" : "c9-sync" ,
@@ -61,6 +63,11 @@ module.exports = ext.register("ext/sync/sync", {
                         mnuSyncPrj.hide();
                 }
             }));
+            
+            this.lblSyncState = barExtras.appendChild(new apf.label({
+                "class"  : "c9-sync-state-info",
+                "margin" : "0 2 0 0"
+            }), this.btnSyncStatus);
         }
         
         ext.initExtension(_self);
@@ -355,7 +362,9 @@ module.exports = ext.register("ext/sync/sync", {
             async: true,
             callback: function( data, state, extra ) {
                 if (state != apf.SUCCESS || JSON.parse(data).success !== true) {
-                    return util.alert("Unable to disable syncing", "An error occurred while disabling sync", extra.http.responseText);
+                    return util.alert("Unable to disable syncing", 
+                        "An error occurred while disabling sync", 
+                        extra.http.responseText);
                 }
                 // Success. Nothing more to do. (UI sync state will update via socket.io push event)
                 
@@ -475,7 +484,7 @@ module.exports = ext.register("ext/sync/sync", {
 
         this.$iframe.connecting = true;
         this.$iframe.connected = false;
-		this.$iframe.src = "http://localhost2:13338/gjtorikian/a572318b/workspace/c9syncproxy.html";
+		this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
     },
     
     showSyncDialog : function(callback){
