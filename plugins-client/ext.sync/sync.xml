@@ -8,7 +8,10 @@
         <div>
             <a class="close-sync-info" href="javascript:void(0)" onclick="mnuSyncInfo.hide()"></a>
             Sync for offline use in progress...
-            <div id="syncProgressBar" class="progress-bar"></div>
+            <a:progressbar id="syncProgressBar"
+              skin   = "progressbar-green" 
+              value  = "0" 
+              margin = "5 0 8"/>
             <a:hbox>
                 <div id="syncFileName" class="sync-file-label" flex="1">Connecting...</div>
                 <a:button id="btnPauseSync" 

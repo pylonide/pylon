@@ -11,7 +11,7 @@
     
     margin-top:8px;
     margin-left:8px;
-    padding:7px 10px 10px 12px;
+    padding: 15px 10px 10px 12px;
     line-height:17px;
 }
 .sync-info-tooltip .close-sync-info {
@@ -19,18 +19,14 @@
     height: 14px;
     width: 13px;
     position: absolute;
-    top: 4px;
-    right: 3px;
+    top: 5px;
+    right: 5px;
     cursor: default;
     display: block;
 }
 
 .sync-info-tooltip .close-sync-info:hover { 
     background-position: 0 -14px;    
-}
-
-.sync-info-tooltip .progress-bar {
-
 }
 
 .sync-info-tooltip .sync-file-label {
