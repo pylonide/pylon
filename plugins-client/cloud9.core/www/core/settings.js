@@ -145,10 +145,6 @@ module.exports = {
         if (resetSettings)
             xml = template;
 
-        // Load from local storage
-        else if (localStorage[sIdent])
-            xml = localStorage[sIdent];
-
         // Load from template
         else if (!cloud9config.settings || cloud9config.settings == "defaults")
             xml = template
