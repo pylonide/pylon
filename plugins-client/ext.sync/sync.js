@@ -118,8 +118,7 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.btnSyncStatus.disable();
                     
                     //Create Project
-                    var createProject = ide.local ? "createProjectLocal" : "createProjectOnline";
-                    _self[createProject](name, 0, 0, function(){
+                    _self.createProject(name, 0, 0, function(){
                         //@todo if the user would refresh the browser in between
                         //      these two calls the sync information is lost
                         //      this might not be a problem because the project
@@ -510,32 +509,10 @@ module.exports = ext.register("ext/sync/sync", {
         });
     },
     
-    createProjectLocal : function(name, type, scm, callback){
-        apf.ajax("/api/" + cloud9config.davPrefix.split("/")[1] 
+    createProject : function(name, type, scm, callback){
+        this.sendMessageToLocal("/api/" + cloud9config.davPrefix.split("/")[1] 
           + "/" + name + "/create", {
-            method: "PUT",
-            headers: {"Content-type": "application/x-www-form-urlencoded"},
-            data: "type=" + (type || "opensource") 
-                + "&scm=" + (scm || "git")
-                + "&servertype=shared&members=1", //&visibility=public
-            async: true,
-            callback: function( data, state, extra) {
-                if (state != apf.SUCCESS) {
-                    return util.alert("Unable to enable sync", 
-                        "An error occurred while creating new workspace '" 
-                            + name + "'", extra.http.responseText);
-                }
-                
-                data = JSON.parse(data);
-                
-                callback();
-            }
-        });
-    },
-    
-    createProjectOnline : function(name, type, scm, callback){
-        apf.ajax("/api/" + cloud9config.davPrefix.split("/")[1] 
-          + "/" + name + "/create", {
+            local: !ide.local,
             method: "PUT",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             data: "type=" + (type || "opensource") 
