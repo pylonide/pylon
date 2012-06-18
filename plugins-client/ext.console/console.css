@@ -1,21 +1,86 @@
+.console_text {
+    font-family : menlo,courier new,fixed,swiss,sans-serif;
+    background: none;
+    font-size : 12px;
+    margin : 3px 0 0 0;
+    padding : 0px 0 3px 0;
+    color : #eee;
+    overflow : hidden;
+}
+
+.consoleInputBox {
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1d1d1d),color-stop(1, #292929));
+    background: -moz-linear-gradient(center bottom,#1d1d1d 0%,#292929 100%);
+    padding : 1px;
+    margin: 0;
+    overflow: hidden;
+    border-top: 1px solid #1f1f1f;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    position: relative;
+    z-index: 999;
+}
+
+.txt_console_prompt {
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1d1d1d),color-stop(1, #292929));
+    background: -moz-linear-gradient(center bottom,#1d1d1d 0%,#292929 100%);
+    color: #acc49e;
+    font-family : menlo,courier new,fixed,swiss,sans-serif;
+    font-size : 11px;
+    padding: 7px 3px 0 7px;
+}
+.console_text .item{
+    padding : 2px 10px;
+}
+
+.console_text .red {
+    color: #c93a40;
+}
+.console_text .blue,
+.console_text .item a:link,
+.console_text .item a:hover,
+.console_text .item a:active {
+    color: #86c2f6;
+}
+.console_text .gray,
+.console_text .item a:visited {
+    color: #909090;
+}
+.console_text .white {
+    color: #eeeeee;
+}
+
 .console_date {
     display:inline
 }
 .console_text div {
     padding: 2px 10px;
 }
-.console_text.feedback div {
+.console_text div {
     padding-left: 31px;
 }
-.console_text.feedback .output_section {
+.console_text .output_section {
     padding: 10px 0 10px 2px;
     border-bottom: 1px solid #444;
     overflow: hidden;
+    -webkit-transition-property: background, height;
+    -webkit-transition-duration: 0.2s;
+    -webkit-transition-delay: 0ms;
+    -webkit-transition-timing-function: ease;
+    -moz-transition-property: background, height;
+    -moz-transition-duration: 0.2s;
+    -moz-transition-delay: 0ms;
+    -moz-transition-timing-function: ease;
 }
 
-.console_text.feedback .output_section.collapsed:hover,
-.console_text.feedback .output_section.collapsed.quit_proc:hover {
+.console_text .output_section.collapsed:hover,
+.console_text .output_section.collapsed.quit_proc:hover {
     background: #38393a;
+    cursor: default;
+}
+
+.console_text .output_section.collapsed span:hover {
+    cursor: default;
 }
 
 /** Deprecated **/
@@ -24,7 +89,7 @@
     border-top: 1px solid #444;
     margin: 6px 5px 6px 30px;
 }
-.console_text.feedback div.prompt_spacer {
+.console_text div.prompt_spacer {
     padding-top: 5px;
 }
 .console_text a:link, .console_text a:hover, .console_text a:active {
@@ -33,37 +98,45 @@
 .console_text a:visited {
     color: #909090;
 }
-.console_text.feedback .prompt_spinner {
+.console_text .prompt_spinner {
     background: url(/static/ext/main/style/images/console_spinner_proc.gif) no-repeat 0 0;
     display: inline;
     width: 21px;
     height: 14px;
     padding: 4px 22px 4px 4px;
     margin-left: 3px;
+    -webkit-transition-property: opacity;
+    -webkit-transition-duration: 0.3s;
+    -webkit-transition-delay: 0ms;
+    -webkit-transition-timing-function: ease;
+    -moz-transition-property: opacity;
+    -moz-transition-duration: 0.3s;
+    -moz-transition-delay: 0ms;
+    -moz-transition-timing-function: ease;
 }
-.console_text.feedback .output_section.quit_proc {
+.console_text .output_section.quit_proc {
     background-color: #372a2a;
     box-shadow: inset 0px 0px 0px 1px #372a2a, inset 6px 0px 0px 0px #b0423f;
 }
-.console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner {
+.console_text .output_section.loading.has_pid:hover .prompt_spinner {
     background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 0;
 }
-.console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner:active {
+.console_text .output_section.loading.has_pid:hover .prompt_spinner:active {
     background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 -22px;
 }
-.console_text.feedback div.loaded .prompt_spinner {
+.console_text div.loaded .prompt_spinner {
     background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat 1px 1px;
 }
 
-.console_text.feedback div.loaded .prompt_spinner:hover {
+.console_text div.loaded .prompt_spinner:hover {
     background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -23px 1px;
 }
 
-.console_text.feedback div.loaded.collapsed .prompt_spinner {
+.console_text div.loaded.collapsed .prompt_spinner {
     background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -48px 1px
 }
 
-.console_text.feedback div.loaded.collapsed .prompt_spinner:hover {
+.console_text div.loaded.collapsed .prompt_spinner:hover {
     background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -73px 1px
 }
 

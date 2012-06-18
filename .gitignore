@@ -17,6 +17,7 @@ aut.js
 helloworld.js
 .*.gz
 .c9revisions
+.c9search
 .architect/
 .sourcemint/
 /mapped_packages/
@@ -30,7 +31,12 @@ plugins/cloud9.client.v8debug/node_modules/
 plugins/cloud9.static/node_modules/
 plugins-server/cloud9.fs/node_modules/
 plugins-client/lib.packed/www/
+plugins-client/lib.ace/www/worker/
+plugins-client/cloud9.core/www/js/
+plugins-client/ext.jsinfer
 node_modules/
 deps/ace/
 plugins-server/fixtures/node_env/hello.js
 npm-debug.log
+plugins-client/lib.apf/www/apf-packaged/apf_debug.js
+

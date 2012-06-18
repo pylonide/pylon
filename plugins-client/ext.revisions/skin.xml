@@ -5,16 +5,30 @@
              * Revision Bar
              * --------------------------------------------------------------------------------------- */
                 .revisionsBar {
-                    border-left: 1px solid #e8e8e8;
+                    border-left: 1px solid #CFD5DD;
                 }
-                .revisionsHolder {
-                    background: #f8f8f8;
-                    background: -webkit-linear-gradient(0, #efefef 1px, #f5f5f5 10px);
-                    background:    -moz-linear-gradient(0, #efefef 1px, #f5f5f5 10px);
-                    background:         linear-gradient(0, #efefef 1px, #f5f5f5 10px);
+                .ace-solarized-light .revisionsBar {
+                    border-left-color: #E8DFC3;
+                }
+                .dark .revisionsBar {
+                    border-left-color: rgba(43,43,43,0.4);
+                }
+                body:not(.dark) .revisionsHolder {
+                    background-color: #f8f8f8;
+                    background-image: -webkit-linear-gradient(0, rgba(242,242,242,.9) 1px, rgba(242,242,242,0) 10px);
+                    background-image:    -moz-linear-gradient(0, rgba(242,242,242,.9) 1px, rgba(242,242,242,0) 10px);
+                    background-image:         linear-gradient(0, rgba(242,242,242,.9) 1px, rgba(242,242,242,0) 10px);
                     border-left: 1px solid #fff;
                 }
-
+                body.ace-solarized-light .revisionsHolder {
+                    background-image: -webkit-linear-gradient(0, rgba(251,241,211,1) 1px, rgba(251,241,211,0) 10px);
+                    background-image:    -moz-linear-gradient(0, rgba(251,241,211,1) 1px, rgba(251,241,211,0) 10px);
+                    background-image:         linear-gradient(0, rgba(251,241,211,1) 1px, rgba(251,241,211,0) 10px);
+                    border-left-color: rgba(255,255,255,.4);
+                }
+                .dark .revisionsHolder {
+                    border-left: 1px solid rgba(255,255,255,.1);
+                }
                 .revisions-list{
                     overflow: hidden;
                     position: relative;
@@ -31,21 +45,29 @@
                     z-index : 1000;
                     position : relative;
                 }
+                .dark .revisionsBar .topbar {
+                    box-shadow: 0 -1px 0 0 rgba(255,255,255,0.1) inset, 3px 1px 11px -3px rgba(0,0,0,0.8);
+
+                }
                 .revisionsBar .topbar span {
                     color: #8B8B8B;
                     cursor: default;
                     font-family: "Helvetica Neue", Arial;
                     font-size: 12px;
-                    line-height: 17px;
+                    line-height: 15px;
                     overflow: hidden;
                     text-indent: 11px;
                     text-transform: uppercase;
                     text-shadow: 0 1px 0 white;
                 }
+                .dark .revisionsBar .topbar span {
+                    color: rgba(255,255,255,.8);
+                    text-shadow: 0 1px 0 rgba(0,0,0,.8);
+                }
                 .revisionsBar .topbar .btn {
                     cursor: pointer;
                     position: absolute;
-                    right: 5px;
+                    right: -5px;
                     top: 0;
                 }
                 .revisionsBar .topbar .btn .left,
@@ -54,6 +76,7 @@
                 }
                 .revisionsBar .topbar .btn .lbl {
                     background: url(images/close-btn.png) no-repeat 0 0;
+                    height: 17px;
                     padding: 0;
                     width: 14px;
                 }
@@ -62,6 +85,16 @@
                 }
                 .revisionsBar .topbar .btn:active .lbl {
                     background-position: -28px 0;
+                }
+
+                .dark .revisionsBar .topbar .btn .lbl {
+                    background-position: 0 -16px;
+                }
+                .dark .revisionsBar .topbar .btn:hover .lbl {
+                    background-position: -14px -16px;
+                }
+                .dark .revisionsBar .topbar .btn:active .lbl {
+                    background-position: -28px -16px;
                 }
             /* ------------------------------------------------------------------------------------------
              * Revision
@@ -80,8 +113,7 @@
                     border-top: 1px solid #ced5dd;
                 }
                 .revisions-list .revision.hover {
-                    background: #f1f1f1;
-                    box-shadow: 0 1px 0 0 #F8F8F8 inset,
+                    box-shadow: 0 0 0 1000em rgba(255, 255, 255, 0.1) inset,0 1px 0 0 #F8F8F8 inset,
                                 0 -1px 0 0 #F8F8F8 inset;
                 }
                 .revisions-list .revision.selected {
@@ -213,6 +245,27 @@
                 }
 
             /* ------------------------------------------------------------------------------------------
+             * Revision DARK
+             * --------------------------------------------------------------------------------------- */
+
+            .dark .revision {
+                background: rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+                border-top: 1px solid rgba(255, 255, 255, 0.05);;
+                color: rgba(255,255,255,.8);
+                cursor: default;
+            }
+            .dark .revisions-list .revision.selected {
+                background: none !important;
+                box-shadow: none !important;
+                border-top-color: transparent;
+                color: rgba(255,255,255,.8) !important;
+                text-shadow: 0 1px 0 RGBA(0,0,0,.8);
+            }
+            .dark .revisions-list .revision.hover {
+                box-shadow: 0 0 0 1000em rgba(255, 255, 255, 0.1) inset;
+            }
+            /* ------------------------------------------------------------------------------------------
              * Show Details
              * --------------------------------------------------------------------------------------- */
                  .show-details {
@@ -222,6 +275,12 @@
                     margin-top : -1px;
                     z-index : 1000;
                     position : relative;
+                 }
+                 .ace-solarized-light .show-details {
+                    box-shadow: 0 1px 0 0 rgba(255,255,255,.4) inset, 0px -2px 13px -6px rgba(0,0,0,0.3);
+                 }
+                 .dark .show-details {
+                    box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0px -2px 13px -6px rgba(0,0,0,0.8);
                  }
                  .show-details .subbar {
                     background: none;
@@ -319,6 +378,15 @@
 	        	background: transparent;
 	        	line-height: 16px;
 	        }
+
+
+            .dark .cbgrey.cbcontainer span {
+                color: rgba(255,255,255,.8);
+            }
+            .dark .cbgrey.cbcontainer .checkbox {
+                border-radius: 5px;
+                box-shadow: 0 -1px 0 0 rgba(0,0,0,.9) inset;
+            }
         ]]></a:style>
         <a:presentation>
             <a:main container=".">

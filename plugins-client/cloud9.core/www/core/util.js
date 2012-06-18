@@ -130,10 +130,13 @@ var SupportedIcons = {
     "text/x-c": 'page_white_c',
     "text/x-csharp": 'page_white_csharp',
     "text/text/x-java-source": 'page_white_cup',
-    "text/x-markdown": 'page_white_text'
+    "text/x-markdown": 'page_white_text',
+    "text/x-xquery": 'page_white_code'
 };
 
 var contentTypes = {
+    "c9search": "text/x-c9search",
+    
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
@@ -196,7 +199,9 @@ var contentTypes = {
     "sql": "text/x-sql",
 
     "sh": "application/x-sh",
-    "bash": "application/x-sh"
+    "bash": "application/x-sh",
+    
+    "xq": "text/x-xquery"
 };
 
 exports.getFileIcon = function(xmlNode) {

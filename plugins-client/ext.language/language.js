@@ -11,18 +11,20 @@ var ide = require("core/ide");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
+var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
-
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
+var keyhandler = require("ext/language/keyhandler");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
+var isContinuousCompletionEnabled;
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -36,6 +38,9 @@ module.exports = ext.register("ext/language/language", {
     worker  : null,
     enabled : true,
 
+    defaultKeyHandler: null,
+    defaultCommandKeyHandler: null,
+
     hook : function() {
         var _self = this;
 
@@ -43,13 +48,19 @@ module.exports = ext.register("ext/language/language", {
             _self.setPath();
         });
 
-
         // We have to wait until the paths for ace are set - a nice module system will fix this
-        ide.addEventListener("extload", function(){
-            var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
+        ide.addEventListener("extload", function() {
+            var worker;
+            if (window.location.search.match(/[?&]noworker=1/)) {
+                worker = _self.worker = createUIWorkerClient();
+            }
+            else {
+                worker = _self.worker = new WorkerClient(
+                    ["treehugger", "ext", "ace", "c9"], "worker.js",
+                    "ext/language/worker", "LanguageWorker");
+            }
             complete.setWorker(worker);
 
-            //ide.addEventListener("init.ext/code/code", function(){
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
                     return;
@@ -69,30 +80,32 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            keyhandler.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
                 callback({worker: worker});
             });
         }, true);
-
+        
         ide.addEventListener("settings.load", function(){
             settings.setDefaults("language", [
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
-                ["unusedFunctionArgs", "true"]
+                ["unusedFunctionArgs", "true"],
+                ["continuousComplete", "false"]
             ]);
         });
 
-        settings.addSettings("Language Support", markupSettings );
+        settings.addSettings("Language Support", markupSettings);
     },
-
+    
     init : function() {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-
+        
         if (!editors.currentEditor || !editors.currentEditor.amlEditor)
             return;
 
@@ -102,12 +115,22 @@ module.exports = ext.register("ext/language/language", {
         var oldSelection = this.editor.selection;
         this.setPath();
 
-        this.setJSHint();
-        this.setInstanceHighlight();
-        this.setUnusedFunctionArgs();
-        this.setUndeclaredVars();
-
-        this.editor.on("changeSession", function(event) {
+        ceEditor.addEventListener("loadmode", function(e) {
+            if (e.name === "ace/mode/javascript") {
+                e.mode.createWorker = function() {
+                    return null;
+                };
+            }
+        });
+        
+        this.updateSettings();
+        
+        var defaultHandler = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
+        var defaultCommandHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
+        this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.onTextInput, defaultHandler);
+        this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.onCommandKey, defaultCommandHandler);
+    
+        this.editor.on("changeSession", function() {
             // Time out a litle, to let the page path be updated
             setTimeout(function() {
                 _self.setPath();
@@ -131,65 +154,63 @@ module.exports = ext.register("ext/language/language", {
             worker.emit("inspect", { data: { row: e.row, col: e.col } });
         });
 
-        // Monkeypatching ACE's JS mode to disable worker
-        // this will be handled by C9's worker
-        ceEditor.addEventListener("loadmode", function(e) {
-            if (e.name === "ace/mode/javascript") {
-                e.mode.createWorker = function() {
-                    return null;
-                };
-            }
-        });
+        settings.model.addEventListener("update", this.updateSettings.bind(this));
+        
+        this.editor.addEventListener("mousedown", this.onEditorClick.bind(this));
+        
     },
-
-    setPath: function() {
-        var page =  tabEditors.getPage();
-        if (!page)
-            return;
-        var currentPath = page.getAttribute("id");
-
+    
+    isContinuousCompletionEnabled: function() {
+        return isContinuousCompletionEnabled;
+    },
+    
+    setContinuousCompletionEnabled: function(value) {
+        isContinuousCompletionEnabled = value;
+    },
+    
+    updateSettings: function() {
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
-
-        var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
-    },
-
-    setJSHint: function() {
         if(settings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
         else
             this.worker.call("disableFeature", ["jshint"]);
-        this.setPath();
-    },
-
-    setInstanceHighlight: function() {
         if(settings.model.queryValue("language/@instanceHighlight") != "false")
             this.worker.call("enableFeature", ["instanceHighlight"]);
         else
             this.worker.call("disableFeature", ["instanceHighlight"]);
-        var cursorPos = this.editor.getCursorPosition();
-        cursorPos.force = true;
-        this.worker.emit("cursormove", {data: cursorPos});
-    },
-
-    setUnusedFunctionArgs: function() {
         if(settings.model.queryValue("language/@unusedFunctionArgs") != "false")
             this.worker.call("enableFeature", ["unusedFunctionArgs"]);
         else
             this.worker.call("disableFeature", ["unusedFunctionArgs"]);
-        this.setPath();
-    },
-
-    setUndeclaredVars: function() {
         if(settings.model.queryValue("language/@undeclaredVars") != "false")
             this.worker.call("enableFeature", ["undeclaredVars"]);
         else
             this.worker.call("disableFeature", ["undeclaredVars"]);
+        this.worker.call("setWarningLevel", [settings.model.queryValue("language/@warnLevel") || "info"]);
+        var cursorPos = this.editor.getCursorPosition();
+        cursorPos.force = true;
+        this.worker.emit("cursormove", {data: cursorPos});
+        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") === "true";
         this.setPath();
     },
 
+    setPath: function() {
+        // Currently no code editor active
+        if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage())
+            return;
+        var currentPath = tabEditors.getPage().getAttribute("id");
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
+    },
+    
+    onEditorClick: function(event) {
+        if(event.domEvent.altKey) {
+            var pos = event.getDocumentPosition();
+            this.worker.emit("jumpToDefinition", {data: pos});
+        }
+    },
+    
     /**
      * Method attached to key combo for complete
      */

@@ -8,6 +8,7 @@ var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword
 var debuggerPlugin = require("ext/debugger/debugger"); 
+var editors = require("ext/editors/editors");
 
 module.exports = (function () {
     
@@ -43,6 +44,7 @@ module.exports = (function () {
         apf.addListener(datagridHtml, "mouseover", function() {
             if (activeTimeout) {
                 clearTimeout(activeTimeout);
+                activeTimeout = null;
             }
         });
         
@@ -221,22 +223,56 @@ module.exports = (function () {
     };
     
     /**
+     * Determine whether the current file is the current frame where the 
+     * debugger is in.
+     */
+    var isCurrentFrame = function(){
+        var frame, page = tabEditors.getPage();
+        
+        if (self.dgStack)
+            frame = dgStack.selected;
+        else
+            frame = mdlDbgStack.queryNode("frame[@index=0]");
+        
+        if (!frame)
+            return false;
+        
+        var scriptName = frame.getAttribute("script");
+        
+        // I have to do a fairly weak filename compare. 
+        // An improvement is to store the full path in the stack model.
+        if (page.getModel().queryValue("@path")
+            .substr(ide.davPrefix.length + 1) != scriptName)
+            return false;
+        
+        var line = frame.getAttribute("line");
+        var column = frame.getAttribute("column");
+        //@todo check if we are still in the current function
+        
+        return true;
+    }
+    
+    /**
      * onMouseMove handler that is being used to show / hide the inline quick watch
      */
     var onEditorMouseMove = function (ev) {
         if (activeTimeout) {
-            clearTimeout(activeTimeout);   
+            clearTimeout(activeTimeout);
+            activeTimeout = null;
         }
         
         if (!stRunning.active && stDebugProcessRunning.active) {
             activeTimeout = setTimeout(function () {
+                if (!isCurrentFrame())
+                    return;
+                
                 var pos = ev.getDocumentPosition();
                 ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
                 
                 // hide it, and set left / top so it gets positioned right when showing again
                 winLiveInspect.hide();
-                windowHtml.style.left = ev.pageX + "px";
-                windowHtml.style.top = (ev.pageY + 8) + "px";
+                windowHtml.style.left = ev.clientX + "px";
+                windowHtml.style.top = (ev.clientY + 8) + "px";
             }, 750);
         }
     };
@@ -285,6 +321,7 @@ module.exports = (function () {
         else {
             // if not visible? then just clear the timeout
             clearTimeout(activeTimeout);
+            activeTimeout = null;
         }
     };
     

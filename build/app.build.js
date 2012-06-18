@@ -2,16 +2,17 @@
 
 ({
 	//optimize: "none",
+	preserveLicenseComments: false,
 	baseUrl: "../",
 	paths: {
 		"text" : "build/text", // plugin for pulling in text! files
 		"core" : "empty:",
 		"ext/commands" : "plugins-client/ext.commands",
-		"ext/uploadfiles" : "plugins-client/ext.uploadfiles",
 		"apf" : "empty:",
 		"treehugger" : "empty:",
 		"debug": "empty:",
 		"apf/elements": "plugins-client/lib.apf/www/apf/elements",
+		"ace/worker": "node_modules/ace/lib/ace/worker",
 		'ext/filesystem': 'plugins-client/ext.filesystem',
 	'ext/settings': 'plugins-client/ext.settings',
 	'ext/editors': 'plugins-client/ext.editors',
@@ -30,7 +31,6 @@
 	'ext/searchinfiles': 'plugins-client/ext.searchinfiles',
 	'ext/searchreplace': 'plugins-client/ext.searchreplace',
 	'ext/quickwatch': 'plugins-client/ext.quickwatch',
-	'ext/quicksearch': 'plugins-client/ext.quicksearch',
 	'ext/gotoline': 'plugins-client/ext.gotoline',
 	'ext/preview': 'plugins-client/ext.preview',
 	'ext/log': 'plugins-client/ext.log',
@@ -67,9 +67,13 @@
 	'ext/closeconfirmation': 'plugins-client/ext.closeconfirmation',
 	'ext/codetools': 'plugins-client/ext.codetools',
 	'ext/colorpicker': 'plugins-client/ext.colorpicker',
+	'ext/gitblame': 'plugins-client/ext.gitblame',
 	'ext/revisions': 'plugins-client/ext.revisions',
-	'ext/language': 'plugins-client/ext.language'
+	'ext/quicksearch': 'plugins-client/ext.quicksearch',
+	'ext/language': 'plugins-client/ext.language',
+	'ext/uploadfiles': 'plugins-client/ext.uploadfiles'
 	},
+    
 	include: ["build/src/core.packed", 
 	"apf/elements/codeeditor", 
 	"apf/elements/debugger", 
@@ -94,7 +98,6 @@
 	'ext/searchinfiles/searchinfiles',
 	'ext/searchreplace/searchreplace',
 	'ext/quickwatch/quickwatch',
-	'ext/quicksearch/quicksearch',
 	'ext/gotoline/gotoline',
 	'ext/preview/preview',
 	'ext/log/log',
@@ -131,7 +134,9 @@
 	'ext/closeconfirmation/closeconfirmation',
 	'ext/codetools/codetools',
 	'ext/colorpicker/colorpicker',
+	'ext/gitblame/gitblame',
 	'ext/revisions/revisions',
+	'ext/quicksearch/quicksearch',
 	'ext/language/language'], 
 	out: "../plugins-client/lib.packed/www/packed.js",
 	inlineText: true,

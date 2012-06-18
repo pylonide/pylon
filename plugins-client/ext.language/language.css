@@ -16,6 +16,11 @@
     z-index: 2000;
 }
 
+.language_highlight_info {
+    position: absolute;
+    border-bottom: solid 1px #D3D3D3;
+    z-index: 2000;
+}
 
 .language_highlight_unused {
     position: absolute;
@@ -64,7 +69,7 @@
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    z-index: 2001;
+    z-index: 3;
 }
 
 .ace_dark .language_rename_main {
@@ -80,10 +85,22 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     opacity: 0.7;
-    z-index: 2001;
+    z-index: 3;
 }
 
 .ace_dark .language_rename_other {
     background-color: #444;
     border: solid 1px #888;
+}
+
+.language_tooltip {
+    display: inline-block;
+    position: absolute;
+    border: 1px solid gray;
+    background-color: #ffffd5;
+    color: black;
+    padding: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.4);
+    box-shadow: 0 1px 1px rgba(0,0,0,.4);
+    z-index: 300;
 }

@@ -156,6 +156,16 @@ module.exports = ext.register("ext/menus/menus", {
                     self["req"+"uire"]("ext/editors/editors").currentEditor.focus();
             } || null;
         }
+        
+        //update c9 main logo link
+        if(window.cloud9config.hosted) {
+            var mainlogo = logobar.$ext.getElementsByClassName('mainlogo');
+            if(mainlogo && (mainlogo = mainlogo[0])) {
+                mainlogo.title = "back to dashboard";
+                mainlogo.href = "/dashboard.html";
+                mainlogo.innerHTML = "Dashboard";
+            }
+        }
     },
     
     $insertByIndex : function(parent, item, index) {
@@ -297,7 +307,6 @@ module.exports = ext.register("ext/menus/menus", {
         }
         
         //index...
-//        if (name.indexOf("Tools/B") > -1) debugger;
         if (typeof index == "number")
             this.$insertByIndex(parent, item, index);
         else
@@ -364,38 +373,42 @@ module.exports = ext.register("ext/menus/menus", {
         return menu.id;
     },
     
-    /**
-     * - Bug in APF, appendChild children while not parent attached dont render
-     * - mnuXXX throughout C9 need to be using this plugin
-     * - Architect submenus used in multiple location
-     */
-    
     restore : function(preview){
         if (this.animateControl)
             this.animateControl.stop();
 
-        logobar.$ext.style.overflow = "hidden";
         apf.setStyleClass(logobar.$ext, "", ["minimized"]);
-        apf.tween.single(logobar.$ext, {
-            from : logobar.$ext.offsetHeight,
-            to : 31,
-            anim : apf.tween.easeOutCubic,
-            type : "height",
-            control : this.animateControl = {},
-            interval : apf.isWebkit ? 0 : 10,
-            steps : 5,
-            oneach : function(){
-                apf.layout.forceResize(tabEditors.$ext);
-            },
-            onfinish : function(){
-                apf.layout.forceResize(tabEditors.$ext);
-                logobar.$ext.style.overflow = "";
-            }
-        });
+        
+        if (apf.isTrue(settings.model.queryValue("general/@animateui"))) {
+            logobar.$ext.style.overflow = "hidden";
+            
+            apf.tween.single(logobar.$ext, {
+                from : logobar.$ext.offsetHeight,
+                to : 31,
+                anim : apf.tween.easeOutCubic,
+                type : "height",
+                control : this.animateControl = {},
+                interval : apf.isWebkit ? 0 : 10,
+                steps : 5,
+                oneach : function(){
+                    apf.layout.forceResize(tabEditors.$ext);
+                },
+                onfinish : function(){
+                    apf.layout.forceResize(tabEditors.$ext);
+                    logobar.$ext.style.overflow = "";
+                }
+            });
+        }
+        else {
+            logobar.$ext.style.height = "31px";
+            apf.layout.forceResize(tabEditors.$ext);
+        }
         
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "false");
             this.minimized = false;
+            
+            ide.dispatchEvent("menus.restore");
         }
     },
     
@@ -403,9 +416,11 @@ module.exports = ext.register("ext/menus/menus", {
         if (this.animateControl)
             this.animateControl.stop();
 
-        if (noAnim) {
+        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (noAnim || !animate) {
             apf.setStyleClass(logobar.$ext, "minimized");
             logobar.$ext.style.height = "12px";
+            apf.layout.forceResize();
         }
         else {
             logobar.$ext.style.overflow = "hidden";
@@ -422,7 +437,7 @@ module.exports = ext.register("ext/menus/menus", {
                 },
                 onfinish : function(){
                     apf.setStyleClass(logobar.$ext, "minimized");
-                    apf.layout.forceResize(tabEditors.$ext);
+                    apf.layout.forceResize();
                     logobar.$ext.style.overflow = "";
                 }
             });
@@ -431,6 +446,8 @@ module.exports = ext.register("ext/menus/menus", {
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "true");
             this.minimized = true;
+            
+            ide.dispatchEvent("menus.minimize");
         }
     },
 

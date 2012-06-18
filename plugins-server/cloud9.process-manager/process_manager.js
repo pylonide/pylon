@@ -35,7 +35,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
 
         // wait for all child processes to finish
         this.shutDownInterval = setInterval(function() {
-            processCount = Object.keys(self.pm.ps()).length;
+            processCount = Object.keys(self.ps()).length;
 
             if (!processCount)
                 return callback();
@@ -50,14 +50,18 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
             return callback("Could not find runner with ID " + runnerId);
-
-        var child = runnerFactory(options, this.eventEmitter, eventName);
-        child.spawn(function(err) {
+            
+        runnerFactory(options, this.eventEmitter, eventName, function (err, child) {
             if (err)
                 return callback(err);
 
-            self.processes[child.pid] = child;
-            callback(null, child.pid);
+            child.spawn(function(err) {
+                if (err)
+                    return callback(err);
+    
+                self.processes[child.pid] = child;
+                callback(null, child.pid, child);
+            });
         });
     };
 
@@ -75,15 +79,19 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         if (!runnerFactory)
             return onStart("Could not find runner with ID " + runnerId);
 
-        var child = runnerFactory(options, this.eventEmitter, "");
-        child.exec(function(err, pid) {
+        runnerFactory(options, this.eventEmitter, "", function (err, child) {
             if (err)
                 return onStart(err);
 
-            self.processes[child.pid] = child;
-            onStart(null, child.pid);
-
-        }, onExit);
+            child.exec(function(err, pid) {
+                if (err)
+                    return onStart(err);
+    
+                self.processes[child.pid] = child;
+                onStart(null, child.pid);
+    
+            }, onExit);
+        });
     };
 
     this.execCommands = function(runnerId, cmds, callback) {
@@ -119,10 +127,13 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
             var child = this.processes[pid];
 
             // process has exited
-            if (!child.pid)
+            if (!child.pid) {
                 delete this.processes[pid];
-            else
+            }
+            else {
                 list[pid] = child.describe();
+                list[pid].extra = child.extra;
+            }
         }
 
         return list;

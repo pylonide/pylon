@@ -60,11 +60,15 @@
         <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>
         <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
         <a:item type="radio" value="text/css">CSS</a:item>
+        <a:item type="radio" value="text/diff">Diff</a:item>
+        <a:item type="radio" value="text/x-go">Golang</a:item>
         <a:item type="radio" value="text/x-groovy">Groovy</a:item>
+        <a:item type="radio" value="text/hx">haXe</a:item>
         <a:item type="radio" value="text/x-java-source">Java</a:item>
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
+        <a:item type="radio" value="application/json">JSON</a:item>
         <a:item type="radio" value="application/x-latex">Latex</a:item>
-        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
+        <a:item type="radio" value="text/x-less">LESS</a:item>
         <a:item type="radio" value="text/x-lua">Lua</a:item>
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
         <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>
@@ -75,10 +79,12 @@
         <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
         <a:item type="radio" value="text/x-scala">Scala</a:item>
         <a:item type="radio" value="text/x-scss">SCSS</a:item>
-        <a:item type="radio" value="text/x-sql">SQL</a:item>
+        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
+        <a:item type="radio" value="text/x-sql">(pq)SQL</a:item>
+        <a:item type="radio" value="image/svg+xml">SVG</a:item>
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
->>>>>>> 9423a6f57ad85cb2c40d03eb764434c60406a0ae
+        <a:item type="radio" value="application/x-yaml">YAML</a:item>
     </a:menu>
 </a:application>

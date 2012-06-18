@@ -16,6 +16,11 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 
+var WARNING_LEVELS = {
+    error: 3,
+    warning: 2,
+    info: 1
+};
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
@@ -25,37 +30,115 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.handlers = [];
     this.currentMarkers = [];
     this.$lastAggregateActions = {};
+    this.$warningLevel = "info";
     
     Mirror.call(this, sender);
     this.setTimeout(500);
     
-    sender.on("complete", function(pos) {
+    sender.on("complete", applyEventOnce(function(pos) {
         _self.complete(pos);
-    });
+    }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
     });
-    sender.on("analyze", function(event) {
-        _self.analyze(event);
-    });
+    sender.on("analyze", applyEventOnce(function(event) {
+        _self.analyze(function() { });
+    }));
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
     });
-    
-    sender.on("inspect", function(event) {
+    sender.on("inspect", applyEventOnce(function(event) {
         _self.inspect(event);
-    });
-    
-    sender.on("change", function() {
+    }));
+    sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
+    }));
+    sender.on("jumpToDefinition", function(event) {
+        _self.jumpToDefinition(event);
     });
-    
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
 };
 
+exports.createUIWorkerClient = function() {
+    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
+    var result = new LanguageWorker(emitter);
+    result.on = function(name, f) {
+        emitter.on.call(result, name, f);
+    };
+    result.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+    result.send = function(cmd, args) {
+        setTimeout(function() { result[cmd].apply(result, args); }, 0);
+    };
+    result.emit = function(event, data) {
+        emitter._dispatchEvent.call(emitter, event, data);
+    };
+    emitter.emit = function(event, data) {
+        emitter._dispatchEvent.call(result, event, { data: data });
+    };
+    return result;
+};
+
+/**
+ * Ensure that an event handler is called only once if multiple
+ * events are received at the same time.
+ **/
+function applyEventOnce(eventHandler) {
+    var timer;
+    return function() {
+        var _arguments = arguments;
+        if (timer)
+            clearTimeout(timer);
+        timer = setTimeout(function() { eventHandler.apply(eventHandler, _arguments); }, 0);
+    };
+}
+
 oop.inherits(LanguageWorker, Mirror);
+
+function asyncForEach(array, fn, callback) {
+	array = array.slice(0); // Just to be sure
+	function processOne() {
+		var item = array.pop();
+		fn(item, function(result, err) {
+			if (array.length > 0) {
+				processOne();
+			}
+			else {
+				callback(result, err);
+			}
+		});
+	}
+	if (array.length > 0) {
+		processOne();
+	}
+	else {
+		callback();
+	}
+}
+
+function asyncParForEach(array, fn, callback) {
+	var completed = 0;
+	var arLength = array.length;
+	if (arLength === 0) {
+		callback();
+	}
+	for (var i = 0; i < arLength; i++) {
+		fn(array[i], function(result, err) {
+			completed++;
+			if (completed === arLength) {
+				callback(result, err);
+			}
+		});
+	}
+}
 
 (function() {
     
@@ -77,32 +160,45 @@ oop.inherits(LanguageWorker, Mirror);
         disabledFeatures[name] = true;
     };
     
+    this.setWarningLevel = function(level) {
+        this.$warningLevel = level;
+    };
+    
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
     this.register = function(path) {
-        var handler = require(path);
-        this.handlers.push(handler);
+        try {
+            var handler = require(path);
+            this.handlers.push(handler);
+        } catch (e) {
+            // In ?noworker=1 debugging mode, synchronous require doesn't work
+            var _self = this;
+            require([path], function(handler) {
+                _self.handlers.push(handler);
+            });
+        }   
     };
 
-    this.parse = function() {
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
+    this.parse = function(callback) {
+        var _self = this;
+        this.cachedAst = null;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
                 try {
-                    var ast = handler.parse(this.doc.getValue());
-                    if(ast) {
-                        this.cachedAst = ast;
-                        return ast;
-                    }
+                    handler.parse(_self.doc.getValue(), function(ast) {
+                        if(ast)
+                            _self.cachedAst = ast;
+                        next();
+                    });
                 } catch(e) {
                     // Ignore parse errors
+                    next();
                 }
             }
-        }
-        // No parser available
-        this.cachedAst = null;
-        return null;
+        }, function() {
+            callback(_self.cachedAst);
+        });
     };
 
     this.scheduleEmit = function(messageType, data) {
@@ -130,6 +226,36 @@ oop.inherits(LanguageWorker, Mirror);
         }
     }
     
+    this.analyze = function(callback) {
+        var _self = this;
+        this.parse(function(ast) {
+            var markers = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !handler.analysisRequiresParsing())) {
+                    handler.analyze(_self.doc, ast, function(result) {
+                        if (result)
+                            markers = markers.concat(result);
+                        next();
+                    });
+                }
+                else {
+                    next();
+                }
+            }, function() {
+                var extendedMakers = markers;
+                filterMarkersAroundError(ast, markers);
+                if (_self.getLastAggregateActions().markers.length > 0)
+                    extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
+                _self.currentMarkers = markers;
+                if (_self.postponedCursorMove)
+                    _self.onCursorMove(_self.postponedCursorMove);
+                callback();
+            });
+        });
+    };
+
+/*
     this.analyze = function() {
         var ast = this.parse();
         var markers = [];
@@ -153,7 +279,7 @@ oop.inherits(LanguageWorker, Mirror);
         if (this.postponedCursorMove) {
             this.onCursorMove(this.postponedCursorMove);
         }
-    };
+*/
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
@@ -164,6 +290,17 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
     };
+    
+    this.filterMarkersBasedOnLevel = function(markers) {
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if(marker.level && WARNING_LEVELS[marker.level] < WARNING_LEVELS[this.$warningLevel]) {
+                markers.splice(i, 1);
+                i--;
+            }
+        }
+        return markers;
+    }
     
     /**
      * Request the AST node on the current position
@@ -196,19 +333,17 @@ oop.inherits(LanguageWorker, Mirror);
             return;
         }
         var pos = event.data;
-        var hintMessage = this.checkForMarker(pos) || "";
+        var _self = this;
+        var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
-        var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
-        if (this.cachedAst) {
-            var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if (currentNode !== this.lastCurrentNode || pos.force) {
-                for (var i = 0; i < this.handlers.length; i++) {
-                    var handler = this.handlers[i];
-                    if (handler.handlesLanguage(this.$language)) {
-                        var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
+        var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
+        
+        function cursorMoved() {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.onCursorMovedNode(_self.doc, ast, pos, currentNode, function(response) {
                         if (!response)
-                            continue;
+                            return next();
                         if (response.markers && response.markers.length > 0) {
                             aggregateActions.markers = aggregateActions.markers.concat(response.markers);
                         }
@@ -216,26 +351,49 @@ oop.inherits(LanguageWorker, Mirror);
                             aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
                         }
                         if (response.hint) {
-                            // Last one wins, support multiple?
-                            aggregateActions.hint = response.hint;
+                            if (aggregateActions.hint)
+                                aggregateActions.hint += "\n" + response.hint;
+                            else
+                                aggregateActions.hint = response.hint;
                         }
-                    }
+                        if (response.displayPos) {
+                            aggregateActions.displayPos = response.displayPos;
+                        }
+                        next();
+                    });
                 }
+                else
+                    next();
+            }, function() {
                 if (aggregateActions.hint && !hintMessage) {
                     hintMessage = aggregateActions.hint;
                 }
-                this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
-                this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
-                this.lastCurrentNode = currentNode;
-                this.setLastAggregateActions(aggregateActions);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(_self.currentMarkers.concat(aggregateActions.markers)));
+                _self.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
+                _self.lastCurrentNode = currentNode;
+                _self.setLastAggregateActions(aggregateActions);
+                _self.scheduleEmit("hint", {
+                    pos: pos,
+                    displayPos: aggregateActions.displayPos,
+                    message: hintMessage
+                });
+            });
+
+        }
+        
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            if (currentNode !== this.lastCurrentNode || pos.force) {
+                cursorMoved();
             }
         } else {
-            this.setLastAggregateActions(aggregateActions);
+            cursorMoved();
         }
-        this.scheduleEmit("hint", hintMessage);
     };
-    
-    this.sendVariablePositions = function(event) {
+
+
+    this.jumpToDefinition = function(event) {
         var pos = event.data;
         // Not going to parse for this, only if already parsed successfully
         if (this.cachedAst) {
@@ -244,25 +402,48 @@ oop.inherits(LanguageWorker, Mirror);
             for (var i = 0; i < this.handlers.length; i++) {
                 var handler = this.handlers[i];
                 if (handler.handlesLanguage(this.$language)) {
-                    var response = handler.getVariablePositions(this.doc, ast, pos, currentNode);
+                    var response = handler.jumpToDefinition(this.doc, ast, pos, currentNode);
                     if (response)
-                        this.sender.emit("variableLocations", response);
+                        this.sender.emit("jumpToDefinition", response);
                 }
             }
         }
     };
 
+    this.sendVariablePositions = function(event) {
+        var pos = event.data;
+        var _self = this;
+        // Not going to parse for this, only if already parsed successfully
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            asyncForEach(this.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                        if (response)
+                            _self.sender.emit("variableLocations", response);
+                        next();
+                    });
+                }
+            }, function() {
+            });
+        }
+    };
+
     this.onUpdate = function() {
         this.scheduledUpdate = false;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                handler.onUpdate(this.doc);
-            }
-        }
-        this.analyze();
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) { 
+            if (handler.handlesLanguage(_self.$language))
+                handler.onUpdate(_self.doc, next);
+            else
+                next();
+        }, function() {
+            _self.analyze(function() {});
+        });
     };
     
+    // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code) {
         var oldPath = this.$path;
         code = code || "";
@@ -271,20 +452,19 @@ oop.inherits(LanguageWorker, Mirror);
         this.cachedAst = null;
         this.lastCurrentNode = null;
         this.setValue(code);
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
+        var doc = this.doc;
+        asyncForEach(this.handlers, function(handler, next) {
             handler.path = path;
             handler.language = language;
-            handler.onDocumentOpen(path, this.doc, oldPath);
-        }
+            handler.onDocumentOpen(path, doc, oldPath, next);
+        }, function() { });
     };
     
     this.documentClose = function(event) {
         var path = event.data;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            handler.onDocumentClose(path);
-        }
+        asyncForEach(this.handlers, function(handler, next) {
+            handler.onDocumentClose(path, next);
+        }, function() { });
     };
     
     // For code completion
@@ -322,43 +502,65 @@ oop.inherits(LanguageWorker, Mirror);
         var pos = event.data;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
-                ast = this.parse();
-                currentNode = ast.findNode({line: pos.row, col: pos.column});
-                break;
-            }
-        }
+        var _self = this;
         
-        var matches = [];
-        
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                var completions = handler.complete(this.doc, ast, pos, currentNode);
-                if (completions)
-                    matches = matches.concat(completions);
+        asyncForEach(this.handlers, function(handler, next) {
+            if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
+                _self.parse(function(hAst) {
+                    if(hAst) {
+                        ast = hAst;
+                        currentNode = ast.findNode({line: pos.row, col: pos.column});
+                    }
+                    next();
+                });
             }
-        }
-
-        removeDuplicateMatches(matches);
-        // Sort by priority, score
-        matches.sort(function(a, b) {
-            if (a.priority < b.priority)
-                return 1;
-            else if (a.priority > b.priority)
-                return -1;
-            else if (a.score < b.score)
-                return 1;
-            else if (a.score > b.score)
-                return -1;
             else
-                return 0;
+                next();
+        }, function() {
+            var matches = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                        if (completions)
+                            matches = matches.concat(completions);
+                        next();
+                    });
+                }
+                else
+                    next();
+            }, function() {
+                removeDuplicateMatches(matches);
+                // Sort by priority, score
+                matches.sort(function(a, b) {
+                    if (a.priority < b.priority)
+                        return 1;
+                    else if (a.priority > b.priority)
+                        return -1;
+                    else if (a.score < b.score)
+                        return 1;
+                    else if (a.score > b.score)
+                        return -1;
+                    else if (a.id && a.id === b.id) {
+                        if (a.isFunction)
+                            return -1;
+                        else if (b.isFunction)
+                            return 1;
+                    }
+                    if (a.name < b.name)
+                        return -1;
+                    else if(a.name > b.name)
+                        return 1;
+                    else
+                        return 0;
+                });
+                
+                matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                _self.sender.emit("complete", {
+                    pos: pos,
+                    matches: matches
+                });
+            });
         });
-        
-        matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-        this.sender.emit("complete", matches);
     };
 
 }).call(LanguageWorker.prototype);

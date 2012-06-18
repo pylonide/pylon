@@ -12,7 +12,7 @@ module.exports = function startup(options, imports, register) {
     imports.connect.useStart(imports.connect.getModule().router(function(app) {
 
         // Serve the sourcemint loader file.
-        app.get(/(\/loader\.[^\/]*)/, function(req, res) {
+        app.get(/^(\/loader\.[^\/]*)/, function(req, res) {
             req.url = req.params[0];
             loaderStatic(req, res, function() {
                 res.writeHead(404);

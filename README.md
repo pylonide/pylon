@@ -36,14 +36,33 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS `>= 0.6.15` & NPM `>= 1.1.16`
-  * Sourcemint: `npm install -g sm`
+  * NodeJS `>= 0.6.15`
+  * NPM `>= 1.1.16`
 
 Install:
 
-    sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
+    # Be sure you have sourcemint installed:
 
-This creates a `cloud9` directory in your current directory, just `cd` into it
+    npm install -g sm
+    
+    # Then:
+
+    sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
+    
+    # or
+    
+    git clone https://github.com/ajaxorg/cloud9.git cloud9
+    cd cloud9
+    sm install
+    
+**// Super important for Linux users!**
+
+If you are having issues with installing the o3/libxml dependency, be sure to check this issue for possible solutions:
+https://github.com/ajaxorg/node-libxml/issues/3
+
+**// end super important notice**
+
+The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
 and run `bin/cloud9.sh` to start:
 
     cd cloud9
@@ -62,6 +81,10 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 
     git pull
     sm update
+
+`sm update` does not currently install missing npm dependencies. To do so use:
+
+    sm install
 
 ## Development
 
@@ -98,6 +121,14 @@ The sourcemint package manager works alongside NPM so to link in a
 `sm` always works on your program sub-tree other than pulling things in
 from the cache.
 
+To view help info for cloud9 use:
+
+    sm help
+
+To view usage info for `sm` use:
+
+    sm -h
+
 ## Open Source Projects Used
 
 The Cloud9 IDE couldn't be this cool if it weren't for the wildly productive
@@ -106,7 +137,7 @@ Main projects that we use as building blocks:
 
   * [async.js] by [fjakobs]
   * [jsDAV] by [mikedeboer]
-  * [connect] by [senchalabs](http://github,com/senchalabs)
+  * [connect] by [senchalabs](http://github.com/senchalabs)
   * [socket.io] by [LearnBoost](http://github.com/LearnBoost)
   * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]

@@ -10,8 +10,8 @@
       focussable = "true">
         <a:hbox edge="0 5 5 5">
             <a:textbox id="txtQuickSearch" flex="1" focusselect="true" skin="searchbox_textbox" skinset="default" class="quickSearch"  />
-            <a:button onclick="require('ext/quicksearch/quicksearch').findprevious(1)" skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" icon="arrow_left_search.png" />
-            <a:button onclick="require('ext/quicksearch/quicksearch').findnext(1)" skin="btnquicksearchnav" class="btnquicksearchnavRight" icon="arrow_right_search.png" />
+            <a:button onclick="require('ext/quicksearch/quicksearch').findprevious(1)" skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider"  />
+            <a:button onclick="require('ext/quicksearch/quicksearch').findnext(1)" skin="btnquicksearchnav" class="btnquicksearchnavRight" />
             <a:button margin="0 0 0 5" skin="btnsearchicon" icon="rounded_close.png" onclick="
               require('ext/quicksearch/quicksearch').toggleDialog(-1);
             " />

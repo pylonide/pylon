@@ -18,7 +18,6 @@
       optimize = "true">
         <a:button
           skin="header-btn"
-          right="5"
           class="panel-settings"
           submenu="mnuFilesSettings"/>
           
@@ -48,7 +47,7 @@
     
                 <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
                 <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
+                <a:rename match="[file|folder[not(@root)]]" set="{davProject.rename([@name], [@oldpath])}" />
                 <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
                 <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
                 <a:copy match="[file|folder]" set="{
@@ -73,6 +72,8 @@
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
+            <a:divider />
+            <a:item match="[file|folder]" command="searchinfiles">Search Files in this Folder</a:item>
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;

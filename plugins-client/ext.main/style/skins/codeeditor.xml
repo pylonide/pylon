@@ -7,21 +7,12 @@
 
         .ace_scroller {
           position: absolute;
-          overflow-x: scroll;
-          overflow-y: hidden;
           background-color: #fbfbfb;
           -webkit-border-top-left-radius: 6px;
           -moz-border-radius-topleft: 6px;
           border-top-left-radius: 6px;
           top: 0;
           bottom: 0
-        }
-
-        .ace_gutter {
-          position: absolute;
-          overflow-x: scroll;
-          overflow-y: hidden;
-          height: 100%;
         }
 
         .ace_editor .ace_sb {

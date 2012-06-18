@@ -1,6 +1,5 @@
 /**
- * Logger
- * The logger outputs given messages into the console output, properly formatted.
+ * The logger formats and outputs messages to the console
  *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -15,38 +14,21 @@ var RE_relwsp = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var RE_COLOR = /\u001b\[([\d;]+)?m/g;
 
-// Remove as many elements in the console output area so that between
-// the existing buffer and the stream coming in we have the right
-// amount of lines according to MAX_LIMIT.
-var balanceBuffer = function(elem) {
-    var len = elem.childNodes.length;
-    if (len <= MAX_LINES)
-        return;
+var BUFFER_INTERVAL = 100;
+var OUTPUT_CUTOFF = 2003;
 
-    len = len - MAX_LINES;
-    for (var i = 0; i < len; i++)
-        elem.removeChild(elem.firstChild);
-};
-
-var jump = function(path, row, column) {
+var openLinkedFile = function(path, row, column) {
     row = parseInt(row.slice(1), 10);
     column = column ? parseInt(column.slice(1), 10) : 0;
     editors.showFile(path, row, column);
-};
-
-// Maximum amount of buffer history
-var bufferInterval = {};
-var setBufferInterval = function(el, id) {
-    bufferInterval[id] = setInterval(function() {
-        balanceBuffer(el);
-    }, 1000);
 };
 
 var strRepeat = function(s, t) { return new Array(t + 1).join(s); };
 var escRegExp = function(s) { return s.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1'); };
 
 var createItem = module.exports.test.createItem = function(line, ide) {
-    if (!line) return "";
+    if (!line)
+        return "";
 
     var workspaceDir = ide.workspaceDir;
     var davPrefix = ide.davPrefix;
@@ -61,22 +43,20 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     else if (line.search(RE_URL) !== -1) {
         line = line.replace(RE_URL, "<a href='$1' target='_blank'>$1</a>");
     }
-    
-    // escape HTML/ XML, but preserve the links:
+
+    // escape HTML/ XML, but preserve the links
     var links = [];
     var replacer = "###$#$#$##0";
     line = line.replace(/(<a.*?a>)/gi, function(m) {
         links.push(m);
         return replacer;
     });
-    
     line = apf.escapeXML(line);
-    
     line = line.replace(replacer, function() {
         return links.shift();
     });
-    
-    var open = 0;
+
+    var openSpanTagCount = 0;
     line = line
         .replace(/\s{2,}/g, function(str) { return strRepeat("&nbsp;", str.length); })
         .replace(RE_COLOR, function(m, style) {
@@ -84,25 +64,25 @@ var createItem = module.exports.test.createItem = function(line, ide) {
                 return "";
             style = parseInt(style.replace(";", ""), 10);
             // check for end of style delimiters
-            if (open > 0 && (style === 39 || (style < 30 && style > 20))) {
-                --open;
+            if (openSpanTagCount > 0 && (style === 39 || (style < 30 && style > 20))) {
+                --openSpanTagCount;
                 return "</span>";
             }
             else {
                 if (style === 1) {
-                    ++open;
+                    ++openSpanTagCount;
                     return "<span class=\"term_boldColor\" style=\"font-weight:bold\">";
                 }
                 else if (style === 3) {
-                    ++open;
+                    ++openSpanTagCount;
                     return "<span style=\"font-style:italic\">";
                 }
                 else if (style === 4) {
-                    ++open;
+                    ++openSpanTagCount;
                     return "<span style=\"text-decoration:underline\">";
                 }
                 else if (style >= 30 && !(style > 40 && style < 50)) {
-                    ++open;
+                    ++openSpanTagCount;
                     var ansiColor = (style % 30);
                     if (ansiColor >= 10)
                         ansiColor -= 2;
@@ -115,8 +95,8 @@ var createItem = module.exports.test.createItem = function(line, ide) {
         })
         .replace(/(\u0007|\u001b)\[(K|2J)/g, "");
 
-    if (open > 0)
-        return line + (new Array(open + 1).join("</span>"));
+    if (openSpanTagCount > 0)
+        return line + (new Array(openSpanTagCount + 1).join("</span>"));
 
     return line;
 };
@@ -125,53 +105,118 @@ var childBuffer = {};
 var childBufferInterval = {};
 var eventsAttached;
 
-var getOutputElement = function(choice) {
-    var ret = {
-        element: txtConsole.$ext,
-        id: "console"
+var preInitConsoleBuffer = document.createElement("div");
+var preInitOutputBuffer = document.createElement("div");
+
+document.body.appendChild(preInitConsoleBuffer);
+document.body.appendChild(preInitOutputBuffer);
+
+// Modify this to create a document fragment if txtOutput is not defined
+var getOutputElement = function(getTxtOutput) {
+
+    // this is a hack for commands that are not associated with anything
+    // if this happens we usually write it to `txtConsole`
+    // but if we don't have that one, we just pump it to /dev/null
+    // in this case the preInitConsoleBuffer
+    var defaultHandler = typeof txtConsole !== "undefined" && txtConsole && txtConsole.$ext
+                            ? txtConsole.$ext
+                            : preInitOutputBuffer;
+    
+    if (typeof getTxtOutput === "object" && getTxtOutput && getTxtOutput.$ext && getTxtOutput.id) {
+        return {
+            element: getTxtOutput.$ext,
+            id: getTxtOutput.id
+        };
+    }
+
+    if (typeof txtOutput === "undefined") {
+        if (getTxtOutput) {
+            return {
+                element: preInitOutputBuffer,
+                id: "output"
+            };
+        }
+
+        return {
+            element: preInitConsoleBuffer,
+            id: "console"
+        };
+    }
+
+    if (typeof getTxtOutput === "boolean" && getTxtOutput) {
+        return {
+            element: txtOutput.$ext,
+            id: "output"
+        };
+    }
+    else if (getTxtOutput === "undefined" || !getTxtOutput) {
+        return {
+            element: defaultHandler,
+            id: "console"
+        };
+    }
+
+
+    if (!getTxtOutput.$ext) {
+        getTxtOutput.$ext = defaultHandler;
+    }
+
+    return {
+        element: getTxtOutput.$ext,
+        id: getTxtOutput.id
     };
-
-    if (!choice)
-        return ret;
-
-    // legacy support: choice passed as Boolean TRUE means 'use txtOutput'.
-    if (typeof choice == "boolean" && choice) {
-        ret.element = txtOutput.$ext;
-        ret.id = "output";
-    }
-    else if (choice.$ext && choice.id) {
-        ret.element = choice.$ext;
-        ret.id = choice.id;
-    }
-
-    return ret;
 }
+
+module.exports.appendConsoleFragmentsAfterInit = function() {
+    while(preInitConsoleBuffer.childNodes.length)
+        txtConsole.$ext.appendChild(preInitConsoleBuffer.childNodes[0]);
+    while(preInitOutputBuffer.childNodes.length)
+        txtOutput.$ext.appendChild(preInitOutputBuffer.childNodes[0]);
+};
 
 module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var out = getOutputElement(useOutput);
     var parentEl = out.element;
     var outputId = out.id;
 
-    if (eventsAttached !== true) {
+    if (parentEl.eventsAttached !== true) {
         parentEl.addEventListener("click", function(e) {
             var node = e.target;
-            if (node.hasAttribute("data-wsp"))
-                jump.apply(null, e.target.getAttribute("data-wsp").split(","));
+            if (node.hasAttribute("data-wsp")) {
+                openLinkedFile.apply(null, e.target.getAttribute("data-wsp").split(","));
+                apf.preventDefault(e);
+                return false;
+            }
         });
-        eventsAttached = true;
+        parentEl.eventsAttached = true;
     }
-
-    if (!bufferInterval[outputId])
-        setBufferInterval(parentEl, outputId);
 
     // Interval console output so the browser doesn't crash from high-volume
     // buffers
     if (!childBuffer[outputId]) {
         childBuffer[outputId] = document.createDocumentFragment();
+        function outputBuffer() {
+            if (parentEl) {
+                parentEl.appendChild(childBuffer[outputId]);
+                childBuffer[outputId] = document.createDocumentFragment();
+
+                // childNodes[3] are the actual lines of output that come after
+                // the spinner, prompt and divider
+                var numChildNodesOverflow = parentEl.childNodes.length - OUTPUT_CUTOFF;
+                for (var i = 0; i < numChildNodesOverflow; i++)
+                    parentEl.removeChild(parentEl.childNodes[3]);
+            }
+            else {
+                if (typeof txtOutput !== "undefined") {
+                    txtOutput.$ext.appendChild(childBuffer[outputId]);
+                    childBuffer[outputId] = document.createDocumentFragment();
+                }
+            }
+        }
+
         childBufferInterval[outputId] = setInterval(function() {
-            parentEl.appendChild(childBuffer[outputId]);
-            childBuffer[outputId] = document.createDocumentFragment();
-        }, 100);
+            outputBuffer();
+        }, BUFFER_INTERVAL);
     }
 
     var lines = (data.toString()).split("\n", MAX_LINES);
@@ -186,16 +231,27 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     }
 
     childBuffer[outputId].appendChild(fragment);
-    
+
     //@todo this implementation is hacking the apf abstraction
     //      so we have to trigger the scrollbar update ourselves
-    setTimeout(function(){
-        tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update()
-    }, 1000);
+    if (window["tabConsole"]) {
+        setTimeout(function(){
+            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+        }, 1000);
+    }
+};
+
+module.exports.killBufferInterval = function(sectionNumber) {
+    var sectionId = "section" + sectionNumber;
+    if (childBufferInterval[sectionId]) {
+        // Wait for the remaining buffer to output
+        setTimeout(function() {
+            clearInterval(childBufferInterval[sectionId]);
+        }, BUFFER_INTERVAL + (BUFFER_INTERVAL/2));
+    }
 };
 
 var messages = {
-    divider: "<span class='cli_divider'></span>",
     prompt: "<span style='color:#86c2f6'>__MSG__</span>",
     command: "<span style='color:#86c2f6'><span>&gt;&gt;&gt;</span><div>__MSG__</div></span>"
 };
@@ -208,27 +264,26 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
     if (messages[type])
         msg = messages[type].replace("__MSG__", msg);
 
-    var out = getOutputElement(useOutput);
-    var parentEl = out.element;
-    var outputId = out.id;
-
-    if (!bufferInterval[outputId])
-        setBufferInterval(parentEl, outputId);
-
     var containerOutput = ['<div'];
     if (tracerId)
         containerOutput.push(' id="', tracerId, '"');
-
     containerOutput.push(" class='item output_section console_",
             type, "'>", (pre || ""), msg, (post || ""), "</div>");
 
-    parentEl.innerHTML += containerOutput.join("");
+    var out = getOutputElement(useOutput);
+    var parentEl = out.element;
+    if (parentEl.innerHTML)
+        parentEl.innerHTML += containerOutput.join("");
+    else
+        parentEl.innerHTML = containerOutput.join("");
     
     //@todo this implementation is hacking the apf abstraction
     //      so we have to trigger the scrollbar update ourselves
-    setTimeout(function(){
-        tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update()
-    }, 1000);
+    if (window["tabConsole"]) {
+        setTimeout(function(){
+            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+        }, 1000);
+    }
 };
 
 });

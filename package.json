@@ -12,23 +12,23 @@
 
     "pm": "sm",
     "dependencies": {
-        
         "socket.io": "0.9.x",
         "socket.io-client": "0.9.x",
         "connect": "1.8.x",
-        
+
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",
         "http-error": "~0.0.1",
         "simple-template": "~0.0.1",
-        
+
         "optimist": "~0.3.1",
         "dryice": "0.4.2",
-        
+
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4"
+        "amd-loader": "~0.0.4",
+        "async": "0.1.21"
     },
-    
+
     "devDependencies": {
         "nodeunit": "~0.7.4",
         "sinon": "~1.3.4",
@@ -36,14 +36,14 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/580c290971538052740eba3cde23ce8e4288b047"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/0eea5c6a1f3bd6a060df5e94c4472b4ea66988b6"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/5f6cbc8bd7bf33b98df449dbfc7a6352c8d36d39"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/0f7f497815b49472bb2865934ac6c71d15dcf126"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/00f2fb3ba522de1fac0765ee8e62de468be53816"],
-        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/b830cc5961190d8442ff7ac3c0c566924a7df195"]
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/a702fad9f0e5fbabe8da351cc235b6e74a5ef7d0"],
+        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/5d279d21e984dc621ff23ae77726ddd015880b7d"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"]
     },
 
     "repository" : {
@@ -56,6 +56,8 @@
     }],
 
     "scripts": {
-        "start": "sh ./bin/cloud9.sh"
+        "start": "sh ./bin/cloud9.sh",
+        "build-debug": "node ./scripts/build-debug",
+        "build-packed": "node ./scripts/build-packed"
     }
 }

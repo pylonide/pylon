@@ -112,8 +112,12 @@ var JsonHighlightRules = function() {
     this.$rules = {
         "start" : [
             {
+                token : "variable", // single line
+                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]\\s*(?=:)'
+            }, {
                 token : "string", // single line
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+                regex : '"',
+                next  : "string"
             }, {
                 token : "constant.numeric", // hex
                 regex : "0[xX][0-9a-fA-F]+\\b"
@@ -138,6 +142,26 @@ var JsonHighlightRules = function() {
             }, {
                 token : "text",
                 regex : "\\s+"
+            }
+        ],
+        "string" : [
+            {
+                token : "constant.language.escape",
+                regex : /\\(?:x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4})/
+            }, {
+                token : "string",
+                regex : '[^"\\\\]+',
+                merge : true
+            }, {
+                token : "string",
+                regex : '"',
+                next  : "start",
+                merge : true
+            }, {
+                token : "string",
+                regex : "",
+                next  : "start",
+                merge : true
             }
         ]
     };
@@ -326,7 +350,7 @@ var CstyleBehaviour = function () {
                 }
 
                 // Find what token we're inside.
-                var tokens = session.getTokens(selection.start.row, selection.start.row)[0].tokens;
+                var tokens = session.getTokens(selection.start.row);
                 var col = 0, token;
                 var quotepos = -1; // Track whether we're inside an open quote.
 
@@ -497,9 +521,9 @@ var FoldMode = exports.FoldMode = function() {};
         }
     };
 
-    this.openingBracketBlock = function(session, bracket, row, column) {
+    this.openingBracketBlock = function(session, bracket, row, column, typeRe, allowBlankLine) {
         var start = {row: row, column: column + 1};
-        var end = session.$findClosingBracket(bracket, start);
+        var end = session.$findClosingBracket(bracket, start, typeRe, allowBlankLine);
         if (!end)
             return;
 

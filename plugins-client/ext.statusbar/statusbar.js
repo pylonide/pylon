@@ -193,10 +193,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             var doc = editor.getDocument();
             var value = doc.getTextRange(range);
             lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-            lblSelectionLength.show();
+           // lblSelectionLength.show();
         } else {
             lblSelectionLength.setAttribute("caption", "");
-            lblSelectionLength.hide();
+          //  lblSelectionLength.hide();
         }
     },
     

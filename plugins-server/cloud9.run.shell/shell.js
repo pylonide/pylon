@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require("util");
+var c9util = require("../cloud9.core/util");
 var spawn = require("child_process").spawn;
 var killTree = require("./killtree").killTree;
 
@@ -22,31 +24,42 @@ var exports = module.exports = function setup(options, imports, register) {
 };
 
 exports.factory = function(uid) {
-    return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.extra, eventEmitter, eventName);
+    return function(args, eventEmitter, eventName, callback) {
+        var options = {};
+        c9util.extend(options, args);
+        options.uid = uid;
+        options.eventEmitter = eventEmitter;
+        options.eventName = eventName;
+        options.args = args.args;
+
+        return new Runner(options, callback);
     };
 };
 
-var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, eventEmitter, eventName) {
-    this.uid = uid;
-    this.command = command;
-    this.args = args || [];
-    this.extra = extra;
+var Runner = exports.Runner = function(options, callback) {
+    this.uid = options.uid;
+    this.command = options.command;
+    this.args = options.args || [];
+    this.extra = options.extra;
 
     this.runOptions = {};
-    if (cwd)
-        this.runOptions.cwd = cwd;
+    if (options.cwd)
+        this.runOptions.cwd = options.cwd;
 
-    env = env || {};
-    env = env;
+    this.env = options.env || {};
     for (var key in process.env)
-        if (!env.hasOwnProperty(key))
-            env[key] = process.env[key];
+        if (!this.env.hasOwnProperty(key))
+            this.env[key] = process.env[key];
 
-    this.runOptions.env = env;
+    this.runOptions.env = this.env;
 
-    this.eventEmitter = eventEmitter;
-    this.eventName = eventName;
+    this.encoding = options.encoding || "utf8";
+    if (this.encoding === "binary") {
+        this.encoding = null;
+     }
+
+    this.eventEmitter = options.eventEmitter;
+    this.eventName = options.eventName;
 
     this.child = {
         pid: null
@@ -56,6 +69,8 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
     this.__defineGetter__("pid", function(){
         return (self.child.exitCode === null && self.child.signalCode === null)  ? self.child.pid : 0;
     });
+    
+    callback(null, self);
 };
 
 (function() {
@@ -106,9 +121,8 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
             this.args = ["-Hu", "#" + this.uid, this.command].concat(this.args);
             this.command = "sudo";
         }
-
+        
         try {
-            // console.log(this.command, this.args)
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {
             return callback(e);
@@ -123,8 +137,12 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
 
+        if (self.encoding) {
+            child.stdout.setEncoding(self.encoding);
+            child.stderr.setEncoding(self.encoding);
+        }
+        
         function emit(msg) {
-            // console.log(self.eventName, msg);
             self.eventEmitter.emit(self.eventName, msg);
         }
 
@@ -134,7 +152,7 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data.toString("utf8"),
+                    "data": data,
                     "extra": self.extra
                 });
             };

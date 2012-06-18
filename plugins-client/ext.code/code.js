@@ -11,13 +11,13 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
-var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
-var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
+var MultiSelectCommands = require("ace/multi_select").commands;
 var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
@@ -46,11 +46,15 @@ var ModesCaption = {
     "CoffeeScript" : "text/x-script.coffeescript",
     "Coldfusion" : "text/x-coldfusion",
     "CSS" : "text/css",
+    "Go" : "text/x-go",
     "Groovy" : "text/x-groovy",
+    "haXe" : "text/hx",
     "Java" : "text/x-java-source",
     "JavaScript" : "application/javascript",
+    "JSON" : "application/json",
     "Latex" : "application/x-latex",
     "Script" : "text/x-script",
+    "Less" : "text/x-less",
     "Lua" : "text/x-lua",
     "Markdown" : "text/x-markdown",
     "OCaml" : "text/x-script.ocaml",
@@ -58,19 +62,25 @@ var ModesCaption = {
     "Perl" : "text/x-script.perl",
     "Powershell" : "text/x-script.powershell",
     "Python" : "text/x-script.python",
+    "pqSQL" : "text/x-sql",
     "Ruby" : "text/x-script.ruby",
     "Scala" : "text/x-scala",
     "SCSS" : "text/x-scss",
+    "SH" : "application/x-sh",
     "SQL" : "text/x-sql",
+    "SVG" : "image/svg+xml",
     "Textile" : "text/x-web-textile",
     "HTML" : "text/html",
-    "XML" : "application/xml"
-}
+    "XML" : "application/xml",
+    "XQuery" : "text/x-xquery",
+    "YAML" : "application/x-yaml"    
+};
 
 var SupportedModes = {
     "application/javascript": "javascript",
     "application/json": "json",
     "text/css": "css",
+    "text/x-less": "less",
     "text/x-scss": "scss",
     "text/html": "html",
     "application/xhtml+xml": "html",
@@ -82,6 +92,7 @@ var SupportedModes = {
     "application/xslt+xml": "xml",
     "application/atom+xml": "xml",
     "application/mathml+xml": "xml",
+    "application/json": "json",
     "application/x-httpd-php": "php",
     "application/x-sh": "sh",
     "text/x-script.python": "python",
@@ -98,18 +109,26 @@ var SupportedModes = {
     "text/x-script.ocaml": "ocaml",
     "text/x-script.clojure": "clojure",
     "application/x-latex": "latex",
+    "application/x-yaml" : "yaml",
     "text/x-lua": "lua",
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
-    "text/x-sql": "sql"
+    "text/x-sql": "sql",
+    "text/x-c9search" : "c9search",
+    "text/x-xquery": "xquery",
+    "text/x-go" : "golang",
+    "text/x-hx" : "hx",
+    "text/x-sql" : "sql"
 };
 
 var contentTypes = {
+    "c9search": "text/x-c9search",
+    
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
-    "less": "text/css",
+    "less": "text/x-less",
     "scss": "text/x-scss",
     "sass": "text/x-sass",
 
@@ -126,6 +145,7 @@ var contentTypes = {
     "php": "application/x-httpd-php",
     "phtml": "application/x-httpd-php",
     "html": "text/html",
+    "tpl": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
     "*Cakefile": "text/x-script.coffeescript",
@@ -168,10 +188,22 @@ var contentTypes = {
 
     "ps1": "text/x-script.powershell",
     "cfm": "text/x-coldfusion",
+    "cfc": "text/x-coldfusion",
     "sql": "text/x-sql",
+    "pqsql": "text/x-sql",
 
     "sh": "application/x-sh",
-    "bash": "application/x-sh"
+    "bash": "application/x-sh",
+    
+    "xq": "text/x-xquery",
+    
+    "patch": "text/diff",
+    
+    "go": "text/x-go",
+    
+    "hx": "text/hx",
+    
+    "yaml": "application/x-yaml"
 };
 
 module.exports = ext.register("ext/code/code", {
@@ -308,6 +340,9 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
+                
+                if (!doc || !doc.acesession)
+                    return; //This is probably a deconstructed document
 
                 doc.acesession.setValue(e.value || "");
 
@@ -319,8 +354,8 @@ module.exports = ext.register("ext/code/code", {
                 if (this.$page.id != this.$page.parentNode.activepage)
                     return;
 
-                ceEditor.setProperty("syntax", syntax);
-                ceEditor.setProperty("value", doc.acesession);
+                ceEditor.setAttribute("syntax", syntax);
+                ceEditor.setAttribute("value", doc.acesession);
                 // force tokenize first visible rows
                 var rowCount = Math.min(50, doc.acesession.getLength());
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
@@ -396,8 +431,9 @@ module.exports = ext.register("ext/code/code", {
             command.focusContext = true;
 
             var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor){
-                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
                     return false;
 
                 return isAvailable ? isAvailable(editor) : true;
@@ -428,10 +464,11 @@ module.exports = ext.register("ext/code/code", {
                 ["overwrite", "false"],
                 ["selectstyle", "line"],
                 ["activeline", "true"],
-                ["gutterline", "false"],
+                ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],
+                ["behaviors", ""],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],
@@ -468,11 +505,11 @@ module.exports = ext.register("ext/code/code", {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
                 if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
-                  && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
-                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "").replace(/"/g, "&quot;") + '"]');
-                    if (nodes.length) {
+                  && e.node.hasAttribute("path")) {
+                    var path = e.node.getAttribute("path").slice(ide.davPrefix.length + 1);
+                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + path.replace(/"/g, "&quot;") + '"]');
+                    if (nodes.length)
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
-                    }
                 }
                 e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
             }
@@ -660,7 +697,7 @@ module.exports = ext.register("ext/code/code", {
                         }
 
                         if (self.ceEditor)
-                            ceEditor.setProperty("syntax", _self.getSyntax(file));
+                            ceEditor.setAttribute("syntax", _self.getSyntax(file));
                     }
                 }
             }), 300000),
@@ -704,7 +741,7 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
+                checked : "[{tabEditors.activepage && tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
                     return editor && editor.ceEditor;
                 }
@@ -714,9 +751,6 @@ module.exports = ext.register("ext/code/code", {
                 id : "mnuWrapView",
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
-                "onprop.wrapmode" : function(e){
-                    this.setAttribute("disabled", !apf.isTrue(e.value))
-                },
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;
@@ -789,6 +823,14 @@ module.exports = ext.register("ext/code/code", {
         this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         this.amlEditor.$editor.commands = commands;
 
+        // for search in files
+        this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+            var node = tabEditors.getPage().$doc.getNode();
+            
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                require("ext/searchinfiles/searchinfiles").launchFileFromSearch(_self.amlEditor.$editor);
+        });
+        
         // preload common language modes
         var noop = function() {};
         ceEditor.getMode("javascript", noop);

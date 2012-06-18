@@ -12,17 +12,18 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var settings = require("core/settings");
 var skin = require("text!ext/guidedtour/skin.xml");
 var markup = require("text!ext/guidedtour/guidedtour.xml");
 var ideConsole = require("ext/console/console");
 var zen = require("ext/zen/zen");
 var dockpanel = require("ext/dockpanel/dockpanel");
-var panels = require("ext/panels/panels");
-var settings = require("core/settings");
 var strTour = require("text!ext/guidedtour/tour.js");
-var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt");
-
+// tour.js uses these, they are NOT undefined
+var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt"); 
 var save, hasDeploy = false;
+var panels = require("ext/panels/panels");
+
 var madeNewFile = false;
 var wentToZen = false;
 var madeDebug = false;
@@ -64,16 +65,23 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         tourControlsDialog.addEventListener("hide", this.shutdown(this.hlElement));
     },
 
-    launchGT: function(){        
+    launchGT: function(){
         ext.initExtension(this);
         this.hideMenus();
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
         this.currentStep = -1;
+        
         winTourDesc.setValue(this.tour.initialText);
+        
         winTourGuide.show();
         winTourButtonStart.show();
         winTourButtonClose.show();
         winTourButtonDone.hide();
+        
+        
+        //hide the seccond unneeded cover
+        var modalBackground = document.getElementsByClassName("bk-window-cover");
+        modalBackground[modalBackground.length - 2].style.opacity = "0";
     },
     
     hideMenus: function(){
@@ -90,24 +98,23 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
     },
     
-    initTour: function(){
-        this.animateui = settings.model.queryValue('general/@animateui');
-        settings.model.setQueryValue('general/@animateui', false);
+    initTour: function() {
+        // Remember the states of everything  
+        this.cliBoxState = settings.model.queryValue("auto/console/@showinput");
+        ideConsole.showInput();
+            
+        this.gutterState = settings.model.queryValue("editors/code/@gutter");
         
-        ext.initExtension(require("ext/console/console"));
-        
-        /*ide.addEventListener("settings.load", function(e){
-            _self.animateui = settings.model.queryValue('general/@animateui');
-            settings.model.setQueryValue('general/@animateui', false);
-        });*/
-        
-        !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
+        this.statusBarState = settings.model.queryValue("auto/statusbar/@show");
 
+        this.projectFilesState = settings.model.queryValue("auto/panels/@active");
+        panels.activate(require("ext/tree/tree"));
+        
         var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
         if (demoFile && !deletedFile && false) {
             txtConsoleInput.setValue("rm helloWorld-quideTour.js");
             deletedFile = true;
-            require("ext/console/console").commandTextHandler({
+            ideConsole.commandTextHandler({
                 keyCode: 13,
                 currentTarget: txtConsoleInput
             });
@@ -155,8 +162,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         
         this.overlay.style = 'block';
         
-        settings.model.setQueryValue('general/@animateui', false);
-        
         apf.removeEventListener("keyup", _self.keyUpEvent);
         
         apf.addEventListener("keyup", _self.keyUpEvent = function(e){
@@ -167,8 +172,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });
         
         // remove the modal overlay, but keep it around to block input
-        //var modalBackground = document.getElementsByClassName("bk-window-cover");
-        //modalBackground[modalBackground.length - 1].style.opacity = "0";
+        var modalBackground = document.getElementsByClassName("bk-window-cover");
+        modalBackground[modalBackground.length - 1].style.opacity = "0";
     },
 
     stepBack: function(){
@@ -218,7 +223,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 btnTourStepBack.enable();
                 btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px 5px";
             }
-            if(this.currentStep > 22) {
+            if(this.currentStep > 25) {
                 btnTourStepBack.disable();
                 btnTourStepBack.$ext.childNodes[1].style.backgroundPosition = "20px -21px";
             }
@@ -248,20 +253,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             if (step.el !== undefined) {
                 if(typeof step.el == "string")
                     step.el = self[step.el];
-                if(typeof step.el == "function")
+                else if (typeof step.el == "function")
                     step.el = step.el();
                 _self.currentEl = step.el;
             }
             // All of these fix issues with elements not being available when this plugin loads
             else if (step.div == "ceEditor"){
                 _self.currentEl = ceEditor;
-            }
-            else if (step.div == "ceEditorGutter") {
-                _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', ceEditor.$ext) 
-            }
-            else if (step.div == "expandedDbg") {
-                _self.currentEl = expandedDbg;
-            }
+            }                  
             else if (step.div == "barIdeStatus") {
                 _self.currentEl = barIdeStatus;
             }
@@ -269,6 +268,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 if (step.div.indexOf("navbar") >= 0) {
                     _self.currentEl = eval(step.div);
                 }
+                else if (step.div == "expandedDbg") {
+                    _self.currentEl = expandedDbg;
+                } 
+                else if (step.div == "ceEditorGutter") {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[2]/DIV[2]', ceEditor.$ext);
+                } 
                 else if (step.node !== undefined) {
                     _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
                 }
@@ -281,6 +286,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 _self.currentEl = btnZenFullscreen;
             }
         }
+        
+        if (this.currentStep > 0) {
+            winTourText.hide();
+            this.hlElement.style.display = "none";
+        }
+        
         var _self = this;
         if(step.notAvailable) {
             this.stepForward();
@@ -289,20 +300,20 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         if (step.before) 
             step.before();
         
-        setTimeout(function(){   
+        setTimeout(function(){   // the timeout is to allow ui anims to shift
             getCurrentEl();
             if(!_self.currentEl)
                 return;
-                
+        
             _self.highlightElement();
-    
-            textTourDesc.setValue(step.desc);
-    
+            
             // Reset Position
             winTourText.setAttribute("bottom", "");
             winTourText.setAttribute("top", "");
             winTourText.setAttribute("left", "");
             winTourText.setAttribute("right", "");
+            
+            textTourDesc.setValue(step.desc);
     
             var pos = _self.getElementPosition(_self.currentEl);
             
@@ -311,46 +322,59 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
             winTourText.setAttribute("class", step.pos);
         
-            _self.setPositions(step.pos, pos, winTourText);
+            _self.setPositions(step.pos, pos, winTourText, step.extra, step.extraTop);
             
             if(step.pos)
                 winTourText.show();
-        });
+
+        }, 400);
     },
 
-    setPositions: function(position, posArray, div) {
+    setPositions: function(position, posArray, div, extra, extraTop) {
         if (position == "top"){
             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 25);
             div.setAttribute("left", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
         }
         else if (position == "right"){
-            div.setAttribute("left", posArray[0] + posArray[2] + 25);
-            div.setAttribute("top", (posArray[1] + (posArray[3] / 2)) - (div.getHeight() / 2));
+            if (extra === undefined)
+                extra = 0;
+            if (extraTop === undefined)
+                extraTop = 0;
+                
+            div.setAttribute("left", posArray[0] + posArray[2] + 25 + extra);
         }
         else if (position == "bottom"){
-            div.setAttribute("top", posArray[3] + 50);
-            div.setAttribute("right", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
+            if (extra === undefined)
+                extra = 0;
+            if (extraTop === undefined)
+                extraTop = 0;
+                
+            div.setAttribute("top", posArray[3] + 50 + extraTop);
+            div.setAttribute("left", posArray[3] + extra);
         }
         else if (position == "left"){
-            div.setAttribute("right", (window.innerWidth - posArray[0]) + 25);
-            div.setAttribute("top", (posArray[1] + (posArray[3] / 2)) - (div.getHeight() / 2));
+            if (extra === undefined)
+                extra = 0;
+            if (extraTop === undefined)
+                extraTop = 0;
+                
+            div.setAttribute("right", (window.innerWidth - posArray[0]) + 15 + extra); // compensation for new file dialog 
+            div.setAttribute("top", (posArray[1] + (posArray[3] / 2)) - (div.getHeight() / 2) + extraTop);
         }
-
+        
         return div;
     },
 
     /**
      * Element methods
      */
-    highlightElement: function(){        
-        //this.currentEl.addEventListener("resize", this.$celResize = function() {
-        //_self.resizeHighlightedEl();
-        //});
+    highlightElement: function(){
         this.resizeHighlightedEl();
         
         var hlZindex = this.hlElement.style.zIndex;
         winTourText.$ext.style.zIndex = hlZindex + 1;
         tourControlsDialog.$ext.style.zIndex = hlZindex + 2;
+        this.hlElement.style.display = "block";
     },
 
     resizeHighlightedEl: function() {
@@ -388,8 +412,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
         var elExt = el.$ext;
         if (elExt === undefined) {
-            var pos = apf.getAbsolutePosition(el[0]);
-            return [pos[0], pos[1], el[0].offsetWidth, el[0].offsetHeight];
+            if (el.parentNode !== undefined)
+                elExt = el.parentNode;
+            else
+                elExt = el[0];
+                
+            var pos = apf.getAbsolutePosition(elExt);
+            return [pos[0], pos[1], elExt.offsetWidth, elExt.offsetHeight];
         }
         else {
             var pos = apf.getAbsolutePosition(elExt);
@@ -408,7 +437,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     closeTG: function() {
         var _self = this;
         winTourGuide.hide();
-        
         apf.removeEventListener("keyup", _self.keyUpEvent);
     },
 
@@ -424,9 +452,19 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             (hlElement || _self.hlElement).style.display = "none";
             _self.currentStep = -1;
             _self.overlay.style = 'none';
+        
+            // restore setting to what they were before
+            settings.model.setQueryValue("auto/console/@showinput", _self.cliBoxState);
             
-            //set anim settings to what it was before the tour
-            settings.model.setQueryValue('general/@animateui', _self.animateui);
+            settings.model.setQueryValue("editors/code/@gutter", _self.gutterState);
+            
+            settings.model.setQueryValue("auto/statusbar/@show", _self.statusBarState);
+    
+            if (_self.projectFilesState === false)
+                require("ext/tree/tree").hide();
+        
+            require("ext/sidebar/sidebar").animateToDefaultWidth();
+            
         };        
     },
 
