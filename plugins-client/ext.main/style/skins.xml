@@ -8893,6 +8893,12 @@
             border-radius : 2px;
             -moz-border-radius: 2px;
             -webkit-border-radius: 2px;
+            
+            background-image: linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -o-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -moz-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -webkit-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -ms-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
         }
         
         .progressbar-greenDisabled {
@@ -8917,7 +8923,7 @@
             
             border-right: 1px solid #475b21;
             border-left: 1px solid #475b21;
-            height: 2px;
+            height: 3px;
         }
 
         .progressbar-greenDisabled .filledbar {
