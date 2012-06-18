@@ -80,7 +80,8 @@ util.inherits(NpmRuntimePlugin, Plugin);
             env: env,
             nodeVersion: version,
             extra: message.extra,
-            cwd: message.cwd
+            cwd: message.cwd,
+            encoding: "ascii"
         }, self.channel, function(err, pid, child) {
             if (err)
                 return self.error(err, 1, message, client);
@@ -128,11 +129,15 @@ util.inherits(NpmRuntimePlugin, Plugin);
             if (code)
                 return callback(null, false);
 
+            // use resolved command
+            message.argv[0] = out.split("\n")[0];
+
             self.pm.spawn("shell", {
                 command: "sh",
                 args: ["-c", message.argv.join(" ")],
                 cwd: cwd,
-                extra: message.extra
+                extra: message.extra,
+                encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message);
