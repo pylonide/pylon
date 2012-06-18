@@ -283,6 +283,10 @@
             height:20px;
         }
         
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.undetermined {
+            background-position: 0 -80px;
+        }
+        
         .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnDisabled {
             background-position: 0 -60px;
         }
@@ -8868,6 +8872,87 @@
     </a:presentation>
 </a:progressbar>
 
+<a:progressbar name="progressbar-green">
+    <a:style><![CDATA[
+        .progressbar-green {
+            position: relative;
+            cursor : default;
+        }
+
+        .progressbar-green .lbl {
+            display: none;
+        }
+        
+        .progressbar-green .left {
+            background-color: #191818;
+            border: 1px solid #111010;
+            -webkit-box-shadow: 0 1px 0 0 #474748;
+           -moz-box-shadow: 0 1px 0 0 #474748;
+                box-shadow: 0 1px 0 0 #474748;
+            
+            border-radius : 2px;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+        }
+        
+        .progressbar-greenDisabled {
+            
+        }
+
+        .progressbar-greenDisabled .left {
+            
+        }
+
+        .progressbar-green .filledbar {
+            overflow: hidden;            
+            display : none;
+            width : 0%;
+            z-index: 1000;
+            
+            background-image: linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -o-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -moz-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -webkit-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -ms-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            
+            border-right: 1px solid #475b21;
+            border-left: 1px solid #475b21;
+            height: 2px;
+        }
+
+        .progressbar-greenDisabled .filledbar {
+        }
+
+        .progressbar-greenDisabled .left {
+            
+        }
+
+        .progressbar-greenRunning .filledbar {
+            display: block;
+        }
+
+        .progressbar-greenComplete .left {
+
+        }
+
+        .progressbar-greenComplete .lbl {
+        
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main progress="div[2]/div" caption="div[1]/span/text()">
+            <div class="progressbar-green">
+                <div class="lbl"><span>0%</span></div>
+                <div class="left">
+                    <div class="filledbar"> </div>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:progressbar>
+
 <a:tab name="tab_console">
 <a:style><![CDATA[
     .tab_console {
@@ -9705,7 +9790,6 @@
         text-transform:uppercase;
         border-radius : 4px;
         -moz-border-radius: 4px;
-        -webkit-border-radius: 4px;
         -webkit-border-radius: 4px;
     }
 
