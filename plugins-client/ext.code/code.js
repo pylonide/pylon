@@ -46,9 +46,12 @@ var ModesCaption = {
     "CoffeeScript" : "text/x-script.coffeescript",
     "Coldfusion" : "text/x-coldfusion",
     "CSS" : "text/css",
+    "Go" : "text/x-go",
     "Groovy" : "text/x-groovy",
+    "haXe" : "text/hx",
     "Java" : "text/x-java-source",
     "JavaScript" : "application/javascript",
+    "JSON" : "application/json",
     "Latex" : "application/x-latex",
     "Script" : "text/x-script",
     "Less" : "text/x-less",
@@ -59,15 +62,19 @@ var ModesCaption = {
     "Perl" : "text/x-script.perl",
     "Powershell" : "text/x-script.powershell",
     "Python" : "text/x-script.python",
+    "pqSQL" : "text/x-sql",
     "Ruby" : "text/x-script.ruby",
     "Scala" : "text/x-scala",
     "SCSS" : "text/x-scss",
+    "SH" : "application/x-sh",
     "SQL" : "text/x-sql",
+    "SVG" : "image/svg+xml",
     "Textile" : "text/x-web-textile",
     "HTML" : "text/html",
     "XML" : "application/xml",
-    "XQuery" : "text/x-xquery"
-}
+    "XQuery" : "text/x-xquery",
+    "YAML" : "application/x-yaml"    
+};
 
 var SupportedModes = {
     "application/javascript": "javascript",
@@ -85,6 +92,7 @@ var SupportedModes = {
     "application/xslt+xml": "xml",
     "application/atom+xml": "xml",
     "application/mathml+xml": "xml",
+    "application/json": "json",
     "application/x-httpd-php": "php",
     "application/x-sh": "sh",
     "text/x-script.python": "python",
@@ -101,13 +109,17 @@ var SupportedModes = {
     "text/x-script.ocaml": "ocaml",
     "text/x-script.clojure": "clojure",
     "application/x-latex": "latex",
+    "application/x-yaml" : "yaml",
     "text/x-lua": "lua",
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
     "text/x-sql": "sql",
     "text/x-c9search" : "c9search",
-    "text/x-xquery": "xquery"
+    "text/x-xquery": "xquery",
+    "text/x-go" : "golang",
+    "text/x-hx" : "hx",
+    "text/x-sql" : "sql"
 };
 
 var contentTypes = {
@@ -133,6 +145,7 @@ var contentTypes = {
     "php": "application/x-httpd-php",
     "phtml": "application/x-httpd-php",
     "html": "text/html",
+    "tpl": "text/html",
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
     "*Cakefile": "text/x-script.coffeescript",
@@ -175,12 +188,22 @@ var contentTypes = {
 
     "ps1": "text/x-script.powershell",
     "cfm": "text/x-coldfusion",
+    "cfc": "text/x-coldfusion",
     "sql": "text/x-sql",
+    "pqsql": "text/x-sql",
 
     "sh": "application/x-sh",
     "bash": "application/x-sh",
     
-    "xq": "text/x-xquery"
+    "xq": "text/x-xquery",
+    
+    "patch": "text/diff",
+    
+    "go": "text/x-go",
+    
+    "hx": "text/hx",
+    
+    "yaml": "application/x-yaml"
 };
 
 module.exports = ext.register("ext/code/code", {
