@@ -61,7 +61,7 @@
         <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
         <a:item type="radio" value="text/css">CSS</a:item>
         <a:item type="radio" value="text/diff">Diff</a:item>
-        <a:item type="radio" value="text/go">Golang</a:item>
+        <a:item type="radio" value="text/x-go">Golang</a:item>
         <a:item type="radio" value="text/x-groovy">Groovy</a:item>
         <a:item type="radio" value="text/hx">haXe</a:item>
         <a:item type="radio" value="text/x-java-source">Java</a:item>
@@ -80,7 +80,7 @@
         <a:item type="radio" value="text/x-scala">Scala</a:item>
         <a:item type="radio" value="text/x-scss">SCSS</a:item>
         <a:item type="radio" value="application/x-sh">Shell Script</a:item>
-        <a:item type="radio" value="text/x-sql">(pg)SQL</a:item>
+        <a:item type="radio" value="text/x-sql">(pq)SQL</a:item>
         <a:item type="radio" value="image/svg+xml">SVG</a:item>
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>

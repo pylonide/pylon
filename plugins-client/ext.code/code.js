@@ -92,6 +92,7 @@ var SupportedModes = {
     "application/xslt+xml": "xml",
     "application/atom+xml": "xml",
     "application/mathml+xml": "xml",
+    "application/json": "json",
     "application/x-httpd-php": "php",
     "application/x-sh": "sh",
     "text/x-script.python": "python",
@@ -108,13 +109,17 @@ var SupportedModes = {
     "text/x-script.ocaml": "ocaml",
     "text/x-script.clojure": "clojure",
     "application/x-latex": "latex",
+    "application/x-yaml" : "yaml",
     "text/x-lua": "lua",
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
     "text/x-sql": "sql",
     "text/x-c9search" : "c9search",
-    "text/x-xquery": "xquery"
+    "text/x-xquery": "xquery",
+    "text/x-go" : "golang",
+    "text/x-hx" : "hx",
+    "text/x-sql" : "sql"
 };
 
 var contentTypes = {
