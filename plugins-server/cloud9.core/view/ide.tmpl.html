@@ -34,7 +34,6 @@
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
                 settings: <%settingsXml%>,
-                real: [%real%],
                 env: <%env%>,
                 packed: <%packed%> ? true : false,
                 packedName: <%packedName%>
@@ -62,13 +61,8 @@
             var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
-<<<<<<< HEAD
-                if (!cloud9config.real) {
-                    var list = ["core/ide", "core/ext", "core/util",
-=======
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
->>>>>>> origin/beta
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
                 }

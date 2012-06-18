@@ -24,15 +24,11 @@ define(function(require, exports, module) {
         this.workspaceId    = window.cloud9config.workspaceId;
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;
-<<<<<<< HEAD
         this.uid            = window.cloud9config.uid;
         this.pid            = window.cloud9config.pid;
         this.env            = window.cloud9config.env;
-
-=======
         this.local          = window.cloud9config.local;
         
->>>>>>> origin/beta
         this.loggedIn       = true;
 
         this.onLine         = false;
