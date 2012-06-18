@@ -478,7 +478,7 @@ module.exports = ext.register("ext/sync/sync", {
         var project;
         for (var i = 0; i < projects.length; i++) {
             project = projects[i];
-            if (project.local !== true) {
+            if (project.local !== true && project.syncEnabled !== true) {
                 xmlStr += this.createSyncProjectXml(project);
             }
         }
