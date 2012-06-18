@@ -158,7 +158,8 @@ module.exports = ext.register("ext/watcher/watcher", {
 
             // allow another plugin to change the watcher behavior
             var eventData = {
-                path: path
+                path: path,
+                message: message
             };
 
             if (ide.dispatchEvent("beforewatcherchange", eventData) === false)
