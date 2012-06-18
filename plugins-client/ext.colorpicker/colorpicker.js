@@ -77,11 +77,19 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var _self = this;
         
         settings.addSettings("Code Tools", markupSettings);
-
+        
         ide.addEventListener("settings.load", function(e){
+            _self.updateSetting();
             if (apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker")))
                 _self.setEvents();
         });
+    },
+
+    updateSetting : function(){  
+        this.enabled = apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker"));
+        
+        if (this.enabled)
+            this.setEvents();
     },
 
     /**
@@ -278,7 +286,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             }
         });
         
-        codetools.register(this);
+        ide.addEventListener("afteropenfile", function() {
+            codetools.register(this);
+        });
     },
     
     removeEvents : function(){
