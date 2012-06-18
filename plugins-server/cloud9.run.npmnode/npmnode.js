@@ -48,15 +48,10 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     this.nodeArgs = [];
 
     options.env = options.env || {};
-    options.command = process.execPath;
+    options.command = options.nodePath || process.execPath;
     options.nodePath = options.nodePath || process.execPath;
 
-    options.sandbox.getPort(function (err, port) {
-        if (err) return callback(err);
-
-        options.port = port;
-        ShellRunner.call(self, options, callback);
-    });
+    ShellRunner.call(self, options, callback);
 };
 
 util.inherits(Runner, ShellRunner);

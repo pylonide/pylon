@@ -30,7 +30,7 @@ exports.factory = function(vfs, sandbox, root, url, nodePath, usePort) {
         options.args = args.args;
         options.cwd = args.cwd;
         options.env = args.env;
-        options.nodePath = args.nodePath;
+        options.nodePath = args.nodePath || nodePath || process.execPath;
         options.nodeVersion = args.nodeVersion;
         options.encoding = args.encoding;
         options.eventEmitter = eventEmitter;
@@ -55,11 +55,8 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     self.root = options.root;
     self.uid = options.uid;
     self.nodeVersion = options.nodeVersion || "auto";
-
     self.file = options.file || "";
-
     options.env = options.env || {};
-    options.env.NODE_PATH = options.root && (options.root + "/../npm_global/lib/node_modules");
 
     self.scriptArgs = options.args || [];
     self.nodeArgs = [];
@@ -134,7 +131,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         options.eventEmitter.on(options.eventName, debugMessageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
-        options.command = options.command || process.execPath;
+        options.command = options.nodePath || process.execPath;
 
         ShellRunner.call(self, vfs, options, callback);
     }

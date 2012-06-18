@@ -8,7 +8,7 @@ var NodeDebugProxy = require("./nodedebugproxy");
  * debug node scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, nodePath, callback) {
     var NodeRunner = runNode.Runner;
 
     // create methods on exports, that take a reference from NodeRunner
@@ -21,14 +21,14 @@ var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePort
     });
 
     function init(projectDir, url) {
-        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, usePortFlag));
+        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, usePortFlag, nodePath));
 
         callback();
     }
 };
 
 function setup (NodeRunner) {
-    exports.factory = function(vfs, sandbox, root, url, usePortFlag) {
+    exports.factory = function(vfs, sandbox, root, url, usePortFlag, nodePath) {
         return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
@@ -38,6 +38,7 @@ function setup (NodeRunner) {
             options.cwd = args.cwd;
             options.env = args.env;
             options.nodeVersion = args.nodeVersion;
+            options.nodePath = args.nodePath || nodePath;
             options.encoding = args.encoding;
             options.breakOnStart = args.breakOnStart;
             options.eventEmitter = eventEmitter;

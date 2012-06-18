@@ -109,6 +109,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
 
     this.createChild = function(callback) {
         this.runOptions.args = this.args;
+        //console.log(this.command, this.runOptions);
         this.vfs.spawn(this.command, this.runOptions, function(err, meta) {
             callback(err, meta && meta.process);
         });

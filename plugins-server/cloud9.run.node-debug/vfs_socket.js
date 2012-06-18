@@ -56,7 +56,7 @@ require("util").inherits(Socket, EventEmitter);
         var self = this;
         this.$vfs.connect(this.$port, { encoding: "utf8"}, function(err, meta) {
             if (err)
-                onEnd(err);
+                return onEnd(err);
 
             self.$stream = meta.stream;
 
@@ -69,13 +69,15 @@ require("util").inherits(Socket, EventEmitter);
 
             self.$stream.addListener("connect", function () {
                 // set connection flag to true (connected)
-                this.connected = true;
+                self.connected = true;
                 self.emit("connect");
             });
 
             function onEnd(errorInfo) {
                 // set connection flag to false (not connected)
-                this.connected = false;
+                errorInfo && console.error("connect error", errorInfo);
+
+                self.connected = false;
                 self.$stream && self.$stream.end();
                 self.state = "initialized";
                 self.emit("end", errorInfo);
@@ -83,17 +85,17 @@ require("util").inherits(Socket, EventEmitter);
 
             function onError() {
                 // if currently not connected and there re-tries left to perform
-                if (!this.connected && this.connectRetryCount > 0) {
+                if (!self.connected && self.connectRetryCount > 0) {
                     // decrease number of re-tries
-                    this.connectRetryCount--;
+                    self.connectRetryCount--;
                     // since the connection has failed the entire connection object is dead.
                     // close the existing connection object
-                    self.$stream.end();
+                    self.$stream && self.$stream.end();
                     // sleep and afterward try to connect again
                     setTimeout(function() {
                         //console.log("retrying. " + ( connectRetryCount + 1 ) + " attempts left");
                         self.connect();
-                    }, this.connectRetryInterval);
+                    }, self.connectRetryInterval);
                 }
                 else {
                     // TODO: replace error message with exception instance.
