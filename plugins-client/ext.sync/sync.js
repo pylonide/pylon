@@ -410,7 +410,7 @@ module.exports = ext.register("ext/sync/sync", {
     		});
     		
     		this.$iframe = document.body.appendChild(document.createElement("iframe"));
-    		this.$iframe.src = "http://localhost:13338/gjtorikian/a572318b/workspace/c9syncproxy.html";
+    		this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
     	}
     	
     	if (!this.$iframe.connected) {
