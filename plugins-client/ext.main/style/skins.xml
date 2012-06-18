@@ -3433,6 +3433,9 @@
         .aceSearchConsole .nocorner.ace_editor {
             margin-top: 0px;
         }
+        .aceSearchConsole.ace-monokai .ace_marker-layer .ace_active_line {
+            background: rgba(0,0,0,0.07);
+        }
         .aceSearchResults .ace_text-layer {
             pointer-events: auto;
         }

@@ -420,7 +420,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
             
-            _self.searchConsole.$editor.session.highlight(options.query);
+            _self.setHighlight(_self.searchConsole.$editor.getSession(), options.query);
         }
         else {
             if (_self.searchPage === null) { // the results are not open, create a new page
@@ -443,7 +443,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
             }
             
-            _self.searcheditor.session.highlight(options.query);
+            _self.setHighlight(_self.searcheditor.getSession(), options.query);
         }
         
         _self.toggleDialog(-1, null, true);
@@ -670,6 +670,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             tabConsole.set(this.pageID);
             this.consoleacedoc.removeLines(0, this.consoleacedoc.getLength());
         }
+    },
+    
+    setHighlight : function(session, query) {
+        session.highlight(query);
+        session.c9SearchHighlight = session.$searchHighlight
+        session.$searchHighlight = null;
     },
     
     enable : function(){
