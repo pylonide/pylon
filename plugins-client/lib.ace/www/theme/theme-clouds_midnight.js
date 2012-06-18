@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/clouds_midnight',function(require, exports, module) {
+define('ace/theme/clouds_midnight', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-clouds-midnight";
@@ -96,6 +96,10 @@ exports.cssText = "\
 \
 .ace-clouds-midnight .ace_marker-layer .ace_active_line {\
   background: rgba(215, 215, 215, 0.031);\
+}\
+\
+.ace-clouds-midnight .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-clouds-midnight .ace_marker-layer .ace_selected_word {\

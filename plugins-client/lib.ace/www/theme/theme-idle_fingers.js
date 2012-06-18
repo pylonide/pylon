@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/idle_fingers',function(require, exports, module) {
+define('ace/theme/idle_fingers', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-idle-fingers";
@@ -96,6 +96,10 @@ exports.cssText = "\
 \
 .ace-idle-fingers .ace_marker-layer .ace_active_line {\
   background: #353637;\
+}\
+\
+.ace-idle-fingers .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-idle-fingers .ace_marker-layer .ace_selected_word {\

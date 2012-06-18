@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/tomorrow_night',function(require, exports, module) {
+define('ace/theme/tomorrow_night', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-tomorrow-night";
@@ -96,6 +96,10 @@ exports.cssText = "\
 \
 .ace-tomorrow-night .ace_marker-layer .ace_active_line {\
   background: #282A2E;\
+}\
+\
+.ace-tomorrow-night .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-tomorrow-night .ace_marker-layer .ace_selected_word {\

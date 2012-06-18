@@ -1,102 +1,85 @@
-define('ace/mode/golang', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/golang_highlight_rules', 'ace/mode/matching_brace_outdent', 'ace/mode/behaviour/cstyle', 'ace/mode/folding/cstyle'], function(require, exports, module) {
+define('ace/mode/jsx', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/jsx_highlight_rules', 'ace/mode/matching_brace_outdent', 'ace/mode/behaviour/cstyle', 'ace/mode/folding/cstyle'], function(require, exports, module) {
 
-    var oop = require("../lib/oop");
-    var TextMode = require("./text").Mode;
-    var Tokenizer = require("../tokenizer").Tokenizer;
-    var GolangHighlightRules = require("./golang_highlight_rules").GolangHighlightRules;
-    var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
-    var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
-    var CStyleFoldMode = require("./folding/cstyle").FoldMode;
-    
-    var Mode = function() {
-        this.$tokenizer = new Tokenizer(new GolangHighlightRules().getRules());
-        this.$outdent = new MatchingBraceOutdent();
-        this.foldingRules = new CStyleFoldMode();
-    };
-    oop.inherits(Mode, TextMode);
-    
-    (function() {
-        
-        this.toggleCommentLines = function(state, doc, startRow, endRow) {
-            var outdent = true;
-            var outentedRows = [];
-            var re = /^(\s*)\/\//;
 
-            for (var i=startRow; i<= endRow; i++) {
-                if (!re.test(doc.getLine(i))) {
-                    outdent = false;
-                    break;
-                }
-            }
+var oop = require("../lib/oop");
+var TextMode = require("./text").Mode;
+var Tokenizer = require("../tokenizer").Tokenizer;
+var JsxHighlightRules = require("./jsx_highlight_rules").JsxHighlightRules;
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
+var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
+var CStyleFoldMode = require("./folding/cstyle").FoldMode;
 
-            if (outdent) {
-                var deleteRange = new Range(0, 0, 0, 0);
-                for (var i=startRow; i<= endRow; i++)
-                {
-                    var line = doc.getLine(i);
-                    var m = line.match(re);
-                    deleteRange.start.row = i;
-                    deleteRange.end.row = i;
-                    deleteRange.end.column = m[0].length;
-                    doc.replace(deleteRange, m[1]);
-                }
-            }
-            else {
-                doc.indentRows(startRow, endRow, "//");
-            }
-        };
+function Mode() {
+    this.$tokenizer = new Tokenizer(new JsxHighlightRules().getRules());
+    this.$outdent = new MatchingBraceOutdent();
+    this.$behaviour = new CstyleBehaviour();
+    this.foldingRules = new CStyleFoldMode();
+}
+oop.inherits(Mode, TextMode);
 
-        this.getNextLineIndent = function(state, line, tab) {
-            var indent = this.$getIndent(line);
+(function() {
 
-            var tokenizedLine = this.$tokenizer.getLineTokens(line, state);
-            var tokens = tokenizedLine.tokens;
-            var endState = tokenizedLine.state;
+      this.getNextLineIndent = function(state, line, tab) {
+          var indent = this.$getIndent(line);
 
-            if (tokens.length && tokens[tokens.length-1].type == "comment") {
-                return indent;
-            }
-            
-            if (state == "start") {
-                var match = line.match(/^.*[\{\(\[]\s*$/);
-                if (match) {
-                    indent += tab;
-                }
-            }
+          var tokenizedLine = this.$tokenizer.getLineTokens(line, state);
+          var tokens = tokenizedLine.tokens;
 
-            return indent;
-        };//end getNextLineIndent
+          if (tokens.length && tokens[tokens.length-1].type == "comment") {
+              return indent;
+          }
 
-        this.checkOutdent = function(state, line, input) {
-            return this.$outdent.checkOutdent(line, input);
-        };
+          if (state == "start") {
+              var match = line.match(/^.*[\{\(\[]\s*$/);
+              if (match) {
+                  indent += tab;
+              }
+          }
 
-        this.autoOutdent = function(state, doc, row) {
-            this.$outdent.autoOutdent(doc, row);
-        };
+          return indent;
+      };
 
-    }).call(Mode.prototype);
+      this.checkOutdent = function(state, line, input) {
+          return this.$outdent.checkOutdent(line, input);
+      };
 
-    exports.Mode = Mode;
+      this.autoOutdent = function(state, doc, row) {
+          this.$outdent.autoOutdent(doc, row);
+      };
+
+}).call(Mode.prototype);
+
+exports.Mode = Mode;
 });
-define('ace/mode/golang_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/lang', 'ace/mode/doc_comment_highlight_rules', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
+define('ace/mode/jsx_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/lang', 'ace/mode/doc_comment_highlight_rules', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
     var oop = require("../lib/oop");
     var lang = require("../lib/lang");
     var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
     var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-
-    var GolangHighlightRules = function() {
+    
+    var JsxHighlightRules = function() {
         var keywords = lang.arrayToMap(
-            ("true|else|false|break|case|return|goto|if|const|" +
-             "continue|struct|default|switch|for|" +
-             "func|import|package|chan|defer|fallthrough|go|interface|map|range" +
-             "select|type|var").split("|")
+            ("break|do|instanceof|typeof|case|else|new|var|catch|finally|return|void|continue|for|switch|default|while|function|this|" +
+             "if|throw|" +
+             "delete|in|try|" +
+             "class|extends|super|import|from|into|implements|interface|static|mixin|override|abstract|final|" +
+             "number|int|string|boolean|variant|" +
+             "log|assert").split("|")
         );
-
+        
         var buildinConstants = lang.arrayToMap(
-            ("nit|true|false|iota").split("|")
+            ("null|true|false|NaN|Infinity|__FILE__|__LINE__|undefined").split("|")
         );
-
+        
+        var reserved = lang.arrayToMap(
+            ("debugger|with|" +
+             "const|export|" +
+             "let|private|public|yield|protected|" +
+             "extern|native|as|operator|__fake__|__readonly__").split("|")
+        );
+        
+        var identifierRe = "[a-zA-Z_][a-zA-Z0-9_]*\\b";
+        
         this.$rules = {
             "start" : [
                 {
@@ -106,25 +89,18 @@ define('ace/mode/golang_highlight_rules', ['require', 'exports', 'module' , 'ace
                 DocCommentHighlightRules.getStartRule("doc-start"),
                 {
                     token : "comment", // multi line comment
-                    merge : true,
                     regex : "\\/\\*",
+                    merge : true,
                     next : "comment"
+                }, {
+                    token : "string.regexp",
+                    regex : "[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/]\\w*\\s*(?=[).,;]|$)"
                 }, {
                     token : "string", // single line
                     regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
                 }, {
-                    token : "string", // multi line string start
-                    merge : true,
-                    regex : '["].*\\\\$',
-                    next : "qqstring"
-                }, {
                     token : "string", // single line
                     regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
-                }, {
-                    token : "string", // multi line string start
-                    merge : true,
-                    regex : "['].*\\\\$",
-                    next : "qstring"
                 }, {
                     token : "constant.numeric", // hex
                     regex : "0[xX][0-9a-fA-F]+\\b"
@@ -132,35 +108,45 @@ define('ace/mode/golang_highlight_rules', ['require', 'exports', 'module' , 'ace
                     token : "constant.numeric", // float
                     regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
                 }, {
-                    token : "constant", // <CONSTANT>
-                    regex : "<[a-zA-Z0-9.]+>"
+                    token : "constant.language.boolean",
+                    regex : "(?:true|false)\\b"
                 }, {
-                    token : "keyword", // pre-compiler directivs
-                    regex : "(?:#include|#pragma|#line|#define|#undef|#ifdef|#else|#elif|#endif|#ifndef)"
+                    token : [
+                        "storage.type",
+                        "text",
+                        "entity.name.function"
+                    ],
+                    regex : "(function)(\\s+)(" + identifierRe + ")"
                 }, {
                     token : function(value) {
                         if (value == "this")
                             return "variable.language";
-                        else if (keywords.hasOwnProperty(value))
+                        else if (value == "function")
+                            return "storage.type";
+                        else if (keywords.hasOwnProperty(value) || reserved.hasOwnProperty(value))
                             return "keyword";
                         else if (buildinConstants.hasOwnProperty(value))
                             return "constant.language";
+                        else if (/^_?[A-Z][a-zA-Z0-9_]*$/.test(value))
+                            return "language.support.class";
                         else
                             return "identifier";
                     },
-                    regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                    // TODO: Unicode escape sequences
+                    // TODO: Unicode identifiers
+                    regex : identifierRe
                 }, {
                     token : "keyword.operator",
-                    regex : "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|==|=|!=|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|new|delete|typeof|void)"
+                    regex : "!|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|==|=|!=|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)"
                 }, {
                     token : "punctuation.operator",
                     regex : "\\?|\\:|\\,|\\;|\\."
                 }, {
                     token : "paren.lparen",
-                    regex : "[[({]"
+                    regex : "[[({<]"
                 }, {
                     token : "paren.rparen",
-                    regex : "[\\])}]"
+                    regex : "[\\])}>]"
                 }, {
                     token : "text",
                     regex : "\\s+"
@@ -176,37 +162,16 @@ define('ace/mode/golang_highlight_rules', ['require', 'exports', 'module' , 'ace
                     merge : true,
                     regex : ".+"
                 }
-            ],
-            "qqstring" : [
-                {
-                    token : "string",
-                    regex : '(?:(?:\\\\.)|(?:[^"\\\\]))*?"',
-                    next : "start"
-                }, {
-                    token : "string",
-                    merge : true,
-                    regex : '.+'
-                }
-            ],
-            "qstring" : [
-                {
-                    token : "string",
-                    regex : "(?:(?:\\\\.)|(?:[^'\\\\]))*?'",
-                    next : "start"
-                }, {
-                    token : "string",
-                    merge : true,
-                    regex : '.+'
-                }
             ]
         };
-		
-		this.embedRules(DocCommentHighlightRules, "doc-",
-			[ DocCommentHighlightRules.getEndRule("start") ]);
-    }
-    oop.inherits(GolangHighlightRules, TextHighlightRules);
+        
+        this.embedRules(DocCommentHighlightRules, "doc-",
+            [ DocCommentHighlightRules.getEndRule("start") ]);
+    };
+    
+    oop.inherits(JsxHighlightRules, TextHighlightRules);
 
-    exports.GolangHighlightRules = GolangHighlightRules;
+    exports.JsxHighlightRules = JsxHighlightRules;
 });
 
 define('ace/mode/doc_comment_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
