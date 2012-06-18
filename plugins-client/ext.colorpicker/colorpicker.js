@@ -79,19 +79,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         settings.addSettings("Code Tools", markupSettings);
 
         ide.addEventListener("settings.load", function(e){
-            settings.setDefaults("editors/codewidget", [
-                ["colorpicker", "false"]
-            ]);
-            
-            _self.updateSetting();
+            if (apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker")))
+                _self.setEvents();
         });
-    },
-    
-    updateSetting : function(){
-        this.enabled = apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker"));
-        
-        if (this.enabled)
-            this.setEvents();
     },
 
     /**
