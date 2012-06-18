@@ -373,7 +373,9 @@ module.exports = ext.register("ext/sync/sync", {
         if (!ide.local) {
         	message.type = "api";
         	message.url = "/api/sync/disable";
-        	this.sendMessageToLocal(message);
+
+            console.error("TODO: Disable of sync when running in infra must call infra API instead of using `postMessage` as local runtime may not be connected. Otherwise disable event will get lost. Will implement once UI is finalized. If no `clientId` provided (from_self.syncClients) will disable sync for this project for all clients.");
+            // this.sendMessageToLocal(message);
         }
         else
         	apf.ajax(url, message);
