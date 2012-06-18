@@ -7,7 +7,7 @@
       class     = "downward sync-info-tooltip">
         <div>
             <a class="close-sync-info" href="javascript:void(0)" onclick="mnuSyncInfo.hide()"></a>
-            Sync for offline use in progress...
+            <span class="sync-info-title">Sync for offline use in progress...</span>
             <a:progressbar id="syncProgressBar"
               skin   = "progressbar-green" 
               value  = "20" 

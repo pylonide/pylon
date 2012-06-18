@@ -8890,9 +8890,9 @@
            -moz-box-shadow: 0 1px 0 0 #474748;
                 box-shadow: 0 1px 0 0 #474748;
             
-            border-radius : 2px;
-            -moz-border-radius: 2px;
-            -webkit-border-radius: 2px;
+            border-radius : 3px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
             
             background-image: linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
             background-image: -o-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);

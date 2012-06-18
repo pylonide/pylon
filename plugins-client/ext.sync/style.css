@@ -25,13 +25,17 @@
     display: block;
 }
 
+.sync-info-tooltip .sync-info-title {
+    padding-left: 5px;    
+}
+
 .sync-info-tooltip .close-sync-info:hover { 
     background-position: 0 -14px;    
 }
 
 .sync-info-tooltip .sync-file-label {
     color: #818080;
-    padding-top: 6px;
+    padding-left: 5px;
     white-space : nowrap;
     overflow : hidden;
     text-overflow : ellipsis;
@@ -43,4 +47,14 @@
 }
 .sync-info-tooltip.menu-bk.c9-tooltip .arrow {
     left: 65%;
+}
+
+.c9-sync-state-info {
+    width: 98px;
+    height: 8px;
+    background: url("{ide.staticPrefix}/ext/main/style/images/sync-state-label.png") no-repeat 0 4px;
+}
+
+.c9-sync-state-info.work-localy {
+    background-position: 0 -13px;
 }

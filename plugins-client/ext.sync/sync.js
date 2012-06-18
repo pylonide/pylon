@@ -43,6 +43,8 @@ module.exports = ext.register("ext/sync/sync", {
             
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
+            
+            
             this.btnSyncStatus = barExtras.appendChild(new apf.button({
                 margin  : "1 0 0 0" ,
                 "class" : "c9-sync" ,
@@ -61,6 +63,11 @@ module.exports = ext.register("ext/sync/sync", {
                         mnuSyncPrj.hide();
                 }
             }));
+            
+            this.lblSyncState = barExtras.appendChild(new apf.label({
+                "class"  : "c9-sync-state-info work-localy",
+                "margin" : "0 2 0 0"
+            }), this.btnSyncStatus);
         }
         
         ext.initExtension(_self);
