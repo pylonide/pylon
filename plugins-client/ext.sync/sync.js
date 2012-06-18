@@ -69,19 +69,19 @@ module.exports = ext.register("ext/sync/sync", {
     init : function(amlNode){
         var _self = this;
         
-        var c = 0;
-        this.nodes.push(
-            menus.addItemByPath("Workspace/Pause Syncing", new apf.item({
-                onclick : function(){
-                    _self.setSync();
-                }
-            }), c += 100),
-            menus.addItemByPath("Workspace/Open Synced Workspace", new apf.item({
-                onclick : function(){
-                    _self.setSync();
-                }
-            }), c += 100)
-        );
+//        var c = 0;
+//        this.nodes.push(
+//            menus.addItemByPath("Workspace/Pause Syncing", new apf.item({
+//                onclick : function(){
+//                    _self.setSync();
+//                }
+//            }), c += 100),
+//            menus.addItemByPath("Workspace/Open Synced Workspace", new apf.item({
+//                onclick : function(){
+//                    _self.setSync();
+//                }
+//            }), c += 100)
+//        );
 
         ide.addEventListener("socketMessage", function (event) {
             if (event.message.type === "sync") {
@@ -118,7 +118,8 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.btnSyncStatus.disable();
                     
                     //Create Project
-                    _self.createProjectOnline(name, 0, 0, function(){
+                    var createProject = ide.local ? "createProjectLocal" : "createProjectOnline";
+                    _self[createProject](name, 0, 0, function(){
                         //@todo if the user would refresh the browser in between
                         //      these two calls the sync information is lost
                         //      this might not be a problem because the project
@@ -159,6 +160,7 @@ module.exports = ext.register("ext/sync/sync", {
     
     updateSyncInfo : function(info){
         document.getElementById("syncFileName").innerHTML = info.path;
+        syncProgressBar.setValue(info.progress || 0);
     },
     
     hideSyncInfo : function(long){
@@ -314,36 +316,30 @@ module.exports = ext.register("ext/sync/sync", {
     enableSync: function() {
         var _self = this;
 
-        if (!ide.local) {
-            // TODO: Show dialog with instructions on how to setup local version.
-            console.log("TODO: Show dialog with instructions on how to setup local version.");
-        }
-        else {
-            this.showSyncDialog(function(data){
-                var found = false, name = cloud9config.projectName;
-                var projects = data.projects;
-                for (var i = 0, l = projects.length; i < l; i++) {
-                    if (projects[i].name == name && !projects[i].local) {
-                        found = projects[i];
-                        break;
-                    }
+        this.showSyncDialog(function(data){
+            var found = false, name = cloud9config.projectName;
+            var projects = data.projects;
+            for (var i = 0, l = projects.length; i < l; i++) {
+                if (projects[i].name == name && projects[i].local == ide.local) {
+                    found = projects[i];
+                    break;
                 }
+            }
+            
+            if (found) {
+                var xmlNode = ddSyncPrj.queryNode("node()[@name='" + name + "']");
+            }
+            else {
+                var xmlNode = apf.getXml(_self.createSyncProjectXml({
+                    name : name
+                }));
+                xmlNode.setAttribute("newws", "true");
                 
-                if (found) {
-                    var xmlNode = ddSyncPrj.queryNode("node()[@name='" + name + "']");
-                }
-                else {
-                    var xmlNode = apf.getXml(_self.createSyncProjectXml({
-                        name : name
-                    }));
-                    xmlNode.setAttribute("newws", "true");
-                    
-                    xmlNode = apf.xmldb.appendChild(mdlSyncPrj.data,
-                        xmlNode, mdlSyncPrj.data.firstChild);
-                }
-                ddSyncPrj.select(xmlNode);
-            });
-        }
+                xmlNode = apf.xmldb.appendChild(mdlSyncPrj.data,
+                    xmlNode, mdlSyncPrj.data.firstChild);
+            }
+            ddSyncPrj.select(xmlNode);
+        });
     },
     
     disableSync: function() {
@@ -351,7 +347,7 @@ module.exports = ext.register("ext/sync/sync", {
 
         winConfirmSyncOff.close();
         
-        var message = {
+        this.sendMessageToLocal("/api/sync/disable", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -366,72 +362,136 @@ module.exports = ext.register("ext/sync/sync", {
                 
                 _self.btnSyncStatus.setValue(false);
             }
-        };
-        
-        var url = "/api/sync/disable";
-        
-        if (!ide.local) {
-        	message.type = "api";
-        	message.url = "/api/sync/disable";
-        	this.sendMessageToLocal(message);
-        }
-        else
-        	apf.ajax(url, message);
+        });
     },
     
     callbacks : [],
     queue : [],
-    sendMessageToLocal : function(message){
-    	var _self = this;
+    sendMessageToLocal : function(url, message){
+        var _self = this;
+        
+        if (ide.local)
+            return apf.ajax(url, message);
+        
+        message.type = "api";
+        message.url  = url;
     	
     	if (message.callback) {
     		message.uid = this.callbacks.push(message.callback) - 1;
     		delete message.callback;
     	}
-    	
-    	if (!this.$iframe) {
-    		window.addEventListener("message", function(e) {
-    			try {
-                    var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
-                } catch (e) { return; }
-                
-                switch (json.type) {
-                	case "connect":
-                		_self.$iframe.connected = true;
-                		_self.queue.forEach(function(message){
-                			_self.$iframe.contentWindow.postMessage(message, "*");
-                		});
-                	break;
-                	case "response":
-                		if (_self.callbacks[json.uid])
-                			_self.callbacks[json.uid](json.data, json.state, json.extra);
-                	break;
-                }
-    		});
-    		
-    		this.$iframe = document.body.appendChild(document.createElement("iframe"));
-    		this.$iframe.src = "http://localhost:13338/gjtorikian/a572318b/workspace/c9syncproxy.html";
-    	}
-    	
-    	if (!this.$iframe.connected) {
-    		this.queue.push(message);
-    		return;
-    	}
-    	
-    	this.$iframe.contentWindow.postMessage(message, "*");
+        
+        this.hasLocalInstalled(function(isInstalled){
+            if (isInstalled) {
+                _self.$iframe.contentWindow.postMessage(message, "*");
+            }
+            else {
+                _self.showInstallLocal();
+            }
+        });
+    },
+    
+    showInstallLocal : function(){
+        
+    },
+    
+    hasLocalInstalled : function(callback){
+        var _self = this;
+        
+        if (!this.$iframe) {
+        	this.$createIframeToLocal(function(isConnected){
+                _self.queue.forEach(function(func){
+                    func(isConnected);
+            	});
+                _self.queue = [];
+        	});
+        }
+        
+        if (this.$iframe.connecting) {
+            //Wait for iframe to connect
+            this.queue.push(function(){
+                callback(true);
+            }) - 1;
+            return;
+        }
+        
+        callback(this.$iframe.connected);
+    },
+    
+    $createIframeToLocal : function(callback){
+        var _self = this;
+        var timer;
+
+        window.addEventListener("message", function(e) {
+    		try {
+                var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
+            } catch (e) { return; }
+
+            switch (json.type) {
+            	case "connect":
+                    clearTimeout(timer);
+                    
+            		_self.$iframe.connected = true;
+                    
+                    callback(true);
+            	break;
+            	case "response":
+            		if (_self.callbacks[json.uid])
+            			_self.callbacks[json.uid](json.data, json.state, json.extra);
+            	break;
+            }
+		});
+        
+        function cleanup(){
+            _self.$iframe.removeEventListener("load", startTimeout);
+            _self.$iframe.removeEventListener("error", errorHandler);
+            _self.$iframe.parentNode.removeChild(_self.$iframe);
+            _self.$iframe = null;
+        }
+
+        //Main timeout for initial connect
+        timer = setTimeout(function(){
+            _self.$iframe.connecting = false;
+            callback(false);
+            cleanup();
+        }, 10000);
+
+        //Sub timeout for after html is loaded
+        var startTimeout = function(){
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                _self.$iframe.connecting = false;
+                callback(false);
+                cleanup();
+            }, 1000);
+        }
+        
+        var errorHandler = function(){
+            callback(false);
+        };
+
+		this.$iframe = document.body.appendChild(document.createElement("iframe"));
+        this.$iframe.addEventListener("load", startTimeout);
+        this.$iframe.addEventListener("error", errorHandler);
+
+        this.$iframe.connecting = true;
+        this.$iframe.connected = false;
+		this.$iframe.src = "http://localhost2:13338/gjtorikian/a572318b/workspace/c9syncproxy.html";
     },
     
     showSyncDialog : function(callback){
         var _self = this;
         
         // User needs to select which project to sync.
-        apf.ajax("/api/context/get", {
+        this.sendMessageToLocal("/api/context/get", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             async: true,
             callback: function( data, state, extra) {
                 if (state != apf.SUCCESS) {
-                    return util.alert("Unable to get available projects", "An error occurred while getting available projects for sync", extra.http.responseText);
+                    return util.alert("Unable to get available projects", 
+                        "An error occurred while getting available projects for sync", 
+                        extra.http.responseText);
                 }
 
                 data = JSON.parse(data);
@@ -446,6 +506,29 @@ module.exports = ext.register("ext/sync/sync", {
                 });
                 
                 callback(data);
+            }
+        });
+    },
+    
+    createProjectLocal : function(name, type, scm, callback){
+        apf.ajax("/api/" + cloud9config.davPrefix.split("/")[1] 
+          + "/" + name + "/create", {
+            method: "PUT",
+            headers: {"Content-type": "application/x-www-form-urlencoded"},
+            data: "type=" + (type || "opensource") 
+                + "&scm=" + (scm || "git")
+                + "&servertype=shared&members=1", //&visibility=public
+            async: true,
+            callback: function( data, state, extra) {
+                if (state != apf.SUCCESS) {
+                    return util.alert("Unable to enable sync", 
+                        "An error occurred while creating new workspace '" 
+                            + name + "'", extra.http.responseText);
+                }
+                
+                data = JSON.parse(data);
+                
+                callback();
             }
         });
     },
@@ -497,7 +580,7 @@ module.exports = ext.register("ext/sync/sync", {
     syncProject: function(onlineWorkspaceId){
     	var _self = this;
     	
-        apf.ajax("/api/sync/enable", {
+        this.sendMessageToLocal("/api/sync/enable", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             data: "payload=" + encodeURIComponent(JSON.stringify({
@@ -515,9 +598,11 @@ module.exports = ext.register("ext/sync/sync", {
                     // Success. Nothing more to do. (UI sync state will update via socket.io push event)
                     
                     _self.showSyncInfo(true);
+                    syncProgressBar.setValue(0)
                 }
                 else if (data.workspaceNotEmpty === true) {
                     winCannotSync.show();
+                    _self.btnSyncStatus.setValue(false);
                 }
             }
         });

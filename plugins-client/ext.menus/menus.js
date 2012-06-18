@@ -36,7 +36,7 @@ module.exports = ext.register("ext/menus/menus", {
                 align   : "center"
             }), logobar.firstChild.firstChild),
 
-            this.setRootMenu("Workspace", 10),
+//            this.setRootMenu("Workspace", 10),
             this.setRootMenu("File", 100),
             this.setRootMenu("Edit", 200),
             this.setRootMenu("Selection", 300),
