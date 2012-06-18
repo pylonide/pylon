@@ -12,6 +12,7 @@
 		"treehugger" : "empty:",
 		"debug": "empty:",
 		"apf/elements": "plugins-client/lib.apf/www/apf/elements",
+		"ace/worker": "node_modules/ace/lib/ace/worker",
 		'ext/filesystem': 'plugins-client/ext.filesystem',
 	'ext/settings': 'plugins-client/ext.settings',
 	'ext/editors': 'plugins-client/ext.editors',
@@ -72,6 +73,7 @@
 	'ext/language': 'plugins-client/ext.language',
 	'ext/uploadfiles': 'plugins-client/ext.uploadfiles'
 	},
+    
 	include: ["build/src/core.packed", 
 	"apf/elements/codeeditor", 
 	"apf/elements/debugger", 

@@ -39,8 +39,9 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-
+// name: ["Caption", "extension", "content-type"]
 var SupportedModes = {
+    c9search: ["C9Search", "c9search_results", "text/x-c9search"],
     coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
     coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion"],
     csharp: ["C#", "cs", "text/x-csharp"],
@@ -92,7 +93,6 @@ Object.keys(SupportedModes).forEach(function(name) {
     ModesCaption[mode.caption] = name;
     contentTypes[mode.mime] = name;
 });
-
 
 module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -357,8 +357,9 @@ module.exports = ext.register("ext/code/code", {
             command.focusContext = true;
 
             var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor){
-                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
                     return false;
 
                 return isAvailable ? isAvailable(editor) : true;
@@ -400,7 +401,7 @@ module.exports = ext.register("ext/code/code", {
                 ["overwrite", "false"],
                 ["selectstyle", "line"],
                 ["activeline", "true"],
-                ["gutterline", "false"],
+                ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],

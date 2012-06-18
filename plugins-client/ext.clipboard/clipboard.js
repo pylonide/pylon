@@ -98,12 +98,15 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.cutSelection(trFiles);
         }
         else {
-            try {
-                if (document.exec("cut")) return;
-            } catch(e) {}
-
             var ace = this.$getAce();
+            ace.focus();
+            // try-catch is needed because firefox throws error instead of returning false
+            try {
+                // due to some bug in chrome "cut" is very slow
+                document.execCommand("copy");
+            } catch(e) {}
             aceClipboardText = ace.getCopyText() || aceClipboardText;
+
             ace.$nativeCommands.exec("cut", ace);
         }
     },
@@ -116,11 +119,12 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.copied = true;
         }
         else {
+            var ace = this.$getAce();
+            ace.focus();
             try {
-                if (document.exec("copy")) return;
+                if (document.execCommand("copy")) return;
             } catch(e) {}
 
-            var ace = this.$getAce();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
     },
@@ -130,11 +134,12 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {
+            var ace = this.$getAce();
+            ace.focus();
             try {
-                if (document.exec("paste")) return;
+                if (document.execCommand("paste")) return;
             } catch(e) {}
 
-            var ace = this.$getAce();
             ace.onPaste(aceClipboardText);
         }
     },
