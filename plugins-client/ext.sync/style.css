@@ -19,10 +19,14 @@
     height: 14px;
     width: 13px;
     position: absolute;
-    top: 3px;
+    top: 4px;
     right: 3px;
     cursor: default;
     display: block;
+}
+
+.sync-info-tooltip .close-sync-info:hover { 
+    background-position: 0 -14px;    
 }
 
 .sync-info-tooltip .progress-bar {
@@ -38,7 +42,7 @@
 }
 
 .sync-info-tooltip .pause-sync .caption {
-    background: url({ide.staticPrefix}/ext/main/style/images/pause-icon.png) no-repeat 0 0;
+    background: url("{ide.staticPrefix}/ext/main/style/images/pause-icon.png") no-repeat 13px 5px;
     height: 13px;
 }
 .sync-info-tooltip.menu-bk.c9-tooltip .arrow {
