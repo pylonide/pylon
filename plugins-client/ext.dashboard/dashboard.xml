@@ -365,7 +365,47 @@
     <a:button caption="Name" skin="" />
     <a:button caption="Date" skin="" />
     <a:filler />
+    <a:textbox initial-message="Search" skin="" />
     
+  </a:hbox>
+  <a:hbox>
+    <a:vbox>
+      <a:button caption="All projects" class="selected" skin="" />
+      <a:button caption="My projects" skin="" />
+      <a:button caption="Shared with me" skin="" />
+      <a:button caption="Recently Visited" skin="" />
+      <a:hbox>
+        <a:button caption="Private projects" skin="" />
+        <a:filler />
+        <a:button caption="Enable" skin="" />
+      </a:hbox>
+      <a:button caption="Public projects" skin="" />
+      <a:button caption="On Github" skin="" />
+      <a:hbox>
+        <a:button caption="On Bitbucket" skin="" />
+        <a:filler />
+        <a:button caption="Activate" skin="" />
+      </a:hbox>
+    </a:vbox>
+    <a:vbox>
+      <a:vbox>
+        <h3>Private projecst</h3>
+        <!--<a:list skin="">
+          <a:each>
+                <a:caption><?lm
+                    <div class="thumbnail">
+                      <div class="sprocket"></div>
+                    </div>
+                    <p class="title">Project title</p>
+                    <p class="status">2/12 online</p>
+                ?></a:caption>
+            </a:each>
+        </a:list> -->
+      </a:vbox>
+    </a:vbox>
+    <a:vbox>
+      
+    </a:vbox>
   </a:hbox>
 </a:window>
 </a:application>
