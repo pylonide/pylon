@@ -317,3 +317,17 @@ BODY {
 .twitter-signin.btn-over {
     background-position:0 -24px;
 }
+
+
+@-webkit-keyframes loading-spinner { 0%, 8.32% { background-position: -0px -0px; } 8.33%, 16.65% { background-position: -15px -0px; } 16.66%, 24.99% { background-position: -30px -0px; } 25%, 33.32% { background-position: -45px -0px; } 33.33%, 41.65% { background-position: -60px -0px; } 41.66%, 49.99% { background-position: -75px -0px; } 50%, 58.32% { background-position: -90px -0px; } 58.33%, 66.65% { background-position: -105px -0px; } 66.66%, 74.99% { background-position: -120px -0px; } 75%, 83.32% { background-position: -135px -0px; } 83.33%, 91.65% { background-position: -150px -0px; } 91.66%, 99.99% { background-position: -165px -0px; } } 
+   @-moz-keyframes loading-spinner { 0%, 8.32% { background-position: -0px -0px; } 8.33%, 16.65% { background-position: -15px -0px; } 16.66%, 24.99% { background-position: -30px -0px; } 25%, 33.32% { background-position: -45px -0px; } 33.33%, 41.65% { background-position: -60px -0px; } 41.66%, 49.99% { background-position: -75px -0px; } 50%, 58.32% { background-position: -90px -0px; } 58.33%, 66.65% { background-position: -105px -0px; } 66.66%, 74.99% { background-position: -120px -0px; } 75%, 83.32% { background-position: -135px -0px; } 83.33%, 91.65% { background-position: -150px -0px; } 91.66%, 99.99% { background-position: -165px -0px; } } 
+        @keyframes loading-spinner { 0%, 8.32% { background-position: -0px -0px; } 8.33%, 16.65% { background-position: -15px -0px; } 16.66%, 24.99% { background-position: -30px -0px; } 25%, 33.32% { background-position: -45px -0px; } 33.33%, 41.65% { background-position: -60px -0px; } 41.66%, 49.99% { background-position: -75px -0px; } 50%, 58.32% { background-position: -90px -0px; } 58.33%, 66.65% { background-position: -105px -0px; } 66.66%, 74.99% { background-position: -120px -0px; } 75%, 83.32% { background-position: -135px -0px; } 83.33%, 91.65% { background-position: -150px -0px; } 91.66%, 99.99% { background-position: -165px -0px; } } 
+
+.editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
+.editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving,
+.loading-spinner {     
+    background: url(images/tab-save-spinner-active.png) no-repeat;
+    -webkit-animation: loading-spinner 1.2s linear 0s infinite normal;
+	   -moz-animation: loading-spinner 1.2s linear 0s infinite normal;
+	        animation: loading-spinner 1.2s linear 0s infinite normal;
+}
