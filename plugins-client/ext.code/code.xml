@@ -65,6 +65,7 @@
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
         <a:item type="radio" value="application/x-latex">Latex</a:item>
         <a:item type="radio" value="application/x-sh">Shell Script</a:item>
+        <a:item type="radio" value="text/x-less">LESS</a:item>
         <a:item type="radio" value="text/x-lua">Lua</a:item>
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
         <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>

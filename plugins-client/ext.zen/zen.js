@@ -355,8 +355,8 @@ module.exports = ext.register("ext/zen/zen", {
 
             apf.layout.forceResize();
             
-            this.zenHandleLeft.style.display = "block";
-            this.zenHandleRight.style.display = "block";
+            _self.zenHandleLeft.style.display = "block";
+            _self.zenHandleRight.style.display = "block";
 
             Firmin.animate(_self.zenHandleLeft, {
                 opacity : 1.0,
