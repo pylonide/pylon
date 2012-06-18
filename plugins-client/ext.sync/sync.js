@@ -65,7 +65,7 @@ module.exports = ext.register("ext/sync/sync", {
             }));
             
             this.lblSyncState = barExtras.appendChild(new apf.label({
-                "class"  : "c9-sync-state-info work-localy",
+                "class"  : "c9-sync-state-info",
                 "margin" : "0 2 0 0"
             }), this.btnSyncStatus);
         }

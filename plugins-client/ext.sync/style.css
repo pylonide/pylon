@@ -55,6 +55,6 @@
     background: url("{ide.staticPrefix}/ext/main/style/images/sync-state-label.png") no-repeat 0 4px;
 }
 
-.c9-sync-state-info.work-localy {
+.c9-sync-state-info.available-online {
     background-position: 0 -13px;
 }
