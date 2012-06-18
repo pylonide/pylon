@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/pastel_on_dark',function(require, exports, module) {
+define('ace/theme/pastel_on_dark', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-pastel-on-dark";
@@ -96,6 +96,10 @@ exports.cssText = "\
 \
 .ace-pastel-on-dark .ace_marker-layer .ace_active_line {\
   background: rgba(255, 255, 255, 0.031);\
+}\
+\
+.ace-pastel-on-dark .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-pastel-on-dark .ace_marker-layer .ace_selected_word {\

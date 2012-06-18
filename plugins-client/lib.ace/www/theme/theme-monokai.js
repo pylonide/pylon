@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/monokai',function(require, exports, module) {
+define('ace/theme/monokai', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-monokai";
@@ -94,11 +94,11 @@ exports.cssText = "\
   border: 1px solid #49483E;\
 }\
 \
-.ace-monokai .ace_marker-layer .ace_active_line{\
+.ace-monokai .ace_marker-layer .ace_active_line {\
   background: #49483E;\
 }\
-.ace-monokai .ace_gutter_active_line{\
-  background: #191916;\
+.ace-monokai .ace_gutter_active_line {\
+  background-color: #191916;\
 }\
 \
 .ace-monokai .ace_marker-layer .ace_selected_word {\

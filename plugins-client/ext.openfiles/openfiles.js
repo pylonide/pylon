@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var settings = require("core/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
@@ -67,10 +68,16 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             if (!e.doc.$page || !node)
                 return;
-
+            
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                ide.dispatchEvent("c9searchopen", e);
+                
             var pgModel = e.doc.$page.$model;
             pgModel.addEventListener("update",
               pgModel.$lstOpenFilesListener = function(){
+                  if (!pgModel.data)
+                       return;
+                  
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
                       apf.xmldb.setAttribute(node, "changed", changed);
@@ -94,8 +101,11 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             if (!node || !node.parentNode || node.beingRemoved)
                 return;
-
-            e.page.$model.removeEventListener("update",
+            
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                ide.dispatchEvent("c9searchclose", e);
+                
+            e.page.$model.removeEventListener("update", 
                 e.page.$model.$lstOpenFilesListener);
 
             if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth) {
@@ -115,7 +125,12 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (!self.trFiles)
                 return;
 
-            var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
+            if (node.getAttribute("customtype") == util.getContentType("c9search")) {
+                apf.xmldb.setAttribute(node, "changed", 0);
+                return;
+            }
+            
+            var path = (e.newPath || e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
 
@@ -130,14 +145,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                     apf.xmldb.setAttribute(fNode, "path", e.newPath);
                     trNode && apf.xmldb.setAttribute(trNode, "path", e.newPath);
                 }
-                if (e.filename) {
+                if (e.filename)
                     apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
-                    trNode && apf.xmldb.setAttribute(trNode, "name", apf.getFilename(e.filename));
-                }
-                if (e.changed != undefined) {
+                if (e.changed != undefined)
                     apf.xmldb.setAttribute(fNode, "changed", e.changed);
-                    trNode && apf.xmldb.setAttribute(trNode, "changed", e.changed);
-                }
             }
         });
     },
@@ -162,8 +173,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
-            htmlNode.style.overflow = "hidden";
-
+                htmlNode.style.overflow = "hidden";
+                
             apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
                 //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
                 {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}

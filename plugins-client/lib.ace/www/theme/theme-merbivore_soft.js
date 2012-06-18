@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/merbivore_soft',function(require, exports, module) {
+define('ace/theme/merbivore_soft', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-merbivore-soft";
@@ -96,6 +96,10 @@ exports.cssText = "\
 \
 .ace-merbivore-soft .ace_marker-layer .ace_active_line {\
   background: #333435;\
+}\
+\
+.ace-merbivore-soft .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-merbivore-soft .ace_marker-layer .ace_selected_word {\

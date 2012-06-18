@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/vibrant_ink',function(require, exports, module) {
+define('ace/theme/vibrant_ink', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-vibrant-ink";
@@ -96,6 +96,10 @@ exports.cssText = "\
 \
 .ace-vibrant-ink .ace_marker-layer .ace_active_line {\
   background: #333333;\
+}\
+\
+.ace-vibrant-ink .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-vibrant-ink .ace_marker-layer .ace_selected_word {\

@@ -24,12 +24,11 @@ var Ide = module.exports = function(options) {
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert(options.socketIoUrl, "option 'socketIoUrl' is required");
     assert(options.socketIoTransports, "option 'socketIoTransports' is required");
-    assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
+   // assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
 
     this.workspaceDir = options.workspaceDir;
-
 
     options.plugins = options.plugins || [];
     this.options = {
@@ -50,14 +49,16 @@ var Ide = module.exports = function(options) {
         extra: options.extra,
         real: (options.real === true) ? true : false,
         hosted: !!options.hosted,
-        env: options.env
+        env: options.env,
+        packed: (options.packed === true) ? true : false,
+        packedName: options.packedName
     };
 
     this.$users = {};
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-
+    
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -98,7 +99,7 @@ util.inherits(Ide, EventEmitter);
                 "cache-control": "no-transform",
                 "Content-Type": "text/html"
             });
-
+            
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
@@ -136,12 +137,14 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
+                scripts: (_self.options.debug || _self.options.packed) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
                 real: _self.options.real ? "true" : "false",
-                env: _self.options.env || "local"
+                env: _self.options.env || "local",
+                packed: _self.options.packed,
+                packedName: _self.options.packedName
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
@@ -215,12 +218,13 @@ util.inherits(Ide, EventEmitter);
 
     this.getPermissions = function(req) {
         var user = this.getUser(req);
+        
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
             return user.getPermissions() || User.VISITOR_PERMISSIONS;
     };
-
+    
     this.hasUser = function(username) {
         return !!this.$users[username];
     };

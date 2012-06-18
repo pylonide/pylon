@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/solarized_dark',function(require, exports, module) {
+define('ace/theme/solarized_dark', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-solarized-dark";
@@ -97,8 +97,9 @@ exports.cssText = "\
 .ace-solarized-dark .ace_marker-layer .ace_active_line {\
   background: #073642;\
 }\
-.ace-solarized-dark .ace_gutter_active_line{\
-  background: #0d3440;\
+\
+.ace-solarized-dark .ace_gutter_active_line {\
+  background-color: #0d3440;\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_selected_word {\

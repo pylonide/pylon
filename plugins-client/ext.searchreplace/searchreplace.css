@@ -12,7 +12,7 @@
     color: #aaa;
     font-size: 11px;
     height: 19px;
-    line-height: 20px;
+    line-height: 19px;
     text-align: center;
     vertical-align: middle;
     display:inline;
@@ -31,4 +31,11 @@
 
 .tb_textbox.searchTxt .sbtb_middle input {
     width: 100%;
+}
+
+.btnquicksearchnav.btnquicksearchnavLeft .lbl span {
+    background-image: url("/static/ext/main/style/icons/arrow_left_search.png");
+}
+.btnquicksearchnav.btnquicksearchnavRight .lbl span {
+    background-image: url("/static/ext/main/style/icons/arrow_right_search.png");
 }

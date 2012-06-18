@@ -68,9 +68,12 @@ module.exports = ext.register("ext/panels/panels", {
             }
         });
         
-        var active = settings.model.queryValue("auto/panels/@active");
-        if (panelExt["default"] && !active || active == panelExt.path)
-            _self.activate(panelExt, null, true);
+        // for local version
+        if (ide.dispatchEvent("panels.activateDefault") !== false) {
+            var active = settings.model.queryValue("auto/panels/@active");
+            if ((panelExt["default"] && !active || active == panelExt.path))
+                _self.activate(panelExt, null, true);
+        }
     },
     
     animate : function(win, toWin, toWidth){

@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Util = require("core/util");
+var util = require("core/util");
 var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
@@ -21,6 +21,14 @@ var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
+
+var searchFilePath = ide.davPrefix + "/search_results.c9search";
+var searchContentType = "c9search";
+
+// Ace dependencies
+var EditSession = require("ace/edit_session").EditSession;
+var Document = require("ace/document").Document;
+var ProxyDocument = require("ext/code/proxydocument");
 
 module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     name     : "Search in files",
@@ -39,6 +47,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     pageID   : "pgSFResults",
 
     nodes    : [],
+    
+    searchPage : null,
 
     hook : function(){
         var _self = this;
@@ -67,8 +77,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             e.ext.setDefaults("editors/code/filesearch", [
                 ["regex", "false"],
                 ["matchcase", "false"],
-                ["wholeword", "false"]
+                ["wholeword", "false"],
+                ["console", "true"]
             ]);
+        });
+        
+        ide.addEventListener("c9searchclose", function(e){
+            _self.searchPage = null;
         });
         
         commands.addCommand({
@@ -110,59 +125,26 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             trFiles.addEventListener("afterselect", _self.setSearchSelection);
         });
 
-        txtSFFind.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                _self.execFind();
-                return false;
-            }
-            
-            if (_self.findKeyboardHandler(e, "searchfiles", this, chkSFRegEx) === false)
-                return false;
+        
+        txtSFFind.ace.session.on("change", function() {
+            _self.checkRegExp(txtSFFind, tooltipSearchInFiles, winSearchInFiles)
+        });
+        this.addSearchKeyboardHandler(txtSFFind, "searchfiles");
                 
-            if (chkSFRegEx.checked
-              && _self.evaluateRegExp(txtSFFind, tooltipSearchInFiles, 
-              winSearchInFiles, e.htmlEvent) === false) {
-                return;
-            }
-        });
-        txtSFFind.addEventListener("keyup", function(e) {
-            if (e.keyCode != 8 && (e.ctrlKey || e.shiftKey || e.metaKey 
-              || e.altKey || !apf.isCharacter(e.keyCode)))
-                return;
-            
-            if (chkSFRegEx.checked) {
-                _self.evaluateRegExp(
-                    txtSFFind, tooltipSearchInFiles, winSearchInFiles);
-            }
+        var kb = this.addSearchKeyboardHandler(txtSFReplace, "replacefiles");
+        kb.bindKeys({
+            "Return|Shift-Return": function(){ _self.replace(); }
         });
         
-        txtSFReplace.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                _self.replace();
-                return false;
-            }
-            
-            if (_self.findKeyboardHandler(e, "replacefiles", this, chkSFRegEx) === false)
-                return false;
-        });
-        
-        txtSFPatterns.addEventListener("keydown", function(e){
-            if (e.keyCode == 13)
-                return false;
-            
-            if (_self.findKeyboardHandler(e, "searchwhere", this) === false)
-                return false;
+        var kb = this.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
+        kb.bindKeys({
+            "Return|Shift-Return": function(){ _self.replace(); }
         });
         
         var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
         
         chkSFRegEx.addEventListener("prop.value", function(e){
-            if (apf.isTrue(e.value)) {
-                if (txtSFFind.getValue())
-                    _self.updateInputRegExp(txtSFFind);
-            }
-            else
-                _self.removeInputRegExp(txtSFFind);
+            _self.$setRegexpMode(txtSFFind, apf.isTrue(e.value));
         });
         
         var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");
@@ -246,9 +228,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             
             if (searchreplace.inited && winSearchReplace.visible) {
+                ext.initExtension(this);
+                winSearchReplace.$ext.style.height = "0px";
                 txtSFFind.focus();
-                txtSFFind.select();
-                searchreplace.toggleDialog(-1, null, true, function(){
+                
+                searchreplace.toggleDialog(-1, null, null, function(){
                     _self.toggleDialog(force, isReplace, noselect);
                 });
                 return;
@@ -270,11 +254,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 if (value) {
                     txtSFFind.setValue(value);
                     
-                    delete txtSFFind.$undo;
-                    delete txtSFFind.$redo;
-                    
-                    if (chkRegEx.checked)
-                        this.updateInputRegExp(txtSFFind);
+                    this.$setRegexpMode(txtSFFind, chkSFRegEx.checked);
                 }
             }
 
@@ -287,64 +267,54 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             //Animate
             if (animate && !apf.isGecko) {
-                Firmin.animate(winSearchInFiles.$ext, {
-                    height: "102px",
-                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-                }, 0.2, function() {
-                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                    winSearchInFiles.$ext.style.height = "";
-                    
-                    setTimeout(function(){
-                        apf.layout.forceResize();
-                    }, 50);
-                });
-            }
+            Firmin.animate(winSearchInFiles.$ext, {
+                height: "102px",
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)"
+            }, 0.2, function() {
+                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                winSearchInFiles.$ext.style.height = "";
+                
+                setTimeout(function(){
+                    apf.layout.forceResize();
+                }, 200);
+            });
+        }
             else {
                 winSearchInFiles.$ext.style.height = "";
                 apf.layout.forceResize();
             }
         }
         else if (winSearchInFiles.visible) {
-            
-
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
             
             
             //Animate
             if (animate && !apf.isGecko) {
-                winSearchInFiles.visible = false;
+            winSearchInFiles.visible = false;
+            
+            winSearchInFiles.$ext.style.height 
+                = winSearchInFiles.$ext.offsetHeight + "px";
+
+            Firmin.animate(winSearchInFiles.$ext, {
+                height: "0px",
+                timingFunction: "ease-in-out"
+            }, 0.2, function(){
+                winSearchInFiles.visible = true;
+                winSearchInFiles.hide();
                 
-                winSearchInFiles.$ext.style.height 
-                    = winSearchInFiles.$ext.offsetHeight + "px";
+                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
-                Firmin.animate(winSearchInFiles.$ext, {
-                    height: "0px",
-                    timingFunction: "ease-in-out"
-                }, 0.2, function(){
-                    winSearchInFiles.visible = true;
-                    
-                    if(noselect && apf.window.activeElement) {
-                        var curEle = apf.window.activeElement;
-                        winSearchInFiles.hide();
-                        curEle.focus();
-                        curEle.select();
-                    } else {
-                        winSearchInFiles.hide();
-                    }
-
-                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                    
-                    if (!noselect && editors.currentEditor)
-                        editors.currentEditor.ceEditor.focus();
-                        
-                    setTimeout(function(){
-                        callback 
-                            ? callback()
-                            : apf.layout.forceResize();
-                    }, 50);
-                });
-            }
+                if (!noselect && editors.currentEditor)
+                    editors.currentEditor.ceEditor.focus();
+                
+                setTimeout(function(){
+                    callback 
+                        ? callback()
+                        : apf.layout.forceResize();
+                }, 50);
+            });
+        }
             else {
                 winSearchInFiles.hide();
                 callback 
@@ -364,13 +334,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var _self = this;
 
         return {
-            query: txtSFFind.value,
-            needle: txtSFFind.value,
-            pattern: txtSFPatterns.value,
+            query: txtSFFind.getValue(),
+            needle: txtSFFind.getValue(),
+            pattern: txtSFPatterns.getValue(),
             casesensitive: chkSFMatchCase.checked ? "1" : "0",
             regexp: chkSFRegEx.checked ? "1" : "0",
             replaceAll: _self.replaceAll ? "true" : "false",
-            replacement: txtSFReplace.value
+            replacement: txtSFReplace.getValue(),
+            wholeword: chkSFWholeWords.checked
         };
     },
     
@@ -382,57 +353,67 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
     execFind: function() {
         var _self = this;
-
-        // show the console
-        ideConsole.show();
+   
+        if (btnSFFind.$ext.innerText == "Find") 
+            btnSFFind.$ext.innerText = "Cancel";
+        else if (btnSFFind.$ext.innerText == "Cancel") {
+            btnSFFind.$ext.innerText = "Find"
+            this.cancelFind();
+            return;
+        }
         
-        if (!this.$panel) {
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.setAttribute("closebtn", true);
-            this.$panel.appendChild(trSFHbox);
+        if (chkSFConsole.checked) {
+            // show the console
+            ideConsole.show();
             
-            tabConsole.set(_self.pageID);
-            
-            trSFHbox.show();
-            trSFResult.setProperty("visible", true);
-            this.$model = trSFResult.getModel();
-            
-            // make sure the tab is shown when results come in
-            this.$model.addEventListener("afterload", function() {
+            if (!this.$panel) {
+                this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+                this.$panel.setAttribute("closebtn", true);
+                     
                 tabConsole.set(_self.pageID);
-                trSFResult.addEventListener("afterselect", function(e) {
-                    var node = trSFResult.selected,
-                        line = 0, text = "", path;
-
-                    if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                        return;
-
-                    if (node.tagName == "d:excerpt") { // clicking on a line excerpt
-                        path = node.parentNode.getAttribute("path");
-                        line = node.getAttribute("line");
-                        text = node.parentNode.getAttribute("query");
-                    }
-                    else { // clicking on filename
-                        path = node.getAttribute("path");
-                        line = apf.queryValue(node, "node()/@line");
-                        text = apf.queryValue(node, "node()/@query");
-                    }
-
-                    editors.showFile(ide.davPrefix + "/" + path, line, 0, text);
+                
+                this.codeEditor = this.$panel.appendChild(new apf.codeeditor({
+                    syntax            : "c9search",
+                    "class"           : "nocorner",
+                    anchors           : "0 0 0 0",
+                    theme             : "ace/theme/monokai",
+                    overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
+                    folding           : "true",
+                    behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
+                    selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
+                    activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
+                    gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
+                    showinvisibles    : "false",
+                    showprintmargin   : "false",
+                    softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
+                    tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",
+                    scrollspeed       : "[{require('core/settings').model}::editors/code/@scrollspeed]",
+                    newlinemode       : "[{require('core/settings').model}::editors/code/@newlinemode]",
+                    animatedscroll    : "[{require('core/settings').model}::editors/code/@animatedscroll]",
+                    fontsize          : "[{require('core/settings').model}::editors/code/@fontsize]",
+                    gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
+                    highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
+                    autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
+                    fadefoldwidgets   : "false",
+                    wrapmodeViewport  : "true"
+                }));
+                
+                this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+                    _self.launchFileFromSearch(_self.codeEditor.$editor);
                 });
-            });
-
-            this.$panel.addEventListener("afterclose", function(){
-                this.removeNode();
-                return false;
-            });
-        }
-        else {
-            tabConsole.appendChild(this.$panel);
-            tabConsole.set(this.pageID);
+                
+                this.$panel.addEventListener("afterclose", function(){
+                    this.removeNode();
+                    return false;
+                });
+            }
+            else {
+                tabConsole.appendChild(this.$panel);
+                tabConsole.set(this.pageID);
+            }
         }
         
-        //Determine the scope
+        // Determine the scope of the search
         var path;
         if (grpSFScope.value == "projects") {
             path = ide.davPrefix;
@@ -452,59 +433,195 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         }
 
         var options = this.getOptions();
-        var query = txtSFFind.value;
+        var query = txtSFFind.getValue();
         options.query = query.replace(/\n/g, "\\n");
 
         // even if there's text in the "replace" field, don't send it when not replacing
         if (!this.replaceAll)
             options.replacement = ""; 
 
-        this.$model.clear();
-        this.$panel.setAttribute("caption", _self.pageTitle);
+        // prepare new Ace document to handle search results
+        var node = apf.getXml("<file />");
+        node.setAttribute("name", "Search Results");
+        node.setAttribute("path", searchFilePath);
+        node.setAttribute("customtype", util.getContentType(searchContentType));
+        node.setAttribute("tooltip", "Search Results");
+        //node.setAttribute("newfile", "1");
+        node.setAttribute("saving", "1");
         
-        trSFResult.setAttribute("empty-message", 
-            "Searching for '" + query + "'...");
-
-        davProject.report(path, "codesearch", options, function(data, state, extra){
-            _self.replaceAll = false; // reset
-
-            var matches = data.getElementsByTagNameNS("DAV:", "excerpt").length;
-            var queryDetails = data.getElementsByTagNameNS("DAV:", "querydetail");
-            
-            if (queryDetails.length === 1) {
-                queryDetails[0].setAttribute("count", ""+matches);
-                queryDetails[0].setAttribute("filecount", 
-                    "" + data.getElementsByTagNameNS("DAV:", "response").length);
+        var doc = ide.createDocument(node);
+        
+        // arrange beginning message
+        var messageHeader = this.messageHeader(path, options);
+        
+        if (chkSFConsole.checked) {
+            if (_self.consoleacedoc !== undefined && _self.consoleacedoc.$lines !== undefined && _self.consoleacedoc.$lines.length > 0) { // append to tab editor if it exists
+                _self.appendLines(_self.consoleacedoc, messageHeader);
+                _self.codeEditor.$editor.gotoLine(_self.consoleacedoc.getLength() + 2);
             }
-            
-            if (state !== apf.SUCCESS || !matches) {
-                var optionsDesc = [];
-                if (Util.isTrue(options.casesensitive))
-                    optionsDesc.push("case sensitive");
-                if (Util.isTrue(options.regexp))
-                    optionsDesc.push("regexp");
-
-                optionsDesc = optionsDesc.length > 0
-                    ? "(" + optionsDesc.join(", ") + ")"
-                    : "";
+            else {
+                _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
+                _self.consoleacedoc = _self.codeEditor.$editor.session.getDocument().doc; // store a reference to the doc
                 
-                trSFResult.setAttribute("empty-message", 
-                    "No matches for '" + query + "' " + optionsDesc);
-                return;
+                // set tab editor commands here
+                _self.codeEditor.$editor.commands._defaultHandlers = commands._defaultHandlers;
+                _self.codeEditor.$editor.commands.commands = commands.commands;
+                _self.codeEditor.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
+                _self.codeEditor.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
+        }
+        else {
+            if (this.searchPage === null) { // the results are not open, create a new page
+                doc.cachedValue = messageHeader;
+                ide.dispatchEvent("openfile", {doc: doc, node: node});
+                
+                _self.searchPage = tabEditors.getPage();
+                _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
+                _self.tabacedoc = _self.searchPage.$doc.acedoc;
+            }
+            else {
+                this.appendLines(_self.tabacedoc, messageHeader);
+                tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
+                
+                _self.searcheditor.gotoLine(_self.tabacedoc.getLength() + 2);
+            } 
+        }
+        
+        var firstStream = false;
+        this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {   
+            firstStream = true;
+            if (!chkSFConsole.checked)
+                _self.appendLines(_self.tabacedoc, data);
             else
-                _self.$panel.setAttribute("caption", 
-                    _self.pageTitle + " (" + matches + ")");
-
-            _self.$model.load(data);
+                _self.appendLines(_self.consoleacedoc, data);
         });
+
+        // Start streaming
+        var start = 0;
+        this.timer = setInterval(function() {  
+            var q = davProject.realWebdav.queue[_self.id];
+                
+            if (firstStream && !q) {
+                if (!chkSFConsole.checked) {
+                    node.setAttribute("saving", "0");
+                    node.setAttribute("changed", "0");
+                }
+                btnSFFind.$ext.innerText = "Find";
+                return clearInterval(_self.timer);
+            }
+            
+            // client not streaming atm
+            //var str = q.http.responseText;   
+            //console.log(str.substr(start).length);
+        }, 50);
         
         this.saveHistory(options.query, "searchfiles");
         this.position = 0;
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
+    
+    launchFileFromSearch : function(editor) {
+        var session = editor.getSession();
+        var currRow = editor.getCursorPosition().row;
+        var path = null;
+        
+        if (editor.getSession().getLine(currRow).length == 0) // no text in this row
+            return;
+        
+        var clickedLine = session.getLine(currRow).trim().split(":"); // number:text
+        
+        if (clickedLine.length < 2) // not a line number with text row
+            return;
+        
+        while (currRow > 0 && session.getTokenAt(currRow, 0).type != "string") {
+          currRow--;
+        }
+        
+        path = editor.getSession().getLine(currRow);
+        
+        if (path.charAt(path.length - 1) == ":")
+            path = path.substring(0, path.length-1);
+        
+        if (path !== undefined && path.length > 0)
+            editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
+    },
 
+    appendLines : function(doc, content) {
+        if (content.length == 0) // blank lines can get through
+            return;
+            
+        var currLength = doc.getLength();
+        
+        var contentArray = content.split("\n");
+        var contentLength = contentArray.length;
+        
+        // reached the end of grep
+        if (contentLength > 0 && contentArray[contentLength - 1].indexOf("Results:") == 0) {
+            var count = contentArray.pop();
+            count = count.substring(count.indexOf(" ") + 1);
+            
+            var countJSON = JSON.parse(count);
+            var finalMessage = this.messageFooter(countJSON);
+        }
+        
+        if (content.length > 0)
+            doc.insertLines(currLength, contentArray);
+        
+        if (countJSON !== undefined)
+            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
+    },
+    
+    messageHeader : function(path, options) {
+        var optionsDesc = [];
+        
+        if (options.regexp === true) {
+            optionsDesc.push("regexp");
+        }
+        if (options.casesensitive === true) {
+            optionsDesc.push("case sensitive");
+        }
+        if (options.wholeword === true) {
+            optionsDesc.push("whole word");
+        }
+        
+        if (optionsDesc.length > 0) {
+            optionsDesc = "(" + optionsDesc.join(", ") + ")";
+        }
+        else {
+            optionsDesc = "";
+        }
+        
+        var replacement = "";
+        if (options.replacement.length > 0)
+            replacement = "', replaced as '" + options.replacement ;
+        
+        return "Searching for '" + options.query + replacement + "' in " + path + optionsDesc + "\n";    
+    },
+    
+    messageFooter : function(countJSON) {
+        var message = "Found " + countJSON.count;
+        
+        message += (countJSON.count > 1 || countJSON.count == 0) ? " matches" : " match";
+        message += " in " + countJSON.filecount;
+        message += (countJSON.filecount > 1 || countJSON.filecount == 0) ? " files" : " file";
+            
+        return message;
+    },
+    
+    cancelFind : function() {
+        clearInterval(this.timer); // still need to handle actual kill for server
+    
+        var killMessage = "Search ended prematurely.";
+        
+        if (chkSFConsole.checked) {
+            this.appendLines(this.consoleacedoc,killMessage);
+        }
+        else {
+            this.appendLines(this.tabacedoc, killMessage);
+        } 
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

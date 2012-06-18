@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse=[%real%]>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse=[%packed%]>
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
@@ -34,8 +34,13 @@
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
                 settings: <%settingsXml%>,
+<<<<<<< HEAD
                 real: [%real%],
                 env: <%env%>
+=======
+                packed: <%packed%> ? true : false,
+                packedName: <%packedName%>
+>>>>>>> origin/beta
             };
 
             // prevent console messages from crashing our app!
@@ -44,7 +49,7 @@
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
-            if (!cloud9config.real) {
+            if (!cloud9config.packed) {
                 var RELEASE = "release";
                 var DEBUG   = "debug";
                 var FILES   = "files";
@@ -60,17 +65,22 @@
             var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
+<<<<<<< HEAD
                 if (!cloud9config.real) {
                     var list = ["core/ide", "core/ext", "core/util",
+=======
+                if (!cloud9config.packed) {
+                    var list = ["core/ide", "core/ext", "core/util", 
+>>>>>>> origin/beta
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
                 }
                 else {
-                    var list = ["[%staticUrl%]/packed.js"];
+                    var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "packed.js")];
                 }
 
                 require(list, function(ide, ext, util){
-                    if (!cloud9config.real) {
+                    if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
                     }
                     else {
@@ -85,21 +95,21 @@
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
 
                     //Load extensions
-                    if (!cloud9config.real) {
+                    if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
                             require(plugins, function() {
-                                loadAndBegin(plugins);
+                                loadAndBegin(ide, plugins);
                             });
                         });
                     }
                     else {
-                        loadAndBegin(list);
+                        loadAndBegin(ide, list);
                     }
                 });
                 preloaderImgs();
             });
 
-            function loadAndBegin(plugins) {
+            function loadAndBegin(ide, plugins) {
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
