@@ -11,12 +11,13 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
-var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
+var MultiSelectCommands = require("ace/multi_select").commands;
 var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
@@ -112,13 +113,13 @@ var SupportedModes = {
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
     "text/x-sql": "sql",
-    "text/x-xquery": "xquery",
-    "text/x-go": "go",
-    "text/hx": "hx",
-    "application/x-yaml": "yaml"
+    "text/x-c9search" : "c9search",
+    "text/x-xquery": "xquery"
 };
 
 var contentTypes = {
+    "c9search": "text/x-c9search",
+    
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
@@ -425,8 +426,9 @@ module.exports = ext.register("ext/code/code", {
             command.focusContext = true;
 
             var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor){
-                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
                     return false;
 
                 return isAvailable ? isAvailable(editor) : true;
@@ -457,7 +459,7 @@ module.exports = ext.register("ext/code/code", {
                 ["overwrite", "false"],
                 ["selectstyle", "line"],
                 ["activeline", "true"],
-                ["gutterline", "false"],
+                ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],
@@ -816,6 +818,14 @@ module.exports = ext.register("ext/code/code", {
         this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         this.amlEditor.$editor.commands = commands;
 
+        // for search in files
+        this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+            var node = tabEditors.getPage().$doc.getNode();
+            
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                require("ext/searchinfiles/searchinfiles").launchFileFromSearch(_self.amlEditor.$editor);
+        });
+        
         // preload common language modes
         var noop = function() {};
         ceEditor.getMode("javascript", noop);

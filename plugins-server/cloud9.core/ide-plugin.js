@@ -62,7 +62,8 @@ module.exports = function setup(options, imports, register) {
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
             hosted: options.hosted,
-            real: (options.real === true) ? true : false
+            packed: (options.packed === true) ? true : false,
+            packedName: options.packedName
         });
 
         register(null, {

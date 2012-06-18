@@ -135,6 +135,8 @@ var SupportedIcons = {
 };
 
 var contentTypes = {
+    "c9search": "text/x-c9search",
+    
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",

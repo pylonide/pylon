@@ -4,7 +4,7 @@
     "main": "packed-plugin.js",
     "private": true,
     "plugin": {
-        "provides": [ ],
+        "provides": ["client.cloud9","client.apf","client.ace","client.treehugger","client.v8debug"],
         "consumes": [
             "static"
         ]
