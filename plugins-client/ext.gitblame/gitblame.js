@@ -34,6 +34,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             },
             isAvailable : function(editor){
                 return editor && editor.ceEditor;
+            }
         }), 500);
     },
 
