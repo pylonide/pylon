@@ -30,11 +30,18 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         menus.addItemByPath("Tools/Git/Blame", new apf.item({
             // @TODO: Support more CVSs? Just "Blame this File"
             onclick : function(){
-                ext.initExtension(_self);
-                _self.requestBlame();
+                _self.startBlame();
             },
             isAvailable : function(editor){
                 return editor && editor.ceEditor;
+        }), 500);
+    },
+
+    startBlame : function() {
+        var _self = this;
+        
+                ext.initExtension(_self);
+                _self.requestBlame();
             }
         }), 500);
     },
