@@ -83,6 +83,7 @@ function extractOutline(node) {
             });
             return this;
         },
+        /* UNDONE: callbacks in outline
         // intelligently name callback functions for method calls
         // setTimeout(function() { ... }, 200) -> name is setTimeout [callback]
         'Call(e, args)', function(b) {
@@ -104,6 +105,7 @@ function extractOutline(node) {
             );
             return foundFunction ? this : false;
         },
+        */
         'Function(name, fargs, body)', function(b) {
             if (!b.name.value)
                 return false;
