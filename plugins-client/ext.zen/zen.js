@@ -11,8 +11,6 @@
 
 define(function(require, exports, module) {
 
-require("ext/zen/firmin-all-min");
-
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
@@ -98,7 +96,7 @@ module.exports = ext.register("ext/zen/zen", {
         });
 
         ide.addEventListener("init.ext/editors/editors", function(){
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 if (e.nextPage.type != "ext/code/code")
                     return;
     
@@ -147,14 +145,11 @@ module.exports = ext.register("ext/zen/zen", {
         this.setupHandleListeners();
 
         var button = btnZenFullscreen;
-        //var editor = editors.currentEditor;
-        //if (editor && editor.amlEditor)
-        //    editor.amlEditor.parentNode.appendChild(button);
         var page = tabEditors && tabEditors.getPage();
         if (page.fake)
             page = page.relPage;
         page.appendChild(button);
-        ide.addEventListener("editorswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage ? e.nextPage.fake ? e.nextPage.relPage : e.nextPage : null;
             if (page && button.parentNode != page)
                 page.appendChild(button);
@@ -200,12 +195,10 @@ module.exports = ext.register("ext/zen/zen", {
     calculatePositions : function() {
         // Calculate the position
         var _self = this;
-        var height = (window.innerHeight) + "px";
-        tabEditors.parentNode.$ext.style.height = height;
         _self.animateZen.style.height = window.innerHeight + "px";
         var width = window.innerWidth * _self.initialWidth;
         var widthDiff = (window.innerWidth - width) / 2;
-        tabEditors.parentNode.$ext.style.width = _self.animateZen.style.width = width + "px";
+        _self.animateZen.style.width = _self.animateZen.style.width = width + "px";
         _self.animateZen.style.left = widthDiff + "px";
 
         // Set the resize handle positions
@@ -222,11 +215,13 @@ module.exports = ext.register("ext/zen/zen", {
         apf.addListener(this.zenHandleLeft, "mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleLeftMove = true;
+            apf.dragMode = true;
         });
 
         apf.addListener(this.zenHandleRight, "mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleRightMove = true;
+            apf.dragMode = true;
         });
 
         apf.addListener(document, "mousemove", function(e) {
@@ -262,6 +257,8 @@ module.exports = ext.register("ext/zen/zen", {
             _self.handleLeftMove = false;
             _self.handleRightMove = false;
             apf.layout.forceResize();
+            
+            apf.dragMode = false;
         });
     },
 
@@ -297,18 +294,6 @@ module.exports = ext.register("ext/zen/zen", {
     },
 
     /**
-     * Checks if the current browser supports fancy shmancy animations
-     *
-     * @return {boolean} true if supported, false otherwise
-     */
-    checkBrowserCssTransforms : function() {
-        var isWebkitCapable = apf.isWebkit && (apf.versionSafari >= 3.1 || apf.versionChrome >= 11);
-        var isGeckoCapable = apf.isGecko && apf.versionGecko >= 4;
-        var isOperaCapable = apf.isOpera && apf.versionOpera >= 10;
-        return isWebkitCapable || isGeckoCapable || isOperaCapable;
-    },
-
-    /**
      * Enters the editor into fullscreen/zen mode
      *
      * @param {boolean} slow Whether to slow down the animation
@@ -318,7 +303,6 @@ module.exports = ext.register("ext/zen/zen", {
         
         var activeElement = apf.document.activeElement;
 
-        this.saveTabEditorsParentStyles();
         if (self.btnZenFullscreen)
             btnZenFullscreen.setAttribute("class", "full");
 
@@ -335,7 +319,6 @@ module.exports = ext.register("ext/zen/zen", {
         this.matchAnimationWindowPosition();
         this.setAceThemeBackground();
 
-        editors.disableTabResizeEvent();
         this.placeTabIntoAnimationWindow();
 
         Firmin.animate(this.animateZen, {
@@ -355,8 +338,8 @@ module.exports = ext.register("ext/zen/zen", {
 
             apf.layout.forceResize();
             
-            this.zenHandleLeft.style.display = "block";
-            this.zenHandleRight.style.display = "block";
+            _self.zenHandleLeft.style.display = "block";
+            _self.zenHandleRight.style.display = "block";
 
             Firmin.animate(_self.zenHandleLeft, {
                 opacity : 1.0,
@@ -408,14 +391,13 @@ module.exports = ext.register("ext/zen/zen", {
         this.zenHandleLeft.style.display = "none";
         this.zenHandleRight.style.display = "none";
 
-        tabEditors.parentNode.$ext.style.width = "100%";
-
         // Get the destination values
-        editors.setTabResizeValues(this.animateZenPosition);
-        var left = this.animateZenPosition.style.left;
-        var top = this.animateZenPosition.style.top;
-        var width = this.animateZenPosition.style.width;
-        var height = this.animateZenPosition.style.height;
+        var container = tabEditors.parentNode.parentNode.$ext;
+        var pos = apf.getAbsolutePosition(container);
+        var left = pos[0];
+        var top = pos[1];
+        var width = container.offsetWidth;
+        var height = container.offsetHeight;
 
         // Set the width to its actual width instead of "85%"
         var afWidth = apf.getHtmlInnerWidth(this.animateZen);
@@ -424,22 +406,17 @@ module.exports = ext.register("ext/zen/zen", {
         this.animateZen.style.height = afHeight + "px";
 
         Firmin.animate(this.animateZen, {
-            height: height,
-            width: width,
-            left: left,
-            top: top,
+            height: height + "px",
+            width: width + "px",
+            left: left + "px",
+            top: top + "px",
             timingFunction: "ease-in-out"
         }, slow ? 3.7 : 0.7, function() {
             _self.animateZen.style.display = "none";
-            // Reset values
-            _self.resetTabEditorsParentStyles();
 
-            apf.document.documentElement.appendChild(tabEditors.parentNode);
+            container.appendChild(tabEditors.parentNode.$ext);
 
-            editors.enableTabResizeEvent();
             apf.layout.forceResize(tabEditors.parentNode.$ext);
-
-            tabEditors.parentNode.$ext.style.position = "absolute";
 
             setTimeout(function() {
                 if (activeElement && activeElement.getHeight()
@@ -453,29 +430,6 @@ module.exports = ext.register("ext/zen/zen", {
         }, slow ? 3.5 : 0.5, function() {
             vbZen.hide();
         });
-    },
-
-    /**
-     * Retrieves and saves the styles of tabEditors.parentNode
-     * so that when we reset the position of it back to unzen mode,
-     * all those position details remain intact
-     */
-    saveTabEditorsParentStyles : function() {
-        this.teMarginLeft = tabEditors.parentNode.$ext.style.marginLeft;
-        this.teMarginRight = tabEditors.parentNode.$ext.style.marginRight;
-        this.teLeft = tabEditors.parentNode.$ext.style.left;
-        this.teTop = tabEditors.parentNode.$ext.style.top;
-    },
-
-    /**
-     * Resets the position and style properties of tabEditors.parent
-     * to what they were when we saved them in #this.saveTabEditorsParentStyles
-     */
-    resetTabEditorsParentStyles : function() {
-        tabEditors.parentNode.$ext.style.marginLeft = this.teMarginLeft;
-        tabEditors.parentNode.$ext.style.marginRight = this.teMarginRight;
-        tabEditors.parentNode.$ext.style.left = this.teLeft;
-        tabEditors.parentNode.$ext.style.top = this.teTop;
     },
 
     /**
@@ -550,13 +504,6 @@ module.exports = ext.register("ext/zen/zen", {
                 reappendlist[i][2],
                 reappendlist[i][1]);
         }
-
-        //this.animateZen.appendChild(tabEditors.parentNode.$ext);
-        tabEditors.parentNode.$ext.style.width = "100%";
-        tabEditors.parentNode.$ext.style.height = "100%";
-        tabEditors.parentNode.$ext.style.position = "relative";
-        tabEditors.parentNode.$ext.style.left = "0px";
-        tabEditors.parentNode.$ext.style.top = "0px";
     },
 
     /**

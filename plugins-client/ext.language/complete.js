@@ -1,4 +1,4 @@
-/**
+16/**
  * Cloud9 Language Foundation
  *
  * @copyright 2011, Ajax.org B.V.
@@ -25,7 +25,7 @@ var AUTO_UPDATE_DELAY = 200;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
-
+var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
@@ -182,6 +182,7 @@ module.exports = {
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
+        this.lineHeight = this.cursorConfig.lineHeight + EXTRA_LINE_HEIGHT;
         var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
         
@@ -202,11 +203,11 @@ module.exports = {
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
         var boxLength = this.matches.length || 1;
-        var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
+        var completionBoxHeight = 11 + Math.min(10 * this.lineHeight, boxLength * (this.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
         
         var innerBoxLength = this.matches.length || 1;
-        var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
+        var innerCompletionBoxHeight = Math.min(10 * this.lineHeight, innerBoxLength * (this.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
         apf.popup.show("completionBox", {
@@ -278,7 +279,7 @@ module.exports = {
                 replaceText(amlEditor.$editor, _self.prefix, match);
                 amlEditor.focus();
             });
-            matchEl.style.height = cursorConfig.lineHeight + "px";
+            matchEl.style.height = cursorConfig.lineHeight + EXTRA_LINE_HEIGHT + "px";
             matchEl.style.width = (MENU_WIDTH - 10) + "px";
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);

@@ -39,147 +39,60 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-var ModesCaption = {
-    "C#" : "text/x-csharp",
-    "C/C++" : "text/x-c",
-    "Clojure" : "text/x-script.clojure",
-    "CoffeeScript" : "text/x-script.coffeescript",
-    "Coldfusion" : "text/x-coldfusion",
-    "CSS" : "text/css",
-    "Groovy" : "text/x-groovy",
-    "Java" : "text/x-java-source",
-    "JavaScript" : "application/javascript",
-    "Latex" : "application/x-latex",
-    "Script" : "text/x-script",
-    "Lua" : "text/x-lua",
-    "Markdown" : "text/x-markdown",
-    "OCaml" : "text/x-script.ocaml",
-    "PHP" : "application/x-httpd-php",
-    "Perl" : "text/x-script.perl",
-    "Powershell" : "text/x-script.powershell",
-    "Python" : "text/x-script.python",
-    "Ruby" : "text/x-script.ruby",
-    "Scala" : "text/x-scala",
-    "SCSS" : "text/x-scss",
-    "SQL" : "text/x-sql",
-    "Textile" : "text/x-web-textile",
-    "HTML" : "text/html",
-    "XML" : "application/xml",
-    "XQuery" : "text/x-xquery"
-}
-
+// name: ["Caption", "extension", "content-type"]
 var SupportedModes = {
-    "application/javascript": "javascript",
-    "application/json": "json",
-    "text/css": "css",
-    "text/x-scss": "scss",
-    "text/html": "html",
-    "application/xhtml+xml": "html",
-    "application/xml": "xml",
-    "application/rdf+xml": "xml",
-    "application/rss+xml": "xml",
-    "image/svg+xml": "svg",
-    "application/wsdl+xml": "xml",
-    "application/xslt+xml": "xml",
-    "application/atom+xml": "xml",
-    "application/mathml+xml": "xml",
-    "application/x-httpd-php": "php",
-    "application/x-sh": "sh",
-    "text/x-script.python": "python",
-    "text/x-script.ruby": "ruby",
-    "text/x-script.perl": "perl",
-    "text/x-script.perl-module": "perl",
-    "text/x-c": "c_cpp",
-    "text/x-java-source": "java",
-    "text/x-groovy": "groovy",
-    "text/x-csharp": "csharp",
-    "text/x-script.coffeescript": "coffee",
-    "text/x-markdown": "markdown",
-    "text/x-web-textile": "textile",
-    "text/x-script.ocaml": "ocaml",
-    "text/x-script.clojure": "clojure",
-    "application/x-latex": "latex",
-    "text/x-lua": "lua",
-    "text/x-script.powershell": "powershell",
-    "text/x-scala": "scala",
-    "text/x-coldfusion": "coldfusion",
-    "text/x-sql": "sql",
-    "text/x-c9search" : "c9search",
-    "text/x-xquery": "xquery"
+    c9search: ["C9Search", "c9search_results", "text/x-c9search"],
+    coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
+    coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion"],
+    csharp: ["C#", "cs", "text/x-csharp"],
+    css: ["CSS", "css", "text/css"],
+    golang: ["Go", "go", "text/x-go"],
+    groovy: ["Groovy", "groovy", "text/x-groovy"],
+    haxe: ["haXe", "hx", "text/haxe"],
+    html: ["HTML", "htm|html|xhtml", "text/html"],
+    c_cpp: ["C/C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
+    clojure: ["Clojure", "clj", "text/x-script.clojure"],
+    java: ["Java", "java", "text/x-java-source"],
+    javascript: ["JavaScript", "js", "application/javascript"],
+    json: ["JSON", "json", "application/json"],
+    latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex"],
+    less: ["LESS", "less", "text/x-less"],
+    liquid: ["Liquid", "liquid", "text/x-liquid"],
+    lua: ["Lua", "lua", "text/x-lua"],
+    markdown: ["Markdown", "md|markdown", "text/x-markdown"],
+    ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml"],
+    perl: ["Perl", "pl|pm", "text/x-script.perl"],
+    pgsql: ["pgSQL", "pgsql", "text/x-pgsql"],
+    php: ["PHP", "php|phtml", "application/x-httpd-php"],
+    powershell: ["Powershell", "ps1", "text/x-script.powershell"],
+    python: ["Python", "py", "text/x-script.python"],
+    ruby: ["Ruby", "ru|gemspec|rake|rb", "text/x-script.ruby"],
+    scad: ["OpenSCAD", "scad", "text/x-scad", "hidden"],
+    scala: ["Scala", "scala", "text/x-scala"],
+    scss: ["SCSS", "scss|sass", "text/x-scss"],
+    sh: ["SH", "sh|bash|bat", "application/x-sh"],
+    sql: ["SQL", "sql", "text/x-sql"],
+    svg: ["SVG", "svg", "image/svg+xml"],
+    text: ["Text", "txt", "text/plain", "hidden"],
+    textile: ["Textile", "textile", "text/x-web-textile"],
+    xml: ["XML", "xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl", "application/xml"],
+    xquery: ["XQuery", "xq", "text/x-xquery"],
+    yaml: ["YAML", "yaml", "text/x-yaml"]
 };
 
-var contentTypes = {
-    "c9search": "text/x-c9search",
-    
-    "js": "application/javascript",
-    "json": "application/json",
-    "css": "text/css",
-    "less": "text/css",
-    "scss": "text/x-scss",
-    "sass": "text/x-sass",
-
-    "xml": "application/xml",
-    "rdf": "application/rdf+xml",
-    "rss": "application/rss+xml",
-    "svg": "image/svg+xml",
-    "wsdl": "application/wsdl+xml",
-    "xslt": "application/xslt+xml",
-    "atom": "application/atom+xml",
-    "mathml": "application/mathml+xml",
-    "mml": "application/mathml+xml",
-
-    "php": "application/x-httpd-php",
-    "phtml": "application/x-httpd-php",
-    "html": "text/html",
-    "xhtml": "application/xhtml+xml",
-    "coffee": "text/x-script.coffeescript",
-    "*Cakefile": "text/x-script.coffeescript",
-    "py": "text/x-script.python",
-
-    "ru": "text/x-script.ruby",
-    "gemspec": "text/x-script.ruby",
-    "rake": "text/x-script.ruby",
-    "rb": "text/x-script.ruby",
-
-    "c": "text/x-c",
-    "cc": "text/x-c",
-    "cpp": "text/x-c",
-    "cxx": "text/x-c",
-    "h": "text/x-c",
-    "hh": "text/x-c",
-    "hpp": "text/x-c",
-
-    "cs": "text/x-csharp",
-
-    "java": "text/x-java-source",
-    "clj": "text/x-script.clojure",
-    "groovy": "text/x-groovy",
-    "scala": "text/x-scala",
-
-    "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml",
-
-    "md": "text/x-markdown",
-    "markdown": "text/x-markdown",
-    "textile": "text/x-web-textile",
-    "latex": "application/x-latex",
-    "tex": "application/x-latex",
-    "ltx": "application/x-latex",
-
-    "lua": "text/x-lua",
-
-    "pl": "text/x-script.perl",
-    "pm": "text/x-script.perl-module",
-
-    "ps1": "text/x-script.powershell",
-    "cfm": "text/x-coldfusion",
-    "sql": "text/x-sql",
-
-    "sh": "application/x-sh",
-    "bash": "application/x-sh",
-    
-    "xq": "text/x-xquery"
-};
+var fileExtensions = {}, ModesCaption = {}, contentTypes = {};
+Object.keys(SupportedModes).forEach(function(name) {
+    var mode = SupportedModes[name];
+    mode.caption = mode[0];
+    mode.mime = mode[2];
+    mode.hidden = !!mode[3];
+    mode.ext = mode[1];
+    mode.ext.split("|").forEach(function(ext) {
+        fileExtensions[ext] = name;
+    });
+    ModesCaption[mode.caption] = name;
+    contentTypes[mode.mime] = name;
+});
 
 module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -191,7 +104,7 @@ module.exports = ext.register("ext/code/code", {
     nodes : [],
     menus : [],
 
-    fileExtensions : Object.keys(contentTypes),
+    fileExtensions : Object.keys(fileExtensions),
     supportedModes : Object.keys(SupportedModes),
 
     getState : function(doc) {
@@ -250,23 +163,61 @@ module.exports = ext.register("ext/code/code", {
         if (!node)
             return "";
 
-        var mime = node.getAttribute("customtype");
+        var mode = node.getAttribute("customtype");
 
-        if (!mime) {
+        if (mode) {
+            var ext = contentTypes[mode.split(";")[0]] ;
+            if (ext)
+                mode = fileExtensions[contentTypes[mode]];
+        }
+
+        if (!mode) {
             var fileName = node.getAttribute("name");
-
-            if (fileName.lastIndexOf(".") != -1)
-                mime = contentTypes[fileName.split(".").pop().toLowerCase()];
-            else
-                mime = contentTypes["*" + fileName];
+            var dotI = fileName.lastIndexOf(".") + 1;
+            var ext = dotI ? fileName.substr(dotI).toLowerCase() : "*" + fileName;
+            mode = fileExtensions[ext];
         }
 
-        if (mime) {
-            mime = mime.split(";")[0];
-            return (SupportedModes[mime] || "text");
+        return SupportedModes[mode] ? mode : "text";
+    },
+
+    setSyntax : function(value) {
+        value = SupportedModes[value] ? value : "";
+        var file = ide.getActivePageModel();
+        if (!file)
+            return;
+
+        var fileName = file.getAttribute("name");
+        var dotI = fileName.lastIndexOf(".") + 1;
+        var ext = dotI ? fileName.substr(dotI).toLowerCase() : "*" + fileName;
+        if (value) {
+            if (!SupportedModes[value])
+                return;
+
+            apf.xmldb.setAttribute(file, "customtype", value);
+            fileExtensions[ext] = value;
+        } else {
+            apf.xmldb.removeAttribute(file, "customtype", "");
+
+            delete fileExtensions[ext];
+            for (var mode in SupportedModes) {
+                if (SupportedModes[mode].ext.split("|").indexOf(ext) != -1) {
+                    fileExtensions[ext] = mode;
+                    break;
+                }
+        }
         }
 
-        return "text";
+        var mime = this.setCustomType(dotI ? ext : file, value);
+        ide.dispatchEvent("track_action", {
+            type: "syntax highlighting",
+            fileType: ext,
+            fileName: fileName,
+            mime: mime,
+            customType: value
+        });
+        if (self.ceEditor)
+            self.ceEditor.setAttribute("syntax", this.getSyntax(file));
     },
     
     getContentType : function(node) {
@@ -274,7 +225,7 @@ module.exports = ext.register("ext/code/code", {
         if (!syntax)
             return "auto";
         
-        return contentTypes[syntax] || (syntax == "text" ? "text/plain" : "auto");
+        return SupportedModes[syntax].mime || "auto";
     },
 
     getSelection : function(){
@@ -412,14 +363,14 @@ module.exports = ext.register("ext/code/code", {
                     return false;
 
                 return isAvailable ? isAvailable(editor) : true;
-            }
+            };
 
             command.findEditor = function(editor) {
                 if (editor && editor.ceEditor)
                     return editor.ceEditor.$editor;
                 return editor;
-            }
-        }
+            };
+        };
 
         if (!defaultCommands.wrapped) {
             defaultCommands.each(fnWrap, defaultCommands);
@@ -432,6 +383,17 @@ module.exports = ext.register("ext/code/code", {
 
         commands.addCommands(defaultCommands, true);
         commands.addCommands(MultiSelectCommands, true);
+
+        commands.addCommand({
+            name: "syntax",
+            exec: function(_, syntax) {
+                if (typeof syntax == "object")
+                    syntax = syntax.argv && syntax.argv[1] || "";
+                syntax = ModesCaption[syntax] || fileExtensions[syntax] || syntax;
+                _self.setSyntax(syntax);
+            },
+            commands: ModesCaption
+        });
 
         //Settings Support
         ide.addEventListener("settings.load", function(e) {
@@ -490,7 +452,7 @@ module.exports = ext.register("ext/code/code", {
             }
         });
 
-        tabEditors.addEventListener("afterswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var editor = _self.amlEditor;
             if (typeof editor != "undefined")
                 editor.afterOpenFile(editor.getSession());
@@ -537,7 +499,7 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Line/Split Line", "splitline")
-        )
+        );
 
         c = 0;
         this.menus.push(
@@ -633,47 +595,7 @@ module.exports = ext.register("ext/code/code", {
                     }
                 },
                 "onitemclick" : function(e) {
-                    var file = ide.getActivePageModel();
-
-                    if (file) {
-                        var value = e.relatedNode.value;
-
-                        if (value == "auto")
-                            apf.xmldb.removeAttribute(file, "customtype", "");
-                        else
-                            apf.xmldb.setAttribute(file, "customtype", value);
-
-                        if (file.getAttribute("customtype")) {
-                            var fileName = file.getAttribute("name");
-
-                            if (contentTypes["*" + fileName])
-                                delete contentTypes["*" + fileName];
-
-                            var mime = value.split(";")[0];
-                            var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                                fileName.split(".").pop() : null;
-
-                            if (fileExt && contentTypes[fileExt] !== mime)
-                                delete contentTypes[fileExt];
-
-                            var customType = fileExt ?
-                                contentTypes[fileExt] : contentTypes["*" + fileName];
-
-                            if (!customType)
-                                _self.setCustomType(fileExt ? fileExt : file, mime);
-
-                            ide.dispatchEvent("track_action", {
-                                type: "syntax highlighting",
-                                fileType: fileExt,
-                                fileName: fileName,
-                                mime: mime,
-                                customType: customType
-                            });
-                        }
-
-                        if (self.ceEditor)
-                            ceEditor.setAttribute("syntax", _self.getSyntax(file));
-                    }
+                    _self.setSyntax(e.relatedNode.value);
                 }
             }), 300000),
 
@@ -759,13 +681,15 @@ module.exports = ext.register("ext/code/code", {
         );
 
         for (var mode in ModesCaption) {
+            if (ModesCaption[mode][3] == "hidden")
+                continue;
             this.menus.push(
                 menus.addItemByPath("View/Syntax/" + mode, new apf.item({
                     type: "radio",
                     value: ModesCaption[mode],
                     group : grpSyntax
                 }), c += 100)
-            )
+            );
         }
 
         c = 0;
@@ -797,7 +721,7 @@ module.exports = ext.register("ext/code/code", {
 
         this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         this.amlEditor.$editor.commands = commands;
-        
+
         // preload common language modes
         var noop = function() {};
         ceEditor.getMode("javascript", noop);
@@ -838,7 +762,7 @@ module.exports = ext.register("ext/code/code", {
                 var syntax = _self.getSyntax(doc.getNode());
                 doc.acesession.setMode(ceEditor.getMode(syntax));
                 doc.acesession.syntax = syntax;
-            })
+            });
         });
 
         ide.addEventListener("afteroffline", function(){
@@ -848,34 +772,58 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("afteronline", function(){
             menus.menus["View/Syntax"].enable();
         });
+        
+        ide.addEventListener("animate", function(e){
+            if (e.type == "editor") {
+                var renderer = ceEditor.$editor.renderer;
+                renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
+            }
+            else if (e.type == "splitbox") {
+                if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
+                    var delta = e.which.getHeight() - parseInt(e.options.height);
+                    if (delta < 0) return;
+                    
+                    var renderer = ceEditor.$editor.renderer;
+                    renderer.onResize(true, null, null, ceEditor.getHeight() + delta);
+                }
+                else if (e.options.width != undefined && apf.isChildOf(e.other, ceEditor, true)) {
+                    var delta = e.which.getWidth() - parseInt(e.options.width);
+                    if (delta < 0) return;
+                    
+                    var renderer = ceEditor.$editor.renderer;
+                    renderer.onResize(true, null, ceEditor.getWidth() + delta);
+                }
+            }
+        });
     },
 
     /**
      * Saves custom syntax for extension type in settings.xml
      *
      * @param {String|xmlNode} ext Contains the extension type shorthand
-     * @param {String} mime Mime type string the extension will be related to
+     * @param {String} mode ace mode the extension will be related to
      */
-    setCustomType: function(ext, mime) {
+    setCustomType: function(ext, mode) {
         var node;
 
         if (typeof ext === "string") {
             node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
-            if (!node)
-                node = settings.model.appendXml('<mime name="'
-                    + mime + '" ext="' + ext + '" />', "auto/customtypes");
+            if (!node && mode)
+                node = settings.model.appendXml('<mime ext="' + ext + '" />', "auto/customtypes");
         } else {
             var name = ext.getAttribute("name") || "";
             node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
             if (node)
                 apf.xmldb.removeAttribute(node, "ext");
-            else
-                node = settings.model.appendXml('<mime name="'
-                    + mime + '" filename="' + name + '" />', "auto/customtypes");
+            else if (mode)
+                node = settings.model.appendXml('<mime filename="' + name + '" />', "auto/customtypes");
         }
-
-        apf.xmldb.setAttribute(node, "name", mime);
+        if (mode)
+            apf.xmldb.setAttribute(node, "name", mode);
+        else if (node)
+            apf.xmldb.removeNode(node);
         settings.save();
+        return mode && SupportedModes[mode].mime;
     },
 
     /**
@@ -890,10 +838,14 @@ module.exports = ext.register("ext/code/code", {
 
         var mimes = customTypes.selectNodes("mime");
         mimes.forEach(function(n) {
-            if (n.getAttribute("filename"))
-                contentTypes["*" + n.getAttribute("filename")] = n.getAttribute("name");
-            else
-                contentTypes[n.getAttribute("ext")] = n.getAttribute("name");
+            var ext = n.getAttribute("filename");
+            ext = ext ? "*" + ext : n.getAttribute("ext");
+            var mode = n.getAttribute("name");
+            // old settings contained contenttype instead of mode
+            if (contentTypes[mode])
+                mode = contentTypes[mode];
+            if (SupportedModes[mode])
+                fileExtensions[ext] = mode;
         });
     },
 

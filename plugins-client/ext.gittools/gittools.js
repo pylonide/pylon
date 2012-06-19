@@ -54,7 +54,7 @@ module.exports = ext.register("ext/gittools/gittools", {
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
-        tabEditors.addEventListener("afterswitch", function(e){
+        ide.addEventListener("tab.afterswitch", function(e){
             var file = _self.getFilePath(e.previous);
             _self.setupGitLogElements(file);
             if (!_self.gitLogs[file])

@@ -55,7 +55,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             _self.updateAnnotations();
         });
 
-        tabEditors.addEventListener("afterswitch", function(e){
+        ide.addEventListener("tab.afterswitch", function(e){
             var ce = editors.currentEditor;
             if (ce) {
                 _self.editorSession = ce.amlEditor.getSession();

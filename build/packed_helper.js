@@ -11,6 +11,10 @@ for (var i in extensions) {
     if (extensions[i].packagePath && extensions[i].packagePath.indexOf("cloud9.core") >= 0) {
         for (var p in extensions[i].clientPlugins) {
         	var name = extensions[i].clientPlugins[p].split("/")[1];
+
+            if (name === "log")
+                continue;
+            
         	var dir = "plugins-client/ext." + name;
             var mapping = "ext/" + name;
 

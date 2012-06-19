@@ -280,10 +280,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
 
         this.$onSwitchFileFn = this.onSwitchFile.bind(this);
-        ide.addEventListener("editorswitch", this.$onSwitchFileFn);
+        ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
-        tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
+        ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
@@ -1455,10 +1455,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
 
         if (this.$onSwitchFileFn)
-            ide.removeEventListener("editorswitch", this.$onSwitchFileFn);
+            ide.removeEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         if (this.$onAfterSwitchFn)
-            ide.removeEventListener("afterswitch", this.$onAfterSwitchFn);
+            ide.removeEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         if (this.$afterSelectFn)
             lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
@@ -1490,10 +1490,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.addEventListener("afterfilesave", this.$onFileSaveFn);
 
         if (this.$onSwitchFileFn)
-            ide.addEventListener("editorswitch", this.$onSwitchFileFn);
+            ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         if (this.$onAfterSwitchFn)
-            ide.addEventListener("afterswitch", this.$onAfterSwitchFn);
+            ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         if (this.$afterSelectFn)
             lstRevisions.addEventListener("afterselect", this.$afterSelectFn);

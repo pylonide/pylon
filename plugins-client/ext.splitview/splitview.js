@@ -139,9 +139,21 @@ module.exports = ext.register("ext/splitview/splitview", {
             )
         );
 
-        ide.addEventListener("editorswitch", function(e) {
+        ide.addEventListener("tab.beforeswitch", function(e) {
             // the return value actually does something!
-            return _self.updateSplitView(e.previousPage, e.nextPage);
+            var cancelSwitch = _self.updateSplitView(e.previousPage, e.nextPage);
+            
+            if (cancelSwitch) {
+                var page       = e.nextPage;
+                var editorPage = tabEditors.getPage(page.type);
+                
+                if (editorPage.model != page.$model)
+                    editorPage.setAttribute("model", page.$model);
+                if (editorPage.actiontracker != page.$at)
+                    editorPage.setAttribute("actiontracker", page.$at);
+            }
+            
+            return cancelSwitch;
         });
 
         ide.addEventListener("pageswitch", function(e) {
