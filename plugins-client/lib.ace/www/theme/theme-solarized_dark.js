@@ -49,8 +49,8 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_gutter {\
-  background: #09222b;\
-  color: #d0edf7;\
+  background: #e8e8e8;\
+  color: #333;\
 }\
 \
 .ace-solarized-dark .ace_print_margin {\
@@ -86,7 +86,7 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_step {\
-  background: rgb(102, 82, 0);\
+  background: rgb(198, 219, 174);\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_bracket {\
@@ -99,7 +99,7 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_gutter_active_line {\
-  background-color: #0d3440;\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_selected_word {\

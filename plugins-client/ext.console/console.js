@@ -162,7 +162,11 @@ module.exports = ext.register("ext/console/console", {
 
     clear: function() {
         var activePg = tabConsole.getPage();
-        if (activePg.childNodes[0].tagName.indexOf("text") === -1)
+        if (activePg.childNodes[0].tagName.indexOf("codeeditor") >=0) {
+            var searchConsole = require("ext/searchinfiles/searchinfiles").searchConsole;
+            searchConsole.$editor.session.getDocument().setValue("");
+        } 
+        else if (activePg.childNodes[0].tagName.indexOf("text") === -1)
             return;
 
         var outputHtmlEl = activePg.childNodes[0].$ext;
