@@ -217,11 +217,13 @@ module.exports = ext.register("ext/editors/editors", {
             = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
             + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
 
-        tabEditors.$buttons.style.position = "absolute";
-        tabEditors.$buttons.style.left = "0";
-        tabEditors.$buttons.style.top = "0";
-        tabEditors.$buttons.style.right = "0";
-        tabEditors.$buttons.style.bottom = "0";
+        if (!apf.isGecko) {
+            tabEditors.$buttons.style.position = "absolute";
+            tabEditors.$buttons.style.left = "0";
+            tabEditors.$buttons.style.top = "0";
+            tabEditors.$buttons.style.right = "0";
+            tabEditors.$buttons.style.bottom = "0";
+        }
     },
 
     /**
@@ -247,7 +249,8 @@ module.exports = ext.register("ext/editors/editors", {
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
             var duration = mouse ? 0.2 : 0.2;
 
-            tabEditors.$buttons.style.overflow = "hidden";
+            if (!apf.isGecko)
+                tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
@@ -289,7 +292,9 @@ module.exports = ext.register("ext/editors/editors", {
             ], function(e){
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
                 _self.animating = false;
-                tabEditors.$buttons.style.overflow = "";
+                
+                if (!apf.isGecko)
+                    tabEditors.$buttons.style.overflow = "";
             });
         }
         else {
@@ -407,7 +412,8 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabs.setAttribute("buttons", "close");
         
-        tabEditors.$buttons.style.overflow = "visible";
+        if (!apf.isGecko)
+            tabEditors.$buttons.style.overflow = "";
 
         var model = new apf.model();
         var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){

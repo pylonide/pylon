@@ -42,7 +42,7 @@
                 <a:vsplitbox id="searchRow">
                     <a:vsplitbox id="editorRow">
                         <a:hsplitbox id="hboxTabBar" height="27">
-                            <a:bar id="barButtonContainer" class="editor_tab"/>
+                            <a:bar id="barButtonContainer" class="editor_tab" style="line-height:0" />
                         </a:hsplitbox>
                         <a:hsplitbox id="hboxMain" splitter="true">
                             <a:bar id="colLeft" width="1" minwidth="105" visible="false" />

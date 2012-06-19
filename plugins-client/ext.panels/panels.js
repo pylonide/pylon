@@ -297,7 +297,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         var _self = this;
         ide.addEventListener("settings.load", function(e){
-            settings.setDefaults("general", [["animateui", apf.isGecko ? false : true]]);
+            settings.setDefaults("general", [["animateui", true]]);
         });
     },
     
