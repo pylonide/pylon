@@ -65,34 +65,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         );
     
         var timer;
-//        navbar.$ext.addEventListener("mouseover", function(e){
-//            clearTimeout(timer);
-//            
-//            if (!_self.collapsed && !_self.animating 
-//              && navbar.getWidth() >= navbar.$int.scrollWidth)
-//              //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
-//                return;
-//            
-//            if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
-//                timer = setTimeout(function(){
-//                    _self.animateToFullWidth();
-//                }, 150);
-//            }
-//        });
-//        
-//        navbar.$ext.addEventListener("mouseout", function(e){
-//            if (!_self.collapsed || !_self.animating
-//              && apf.isChildOf(navbar.$ext, e.toElement, true))
-//                return;
-//            
-//            clearTimeout(timer);
-//            if (colLeft.getWidth() != navbar.getWidth()) {
-//                timer = setTimeout(function(){
-//                    _self.animateToDefaultWidth();
-//                }, 300);
-//            }
-//        });
-        
         ide.addEventListener("panels.animate", function(e){
             if (e.noanim) {
                 _self.animateToDefaultWidth(true);
@@ -107,18 +79,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             //Stop and prevent any animation to happen
             clearTimeout(timer);
             _self.animating = true;
-//            if (_self.animateControl)
-//                _self.animateControl.stop();
-            
-//            var lastTween = e.tweens[e.tweens.length - 1];
-//            var tween = {
-//                oHtml : navbar.$ext, 
-//                type  : "width", 
-//                from  : navbar.getWidth(),
-//                to    : lastTween.to
-//            };
-            
-//            e.tweens.push(tween);
 
             var l = navbar.$ext.lastChild.previousSibling;
             var w = l.offsetLeft + l.offsetWidth + (_self.btnArrow.visible ? 1 : 6);

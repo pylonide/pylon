@@ -123,9 +123,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 //Resize hbox
                 this.resizeMainHbox();
             }
-            /*else {
-                barParent.$dockData.sections.remove(btnPNode.$dockData);
-            }*/
         }
     }
     

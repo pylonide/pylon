@@ -93,7 +93,6 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 1);
-            //apf.layout.forceResize(barButtonContainer.$ext);
         }
         else {
             if (!preview) {
@@ -103,23 +102,18 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 0);
-            //apf.layout.forceResize(barButtonContainer.$ext);
         }
 
     },
 
     addTabSection : function(){
         var _self = this;
-//        var vbox = this.hbox.appendChild(
-//            new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
-//        );
 
         var btn, btnMenu;
         var tab = new apf.bar({
             skin     : "basic",
             "class"  : "codeditorHolder",
-            style    : "position:absolute;", //53px
-            //htmlNode : document.body,
+            style    : "position:absolute;", 
             childNodes: [
                 new apf.tab({
                     id      : "tabEditors",
@@ -171,8 +165,6 @@ module.exports = ext.register("ext/editors/editors", {
                     onmousedown : function(){
                         apf.setStyleClass(window[menus.getMenuId('View/Tabs')].$ext, 'tabsContextMenu');
                     },
-                   /* showme  : "[{require('core/settings').model}::auto/tabs/@show]",
-                    visible : "{apf.isTrue(this.showme)}", */
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
                 }) /*,
@@ -188,7 +180,6 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
 
-//        apf.document.documentElement.appendChild(tab);
         colMiddle.appendChild(tab);
         var tabs = tabEditors;
 
@@ -221,18 +212,6 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
-//        this.$buttonContainer = new apf.bar({
-//            skin : "basic",
-//            "class": "editor_tab",
-//            "style": "position:absolute",
-//            htmlNode : document.body
-//        });
-//        this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
-//        //tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-//        this.$buttonContainer.$int.style.paddingRight
-//            = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
-//            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
-
         barButtonContainer.$int.appendChild(tabEditors.$buttons);
         barButtonContainer.$int.style.paddingRight
             = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
@@ -243,53 +222,6 @@ module.exports = ext.register("ext/editors/editors", {
         tabEditors.$buttons.style.top = "0";
         tabEditors.$buttons.style.right = "0";
         tabEditors.$buttons.style.bottom = "0";
-
-//        var timer;
-//        tabEditors.$buttons.addEventListener("mouseover",function(e){
-//            clearTimeout(timer);
-//
-//            if (_self.showTabs || _self.previewing)
-//                return;
-//
-//            timer = setTimeout(function(){
-//                if (!_self.previewing) {
-//                    _self.toggleTabs(1, true, null, true);
-//                    _self.previewing = true;
-//                }
-//            }, 200);
-//        });
-//        tabEditors.$buttons.addEventListener("mouseout",function(e){
-//            clearTimeout(timer);
-//
-//            if (_self.showTabs || apf.isChildOf(tabEditors.$buttons, e.toElement, true))
-//                return;
-//
-//            timer = setTimeout(function(){
-//                if (_self.previewing) {
-//                    _self.previewing = false;
-//                    _self.toggleTabs(-1, true, null, true);
-//                }
-//            }, 300);
-//        });
-
-//        splitterPanelLeft.addEventListener("dragmove", function(e){
-//            _self.isResizing = true;
-//        });
-//        splitterPanelLeft.addEventListener("dragdrop", function(e){
-//            _self.isResizing = false;
-//        });
-
-//        ide.addEventListener("init.ext/sidebar/sidebar", function(){
-//            navbar.addEventListener("resize", function(){
-//                _self.$resizeButtons();
-//            });
-//        });
-
-//        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-//            _self.$resize(tabEditors.parentNode.$ext);
-//        });
-
-//        return vbox;
     },
 
     /**
@@ -300,8 +232,6 @@ module.exports = ext.register("ext/editors/editors", {
      */
     setTabResizeValues : function(ext, preview, animate, mouse, dir) {
         var ph;
-        var pos = apf.getAbsolutePosition(ph = tabEditors.$buttons);
-        var d = apf.getDiff(ext);
         var _self = this;
 
         if (this.animating && (!animate || this.animating[0] == preview))
@@ -320,7 +250,6 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
-//                tabEditors.$buttons.style.height = "8px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "step5");
             }
@@ -346,8 +275,6 @@ module.exports = ext.register("ext/editors/editors", {
                         "step" + (dir ? --i : ++i),
                         ["step" + (dir ? i + 1 : i-1)]);
         
-//                    if (tabEditors.getPage())
-//                        apf.layout.forceResize(tabEditors.getPage().$ext);
                 }, ++j * (duration / 6) * 1000);
             });
             
@@ -361,13 +288,8 @@ module.exports = ext.register("ext/editors/editors", {
                 { duration : duration, node: this.buttons.menu, height : (dir ? 17 : 10) + "px"}
             ], function(e){
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
-
                 _self.animating = false;
-
                 tabEditors.$buttons.style.overflow = "";
-
-//                if (tabEditors.getPage())
-//                    apf.layout.forceResize(tabEditors.getPage().$ext);
             });
         }
         else {
@@ -383,55 +305,8 @@ module.exports = ext.register("ext/editors/editors", {
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
             }
-
-//            this.$resize(ext, preview);
         }
     },
-
-//    $resize : function(ext, preview){
-//        if (this.previewing || this.animating)
-//            return;
-//
-//        var ph;
-//        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-//        var d = apf.getDiff(ext);
-//
-//        ext.style.left = (pos[0] - 2) + "px";
-//        ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
-//        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
-//        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
-//        ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
-//
-//        if (this.isResizing)
-//            this.$resizeButtons([pos[0], pos[1] - 27], ph.offsetWidth);
-//    },
-//
-//    $resizeButtons : function(pos, width){
-//        var ph, ext = this.$buttonContainer.$ext;
-//        var d2 = apf.getDiff(ext);
-//        if (!pos)
-//            pos = apf.getAbsolutePosition(ph = barButtonContainer.$ext);
-//        if (!width)
-//            width = ph.offsetWidth;
-//
-//        ext.style.left = (Math.max(this.showTabs ? 45 : 0, pos[0])) + "px";
-//        ext.style.top = (pos[1]) + "px"; // - 28
-//        ext.style.width = (width + 2 - d2[0]) + "px";
-//    },
-
-    /**
-     * Disable the resize event when the editors are in focus mode
-     */
-//    disableTabResizeEvent : function() {
-//        tabPlaceholder.removeEventListener("resize", this.$tabPlaceholderResize);
-//    },
-
-    /**
-     * Enable the resize event when the editors come back to non-focus mode
-     */
-//    enableTabResizeEvent : function() {
-//        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize);
-//    },
 
     isEditorAvailable : function(page, path){
         var editor = ext.extLut[path];
@@ -574,9 +449,6 @@ module.exports = ext.register("ext/editors/editors", {
 
         //Set active page
         tabs.set(filepath);
-
-        //if (editorPage.model != model)
-            //this.beforeswitch({nextPage: fake});
 
         editor.enable();
         //editor.$rbEditor.select();

@@ -783,7 +783,7 @@ module.exports = ext.register("ext/code/code", {
         
         ide.addEventListener("animate", function(e){
             if (e.type == "editor") {
-                var renderer = ceEditor.$editor.renderer;e.delta
+                var renderer = ceEditor.$editor.renderer;
                 renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
             }
             else if (e.type == "splitbox") {
