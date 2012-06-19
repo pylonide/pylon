@@ -21,6 +21,7 @@ var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
+var anims = require("ext/anims/anims");
 
 var searchFilePath = ide.davPrefix + "/search_results.c9search";
 var searchContentType = "c9search";
@@ -52,7 +53,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
     hook : function(){
         var _self = this;
-
+        
+        this.markupInsertionPoint = searchRow;
+        
         commands.addCommand({
             name: "searchinfiles",
             hint: "search for a string through all files in the current workspace",
@@ -97,14 +100,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
         });
         
-        ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchInFiles, e.ext.splitter);
-        });
-        if (winSearchInFiles.parentNode != mainRow) {
-            mainRow.insertBefore(winSearchInFiles, 
-                self.winDbgConsole && winDbgConsole.previousSibling || null);
-        }
-
         winSearchInFiles.addEventListener("prop.visible", function(e) {
             if (e.value) {
                 if (self.trFiles)
@@ -258,6 +253,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 }
             }
 
+            searchRow.appendChild(winSearchInFiles);
             winSearchInFiles.show();
             txtSFFind.focus();
             txtSFFind.select();
@@ -266,19 +262,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             document.body.scrollTop = 0;
             
             //Animate
-            if (animate && !apf.isGecko) {
-            Firmin.animate(winSearchInFiles.$ext, {
-                height: "102px",
-                timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-            }, 0.2, function() {
-                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                winSearchInFiles.$ext.style.height = "";
-                
-                setTimeout(function(){
-                    apf.layout.forceResize();
-                }, 200);
-            });
-        }
+            if (animate) {
+                anims.animateSplitBoxNode(winSearchInFiles, {
+                    height: "102px",
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)",
+                    duration: 0.2
+                }, function() {
+                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    winSearchInFiles.$ext.style.height = "";
+                    
+                    setTimeout(function(){
+                        apf.layout.forceResize();
+                    }, 50);
+                });
+            }
             else {
                 winSearchInFiles.$ext.style.height = "";
                 apf.layout.forceResize();
@@ -288,35 +285,38 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
             
-            
             //Animate
             if (animate && !apf.isGecko) {
-            winSearchInFiles.visible = false;
-            
-            winSearchInFiles.$ext.style.height 
-                = winSearchInFiles.$ext.offsetHeight + "px";
-
-            Firmin.animate(winSearchInFiles.$ext, {
-                height: "0px",
-                timingFunction: "ease-in-out"
-            }, 0.2, function(){
-                winSearchInFiles.visible = true;
-                winSearchInFiles.hide();
+                winSearchInFiles.visible = false;
                 
-                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                winSearchInFiles.$ext.style.height 
+                    = winSearchInFiles.$ext.offsetHeight + "px";
 
-                if (!noselect && editors.currentEditor)
-                    editors.currentEditor.ceEditor.focus();
-                
-                setTimeout(function(){
-                    callback 
-                        ? callback()
-                        : apf.layout.forceResize();
-                }, 50);
-            });
-        }
+                anims.animateSplitBoxNode(winSearchInFiles, {
+                    height: "0px",
+                    timingFunction: "ease-in-out",
+                    duration : 0.2
+                }, function(){
+                    winSearchInFiles.visible = true;
+                    winSearchInFiles.hide();
+                    winSearchInFiles.parentNode.removeChild(winSearchInFiles);
+                    
+                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+    
+                    if (!noselect && editors.currentEditor)
+                        editors.currentEditor.ceEditor.focus();
+                    
+                    setTimeout(function(){
+                        callback 
+                            ? callback()
+                            : apf.layout.forceResize();
+                    }, 50);
+                });
+            }
             else {
                 winSearchInFiles.hide();
+                winSearchInFiles.parentNode.removeChild(winSearchInFiles);
+                
                 callback 
                     ? callback()
                     : apf.layout.forceResize();
@@ -544,7 +544,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             path = path.substring(0, path.length-1);
         
         if (path !== undefined && path.length > 0)
-            editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
+            editors.gotoDocument({
+                path: ide.davPrefix + "/" + path, 
+                row: clickedLine[0], 
+                col: 0, 
+                text: clickedLine[1]
+            });
     },
 
     appendLines : function(doc, content) {

@@ -32,6 +32,9 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             onclick : function(){
                 ext.initExtension(_self);
                 _self.requestBlame();
+            },
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
             }
         }), 500);
     },

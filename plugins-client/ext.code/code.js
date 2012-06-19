@@ -452,7 +452,7 @@ module.exports = ext.register("ext/code/code", {
             }
         });
 
-        tabEditors.addEventListener("afterswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var editor = _self.amlEditor;
             if (typeof editor != "undefined")
                 editor.afterOpenFile(editor.getSession());
@@ -779,6 +779,29 @@ module.exports = ext.register("ext/code/code", {
 
         ide.addEventListener("afteronline", function(){
             menus.menus["View/Syntax"].enable();
+        });
+        
+        ide.addEventListener("animate", function(e){
+            if (e.type == "editor") {
+                var renderer = ceEditor.$editor.renderer;
+                renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
+            }
+            else if (e.type == "splitbox") {
+                if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
+                    var delta = e.which.getHeight() - parseInt(e.options.height);
+                    if (delta < 0) return;
+                    
+                    var renderer = ceEditor.$editor.renderer;
+                    renderer.onResize(true, null, null, ceEditor.getHeight() + delta);
+                }
+                else if (e.options.width != undefined && apf.isChildOf(e.other, ceEditor, true)) {
+                    var delta = e.which.getWidth() - parseInt(e.options.width);
+                    if (delta < 0) return;
+                    
+                    var renderer = ceEditor.$editor.renderer;
+                    renderer.onResize(true, null, ceEditor.getWidth() + delta);
+                }
+            }
         });
     },
 

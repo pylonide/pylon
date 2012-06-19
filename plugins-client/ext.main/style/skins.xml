@@ -27,6 +27,44 @@
 </a:checkbox>
 <a:bar name="bar">
     <a:style><![CDATA[
+        .basic{
+            position : relative;
+        }
+        
+        .fakehbox{
+            white-space : nowrap;
+        }
+        
+        .fakehbox>div{
+            display : inline-block;
+        }
+        
+        .fakehbox.aligntop>div{
+            vertical-align : top;
+        }
+        
+        .fakehbox.aligncenter>div{
+            vertical-align : middle;
+        }
+        
+        .fakehbox.padding3>div{
+            margin-left : 3px;
+        }
+        
+        .fakehbox.static{
+            position : static;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="basic">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="deprecated">
+    <a:style><![CDATA[
         .bar{
             overflow : hidden;
             position : relative;
@@ -37,20 +75,6 @@
             <div class="bar">
                 <div class="contents"> </div>
                 <div class="barFooter"><div><div> </div></div></div>
-            </div>
-        </a:main>
-    </a:presentation>
-</a:bar>
-<a:bar name="basic">
-    <a:style><![CDATA[
-        .basic{
-            position : relative;
-        }
-    ]]></a:style>
-
-    <a:presentation>
-        <a:main container=".">
-            <div class="basic">
             </div>
         </a:main>
     </a:presentation>
@@ -110,7 +134,6 @@
          * c9 Menu Bar expanded
          * --------------------------------------------------------------------------------------- */
         .c9-menu-bar {
-            padding-top: 4px;
             position      : relative;
             overflow      : visible;
             background    : url(images/c9-repeat-x.png) repeat-x 0 0 #49a8fa;
@@ -133,6 +156,10 @@
 
         .c9-menu-bar.offline .c9-mbar-bcont .c9-offline {
             display:block;
+        }
+        
+        .c9-mbar-logo{
+            padding-top: 4px;
         }
         
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
@@ -176,6 +203,11 @@
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
         }
+        
+        .c9-menu-bar .c9-mbar-cont>div{
+            display : inline-block;
+            vertical-align : top;
+        }
 
         .c9-menu-bar .c9-mbar-cont .c9-divider-double, 
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize {
@@ -200,7 +232,7 @@
             left: 0;
             position : absolute;
             top: 0px;
-            width: 21px;
+            width: 20px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
@@ -208,6 +240,7 @@
         .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
             height: 37px;
+            pointer-events: none;
             position: fixed;
             right: 0;
             top: 0;
@@ -219,6 +252,7 @@
             display: block;
             height: 26px;
             left: 33px;
+            pointer-events: all;
             position: absolute;
             text-indent: 100%;
             top: 4px;
@@ -229,6 +263,7 @@
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
         	height: 10px;
         	left: 24px;
+            pointer-events: all;
         	position: absolute;
         	top: 4px;
         	width: 10px;
@@ -257,6 +292,7 @@
          .c9-menu-bar.minimized .c9-mbar-cont:hover,
          .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: 50% -21px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.08), 0 6px 0 0 rgba(255,255,255,0.05) inset;
          }
          .c9-menu-bar.minimized .c9-mbar-cont * {
             display: none;
@@ -292,24 +328,16 @@
         .black-menu-bar {
 			background    : rgba(26, 26, 26, .9);
 			border-bottom : 1px solid black;
-			height        : 27px !important;
+			height        : 26px !important;
 			overflow      : hidden;
-			padding       : 0 5px 0 0px !important;
+			padding       : 0 0 0 0px !important;
 			position      : relative;
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
 			min-width : 196px;
             z-index   : 1000;
         }
-
-        /*.deploy.mnubtn {
-            border-bottom : none;
-        }
-
-        .deploy.mnubtn.mnubtnDown {
-            border-bottom: 1px solid #3F3F41;
-        }*/
-
+        
         .black-menu-bar .c9menulogo {
             width    : 65px;
             height   : 32px;
@@ -1561,7 +1589,7 @@
 <a:button name="c9-menu-btn">
     <a:style><![CDATA[
         .c9-menu-btn {
-            height             : 24px;
+            height             : 25px;
             overflow           : visible;
             cursor             : default;
             position           : relative;
@@ -1569,6 +1597,7 @@
             -khtml-user-select : none;
             user-select        : none;
             line-height        : 17px;
+            display            : inline-block;
         }
 
         .c9-menu-btn .c9-left,
@@ -1917,6 +1946,10 @@
         }
         .c9-toolbarbutton-glossyDown .c9-label:after {
             background-position: -476px -490px; 
+        }
+        
+        .c9-toolbarbutton-glossyDisabled .c9-label{
+            color : #999;
         }
 
         .c9-toolbarbutton-glossyIcon .c9-icon {
@@ -4668,8 +4701,8 @@
         
         .dark .divider-status-bar {
             background: none;
-            border-left: 1px solid rgba(0,0,0,.3);   
-            border-right: 1px solid rgba(255,255,255,.05);
+            border-left: 1px solid rgba(0,0,0,.3);
+            border-right: 1px solid rgba(255,255,255,.1);
         }
         
         .ace_dark .divider-status-bar {
@@ -5975,9 +6008,6 @@
             color: gray;
             text-shadow : none;
         }
-        .menu>div.menu_item.disabled>span{
-            opacity: 0.2;
-        }
 
         .menu>div.menu_item>u{
             width: 16px;
@@ -6397,6 +6427,9 @@
                 padding  : 30px 0 0 0;
                 border-right: 1px solid rgba(43,43,43,0.4);
             }
+            .dark .fm-window {
+                border-right: 1px solid rgba(128,128,128,0.7);
+            }
 
             .fm-window .fm-header {
                 position : relative;
@@ -6424,6 +6457,10 @@
                 text-shadow   : #fff 0px 1px 0px;
                 box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
                 text-transform : uppercase;
+            }
+            
+            .dark .fm-window .fm-header .hcontent{
+                background-position: 0 -1318px, 0 0;
             }
 
             .fm-window .fm-content {
@@ -8399,6 +8436,10 @@
             position : relative;
             z-index  : 8000;
         }
+        
+        .topsplitter .splitter{
+            z-index : 100000;
+        }
 
         .splitterFocus {
         }
@@ -8420,16 +8461,14 @@
         }
 
         .splitter.vertical{
-            display  : -moz-box;
-            display  : -webkit-box;
-            display  : -ms-box;
-            width    : 0;
+            width  : 0;
         }
 
         .splitter.vertical div{
             width : 5px;
             margin-left : -3px;
             background : url(images/spacer.gif);
+            height : 100%;
         }
 
         .splitter.vertical.panelsplitter div {
@@ -9046,34 +9085,54 @@
     }
     
     .editor_tab .btnsesssioncontainer {
-        background: rgba(24,24,24,.9) url(images/c9-noise.png);
-        padding : 0 100px 0 21px;  
-        height: 27px;
-        overflow: visible;
-        white-space: nowrap;
+        padding : 5px 4px 0 21px;	
+        height: 22px;
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
-        width : auto;
+        /*overflow : hidden;*/
+       
+        /* 
+            this fixes the tab being over the white line 
+            shadow while not having overflow:hidden 
+        */
+        clip: rect(0px 3000px 28px 0px); 
+       
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
+        position : relative;
+        z-index : 100;
 
-        position: relative;
-
-        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset, 0 1px 0 0 rgba(255, 255, 255, .9);
+        /*-webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+           -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+                box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;*/
+        
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
         margin-bottom: 1px;
+
+        display : -webkit-box;
+        display : -moz-box;
+    }
+    
+    .editor_tab .btnsesssioncontainer.morepadding{
+        padding-right : 53px;
     }
     .dark .editor_tab .btnsesssioncontainer {
-        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset, 0 1px 0 0 rgba(255, 255, 255, .1);
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
     }
     .editor_tab.hidetabs .btnsesssioncontainer {
         padding-right: 80px;
     }
         
-    .editor_tab .btnsesssioncontainer > div {
+    .editor_tab .btnsesssioncontainer > .session_btn {
         cursor: default;
-        display : inline-block;
+        
+        min-width : 17px;
+        max-width : 150px;
+        -webkit-box-flex : 1;
+        -moz-box-flex : 1;
         position : relative;
-        vertical-align : top;
-        top : 5px;
+        width : 0;
+        line-height : 1.2em;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9230,10 +9289,6 @@
                 user-select: none;
     }
      
-    .editor_tab #q5 {
-        top: 2px !important;
-    }
-
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_icon {
         display: none;
     }
@@ -9245,7 +9300,7 @@
     	display: inline-block;
 		height: 17px;
 		margin: 0px 0px 0 12px;
-		top: 6px;
+		top: 2px;
 		width: 30px;
         vertical-align : top;
     }
@@ -9349,7 +9404,6 @@
      * END LEGACY CODE
      * --------------------------------------------------------------------------------------- */
 
-
     /* ------------------------------------------------------------------------------------------
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
@@ -9374,7 +9428,7 @@
     	border-bottom: 2px solid transparent;
         height: 5px;
     	overflow: hidden;
-        top : 5px;
+        top : 0px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -9421,7 +9475,7 @@
     .editor_tab.hidetabs .curbtn {
     	height: 8px;
     	overflow: hidden;
-        top : 5px;
+        top : 0px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
@@ -9488,80 +9542,79 @@
      * Animation steps
      * --------------------------------------------------------------------------------------- */
     
-    .editor_tab .step1 .tab_middle:after 
+    .editor_tab.step1 .tab_middle:after 
         { -webkit-mask-position : -164px    0px; top : 0; width : 17px; right: -17px; display: block;}
-    .editor_tab .step2 .tab_middle:after 
+    .editor_tab.step2 .tab_middle:after 
         { -webkit-mask-position : -164px  -32px; top : 0; width : 14px; right: -14px; display: block;}
-    .editor_tab .step3 .tab_middle:after 
+    .editor_tab.step3 .tab_middle:after 
         { -webkit-mask-position : -164px  -64px; top : 0; width : 11px; right: -11px; display: block;}
-    .editor_tab .step4 .tab_middle:after 
+    .editor_tab.step4 .tab_middle:after 
         { -webkit-mask-position : -164px  -96px; top : 0; width : 7px;  right: -7px;  display: block;}
-    .editor_tab .step5 .tab_middle:after,
-    .editor_tab .step6 .tab_middle:after 
+    .editor_tab.step5 .tab_middle:after,
+    .editor_tab.step6 .tab_middle:after 
         { -webkit-mask-position : -164px -128px; top : 0; width : 0px;  right: 0;     display: block;}
     
-    .editor_tab .step1 .tab_middle:before 
+    .editor_tab.step1 .tab_middle:before 
         { -webkit-mask-position : -137px    0px; width : 17px; }
-    .editor_tab .step2 .tab_middle:before 
+    .editor_tab.step2 .tab_middle:before 
         { -webkit-mask-position : -137px  -32px; width : 17px; }
-    .editor_tab .step3 .tab_middle:before 
+    .editor_tab.step3 .tab_middle:before 
         { -webkit-mask-position : -137px  -64px; width : 18px; }
-    .editor_tab .step4 .tab_middle:before 
+    .editor_tab.step4 .tab_middle:before 
         { -webkit-mask-position : -137px  -96px; width : 18px; }
-    .editor_tab .step5 .tab_middle:before 
+    .editor_tab.step5 .tab_middle:before 
         { -webkit-mask-position : -137px -128px; width : 19px; }
-    .editor_tab .step6 .tab_middle:before 
+    .editor_tab.step6 .tab_middle:before 
         { -webkit-mask-position : -137px -128px; width : 19px; }
     
-    .editor_tab .step1 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step2 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step3 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step4 .session_btn:not(.curbtn) .tab_middle:before,
-    .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle:before {
+    .editor_tab.step1 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step2 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step3 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step4 .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab.step5 .session_btn:not(.curbtn) .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -79px;
         background-repeat   : repeat-x;
         top                 : 0;
     }
-    .editor_tab .step1 .curbtn .tab_middle:before,
-    .editor_tab .step2 .curbtn .tab_middle:before,
-    .editor_tab .step3 .curbtn .tab_middle:before,
-    .editor_tab .step4 .curbtn .tab_middle:before,
-    .editor_tab .step5 .curbtn .tab_middle:before {
+    .editor_tab.step1 .curbtn .tab_middle:before,
+    .editor_tab.step2 .curbtn .tab_middle:before,
+    .editor_tab.step3 .curbtn .tab_middle:before,
+    .editor_tab.step4 .curbtn .tab_middle:before,
+    .editor_tab.step5 .curbtn .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
         top                 : 0;
     }
   
-    .dark .editor_tab .step1 .curbtn .tab_middle:before,
-    .dark .editor_tab .step2 .curbtn .tab_middle:before,
-    .dark .editor_tab .step3 .curbtn .tab_middle:before,
-    .dark .editor_tab .step4 .curbtn .tab_middle:before,
-    .dark .editor_tab .step5 .curbtn .tab_middle:before {
+    .dark .editor_tab.step1 .curbtn .tab_middle:before,
+    .dark .editor_tab.step2 .curbtn .tab_middle:before,
+    .dark .editor_tab.step3 .curbtn .tab_middle:before,
+    .dark .editor_tab.step4 .curbtn .tab_middle:before,
+    .dark .editor_tab.step5 .curbtn .tab_middle:before {
         background-position : 0 -1126px;
     }
   
-
-    .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle:before 
+    .editor_tab.step5 .session_btn:not(.curbtn) .tab_middle:before 
         { height : 8px; }
-    .editor_tab .step6 .session_btn:not(.curbtn) .tab_middle:before 
+    .editor_tab.step6 .session_btn:not(.curbtn) .tab_middle:before 
         { height : 5px; }
     
-    .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle 
+    .editor_tab.step5 .session_btn:not(.curbtn) .tab_middle 
         { height : 3px; }
-    .editor_tab .step6 .session_btn:not(.curbtn) .tab_middle
+    .editor_tab.step6 .session_btn:not(.curbtn) .tab_middle
         { height : 0px; }
 
-    .editor_tab .step1 .tab_middle *
+    .editor_tab.step1 .tab_middle *
         { opacity: 0.8; }
-    .editor_tab .step2 .tab_middle *
+    .editor_tab.step2 .tab_middle *
         { opacity: 0.6; }
-    .editor_tab .step3 .tab_middle *
+    .editor_tab.step3 .tab_middle *
         { opacity: 0.4; }
-    .editor_tab .step4 .tab_middle *
+    .editor_tab.step4 .tab_middle *
         { opacity: 0.2; }
-    .editor_tab .step5 .tab_middle *
+    .editor_tab.step5 .tab_middle *
         { opacity: 0; }
 
 
@@ -9572,11 +9625,6 @@
         background-repeat: no-repeat;
         background-position: 0 0;
     }
-
-
-    
-
-    
 
     /*.editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
         background-image: url(images/save-indicator-active-tab.gif);
@@ -9617,7 +9665,7 @@
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
 	*/
         top : 25%;
-        margin: -100px auto 0 auto;
+        margin: 0px auto 0 auto;
         /*background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;*/
         /*border-bottom: 1px solid #8c8c8c;
         border-left: 1px solid #8c8c8c;
@@ -9712,6 +9760,10 @@
         /*border-bottom: 1px solid #8C8C8C;*/
         padding-top:6px;
         clear: both;
+        box-shadow: 0 1px 0 0 rgba(255, 255, 255, .9) inset;
+    }
+    .dark .editor_tab .session_page {
+        box-shadow: 0 1px 0 0 rgba(255, 255, 255, .1) inset;
     }
 
     .editor_tab .session_page.curpage{
@@ -9734,11 +9786,15 @@
     }*/
 ]]></a:style>
 <a:style condition="apf.isGecko">
+    .editor_tab .btnsesssioncontainer {
+        overflow : hidden;
+    }
+
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
-        top: 6px;
+        top: 0px;
     }
     .editor_tab.hidetabs .curbtn {
-        top: 5px;
+        top: 0px;
     }
 
     .editor_tab .tab_middle {
@@ -9747,6 +9803,10 @@
 
     .editor_tab .tab_right, .editor_tab .tab_left {
         height : 23px;
+    }
+    
+    .editor_tab .btnsesssioncontainer > .session_btn {
+        max-width : 190px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
@@ -9793,9 +9853,7 @@
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
         background-color    : #303030;
         color               : #cecece;
-        -webkit-transition: background-color .1s linear;
-           -moz-transition: background-color .1s linear;
-                transition: background-color .1s linear;
+        /*-webkit-transition: background-color .1s linear;*/
     }
 
     .editor_tab .session_btn .tab_middle:before {
@@ -9876,9 +9934,7 @@
     <a:button
       caption   = "div[1]/div[2]/text()"
       container = "div"
-      icon      = "div[1]/div"
-      maxwidth  = "150"
-      minwidth  = "17">
+      icon      = "div[1]/div">
         <div class="session_btn">
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>
@@ -11482,7 +11538,8 @@
             color:white;
         }
 
-        .filemgr-treeFocus > .item-fix.selected:first-child {
+        .filemgr-treeFocus > .item-fix.selected:first-child,
+        .filemgr-tree.openfile > .item-fix.selected:first-child {
         	border-top-color:#166CAD;
         }
 
