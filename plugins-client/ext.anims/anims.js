@@ -105,10 +105,12 @@ module.exports = ext.register("ext/anims/anims", {
                 oNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();
                 
-                if (pNode.$vbox)
-                    aNode.setHeight(options.height);
-                else
-                    aNode.setWidth(options.width);
+                if (aNode.parentNode) {
+                    if (pNode.$vbox)
+                        aNode.setHeight(options.height);
+                    else
+                        aNode.setWidth(options.width);
+                }
                 
                 finish && finish(); //setTimeout(finish, 30);
             });
