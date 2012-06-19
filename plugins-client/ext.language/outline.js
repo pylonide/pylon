@@ -14,7 +14,8 @@ var search = require("ext/gotofile/search");
 
 module.exports = {
     nodes: [],
-    cachedOutlineTree : [],
+    fullOutline : [],
+    ignoreSelectOnce : true,
     
     hook: function(oExt, worker) {
         this.worker = worker;
@@ -32,7 +33,7 @@ module.exports = {
                 return editor && editor.ceEditor;
             },
             exec: function () {
-                _self.fetchOutline(true);
+                _self.updateOutline(true);
             }
         });
         
@@ -46,14 +47,30 @@ module.exports = {
             menus.addItemByPath("Goto/Goto Definition...", mnuItem.cloneNode(false), 110)
         );
         
-        ide.addEventListener("init.ext/gotofile/gotofile", function(e) {
+        ide.addEventListener("init.ext/gotofile/gotofile", function() {
             dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
+            // dgGoToFile.parentNode.insertBefore(txtOutline, treeOutline);
             txtGoToFile.addEventListener("afterchange", function(e) {
-                // TODO: only call fetchOutline() when necessary
-                if (gotofile.isOutlineEnabled())
-                    _self.fetchOutline(false);
+                _self.onAfterChange(e);
+            });            
+            txtGoToFile.addEventListener("keydown", function(e) {
+                _self.onKeyDown(e);
+            });     
+            dgGoToFile.addEventListener("keydown", function(e) {
+                _self.onKeyDown(e);
             });
-        });
+            winGoToFile.addEventListener("prop.visible", function(e) {
+                if (!e.value)
+                    _self.showFileSearch();
+            });
+            treeOutline.addEventListener("onafterselect", function() {
+                _self.onSelect(treeOutline.selected);
+            });
+            treeOutline.addEventListener("onclick", function() {
+                setTimeout(gotofile.toggleDialog(-1), 500);
+            });
+        });   
+
     },
 
     outlineJsonToXml: function(array, selected, tag) {
@@ -61,7 +78,7 @@ module.exports = {
         for (var i = 0; i < array.length; i++) {
             var elem = array[i];
             xmlS.push('<'); xmlS.push(tag); xmlS.push(' name="'); xmlS.push(elem.name);
-                xmlS.push('" icon="' + elem.icon);
+                xmlS.push('" icon="' + (elem.icon || "method"));
                 xmlS.push('" sl="'); xmlS.push(elem.pos.sl);
                 xmlS.push('" el="'); xmlS.push(elem.pos.el);
                 xmlS.push('" sc="'); xmlS.push(elem.pos.sc);
@@ -75,7 +92,7 @@ module.exports = {
         return xmlS.join('');
     },
     
-    fetchOutline : function(showNow) {
+    updateOutline : function(showNow) {
         this.worker.emit("outline", { data : { showNow: showNow } });
     },
 
@@ -100,19 +117,41 @@ module.exports = {
         
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
-            //if (!txtGoToFile.value.match(/^@/))
-            //    txtGoToFile.setValue("@");
-            //txtGoToFile.$input.selectionStart = 1;
-            dgGoToFile.hide();
-            treeOutline.show();
+            this.showOutline();
+            txtGoToFile.$input.selectionStart = 1;
         }
+        
         //gotofile.setOutline(data.body, this.renderOutline);
-        this.cachedOutlineTree = event.data.body;
+        this.fullOutline = event.data.body;
         this.renderOutline();
     },
     
-    renderOutline : function() {
-        var outline = this.cachedOutlineTree;
+    showOutline: function() {
+        gotofile.setEventsEnabled(false);
+        if (!dgGoToFile.getProperty("visible"))
+            return;
+        if (!txtGoToFile.value.match(/^@/))
+            txtGoToFile.setValue("@");
+        else
+            txtGoToFile.setValue(txtGoToFile.value);
+        this.ignoreSelectOnce = true;
+        dgGoToFile.hide();
+        treeOutline.show();
+    },
+    
+    showFileSearch: function() {
+        gotofile.setEventsEnabled(true);
+        // txtOutline.value = txtGoToFile.value;
+        if (dgGoToFile.getProperty("visible"))
+            return;
+        //if (txtOutline.value.match(/^@/))
+        //    txtGoToFile.setValue("");
+        dgGoToFile.show();
+        treeOutline.hide();
+    },
+    
+    renderOutline: function() {
+        var outline = search.treeSearch(this.fullOutline, txtGoToFile.value.substr(1));
         if (outline.items)
             outline = outline.items;
         var ace = editors.currentEditor.amlEditor.$editor;
@@ -127,16 +166,13 @@ module.exports = {
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
         }
-        //document.addEventListener("click", this.closeOutline);
-        ace.container.addEventListener("DOMMouseScroll", this.closeOutline);
-        ace.container.addEventListener("mousewheel", this.closeOutline);
-    },
-    
-    filterOutline : function() {
-        // TODO
     },
 
-    jumpTo: function(el) {
+    onSelect: function(el) {
+        if (this.ignoreSelectOnce) {
+            this.ignoreSelectOnce = false;
+            return;
+        }
         setTimeout(function() {
             var editor = editors.currentEditor.amlEditor.$editor;
             var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
@@ -146,25 +182,72 @@ module.exports = {
         });
     },
 
-    jumpToAndClose: function(el) {
+    onAfterChoose: function(el) {
         this.closeOutline();
     },
-
-    closeOutline : function(event) {
-        var ace = editors.currentEditor.amlEditor.$editor;
-        //document.removeEventListener("click", this.closeOutline);
-        ace.container.removeEventListener("DOMMouseScroll", this.closeOutline);
-        ace.container.removeEventListener("mousewheel", this.closeOutline);
-        barOutline.$ext.style.display = "none";
-        setTimeout(function() {
-            editors.currentEditor.amlEditor.$editor.focus();
-        }, 100);
-    },
-
-    escapeOutline: function(event) {
-        if(event.keyCode === 27) {
-            this.closeOutline();
+    
+    onKeyDown: function(e) {
+        if (gotofile.eventsEnabled)
+            return;
+            
+        if (e.keyCode === 27) { // Escape
+            gotofile.toggleDialog(-1);
         }
+        else if (e.keyCode === 13) { // Enter
+            gotofile.toggleDialog(-1);
+        }
+        else if (e.keyCode === 40) { // Down
+            e.preventDefault();
+            if (treeOutline.childNodes.length === 0)
+                return;
+            var node = treeOutline.selection[0] || treeOutline.root.childNodes[0];
+            treeOutline.select(this.getNodeAfter(node) || node);
+        }
+        else if (e.keyCode === 38) { // Up
+            e.preventDefault();
+            if (treeOutline.childNodes.length === 0 || !treeOutline.selection[0])
+                return;
+            var node = treeOutline.selection[0];
+            treeOutline.select(this.getNodeBefore(node) || node);
+        }
+        else if (e.keyCode == 16) { // @
+            this.showOutline();
+        }
+    },
+    
+    getNodeAfter: function(node) {
+        if (node.childNodes[1] && treeOutline.isCollapsed(node.childNodes[1])) {
+            return node.childNodes[1];
+        } else {
+            while (!node.nextSibling && node.parentNode)
+                node = node.parentNode;
+            return node.nextSibling;
+        }
+    },
+    
+    getNodeBefore: function(node) {
+        if (node.previousSibling && node.previousSibling.attributes) {
+            node = node.previousSibling;
+            while (node.childNodes[1] && treeOutline.isCollapsed(node.childNodes[1]))
+                node = node.childNodes[1];
+            return node;
+        } else {
+            return node.parentNode == treeOutline.root ? null : node.parentNode;
+        }
+    },
+    
+    onAfterChange: function(event) {
+        if (txtGoToFile.value === "@")
+            this.ignoreSelectOnce = true;
+        if (this.isOutlineEnabled())
+            this.showOutline();
+        else
+            this.showFileSearch();
+        this.renderOutline();
+    },
+    
+    isOutlineEnabled: function() {
+        return txtGoToFile.value.match(/^@/);
     }
 };
 });

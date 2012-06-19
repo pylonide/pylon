@@ -26,15 +26,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     markup  : markup,
     offline : false,
 
-    dirty   : true,
-    nodes   : [],
+    eventsEnabled : true,
+    dirty         : true,
+    nodes         : [],
     
     arraySearchResults : [],
     arrayCache : [],
     arrayCacheLastSearch : [],
-    
-    outlineArrayCache : [],
-    renderOutline : function() {},
 
     hook : function(){
         var _self = this;
@@ -69,11 +67,18 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.updateFileCache();
         });
     },
+    
+    setEventsEnabled : function(enabled) {
+        this.eventsEnabled = enabled;
+    },
 
     init : function() {
         var _self = this;
         
-        txtGoToFile.addEventListener("keydown", function(e){
+        txtGoToFile.addEventListener("keydown", function(e) {
+            if (!this.eventsEnabled)
+                return;
+            
             if (e.keyCode == 27)
                 _self.toggleDialog(-1);
             
@@ -106,7 +111,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        txtGoToFile.addEventListener("afterchange", function(e){
+        txtGoToFile.addEventListener("afterchange", function(e) {
+            if (!this.eventsEnabled)
+                return;
             _self.filter(txtGoToFile.value);
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
@@ -115,7 +122,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        dgGoToFile.addEventListener("keydown", function(e) {
+        dgGoToFile.addEventListener("keydown", function(e) {                
             if (e.keyCode == 27) {
                 _self.toggleDialog(-1);
             }
@@ -165,24 +172,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.updateDatagrid();
         
         this.nodes.push(winGoToFile);
-    },
-    
-    setOutline : function(nodes, renderOutline) {
-        this.outlineArrayCache = nodes;
-        this.renderOutline = renderOutline;
-        if (!this.isOutlineEnabled())
-            return;
-        this.lastSearch = "@";
-        this.arrayCacheLastSearch = nodes;
-        this.filter(txtGoToFile.value, 1);
-        this._dirty = true;
-        
-        if (this.dgGoToFile)
-            this.updateDatagrid();
-    },
-    
-    isOutlineEnabled: function() {
-        return txtGoToFile.value.match(/^@/);
     },
     
     updateFileCache : function(isDirty){
@@ -274,22 +263,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             // Optimization reusing smaller result if possible
             if (this.lastSearch && keyword.indexOf(this.lastSearch) > -1)
                 nodes = this.arrayCacheLastSearch;
-            else if (this.isOutlineEnabled())
-                nodes = this.outlineArrayCache || [];
             else
                 nodes = this.arrayCache;
-            
-            if (keyword.match(/^@/))
-                keyword = keyword.substring(1);
                 
             var cache = [];
 
             dgGoToFile.$viewport.setScrollTop(0);
 
-            if (nodes[0] && nodes[0].name && nodes[0].name.lastIndexOf)
-                this.arraySearchResults = search.treeSearch(nodes, keyword, cache);
-            else
-                this.arraySearchResults = search.fileSearch(nodes, keyword, cache);
+            this.arraySearchResults = search.fileSearch(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
         }
         

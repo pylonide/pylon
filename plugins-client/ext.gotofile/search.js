@@ -124,8 +124,11 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword) {
     var results = [];
     for (var i = 0; i < tree.length; i++) {
         var node = tree[i];
-        if (node.name.lastIndexOf(keyword) == -1)
-            continue;
+        if (node.name.lastIndexOf(keyword) === -1) {
+            if (node.items)
+                results = results.concat(treeSearch(node.items, keyword));
+            continue
+        }
         var result = {
             name: node.name,
             pos: node.pos,

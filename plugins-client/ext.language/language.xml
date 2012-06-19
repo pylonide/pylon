@@ -4,21 +4,7 @@
 
     <a:bar id="barOutline" skinset="language_skin" skin="codecomplete" visible="false">
         <a:vbox anchors="0 0 0 0">
-            <a:toolbar>
-                <a:bar height = "36">
-                    <a:hbox edge="5">
-                        <a:textbox 
-                          id              = "tbOutlineSearch"
-                          realtime        = "true"
-                          flex            = "1"
-                          skin            = "searchbox_textbox"
-                          class           = "small_font"
-                          focusselect     = "true"
-                          initial-message = "Search Outline"
-                        />
-                    </a:hbox>
-                </a:bar>
-            </a:toolbar>
+            <!-- <a:textbox id="txtOutline" realtime="true" skin="searchbox_textbox" focusselect="true" /> -->
             <a:hbox flex="1">
                 <a:model id="mdlOutline">
                     <data>
@@ -28,9 +14,7 @@
                   id              = "treeOutline"
                   skin            = "outline-tree"
                   opencloseaction = "onmouseup"
-                  onafterchoose   = "require('ext/language/outline').jumpToAndClose(this.selected)"
-                  onafterselect   = "require('ext/language/outline').jumpTo(this.selected)"
-                  onkeyup         = "require('ext/language/outline').escapeOutline(event)"
+                  onafterchoose   = "require('ext/language/outline').onAfterChoose(this.selected)"
                   model           = "mdlOutline"
                   openadd         = "false"
                   startcollapsed  = "false"
@@ -38,9 +22,6 @@
                   scrollbar       = "sbShared 32 7 7">
                     <a:each
                       match         = "[entries|entry]"
-                      filter        = "{txtGoToFile.value}"
-                      filter-groups = "entries"
-                      filter-fields = "@name"
                     >
                         <a:caption>
                           <?lm [@name]{!![@meta] ? "<cpde style='color:gray;'> : [@meta]</code>" : ""} ?>
