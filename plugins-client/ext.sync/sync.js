@@ -151,7 +151,9 @@ module.exports = ext.register("ext/sync/sync", {
     
     showSyncInfo : function(force){
         var _self = this;
-        
+
+        ext.initExtension(_self);
+
         if (_self.syncInfoTimer && !force || mnuSyncInfo.visible)
             return;
         
@@ -259,7 +261,7 @@ module.exports = ext.register("ext/sync/sync", {
                 }
             }
             else if (event.name === "status") {
-                if (event.value == "synced" && mnuSyncInfo.visible) {
+                if (event.value == "synced" && self.mnuSyncInfo && self.mnuSyncInfo.visible) {
                     _self.hideSyncInfo();
                 }
                 
