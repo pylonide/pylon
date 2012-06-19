@@ -990,7 +990,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     gotoDocument : function(options) {
         if (!options.node && options.path)
-            options.node = this.createFileNodeFromPath(options.path)
+            options.node = fs.createFileNodeFromPath(options.path)
 
         this.jump(options);
     },
