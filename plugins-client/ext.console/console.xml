@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="winDbgConsole" height="0" zindex="1000" minheight="150">
+    <a:bar id="winDbgConsole" height="0" zindex="1000">
         <a:vsplitbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" visible="false" render2="runtime" buttons="scale,order"
               onclose="return require('ext/console/console').checkIfPageCanClose(event)">

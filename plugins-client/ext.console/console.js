@@ -1169,6 +1169,8 @@ module.exports = ext.register("ext/console/console", {
                 }
                 else {
                     winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
+                    winDbgConsole.minheight = _self.minHeight;
+                    
                     _self.maxHeight = window.innerHeight - 70;
                     winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
                 }
