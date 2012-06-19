@@ -63,7 +63,8 @@ module.exports = ext.register("ext/sync/sync", {
             }));
             
             this.lblSyncState = barExtras.appendChild(new apf.label({
-                "class"  : "c9-sync-state-info",
+                "class"  : "c9-sync-state-info" 
+                            + (ide.local ? " available-online" : ""),
                 "margin" : "0 2 0 0"
             }), this.btnSyncStatus);
             
@@ -73,6 +74,12 @@ module.exports = ext.register("ext/sync/sync", {
             
             ide.addEventListener("localOnline", function(){
                 _self.btnSyncStatus.enable();
+            });
+            
+            ide.addEventListener("socketMessage", function (event) {
+                if (event.message.type === "sync") {
+                    _self.handleMessage(event.message);
+                }
             });
         }
     },
@@ -93,12 +100,6 @@ module.exports = ext.register("ext/sync/sync", {
 //                }
 //            }), c += 100)
 //        );
-
-        ide.addEventListener("socketMessage", function (event) {
-            if (event.message.type === "sync") {
-                _self.handleMessage(event.message);
-            }
-        });
 
         tooltip.add(this.btnSyncStatus, {
             hideonclick : true,
@@ -237,6 +238,8 @@ module.exports = ext.register("ext/sync/sync", {
                 if (ide.local)
                     _self.btnSyncStatus.setValue(_self.syncEnabled = true);
                 else {
+                    _self.syncClients = message.args.clients;
+                    
                     this.getLocalId(function(err, localId){
                         if (err) {
                             // We can't determine which client is connected 
@@ -244,8 +247,6 @@ module.exports = ext.register("ext/sync/sync", {
                             _self.btnSyncStatus.setValue(_self.syncEnabled = true);
                         }
                         else {
-                            _self.syncClients = message.args.clients;
-                                
                             for (var name in _self.syncClients) {
                                 if (_self.syncClients[name].mac == localId) {
                                     _self.btnSyncStatus.setValue(_self.syncEnabled = true);
@@ -434,9 +435,9 @@ module.exports = ext.register("ext/sync/sync", {
      * running it will retry until the client is running.
      */
     getLocalId : function(callback){
-        callback(null, "this-is-my-mac-address");
+        //callback(null, "this-is-my-mac-address");
         
-        //callback(new Error("message"));
+        callback(new Error("message"));
     },
     
     showSyncDialog : function(callback){
@@ -515,15 +516,21 @@ module.exports = ext.register("ext/sync/sync", {
                     + '" url="' + (project.url || "") + '" />';
     },
     
-    syncProject: function(onlineWorkspaceId){
+    syncProject: function(onlineWorkspaceId, master){
     	var _self = this;
     	
+        if (!onlineWorkspaceId)
+            onlineWorkspaceId = this.lastOnlineWorkspaceId;
+        else
+            this.lastOnlineWorkspaceId = onlineWorkspaceId;
+        
         this.sendMessageToLocal("/api/sync/enable", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             data: "payload=" + encodeURIComponent(JSON.stringify({
                 localWorkspaceId: ide.workspaceId,
-                onlineWorkspaceId: onlineWorkspaceId
+                onlineWorkspaceId: onlineWorkspaceId,
+                master: master /* this is "local" or "remote"
             })),
             async: true,
             callback: function( data, state, extra) {
