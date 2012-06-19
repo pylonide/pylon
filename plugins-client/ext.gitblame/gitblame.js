@@ -34,16 +34,15 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             },
             isAvailable : function(editor){
                 return editor && editor.ceEditor;
+            }
         }), 500);
     },
 
     startBlame : function() {
         var _self = this;
         
-                ext.initExtension(_self);
-                _self.requestBlame();
-            }
-        }), 500);
+        ext.initExtension(_self);
+        _self.requestBlame();
     },
 
     requestBlame : function() {
