@@ -16,6 +16,7 @@ module.exports = {
     nodes: [],
     fullOutline : [],
     ignoreSelectOnce : true,
+    isDirty : false,
     
     hook: function(oExt, worker) {
         this.worker = worker;
@@ -137,7 +138,7 @@ module.exports = {
         
         //gotofile.setOutline(data.body, this.renderOutline);
         this.fullOutline = event.data.body;
-        this.renderOutline();
+        this.renderOutline(event.data.showNow);
     },
     
     showOutline: function() {
@@ -161,8 +162,10 @@ module.exports = {
         treeOutline.hide();
     },
     
-    renderOutline: function() {
-        var outline = search.treeSearch(this.fullOutline, txtGoToFile.value.substr(1));
+    renderOutline: function(ignoreFilter) {
+        var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
+        this.isDirty = ignoreFilter;
+        var outline = search.treeSearch(this.fullOutline, filter);
         if (outline.items)
             outline = outline.items;
         var ace = editors.currentEditor.amlEditor.$editor;
@@ -171,7 +174,7 @@ module.exports = {
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
         
         var node = mdlOutline.queryNode("//entry[@selected]");
-        if(node) {
+        if (node) {
             this.ignoreSelectOnce = true;
             treeOutline.select(node);
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
@@ -215,8 +218,11 @@ module.exports = {
             var node = treeOutline.selection[0];
             treeOutline.select(this.getNodeBefore(node) || node);
         }
-        else if (e.keyCode == 50) { // @
+        else if (e.keyCode === 50) { // @
             this.showOutline();
+        }
+        else if (this.isDirty) {
+            this.renderOutline();
         }
     },
     
