@@ -766,7 +766,8 @@ apf.vbox = function(struct, tagName){
         this.$ext.className = this.localName;
 
         this.$vbox = this.localName == "vbox";
-        this.$int = apf.isGecko && !(this.parentNode && this.parentNode.$box) || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
+        this.$int = apf.isGecko && !(this.parentNode && "hbox|vbox".indexOf(this.parentNode.localName) > -1) 
+          || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
