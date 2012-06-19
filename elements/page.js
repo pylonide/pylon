@@ -275,6 +275,11 @@ apf.page = function(struct, tagName){
             }
         }
     });
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        if (this.fake && this.parentNode.$activepage == this)
+            this.$deactivate();
+    });
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
@@ -322,6 +327,9 @@ apf.page = function(struct, tagName){
 
     this.$deactivate = function(fakeOther){
         this.$active = false;
+
+        if (!this.parentNode)
+            return;
 
         if (this.parentNode.$hasButtons) {
             if (this.$position > 0)
@@ -501,14 +509,14 @@ apf.page = function(struct, tagName){
             var start = htmlEvent.clientX;
             var x = start - pos[0];
             var t = apf.getAbsolutePosition(this.$button)[1];
+            
+            var div = oHtml.cloneNode(true);
+            div.style.opacity = 0;
+            
             oHtml.style.left = (oHtml.offsetLeft) + "px";
             oHtml.style.top = (oHtml.offsetTop) + "px";
+            oHtml.style.width = (oHtml.offsetWidth - apf.getWidthDiff(oHtml)) + "px";
             oHtml.style.position = "absolute";
-            
-            var div = document.createElement("div");
-            div.style.width = oHtml.offsetWidth + "px";
-            div.style.marginLeft = apf.getStyle(this.$button, "marginLeft");
-            div.style.marginRight = apf.getStyle(this.$button, "marginRight");
             
             this.$button.parentNode.insertBefore(div, this.$button);
             
@@ -607,6 +615,7 @@ apf.page = function(struct, tagName){
                             oHtml.style.position = 
                             oHtml.style.zIndex   = 
                             oHtml.style.top      = 
+                            oHtml.style.width    =
                             oHtml.style.left     = "";
                             
                             var reorder = _self.nextSibling != aml;
@@ -628,6 +637,7 @@ apf.page = function(struct, tagName){
                     oHtml.style.position = 
                     oHtml.style.zIndex   = 
                     oHtml.style.top      = 
+                    oHtml.style.width    =
                     oHtml.style.left     = "";
                     
                     div.parentNode.removeChild(div);
@@ -711,11 +721,11 @@ apf.page = function(struct, tagName){
                 this.$propHandlers["closebtn"].call(this, true);
             
             //#ifdef __ENABLE_TAB_SCALE
-            if (this.parentNode.$scale) {
-                var w = apf.getHtmlInnerWidth(this.parentNode.$buttons);
-                var l = this.parentNode.getPages().length;
-                this.$button.style.width = Math.round(Math.min(w/l, this.parentNode.$maxBtnWidth)) + "px";
-            }
+//            if (this.parentNode.$scale) {
+//                var w = apf.getHtmlInnerWidth(this.parentNode.$buttons);
+//                var l = this.parentNode.getPages().length;
+//                this.$button.style.width = Math.round(Math.min(w/l, this.parentNode.$maxBtnWidth)) + "px";
+//            }
             //#endif
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.$button)

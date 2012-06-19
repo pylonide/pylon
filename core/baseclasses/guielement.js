@@ -146,7 +146,7 @@ apf.GuiElement = function(){
             // #endif
 
             // #ifdef __AMLVBOX || __AMLHBOX
-            if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+            if (this.parentNode.$box) {
                 if (this.$disableCurrentLayout)
                     this.$disableCurrentLayout();
                 this.parentNode.register(this, insert);
@@ -166,12 +166,12 @@ apf.GuiElement = function(){
         return type == "anchoring";
         // #endif
     }
-    
+
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this 
-          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
+//        if (e.currentTarget == this 
+//          && (this.parentNode.$box || "table" == this.parentNode.localName)) {
             this.$setLayout();
-        }
+//        }
     }); 
 
     this.implement(
@@ -429,20 +429,30 @@ apf.GuiElement = function(){
         if (this.$focussable && typeof this.focussable == "undefined")
             apf.GuiElement.propHandlers.focussable.call(this, true);
         //#endif
+        
+        //#ifdef __WITH_LAYOUT
+        if (setResizeEvent)
+            f2();
+        //#endif
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
     this.addEventListener("$skinchange", f);
     
     //#ifdef __WITH_LAYOUT
-    var f;
-    this.addEventListener("$event.resize", f = function(c){
+    var f2, setResizeEvent;
+    this.addEventListener("$event.resize", f2 = function(c){
+        if (!this.$ext) {
+            setResizeEvent = true;
+            return;
+        }
+        
         apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
             if (o) o.dispatchEvent('resize');", true);
 
         apf.layout.queue(this.$ext);
         //apf.layout.activateRules(this.$ext);
-        this.removeEventListener("$event.resize", f);
+        this.removeEventListener("$event.resize", f2);
     });
     //#endif
 

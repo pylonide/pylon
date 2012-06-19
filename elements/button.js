@@ -224,10 +224,14 @@ apf.button  = function(struct, tagName){
             value = !this.value;
         this.value = value;
 
-        if (this.value)
+        if (this.value) {
             this.$setState("Down", {});
-        else
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked")
+        }
+        else {
             this.$setState("Out", {});
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"])
+        }
     };
 
     this.$propHandlers["state"] = function(value){
@@ -553,7 +557,7 @@ apf.button  = function(struct, tagName){
 
     //#ifdef __AMLTOOLBAR || __INC_ALL
     this.$submenu = function(hide, force){
-        if (hide) {
+        if (hide && this.submenu) {
             this.setValue(false);
             this.$setState("Out", {}, "mouseout");
             if(this.parentNode)
