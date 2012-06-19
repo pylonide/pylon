@@ -153,7 +153,7 @@ apf.AmlElement = function(struct, tagName){
             }
             //#endif
             
-            if (this.name == value)
+            if (this.name == value || !value)
                 return;
     
             if (self[this.name] == this) {

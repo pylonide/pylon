@@ -333,8 +333,120 @@ apf.BaseTab = function(){
     }
     
     this.anims = "add|remove|sync";
+
+    //Add an element
+    function animAddTab(tab, callback){
+        var t = tab.$button;
+
+        var animateWidth = (t.offsetWidth 
+            - apf.getWidthDiff(t)) < parseInt(apf.getStyle(t, "maxWidth"));
+        
+        if (animateWidth) {
+            var p = tab.parentNode.getPages()[0] == tab 
+                ? null 
+                : t.previousElementSibling;
+            var tb = p 
+                ? (p.offsetWidth - apf.getWidthDiff(p)) 
+                : parseInt(apf.getStyle(t, "maxWidth"));
+            t.style.maxWidth = "0px";
+        }
+
+        t.style.marginTop = (t.offsetHeight + 2) + "px";
+        
+        function animateToTop(){
+            t.style.marginTop = "0px";
+            
+            setTimeout(function(){
+                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style.marginTop = "";
+                
+                if (animateWidth)
+                    t.style.maxWidth = "";
+                
+                callback(tab);
+            }, 150);
+        }
+        
+        setTimeout(function(){
+            t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width";
+            t.style[apf.CSSPREFIX + "TransitionDuration"] = "100ms, 50ms";
+            t.style[apf.CSSPREFIX + "TimingFunction"] = "cubic-bezier(.10, .10, .25, .90), cubic-bezier(.10, .10, .25, .90)";
+            
+            if (animateWidth) {
+                t.style.maxWidth = tb + "px";
+                setTimeout(animateToTop, 50);
+            }
+            else animateToTop();
+        });
+    }
+    
+    //Remove an element
+    function animRemoveTab(tab, isLast, isContracted, callback, isOnly){
+        var t = tab.$button;
+        var tb = t.offsetHeight;
+        
+        var diff = t.offsetWidth;
+        
+        t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width, padding";
+        t.style[apf.CSSPREFIX + "TransitionDuration"] = (isOnly ? ".2" : ".15") + "s, .1s, .1s";
+        t.style[apf.CSSPREFIX + "TimingFunction"] = "linear, ease-out, ease-out";
+        
+        t.style.marginTop = (tb + 2) + "px";
+
+        var p = t.parentNode;
+        if (apf.isGecko) p = p.parentNode;
+        
+        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        
+        if (isLast)
+            p.style.paddingRight = "";
+        else {
+            var cur = parseInt(apf.getStyle(p, "paddingRight"));
+            p.style.paddingRight = (cur + diff - 21) + "px";
+        }
+        
+        function end(){
+            setTimeout(function(){
+                p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style.display = "none";
+                
+                callback(tab);
+            }, 150);
+        }
+        
+        if (!isLast && isContracted) {
+            t.style.minWidth = "20px"
+            t.style.maxWidth = "0px";
+            t.style.padding = 0;
+            
+            end();
+        }
+        else {
+            setTimeout(function(){
+                t.style.minWidth = "20px"
+                t.style.maxWidth = "0px";
+                t.style.padding = 0;
+                
+                end();
+            }, isOnly ? 150 : 100);
+        }
+    }
     
     this.$scaleinit = function(node, type, callback, force){
+        var _self = this;
+        
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
@@ -360,116 +472,82 @@ apf.BaseTab = function(){
         if (!type)
             return scalersz.call(this);
         
-        if (this.$control && this.$control.type != "remove" && this.$control.stop)
-            this.$control.stop();
-
-        var _self = this;
-        var anim  = {
-            steps    : type == "remove" ? 8 : 8,
-            control  : this.$control = {},
-            anim     : apf.tween.EASEOUT,
-            interval : 10,
-            tweens   : [],
-            oHtml    : node,
-            onfinish : function(){
-                if (!node)
-                    return;
-
-                if (type == "add")
-                    node.dispatchEvent("afteropen");
-            },
-            onstop    : function(){
-                if (!node)
-                    return;
-
-                if (type == "add")
-                    node.dispatchEvent("afteropen");
-                else if (type == "remove")
-                    node.dispatchEvent("afterclose");
-            }
-            //oneach   : function(){alert(1);}
-        };
-        
         function btnMoHandler(e){
             var pos = apf.getAbsolutePosition(this);
             if (e.clientX <= pos[0] || e.clientY <= pos[1] 
               || e.clientX >= pos[0] + this.offsetWidth 
               || e.clientY >= pos[1] + this.offsetHeight) {
                 apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
-                if (_self.$control.state == apf.tween.STOPPED) {
                     delete _self.$waitForMouseOut;
                     _self.$scaleinit(null, "sync");
-                }
-                else if (_self.$waitForMouseOut)
-                    _self.$waitForMouseOut = 2;
+//                }
+//                else if (_self.$waitForMouseOut)
+//                    _self.$waitForMouseOut = 2;
             }
         }
-        
-        this.$control.type = type;
         
         if (type == "add") {
-            var htmlNode = node.$button;
-            htmlNode.style.width = this.$minBtnWidth + "px";
-            if (pg.length) {
-                scalersz.call(this, null, node);
-                this.$buildScaleAnim(anim, pg, null, true);
-            }
+            animAddTab(node, function(){
+                node.dispatchEvent("afteropen");
+            });
         }
         else if (type == "sync") {
-            this.$buildScaleAnim(anim, pg);
+            scalersz.call(this);
         }
         else if (type == "remove") {
-            anim.onfinish = function(){
-                if (node.dispatchEvent("afterclose") !== false)
-                    callback();
+            var onfinish = function(){
+                if (node.dispatchEvent("afterclose") === false)
+                    return;
                     
-                html.style.marginLeft = 0;
-                apf.setOpacity(html, 1);
+                callback();
+
+                if (!isLast && isContracted) {
+                    var pages = _self.getPages();
+                    for (var i = 0, l = pages.length; i < l; i++) {
+                        var page = pages[i];
+                        page.$button.style.minWidth = "";
+                        page.$button.style.maxWidth = "";
+                    }
+                }
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
                     delete _self.$waitForMouseOut;
-                    _self.$scaleinit(null, "sync");
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
+            };
+            
+            var pages = this.getPages();
+            
+            var lNode = pages[pages.length - 1];
+            while (lNode && lNode.$button.style.top) {
+                lNode = lNode.previousSibling;
             }
-            anim.onstop = function(){
-                apf.setOpacity(html, 1);
+            if (!lNode) return;
+            
+            var isLast = lNode == node;
+            var isContracted = (node.$button.offsetWidth - apf.getWidthDiff(node.$button) 
+                != parseInt(apf.getStyle(node.$button, "maxWidth")));
+            
+            if (!isLast && isContracted) {
+                for (var i = 0, l = pages.length; i < l; i++) {
+                    var page = pages[i];
+                    page.$button.style.minWidth = 
+                    page.$button.style.maxWidth = (page.$button.offsetWidth 
+                        - (apf.isGecko ? 0 : apf.getWidthDiff(page.$button))) 
+                        + "px";
+                }
             }
             
-            var html = node.$button;
-            anim.tweens.push({
-                oHtml : html,
-                type  : "width", 
-                from  : html.offsetWidth - apf.getWidthDiff(html),
-                to    : 0
-            });
-            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
-            if (over)
-                anim.tweens.push({
-                    oHtml : html,
-                    type  : "marginLeft", 
-                    from  : 0,
-                    to    : -1 * over
-                });
-            anim.tweens.push({
-                oHtml : html,
-                type  : "fade", 
-                from  : 1,
-                to    : 0
-            });
-            
-            var isLast = pg[pg.length - 1] == node;
-            if (isLast)
-                this.$buildScaleAnim(anim, pg, node);
-            
+            var isCur = this.$activepage == node;
+                
             //Set activetab if the current one is lost
-            if (this.nextTabInLine) {
-                this.set(this.nextTabInLine);
-                delete this.nextTabInLine;
+            if (_self.nextTabInLine) {
+                _self.set(_self.nextTabInLine);
+                delete _self.nextTabInLine;
             }
-            else if (this.$activepage == node) {
+            else if (_self.$activepage == node) {
                 var ln = node.nextSibling;
                 while (ln && (!ln.$first || !ln.visible))
                     ln = ln.nextSibling;
@@ -477,89 +555,50 @@ apf.BaseTab = function(){
                 while (rn && (!rn.$last || !rn.visible))
                     rn = rn.previousSibling;
                 if (ln || rn)
-                    this.set(ln || rn);
+                    _self.set(ln || rn);
             }
+            
+            if (isCur) {
+                apf.setStyleClass(node.$button, "curbtn");
+                node.$button.style.zIndex = 0;
+            }
+            
+            if (pages.length == 1)
+                (node.relPage || node).$ext.style.display = "none";
+            
+            animRemoveTab(node, isLast, isContracted, onfinish, pages.length == 1);
             
             this.$waitForMouseOut = true;
             if (!isLast)
                 apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
         }
-        
-        if (anim.tweens.length)
-            apf.tween.multi(this, anim);
     }
     
-    this.$buildScaleAnim = function(anim, pg, excl, add){
-        if (excl) {
-            pg = pg.slice();
-            pg.remove(excl);
-        }
-        if (!pg.length)
-            return;
-        
-        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons);//apf.getHtmlInnerWidth(this.$ext);
-        var l  = pg.length;
-        var bw = Math.min(cw/l, this.$maxBtnWidth);
-        var re = Math.round((bw % 1) * 10);
-        for (var wd, html, s, i = 0; i < l - 1; i++) {
-            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
-            cw -= s;
-            html = pg[i].$button, wd = apf.getWidthDiff(html);
-            anim.tweens.push({
-                oHtml : html, 
-                type  : "width", 
-                from  : html.offsetWidth - wd,
-                to    : s - wd - (this.$btnMargin || 0)
-            });
-        }
-        html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
-        anim.tweens.push({
-            oHtml : html, 
-            type  : "width", 
-            from  : html.offsetWidth - wd, // - (add ? 3 : 0)
-            to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
-        });
-    }
-    
-    var round = [Math.floor, Math.ceil];
+    /**
+     * Update the size of the tab container
+     */
     function scalersz(e, excl){
-        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
-          || this.$control && this.$control.state == apf.tween.RUNNING) {
-            //@todo queue call here to after anim
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut)
             return;
+        
+        var p = apf.isGecko ? this.$buttons.parentNode : this.$buttons;
+        
+        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        
+        if (apf.isGecko) {
+            p.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+        }
+        else {
+            p.style.paddingRight = "";
         }
         
-        var page = this.getPage();
-
-        if (!page)
-            return;
-
-        if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(page.$button)[0];
-
-        var pg = this.getPages();
-        if (excl)
-            pg.remove(excl);
-        if (!pg.length)
-            return;
-
-        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons) 
-            - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
-        var l  = pg.length;
-        var bw = Math.min(cw/l, this.$maxBtnWidth);
-        var re = Math.round((bw % 1) * 10);
-        for (var s, i = 0; i < l - 1; i++) {
-            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
-            cw -= s;
-            if (!pg[i].$button) continue;
-            pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
-        }
-        if (!pg[l - 1].$button) return;
-        pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
-            Math.min(cw, this.$maxBtnWidth)) 
-              - this.$btnMargin 
-              - apf.getWidthDiff(pg[l - 1].$button)) + "px";
+        setTimeout(function(){
+            p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+            p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+            p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+        }, 250);
     }
     //#endif
 
@@ -835,7 +874,7 @@ apf.BaseTab = function(){
             //page.removeNode();
             if (page.dispatchEvent("afterclose") !== false)
             	page.destroy(true, true);
-
+            
             // #ifdef __ENABLE_TABSCROLL
             //@todo this is wrong, we can also use removeChild
             //this.setScrollerState();
@@ -1222,6 +1261,9 @@ apf.BaseTab = function(){
             return;
         
         if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            if (!this.getPage(this.nextTabInLine))
+                this.nextTabInLine = null;
+            
             if (this.nextTabInLine)
                 this.set(this.nextTabInLine);
             
@@ -1429,6 +1471,23 @@ apf.BaseTab = function(){
         if (this.$hasButtons) {
             this.$buttons = this.$getLayoutNode("main", "buttons", this.$ext);
             this.$buttons.setAttribute("id", this.$uniqueId + "_buttons");
+            
+            if (apf.isGecko && !this.$gotContainer) {
+                var div = this.$ext.appendChild(document.createElement("div"));
+                div.style.backgroundImage = apf.getStyle(this.$buttons, "backgroundImage");
+                div.style.backgroundColor = apf.getStyle(this.$buttons, "backgroundColor");
+                div.style.position = "absolute";
+                div.style.left = 0;
+                div.style.top = 0;
+                div.style.right = 0;
+                div.style.overflow = "hidden";
+                div.style.height = this.$buttons.offsetHeight + "px";
+                div.appendChild(this.$buttons);
+                this.$buttons.style.width = "100%";
+                div.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+                
+                this.$gotContainer = true;
+            }
         }
 
         this.oPages = this.$getLayoutNode("main", "pages", this.$ext);

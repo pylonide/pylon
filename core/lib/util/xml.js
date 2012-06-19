@@ -190,7 +190,7 @@ apf.getChildNumber = function(node, fromList){
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){
     if (typeof parentNode != "object")
-        parentNode = getElementById(parentNode);
+        parentNode = apf.xmldb.getElementById(parentNode);
 
     if (options && options.clearContents) {
         //Signal listening elements
@@ -268,6 +268,9 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
+        
+        if (options.filter)
+            nodes = options.filter(parentNode, nodes);
 
         if (parentNode.ownerDocument.importNode) {
             doc = parentNode.ownerDocument;
