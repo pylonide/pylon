@@ -107,9 +107,9 @@ module.exports = ext.register("ext/anims/anims", {
                 
                 if (aNode.parentNode) {
                     if (pNode.$vbox)
-                        aNode.setHeight(options.height);
+                        aNode.setHeight(parseInt(options.height));
                     else
-                        aNode.setWidth(options.width);
+                        aNode.setWidth(parseInt(options.width));
                 }
                 
                 finish && finish(); //setTimeout(finish, 30);

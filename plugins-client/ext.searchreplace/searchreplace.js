@@ -415,7 +415,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             //Animate
             var toHeight = winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
-                toHeight -= hboxReplace.$ext.scrollHeight;
+                toHeight -= hboxReplace.$ext.scrollHeight + 4;
             
             if (animate) {
                 anims.animateSplitBoxNode(winSearchReplace, {
