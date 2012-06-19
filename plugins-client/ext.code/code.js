@@ -41,7 +41,7 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 
 // name: ["Caption", "extension", "content-type"]
 var SupportedModes = {
-    c9search: ["C9Search", "c9search_results", "text/x-c9search"],
+    c9search: ["C9Search", "c9search", "text/x-c9search"],
     coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
     coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion"],
     csharp: ["C#", "cs", "text/x-csharp"],

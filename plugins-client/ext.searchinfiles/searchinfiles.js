@@ -388,7 +388,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         // prepare new Ace document to handle search results
         var node = apf.getXml("<file />");
         node.setAttribute("name", "Search Results");
-        node.setAttribute("path", "Search Results");
+        node.setAttribute("path", this.searchFilePath);
         node.setAttribute("customtype", util.getContentType(this.searchContentType));
         node.setAttribute("tooltip", "Search Results");
         node.setAttribute("newfile", "0");
