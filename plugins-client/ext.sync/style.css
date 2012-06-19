@@ -58,3 +58,17 @@
 .c9-sync-state-info.available-online {
     background-position: 0 -13px;
 }
+
+blockquote.code{
+    font-family : Courier New;
+    font-size : 12px;
+    margin : 10px;
+}
+
+.lblinstall{
+    white-space:normal;
+}
+
+.lblinstall a{
+    color : #f1f1f1;
+}

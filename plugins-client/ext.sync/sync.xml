@@ -26,6 +26,66 @@
         <div class="arrow"></div>
     </a:menu>
     
+    <a:model id="mdlSyncClients"></a:model>
+    <a:menu
+      id        = "mnuInstallLocal"
+      skin      = "menu-bk"
+      width     = "330"
+      style     = "margin-top:8px;margin-left:8px;">
+        <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncInstall">
+            <a:label class="lblinstall">
+                <p style="margin-top:0"><strong>Offline syncing requires the c9 command line installed.</strong></p>
+                <p>Click <a href="#">here</a> to download the c9 cli or install via npm:</p>
+                <blockquote class="code">npm install c9</blockquote>
+                <p>If you already have c9 cli installed, it is probably not running. Start the cli using:</p>
+                <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
+            </a:label>
+        </a:vbox>
+        <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncRemoveLocal">
+            <a:label class="lblinstall">
+                <p style="margin-top:0"><strong>The c9 command line is not running.</strong></p>
+                <p>This project is synced with one or more clients but they are currently not running</p>
+                <p>Click <a href="#">here</a> to download the c9 cli or install via npm:</p>
+                <p>You can start the cli using:</p>
+                <blockquote class="code">c9 --start</blockquote>
+            </a:label>    
+            
+            <a:divider skin="c9-divider-hor" margin="-10 0 0 0" />
+            
+            <a:label class="lblinstall">    
+                Alternatively choose the client from the dropdown below:
+            </a:label>
+            
+            <a:dropdown id="ddLocalClients" 
+              skin       = "black_dropdown"
+              model      = "mdlSyncClients"
+              width      = "200"
+              each       = "[client]"
+              eachvalue  = "[@mac]"
+              caption    = "[@name]"
+              visible2    = "{this.length}" />
+            
+            <a:divider skin="c9-divider-hor" />
+            
+            <a:hbox pack="end" edge="0" padding="10">
+                <a:button
+                  caption = "Cancel"
+                  skin    = "c9-simple-btn"
+                  onclick = "mnuSyncPrj.hide()"
+                  style   = "cursor:pointer"
+                  margin  = "5 0 0 0"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Disable Sync"
+                  skin    = "btn-default-css3"
+                  id      = "btnSyncOK"
+                  height  = "24"
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:menu>
+    
     <a:model id="mdlSyncPrj" />
     <a:menu
       id        = "mnuSyncPrj"
@@ -81,20 +141,16 @@
       width     = "600"
       skin      = "bk-window2"
       render    = "runtime"
-      onkeydown = "
-        if(event.keyCode == 78) {
-            btnQuestionNo.dispatchEvent('click', {htmlEvent: {}});
-        }
-      "
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
-            <h3 id="winQuestionHeader">Your workspace must be empty in order to start syncing with an online project!</h3>
-            <div id="winQuestionMsg" class="alertMsg">The current directory can only contain a settings file.</div>
+            <h3 id="winQuestionHeader">Your local workspace and your remote workspace both have files in them.</h3>
+            <div id="winQuestionMsg" class="alertMsg">Which workspace would you like to be leading? Newer files in the leading workspace will overwrite older files in the other workspace.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionNo" onclick = "require('ext/sync/sync').removeAndEnableSync()" default="3" skin="btn-default-css3" class="btn-red">Delete everything and synch</a:button>
-            <a:button id="btnQuestionYes" onclick = "winCannotSync.hide()" skin="btn-default-css3" class="btn-green">Okay</a:button>
+            <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject('local')" skin="btn-default-css3" class="btn-red">Local Workspace</a:button>
+            <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject('remote')" skin="btn-default-css3" class="btn-red">Remote Workspace</a:button>
+            <a:button id="btnQuestionCancel" onclick="winCannotSync.hide()" skin="btn-default-css3" default="3" class="btn-red">Cancel</a:button>
         </a:hbox>
     </a:window>
     

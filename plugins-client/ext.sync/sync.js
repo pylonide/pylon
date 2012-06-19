@@ -43,8 +43,6 @@ module.exports = ext.register("ext/sync/sync", {
             
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
-            
-            
             this.btnSyncStatus = barExtras.appendChild(new apf.button({
                 margin  : "1 0 0 0" ,
                 "class" : "c9-sync" ,
@@ -68,9 +66,15 @@ module.exports = ext.register("ext/sync/sync", {
                 "class"  : "c9-sync-state-info",
                 "margin" : "0 2 0 0"
             }), this.btnSyncStatus);
+            
+            ide.addEventListener("localOffline", function(){
+                _self.btnSyncStatus.disable();
+            });
+            
+            ide.addEventListener("localOnline", function(){
+                _self.btnSyncStatus.enable();
+            });
         }
-        
-        ext.initExtension(_self);
     },
 
     init : function(amlNode){
@@ -174,6 +178,7 @@ module.exports = ext.register("ext/sync/sync", {
         
         clearTimeout(this.syncInfoHideTimer);
         this.syncInfoHideTimer = setTimeout(function(){
+// @todo this needs to be turned on after merging with ui/experimental branch
 //            anims.animate(mnuSyncInfo, {
 //                opacity : 0,
 //                timingFunction : "linear",
@@ -222,18 +227,34 @@ module.exports = ext.register("ext/sync/sync", {
         if (message.action === "notify") {
             var event = message.args.event;
             if (event.name === "enabled") {
-                _self.syncEnabled = event.value;
                 _self.btnSyncStatus.enable();
                 
-                if (_self.syncEnabled === true) {
-                    _self.btnSyncStatus.setValue(true);
-                    
-                    if (!ide.local && typeof message.args.clients !== "undefined") {
-                        _self.syncClients = message.args.clients;
-                    }
-                } 
+                if (!event.value) {
+                    _self.btnSyncStatus.setValue(_self.syncEnabled = false);
+                    return;
+                }
+                
+                if (ide.local)
+                    _self.btnSyncStatus.setValue(_self.syncEnabled = true);
                 else {
-                    _self.btnSyncStatus.setValue(false);
+                    this.getLocalId(function(err, localId){
+                        if (err) {
+                            // We can't determine which client is connected 
+                            // so we'll show as connected
+                            _self.btnSyncStatus.setValue(_self.syncEnabled = true);
+                        }
+                        else {
+                            _self.syncClients = message.args.clients;
+                                
+                            for (var name in _self.syncClients) {
+                                if (_self.syncClients[name].mac == localId) {
+                                    _self.btnSyncStatus.setValue(_self.syncEnabled = true);
+                                    return;
+                                }
+                            }
+                            _self.btnSyncStatus.setValue(_self.syncEnabled = false);
+                        }
+                    });
                 }
             }
             else if (event.name === "status") {
@@ -241,8 +262,8 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.hideSyncInfo();
                 }
                 
-                // TODO: Update global sync status indicator.
-                console.log("[SYNC] STATUS", event.value);
+                if (cloud9config.debug)
+                    console.log("[SYNC] STATUS", event.value);
             }
         }
         else if (message.action === "notify-file") {
@@ -373,118 +394,50 @@ module.exports = ext.register("ext/sync/sync", {
         });
     },
     
-    callbacks : [],
-    queue : [],
     sendMessageToLocal : function(url, message){
         var _self = this;
         
         if (ide.local)
             return apf.ajax(url, message);
         
-        message.type = "api";
-        message.url  = url;
-    	
-    	if (message.callback) {
-    		message.uid = this.callbacks.push(message.callback) - 1;
-    		delete message.callback;
-    	}
-        
-        this.hasLocalInstalled(function(isInstalled){
-            if (isInstalled) {
-                _self.$iframe.contentWindow.postMessage(message, "*");
-            }
-            else {
+        this.getLocalId(function(err, localId){
+            if (err) {
                 _self.showInstallLocal();
+            }
+            else if (localId) {
+                message.localId = localId;
+                apf.ajax(url, message);
             }
         });
     },
     
     showInstallLocal : function(){
+        var xml = new apf.getXml("<clients />"), doc = xml.ownerDocument, c;
+        var found = false;
+        for (var prop in this.syncClients) {
+            c = xml.appendChild(doc.createElement("client"));
+            c.setAttribute("name", prop);
+            c.setAttribute("mac", this.syncClients.mac);
+            found = true;
+        }
+        mdlSyncClients.load(xml);
         
+        vboxSyncRemoveLocal.setAttribute("visible", found);
+        vboxSyncInstall.setAttribute("visible", !found);
+        
+        mnuInstallLocal.display(null, null, true, this.btnSyncStatus);
     },
     
-    hasLocalInstalled : function(callback){
-        var _self = this;
+    /**
+     * This function retrieves the mac address of the local client that is 
+     * installed. This function cashes the result so that the callback is only
+     * called async once when the client was already running. If it wasn't 
+     * running it will retry until the client is running.
+     */
+    getLocalId : function(callback){
+        callback(null, "this-is-my-mac-address");
         
-        if (!this.$iframe) {
-        	this.$createIframeToLocal(function(isConnected){
-                _self.queue.forEach(function(func){
-                    func(isConnected);
-            	});
-                _self.queue = [];
-        	});
-        }
-        
-        if (this.$iframe.connecting) {
-            //Wait for iframe to connect
-            this.queue.push(function(){
-                callback(true);
-            }) - 1;
-            return;
-        }
-        
-        callback(this.$iframe.connected);
-    },
-    
-    $createIframeToLocal : function(callback){
-        var _self = this;
-        var timer;
-
-        window.addEventListener("message", function(e) {
-    		try {
-                var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
-            } catch (e) { return; }
-
-            switch (json.type) {
-            	case "connect":
-                    clearTimeout(timer);
-                    
-            		_self.$iframe.connected = true;
-                    
-                    callback(true);
-            	break;
-            	case "response":
-            		if (_self.callbacks[json.uid])
-            			_self.callbacks[json.uid](json.data, json.state, json.extra);
-            	break;
-            }
-		});
-        
-        function cleanup(){
-            _self.$iframe.removeEventListener("load", startTimeout);
-            _self.$iframe.removeEventListener("error", errorHandler);
-            _self.$iframe.parentNode.removeChild(_self.$iframe);
-            _self.$iframe = null;
-        }
-
-        //Main timeout for initial connect
-        timer = setTimeout(function(){
-            _self.$iframe.connecting = false;
-            callback(false);
-            cleanup();
-        }, 10000);
-
-        //Sub timeout for after html is loaded
-        var startTimeout = function(){
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                _self.$iframe.connecting = false;
-                callback(false);
-                cleanup();
-            }, 1000);
-        }
-        
-        var errorHandler = function(){
-            callback(false);
-        };
-
-		this.$iframe = document.body.appendChild(document.createElement("iframe"));
-        this.$iframe.addEventListener("load", startTimeout);
-        this.$iframe.addEventListener("error", errorHandler);
-
-        this.$iframe.connecting = true;
-        this.$iframe.connected = false;
-		this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
+        //callback(new Error("message"));
     },
     
     showSyncDialog : function(callback){
@@ -521,11 +474,11 @@ module.exports = ext.register("ext/sync/sync", {
     createProject : function(name, type, scm, callback){
         this.sendMessageToLocal("/api/" + cloud9config.davPrefix.split("/")[1] 
           + "/" + name + "/create", {
-            local: !ide.local,
             method: "PUT",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             data: "type=" + (type || "opensource") 
                 + "&scm=" + (scm || "git")
+                + "&local=" + (!ide.local)
                 + "&servertype=shared&members=1", //&visibility=public
             async: true,
             callback: function( data, state, extra) {
@@ -586,6 +539,7 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.showSyncInfo(true);
                     syncProgressBar.setValue(0)
                 }
+                //@todo I propose to rename to workspacesNotEmpty
                 else if (data.workspaceNotEmpty === true) {
                     winCannotSync.show();
                     _self.btnSyncStatus.setValue(false);
@@ -594,18 +548,22 @@ module.exports = ext.register("ext/sync/sync", {
         });
     },
 
-    removeAndEnableSync: function() {
-        alert("TODO");
-        /*var workspaceChildren = fs.model.queryNode("//node()[@path='" + ide.davPrefix + "']").childNodes;
-        
-        workspaceChildren.forEach(function(el) {
-            fs.model.removeXml("//node()[@path=" + el.getAttribute("path") + "]");
-        });*/
-    },
-    
     setSync : function() {
+        var _self = this;
+        
         if (this.syncEnabled) {
-            winConfirmSyncOff.show();
+            if (ide.local) 
+                winConfirmSyncOff.show();
+            else {
+                this.getLocalId(function(err, localId){
+                    if (err) {
+                        _self.showInstallLocal();
+                        _self.btnSyncStatus.setValue(true);
+                    }
+                    else
+                        winConfirmSyncOff.show();
+                });
+            }
         }
         else {
             this.enableSync();
