@@ -41,10 +41,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     startBlame : function() {
         var _self = this;
         
-                ext.initExtension(_self);
-                _self.requestBlame();
-            }
-        }), 500);
+        ext.initExtension(_self);
+        _self.requestBlame();
     },
 
     requestBlame : function() {
