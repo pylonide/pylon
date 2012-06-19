@@ -36,10 +36,10 @@
     <a:menu id="mnuCtxEditor" render="runtime">
         <a:item command="undo">Undo</a:item>
         <a:item command="redo">Redo</a:item>
-        <a:divider />
-        <a:item command="cut">Cut</a:item>
-        <a:item command="copy">Copy</a:item>
-        <a:item command="paste">Paste</a:item>
+        <a:divider visible="{!window.cloud9config.local}" />
+        <a:item visible="{!window.cloud9config.local}" command="cut">Cut</a:item>
+        <a:item visible="{!window.cloud9config.local}" command="copy">Copy</a:item>
+        <a:item visible="{!window.cloud9config.local}" command="paste">Paste</a:item>
         <a:divider />
         <a:item 
           visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"

@@ -336,6 +336,10 @@ exports.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
+exports.isChrome = function() {
+    return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+};
+
 /*
  * JavaScript Linkify - v0.3 - 6/27/2009
  * http://benalman.com/projects/javascript-linkify/
