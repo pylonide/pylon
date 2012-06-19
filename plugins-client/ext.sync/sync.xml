@@ -79,7 +79,7 @@
                   class   = "btn-green"
                   caption = "Disable Sync"
                   skin    = "btn-default-css3"
-                  id      = "btnSyncOK"
+                  id      = "btnDisableSync"
                   height  = "24"
                 />
             </a:hbox>
