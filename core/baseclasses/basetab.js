@@ -384,18 +384,17 @@ apf.BaseTab = function(){
     }
     
     //Remove an element
-    function animRemoveTab(tab, isLast, isContracted, callback){
+    function animRemoveTab(tab, isLast, isContracted, callback, isOnly){
         var t = tab.$button;
         var tb = t.offsetHeight;
         
         var diff = t.offsetWidth;
         
         t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width, padding";
-        t.style[apf.CSSPREFIX + "TransitionDuration"] = ".1s, .2s, .2s";
-        t.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out, ease-out, ease-out";
+        t.style[apf.CSSPREFIX + "TransitionDuration"] = (isOnly ? ".2" : ".15") + "s, .1s, .1s";
+        t.style[apf.CSSPREFIX + "TimingFunction"] = "linear, ease-out, ease-out";
         
         t.style.marginTop = (tb + 2) + "px";
-        t.style.padding = 0;
 
         var p = t.parentNode;
         if (apf.isGecko) p = p.parentNode;
@@ -424,10 +423,10 @@ apf.BaseTab = function(){
                 t.style.display = "none";
                 
                 callback(tab);
-            }, 250);
+            }, 150);
         }
         
-        if (!isLast || isContracted) {
+        if (!isLast && isContracted) {
             t.style.minWidth = "20px"
             t.style.maxWidth = "0px";
             t.style.padding = 0;
@@ -441,7 +440,7 @@ apf.BaseTab = function(){
                 t.style.padding = 0;
                 
                 end();
-            }, 100);
+            }, isOnly ? 150 : 100);
         }
     }
     
@@ -567,7 +566,7 @@ apf.BaseTab = function(){
             if (pages.length == 1)
                 (node.relPage || node).$ext.style.display = "none";
             
-            animRemoveTab(node, isLast, isContracted, onfinish);
+            animRemoveTab(node, isLast, isContracted, onfinish, pages.length == 1);
             
             this.$waitForMouseOut = true;
             if (!isLast)

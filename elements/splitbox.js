@@ -309,7 +309,7 @@ apf.vsplitbox = function(struct, tagName){
     
     function visibleHandler(e){
         if (this.parentNode.$handle) {
-            if (!e.value)
+            if (!e.value || this.parentNode.childNodes.length < 3)
                 this.parentNode.$handle.hide();
             else
                 this.parentNode.$handle.show();
@@ -333,6 +333,8 @@ apf.vsplitbox = function(struct, tagName){
             //@todo this should check the largest and only allow that one
             //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                 //return;
+            
+            //@todo change fixedChild flexChild1 and flexChild2 based on this
 
             this.$ext.style.width = !apf.isNot(value) 
                 ? (parseFloat(value) == value 
@@ -349,6 +351,8 @@ apf.vsplitbox = function(struct, tagName){
             //@todo this should check the largest and only allow that one
             //if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
                 //return;
+
+            //@todo change fixedChild flexChild1 and flexChild2 based on this
 
             this.$ext.style.height = !apf.isNot(value) 
                 ? (parseFloat(value) == value 
@@ -409,6 +413,9 @@ apf.vsplitbox = function(struct, tagName){
             this.$propHandlers["padding"].call(this, this.padding);
             this.$propHandlers["edge"].call(this, this.edge);
         }
+        
+        if (this.$handle && this.childNodes.length > 2)
+            this.$handle.show();
     }
     
     this.unregister = function(amlNode){
@@ -444,6 +451,9 @@ apf.vsplitbox = function(struct, tagName){
         amlNode.$ext.style.top = 
         amlNode.$ext.style.right = 
         amlNode.$ext.style.bottom = "";
+        
+        if (this.$handle)
+            this.$handle.hide();
     }
     
     /**** DOM Hooks ****/

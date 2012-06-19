@@ -166,13 +166,13 @@ apf.GuiElement = function(){
         return type == "anchoring";
         // #endif
     }
-    
-//    this.addEventListener("DOMNodeInserted", function(e){
+
+    this.addEventListener("DOMNodeInserted", function(e){
 //        if (e.currentTarget == this 
 //          && (this.parentNode.$box || "table" == this.parentNode.localName)) {
-//            this.$setLayout();
+            this.$setLayout();
 //        }
-//    }); 
+    }); 
 
     this.implement(
         //#ifdef __WITH_ANCHORING

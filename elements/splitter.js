@@ -123,7 +123,7 @@ apf.splitter = function(struct, tagName){
         //Build Main Skin
         this.$ext = this.$getExternal();
 
-        var template = "vbox|hbox".indexOf(this.parentNode.localName) == 0
+        var template = "vbox|hbox".indexOf(this.parentNode.localName) > -1
             ? "box" : "splitbox";
             
         apf.extend(this, apf.splitter.templates[template]);
@@ -225,6 +225,9 @@ apf.splitter.templates = {
             this.$ext.onmousedown = function(e){
                 if (!e)
                     e = event;
+                
+                if (_self.dispatchEvent("dragstart") === false)
+                    return;
                 
                 apf.dragMode = true; //prevent selection
                 
@@ -343,8 +346,6 @@ apf.splitter.templates = {
                     _self.type == "vertical" ? "w-resize" : "n-resize",
                     [_self.type == "vertical" ? "n-resize" : "w-resize"]);
                 
-                _self.dispatchEvent("dragstart");
-                
                 //@todo convert to proper way
                 document.onmouseup = function(e){
                     if(!e) e = event;
@@ -432,7 +433,7 @@ apf.splitter.templates = {
         updateV : function(newPos, finalPass){
             var method = finalPass ? "setAttribute" : "setProperty";
             
-            var pNode = this.parentNode;
+            var pNode = this.$parent || this.parentNode;
             if (pNode.fixedChild) {
                 if (pNode.fixedChild == pNode.firstChild) {
                     pNode.fixedChild[method]("height", newPos - pNode.$edge[0]);
@@ -461,7 +462,7 @@ apf.splitter.templates = {
         updateH : function(newPos, finalPass){
             var method = finalPass ? "setAttribute" : "setProperty";
 
-            var pNode = this.parentNode;
+            var pNode = this.$parent || this.parentNode;
             if (pNode.fixedChild) {
                 if (pNode.fixedChild == pNode.firstChild) {
                     pNode.fixedChild[method]("width", newPos - pNode.$edge[3]);
@@ -505,11 +506,14 @@ apf.splitter.templates = {
                 if (!e)
                     e = event;
 
+                if (_self.dispatchEvent("dragstart") === false)
+                    return;
+
                 apf.dragMode = true; //prevent selection
                 
                 _self.$setSiblings();
 
-                var pNode = _self.parentNode;
+                var pNode = _self.$parent || _self.parentNode;
                 if (pNode.$vbox) {
                     var min = parseInt(pNode.firstChild.minheight) + pNode.$edge[0];
                     var max = apf.getHtmlInnerHeight(pNode.$ext) - pNode.lastChild.minheight 
@@ -527,13 +531,13 @@ apf.splitter.templates = {
                     var newPos, coords;
                     if (pNode.$vbox) {
                         if (e.clientY >= 0) {
-                            coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            coords = apf.getAbsolutePosition(_self.$parent ? _self.$parent.$ext : _self.$ext.offsetParent);
                             newPos = Math.min(max, Math.max(min, (e.clientY - coords[1] - offset)));
                         }
                     }
                     else {
                         if (e.clientX >= 0) {
-                            coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            coords = apf.getAbsolutePosition(_self.$parent ? _self.$parent.$ext : _self.$ext.offsetParent);
                             newPos = Math.min(max, Math.max(min, (e.clientX - coords[0] - offset)));
                         }
                     }
@@ -556,8 +560,6 @@ apf.splitter.templates = {
                 _self.$setStyleClass(document.body,
                     _self.type == "vertical" ? "w-resize" : "n-resize",
                     [_self.type == "vertical" ? "n-resize" : "w-resize"]);
-                
-                _self.dispatchEvent("dragstart");
                 
                 //@todo convert to proper way
                 document.onmouseup = function(e){
