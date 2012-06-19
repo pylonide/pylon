@@ -6,6 +6,7 @@
  */
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
@@ -144,6 +145,7 @@ module.exports = {
         var _self = this;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
+            event.what = "SDF";
             _self.onComplete(event);
         });
         this.$onChange = this.onChange.bind(this);
@@ -421,7 +423,7 @@ module.exports = {
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
         setTimeout(function() {
-            worker.emit("complete", {data: editor.getCursorPosition()});
+            worker.emit("complete", {data: { pos: editor.getCursorPosition(), staticPrefix: ide.staticPrefix}});
         });
         var _self = this;
         if(forceBox)
