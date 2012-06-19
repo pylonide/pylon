@@ -54,7 +54,7 @@ function extractOutline(node) {
             results.push({
                 type: 'function',
                 name: b.x.value + fargsToString(b.fargs),
-                pos: this[1].getPos(),
+                pos: b.x.getPos(),
                 items: extractOutline(b.body)
             });
             return this;
@@ -106,7 +106,7 @@ function extractOutline(node) {
             results.push({
                 type: 'function',
                 name: b.name.value + fargsToString(b.fargs),
-                pos: this.getPos(),
+                pos: b.name.getPos(),
                 items: extractOutline(b.body)
             });
             return this;
