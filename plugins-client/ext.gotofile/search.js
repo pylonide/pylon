@@ -18,7 +18,8 @@ var fileTypes = {
     "pl": 1, "pm": 2, "ps1": 1, "cfm": 1, "sql": 2, "sh": 1, "bash": 1, 
     "bmp": 10, "djv": 10, "djvu": 10, "gif": 10, "ico": 10, "jpg": 10, 
     "jpeg": 10, "pbm": 10, "pgm": 10, "png": 10, "pnm": 10, "ppm": 10, 
-    "psd": 10, "tiff": 10, "xbm": 10, "xpm": 10
+    "psd": 10, "tiff": 10, "xbm": 10, "xpm": 10,
+    "go": 5, "hx": 5, "yaml": 5, "psql": 2
 };
 
 /**
