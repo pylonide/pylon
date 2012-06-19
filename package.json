@@ -43,7 +43,7 @@
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/a702fad9f0e5fbabe8da351cc235b6e74a5ef7d0"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/5d279d21e984dc621ff23ae77726ddd015880b7d"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"]
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"]
     },
 
     "repository" : {
