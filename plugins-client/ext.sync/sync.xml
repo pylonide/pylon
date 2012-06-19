@@ -166,7 +166,7 @@
       render    = "runtime"
       onkeydown = "
         if(event.keyCode == 89) {
-            btnQuestionYes.dispatchEvent('click', {htmlEvent: {}});
+            btnYesDisable.dispatchEvent('click', {htmlEvent: {}});
         }
         if(event.keyCode == 78) {
             btnQuestionNo.dispatchEvent('click', {htmlEvent: {}});
@@ -179,7 +179,7 @@
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
             <a:button id="btnQuestionNo" onclick = "winConfirmSyncOff.close();" default="3" skin="btn-default-css3" class="btn-green">No</a:button>
-            <a:button id="btnQuestionYes" onclick = "require('ext/sync/sync').disableSync()" skin="btn-default-css3" class="btn-red">Yes, disable it</a:button>
+            <a:button id="btnYesDisable" onclick = "require('ext/sync/sync').disableSync()" skin="btn-default-css3" class="btn-red">Yes, disable it</a:button>
         </a:hbox>
     </a:window>
 </a:application>                                                                     
