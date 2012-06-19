@@ -88,6 +88,8 @@ module.exports = ext.register("ext/themes/themes", {
             }, 10);
         }
         
+        this.isDark = theme.isDark;
+        
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;

@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
-var editors = require("ext/editors/editors");
 var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/panels/panels", {
@@ -79,11 +78,7 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     animate : function(win, toWin, toWidth){
-//        var tweens = [], 
         var _self = this;
-        
-//        if (this.animateControl)
-//            this.animateControl.stop();
         
         this.animating = true;
         
@@ -92,12 +87,9 @@ module.exports = ext.register("ext/panels/panels", {
         
         colLeft.setAttribute("minwidth", 0);
         
-//        editors.pauseTabResize();
-        
         var onfinish = function(){
             if (toWin) {
                 toWinExt.style.zIndex = zIndex2;
-//                apf.setOpacity(toWinExt, 1);
                 toWinExt.style.left = 0;
                 toWinExt.style.minWidth = "";
                 colLeft.setAttribute("minwidth", toWin.minwidth);
@@ -107,13 +99,10 @@ module.exports = ext.register("ext/panels/panels", {
             }
             if (win) {
                 winExt.style.zIndex = zIndex;
-//                apf.setOpacity(winExt, 1);
                 win.$ext.style.left = 0;
                 win.$ext.style.minWidth = "";
                 win.hide();
             }
-            
-//            editors.continueTabResize();
             
             _self.animating = false;
         }
@@ -134,35 +123,16 @@ module.exports = ext.register("ext/panels/panels", {
         }
         
         if (toWin) {
-//            var diff2  = apf.getDiff(toWinExt);
             var zIndex2 = toWinExt.style.zIndex;
-//            toWinExt.style.position = "absolute";
             toWinExt.style.zIndex = 2000;
-//            toWinExt.style.left = left + "px";
-//            toWinExt.style.top = top + "px";
-//            toWinExt.style.width = (toWidth - diff2[0]) + "px";
-//            toWinExt.style.height = (height - diff2[1]) + "px";
             toWin.show();
         }
         
         if (win) {
-//            var left = win.getLeft();
-//            var top  = win.getTop();
-//            var width = win.getWidth();
-//            var height = win.getHeight();
-            
             var winExt = win.$altExt || win.$ext;
-//            var diff  = apf.getDiff(winExt);
             var zIndex = winExt.style.zIndex;
-//            if (width < win.minwidth)
-//                width = win.minwidth;
             
-//            winExt.style.position = "absolute";
             winExt.style.zIndex = 1000;
-//            winExt.style.left = left + "px";
-//            winExt.style.top = top + "px";
-//            winExt.style.width = (width - diff[0]) + "px";
-//            winExt.style.height = (height - diff[1]) + "px";
             
             if (toWin) {
                 var options = { 
@@ -170,11 +140,14 @@ module.exports = ext.register("ext/panels/panels", {
                     duration: 0.15 
                 };
                 
-                apf.setOpacity(toWin.$ext, 0);
-                anims.animate(toWin, apf.extend({ opacity: 1 }, options), onfinish);
-                anims.animate(win, apf.extend({ opacity: 0 }, options), onfinish);
-                //anims.animate(toWin, apf.extend({ width: toWidth }, options));
-                //anims.animate(win, apf.extend({ width: toWidth }, options));
+                if (!self["req"+"uire"]("ext/themes/themes").isDark) {
+                    apf.setOpacity(toWin.$ext, 0);
+                    anims.animate(toWin, apf.extend({ opacity: 1 }, options));
+                    //anims.animate(win, apf.extend({ opacity: 0 }, options));
+                }
+                else {
+                    win.hide();
+                }
                 anims.animateSplitBoxNode(colLeft, 
                     apf.extend({ width: toWidth + "px" }, options), onfinish);
             }
@@ -200,8 +173,6 @@ module.exports = ext.register("ext/panels/panels", {
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)" //@todo
             }, onfinish);
         }
-//        
-//        apf.tween.multi(document.body, options);
     },
     
     activate : function(panelExt, noButton, noAnim){
@@ -240,7 +211,6 @@ module.exports = ext.register("ext/panels/panels", {
         if (!noButton && panelExt.button)
             panelExt.button.setValue(true);
 
-//        splitterPanelLeft.show();
         this.currentPanel = panelExt;
         this.lastPanel    = panelExt;
         
@@ -269,8 +239,6 @@ module.exports = ext.register("ext/panels/panels", {
         if (!noButton && this.currentPanel.button)
             this.currentPanel.button.setValue(false);
 
-//        splitterPanelLeft.hide();
-        
         //Quick Fix
         if (apf.isGecko)
             apf.layout.forceResize(vbMain.$ext);

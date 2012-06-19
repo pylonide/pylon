@@ -256,7 +256,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (ide.inited) {
                 setTimeout(function() {
                     _self.loadProjectTree();
-                }, 50);
+                }, 200);
             }
             else {
                 _self.loadProjectTree();
