@@ -8,12 +8,15 @@
 
 define(function(require, exports, module) {
 
-var save;
+var filesystem = require("ext/filesystem/filesystem");
+var gotofile = require("ext/gotofile/gotofile");
+var editors = require("ext/editors/editors");
+var save = require("ext/save/save");
+var ide = require("core/ide");
+
+
 var cliCmds = exports.cliCmds = {
     w: function(editor, data) {
-        if (!save)
-            save = require("ext/save/save");
-
         var page = tabEditors.getPage();
         if (!page)
             return;
@@ -32,6 +35,53 @@ var cliCmds = exports.cliCmds = {
                 console.log(page.name + " " + lines +"L, ##C written");
             });
         }
+    },
+    e: function(editor, data) {
+        var path = data.argv[1];
+        if (!path) {
+            gotofile.toggleDialog(1);
+            return false;
+        }
+        else {
+            path = (ide.davPrefix + "/" + path).replace(/\/+/, "/");
+            filesystem.exists(path, function(exists){
+                if (exists) {
+                    editors.showFile(path);
+                }
+                else {
+                    var node = editors.createFileNodeFromPath(path);
+                    node.setAttribute("newfile", "1");
+                    node.setAttribute("changed", "1");
+                    node.setAttribute("cli", "1"); // blocks Save As dialog
+
+                    var doc = ide.createDocument(node);
+                    doc.cachedValue = "";
+
+                    ide.dispatchEvent("openfile", {doc: doc, node: node});
+                }
+            });
+        }
+    },
+    wq: function(editor, data) {
+        cliCmds.w(editor, data);
+        cliCmds.q();
+    },
+    q: function(editor, data) {
+        var page = tabEditors.getPage();
+        var corrected = ide.dispatchEvent("beforeclosetab", {
+            page: page
+        });
+        if (corrected)
+            page = corrected;
+        if (data && data.force) {
+            var at = page.$at;
+            at.undo_ptr = at.$undostack[at.$undostack.length-1];
+            page.$doc.getNode().removeAttribute("changed");
+        }
+        editors.close(page);
+    },
+    "q!": function() {
+        cliCmds.q(null, {force: true})
     }
 };
 
@@ -50,27 +100,28 @@ exports.searchStore = {
     }
 };
 
+exports.focusCommandLine = function(val) {
+    var editor = txtConsoleInput.$editor;
+    editor.setValue(val, 1);
+    setTimeout(function(){
+        editor.focus();
+    })
+}
 
 exports.actions = {
     ":": {
         fn: function(editor, range, count, param) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue(":");
+           exports.focusCommandLine(":");
         }
     },
     "/": {
         fn: function(editor, range, count, param) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue("/");
+            exports.focusCommandLine("/");
         }
     },
     "?": {
         fn: function(editor, range, count, param) {
-            editor.blur();
-            txtConsoleInput.focus();
-            txtConsoleInput.setValue("?");
+            exports.focusCommandLine("?");
         }
     }
 };
@@ -83,14 +134,14 @@ exports.addCommands = function(handler) {
 }
 
 exports.onConsoleCommand = function(e) {
-    var cmd = e.data.command;
+    var cmd = e.data.command, success;
     if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
         var ed = ceEditor.$editor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
             if (cliCmds[cmd]) {
-                cliCmds[cmd](ed, e.data);
+                success = cliCmds[cmd](ed, e.data);
             }
             else if (cmd.match(/^\d+$/)) {
                 ed.gotoLine(cmd, 0);
@@ -100,7 +151,6 @@ exports.onConsoleCommand = function(e) {
                 console.log("Vim command '" + cmd + "' not implemented.");
             }
 
-            ceEditor.focus();
             e.returnValue = false;
         }
         else if (cmd[0] === "/" || cmd[0] === "?") {
@@ -112,9 +162,12 @@ exports.onConsoleCommand = function(e) {
             else
                 cmd = exports.searchStore.current;
             ed.find(cmd, options);
-            ceEditor.focus();
+            setTimeout(function(){ ed.focus(); });
             e.returnValue = false;
         }
+        // something blocks focusing without timeout
+        if (success !== false)
+            setTimeout(function(){ ed.focus(); });
     }
 };
 
