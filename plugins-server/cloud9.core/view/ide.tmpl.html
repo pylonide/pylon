@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse=[%packed%]>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse="[%packed%]">
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
-
+        <script type="text/javascript">
+        //<![CDATA[
+            if (<%local%>)
+                document.title += " Local";
+        //]]>
+        </script>
         <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
@@ -16,7 +21,7 @@
         [%scripts%]
         <script type="text/javascript">
         //<![CDATA[
-
+                
             window.cloud9config = {
                 startdate: new Date(),
                 davPrefix: <%davPrefix%>,
@@ -34,7 +39,7 @@
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
                 settings: <%settingsXml%>,
-                packed: <%packed%> ? true : false,
+                packed: <%packed%>,
                 packedName: <%packedName%>,
                 local: <%local%>
             };
@@ -44,9 +49,6 @@
                 var K = function() {};
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
-
-            if (cloud9config.local)
-                document.title += " Local";
                 
             if (!cloud9config.packed) {
                 var RELEASE = "release";

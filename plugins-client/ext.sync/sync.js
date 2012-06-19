@@ -14,7 +14,7 @@ var settings = require("ext/settings/settings");
 var menus = require("ext/menus/menus");
 var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
-//var anims = require("ext/anims/anims");
+var anims = require("ext/anims/anims");
 var tooltip = require("ext/tooltip/tooltip");
 
 var markup = require("text!ext/sync/sync.xml");
@@ -181,49 +181,18 @@ module.exports = ext.register("ext/sync/sync", {
         
         clearTimeout(this.syncInfoHideTimer);
         this.syncInfoHideTimer = setTimeout(function(){
-// @todo this needs to be turned on after merging with ui/experimental branch
-//            anims.animate(mnuSyncInfo, {
-//                opacity : 0,
-//                timingFunction : "linear",
-//                duration : 0.2
-//            }, function(){
-//                apf.setOpacity(mnuSyncInfo.$ext, 1);
-//                mnuSync.hide();
-//            });
+            anims.animate(mnuSyncInfo, {
+                opacity : 0,
+                timingFunction : "linear",
+                duration : 0.2
+            }, function(){
+                apf.setOpacity(mnuSyncInfo.$ext, 1);
+                mnuSync.hide();
+            });
             mnuSyncInfo.hide();
         }, long ? 5000 : 500);
     },
-
-	isFSNodeVisibleInTree : function(path){
-		var xmlNode = fs.model.queryNode("//node()[@path=" 
-            + util.escapeXpathString(path) + "]")
-		if (!xmlNode) return false;
-		
-		var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
-		if (!htmlNode) return false;
-		
-		return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
-	},
 	
-	createFolderInTreeIfVisible : function(path){
-		var file, li;
-        do {
-        	li   = path.lastIndexOf("/");
-        	file = path.substr(li + 1);
-        	path = path.substr(0, li);
-        	
-            if (this.isFSNodeVisibleInTree(path)) {
-            	if (!fs.model.queryNode("//node()[@path=" 
-            	  + util.escapeXpathString(path + "/" + file) + "]")) {
-	            	fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
-	              		"//node()[@path=" + util.escapeXpathString(path) + "]");
-            	}
-              	
-              	break;
-            }
-        } while (path && path != ide.davPrefix);
-	},
-
     handleMessage : function(message) {
         var _self = this;
             
@@ -301,7 +270,7 @@ module.exports = ext.register("ext/sync/sync", {
     createSyncFile: function(path, mtime) {
         var parentPath = ide.davPrefix + path.substring(0, path.lastIndexOf("/"));
         
-        if (this.isFSNodeVisibleInTree(parentPath)) {
+        if (fs.isFSNodeVisibleInTree(parentPath)) {
 	        if (!fs.pathExists(parentPath))
 	            fs.createFolderTree(parentPath);
 	            
@@ -310,14 +279,14 @@ module.exports = ext.register("ext/sync/sync", {
 	            "//node()[@path=" + util.escapeXpathString(parentPath) + "]");
         }
         else {
-        	this.createFolderInTreeIfVisible(parentPath);
+        	fs.createFolderInTreeIfVisible(parentPath);
         }
     },    
     
     moveSyncFile : function(oldPath, newPath) {
         var parentPath = ide.davPrefix + newPath.substring(0, newPath.lastIndexOf("/"));
         
-        if (this.isFSNodeVisibleInTree(parentPath)) {
+        if (fs.isFSNodeVisibleInTree(parentPath)) {
 	        if (!fs.pathExists(parentPath))
 	            fs.createFolderTree(parentPath);
 	        
@@ -334,7 +303,7 @@ module.exports = ext.register("ext/sync/sync", {
 	            apf.xmldb.appendChild(parent, fs.createFileNodeFromPath(newPath));
         }
         else {
-        	this.createFolderInTreeIfVisible(parentPath);
+        	fs.createFolderInTreeIfVisible(parentPath);
         }
     },
     
