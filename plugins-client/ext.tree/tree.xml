@@ -28,13 +28,12 @@
             <a:divider />
         </a:menu>
 
-        <a:vbox id="vboxTreeContainer" anchors="0 0 0 0">
-            <a:tree id="trFiles" border="0" simpledata="true"
+        <a:vsplitbox id="vboxTreeContainer" anchors="0 0 0 0" minheight="1">
+            <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
               contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
               onbeforeremove="return require('core/util').removeInteractive(this)"
-              onbeforemove="this.disable();"
-              flex="1" scrollbar="sbShared 2 2 2"
-              canrename="{!require('core/ide').readonly}" disableremove="{require('core/ide').readonly}"
+              onbeforemove="this.disable();" 
+              scrollbar="sbShared 2 2 2"
             >
                 <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                     <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
@@ -67,11 +66,11 @@
                 <a:drop match="[folder|file]" target="[file]"
                     action="insert-before" copy="{event.ctrlKey}" />
             </a:tree>
-        </a:vbox>
-
-        <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active || require('core/ide').readonly}}" render="runtime">
+        </a:vsplitbox>
+        
+        <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active}}" render="runtime">
             <a:item match="[file]" class="strong"  onclick="
-                require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
+                require('ext/tree/tree').openSelection();
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>

@@ -119,14 +119,29 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     barParent.vbox.removeNode();//destroy(true, true);
                     barParent.splitter.removeNode();//destroy(true, true);
                 }
+                
+                //Resize hbox
+                this.resizeMainHbox();
             }
-            /*else {
-                barParent.$dockData.sections.remove(btnPNode.$dockData);
-            }*/
         }
     }
     
-    function checkBars(){
+    this.resizeMainHbox = function(){
+        var hboxParent = this.$parentHBox;
+        var l = hboxParent.lastChild;
+        var f = hboxParent.firstChild;
+        while (l && !l.visible) l = l.previousSibling;
+        while (f && !f.visible) f = f.nextSibling;
+        
+        if (!l) {
+            hboxParent.setWidth(0);
+            return;
+        }
+        
+        hboxParent.setWidth(l.getLeft() + l.getWidth() - f.getLeft());
+    }
+    
+    this.checkBars = function (){
         var bar, bars = state.bars;
         for (var i = bars.length - 1; i >= 0; i--) {
             bar = bars[i];
@@ -136,6 +151,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 //bars.remove(bar);
             }
         }
+        
+        this.resizeMainHbox();
     }
     
     function registerLookup(node){
@@ -684,9 +701,45 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             }), bar.vbox);
             
-            if (!ps)
-                bar.splitter.setAttribute("parent", bar.parentNode.parentNode.parentNode);
-            
+            bar.splitter.addEventListener("dragstart", function(){
+                if (!this.previousSibling) {
+                    if (!bar.splitter.parent) {
+                        bar.splitter.setAttribute("parent", bar.parentNode.parentNode);
+                        apf.extend(bar.splitter, apf.splitter.templates.splitbox);
+                        bar.splitter.decorate();
+                        bar.splitter.$ext.onmousedown();
+                        return false;
+                    }
+                    
+                    bar.vbox.setAttribute("width", "");
+                    bar.vbox.setAttribute("flex", "1");
+                }
+                else if (bar.splitter.parent) {
+                    bar.splitter.removeAttribute("parent");
+                    apf.extend(bar.splitter, apf.splitter.templates.box);
+                    bar.splitter.decorate();
+                    bar.splitter.$ext.onmousedown();
+                    return false;
+                }
+            });
+            bar.splitter.addEventListener("dragdrop", function(){
+                if (!this.previousSibling) {
+                    var w = bar.vbox.getWidth();
+                    bar.vbox.removeAttribute("flex");
+                    bar.vbox.setWidth(w);
+                }
+            });
+            bar.splitter.addEventListener("dragmove", function(){
+                if (this.previousSibling) {
+                    var p = bar.parentNode;
+                    var l = p.lastChild;
+                    var f = p.firstChild;
+                    while (l && !l.visible) l = l.previousSibling;
+                    while (f && !f.visible) f = f.nextSibling;
+                    p.setWidth(l.getLeft() + l.getWidth() - f.getLeft());
+                }
+            });
+
             bar.splitter.bar = 
             bar.vbox.bar     = bar;
         }
@@ -733,6 +786,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         bar.$dockData.expanded = byUser ? 2 : 1;
         
         this.$cbChange();
+        this.resizeMainHbox();
     };
     
     /**
@@ -781,6 +835,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         bar.firstChild.$ext.onmousemove({});
         
         this.$cbChange();
+        this.resizeMainHbox();
     };
     
     this.$isLastBar = function(aml) {
@@ -1587,8 +1642,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             else
                 i = b.push(button.$dockData);
             
-            tableCleanup(pNode, btnPNode, oldMenu, b);
-            checkBars();
+            tableCleanup.call(this, pNode, btnPNode, oldMenu, b);
+            this.checkBars();
         }
         else if (dragAml.localName == "divider") {
             var buttons = dragAml.parentNode && dragAml.parentNode.selectNodes("button");
@@ -1597,7 +1652,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 this.$moveTo(submenu, button, aml, beforeButton, parentNode, position, tab, pNode, true);
             }
             
-            checkBars();
+            this.checkBars();
         }
         
         if (!ignoreEvent)
@@ -1800,6 +1855,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                   before ? state.bars.indexOf(before.$dockData) : state.bars.length);
         }
         
+        this.resizeMainHbox();
+        
         registerLookup.call(this, bar);
         
         return bar;
@@ -1924,7 +1981,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
                 button.$dockData.hidden = 2;
 
-                tableCleanup(pNode, btnPNode, pNode.parentNode.localName == "menu" 
+                tableCleanup.call(_self, pNode, btnPNode, pNode.parentNode.localName == "menu" 
                     ? pNode.parentNode 
                     : self[button.submenu]);
                     
@@ -2224,7 +2281,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 
                 //Upgrade to container if only 1 element
                 if (this.parentNode.selectNodes("button").length == 1) {
-                    this.parentNode.firstChild.dispatchEvent("beforedrag", e);
+                    this.parentNode.firstChild.dispatchEvent("beforedrag", {htmlEvent: e.htmlEvent});
                     return false;
                 }
                 

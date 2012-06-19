@@ -19,6 +19,7 @@ var markup = require("text!ext/searchreplace/searchreplace.xml");
 var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
+var anims = require("ext/anims/anims");
 var searchinfiles;
 
 var oIter, oTotal;
@@ -44,7 +45,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     hook : function(){
         var _self = this;
-
+        
+        this.markupInsertionPoint = searchRow;
+        
         commands.addCommand({
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
@@ -176,14 +179,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
 
         apf.importCssString(_self.css);
-
-        ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchReplace, e.ext.splitter);
-        });
-        if (winSearchReplace.parentNode != mainRow) {
-            mainRow.insertBefore(winSearchReplace,
-                self.winDbgConsole && winDbgConsole.previousSibling || null);
-        }
 
         hboxReplace.addEventListener("afterrender", function(){
             var kb = _self.addSearchKeyboardHandler(txtReplace, "replace");
@@ -366,7 +361,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (!editor || !editor.amlEditor)
             return;
 
-        var wasVisible  = winSearchReplace.visible;
+        var wasVisible  = !!winSearchReplace.parentNode;//visible;
         var stateChange = isReplace != undefined && this.$lastState != isReplace;
 
         tooltipSearchReplace.$ext.style.display = "none";
@@ -412,6 +407,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 };
             }
 
+            searchRow.appendChild(winSearchReplace);
             winSearchReplace.show();
             txtFind.focus();
             txtFind.select();
@@ -419,17 +415,17 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             //Animate
             var toHeight = winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
-                toHeight -= hboxReplace.$ext.scrollHeight;
-
-            if (animate && !apf.isGecko) {
-                Firmin.animate(winSearchReplace.$ext, {
-                    height: toHeight + "px", //(isReplace ? 70 : 38)
-                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-                }, 0.2, function() {
+                toHeight -= hboxReplace.$ext.scrollHeight + 4;
+            
+            if (animate) {
+                anims.animateSplitBoxNode(winSearchReplace, {
+                    height: toHeight + "px", 
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)",
+                    duration : 0.2
+                }, function() {
                     if (stateChange && !isReplace && wasVisible)
                         _self.setupDialog(isReplace);
-
-                    winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    
                     winSearchReplace.$ext.style.height = "";
 
                     divSearchCount.$ext.style.visibility = "";
@@ -459,19 +455,19 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 = winSearchReplace.$ext.offsetHeight + "px";
 
             //Animate
-            if (animate && !apf.isGecko) {
-                Firmin.animate(winSearchReplace.$ext, {
+            if (animate) {
+                anims.animateSplitBoxNode(winSearchReplace, {
                     height: "0px",
-                    timingFunction: "ease-in-out"
-                }, 0.2, function(){
+                    timingFunction: "ease-in-out",
+                    duration: 0.2
+                }, function(){
                     winSearchReplace.visible = true;
                     winSearchReplace.hide();
-
-                    winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-
+                    winSearchReplace.parentNode.removeChild(winSearchReplace);
+                    
                     if (!noselect)
                         editor.ceEditor.focus();
-
+                    
                     setTimeout(function(){
                         callback
                             ? callback()
@@ -482,6 +478,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             else {
                 winSearchReplace.visible = true;
                 winSearchReplace.hide();
+                winSearchReplace.parentNode.removeChild(winSearchReplace);
                 if (!noselect)
                     editor.ceEditor.focus();
 

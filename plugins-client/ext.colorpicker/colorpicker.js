@@ -274,7 +274,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 _self.hideColorTooltips();
         }
         // hide all markers and the colorpicker upon tab-/ editorswitch
-        ide.addEventListener("beforeeditorswitch", function() {
+        ide.addEventListener("tab.beforeswitch", function() {
             switchOrClose();
         });
 

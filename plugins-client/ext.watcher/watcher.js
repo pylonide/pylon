@@ -34,7 +34,7 @@ module.exports = ext.register("ext/watcher/watcher", {
 
         function checkPage() {
             var page = tabEditors.getPage();
-            var data = page.$model.data;
+            var data = page && page.$model && page.$model.data;
             if (!data || !data.getAttribute)
                 return;
 
@@ -162,8 +162,9 @@ module.exports = ext.register("ext/watcher/watcher", {
                 message: message
             };
 
-            if (ide.dispatchEvent("beforewatcherchange", eventData) === false)
+            if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
                 return;
+            }
 
             switch (message.subtype) {
                 case "remove":
@@ -189,7 +190,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         });
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
-            tabEditors.addEventListener("afterswitch", function(e) {
+            ide.addEventListener("tab.afterswitch", function(e) {
                 if (_self.disabled) {
                     return;
                 }

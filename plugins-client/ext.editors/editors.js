@@ -13,6 +13,7 @@ var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -92,7 +93,6 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 1);
-            apf.layout.forceResize(barButtonContainer.$ext);
         }
         else {
             if (!preview) {
@@ -102,23 +102,18 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 0);
-            apf.layout.forceResize(barButtonContainer.$ext);
         }
 
     },
 
     addTabSection : function(){
         var _self = this;
-        var vbox = this.hbox.appendChild(
-            new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
-        );
 
         var btn, btnMenu;
         var tab = new apf.bar({
             skin     : "basic",
             "class"  : "codeditorHolder",
-            style    : "position:absolute;", //53px
-            //htmlNode : document.body,
+            style    : "position:absolute;", 
             childNodes: [
                 new apf.tab({
                     id      : "tabEditors",
@@ -140,6 +135,13 @@ module.exports = ext.register("ext/editors/editors", {
                     onclose : function(e){
                         if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
                             return false;
+                        
+                        if (this.length == 1) {
+                            btn.$ext.style.position = "absolute";
+                            btn.$ext.style.right = "5px";
+                            btn.$ext.style.top = "6px";
+                            btn.$ext.parentNode.style.overflow = "hidden";
+                        }
 
                         e.page.addEventListener("afterclose", _self.$close);
                     },
@@ -148,7 +150,7 @@ module.exports = ext.register("ext/editors/editors", {
                             id : "plus_tab_button",
                             "class" : "plus_tab_button",
                             skin : "btn_icon_only",
-                            disabled: ide.readonly,
+                            style : "position:absolute;right:5px;top:6px",
                             onclick : function(){
                                 require("ext/newresource/newresource").newfile();
                             }
@@ -163,8 +165,6 @@ module.exports = ext.register("ext/editors/editors", {
                     onmousedown : function(){
                         apf.setStyleClass(window[menus.getMenuId('View/Tabs')].$ext, 'tabsContextMenu');
                     },
-                   /* showme  : "[{require('core/settings').model}::auto/tabs/@show]",
-                    visible : "{apf.isTrue(this.showme)}", */
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
                 }) /*,
@@ -180,7 +180,7 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
 
-        apf.document.documentElement.appendChild(tab);
+        colMiddle.appendChild(tab);
         var tabs = tabEditors;
 
         this.buttons = {
@@ -202,89 +202,38 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (e.relatedNode == this && e.currentTarget.localName == "page") {
-                tabs.appendChild(btn);
                 tabs.$buttons.appendChild(btn.$ext);
-                btn.$ext.style.position = "";
-                btn.$ext.style.right = "";
-                btn.$ext.style.top = "";
+                if (btn.$ext.style.position) {
+                    //tabs.appendChild(btn);
+                    btn.$ext.style.position = "";
+                    btn.$ext.style.right = "";
+                    btn.$ext.style.top = "";
+                }
             }
         });
 
-        tabs.addEventListener("DOMNodeRemoved",function(e){
-            if (e.relatedNode == this && this.getPages().length == 1) {
-                btn.$ext.style.position = "absolute";
-                btn.$ext.style.right = "5px";
-                btn.$ext.style.top = "8px";
-            }
-        });
+        barButtonContainer.$int.appendChild(tabEditors.$buttons);
+        barButtonContainer.$int.style.paddingRight
+            = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
+            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
 
-        this.$buttonContainer = new apf.bar({
-            skin : "basic",
-            "class": "editor_tab",
-            "style": "position:absolute;z-index:10;",
-            htmlNode : document.body
-        });
-        this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
-        //tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-
-//        var timer;
-//        tabEditors.$buttons.addEventListener("mouseover",function(e){
-//            clearTimeout(timer);
-//
-//            if (_self.showTabs || _self.previewing)
-//                return;
-//
-//            timer = setTimeout(function(){
-//                if (!_self.previewing) {
-//                    _self.toggleTabs(1, true, null, true);
-//                    _self.previewing = true;
-//                }
-//            }, 200);
-//        });
-//        tabEditors.$buttons.addEventListener("mouseout",function(e){
-//            clearTimeout(timer);
-//
-//            if (_self.showTabs || apf.isChildOf(tabEditors.$buttons, e.toElement, true))
-//                return;
-//
-//            timer = setTimeout(function(){
-//                if (_self.previewing) {
-//                    _self.previewing = false;
-//                    _self.toggleTabs(-1, true, null, true);
-//                }
-//            }, 300);
-//        });
-
-        splitterPanelLeft.addEventListener("dragmove", function(e){
-            _self.isResizing = true;
-        });
-        splitterPanelLeft.addEventListener("dragdrop", function(e){
-            _self.isResizing = false;
-        });
-
-        ide.addEventListener("init.ext/sidebar/sidebar", function(){
-            navbar.addEventListener("resize", function(){
-                _self.$resizeButtons();
-            });
-        });
-
-        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-            _self.$resize(tabEditors.parentNode.$ext);
-        });
-
-        return vbox;
+        if (!apf.isGecko) {
+            tabEditors.$buttons.style.position = "absolute";
+            tabEditors.$buttons.style.left = "0";
+            tabEditors.$buttons.style.top = "0";
+            tabEditors.$buttons.style.right = "0";
+            tabEditors.$buttons.style.bottom = "0";
+        }
     },
 
     /**
      * This method has been abstracted so it can be used by
-     * the focus extension to get the destination coordinates and
+     * the zen extension to get the destination coordinates and
      * dimensions of tabEditors.parentNode when the editor goes
-     * out of focus mode
+     * out of zen mode
      */
     setTabResizeValues : function(ext, preview, animate, mouse, dir) {
         var ph;
-        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-        var d = apf.getDiff(ext);
         var _self = this;
 
         if (this.animating && (!animate || this.animating[0] == preview))
@@ -298,114 +247,70 @@ module.exports = ext.register("ext/editors/editors", {
 
             if (dir == undefined)
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
-            var steps = mouse ? 10 : 5;
-            var i = dir ? steps + 1 : 0;
-            var div = mouse ? 2 : 1;
+            var duration = mouse ? 0.2 : 0.2;
+
+            if (!apf.isGecko)
+                tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
-                tabEditors.$buttons.style.height = "8px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
-                apf.setStyleClass(tabEditors.$buttons, "step6");
+                apf.setStyleClass(tabEditors.$buttons.parentNode, "step5");
             }
-
-            apf.tween.multi(ext, {
-                anim : mouse ? apf.tween.easeOutCubic : apf.tween.easeOutCubic,
-                steps : steps,
-                interval : apf.isWebkit ? 0 : 10,
-                control : this.animateControl = {},
-                tweens : [
-                    { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
-                    { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" },
-                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 27 : 12), type: "height" },
-                    { oHtml: this.buttons.add, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
-                    { oHtml: this.buttons.add, from: dir ? 10 : 17, to : dir ? 17 : 10, type: "height" },
-                    { oHtml: this.buttons.menu, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
-                    { oHtml: this.buttons.menu, from: dir ? 10 : 17, to : dir ? 17 : 10, type: "height" }
-                ],
-                oneach : function(){
-                    apf.setStyleClass(tabEditors.$buttons,
-                        "step" + Math.ceil((dir ? --i : ++i) / div),
-                        ["step" + Math.ceil((dir ? i + 1 : i-1) / div)]);
-
-                    if (tabEditors.getPage())
-                        apf.layout.forceResize(tabEditors.getPage().$ext);
-                },
-                onfinish : function(e){
-                    apf.setStyleClass(tabEditors.$buttons, "",
-                        ["step" + Math.ceil(i / div)]);
-
-                    _self.animating = false;
-
-                    if (!dir) {
-                        apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
+            else {
+                //@todo this is a bit hacky
+                ide.dispatchEvent("animate", {
+                    type: "editor",
+                    delta: 16
+                });
+            }
+            
+            var i = dir ? 6 : 0, j = 0;
+            [1,2,3,4,5,6].forEach(function(x){
+                setTimeout(function(){
+                    if (x == 6) {
+                        if (!dir)
+                            apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
+                        
+                        return;
                     }
-
-                    if (tabEditors.getPage())
-                        apf.layout.forceResize(tabEditors.getPage().$ext);
-                }
-            })
+                    
+                    apf.setStyleClass(tabEditors.$buttons.parentNode,
+                        "step" + (dir ? --i : ++i),
+                        ["step" + (dir ? i + 1 : i-1)]);
+        
+                }, ++j * (duration / 6) * 1000);
+            });
+            
+            anims.animateMultiple([
+                { duration : duration, node: ext, top : (this.showTabs || preview ? 0 : -16) + "px"},
+                //{ duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
+                { duration : duration, node: tabEditors.$buttons, height: (this.showTabs || preview ? 22 : 7) + "px"},
+                { duration : duration, node: this.buttons.add, opacity : dir ? 1 : 0},
+                { duration : duration, node: this.buttons.add, height : (dir ? 17 : 10) + "px"},
+                { duration : duration, node: this.buttons.menu, opacity : dir ? 1 : 0},
+                { duration : duration, node: this.buttons.menu, height : (dir ? 17 : 10) + "px"}
+            ], function(e){
+                apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
+                _self.animating = false;
+                
+                if (!apf.isGecko)
+                    tabEditors.$buttons.style.overflow = "";
+            });
         }
         else {
             if (this.showTabs || preview) {
-                tabEditors.$buttons.style.height = "27px";
+                tabEditors.$buttons.style.height = "22px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
             }
             else {
-                tabEditors.$buttons.style.height = "12px";
+                tabEditors.$buttons.style.height = "7px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
             }
-
-            this.$resize(ext, preview);
         }
-    },
-
-    $resize : function(ext, preview){
-        if (this.previewing || this.animating)
-            return;
-
-        var ph;
-        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-        var d = apf.getDiff(ext);
-
-        ext.style.left = (pos[0] - 2) + "px";
-        ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
-        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
-        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
-        ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
-
-        if (this.isResizing)
-            this.$resizeButtons([pos[0], pos[1] - 27], ph.offsetWidth);
-    },
-
-    $resizeButtons : function(pos, width){
-        var ph, ext = this.$buttonContainer.$ext;
-        var d2 = apf.getDiff(ext);
-        if (!pos)
-            pos = apf.getAbsolutePosition(ph = barButtonContainer.$ext);
-        if (!width)
-            width = ph.offsetWidth;
-
-        ext.style.left = (Math.max(this.showTabs ? 45 : 0, pos[0])) + "px";
-        ext.style.top = (pos[1]) + "px"; // - 28
-        ext.style.width = (width + 2 - d2[0]) + "px";
-    },
-
-    /**
-     * Disable the resize event when the editors are in focus mode
-     */
-    disableTabResizeEvent : function() {
-        tabPlaceholder.removeEventListener("resize", this.$tabPlaceholderResize);
-    },
-
-    /**
-     * Enable the resize event when the editors come back to non-focus mode
-     */
-    enableTabResizeEvent : function() {
-        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize);
     },
 
     isEditorAvailable : function(page, path){
@@ -506,6 +411,9 @@ module.exports = ext.register("ext/editors/editors", {
         //Create Fake Page
         if (init)
             tabs.setAttribute("buttons", "close");
+        
+        if (!apf.isGecko)
+            tabEditors.$buttons.style.overflow = "";
 
         var model = new apf.model();
         var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
@@ -542,14 +450,11 @@ module.exports = ext.register("ext/editors/editors", {
             doc: doc
         });
 
-        if (init && !active)
+        if (active === false) // init && !
             return;
 
         //Set active page
         tabs.set(filepath);
-
-        //if (editorPage.model != model)
-            //this.beforeswitch({nextPage: fake});
 
         editor.enable();
         //editor.$rbEditor.select();
@@ -651,7 +556,7 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.history.setHash("");
             }*/
             //apf.history.setHash("");
-
+            
             editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
         }
@@ -670,29 +575,31 @@ module.exports = ext.register("ext/editors/editors", {
     beforeswitch : function(e) {
         var page       = e.nextPage;
         var editorPage = tabEditors.getPage(page.type);
+        
         if (!editorPage) return;
 
         // fire this event BEFORE editor sessions are swapped.
-        ide.dispatchEvent("beforeeditorswitch", {
+        if (ide.dispatchEvent("tab.beforeswitch", {
             previousPage: e.previousPage,
             nextPage: e.nextPage
-        });
+        }) === false)
+            return false;
 
         if (editorPage.model != page.$model)
             editorPage.setAttribute("model", page.$model);
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
 
-        if (ide.dispatchEvent("editorswitch", {
-            previousPage: e.previousPage,
-            nextPage: e.nextPage
-        }) !== false) {
-            page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
-        }
+        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
-        var page = e.nextPage;
+        var _self = this;
+        var page  = e.nextPage;
+        
+        if (this.switchLoop == page.id)
+            return;
+        
         var fromHandler, toHandler = ext.extLut[page.type];
 
         if (e.previousPage && e.previousPage != e.nextPage)
@@ -750,6 +657,18 @@ module.exports = ext.register("ext/editors/editors", {
             app.navigateTo(page.appid + "/" + page.id);
         else if (!page.id)
             app.navigateTo(app.loc || (app.loc = "myhome"));*/
+
+        clearTimeout(this.afterswitchTimeout);
+        this.afterswitchTimeout = setTimeout(function(){
+            _self.switchLoop = page.id;
+            
+            ide.dispatchEvent("tab.afterswitch", {
+                previousPage: e.previousPage,
+                nextPage: e.nextPage
+            });
+            
+            delete _self.switchLoop;
+        }, 150);
     },
 
     /**** Init ****/
@@ -792,13 +711,13 @@ module.exports = ext.register("ext/editors/editors", {
 
         commands.addCommand({
             name: "toggleTabs",
-            bindKey : { mac : "Ctrl-M", wind: "Ctrl-M" },
+            bindKey : { mac : "Ctrl-M", win : "Ctrl-M" },
             exec: function(e){
                  _self.toggleTabs(!_self.showTabs ? 1 : -1);
             }
         });
 
-        menus.addItemByPath("View/Tab Button", new apf.item({
+        menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
             checked : "[{require('core/settings').model}::auto/tabs/@show]",
             command : "toggleTabs"
@@ -828,14 +747,32 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
         });
 
-        var vbox  = colMiddle;
-        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
-
         this.$itmGroup = new apf.group();
 
         this.nodes.push(this.addTabSection());
 
-        this.panel = this.hbox;
+        ide.addEventListener("animate", function(e){
+            if (self.logobar && e.which == logobar) {
+                if (e.options.height == "12px") {
+                    anims.animate(tabEditors.$buttons, {
+                        paddingRight: "53px",
+                        timingFunction: e.options.timingFunction,
+                        duration: e.options.duration
+                    }, function(){
+                        apf.setStyleClass(tabEditors.$buttons, "morepadding");
+                    });
+                }
+                else {
+                    anims.animate(tabEditors.$buttons, {
+                        paddingRight: "4px",
+                        timingFunction: e.options.timingFunction,
+                        duration: e.options.duration
+                    }, function(){
+                        apf.setStyleClass(tabEditors.$buttons, "", ["morepadding"]);
+                    });
+                }
+            }
+        });
 
         /**** Support for state preservation ****/
 
@@ -845,6 +782,10 @@ module.exports = ext.register("ext/editors/editors", {
             settings.setDefaults("auto/tabs", [["show", "true"]]);
 
             _self.loadedSettings = false;
+            
+            if (apf.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
+                apf.setStyleClass(tabEditors.$buttons, "morepadding");
+            }
 
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.showTabs = apf.isTrue(showTab);
@@ -906,7 +847,7 @@ module.exports = ext.register("ext/editors/editors", {
                             .replace(/\\n/g, "\n");
                     }
 
-                    ide.dispatchEvent("openfile", {
+                    _self.gotoDocument({
                         doc      : doc,
                         init     : true,
                         forceOpen: true,
@@ -1010,11 +951,12 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             // send it to the dispatcher
-            ide.dispatchEvent("openfile", {
-                doc: doc,
-                active: true,
+            editors.gotoDocument({
+                node : node,
+                active : true,
                 origin: "hash"
             });
+            
             // and expand the tree
             checkExpand(path, doc);
 
@@ -1046,29 +988,39 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     pauseTabResize : function(){
-        return;
         tabEditors.setAttribute("buttons", "close,order");
     },
 
     continueTabResize : function(){
-        return;
         setTimeout(function(){
             tabEditors.setAttribute("buttons", "close,scale,order");
             tabEditors.$waitForMouseOut = false;
             tabEditors.$scaleinit(null, "sync");
         }, 300);
     },
+    
+    gotoDocument : function(options) {
+        if (!options.node && options.path)
+            options.node = this.createFileNodeFromPath(options.path)
 
-    showFile : function(path, row, column, text) {
-        var node = this.createFileNodeFromPath(path);
-
-        this.jump(node, row, column, text);
+        this.jump(options);
     },
 
-    jump : function(fileEl, row, column, text, doc, page) {
-        var path    = fileEl.getAttribute("path");
-        var tabs    = tabEditors;
-        var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+    jump : function(options) {
+        var row     = options.row;
+        var column  = options.column;
+        var text    = options.text;
+        var page    = options.page;
+        
+        var hasData;
+        if (!options.doc) {
+            var node    = options.node;
+            var path    = node.getAttribute("path");
+            var tabs    = tabEditors;
+            
+            hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+        }
+        
         var _self   = this;
 
         if (row !== undefined) {
@@ -1099,22 +1051,24 @@ module.exports = ext.register("ext/editors/editors", {
                 });
         }
 
-        if (!hasData)
-            ide.dispatchEvent("openfile", {
-                doc: doc || ide.createDocument(fileEl),
-                origin: "jump"
-            });
+        if (!hasData) {
+            options.origin = "jump";
+            if (!options.doc)
+                options.doc = ide.createDocument(options.node);
+
+            ide.dispatchEvent("openfile", options);
+        }
         else
             tabs.set(path);
     },
 
     enable : function(){
-        this.hbox.show();
+//        this.hbox.show();
         //this.splitter.show();
     },
 
     disable : function(){
-        this.hbox.hide();
+//        this.hbox.hide();
         //this.splitter.hide();
     },
 
@@ -1122,7 +1076,7 @@ module.exports = ext.register("ext/editors/editors", {
         menus.remove("View/Tab Bar");
         menus.remove("View/Editors/");
 
-        this.hbox.destroy(true, true);
+//        this.hbox.destroy(true, true);
         //this.splitter.destroy(true, true);
     }
 });

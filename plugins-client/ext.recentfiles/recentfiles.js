@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/recentfiles/recentfiles", {
     dev         : "Ajax.org",
@@ -132,7 +133,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                     node.setAttribute("name", def.caption);
                     node.setAttribute("path", def.value);
 
-                    ide.dispatchEvent("openfile", {doc: ide.createDocument(node), origin: "recentfiles"});
+                    editors.gotoDocument({doc: ide.createDocument(node), origin: "recentfiles"});
                 }
             }), this.menu.firstChild);
         }

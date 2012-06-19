@@ -120,7 +120,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
         
         ide.addEventListener("init.ext/editors/editors", function(e){
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 var editor = e.nextPage.$editor;
                 if (!editor.ceEditor) {
                     barIdeStatus.hide();
@@ -193,10 +193,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             var doc = editor.getDocument();
             var value = doc.getTextRange(range);
             lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-           // lblSelectionLength.show();
+            lblSelectionLength.show();
         } else {
             lblSelectionLength.setAttribute("caption", "");
-          //  lblSelectionLength.hide();
+            lblSelectionLength.hide();
         }
     },
     

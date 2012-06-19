@@ -17,6 +17,7 @@ var css = require("text!ext/save/save.css");
 var markup = require("text!ext/tabsessions/tabsessions.xml");
 var tabbeh = require("ext/tabbehaviors/tabbehaviors");
 var commands = require("ext/commands/commands");
+var editors = require("ext/editors/editors");
 
 tabbeh.menuOffset += 3;
 
@@ -189,8 +190,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 }
                 catch(e) {}
             }
-
-            ide.dispatchEvent("openfile", {
+            editors.gotoDocument({
                 doc    : doc,
                 init   : true,
                 active : active
