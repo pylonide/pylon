@@ -93,16 +93,19 @@ module.exports = ext.register("ext/themes/themes", {
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;
+        var editorHolder = tabEditors.parentNode.$ext;
         var tabsDiv = tabEditors.$buttons.parentNode.parentNode;
         editorDiv.setAttribute("id", "editorDiv");
         tabsDiv.setAttribute("id", "tabsDiv");
         
         if (theme.isDark) {
             apf.setStyleClass(editorDiv, "dark");
+            apf.setStyleClass(editorHolder, "dark");
             apf.setStyleClass(tabsDiv, "dark");
         }
         else {
             apf.setStyleClass(editorDiv, "", ["dark"]);
+            apf.setStyleClass(editorHolder, "", ["dark"]);
             apf.setStyleClass(tabsDiv, "", ["dark"]);
         }
         
@@ -110,10 +113,12 @@ module.exports = ext.register("ext/themes/themes", {
         
         if (_self.lastTheme) {
             apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
-             apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+            apf.setStyleClass(editorHolder, "", [_self.lastTheme]);
+            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
         apf.setStyleClass(editorDiv, _self.lastTheme = cssClass);
+        apf.setStyleClass(editorHolder, _self.lastTheme = cssClass);
         apf.setStyleClass(tabsDiv, _self.lastTheme = cssClass);
         
         if (_self.loaded[path])

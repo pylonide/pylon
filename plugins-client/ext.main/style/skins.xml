@@ -292,6 +292,7 @@
          .c9-menu-bar.minimized .c9-mbar-cont:hover,
          .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: 50% -21px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.08), 0 6px 0 0 rgba(255,255,255,0.05) inset;
          }
          .c9-menu-bar.minimized .c9-mbar-cont * {
             display: none;

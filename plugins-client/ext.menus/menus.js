@@ -73,7 +73,7 @@ module.exports = ext.register("ext/menus/menus", {
             clearTimeout(timer);
             timer = setTimeout(function(){
                 _self.restore(true);
-            }, 200);
+            }, 500);
         });
         logobar.$ext.addEventListener("mouseout",function(e){
             if (!_self.minimized || !ide.inited
@@ -84,15 +84,15 @@ module.exports = ext.register("ext/menus/menus", {
             if (apf.popup.isShowing(apf.popup.last)) {
                 timer = setTimeout(function(){
                     if (apf.popup.isShowing(apf.popup.last))
-                        timer = setTimeout(arguments.callee, 300);
+                        timer = setTimeout(arguments.callee, 500);
                     else
                         _self.minimize(true);
-                }, 300);
+                }, 500);
             }
             else {
                 timer = setTimeout(function(){
                     _self.minimize(true);
-                }, 300);
+                }, 500);
             }
         });
         
