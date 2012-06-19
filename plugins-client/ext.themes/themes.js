@@ -80,6 +80,7 @@ module.exports = ext.register("ext/themes/themes", {
                 _self.setThemedGUI(path);
             }, 10);
         }
+        
         // fixes a problem with Ace architect loading /lib/ace, 
         // creating a conflict with themes
         if (theme.isDark === undefined) {
@@ -126,7 +127,7 @@ module.exports = ext.register("ext/themes/themes", {
             
         _self.loaded[path] = true;
         
-        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
+        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "backgroundColor");
         var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
         
         apf.importStylesheet([

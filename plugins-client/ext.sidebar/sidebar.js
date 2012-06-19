@@ -69,9 +69,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             if (e.noanim) {
                 _self.animateToDefaultWidth(true);
                 if (e.activate)
-                    apf.setStyleClass(navbar.$ext, "", ["closed"]);
+                    apf.setStyleClass(navbar.$int, "", ["closed"]);
                 else 
-                    apf.setStyleClass(navbar.$ext, "closed");
+                    apf.setStyleClass(navbar.$int, "closed");
                 
                 return;
             }
@@ -80,19 +80,19 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             clearTimeout(timer);
             _self.animating = true;
 
-            var l = navbar.$ext.lastChild.previousSibling;
+            var l = navbar.$int.lastChild.previousSibling;
             var w = l.offsetLeft + l.offsetWidth + (_self.btnArrow.visible ? 1 : 6);
             
             setTimeout(function(){
                 if (!e.toWidth) {
-                    apf.setStyleClass(navbar.$ext, "closed");
-                    navbar.$ext.style.boxShadow = shadowClosed;
+                    apf.setStyleClass(navbar.$int, "closed");
+                    navbar.$int.style.boxShadow = shadowClosed;
                     _self.btnArrow.show();
                     panels.lastPanel.button.$setState("Out", {});
                 }
                 else {
-                    apf.setStyleClass(navbar.$ext, "", ["closed"]);
-                    navbar.$ext.style.boxShadow = shadowOpen;
+                    apf.setStyleClass(navbar.$int, "", ["closed"]);
+                    navbar.$int.style.boxShadow = shadowOpen;
                     _self.btnArrow.hide();
                 }
             }, 50);
@@ -117,8 +117,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             var activePanel = e.model.queryValue("auto/panels/@active");
             if (activePanel == "none") {
                 navbar.setWidth(45);
-                apf.setStyleClass(navbar.$ext, "closed");
-                navbar.$ext.style.boxShadow = shadowClosed;
+                apf.setStyleClass(navbar.$int, "closed");
+                navbar.$int.style.boxShadow = shadowClosed;
                 _self.btnArrow.show();
             } else {
                 ide.addEventListener("init." + activePanel, function(e){
@@ -149,9 +149,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 !e.value ? 0 : 45);
 
             if (e.value) {
-                apf.setStyleClass(navbar.$ext, "", ["minimized"]);
+                apf.setStyleClass(navbar.$int, "", ["minimized"]);
             } else {
-                apf.setStyleClass(navbar.$ext, "minimized");
+                apf.setStyleClass(navbar.$int, "minimized");
             }
         })
     },
@@ -177,14 +177,14 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             duration: 0.3,
             immediate: immediate
         }, function(){
-            apf.setStyleClass(navbar.$ext, "closed");
+            apf.setStyleClass(navbar.$int, "closed");
             apf.layout.forceResize();
             editors.continueTabResize();
         });
     },
     
     setExpandedSize : function (){
-        var l = navbar.$ext.lastChild.previousSibling;
+        var l = navbar.$int.lastChild.previousSibling;
         var w = l.offsetLeft + l.offsetWidth + (this.btnArrow.visible ? 6 : 1);
         navbar.setWidth(Math.max(w, colLeft.getWidth()));
     },

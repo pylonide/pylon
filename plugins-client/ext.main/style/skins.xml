@@ -9123,7 +9123,7 @@
         padding-right: 80px;
     }
         
-    .editor_tab .btnsesssioncontainer > div {
+    .editor_tab .btnsesssioncontainer > .session_btn {
         cursor: default;
         
         min-width : 17px;
@@ -9132,6 +9132,7 @@
         -moz-box-flex : 1;
         position : relative;
         width : 0;
+        line-height : 1.2em;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9785,6 +9786,10 @@
     }*/
 ]]></a:style>
 <a:style condition="apf.isGecko">
+    .editor_tab .btnsesssioncontainer {
+        overflow : hidden;
+    }
+
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
         top: 0px;
     }
@@ -9798,6 +9803,10 @@
 
     .editor_tab .tab_right, .editor_tab .tab_left {
         height : 23px;
+    }
+    
+    .editor_tab .btnsesssioncontainer > .session_btn {
+        max-width : 190px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
