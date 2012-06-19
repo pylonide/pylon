@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow .ace_text-layer {\
-  cursor: text;\
   color: #4D4D4C;\
 }\
 \
@@ -86,7 +85,7 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow .ace_marker-layer .ace_step {\
-  background: rgb(198, 219, 174);\
+  background: rgb(255, 255, 0);\
 }\
 \
 .ace-tomorrow .ace_marker-layer .ace_bracket {\

@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-light .ace_text-layer {\
-  cursor: text;\
   color: #586E75;\
 }\
 \
@@ -86,7 +85,7 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-light .ace_marker-layer .ace_step {\
-  background: rgb(198, 219, 174);\
+  background: rgb(255, 255, 0);\
 }\
 \
 .ace-solarized-light .ace_marker-layer .ace_bracket {\
