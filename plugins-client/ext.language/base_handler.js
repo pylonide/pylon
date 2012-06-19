@@ -109,10 +109,11 @@ module.exports = {
      * Performs code completion for the user based on the current cursor position
      * @param doc the entire source code as string
      * @param fullAst the entire AST of the current file
-     * @param cursorPos the current cursor position (object with keys 'row' and 'column')
+     * @param data contains pos, the current cursor position (object with keys 'row' and 'column')
+     *        and staticPrefix, the current loading URL
      * @param currentNode the AST node the cursor is currently at
      */
-    complete: function(staticPrefix, doc, fullAst, cursorPos, currentNode, callback) {
+    complete: function(doc, fullAst, data, currentNode, callback) {
         callback();
     },
 

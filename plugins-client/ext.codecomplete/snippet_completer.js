@@ -23,7 +23,8 @@ completer.fetchText = function(staticPrefix, path) {
         return false;
 };
 
-completer.complete = function(staticPrefix, doc, fullAst, pos, currentNode, callback) {
+completer.complete = function(doc, fullAst, data, currentNode, callback) {
+    var pos = data.pos;
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     if(line[pos.column - identifier.length - 1] === '.') // No snippet completion after "."
@@ -32,7 +33,7 @@ completer.complete = function(staticPrefix, doc, fullAst, pos, currentNode, call
     var snippets = snippetCache[this.language];
     
     if (snippets === undefined) {
-        var text = this.fetchText(staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
+        var text = this.fetchText(data.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
         snippets = text ? JSON.parse(text) : {};
         // Cache
         snippetCache[this.language] = snippets;
