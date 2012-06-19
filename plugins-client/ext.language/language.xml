@@ -14,7 +14,6 @@
                   id              = "treeOutline"
                   skin            = "outline-tree"
                   opencloseaction = "onmouseup"
-                  onafterchoose   = "require('ext/language/outline').onAfterChoose(this.selected)"
                   model           = "mdlOutline"
                   openadd         = "false"
                   startcollapsed  = "false"

@@ -130,11 +130,12 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword) {
             continue
         }
         var result = {
-            name: node.name,
-            pos: node.pos,
-            icon: node.icon,
             items: node.items ? treeSearch(node.items, keyword) : []
         };
+        for (var p in node) {
+            if (node.hasOwnProperty(p) && p !== "items")
+                result[p] = node[p];
+        }
         results.push(result);
     }
     return results;

@@ -66,7 +66,7 @@ module.exports = {
             treeOutline.addEventListener("onafterselect", function() {
                 _self.onSelect(treeOutline.selected);
             });
-            treeOutline.addEventListener("onclick", function() {
+            treeOutline.addEventListener("onafterchoose", function() {
                 setTimeout(gotofile.toggleDialog(-1), 500);
             });
         });   
@@ -77,12 +77,13 @@ module.exports = {
         var xmlS = [];
         for (var i = 0; i < array.length; i++) {
             var elem = array[i];
+            var pos = elem.displayPos || elem.pos;
             xmlS.push('<'); xmlS.push(tag); xmlS.push(' name="'); xmlS.push(elem.name);
                 xmlS.push('" icon="' + (elem.icon || "method"));
-                xmlS.push('" sl="'); xmlS.push(elem.pos.sl);
-                xmlS.push('" el="'); xmlS.push(elem.pos.el);
-                xmlS.push('" sc="'); xmlS.push(elem.pos.sc);
-                xmlS.push('" ec="'); xmlS.push(elem.pos.ec);
+                xmlS.push('" sl="'); xmlS.push(pos.sl);
+                xmlS.push('" el="'); xmlS.push(pos.el);
+                xmlS.push('" sc="'); xmlS.push(pos.sc);
+                xmlS.push('" ec="'); xmlS.push(pos.ec);
             elem.meta && xmlS.push('" meta="') && xmlS.push(elem.meta);
                 elem === selected && xmlS.push('" selected="true');
                 xmlS.push('">\n');
@@ -141,11 +142,8 @@ module.exports = {
     
     showFileSearch: function() {
         gotofile.setEventsEnabled(true);
-        // txtOutline.value = txtGoToFile.value;
         if (dgGoToFile.getProperty("visible"))
             return;
-        //if (txtOutline.value.match(/^@/))
-        //    txtGoToFile.setValue("");
         dgGoToFile.show();
         treeOutline.hide();
     },
@@ -156,12 +154,12 @@ module.exports = {
             outline = outline.items;
         var ace = editors.currentEditor.amlEditor.$editor;
         
-        //barOutline.setAttribute('visible', true);
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
         
         var node = mdlOutline.queryNode("//entry[@selected]");
         if(node) {
+            this.ignoreSelectOnce = true;
             treeOutline.select(node);
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
@@ -173,17 +171,11 @@ module.exports = {
             this.ignoreSelectOnce = false;
             return;
         }
-        setTimeout(function() {
-            var editor = editors.currentEditor.amlEditor.$editor;
-            var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
-                +el.getAttribute("el"), +el.getAttribute("ec"));
-            editor.selection.setSelectionRange(range);
-            editor.centerSelection();
-        });
-    },
-
-    onAfterChoose: function(el) {
-        this.closeOutline();
+        var editor = editors.currentEditor.amlEditor.$editor;
+        var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
+            +el.getAttribute("el"), +el.getAttribute("ec"));
+        editor.selection.setSelectionRange(range);
+        editor.centerSelection();
     },
     
     onKeyDown: function(e) {

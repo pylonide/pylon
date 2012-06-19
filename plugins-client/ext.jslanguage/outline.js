@@ -43,7 +43,7 @@ function extractOutline(node) {
             var name = expressionToName(b.e);
             if(!name) return false;
             results.push({
-                type: 'function',
+                icon: 'method',
                 name: name + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 items: extractOutline(b.body)
@@ -52,7 +52,7 @@ function extractOutline(node) {
         },
         'VarDeclInit(x, Function(name, fargs, body))', function(b) {
             results.push({
-                type: 'function',
+                icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: b.x.getPos(),
                 items: extractOutline(b.body)
@@ -62,21 +62,23 @@ function extractOutline(node) {
         // x : function(...) { ... } -> name is x
         'PropertyInit(x, Function(name, fargs, body))', function(b) {
             results.push({
-                type: 'function',
+                icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
+                displayPos: b.x.getPos(),
                 items: extractOutline(b.body)
             });
             return this;
         },
-        // e.on("listen", function(...) { ... }) -> name is on[listen]
+        // e.on("listen", function(...) { ... }) -> name is listen
         'Call(e, [String(s), Function(name, fargs, body)])', function(b) {
             var name = expressionToName(b.e);
             if(!name) return false;
             results.push({
-                type: 'function',
-                name: name + '[' + b.s.value + ']' + fargsToString(b.fargs),
+                icon: 'event',
+                name: b.s.value + fargsToString(b.fargs),
                 pos: this.getPos(),
+                displayPos: b.s.getPos(),
                 items: extractOutline(b.body)
             });
             return this;
@@ -89,9 +91,10 @@ function extractOutline(node) {
             var foundFunction = false;
             b.args.each(
                 'Function(name, fargs, body)', function(b) {
-                    if(b.name.value) return;
+                    if (b.name.value)
+                        return;
                     results.push({
-                        type: 'function',
+                        icon: 'method',
                         name: name + '[callback]' + fargsToString(b.fargs),
                         pos: this.getPos(),
                         items: extractOutline(b.body)
@@ -102,11 +105,13 @@ function extractOutline(node) {
             return foundFunction ? this : false;
         },
         'Function(name, fargs, body)', function(b) {
-            if(!b.name.value) return false;
+            if (!b.name.value)
+                return false;
             results.push({
-                type: 'function',
+                icon: 'method',
                 name: b.name.value + fargsToString(b.fargs),
-                pos: b.name.getPos(),
+                pos: this.getPos(),
+                displayPos: b.name.getPos(),
                 items: extractOutline(b.body)
             });
             return this;
