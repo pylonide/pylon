@@ -403,7 +403,7 @@ Scope.prototype.getNamesByKind = function(kind) {
 
 var GLOBALS_ARRAY = Object.keys(GLOBALS);
 
-handler.complete = function(doc, fullAst, pos, currentNode, callback) {
+handler.complete = function(staticPrefix, doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
 

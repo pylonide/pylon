@@ -112,7 +112,7 @@ module.exports = {
      * @param cursorPos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at
      */
-    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
+    complete: function(staticPrefix, doc, fullAst, cursorPos, currentNode, callback) {
         callback();
     },
 

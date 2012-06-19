@@ -500,6 +500,7 @@ function asyncParForEach(array, fn, callback) {
     
     this.complete = function(event) {
         var pos = event.data;
+        var staticPrefix = event.staticPrefix;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
         var _self = this;
@@ -520,7 +521,7 @@ function asyncParForEach(array, fn, callback) {
             var matches = [];
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                    handler.complete(staticPrefix, _self.doc, ast, pos, currentNode, function(completions) {
                         if (completions)
                             matches = matches.concat(completions);
                         next();
