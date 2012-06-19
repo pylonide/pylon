@@ -279,7 +279,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else
                 nodes = this.arrayCache;
             
-            if (this.isOutlineEnabled())
+            if (keyword.match(/^@/))
                 keyword = keyword.substring(1);
                 
             var cache = [];

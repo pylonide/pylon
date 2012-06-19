@@ -24,20 +24,6 @@ module.exports = {
             _self.openOutline(event);
         }); 
         
-        // TODO: properly register this event listener
-        // TODO: only call fetchOutline() once
-        var setListener = function() {
-            if (typeof txtGoToFile === "undefined") {
-                setTimeout(setListener, 1000);
-                return;
-            }
-            txtGoToFile.addEventListener("afterchange", function(e) {
-                if (gotofile.isOutlineEnabled())
-                    _self.fetchOutline(false);
-            });
-        };
-        //gotofile.setOutline(this);
-        setListener();               
         commands.addCommand({
             name: "outline",
             hint: "search for a definition and jump to it",
@@ -62,6 +48,11 @@ module.exports = {
         
         ide.addEventListener("init.ext/gotofile/gotofile", function(e) {
             dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
+            txtGoToFile.addEventListener("afterchange", function(e) {
+                // TODO: only call fetchOutline() when necessary
+                if (gotofile.isOutlineEnabled())
+                    _self.fetchOutline(false);
+            });
         });
     },
 
