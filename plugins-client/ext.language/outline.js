@@ -215,7 +215,7 @@ module.exports = {
             var node = treeOutline.selection[0];
             treeOutline.select(this.getNodeBefore(node) || node);
         }
-        else if (e.keyCode == 16) { // @
+        else if (e.keyCode == 50) { // @
             this.showOutline();
         }
     },

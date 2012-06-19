@@ -76,7 +76,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
         
         txtGoToFile.addEventListener("keydown", function(e) {
-            if (!this.eventsEnabled)
+            if (!_self.eventsEnabled)
                 return;
             
             if (e.keyCode == 27)
@@ -112,7 +112,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         txtGoToFile.addEventListener("afterchange", function(e) {
-            if (!this.eventsEnabled)
+            if (!_self.eventsEnabled)
                 return;
             _self.filter(txtGoToFile.value);
             
