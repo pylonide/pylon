@@ -187,7 +187,7 @@ module.exports = ext.register("ext/sync/sync", {
                 duration : 0.2
             }, function(){
                 apf.setOpacity(mnuSyncInfo.$ext, 1);
-                mnuSync.hide();
+                mnuSyncInfo.hide();
             });
             mnuSyncInfo.hide();
         }, long ? 5000 : 500);
@@ -294,6 +294,9 @@ module.exports = ext.register("ext/sync/sync", {
 	            + util.escapeXpathString(ide.davPrefix + oldPath) + "]");
 	        var parent = fs.model.queryNode("//node()[@path=" 
 	                + util.escapeXpathString(parentPath) + "]");
+	
+			if (apf.getFilename(oldPath) != apf.getFilename(newPath))
+				fs.beforeRename(file, null, newPath);
 	
 	        if (file) {
 	            apf.xmldb.moveNode(parent, file);

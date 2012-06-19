@@ -61,7 +61,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     },
     
     isFSNodeVisibleInTree : function(path) {
-		var xmlNode = fs.model.queryNode("//node()[@path=" 
+		var xmlNode = this.model.queryNode("//node()[@path=" 
             + util.escapeXpathString(path) + "]")
 		if (!xmlNode) return false;
 		
