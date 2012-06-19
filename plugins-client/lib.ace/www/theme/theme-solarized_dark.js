@@ -49,8 +49,8 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_gutter {\
-  background: #e8e8e8;\
-  color: #333;\
+  background: #09222b;\
+  color: #d0edf7;\
 }\
 \
 .ace-solarized-dark .ace_print_margin {\
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_text-layer {\
-  cursor: text;\
   color: #93A1A1;\
 }\
 \
@@ -86,7 +85,7 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_step {\
-  background: rgb(198, 219, 174);\
+  background: rgb(102, 82, 0);\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_bracket {\
@@ -99,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: #0d3440;\
 }\
 \
 .ace-solarized-dark .ace_marker-layer .ace_selected_word {\

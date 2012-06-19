@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-pastel-on-dark .ace_text-layer {\
-  cursor: text;\
   color: #8F938F;\
 }\
 \
@@ -86,7 +85,7 @@ exports.cssText = "\
 }\
 \
 .ace-pastel-on-dark .ace_marker-layer .ace_step {\
-  background: rgb(198, 219, 174);\
+  background: rgb(102, 82, 0);\
 }\
 \
 .ace-pastel-on-dark .ace_marker-layer .ace_bracket {\

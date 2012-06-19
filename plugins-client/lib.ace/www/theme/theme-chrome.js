@@ -58,7 +58,6 @@ exports.cssText = ".ace-chrome .ace_editor {\
 }\
 \
 .ace-chrome .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-chrome .ace_cursor {\
