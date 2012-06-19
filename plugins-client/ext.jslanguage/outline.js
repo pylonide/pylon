@@ -65,7 +65,7 @@ function extractOutline(node) {
                 icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
-                displayPos: b.x.getPos(),
+                displayPos: b.x.getPos() || b.body.getPos(),
                 items: extractOutline(b.body)
             });
             return this;
