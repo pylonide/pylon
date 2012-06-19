@@ -11,14 +11,14 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
-var editors = require("ext/editors/editors");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL, 
-    nodes : [],
+    nodes  : [],
     panels : {},
     
     currentPanel : null,
@@ -54,6 +54,7 @@ module.exports = ext.register("ext/panels/panels", {
             panelExt.panel.setAttribute("draggable", "false");
             panelExt.panel.$ext.style.zIndex = 100;
             panelExt.panel.$ext.style.minWidth = ""; //Needed for the anims
+            panelExt.panel.setAttribute("anchors", "0 0 0 0");
         });
         
         ide.addEventListener("settings.load", function(){
@@ -77,10 +78,7 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     animate : function(win, toWin, toWidth){
-        var tweens = [], _self = this;
-        
-        if (this.animateControl)
-            this.animateControl.stop();
+        var _self = this;
         
         this.animating = true;
         
@@ -88,6 +86,33 @@ module.exports = ext.register("ext/panels/panels", {
             navbar.$ext.style.zIndex = 10000;
         
         colLeft.setAttribute("minwidth", 0);
+        
+        var onfinish = function(){
+            if (toWin) {
+                toWinExt.style.zIndex = zIndex2;
+                toWinExt.style.left = 0;
+                toWinExt.style.minWidth = "";
+                colLeft.setAttribute("minwidth", toWin.minwidth);
+            }
+            else {
+                colLeft.hide();
+            }
+            if (win) {
+                winExt.style.zIndex = zIndex;
+                win.$ext.style.left = 0;
+                win.$ext.style.minWidth = "";
+                win.hide();
+            }
+            
+            _self.animating = false;
+        }
+        
+        ide.dispatchEvent("panels.animate", { 
+            win : win,
+            toWin : toWin,
+            toWidth : toWidth,
+            onfinish : onfinish
+        });
         
         if (toWin) {
             var toWinExt = toWin.$altExt || toWin.$ext;
@@ -97,122 +122,57 @@ module.exports = ext.register("ext/panels/panels", {
             toWin.hide();
         }
         
+        if (toWin) {
+            var zIndex2 = toWinExt.style.zIndex;
+            toWinExt.style.zIndex = 2000;
+            toWin.show();
+        }
+        
         if (win) {
-            var left = win.getLeft();
-            var top  = win.getTop();
-            var width = win.getWidth();
-            var height = win.getHeight();
-            
             var winExt = win.$altExt || win.$ext;
-            var diff  = apf.getDiff(winExt);
             var zIndex = winExt.style.zIndex;
-            if (width < win.minwidth)
-                width = win.minwidth;
             
-            winExt.style.position = "absolute";
             winExt.style.zIndex = 1000;
-            winExt.style.left = left + "px";
-            winExt.style.top = top + "px";
-            winExt.style.width = (width - diff[0]) + "px";
-            winExt.style.height = (height - diff[1]) + "px";
             
             if (toWin) {
-                tweens.push(
-                    {oHtml: toWinExt, type: "fade", from: 0, to: 1},
-                    {oHtml: toWinExt, type: "width", from: width, to: toWidth},
-                    {oHtml: winExt, type: "width", from: width, to: toWidth},
-                    {oHtml: colLeft.$ext, type: "width", from: width, to: toWidth}
-                );
+                var options = { 
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+                    duration: 0.15 
+                };
+                
+                if (!self["req"+"uire"]("ext/themes/themes").isDark) {
+                    apf.setOpacity(toWin.$ext, 0);
+                    anims.animate(toWin, apf.extend({ opacity: 1 }, options));
+                    //anims.animate(win, apf.extend({ opacity: 0 }, options));
+                }
+                else {
+                    win.hide();
+                }
+                anims.animateSplitBoxNode(colLeft, 
+                    apf.extend({ width: toWidth + "px" }, options), onfinish);
             }
             else {
-                tweens.push(
-                    {oHtml: winExt, type: "left", from: left, to: left - width},
-                    {oHtml: colLeft.$ext, type: "width", from: width, to: 0}
-                );
+                winExt.style.minWidth = (winExt.offsetWidth - apf.getWidthDiff(winExt)) + "px";
+                winExt.style.left = "";
+                anims.animateSplitBoxNode(colLeft, {
+                    width : 0,
+                    duration : 0.15,
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)" //@todo
+                }, onfinish);
             }
         }
         else {
             toWin.show();
             colLeft.show();
 
-            var left = toWin.getLeft();
-            var top  = toWin.getTop();
-            var height = toWin.getHeight();
-            var width = 0;
-            
-            tweens.push(
-                {oHtml: toWinExt, type: "left", from: left - toWidth, to: left},
-                {oHtml: colLeft.$ext, type: "width", from: width, to: toWidth}
-            );
+            toWinExt.style.minWidth = (toWidth - apf.getWidthDiff(toWinExt)) + "px";
+            toWinExt.style.left = "";
+            anims.animateSplitBoxNode(colLeft, {
+                width : toWidth + "px",
+                duration : 0.15,
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)" //@todo
+            }, onfinish);
         }
-        
-        if (toWin) {
-            var diff2  = apf.getDiff(toWinExt);
-            var zIndex2 = toWinExt.style.zIndex;
-            toWinExt.style.position = "absolute";
-            toWinExt.style.zIndex = 2000;
-            toWinExt.style.left = left + "px";
-            toWinExt.style.top = top + "px";
-            toWinExt.style.width = (toWidth - diff2[0]) + "px";
-            toWinExt.style.height = (height - diff2[1]) + "px";
-            toWin.show();
-        }
-        
-        editors.pauseTabResize();
-        
-        colLeft.$ext.style.width = width + "px";
-        //apf.setOpacity(toWinExt, 0);
-        
-        var options = {
-            steps : win && toWin ? 6 : 6,
-            interval : apf.isChrome ? 0 : 5,
-            control : this.animateControl = {},
-            anim : win && toWin ? apf.tween.easeOutCubic : apf.tween.easeOutCubic,
-            tweens : tweens,
-            oneach: function(){
-                apf.layout.forceResize()
-            },
-            onfinish : function(){
-                if (toWin) {
-                    toWinExt.style.zIndex = zIndex2;
-                    toWinExt.style.position = 
-                    toWinExt.style.left = 
-                    toWinExt.style.top = 
-                    toWinExt.style.height =
-                    toWinExt.style.width = "";
-                    apf.setOpacity(toWinExt, 1);
-                    
-                    colLeft.setAttribute("minwidth", toWin.minwidth);
-                }
-                if (win) {
-                    winExt.style.zIndex = zIndex;
-                    winExt.style.position = 
-                    winExt.style.left = 
-                    winExt.style.top = 
-                    winExt.style.height =
-                    winExt.style.width = "";
-                    apf.setOpacity(winExt, 1);
-                    win.hide();
-                    
-                    if (!toWin)
-                        colLeft.hide();
-                }
-                
-                editors.continueTabResize();
-                
-                _self.animating = false;
-            }
-        };
-        options.onstop = options.onfinish;
-        
-        ide.dispatchEvent("panels.animate", { 
-            options : options,
-            tweens : tweens, 
-            win : win,
-            toWin : toWin
-        });
-        
-        apf.tween.multi(document.body, options);
     },
     
     activate : function(panelExt, noButton, noAnim){
@@ -228,6 +188,8 @@ module.exports = ext.register("ext/panels/panels", {
         
         var width = settings.model.queryValue("auto/panels/panel[@path='" 
             + panelExt.path + "']/@width") || panelExt.defaultWidth;
+
+        colLeft.show();
         
         if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
@@ -239,15 +201,16 @@ module.exports = ext.register("ext/panels/panels", {
             
             apf.layout.forceResize();
         }
-        else if (!noAnim)
-            this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
-
-        colLeft.show();
+        else if (!noAnim) {
+            var _self = this;
+            setTimeout(function(){
+                _self.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
+            }, 10);
+        }
         
         if (!noButton && panelExt.button)
             panelExt.button.setValue(true);
 
-        splitterPanelLeft.show();
         this.currentPanel = panelExt;
         this.lastPanel    = panelExt;
         
@@ -276,8 +239,6 @@ module.exports = ext.register("ext/panels/panels", {
         if (!noButton && this.currentPanel.button)
             this.currentPanel.button.setValue(false);
 
-        splitterPanelLeft.hide();
-        
         //Quick Fix
         if (apf.isGecko)
             apf.layout.forceResize(vbMain.$ext);
@@ -321,29 +282,22 @@ module.exports = ext.register("ext/panels/panels", {
             menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
         );
         
-        var timer;
-        colLeft.addEventListener("resize", function(){
-            if (!_self.currentPanel || _self.animating)
+        splitterPanelLeft.addEventListener("dragdrop", function(e){
+            if (!_self.currentPanel)
                 return;
             
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                if (!_self.currentPanel)
-                    return;
+            var query = "auto/panels/panel[@path='" 
+                + _self.currentPanel.path + "']/@width";
                 
-                var query = "auto/panels/panel[@path='" 
-                    + _self.currentPanel.path + "']/@width";
-                    
-                if (settings.model.queryValue(query) != colLeft.getWidth())
-                    settings.model.setQueryValue(query, colLeft.getWidth());
-            }, 500);
+            if (settings.model.queryValue(query) != colLeft.getWidth())
+                settings.model.setQueryValue(query, colLeft.getWidth());
         });
         
         /**** Support for state preservation ****/
         
         var _self = this;
         ide.addEventListener("settings.load", function(e){
-            settings.setDefaults("general", [["animateui", apf.isGecko ? false : true]]);
+            settings.setDefaults("general", [["animateui", true]]);
         });
     },
     

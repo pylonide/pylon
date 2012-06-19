@@ -122,7 +122,7 @@ module.exports = ext.register("ext/offline/offline", {
                 return false;
             }
         });
-        
+
         // make sure that ide.onLine is actual 1 here already
         // because otherwise you'll run into timing issues, because some
         // extensions do an additional check for ide.onLine !== 0 as well (like jsdav)
@@ -132,7 +132,7 @@ module.exports = ext.register("ext/offline/offline", {
             stServerConnected.activate();
             ide.onLine = true;
         });
-        
+
         ide.addEventListener("afteronline", function(e){
             apf.setStyleClass(logobar.$ext, "", ["offline"]);
 
@@ -149,8 +149,8 @@ module.exports = ext.register("ext/offline/offline", {
 
 		ide.addEventListener("localOnline", function(e) {
 			apf.setStyleClass(logobar.$ext, "", ["offline"]);
-		});
-		
+        });
+
         /**** File System ****/
         /**
          * Here, we need to first create the offlineWebdav object in the main scope
@@ -293,19 +293,6 @@ module.exports = ext.register("ext/offline/offline", {
             webdav.rename(item.from, item.to, false, false, callback);
         });
 
-        var ident = "cloud9.filetree." + ide.workspaceId;
-
-        //@todo after being longer than 5 minutes offline reload tree when coming online
-
-        ide.addEventListener("afteroffline", function(){
-            if (!fs.model.data) {
-                if (localStorage[ident]) {
-                    fs.model.load(localStorage[ident]);
-                    fs.projectName = fs.model.queryValue("folder[@root='1']/@name");
-                }
-            }
-        });
-
         //File contents
         /**
          * This is where we save the files if we have offline support
@@ -349,7 +336,7 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("socketDisconnect", function(){
             offline.goOffline();
         });
- 
+
         if (_self.offlineStartup)
             ide.dispatchEvent("afteroffline"); //Faking offline startup
     },

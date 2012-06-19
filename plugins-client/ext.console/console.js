@@ -20,6 +20,7 @@ var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 var theme = require("text!ext/console/themes/arthur.css");
 var inputHistory = require("ext/console/input_history");
+var anims = require("ext/anims/anims");
 
 // Some constants used throughout the plugin
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
@@ -162,7 +163,11 @@ module.exports = ext.register("ext/console/console", {
 
     clear: function() {
         var activePg = tabConsole.getPage();
-        if (activePg.childNodes[0].tagName.indexOf("text") === -1)
+        if (activePg.childNodes[0].tagName.indexOf("codeeditor") >=0) {
+            var searchConsole = require("ext/searchinfiles/searchinfiles").searchConsole;
+            searchConsole.$editor.session.getDocument().setValue("");
+        } 
+        else if (activePg.childNodes[0].tagName.indexOf("text") === -1)
             return;
 
         var outputHtmlEl = activePg.childNodes[0].$ext;
@@ -577,7 +582,7 @@ module.exports = ext.register("ext/console/console", {
         var _self = this;
         
         // Append the console window at the bottom below the tab
-        this.markupInsertionPoint = mainRow;
+        this.markupInsertionPoint = consoleRow;
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
@@ -735,10 +740,10 @@ module.exports = ext.register("ext/console/console", {
 
         apf.importCssString(this.css);
 
-        this.splitter = mainRow.insertBefore(new apf.splitter({
-            scale : "bottom",
-            visible : false
-        }), winDbgConsole);
+//        this.splitter = consoleRow.insertBefore(new apf.splitter({
+//            scale : "bottom",
+//            visible : false
+//        }), winDbgConsole);
 
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
@@ -746,7 +751,7 @@ module.exports = ext.register("ext/console/console", {
             if (!editors)
                 editors = require("ext/editors/editors");
             if (data.isfile) {
-                editors.showFile(path);
+                editors.gotoDocument({path: path});
             }
             else {
                 // @TODO Update
@@ -791,12 +796,13 @@ module.exports = ext.register("ext/console/console", {
             });
         });
 
+        this.splitter = winDbgConsole.parentNode.$handle;
         this.splitter.addEventListener("dragdrop", function(e){
             settings.model.setQueryValue("auto/console/@height",
                 _self.height = winDbgConsole.height)
         });
 
-        this.nodes.push(winDbgConsole, this.splitter);
+        this.nodes.push(winDbgConsole);
 
         
         txtConsoleInput.ace.commands.bindKeys({
@@ -1005,7 +1011,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         this.maximized = false;
 
-        mainRow.appendChild(winDbgConsole);
+        consoleRow.appendChild(winDbgConsole);
         winDbgConsole.removeAttribute('anchors');
         this.maxHeight = window.innerHeight - 70;
         winDbgConsole.$ext.style.maxHeight =  this.maxHeight + "px";
@@ -1029,43 +1035,6 @@ module.exports = ext.register("ext/console/console", {
         
         cliBox.show();
         
-        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
-        if (!immediate && animOn) {
-            cliBox.$ext.style.height = "0px";
-            cliBox.$ext.scrollTop = 0;
-            setTimeout(function(){
-                cliBox.$ext.scrollTop = 0;
-            });
-    
-            if (_self.hidden) {
-                winDbgConsole.$ext.style.height = "0px";
-                Firmin.animate(winDbgConsole.$ext, {
-                    height: _self.collapsedHeight + "px",
-                    timingFunction: "cubic-bezier(.30, .08, 0, 1)"
-                }, 0.3);
-            }
-    
-            var timer = setInterval(function(){apf.layout.forceResize()}, 10);
-            Firmin.animate(cliBox.$ext, {
-                height: _self.collapsedHeight + "px",
-                timingFunction: "cubic-bezier(.30, .08, 0, 1)"
-            }, 0.3, function(){
-                if (_self.hidden)
-                    winDbgConsole.setAttribute("height", _self.collapsedHeight + "px");
-                
-                winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                cliBox.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                
-                apf.layout.forceResize();
-                clearInterval(timer);
-            });
-        }
-        else {
-            if (_self.hidden)
-                winDbgConsole.setAttribute("height", _self.collapsedHeight + "px");
-            apf.layout.forceResize();
-        }
-        
         if (temporary) {
             var _self = this;
             txtConsoleInput.addEventListener("blur", function(){
@@ -1079,41 +1048,105 @@ module.exports = ext.register("ext/console/console", {
             settings.model.setQueryValue("auto/console/@showinput", true);
             this.hiddenInput = false;
         }
+
+        var timing = "cubic-bezier(.10, .10, .25, .90)";
+        var cliExt = cliBox.$ext;
+        if (_self.hidden) {
+            cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
+            cliExt.style.bottom = "";
+
+            document.body.scrollTop = 0;
+            
+            anims.animateSplitBoxNode(winDbgConsole, {
+                height: _self.collapsedHeight + "px",
+                timingFunction: timing,
+                duration: 0.2,
+                immediate: immediate
+            }, function(){
+                cliExt.style.minHeight = "";
+                cliExt.style.bottom = 0;
+                apf.layout.forceResize();
+            });
+        }
+        else {
+            cliExt.scrollTop = 0;
+            document.body.scrollTop = 0;
+            
+            cliExt.style.bottom = "-" + _self.collapsedHeight + "px";
+            tabConsole.$ext.style.bottom = 0;
+
+            anims.animate(tabConsole, {
+                bottom : _self.collapsedHeight + "px",
+                timingFunction: timing,
+                duration: 0.2,
+                immediate: immediate
+            });
+            
+            anims.animate(cliBox, {
+                bottom: "0px",
+                timingFunction: timing,
+                duration: 0.2,
+                immediate: immediate
+            }, function(){
+                cliBox.parentNode.$ext.style.overflow = "";
+                cliBox.setHeight(_self.collapsedHeight);
+                apf.layout.forceResize();
+            });
+        }
     },
 
     hideInput : function(force, immediate){
+        var _self = this;
+        
         if (!force && (!this.inited || this.hiddenInput))
             return;
 
         this.$collapsedHeight = 0;
         
-        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
-        if (!immediate && animOn) {
-            if (this.hidden) {
-                Firmin.animate(winDbgConsole.$ext, {
-                    height: "0px",
-                    timingFunction: "ease-in-out"
-                }, 0.3);
-            }
+        var timing = "cubic-bezier(.10, .10, .25, .90)";
+        var cliExt = cliBox.$ext;
+        if (_self.hidden) {
+            cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
+            cliExt.style.bottom = "";
+
+            document.body.scrollTop = 0;
             
-            var timer = setInterval(function(){apf.layout.forceResize()}, 10);
-            Firmin.animate(cliBox.$ext, {
+            anims.animateSplitBoxNode(winDbgConsole, {
                 height: "0px",
-                timingFunction: "ease-in-out"
-            }, 0.3, function(){
+                timingFunction: timing,
+                duration: 0.2,
+                immediate: immediate
+            }, function(){
+                cliExt.style.minHeight = "";
+                cliExt.style.bottom = 0;
                 cliBox.hide();
-                cliBox.$ext.style.height = "";
                 apf.layout.forceResize();
-                clearTimeout(timer);
             });
         }
         else {
-            if (this.hidden)
-                winDbgConsole.setAttribute("height", "0")
-            cliBox.hide();
-            apf.layout.forceResize();
+            cliExt.scrollTop = 0;
+            document.body.scrollTop = 0;
+            
+            anims.animate(tabConsole, {
+                bottom : "0px",
+                timingFunction: timing,
+                duration: 0.2,
+                immediate: immediate
+            });
+            
+            anims.animate(cliBox, {
+                bottom: "-" + _self.collapsedHeight + "px",
+                timingFunction: timing,
+                duration: 0.2,
+                immediate: immediate
+            }, function(){
+                cliBox.parentNode.$ext.style.overflow = "";
+                cliBox.setHeight(0);
+                cliBox.hide();
+                apf.layout.forceResize();
+            });
         }
-
+        
         settings.model.setQueryValue("auto/console/@showinput", false);
         this.hiddenInput = true;
     },
@@ -1141,13 +1174,15 @@ module.exports = ext.register("ext/console/console", {
                 }
                 else {
                     winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
+                    winDbgConsole.minheight = _self.minHeight;
+                    
                     _self.maxHeight = window.innerHeight - 70;
                     winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
                 }
 
                 winDbgConsole.height = height + 1;
                 winDbgConsole.setAttribute("height", height);
-                _self.splitter[shouldShow ? "show" : "hide"]();
+                //_self.splitter[shouldShow ? "show" : "hide"]();
                 winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                 _self.animating = false;
@@ -1170,10 +1205,11 @@ module.exports = ext.register("ext/console/console", {
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
             if (!immediate && animOn) {
-                Firmin.animate(winDbgConsole.$ext, {
+                anims.animateSplitBoxNode(winDbgConsole, {
                     height: height + "px",
-                    timingFunction: "cubic-bezier(.30, .08, 0, 1)"
-                }, 0.3, finish);
+                    timingFunction: "cubic-bezier(.30, .08, 0, 1)",
+                    duration: 0.3
+                }, finish);
             }
             else
                 finish();
@@ -1181,7 +1217,7 @@ module.exports = ext.register("ext/console/console", {
         else {
             height = this.$collapsedHeight;
 
-            if (winDbgConsole.parentNode != mainRow)
+            if (winDbgConsole.parentNode != consoleRow)
                 this.restoreConsoleHeight();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
@@ -1189,15 +1225,14 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.$ext.style.maxHeight = "10000px";
 
             if (!immediate && animOn) {
-                var timer = setInterval(function(){apf.layout.forceResize()}, 10);
+                //var timer = setInterval(function(){apf.layout.forceResize()}, 10);
+                //clearInterval(timer);
 
-                Firmin.animate(winDbgConsole.$ext, {
+                anims.animateSplitBoxNode(winDbgConsole, {
                     height: height + "px",
-                    timingFunction: "ease-in-out"
-                }, 0.3, function(){
-                    clearInterval(timer);
-                    finish();
-                });
+                    timingFunction: "ease-in-out",
+                    duration: 0.3
+                }, finish);
             }
             else
                 finish();

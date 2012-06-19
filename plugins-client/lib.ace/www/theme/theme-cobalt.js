@@ -86,7 +86,7 @@ exports.cssText = "\
 }\
 \
 .ace-cobalt .ace_marker-layer .ace_step {\
-  background: rgb(127, 111, 19);\
+  background: rgb(198, 219, 174);\
 }\
 \
 .ace-cobalt .ace_marker-layer .ace_bracket {\

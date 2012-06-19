@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var commands = require("ext/commands/commands");
+var editors = require("ext/editors/editors");
 
 require("ext/main/main"); //Make sure apf is inited.
 
@@ -263,7 +264,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     else {
                         node.setAttribute("name", filename);
                         node.setAttribute("path", path + "/" + filename);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:"newfile"});
+                        
+                        editors.gotoDocument({doc: ide.createDocument(node), type:"newfile"});
                     }
                 }
             };
@@ -446,6 +448,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var doc  = e.doc;
             var node = doc.getNode();
             var editor = e.doc.$page && e.doc.$page.$editor;
+            
+            // This make the tab animation nicer.
+            function dispatchAfterOpenFile(){
+                setTimeout(function(){
+                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                }, 150);
+            }
 
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
@@ -456,7 +465,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             });
 
             if (doc.hasValue()) {
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
                 return;
             }
 
@@ -464,12 +473,12 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             if (doc.cachedValue) {
                 doc.setValue(doc.cachedValue);
                 delete doc.cachedValue;
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
             }
             // if we're creating a new file then we'll fill the doc with nah dah
             else if ((e.type && e.type === "newfile") || Number(node.getAttribute("newfile") || 0) === 1) {
                 doc.setValue("");
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
             }
             // otherwise go on loading
             else {
@@ -507,7 +516,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             doc.setValue(data);
                             
                             // fire event
-                            ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                            dispatchAfterOpenFile();
                         //});
                     }
                 };

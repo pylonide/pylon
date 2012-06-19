@@ -45,6 +45,8 @@ module.exports = ext.register("ext/main/main", {
             apf.config.resize = true;
             apf.layout.$onresize();
         });
+        
+        self.splitterPanelLeft = hboxMain.$handle; //Intended to be global
     },
 
     enable : function(){

@@ -9,13 +9,13 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var settings = require("core/settings");
 var skin = require("text!ext/gotoline/skin.xml");
 var markup = require("text!ext/gotoline/gotoline.xml");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/gotoline/gotoline", {
     name    : "Gotoline Window",
@@ -159,41 +159,33 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         editor.ceEditor.parentNode.appendChild(winGotoLine);
         winGotoLine.setAttribute("top", Math.max(0, Math.min(maxTop, pos.pageY - epos[1] - 5)));
-        winGotoLine.setAttribute("left", -60);
+        //winGotoLine.setAttribute("left", 0);
 
         winGotoLine.show();
         txtLineNr.focus();
 
         //Animate
         if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
-            apf.tween.single(winGotoLine, {
-                type     : "left",
-                anim     : apf.tween.easeInOutCubic,
-                from     : -60,
-                to       : 0,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {})
+            winGotoLine.setWidth(0);
+            anims.animate(winGotoLine, {
+                width: "60px", 
+                timingFunction: "cubic-bezier(.11, .93, .84, 1)",
+                duration : 0.15
             });
         }
         else {
-            winGotoLine.setLeft(0);
+            winGotoLine.setWidth(60);
         }
     },
 
     hide : function() {
         if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
-            apf.tween.single(winGotoLine, {
-                type     : "left",
-                anim     : apf.tween.EASEOUT,
-                from     : winGotoLine.$ext.offsetLeft,
-                to       : -60,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winGotoLine.hide();
-                }
+            anims.animate(winGotoLine, {
+                width: "0px", 
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)",
+                duration : 0.15
+            }, function(){
+                winGotoLine.hide();
             });
         }
         else {
@@ -234,7 +226,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         if (typeof line != "number")
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
-        ace.gotoLine(line);
+        if (!this.lastLine || this.lastLine != line) {
+            ace.gotoLine(line);
+            this.lastLine = line;
+        }
         
         if (typeof preview != "undefined") {
             var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
@@ -269,25 +264,22 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
             //General case (centered)
             else {
-                top = half - 5;// - lineHeight;
+                top = half - 1;// - lineHeight;
             }
 
             if (this.lineControl)
                 this.lineControl.stop();
     
             //Animate
-            apf.tween.single(winGotoLine, {
-                type     : "top",
-                anim     : apf.tween.easeInOutCubic,
-                from     : winGotoLine.getTop(),
-                to       : top,
-                steps    : 8,
-                interval : 10,
-                control  : (this.lineControl = {})
+            anims.animate(winGotoLine, {
+                top: top + "px", 
+                timingFunction: "cubic-bezier(.11, .93, .84, 1)",
+                duration : 0.25
             });
         }
         else {
-            winGotoLine.hide();
+            //winGotoLine.hide();
+            this.hide();
 
             var history = lstLineNumber.$model;
             var gotoline, lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");

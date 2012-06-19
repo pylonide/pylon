@@ -41,7 +41,7 @@ module.exports = ext.register("ext/html/html", {
         );
         
         ide.addEventListener("init.ext/editors/editors", function(e) {
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 _self.enable();
             });
             ide.addEventListener("closefile", function(e){

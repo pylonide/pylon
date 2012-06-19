@@ -15,6 +15,7 @@ var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
 var commands = require("ext/commands/commands");
+var editors = require("ext/editors/editors");
 
 var showHideScrollPos;
 
@@ -250,8 +251,16 @@ module.exports = ext.register("ext/tree/tree", {
     onReady : function() {
         var _self = this;
         trFiles.setAttribute("model", this.model);
+        
         if (this.loadedSettings === 1) {
-            _self.loadProjectTree();
+            if (ide.inited) {
+                setTimeout(function() {
+                    _self.loadProjectTree();
+                }, 200);
+            }
+            else {
+                _self.loadProjectTree();
+            }
         }
 
         // If no settings were found, then we set the "get" attribute of
@@ -370,12 +379,7 @@ module.exports = ext.register("ext/tree/tree", {
         
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
-            var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1 ||
-                !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
-                    return;
-
-            ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+            _self.openSelection();
         });
         
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
@@ -505,6 +509,19 @@ module.exports = ext.register("ext/tree/tree", {
     $cancelWhenOffline : function() {
         if (!ide.onLine && !ide.offlineFileSystemSupport)
             return false;
+    },
+    
+    openSelection : function(){
+        if (!ide.onLine && !ide.offlineFileSystemSupport)
+            return;
+        
+        var sel = trFiles.getSelection();
+        sel.forEach(function(node){
+            if (!node || node.tagName != "file")
+                return;
+        
+            editors.gotoDocument({node: node});
+        });
     },
 
     moveFile : function(path, newpath){

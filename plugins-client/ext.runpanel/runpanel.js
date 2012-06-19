@@ -202,7 +202,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
         
         function setActiveFile(page){
-            if (page && page.$model) {
+            if (page && page.$model && page.$doc.getNode().getAttribute("ignore") !== "1") {
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
                 _self.model.setQueryValue("config[@curfile]/@path", path);
                 _self.model.setQueryValue("config[@curfile]/@name",
@@ -213,7 +213,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         ide.addEventListener("init.ext/editors/editors", function(e) {
             setActiveFile(tabEditors.getPage());
 
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 setActiveFile(e.nextPage);
             });
 

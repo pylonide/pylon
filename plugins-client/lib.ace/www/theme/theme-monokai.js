@@ -49,8 +49,8 @@ exports.cssText = "\
 }\
 \
 .ace-monokai .ace_gutter {\
-  background: #292a24;\
-  color: #f1f1f1;\
+  background: #e8e8e8;\
+  color: #333;\
 }\
 \
 .ace-monokai .ace_print_margin {\
@@ -86,7 +86,7 @@ exports.cssText = "\
 }\
 \
 .ace-monokai .ace_marker-layer .ace_step {\
-  background: rgb(102, 82, 0);\
+  background: rgb(198, 219, 174);\
 }\
 \
 .ace-monokai .ace_marker-layer .ace_bracket {\
@@ -97,8 +97,9 @@ exports.cssText = "\
 .ace-monokai .ace_marker-layer .ace_active_line {\
   background: #49483E;\
 }\
+\
 .ace-monokai .ace_gutter_active_line {\
-  background-color: #191916;\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-monokai .ace_marker-layer .ace_selected_word {\

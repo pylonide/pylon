@@ -86,7 +86,7 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow-night-bright .ace_marker-layer .ace_step {\
-  background: rgb(102, 82, 0);\
+  background: rgb(198, 219, 174);\
 }\
 \
 .ace-tomorrow-night-bright .ace_marker-layer .ace_bracket {\
