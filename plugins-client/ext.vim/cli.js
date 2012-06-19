@@ -101,11 +101,8 @@ exports.searchStore = {
 };
 
 exports.focusCommandLine = function(val) {
-    var editor = txtConsoleInput.$editor;
-    editor.setValue(val, 1);
-    setTimeout(function(){
-        editor.focus();
-    })
+    txtConsoleInput.$editor.setValue(val, 1);
+    setTimeout(function() { txtConsoleInput.focus(); });
 }
 
 exports.actions = {
@@ -167,7 +164,7 @@ exports.onConsoleCommand = function(e) {
         }
         // something blocks focusing without timeout
         if (success !== false)
-            setTimeout(function(){ ed.focus(); });
+            setTimeout(function(){ ceEditor.focus(); });
     }
 };
 
