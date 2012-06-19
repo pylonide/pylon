@@ -1055,7 +1055,7 @@ module.exports = ext.register("ext/console/console", {
             anims.animateSplitBoxNode(winDbgConsole, {
                 height: _self.collapsedHeight + "px",
                 timingFunction: timing,
-                duration: 0.3,
+                duration: 0.2,
                 immediate: immediate
             }, function(){
                 cliExt.style.minHeight = "";
@@ -1073,14 +1073,14 @@ module.exports = ext.register("ext/console/console", {
             anims.animate(tabConsole, {
                 bottom : _self.collapsedHeight + "px",
                 timingFunction: timing,
-                duration: 0.3,
+                duration: 0.2,
                 immediate: immediate
             });
             
             anims.animate(cliBox, {
                 bottom: "0px",
                 timingFunction: timing,
-                duration: 0.3,
+                duration: 0.2,
                 immediate: immediate
             }, function(){
                 cliBox.parentNode.$ext.style.overflow = "";
@@ -1098,7 +1098,7 @@ module.exports = ext.register("ext/console/console", {
 
         this.$collapsedHeight = 0;
         
-        var timing = "ease-in-out";
+        var timing = "cubic-bezier(.10, .10, .25, .90)";
         var cliExt = cliBox.$ext;
         if (_self.hidden) {
             cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
@@ -1109,7 +1109,7 @@ module.exports = ext.register("ext/console/console", {
             anims.animateSplitBoxNode(winDbgConsole, {
                 height: "0px",
                 timingFunction: timing,
-                duration: 0.3,
+                duration: 0.2,
                 immediate: immediate
             }, function(){
                 cliExt.style.minHeight = "";
@@ -1125,14 +1125,14 @@ module.exports = ext.register("ext/console/console", {
             anims.animate(tabConsole, {
                 bottom : "0px",
                 timingFunction: timing,
-                duration: 0.3,
+                duration: 0.2,
                 immediate: immediate
             });
             
             anims.animate(cliBox, {
                 bottom: "-" + _self.collapsedHeight + "px",
                 timingFunction: timing,
-                duration: 0.3,
+                duration: 0.2,
                 immediate: immediate
             }, function(){
                 cliBox.parentNode.$ext.style.overflow = "";

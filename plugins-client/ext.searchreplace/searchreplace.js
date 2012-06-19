@@ -179,45 +179,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
 
         apf.importCssString(_self.css);
-        
-//        txtFind.addEventListener("clear", function() {
-//            _self.execFind();
-//        })
-//
-//        txtFind.addEventListener("keydown", function(e) {
-//            if (e.keyCode == 13 && !e.altKey && !e.ctrlKey && !e.metaKey) {
-//                _self.execFind(false, !!e.shiftKey, true, true);
-//                return false;
-//            }
-//            
-//            var ace = _self.$getAce();
-//            var isTooLong = ace.getSession().getDocument().getLength() > MAX_LINES;
-//            
-//            if (_self.findKeyboardHandler(e, "search", this, chkRegEx) === false) {
-//                apf.layout.forceResize();
-//                if (!isTooLong)
-//                    _self.updateCounter(null, true);
-//                return false;
-//            }
-//            
-//            if (chkRegEx.checked
-//              && _self.evaluateRegExp(txtFind, tooltipSearchReplace, 
-//              winSearchReplace, e.htmlEvent) === false) {
-//                if (!isTooLong)
-//                    _self.updateCounter(null, true);
-//                return;
-//            }
-//
-//            if (isTooLong)
-//                return;
-//
-//            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
-//                clearTimeout(this.$timer);
-//                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-//                    _self.execFind();
-//                    apf.layout.forceResize();
-//                }, 20);
-//            }
 
         hboxReplace.addEventListener("afterrender", function(){
             var kb = _self.addSearchKeyboardHandler(txtReplace, "replace");
