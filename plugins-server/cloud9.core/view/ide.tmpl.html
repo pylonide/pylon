@@ -127,6 +127,26 @@
             }
         //]]>
         </script>
+        
+        <script>
+            // browser requirement check
+            require([apfLoc], function () {
+                // we don't do this on a non-hosted version...
+                // the file won't be there, so no need to
+                if (!window.cloud9config.hosted) return;
+                
+                // if you pass `force=true` into the querystring, then
+                // we bypass the browser check
+                if (!window.location.search.match(/\bforce\=true\b/)) {
+                    // otherwise, ask apf
+                    if (apf.isIE) {
+                        // redirect to the notsupported page
+                        var ref = encodeURIComponent(window.location.pathname + window.location.search);
+                        window.location.href = "/site/notsupported.html?ref=" + ref;
+                    }
+                }
+            });
+        </script>
     </head>
     <body style="display:none">
         <div id="noscript">
