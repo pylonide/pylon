@@ -294,6 +294,8 @@
         <p:define name="__AMLPAGE" value="1" />
         <!--p:define name="__ENABLE_PAGE_TRANSITIONS" value="1" /-->
         <p:define name="__AMLDIVIDER" value="1" />
+	<p:define name="__AMLHSPLITBOX" value="1" />
+	<p:define name="__AMLVSPLITBOX" value="1" />
         <p:define name="__AMLVBOX" value="1" />
         <p:define name="__AMLHBOX" value="1" />
         <p:define name="__AMLBROWSER" value="1" />
