@@ -361,17 +361,17 @@ var V8Debugger = module.exports = function(dbg, host) {
         if (options.content)
             v8bp.content = options.content;
         
+        // Add it to the the model here to handle slow internet connections
+        model.appendXml(_self.$getBreakpointXml(v8bp, options.lineOffset, options.scriptId));
+
         // now attach it
         v8bp.attach(this.$debugger, function () {
-            // after succeeding, also add it to the the model
-            model.appendXml(_self.$getBreakpointXml(v8bp, options.lineOffset, options.scriptId));
-            
             // bind model and breakpoint to eachother
             _self.$bindV8BreakpointToModel(model.data.selectSingleNode("//breakpoint[@script=\'" + v8bp.source + "\' and @line=" + options.row + "]"), v8bp);
             
             if (typeof callback === "function") {
                 callback();
-            }            
+            }
         });
         
         return v8bp;
