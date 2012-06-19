@@ -48,6 +48,8 @@ module.exports = {
         );
         
         ide.addEventListener("init.ext/gotofile/gotofile", function() {
+            var selStart, selEnd;
+            
             dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
             // dgGoToFile.parentNode.insertBefore(txtOutline, treeOutline);
             txtGoToFile.addEventListener("afterchange", function(e) {
@@ -68,6 +70,17 @@ module.exports = {
             });
             treeOutline.addEventListener("onafterchoose", function() {
                 setTimeout(gotofile.toggleDialog(-1), 500);
+            });
+            txtGoToFile.addEventListener("blur", function() {
+                selStart = txtGoToFile.$input.selectionStart;
+                selEnd = txtGoToFile.$input.selectionEnd;
+            });
+            treeOutline.addEventListener("focus", function() {
+                txtGoToFile.focus();
+                if (selStart && selEnd) {
+                    txtGoToFile.$input.selectionStart = selStart;
+                    txtGoToFile.$input.selectionEnd = selEnd;
+                }
             });
         });   
 
