@@ -405,8 +405,7 @@ module.exports = ext.register("ext/sync/sync", {
                 _self.showInstallLocal();
             }
             else if (localId) {
-                message.localId = localId;
-                apf.ajax(url, message);
+                apf.ajax(url + "?localid=" + encodeURIComponent(localId), message);
             }
         });
     },
