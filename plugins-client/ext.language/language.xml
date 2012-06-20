@@ -9,7 +9,7 @@
         </a:model>
         <a:tree
           id              = "treeOutline"
-          class           = "searchresults"
+          class           = "searchresults treeOutline"
           opencloseaction = "onmouseup"
           model           = "mdlOutline"
           openadd         = "false"

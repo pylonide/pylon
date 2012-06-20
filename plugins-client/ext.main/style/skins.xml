@@ -5669,7 +5669,8 @@
             position : relative;
         }
         
-        .searchresults>div{
+        .searchresults>div,
+        .treeOutline .item-fix{
             background : rgba(255,255,255,0.4);   
             color : #666;
             padding : 2px 3px 4px 10px;
@@ -5678,10 +5679,12 @@
             cursor : default;
             white-space : nowrap;
         }
-        .searchresults>div:not(.selected):hover{
+        .searchresults>div:not(.selected):hover,
+        .treeOutline .item-fix:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
         }
-        .dark .searchresults>div {
+        .dark .searchresults>div,
+        .dark .treeOutline .item-fix{
             background : rgba(255,255,255,0.1);   
             border-top-color: rgba(255,255,255,0.05);
             border-bottom-color : rgba(0,0,0,0.3);
@@ -5689,7 +5692,8 @@
         .dark .searchresults>div:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
         }
-        .searchresults>div>span{
+        .searchresults>div>span,
+        .treeOutline .item-fix>span{
             font-size : 14px;
             color : #333;
             display : block;
@@ -5698,11 +5702,13 @@
         .searchresults .path {
             font-size: 11px;
         }
-        .searchresults>div.selected{
+        .searchresults>div.selected,
+        .treeOutline .item-fix.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
         }
-        .dark .searchresults>div.selected{
+        .dark .searchresults>div.selected,
+        .dark .treeOutline .item-fix.selected{
             background: none !important;
             box-shadow: none !important;
         }
@@ -5713,14 +5719,18 @@
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.3) inset;
         }
         .searchresults>div.selected,
-        .searchresults>div.selected>span {
+        .searchresults>div.selected>span,
+        .treeOutline .item-fix.selected,,
+        .treeOutline .item-fix.selected>span {
             color : white !important;
         }
         
-        .searchresults>div.selected>span{
+        .searchresults>div.selected>span,
+        .treeOutline .item-fix.selected>span{
             color : #f1f1f1;
         }
-        .searchresults>div.selected>span>strong{
+        .searchresults>div.selected>span>strong,
+        .treeOutline .item-fix.selected>span>strong{
             color : #fff;
         }
         .searchresults .message{
