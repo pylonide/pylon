@@ -225,14 +225,18 @@ module.exports = {
             if (treeOutline.childNodes.length === 0)
                 return;
             var node = treeOutline.selection[0] || treeOutline.root.childNodes[0];
-            treeOutline.select(this.getNodeAfter(node) || node);
+            var select = this.getNodeAfter(node) || node;
+            treeOutline.select(select);
+            select.scrollIntoView();
         }
         else if (e.keyCode === 38) { // Up
             e.preventDefault();
             if (treeOutline.childNodes.length === 0 || !treeOutline.selection[0])
                 return;
             var node = treeOutline.selection[0];
-            treeOutline.select(this.getNodeBefore(node) || node);
+            var select = this.getNodeBefore(node) || node;
+            treeOutline.select(select);
+            select.scrollIntoView();
         }
         else if (this.isDirty) {
             this.renderOutline();
