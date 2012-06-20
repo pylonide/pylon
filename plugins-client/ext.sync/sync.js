@@ -481,6 +481,7 @@ module.exports = ext.register("ext/sync/sync", {
     },
     
     createProject : function(name, type, scm, callback){
+        var _self = this;
         this.sendMessageToLocal("/api/" + cloud9config.davPrefix.split("/")[1] 
           + "/" + name + "/create", {
             method: "PUT",
@@ -495,6 +496,14 @@ module.exports = ext.register("ext/sync/sync", {
                     return util.alert("Unable to enable sync", 
                         "An error occurred while creating new workspace '" 
                             + name + "'", extra.http.responseText);
+                }
+                
+                if (data == "Exists") {
+                    _self.btnSyncStatus.setValue(false);
+                    _self.btnSyncStatus.enable();
+                    return util.alert("Unable to enable sync", 
+                        "The project with name '" 
+                            + name + "' already exists", "Please try a different project name");
                 }
                 
                 data = JSON.parse(data);
@@ -549,13 +558,11 @@ module.exports = ext.register("ext/sync/sync", {
                 
                 data = JSON.parse(data);
                 if (data.success === true) {
-                    // Success. Nothing more to do. (UI sync state will update via socket.io push event)
-                    
+                    // Success. Nothing more to do. (UI sync state will update via socket.io push event)                    
                     _self.showSyncInfo(true);
                     syncProgressBar.setValue(0)
                 }
-                //@todo I propose to rename to workspacesNotEmpty
-                else if (data.workspaceNotEmpty === true) {
+                else if (data.workspacesNotEmpty === true) {
                     winCannotSync.show();
                     _self.btnSyncStatus.setValue(false);
                 }
