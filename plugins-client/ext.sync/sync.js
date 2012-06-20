@@ -548,7 +548,7 @@ module.exports = ext.register("ext/sync/sync", {
             data: "payload=" + encodeURIComponent(JSON.stringify({
                 localWorkspaceId: ide.workspaceId,
                 onlineWorkspaceId: onlineWorkspaceId,
-                master: master /* this is "local" or "remote" */
+                master: master // this is "local" or "remote".
             })),
             async: true,
             callback: function( data, state, extra) {
