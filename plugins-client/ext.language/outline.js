@@ -192,13 +192,12 @@ module.exports = {
         var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
             +el.getAttribute("el"), +el.getAttribute("ec"));
         editor.selection.setSelectionRange(range);
-        this.revealRange(editor, +el.getAttribute("sl"), +el.getAttribute("elx") || +el.getAttribute("el"));
-    },
-    
-    revealRange: function(editor, line, lineEnd) {
+        //editor.centerSelection();
+        var line = +el.getAttribute("sl");
+        var lineEnd = +el.getAttribute("elx") || +el.getAttribute("el");
         var linesVisible = editor.renderer.$size.height / editor.renderer.$cursorLayer.config.lineHeight;
         lineEnd = Math.min(lineEnd, line + linesVisible);
-        editor.scrollToLine((line + lineEnd) / 2, true);
+        editor.scrollToLine((line + lineEnd) / 2 - 1, true);
     },
     
     onKeyDown: function(e) {
