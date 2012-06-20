@@ -94,8 +94,19 @@ function extractOutline(doc, node) {
             results.push({
                 icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
-                pos: b.x.getPos(),
+                pos: this[1].getPos(),
+                displayPos: b.x.getPos(),
                 items: extractOutline(doc, b.body)
+            });
+            return this;
+        },
+        'VarDeclInit(x, ObjectInit(_))', function(b) {
+            results.push({
+                icon: 'property',
+                name: b.x.value,
+                pos: this[1].getPos(),
+                displayPos: b.x.getPos(),
+                items: extractOutline(doc, this[1])
             });
             return this;
         },
@@ -107,6 +118,15 @@ function extractOutline(doc, node) {
                 pos: this[1].getPos(),
                 displayPos: getIdentifierPosBefore(doc, this.getPos()),
                 items: extractOutline(doc, b.body)
+            });
+            return this;
+        },
+        'PropertyInit(x, e)', function(b) {
+            results.push({
+                icon: 'property',
+                name: b.x.value,
+                pos: this.getPos(),
+                displayPos: getIdentifierPosBefore(doc, this.getPos())
             });
             return this;
         },
