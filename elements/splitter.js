@@ -518,13 +518,13 @@ apf.splitter.templates = {
                     var min = parseInt(pNode.firstChild.minheight) + pNode.$edge[0];
                     var max = apf.getHtmlInnerHeight(pNode.$ext) - pNode.lastChild.minheight 
                         - pNode.$edge[2] - pNode.padding;
-                    var offset = e.offsetY;
+                    var offset = e.layerY || e.offsetY;
                 }
                 else {
                     var min = parseInt(pNode.firstChild.minwidth) + pNode.$edge[3];
                     var max = apf.getHtmlInnerWidth(pNode.$ext) - pNode.lastChild.minwidth 
                         - pNode.$edge[1] - pNode.padding;
-                    var offset = e.offsetX;
+                    var offset = e.layerX || e.offsetX;
                 }
                 
                 function update(e, final){

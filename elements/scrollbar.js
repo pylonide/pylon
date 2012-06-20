@@ -710,7 +710,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (!hasOnScroll())
                 return;
 
-            if (apf.findHost(e.toElement) != sb) {
+            var el = apf.findHost(e.toElement || e.rangeParent);
+            if (el != sb && el != sbShared.$viewport.amlNode) {
                 clearTimeout(timer);
                 hideScrollbar();
             }
