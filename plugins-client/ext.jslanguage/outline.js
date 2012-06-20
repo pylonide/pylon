@@ -110,16 +110,35 @@ function extractOutline(doc, node) {
             return this;
         },
         // e.on("listen", function(...) { ... }) -> name is listen
-        'Call(e, [String(s), Function(name, fargs, body)])', function(b) {
+        'Call(e, args)', function(b) {
             var name = expressionToName(b.e);
-            if (!name)
+            if (!name || b.args.length < 2)
                 return false;
+            // Require handler at first or second position
+            var s;
+            var fun;
+            if (b.args[0] && b.args[0].cons === 'String' && b.args[1] && b.args[1].cons === 'Function') {
+                s = b.args[0];
+                fun = b.args[1]
+            }
+            else if (b.args[1] && b.args[1].cons === 'String' && b.args[2] && b.args[2].cons === 'Function') {
+                s = b.args[1];
+                fun = b.args[2];
+            }
+            else {
+                return false;
+            }
+            // Ignore if more handler-like arguments exist
+            if (b.args.length >= 4 && b.args[2].cons === 'String' && b.args[3].cons === 'Function')
+                return false;
+            var fargs = fun[1];
+            var body = fun[2];
             results.push({
                 icon: 'event',
-                name: b.s.value + fargsToString(b.fargs),
+                name: s[0].value + fargsToString(fargs),
                 pos: this.getPos(),
-                displayPos: fixStringPos(doc, this[1][0]),
-                items: extractOutline(doc, b.body)
+                displayPos: fixStringPos(doc, s),
+                items: extractOutline(doc, body)
             });
             return this;
         },
