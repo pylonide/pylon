@@ -5704,6 +5704,9 @@
             background: none !important;
             box-shadow: none !important;
         }
+        .searchresults>div.selected:hover{
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
+        }
         .searchresults>div.selected,
         .searchresults>div.selected>span {
             color : white !important;

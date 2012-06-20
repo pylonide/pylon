@@ -96,6 +96,7 @@ module.exports = ext.register("ext/themes/themes", {
         var editorDiv = hboxMain.$ext;
         var editorHolder = tabEditors.parentNode.$ext;
         var tabsDiv = tabEditors.$buttons.parentNode.parentNode;
+        
         editorDiv.setAttribute("id", "editorDiv");
         tabsDiv.setAttribute("id", "tabsDiv");
         
@@ -118,9 +119,11 @@ module.exports = ext.register("ext/themes/themes", {
             apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
-        apf.setStyleClass(editorDiv, _self.lastTheme = cssClass);
-        apf.setStyleClass(editorHolder, _self.lastTheme = cssClass);
-        apf.setStyleClass(tabsDiv, _self.lastTheme = cssClass);
+        _self.lastTheme = cssClass;
+        
+        apf.setStyleClass(editorDiv, cssClass);
+        apf.setStyleClass(editorHolder, cssClass);
+        apf.setStyleClass(tabsDiv, cssClass);
         
         if (_self.loaded[path])
             return;
