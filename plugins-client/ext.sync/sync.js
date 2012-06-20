@@ -44,7 +44,7 @@ module.exports = ext.register("ext/sync/sync", {
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
             this.btnSyncStatus = barExtras.appendChild(new apf.button({
-                margin  : "1 0 0 0" ,
+                margin  : "3 0 0 0" ,
                 "class" : "c9-sync" ,
                 state   : "true",
                 disabled : true,
@@ -65,7 +65,7 @@ module.exports = ext.register("ext/sync/sync", {
             this.lblSyncState = barExtras.appendChild(new apf.label({
                 "class"  : "c9-sync-state-info" 
                             + (ide.local ? " available-online" : ""),
-                "margin" : "0 2 0 0"
+                "margin" : "4 2 0 0"
             }), this.btnSyncStatus);
             
             ide.addEventListener("localOffline", function(){
