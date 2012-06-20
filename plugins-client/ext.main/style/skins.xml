@@ -5673,7 +5673,7 @@
             padding : 2px 3px 4px 10px;
         }
         .treeOutline .item-fix label {
-            padding : 2px 3px 4px 14px;
+            padding : 3px 3px 4px 14px;
         }
         .treeOutline .item-fix {
             padding: 0
