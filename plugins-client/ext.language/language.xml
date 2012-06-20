@@ -2,35 +2,30 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barOutline" skinset="language_skin" skin="codecomplete" visible="false">
-        <a:vbox anchors="0 0 0 0">
-            <!-- <a:textbox id="txtOutline" realtime="true" skin="searchbox_textbox" focusselect="true" /> -->
-            <a:hbox flex="1">
-                <a:model id="mdlOutline">
-                    <data>
-                    </data>
-                </a:model>
-                <a:tree
-                  id              = "treeOutline"
-                  skin            = "outline-tree"
-                  opencloseaction = "onmouseup"
-                  model           = "mdlOutline"
-                  openadd         = "false"
-                  startcollapsed  = "false"
-                  empty-message   = "No outline available"
-                  scrollbar       = "sbShared 32 7 7">
-                    <a:each
-                      match         = "[entries|entry]"
-                    >
-                        <a:caption>
-                          <?lm [@name]{!![@meta] ? "<cpde style='color:gray;'> : [@meta]</code>" : ""} ?>
-                        </a:caption>
-                        <a:icon value="/static/ext/language/img/[@icon].png" />
-                    </a:each>
-                </a:tree>
-              </a:hbox>
-        </a:vbox>
-    </a:bar>
+    <a:hbox flex="1" visible="false">
+        <a:model id="mdlOutline">
+            <data>
+            </data>
+        </a:model>
+        <a:tree
+          id              = "treeOutline"
+          skin            = "outline-tree"
+          opencloseaction = "onmouseup"
+          model           = "mdlOutline"
+          openadd         = "false"
+          startcollapsed  = "false"
+          empty-message   = "No outline available"
+          scrollbar       = "sbShared 32 7 7">
+            <a:each
+              match         = "[entries|entry]"
+            >
+                <a:caption>
+                  <?lm [@name]{!![@meta] ? "<cpde style='color:gray;'> : [@meta]</code>" : ""} ?>
+                </a:caption>
+                <a:icon value="/static/ext/language/img/[@icon].png" />
+            </a:each>
+        </a:tree>
+      </a:hbox>
 
     <a:bar id="barHierarchy" skinset="language_skin" skin="codecomplete" width="300" visible="false">
         <a:vbox anchors="0 0 0 0">
