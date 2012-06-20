@@ -6,12 +6,14 @@ var baseLanguageHandler = require('ext/language/base_handler');
 
 var outlineHandler = module.exports = Object.create(baseLanguageHandler);
 
+var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+
 outlineHandler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
 outlineHandler.outline = function(doc, ast, callback) {
-    callback({ body : extractOutline(ast) });
+    callback({ body : extractOutline(doc, ast) });
 };
     
 function fargsToString(fargs) {
@@ -34,8 +36,44 @@ function expressionToName(node) {
     return name;
 }
 
+function getIdentifierPosBefore(doc, pos) {
+    if (!pos)
+        return null;
+    for (var sl = pos.sl; sl >= 0; sl--) {
+        var line = doc.getLine(sl);
+        var foundId = false;
+        for (var sc = pos.sc; sc > 1; sc--) {
+            if (ID_REGEX.test(line[sc - 1]))
+                foundId = true;
+            else if (foundId)
+                break;
+        }
+        if (foundId)
+            break;
+        pos.sc = sl > 0 && doc.getLine(sl - 1).length - 1;
+    }
+    for (var ec = sc; ec < line.length; ec++) {
+        if (!ID_REGEX.test(line[ec]))
+            break;
+    }
+    var result = { sl: sl, el: sl, sc: sc, ec: ec};
+    if (line.substring(sc, ec) === 'function')
+        return getIdentifierPosBefore(doc, result);
+    return result;
+}
+
+// HACK: fix incorrect pos info for string literals
+function fixStringPos(doc, node) { 
+    var pos = node.getPos();
+    var line = doc.getLine(pos.el);
+    if (line[pos.ec] === '"')
+        return pos;
+    pos.ec += 2;
+    return pos;
+}
+
 // This is where the fun stuff happens
-function extractOutline(node) {
+function extractOutline(doc, node) {
     var results = [];
     node.traverseTopDown(
         // e.x = function(...) { ... }  -> name is x
@@ -46,7 +84,8 @@ function extractOutline(node) {
                 icon: 'method',
                 name: name + fargsToString(b.fargs),
                 pos: this[1].getPos(),
-                items: extractOutline(b.body)
+                displayPos: b.e.cons === 'PropAccess' && getIdentifierPosBefore(doc, this[1].getPos()) || b.e.getPos(),
+                items: extractOutline(doc, b.body)
             });
             return this;
         },
@@ -55,7 +94,7 @@ function extractOutline(node) {
                 icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: b.x.getPos(),
-                items: extractOutline(b.body)
+                items: extractOutline(doc, b.body)
             });
             return this;
         },
@@ -65,21 +104,22 @@ function extractOutline(node) {
                 icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
-                displayPos: b.x.getPos() || b.body.getPos(),
-                items: extractOutline(b.body)
+                displayPos: getIdentifierPosBefore(doc, this.getPos()),
+                items: extractOutline(doc, b.body)
             });
             return this;
         },
         // e.on("listen", function(...) { ... }) -> name is listen
         'Call(e, [String(s), Function(name, fargs, body)])', function(b) {
             var name = expressionToName(b.e);
-            if(!name) return false;
+            if (!name)
+                return false;
             results.push({
                 icon: 'event',
                 name: b.s.value + fargsToString(b.fargs),
                 pos: this.getPos(),
-                displayPos: b.s.getPos(),
-                items: extractOutline(b.body)
+                displayPos: fixStringPos(doc, this[1][0]),
+                items: extractOutline(doc, b.body)
             });
             return this;
         },
@@ -98,7 +138,7 @@ function extractOutline(node) {
                         icon: 'method',
                         name: name + '[callback]' + fargsToString(b.fargs),
                         pos: this.getPos(),
-                        items: extractOutline(b.body)
+                        items: extractOutline(doc, b.body)
                     });
                     foundFunction = true;
                 }
@@ -114,7 +154,7 @@ function extractOutline(node) {
                 name: b.name.value + fargsToString(b.fargs),
                 pos: this.getPos(),
                 displayPos: b.name.getPos(),
-                items: extractOutline(b.body)
+                items: extractOutline(doc, b.body)
             });
             return this;
         }
