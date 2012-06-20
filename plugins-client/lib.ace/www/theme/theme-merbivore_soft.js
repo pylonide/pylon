@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-merbivore-soft .ace_text-layer {\
-  cursor: text;\
   color: #E6E1DC;\
 }\
 \
@@ -86,7 +85,7 @@ exports.cssText = "\
 }\
 \
 .ace-merbivore-soft .ace_marker-layer .ace_step {\
-  background: rgb(198, 219, 174);\
+  background: rgb(102, 82, 0);\
 }\
 \
 .ace-merbivore-soft .ace_marker-layer .ace_bracket {\

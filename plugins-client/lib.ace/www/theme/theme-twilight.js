@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-twilight .ace_text-layer {\
-  cursor: text;\
   color: #F8F8F8;\
 }\
 \
@@ -86,7 +85,7 @@ exports.cssText = "\
 }\
 \
 .ace-twilight .ace_marker-layer .ace_step {\
-  background: rgb(198, 219, 174);\
+  background: rgb(102, 82, 0);\
 }\
 \
 .ace-twilight .ace_marker-layer .ace_bracket {\

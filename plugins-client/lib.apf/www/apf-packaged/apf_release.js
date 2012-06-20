@@ -32457,9 +32457,9 @@ apf.BaseTree = function(){
                 : null;
         
         var next = htmlNode.nextSibling;
-        if (next.tagName != htmlNode.tagName)
+        if (next && next.tagName != htmlNode.tagName)
             next = next.nextSibling;
-        if (beforeNode == next)
+        if (next && beforeNode == next)
             return;
         
         var oPHtmlNode = htmlNode.parentNode,
@@ -52858,13 +52858,15 @@ apf.vbox = function(struct, tagName){
         this.$ext.className = this.localName;
 
         this.$vbox = this.localName == "vbox";
-        this.$int = apf.isGecko && !(this.parentNode && "hbox|vbox".indexOf(this.parentNode.localName) > -1) 
+        this.$int = apf.isGecko && !(this.parentNode 
+          && "hbox|vbox".indexOf(this.parentNode.localName) > -1) 
           || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko && !(this.parentNode && this.parentNode.$box)) {
+        if (apf.isGecko && !(this.parentNode 
+          && "hbox|vbox".indexOf(this.parentNode.localName) > -1)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
         }
@@ -61526,7 +61528,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (!hasOnScroll())
                 return;
 
-            if (apf.findHost(e.toElement) != sb) {
+            var el = apf.findHost(e.toElement || e.rangeParent);
+            if (el != sb && el != sbShared.$viewport.amlNode) {
                 clearTimeout(timer);
                 hideScrollbar();
             }
@@ -64696,13 +64699,13 @@ apf.splitter.templates = {
                     var min = parseInt(pNode.firstChild.minheight) + pNode.$edge[0];
                     var max = apf.getHtmlInnerHeight(pNode.$ext) - pNode.lastChild.minheight 
                         - pNode.$edge[2] - pNode.padding;
-                    var offset = e.offsetY;
+                    var offset = e.layerY || e.offsetY;
                 }
                 else {
                     var min = parseInt(pNode.firstChild.minwidth) + pNode.$edge[3];
                     var max = apf.getHtmlInnerWidth(pNode.$ext) - pNode.lastChild.minwidth 
                         - pNode.$edge[1] - pNode.padding;
-                    var offset = e.offsetX;
+                    var offset = e.layerX || e.offsetX;
                 }
                 
                 function update(e, final){
