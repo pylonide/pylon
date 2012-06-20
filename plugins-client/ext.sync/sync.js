@@ -481,6 +481,7 @@ module.exports = ext.register("ext/sync/sync", {
     },
     
     createProject : function(name, type, scm, callback){
+        var _self = this;
         this.sendMessageToLocal("/api/" + cloud9config.davPrefix.split("/")[1] 
           + "/" + name + "/create", {
             method: "PUT",
@@ -495,6 +496,14 @@ module.exports = ext.register("ext/sync/sync", {
                     return util.alert("Unable to enable sync", 
                         "An error occurred while creating new workspace '" 
                             + name + "'", extra.http.responseText);
+                }
+                
+                if (data == "Exists") {
+                    _self.btnSyncStatus.setValue(false);
+                    _self.btnSyncStatus.enable();
+                    return util.alert("Unable to enable sync", 
+                        "The project with name '" 
+                            + name + "' already exists", "Please try a different project name");
                 }
                 
                 data = JSON.parse(data);

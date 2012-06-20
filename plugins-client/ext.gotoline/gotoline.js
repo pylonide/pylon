@@ -226,7 +226,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         if (typeof line != "number")
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
-        if (!this.lastLine || this.lastLine != line) {
+        if (!this.lastLine || this.lastLine != line 
+          || !ace.isRowFullyVisible(line)) {
             ace.gotoLine(line);
             this.lastLine = line;
         }

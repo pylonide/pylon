@@ -58,9 +58,6 @@ module.exports = ext.register("ext/panels/panels", {
         });
         
         ide.addEventListener("settings.load", function(){
-            if (apf.isGecko)
-                settings.model.setQueryValue("general/@animateui", false);
-                
             if (!settings.model.queryNode("auto/panels/panel[@path='" 
                 + panelExt.path + "']")) {
                 settings.model.appendXml("<panel path='" 
@@ -197,7 +194,7 @@ module.exports = ext.register("ext/panels/panels", {
             colLeft.setAttribute("minwidth", panelExt.panel.minwidth);
             colLeft.setWidth(width);
             
-            ide.dispatchEvent("panels.animate", {noanim : true, activate: true});
+            ide.dispatchEvent("panels.animate", {noanim : true, toWidth: width});
             
             apf.layout.forceResize();
         }
@@ -229,7 +226,7 @@ module.exports = ext.register("ext/panels/panels", {
         if (anim === false || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             this.currentPanel.panel.hide();
             colLeft.hide();
-            ide.dispatchEvent("panels.animate", {noanim : true, activate: false});
+            ide.dispatchEvent("panels.animate", {noanim : true});
             
             apf.layout.forceResize();
         }

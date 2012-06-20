@@ -89,8 +89,8 @@ module.exports = ext.register("ext/editors/editors", {
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
-                ide.dispatchEvent("tabs.visible", {value: true});
                 this.showTabs = true;
+                ide.dispatchEvent("tabs.visible", {value: true, noanim: noAnim});
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 1);
@@ -98,8 +98,8 @@ module.exports = ext.register("ext/editors/editors", {
         else {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "false");
-                ide.dispatchEvent("tabs.visible", {value: false});
                 this.showTabs = false;
+                ide.dispatchEvent("tabs.visible", {value: false, noanim: noAnim});
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 0);
@@ -121,7 +121,9 @@ module.exports = ext.register("ext/editors/editors", {
                     skin    : "editor_tab",
                     style   : "height : 100%",
                     buttons : "close,scale,order",
-                    animate : "[{require('core/settings').model}::general/@animateui]",
+                    animate : apf.isGecko
+                        ? false
+                        : "[{require('core/settings').model}::general/@animateui]",
                     anims   : "{apf.isTrue(this.animate) ? 'add|remove|sync' : ''}",
                     overactivetab  : true,
                     onfocus        : function(e){
@@ -250,8 +252,7 @@ module.exports = ext.register("ext/editors/editors", {
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
             var duration = mouse ? 0.2 : 0.2;
 
-            if (!apf.isGecko)
-                tabEditors.$buttons.style.overflow = "hidden";
+            tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
@@ -281,7 +282,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                 }, ++j * (duration / 6) * 1000);
             });
-
+            
             anims.animateMultiple([
                 { duration : duration, node: ext, top : (this.showTabs || preview ? 0 : -16) + "px"},
                 //{ duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
@@ -293,9 +294,11 @@ module.exports = ext.register("ext/editors/editors", {
             ], function(e){
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
                     _self.animating = false;
+                
+                tabEditors.parentNode.setAttribute("margin", 
+                    (this.showTabs || preview ? "0 0 0 0" : "-16 0 0 0"));
 
-                if (!apf.isGecko)
-                    tabEditors.$buttons.style.overflow = "";
+                tabEditors.$buttons.style.overflow = "";
             });
         }
         else {
@@ -304,12 +307,16 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
+                
+                tabEditors.parentNode.setAttribute("margin", "0 0 0 0");
             }
             else {
                 tabEditors.$buttons.style.height = "7px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
+                
+                tabEditors.parentNode.setAttribute("margin", "-16 0 0 0");
             }
         }
     },
