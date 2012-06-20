@@ -33,11 +33,11 @@
       readonly          = "{[@loading] || require('core/ide') || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
-    <a:menu id="mnuCtxEditor" render="runtime">
+    <a:menu id="mnuCtxEditor">
         <a:item command="undo">Undo</a:item>
         <a:item command="redo">Redo</a:item>
         <a:divider />
-        <a:item command="cut">Cut</a:item>
+        <a:item id="mnuCtxEditorCut" command="cut">Cut</a:item>
         <a:item command="copy">Copy</a:item>
         <a:item command="paste">Paste</a:item>
         <a:divider />

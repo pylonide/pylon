@@ -124,6 +124,25 @@ module.exports = ext.register("ext/revisions/revisions", {
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
+        ide.addEventListener("init.ext/tabbehaviors/tabbehaviors", function() {
+            menus.addItemByPath("~", new apf.divider(), 2000, mnuContextTabs);
+            menus.addItemByPath("File Revision History...", new apf.item({
+                command : "revisionpanel"
+            }), 2100, mnuContextTabs);
+        });
+
+        ide.addEventListener("init.ext/code/code", function() {
+            self.nodes.push(
+                mnuCtxEditor.insertBefore(new apf.item({
+                    id : "mnuCtxEditorRevisions",
+                    caption : "File Revision History...",
+                    command: "revisionpanel"
+                }), mnuCtxEditorCut),
+                mnuCtxEditor.insertBefore(new apf.divider({
+                    visible : "{mnuCtxEditorRevisions.visible}"
+                }), mnuCtxEditorCut)
+            );
+        });
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
@@ -309,7 +328,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
-        
+
         apf.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
@@ -337,7 +356,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        // Commented the line below out because it would try to select 
+        // Commented the line below out because it would try to select
         // and update nodes in the cached representation.
         //this.$restoreSelection(page, page.$mdlRevisions);
         this.model = page.$mdlRevisions;
