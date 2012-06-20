@@ -5678,7 +5678,7 @@
             cursor : default;
             white-space : nowrap;
         }
-        .searchresults>div:hover{
+        .searchresults>div:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
         }
         .dark .searchresults>div {
@@ -5686,7 +5686,7 @@
             border-top-color: rgba(255,255,255,0.05);
             border-bottom-color : rgba(0,0,0,0.3);
         }
-        .dark .searchresults>div:hover{
+        .dark .searchresults>div:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
         }
         .searchresults>div>span{
@@ -5749,6 +5749,7 @@
         </a:empty>
     </a:presentation>
 </a:list>
+
 <a:list name="list">
     <a:style><![CDATA[
         .list{
@@ -11482,11 +11483,12 @@
         .filemgr-tree .item-fix {
             position:relative;
             height:18px;
-            border-top:1px solid transparent;
-            border-bottom:1px solid transparent;
             /*width:100%;*/
         }
-        
+        .filemgr-tree:not(.searchresults) .item-fix {
+            border-top:1px solid transparent;
+            border-bottom:1px solid transparent;
+        }
         .filemgr-treeDisabled .item-fix{
             opacity : 0.3;
         }
@@ -11509,9 +11511,13 @@
             display : none !important;
         }
 
-        .filemgr-tree .item-fix.selected {
+        .filemgr-tree:not(.searchresults) .item-fix.selected {
             background : rgba(0,0,0,0.04);
         }
+        .filemgr-tree .item-fix.selected label u {  
+            color: white;
+        }
+        
 
         .filemgr-dragtree .item .caption,
         .filemgr-tree .item-fix.dragAppend .item,
@@ -11622,6 +11628,12 @@
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
         }
+        .dark .filemgr-tree U.root .item-fix.min .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.minlast .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.plus .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.pluslast .item SPAN,
+        .dark .filemgr-tree .item-fix.root .item SPAN {
+        }
 
         .filemgr-tree .item-fix.min .item SPAN,
         .filemgr-tree .item-fix.minlast .item SPAN {
@@ -11641,6 +11653,9 @@
             background-position:3px 1px;
             background-repeat:no-repeat;
             padding-left:21px;
+        }
+        .filemgr-tree.searchresults .item LABEL {
+            background-position: 3px 50%;
         }
 
         .filemgr-tree .item LABEL .caption {
