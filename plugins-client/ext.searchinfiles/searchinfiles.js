@@ -642,9 +642,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
                 highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
                 autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
-                fadefoldwidgets   : "false",
-                wrapmodeViewport  : "true"
+                fadefoldwidgets   : "false"
             }));
+            
+            _self.searchConsole.$editor.session.setUseWrapMode(true);
+            _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
             
             this.$panel.addEventListener("afterclose", function(){
                 this.removeNode();
