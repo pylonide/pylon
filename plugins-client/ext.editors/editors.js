@@ -280,7 +280,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                 }, ++j * (duration / 6) * 1000);
             });
-
+            
             anims.animateMultiple([
                 { duration : duration, node: ext, top : (this.showTabs || preview ? 0 : -16) + "px"},
                 //{ duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
@@ -292,6 +292,9 @@ module.exports = ext.register("ext/editors/editors", {
             ], function(e){
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
                     _self.animating = false;
+                
+                tabEditors.parentNode.setAttribute("margin", 
+                    (this.showTabs || preview ? "0 0 0 0" : "-16 0 0 0"));
 
                 if (!apf.isGecko)
                     tabEditors.$buttons.style.overflow = "";

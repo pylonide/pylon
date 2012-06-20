@@ -9420,7 +9420,7 @@
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs {
-        box-shadow: -3px 0 0 0 #2B2B2B;
+        box-shadow: -1px 0 0 0 #2B2B2B;
     }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
