@@ -102,7 +102,8 @@ module.exports = ext.register("ext/themes/themes", {
         if (theme.isDark) {
             apf.setStyleClass(editorDiv, "dark");
             apf.setStyleClass(editorHolder, "dark");
-            apf.setStyleClass(tabsDiv, "dark");
+            if (!apf.isGecko) 
+                apf.setStyleClass(tabsDiv, "dark");
         }
         else {
             apf.setStyleClass(editorDiv, "", ["dark"]);
@@ -133,9 +134,9 @@ module.exports = ext.register("ext/themes/themes", {
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
+            (apf.isGecko ? [] : ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
              (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
-             + ";background-color: " + bg + " !important"],
+             + ";background-color: " + bg + " !important"]),
             ["#editorDiv." + cssClass + " > .basic, "
              + "#editorDiv." + cssClass + " > .vsplitbox, "
              + "#tabsDiv." + cssClass + ", " // > .editor_tab

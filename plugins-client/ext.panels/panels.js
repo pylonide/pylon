@@ -58,9 +58,6 @@ module.exports = ext.register("ext/panels/panels", {
         });
         
         ide.addEventListener("settings.load", function(){
-            if (apf.isGecko)
-                settings.model.setQueryValue("general/@animateui", false);
-                
             if (!settings.model.queryNode("auto/panels/panel[@path='" 
                 + panelExt.path + "']")) {
                 settings.model.appendXml("<panel path='" 
