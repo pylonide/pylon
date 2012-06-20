@@ -2241,7 +2241,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             };
             
-            _setBtnIco(button);
+            setTimeout(function(){
+                _setBtnIco(button);
+            });
             
             // When the page is shown, we can reset the notification count
             page.addEventListener("prop.visible", function(e) {
