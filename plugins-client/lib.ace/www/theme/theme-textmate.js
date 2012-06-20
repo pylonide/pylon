@@ -63,7 +63,6 @@ exports.cssText = ".ace-tm .ace_editor {\
 }\
 \
 .ace-tm .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-tm .ace_cursor {\

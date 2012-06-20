@@ -191,9 +191,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
 
         var blur = function(e) {
-            if (self.hboxReplace && !hboxReplace.visible
-              && self.winSearchReplace && winSearchReplace.visible
-              && !apf.isChildOf(winSearchReplace, e.toElement))
+            if ( self.hboxReplace && !apf.isChildOf(winSearchReplace, e.toElement))
                 _self.toggleDialog(-1, null, true);
         }
 

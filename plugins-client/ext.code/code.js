@@ -41,7 +41,7 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 
 // name: ["Caption", "extension", "content-type"]
 var SupportedModes = {
-    c9search: ["C9Search", "c9search_results", "text/x-c9search"],
+    c9search: ["C9Search", "c9search", "text/x-c9search"],
     coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
     coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion"],
     csharp: ["C#", "cs", "text/x-csharp"],
@@ -205,7 +205,7 @@ module.exports = ext.register("ext/code/code", {
                     fileExtensions[ext] = mode;
                     break;
                 }
-            }
+        }
         }
 
         var mime = this.setCustomType(dotI ? ext : file, value);
@@ -219,12 +219,12 @@ module.exports = ext.register("ext/code/code", {
         if (self.ceEditor)
             self.ceEditor.setAttribute("syntax", this.getSyntax(file));
     },
-
+    
     getContentType : function(node) {
         var syntax = this.getSyntax(node);
         if (!syntax)
             return "auto";
-
+        
         return SupportedModes[syntax].mime || "auto";
     },
 
@@ -266,7 +266,7 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
-
+                
                 if (!doc || !doc.acesession)
                     return; //This is probably a deconstructed document
 
@@ -328,7 +328,7 @@ module.exports = ext.register("ext/code/code", {
                     //??? call doc.$page.destroy()
                 });
             });
-
+            
             doc.dispatchEvent("init");
         }
 
@@ -653,11 +653,11 @@ module.exports = ext.register("ext/code/code", {
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;
-
+                        
                     var page = tabEditors.getPage();
-                    if (page.$model)
+                    if (page.$model) 
                         return apf.isTrue(page.$model.queryValue("@wrapmode"));
-
+                    
                     return false;
                 }
             }), 600000)
@@ -723,14 +723,6 @@ module.exports = ext.register("ext/code/code", {
 
         this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         this.amlEditor.$editor.commands = commands;
-
-        // for search in files
-        this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
-            var node = tabEditors.getPage().$doc.getNode();
-
-            if (node.getAttribute("customtype") == util.getContentType("c9search"))
-                require("ext/searchinfiles/searchinfiles").launchFileFromSearch(_self.amlEditor.$editor);
-        });
 
         // preload common language modes
         var noop = function() {};
@@ -892,7 +884,7 @@ module.exports = ext.register("ext/code/code", {
         });
     },
 
-    destroy : function() {
+    destroy : function(){
         this.menus.each(function(item){
             item.destroy(true, true);
         });

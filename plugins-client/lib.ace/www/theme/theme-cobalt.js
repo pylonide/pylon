@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-cobalt .ace_text-layer {\
-  cursor: text;\
   color: #FFFFFF;\
 }\
 \

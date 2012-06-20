@@ -32457,9 +32457,9 @@ apf.BaseTree = function(){
                 : null;
         
         var next = htmlNode.nextSibling;
-        if (next.tagName != htmlNode.tagName)
+        if (next && next.tagName != htmlNode.tagName)
             next = next.nextSibling;
-        if (beforeNode == next)
+        if (next && beforeNode == next)
             return;
         
         var oPHtmlNode = htmlNode.parentNode,
@@ -52858,12 +52858,15 @@ apf.vbox = function(struct, tagName){
         this.$ext.className = this.localName;
 
         this.$vbox = this.localName == "vbox";
-        this.$int = apf.isGecko && !(this.parentNode && this.parentNode.$box) || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
+        this.$int = apf.isGecko && !(this.parentNode 
+          && "hbox|vbox".indexOf(this.parentNode.localName) > -1) 
+          || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko && !(this.parentNode && this.parentNode.$box)) {
+        if (apf.isGecko && !(this.parentNode 
+          && "hbox|vbox".indexOf(this.parentNode.localName) > -1)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
         }
@@ -61525,7 +61528,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (!hasOnScroll())
                 return;
 
-            if (apf.findHost(e.toElement) != sb) {
+            var el = apf.findHost(e.toElement || e.rangeParent);
+            if (el != sb && el != sbShared.$viewport.amlNode) {
                 clearTimeout(timer);
                 hideScrollbar();
             }
@@ -63632,26 +63636,27 @@ apf.vsplitbox = function(struct, tagName){
             this.hide();
             return false;
         }
-        fNode.$ext.style.left = this.$edge[3] + "px";
-        fNode.$ext.style.top = this.$edge[0] + "px";
+        fNode.$ext.style.left = (this.$edge[3] + fNode.$margin[3]) + "px";
+        fNode.$ext.style.top = (this.$edge[0] + fNode.$margin[0]) + "px";
         if (this.$vbox)
-            fNode.$ext.style.right = this.$edge[1] + "px";
+            fNode.$ext.style.right = (this.$edge[1] + fNode.$margin[1]) + "px";
         else
-            fNode.$ext.style.bottom = this.$edge[2] + "px";
+            fNode.$ext.style.bottom = (this.$edge[2] + fNode.$margin[2]) + "px";
         
         var lNode = this.getSecondVisibleChild();
         if (lNode && lNode.visible) {
-            lNode.$ext.style.right = this.$edge[1] + "px";
-            lNode.$ext.style.bottom = this.$edge[2] + "px";
+            lNode.$ext.style.right = (this.$edge[1] + lNode.$margin[1]) + "px";
+            lNode.$ext.style.bottom = (this.$edge[2] + lNode.$margin[2]) + "px";
             if (this.$vbox) {
                 var isPercentage;
                 
-                lNode.$ext.style.left = this.$edge[3] + "px";
+                lNode.$ext.style.left = (this.$edge[3] + lNode.$margin[3]) + "px";
                 if (fNode.height) {
                     isPercentage = String(fNode.height).indexOf("%") > -1;
                     lNode.$ext.style.top = isPercentage 
                         ? fNode.height 
-                        : ((parseInt(fNode.height) + this.padding + this.$edge[0]) + "px");
+                        : ((parseInt(fNode.height) + this.padding 
+                            + this.$edge[0] + fNode.$margin[0]) + "px");
                     
                     if (this.$handle) {
                         this.$handle.$ext.style.top = isPercentage
@@ -63667,7 +63672,8 @@ apf.vsplitbox = function(struct, tagName){
                     lNode.$ext.style.top = "";
                     fNode.$ext.style.bottom = isPercentage 
                         ? lNode.height 
-                        : ((parseInt(lNode.height) + this.padding + this.$edge[2]) + "px");
+                        : ((parseInt(lNode.height) + this.padding 
+                            + this.$edge[2] + lNode.$margin[2]) + "px");
                     
                     if (this.$handle) {
                         this.$handle.$ext.style.bottom = isPercentage
@@ -63691,7 +63697,8 @@ apf.vsplitbox = function(struct, tagName){
                     var isPercentage = String(fNode.width).indexOf("%") > -1;
                     lNode.$ext.style.left = isPercentage
                         ? fNode.width 
-                        : ((parseInt(fNode.width) + this.padding + this.$edge[3]) + "px");
+                        : ((parseInt(fNode.width) + this.padding 
+                            + this.$edge[3] + fNode.$margin[3]) + "px");
                     
                     if (this.$handle) {
                         this.$handle.$ext.style.left = isPercentage
@@ -63707,7 +63714,8 @@ apf.vsplitbox = function(struct, tagName){
                     lNode.$ext.style.left = "";
                     fNode.$ext.style.right = isPercentage
                         ? lNode.width 
-                        : ((parseInt(lNode.width) + this.padding + this.$edge[1]) + "px");
+                        : ((parseInt(lNode.width) + this.padding 
+                            + this.$edge[1] + lNode.$margin[1]) + "px");
                     
                     if (this.$handle) {
                         this.$handle.$ext.style.right = isPercentage
@@ -63730,11 +63738,11 @@ apf.vsplitbox = function(struct, tagName){
         }
         else {
             if (!this.$vbox) {
-                fNode.$ext.style.right = this.$edge[1] + "px";
+                fNode.$ext.style.right = (this.$edge[1] + fNode.$margin[1]) + "px";
                 fNode.$ext.style.width = "";
             }
             else {
-                fNode.$ext.style.bottom = this.$edge[2] + "px";
+                fNode.$ext.style.bottom = (this.$edge[2] + fNode.$margin[2]) + "px";
                 fNode.$ext.style.height = "";
             }
             
@@ -63838,8 +63846,11 @@ apf.vsplitbox = function(struct, tagName){
         },
         
         "margin" : function(value){
-            var b = apf.getBox(value);
-            //@todo
+            this.$margin = apf.getBox(value);
+            
+            //This can be optimized
+            if (this.$amlLoaded)
+                this.parentNode.$propHandlers["edge"].call(this.parentNode, this.parentNode.edge);
         }
     }
     
@@ -63847,6 +63858,8 @@ apf.vsplitbox = function(struct, tagName){
         if (amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
             return;
 
+        amlNode.$margin = [0, 0, 0, 0];
+        
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
@@ -63893,6 +63906,8 @@ apf.vsplitbox = function(struct, tagName){
     this.unregister = function(amlNode){
         if (!amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
             return;
+        
+        delete amlNode.$margin;
         
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
@@ -64684,13 +64699,13 @@ apf.splitter.templates = {
                     var min = parseInt(pNode.firstChild.minheight) + pNode.$edge[0];
                     var max = apf.getHtmlInnerHeight(pNode.$ext) - pNode.lastChild.minheight 
                         - pNode.$edge[2] - pNode.padding;
-                    var offset = e.offsetY;
+                    var offset = e.layerY || e.offsetY;
                 }
                 else {
                     var min = parseInt(pNode.firstChild.minwidth) + pNode.$edge[3];
                     var max = apf.getHtmlInnerWidth(pNode.$ext) - pNode.lastChild.minwidth 
                         - pNode.$edge[1] - pNode.padding;
-                    var offset = e.offsetX;
+                    var offset = e.layerX || e.offsetX;
                 }
                 
                 function update(e, final){

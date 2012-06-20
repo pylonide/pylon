@@ -89,7 +89,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             name: "closealltotheleft",
             isAvailable : function(){
                 return ide.onLine && tabEditors.length > 1 
-                  && mnuContextTabs.$page != tabEditors.getPage(0);
+                  && tabEditors.getPages().indexOf(mnuContextTabs.$page) != 0;
             },
             exec: function (editor, args) { 
                 _self.closealltotheleft(args[0]); 

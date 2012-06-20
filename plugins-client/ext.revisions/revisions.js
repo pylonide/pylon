@@ -116,6 +116,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                 disabled: "{!tabEditors.length}",
                 command: "revisionpanel"
             }), 900),
+            menus.addItemByPath("File/Git Blame", new apf.item({
+                onclick : function() {
+                    require("ext/gitblame/gitblame").startBlame();
+                }
+            }), 909),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
@@ -304,8 +309,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
-
-         apf.addEventListener("exit", function() {
+        
+        apf.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
@@ -332,7 +337,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        this.$restoreSelection(page, page.$mdlRevisions);
+        // Commented the line below out because it would try to select 
+        // and update nodes in the cached representation.
+        //this.$restoreSelection(page, page.$mdlRevisions);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
@@ -906,7 +913,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     populateModel: function(revObj, model) {
         var page = tabEditors.getPage();
-        if (this.isNewPage(page)) {
+        if (this.isNewPage(page) || !Util.pageIsCode(page)) {
             return;
         }
 

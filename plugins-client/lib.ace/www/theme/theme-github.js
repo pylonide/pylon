@@ -102,7 +102,6 @@ exports.cssText = "/* CSS style content from github's default pygments highlight
 }\
 \
 .ace-github .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-github .ace_cursor {\

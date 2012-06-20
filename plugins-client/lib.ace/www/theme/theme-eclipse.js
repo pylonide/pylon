@@ -63,7 +63,6 @@ exports.cssText = ".ace-eclipse .ace_editor {\
 }\
 \
 .ace-eclipse .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-eclipse .ace_cursor {\

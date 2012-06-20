@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-kr-theme .ace_text-layer {\
-  cursor: text;\
   color: #FCFFE0;\
 }\
 \

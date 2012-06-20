@@ -300,7 +300,7 @@ module.exports = ext.register("ext/save/save", {
         if (ide.dispatchEvent("beforefilesave", {node: node, doc: doc }) === false)
             return;
 
-        if (node.getAttribute("newfile") && !node.getAttribute("cli")){
+        if (node.getAttribute("newfile") && !node.getAttribute("cli") && !node.getAttribute("ignore") !== "1"){
             this.saveas(page, callback);
             return;
         }

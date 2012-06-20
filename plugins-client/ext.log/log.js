@@ -87,7 +87,7 @@ module.exports = ext.register("ext/log/log", {
     
             var xmlNode = _self.log(url, type, options);
     
-            get.apply(oHttp, arguments);
+            return get.apply(oHttp, arguments);
         }
     },
 
