@@ -32457,9 +32457,9 @@ apf.BaseTree = function(){
                 : null;
         
         var next = htmlNode.nextSibling;
-        if (next && next.tagName != htmlNode.tagName)
+        if (next.tagName != htmlNode.tagName)
             next = next.nextSibling;
-        if (next && beforeNode == next)
+        if (beforeNode == next)
             return;
         
         var oPHtmlNode = htmlNode.parentNode,
