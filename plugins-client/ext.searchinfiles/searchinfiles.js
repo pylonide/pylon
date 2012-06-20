@@ -14,7 +14,6 @@ var settings = require("core/settings");
 var extSettings = require("ext/settings/settings");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
-var ideConsole = require("ext/console/console");
 var menus = require("ext/menus/menus");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
@@ -404,8 +403,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var messageHeader = this.messageHeader(path, options);
         
         if (chkSFConsole.checked) {
-            // show the console
-            ideConsole.show();
+            // show the console; require here is necessary for c9local, please do not change
+            require("ext/console/console").show();
             
             this.makeSearchResultsPanel();
             

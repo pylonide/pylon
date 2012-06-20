@@ -14,7 +14,6 @@ var util = require("core/util");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var anims = require("ext/anims/anims");
-var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -954,7 +953,8 @@ module.exports = ext.register("ext/editors/editors", {
         if (rawState) {
             // build the real path, as the one in the hash is relative
             var path = ide.davPrefix.replace(/\/$/, "") + "/" + rawState[1];
-            var doc = ide.createDocument(fs.createFileNodeFromPath(path));
+            // require here is necessary for c9local, please do not change
+            var doc = ide.createDocument(require("ext/filesystem/filesystem").createFileNodeFromPath(path));
 
             // if selection information was added, add that to the state
             if (rawState[2] && rawState[3]) {
@@ -996,8 +996,9 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     gotoDocument : function(options) {
+        // require here is necessary for c9local, please do not change
         if (!options.node && options.path)
-            options.node = fs.createFileNodeFromPath(options.path);
+            options.node = require("ext/filesystem/filesystem").createFileNodeFromPath(options.path);
 
         this.jump(options);
     },
