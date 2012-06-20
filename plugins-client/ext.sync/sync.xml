@@ -36,7 +36,7 @@
             <a:label class="lblinstall">
                 <p style="margin-top:0"><strong>Offline syncing requires the c9 command line installed.</strong></p>
                 <p>Click <a href="#">here</a> to download the c9 cli or install via npm:</p>
-                <blockquote class="code">npm install c9</blockquote>
+                <blockquote class="code">npm install -g c9</blockquote>
                 <p>If you already have c9 cli installed, it is probably not running. Start the cli using:</p>
                 <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
             </a:label>
@@ -46,6 +46,7 @@
                 <p style="margin-top:0"><strong>The c9 command line is not running.</strong></p>
                 <p>This project is synced with one or more clients but they are currently not running</p>
                 <p>Click <a href="#">here</a> to download the c9 cli or install via npm:</p>
+                <blockquote class="code">npm install -g c9</blockquote>
                 <p>You can start the cli using:</p>
                 <blockquote class="code">c9 --start</blockquote>
             </a:label>    
@@ -61,8 +62,8 @@
               model      = "mdlSyncClients"
               width      = "200"
               each       = "[client]"
-              eachvalue  = "[@mac]"
-              caption    = "[@name]"
+              eachvalue  = "[@name]"
+              caption    = "[@label]"
               visible2    = "{this.length}" />
             
             <a:divider skin="c9-divider-hor" />

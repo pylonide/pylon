@@ -223,8 +223,8 @@ module.exports = ext.register("ext/sync/sync", {
                             _self.btnSyncStatus.setValue(_self.syncEnabled = true);
                         }
                         else {
-                            for (var name in _self.syncClients) {
-                                if (_self.syncClients[name].mac == localId) {
+                            for (var macAddress in _self.syncClients) {
+                                if (macAddress === localId) {
                                     _self.btnSyncStatus.setValue(_self.syncEnabled = true);
                                     return;
                                 }
@@ -423,10 +423,10 @@ module.exports = ext.register("ext/sync/sync", {
     showInstallLocal : function(){
         var xml = new apf.getXml("<clients />"), doc = xml.ownerDocument, c;
         var found = false;
-        for (var prop in this.syncClients) {
+        for (var macAddress in this.syncClients) {
             c = xml.appendChild(doc.createElement("client"));
-            c.setAttribute("name", prop);
-            c.setAttribute("mac", this.syncClients.mac);
+            c.setAttribute("name", macAddress);
+            c.setAttribute("label", macAddress + " (" + this.syncClients[macAddress].hostname + ")");
             found = true;
         }
         mdlSyncClients.load(xml);
@@ -444,11 +444,65 @@ module.exports = ext.register("ext/sync/sync", {
      * running it will retry until the client is running.
      */
     getLocalId : function(callback){
-        //callback(null, "this-is-my-mac-address");
-        
-        callback(new Error("message"));
+        this.callLocalProxy({
+            type: "macAddress",
+            callback: function( data, state, extra ) {
+                if (state != apf.SUCCESS) {
+                    callback(new Error("Unable to fetch mac address of local runtime."));
+                    return;
+                }
+                data = JSON.parse(data);
+                if (!data.macAddress) {
+                    callback(new Error("Error fetching mac address of local runtime. `macAddress` not in response"));
+                    return;
+                }
+                callback(null, data.macAddress);
+            }
+        });
     },
-    
+
+    callLocalProxy__callbacks : [],
+    callLocalProxy__queue : [],
+    callLocalProxy: function(message) {
+        var _self = this;
+        
+        if (message.callback) {
+            message.uid = this.callLocalProxy__callbacks.push(message.callback) - 1;
+            delete message.callback;
+        }
+        
+        if (!this.$iframe) {
+            window.addEventListener("message", function(e) {
+                try {
+                    var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
+                } catch (e) { return; }
+                
+                switch (json.type) {
+                    case "connect":
+                        _self.$iframe.connected = true;
+                        _self.callLocalProxy__queue.forEach(function(message){
+                            _self.$iframe.contentWindow.postMessage(message, "*");
+                        });
+                    break;
+                    case "response":
+                        if (_self.callLocalProxy__callbacks[json.uid])
+                            _self.callLocalProxy__callbacks[json.uid](json.data, json.state, json.extra);
+                    break;
+                }
+            });
+            
+            this.$iframe = document.body.appendChild(document.createElement("iframe"));
+            this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
+        }
+        
+        if (!this.$iframe.connected) {
+            this.callLocalProxy__queue.push(message);
+            return;
+        }
+
+        this.$iframe.contentWindow.postMessage(message, "*");
+    },
+
     showSyncDialog : function(callback){
         var _self = this;
         
