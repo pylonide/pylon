@@ -52,7 +52,6 @@ module.exports = {
             var selStart, selEnd;
             
             dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
-            // dgGoToFile.parentNode.insertBefore(txtOutline, treeOutline);
             txtGoToFile.addEventListener("afterchange", function(e) {
                 _self.onAfterChange(e);
             });            
