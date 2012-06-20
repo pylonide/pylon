@@ -58,7 +58,10 @@ module.exports = {
             });            
             txtGoToFile.addEventListener("keydown", function(e) {
                 _self.onKeyDown(e);
-            });     
+            });             
+            txtGoToFile.addEventListener("keyup", function(e) {
+                _self.onKeyUp(e);
+            });   
             dgGoToFile.addEventListener("keydown", function(e) {
                 _self.onKeyDown(e);
             });
@@ -131,15 +134,17 @@ module.exports = {
             return;
         }
         
+        this.fullOutline = event.data.body;
+        this.renderOutline(event.data.showNow);
+        
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
             this.showOutline();
             txtGoToFile.$input.selectionStart = 1;
         }
-        
-        //gotofile.setOutline(data.body, this.renderOutline);
-        this.fullOutline = event.data.body;
-        this.renderOutline(event.data.showNow);
+        else if (txtGoToFile.value.match(/^@/)) {
+            this.showOutline();
+        }
     },
     
     showOutline: function() {
@@ -229,12 +234,14 @@ module.exports = {
             var node = treeOutline.selection[0];
             treeOutline.select(this.getNodeBefore(node) || node);
         }
-        else if (e.keyCode === 50) { // @
-            this.showOutline();
-        }
         else if (this.isDirty) {
             this.renderOutline();
         }
+    },
+    
+    onKeyUp: function(e) {
+        if (e.keyCode === 50) // @
+            this.updateOutline();
     },
     
     getNodeAfter: function(node) {
@@ -261,16 +268,12 @@ module.exports = {
     onAfterChange: function(event) {
         if (txtGoToFile.value === "@")
             this.ignoreSelectOnce = true;
-        if (this.isOutlineEnabled())
-            this.showOutline();
+        if (txtGoToFile.value.match(/^@/))
+            this.updateOutline();
         else
             this.showFileSearch();
         this.renderOutline();
     },
-    
-    isOutlineEnabled: function() {
-        return txtGoToFile.value.match(/^@/);
-    }
 };
 });
 
