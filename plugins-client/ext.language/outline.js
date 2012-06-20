@@ -191,13 +191,18 @@ module.exports = {
         var editor = editors.currentEditor.amlEditor.$editor;
         var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
             +el.getAttribute("el"), +el.getAttribute("ec"));
+        this.scrollToDefinition(editor, +el.getAttribute("sl"), +el.getAttribute("elx") || +el.getAttribute("el"));
         editor.selection.setSelectionRange(range);
-        //editor.centerSelection();
-        var line = +el.getAttribute("sl");
-        var lineEnd = +el.getAttribute("elx") || +el.getAttribute("el");
-        var linesVisible = editor.renderer.$size.height / editor.renderer.$cursorLayer.config.lineHeight;
+    },
+    
+    scrollToDefinition: function(editor, line, lineEnd) {
+        var lineHeight = editor.renderer.$cursorLayer.config.lineHeight;
+        var lineVisibleStart = editor.renderer.scrollTop / lineHeight
+        var linesVisible = editor.renderer.$size.height / lineHeight;
         lineEnd = Math.min(lineEnd, line + linesVisible);
-        editor.scrollToLine((line + lineEnd) / 2 - 1, true);
+        if (lineVisibleStart <= line && lineEnd <= lineVisibleStart + linesVisible)
+            return; 
+        editor.scrollToLine((line + lineEnd) / 2 - 1, true);  
     },
     
     onKeyDown: function(e) {
