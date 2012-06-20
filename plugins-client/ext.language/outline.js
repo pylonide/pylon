@@ -98,6 +98,7 @@ module.exports = {
                 xmlS.push('" el="'); xmlS.push(pos.el);
                 xmlS.push('" sc="'); xmlS.push(pos.sc);
                 xmlS.push('" ec="'); xmlS.push(pos.ec);
+                xmlS.push('" elx="'); xmlS.push(elem.pos.el);
             elem.meta && xmlS.push('" meta="') && xmlS.push(elem.meta);
                 elem === selected && xmlS.push('" selected="true');
                 xmlS.push('">\n');
@@ -191,7 +192,13 @@ module.exports = {
         var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
             +el.getAttribute("el"), +el.getAttribute("ec"));
         editor.selection.setSelectionRange(range);
-        editor.centerSelection();
+        this.revealRange(editor, +el.getAttribute("sl"), +el.getAttribute("elx") || +el.getAttribute("el"));
+    },
+    
+    revealRange: function(editor, line, lineEnd) {
+        var linesVisible = editor.renderer.$size.height / editor.renderer.$cursorLayer.config.lineHeight;
+        lineEnd = Math.min(lineEnd, line + linesVisible);
+        editor.scrollToLine((line + lineEnd) / 2, true);
     },
     
     onKeyDown: function(e) {
@@ -262,3 +269,4 @@ module.exports = {
     }
 };
 });
+
