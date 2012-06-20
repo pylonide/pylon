@@ -66,9 +66,10 @@ function getIdentifierPosBefore(doc, pos) {
 function fixStringPos(doc, node) { 
     var pos = node.getPos();
     var line = doc.getLine(pos.el);
-    if (line[pos.ec] === '"')
-        return pos;
-    pos.ec += 2;
+    if (line[pos.ec] !== '"')
+        pos.ec += 2;
+    pos.sc++;
+    pos.ec--;
     return pos;
 }
 
@@ -182,3 +183,4 @@ function extractOutline(doc, node) {
 }
 
 });
+
