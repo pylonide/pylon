@@ -1168,6 +1168,9 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
+            if (shouldShow && tabConsole.getPage("pgSFResults"))
+                apf.layout.forceResize(tabConsole.getPage("pgSFResults").$ext);
+                
             setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
@@ -1204,7 +1207,7 @@ module.exports = ext.register("ext/console/console", {
             cliBox.$ext.style.height = "28px";
 
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
-
+            
             if (!immediate && animOn) {
                 anims.animateSplitBoxNode(winDbgConsole, {
                     height: height + "px",

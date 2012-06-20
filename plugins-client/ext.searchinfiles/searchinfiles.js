@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var settings = require("core/settings");
+var extSettings = require("ext/settings/settings");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
@@ -22,6 +23,7 @@ var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
 var anims = require("ext/anims/anims");
+var markupSettings =  require("text!ext/searchinfiles/settings.xml");
 
 // Ace dependencies
 var EditSession = require("ace/edit_session").EditSession;
@@ -70,6 +72,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 command : "searchinfiles"
             }), 20000)
         );
+        
+        extSettings.addSettings("Code Editor", markupSettings);
     },
 
     init : function(amlNode){
@@ -80,7 +84,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 ["regex", "false"],
                 ["matchcase", "false"],
                 ["wholeword", "false"],
-                ["console", "true"]
+                ["console", "true"],
+                ["consolelaunch", "false"]
             ]);
         });
         
@@ -436,7 +441,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults")
                 
                 _self.apfeditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
-                    _self.launchFileFromSearch(editor);
+                    _self.launchFileFromSearch(_self.apfeditor.$editor);
                 });
             }
             else {
@@ -661,14 +666,22 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             _self.searchConsole.addEventListener("keyup", function(e) {
                 if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
-                    _self.launchFileFromSearch(_self.searchConsole.$editor);
-                    _self.returnFocus = true;
-                    return false;
+                    if (apf.isTrue(settings.model.queryValue("editors/code/filesearch/@consolelaunch"))) {
+                        _self.launchFileFromSearch(_self.searchConsole.$editor);
+                        _self.returnFocus = true;
+                        return false;
+                    }
                 }
             });
             
             _self.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(_self.searchConsole.$editor);
+            });
+            
+            tabConsole.addEventListener("afterswitch", function(e){
+                if (e.currentTarget.activepage == "pgSFResults") {
+                    apf.layout.forceResize(_self.searchConsole.$ext);
+                }
             });
         }
         else {
@@ -682,6 +695,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         session.highlight(query);
         session.c9SearchHighlight = session.$searchHighlight
         session.$searchHighlight = null;
+    },
+    
+    toggleConsoleSearch: function() {
+        
     },
     
     enable : function(){

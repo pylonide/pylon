@@ -1,0 +1,3 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox position="9000" class="underlined" label="Launch Files for Console Search" value="[editors/code/filesearch/@consolelaunch]" skin="checkbox_grey" />
+</a:application>
