@@ -750,9 +750,9 @@ apf.BaseTree = function(){
                 : null;
         
         var next = htmlNode.nextSibling;
-        if (next.tagName != htmlNode.tagName)
+        if (next && next.tagName != htmlNode.tagName)
             next = next.nextSibling;
-        if (beforeNode == next)
+        if (next && beforeNode == next)
             return;
         
         var oPHtmlNode = htmlNode.parentNode,
