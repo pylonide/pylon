@@ -226,7 +226,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     else {
                         node.setAttribute("name", filename);
                         node.setAttribute("path", path + "/" + filename);
-                        
+
                         editors.gotoDocument({doc: ide.createDocument(node), type:"newfile", origin: "newfile"});
                     }
                 }
@@ -393,7 +393,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var doc  = e.doc;
             var node = doc.getNode();
             var editor = e.doc.$page && e.doc.$page.$editor;
-            
+
             // This make the tab animation nicer.
             function dispatchAfterOpenFile(){
                 setTimeout(function(){

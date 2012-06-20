@@ -251,7 +251,7 @@ module.exports = ext.register("ext/tree/tree", {
     onReady : function() {
         var _self = this;
         trFiles.setAttribute("model", this.model);
-        
+
         if (this.loadedSettings === 1) {
             if (ide.inited) {
                 setTimeout(function() {
@@ -310,11 +310,11 @@ module.exports = ext.register("ext/tree/tree", {
                 });
             }
         }));
-        
+
         trFiles.filterUnique = function(pNode, nodes){
             var filtered = [];
-            for (i = 0, l = nodes.length; i < l; i++) {
-                if (!pNode.selectSingleNode("node()[@path=" 
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!pNode.selectSingleNode("node()[@path="
                   + escapeXpathString(nodes[i].getAttribute("path")) + "]"))
                     filtered.push(nodes[i]);
             }
@@ -399,20 +399,20 @@ module.exports = ext.register("ext/tree/tree", {
             for (var i = 0, l = e.args.length; i < l; i++) {
                 args     = e.args[i].args;
                 filename = args[1].getAttribute("name");
-    
+
                 var count = 0;
                 filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
                 while (args[0].selectSingleNode('node()[@name=' + escapeXpathString(filename) + ']')) {
                     filename = filename.replace(/\.(\d+)$/, "");
-                    
-                    var idx  = filename.lastIndexOf("."); 
+
+                    var idx  = filename.lastIndexOf(".");
                     if (idx == -1) idx = filename.length;
-    
+
                     var name = filename.substr(0, idx), ext = filename.substr(idx);
                     filename = name + "." + ++count + ext;
                 }
                 args[1].setAttribute("newname", filename);
-    
+
                 rename(args[1], args[0], filename, count > 0);
             }
         });
@@ -510,16 +510,16 @@ module.exports = ext.register("ext/tree/tree", {
         if (!ide.onLine && !ide.offlineFileSystemSupport)
             return false;
     },
-    
+
     openSelection : function(){
         if (!ide.onLine && !ide.offlineFileSystemSupport)
             return;
-        
+
         var sel = trFiles.getSelection();
         sel.forEach(function(node){
             if (!node || node.tagName != "file")
                 return;
-        
+
             editors.gotoDocument({node: node});
         });
     },
@@ -534,7 +534,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             ide.dispatchEvent("afterupdatefile", {
                 path: node.getAttribute("oldpath"),
-                newPath: path,
+                newPath: newpath,
                 xmlNode: node,
                 isFolder: node.getAttribute("type") === "folder"
             });
@@ -696,7 +696,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             _self.loading = false;
-            
+
             // Re-select the last selected item
             if(_self.treeSelection.path) {
                 var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
