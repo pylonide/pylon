@@ -23,7 +23,6 @@ var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
 var anims = require("ext/anims/anims");
-var markupSettings =  require("text!ext/searchinfiles/settings.xml");
 
 // Ace dependencies
 var EditSession = require("ace/edit_session").EditSession;
@@ -72,8 +71,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 command : "searchinfiles"
             }), 20000)
         );
-        
-        extSettings.addSettings("Code Editor", markupSettings);
     },
 
     init : function(amlNode){

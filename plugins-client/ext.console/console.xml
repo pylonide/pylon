@@ -85,6 +85,9 @@
             <a:item type="check"
               checked = "[{require('core/settings').model}::auto/console/@clearonrun]"
               caption = "Clear output on run" />
+            <a:item type="check"
+              checked = "[{require('core/settings').model}::editors/code/filesearch/@consolelaunch]"
+              caption = "Open files when navigating search results with arrow keys" />
         </a:menu>
     </a:bar>
 </a:application>
