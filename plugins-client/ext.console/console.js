@@ -1125,6 +1125,7 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             cliExt.scrollTop = 0;
+            
             document.body.scrollTop = 0;
             
             anims.animate(tabConsole, {
@@ -1201,6 +1202,7 @@ module.exports = ext.register("ext/console/console", {
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
+            cliBox.$ext.style.height = "28px";
 
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 

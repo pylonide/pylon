@@ -121,7 +121,9 @@ module.exports = ext.register("ext/editors/editors", {
                     skin    : "editor_tab",
                     style   : "height : 100%",
                     buttons : "close,scale,order",
-                    animate : "[{require('core/settings').model}::general/@animateui]",
+                    animate : apf.isGecko
+                        ? false
+                        : "[{require('core/settings').model}::general/@animateui]",
                     anims   : "{apf.isTrue(this.animate) ? 'add|remove|sync' : ''}",
                     overactivetab  : true,
                     onfocus        : function(e){
@@ -250,8 +252,7 @@ module.exports = ext.register("ext/editors/editors", {
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
             var duration = mouse ? 0.2 : 0.2;
 
-            if (!apf.isGecko)
-                tabEditors.$buttons.style.overflow = "hidden";
+            tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
@@ -294,8 +295,7 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
                     _self.animating = false;
 
-                if (!apf.isGecko)
-                    tabEditors.$buttons.style.overflow = "";
+                tabEditors.$buttons.style.overflow = "";
             });
         }
         else {
