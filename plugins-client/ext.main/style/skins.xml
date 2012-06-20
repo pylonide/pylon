@@ -5669,11 +5669,23 @@
             position : relative;
         }
         
+        .searchresults>div {
+            padding : 2px 3px 4px 10px;
+        }
+        .treeOutline .item-fix label {
+            padding : 2px 3px 4px 14px;
+        }
+        .treeOutline .item-fix {
+            padding: 0
+        }
+        .treeOutline .item span {
+            left: 4px;
+            top: 7px;
+        }
         .searchresults>div,
         .treeOutline .item-fix{
             background : rgba(255,255,255,0.4);   
             color : #666;
-            padding : 2px 3px 4px 10px;
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
             cursor : default;
@@ -11492,19 +11504,18 @@
 
         .filemgr-tree .item-fix {
             position:relative;
-            height:18px;
             /*width:100%;*/
         }
         .filemgr-tree:not(.searchresults) .item-fix {
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
+            height:18px;
         }
         .filemgr-treeDisabled .item-fix{
             opacity : 0.3;
         }
 
         .filemgr-tree .item-fix .item {
-            height:18px;
             padding:0 0 0 14px;
             position:relative;
             /*overflow:hidden;*/
