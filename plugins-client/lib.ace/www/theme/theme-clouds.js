@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-clouds .ace_text-layer {\
-  cursor: text;\
   color: #000000;\
 }\
 \

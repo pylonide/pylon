@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="winDbgConsole" height="30" zindex="1000">
-        <a:vbox anchors="0 0 0 0">
-            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="scale,order"
+    <a:bar id="winDbgConsole" height="0" zindex="1000">
+        <a:vsplitbox anchors="0 0 0 0">
+            <a:tab id="tabConsole" skin="tab_console" visible="false" render2="runtime" buttons="scale,order"
               onclose="return require('ext/console/console').checkIfPageCanClose(event)">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
@@ -62,16 +62,7 @@
                 </a:page>
             </a:tab>
 
-            <a:menu id="mnuConsoleSettings">
-                <a:item type="check"
-                  checked = "[{require('core/settings').model}::auto/console/@autoshow]"
-                  caption = "Auto-show console when running" />
-                <!--a:item type="check"
-                  checked = "[{require('core/settings').model}::auto/console/@clearonrun]"
-                  caption = "Clear output on run" /-->
-            </a:menu>
-
-            <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="4" pack="end" visible="false">
+            <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="4" pack="end" visible="false" height="31">
                 <a:text id="txtConsolePrompt"
                     class="txt_console_prompt"
                     visible="false"
@@ -85,7 +76,18 @@
                     value = "{!!tabConsole.visible}"
                     onprop.value="try { require('ext/console/console')[event.value ? 'show' : 'hide'](); } catch(e) {} " />
             </a:hbox>
-        </a:vbox>
+        </a:vsplitbox>
+        
+        <a:menu id="mnuConsoleSettings">
+            <a:item type="check"
+              checked = "[{require('core/settings').model}::auto/console/@autoshow]"
+              caption = "Auto-show console when running" />
+            <a:item type="check"
+              checked = "[{require('core/settings').model}::auto/console/@clearonrun]"
+              caption = "Clear output on run" />
+            <a:item type="check"
+              checked = "[{require('core/settings').model}::editors/code/filesearch/@consolelaunch]"
+              caption = "Open files when navigating search results with arrow keys" />
+        </a:menu>
     </a:bar>
 </a:application>
-

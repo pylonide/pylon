@@ -1,4 +1,4 @@
-/**
+16/**
  * Cloud9 Language Foundation
  *
  * @copyright 2011, Ajax.org B.V.
@@ -20,12 +20,12 @@ var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 2000;
 var HIDE_DOC_DELAY = 1000;
-var AUTO_OPEN_DELAY = 50;
+var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
-
+var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
@@ -182,6 +182,7 @@ module.exports = {
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
+        this.lineHeight = this.cursorConfig.lineHeight + EXTRA_LINE_HEIGHT;
         var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
         
@@ -202,35 +203,32 @@ module.exports = {
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
         var boxLength = this.matches.length || 1;
-        var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
+        var completionBoxHeight = 11 + Math.min(10 * this.lineHeight, boxLength * (this.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
         
         var innerBoxLength = this.matches.length || 1;
-        var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
+        var innerCompletionBoxHeight = Math.min(10 * this.lineHeight, innerBoxLength * (this.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
-        setTimeout(function() {
-            apf.popup.show("completionBox", {
-                x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
-                y        : _self.cursorConfig.lineHeight,
-                height   : completionBoxHeight,
-                width    : MENU_WIDTH,
-                animate  : false,
-                ref      : cursorLayer.cursor,
-                callback : function() {
-                    barCompleterCont.setHeight(completionBoxHeight);
-                    barCompleterCont.$ext.style.height = completionBoxHeight + "px";
-                    sbCompleter.$resize();
-                    _self.completionElement.scrollTop = 0;
-                }
-            });
-        }, 0);
+        apf.popup.show("completionBox", {
+            x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
+            y        : _self.cursorConfig.lineHeight,
+            height   : completionBoxHeight,
+            width    : MENU_WIDTH,
+            animate  : false,
+            ref      : cursorLayer.cursor,
+            callback : function() {
+                barCompleterCont.setHeight(completionBoxHeight);
+                barCompleterCont.$ext.style.height = completionBoxHeight + "px";
+                sbCompleter.$resize();
+                _self.completionElement.scrollTop = 0;
+            }
+        });
     },
 
-    closeCompletionBox : function(event, doNotHide) {
+    closeCompletionBox : function(event) {
+        barCompleterCont.$ext.style.display = "none";
         var ace = editors.currentEditor.amlEditor.$editor;
-        if (!doNotHide)
-            barCompleterCont.$ext.style.display = "none";
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
@@ -281,7 +279,7 @@ module.exports = {
                 replaceText(amlEditor.$editor, _self.prefix, match);
                 amlEditor.focus();
             });
-            matchEl.style.height = cursorConfig.lineHeight + "px";
+            matchEl.style.height = cursorConfig.lineHeight + EXTRA_LINE_HEIGHT + "px";
             matchEl.style.width = (MENU_WIDTH - 10) + "px";
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
@@ -461,7 +459,7 @@ module.exports = {
         }
         else {
             if(typeof barCompleterCont !== 'undefined')
-                barCompleterCont.$ext.style.display = "none";
+               this.closeCompletionBox();
         }
     },
     

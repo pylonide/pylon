@@ -14,7 +14,6 @@ var V8WebSocketDebugHost = module.exports = function(socket) {
 };
 
 (function() {
-     
     this.$connect = function(callback) {
         if (this.state != "connected")
             this.$v8ds = new WSV8DebuggerService(this.$socket);

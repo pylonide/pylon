@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-pastel-on-dark .ace_text-layer {\
-  cursor: text;\
   color: #8F938F;\
 }\
 \

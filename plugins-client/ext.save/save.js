@@ -81,8 +81,6 @@ module.exports = ext.register("ext/save/save", {
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("close", _self.$close = function(e) {
                 var at = e.page.$at;
-                if (!at.undo_ptr)
-                    at.undo_ptr = at.$undostack[0];
                 var node = e.page.$doc.getNode();
                 if (node && (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
                   || !at.undo_ptr && node.getAttribute("changed") == 1
@@ -115,12 +113,14 @@ module.exports = ext.register("ext/save/save", {
                                 if (!(page=winCloseConfirm.page))
                                     return;
     
-                                tabEditors.remove(page, true, page.noAnim);
+                                delete winCloseConfirm.page;
                                 delete page.noAnim;
+                                
+                                page.dispatchEvent("aftersavedialogclosed");
+                                
+                                tabEditors.remove(page, true, page.noAnim);
                                 if (resetUndo)
                                     page.$at.undo(-1);
-                                delete winCloseConfirm.page;
-                                page.dispatchEvent("aftersavedialogclosed");
                             };
     
                             if (winCloseConfirm.all == -200)
@@ -302,7 +302,7 @@ module.exports = ext.register("ext/save/save", {
         if (ide.dispatchEvent("beforefilesave", {node: node, doc: doc }) === false)
             return;
 
-        if (node.getAttribute("newfile") && !node.getAttribute("cli")){
+        if (node.getAttribute("newfile") && !node.getAttribute("cli") && !node.getAttribute("ignore") !== "1"){
             this.saveas(page, callback);
             return;
         }

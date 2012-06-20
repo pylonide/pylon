@@ -52,7 +52,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
             _self.map_enabled = e.model.queryValue("editors/code/@minimap");
         });
 
-        tabEditors.addEventListener("afterswitch", function(e){
+        ide.addEventListener("tab.afterswitch", function(e){
             if (e.nextPage.type === "ext/imgview/imgview")
                 return;
 

@@ -40,6 +40,7 @@ util.inherits(SearchPlugin, Plugin);
 
         if (message.path.indexOf("/workspace/" >= 0))
             message.path = message.path.substr(11);
+        message.uri = message.path;
 
         var lastSlash = message.path.lastIndexOf("/");
         var dirPath = "/" + message.path.substr(0, lastSlash);
@@ -86,7 +87,7 @@ util.inherits(SearchPlugin, Plugin);
         if (options.maxresults)
             cmd += "-m " + parseInt(options.maxresults, 10);
         if (options.wholeword)
-            cmd += " -w"
+            cmd += " -w";
 
         var query = options.query;
         // grep has a funny way of handling new lines (that is to say, it's non-existent)
@@ -106,10 +107,16 @@ util.inherits(SearchPlugin, Plugin);
 
         cmd += " --exclude=*{" + PATTERN_EDIR + "}*"
             +  " --include=" + include
-            + " '" + query + "'"
+            + " '" + query.replace(/-/g, "\\-") + "'"
             + " \"" + escapeShell(options.path) + "\"";
 
-        if (options.replaceAll && !options.replacement) {
+        if (options.replaceAll) {
+            if (!options.replacement)
+                options.replacement = "";
+            
+            if (options.regexp)
+                query = escapeRegExp(query);
+
             // pipe the grep results into perl
             cmd += " -l | xargs " + PERL_CMD +
             // print the grep result to STDOUT (to arrange in parseSearchResult())
@@ -134,28 +141,17 @@ util.inherits(SearchPlugin, Plugin);
 
         this.grep.stdout.setEncoding("utf8");
         this.grep.stderr.setEncoding("utf8");
-        var buffer = '';
 
         this.grep.stdout.on("data", function(data) {
-            if (!data)
-                return;
-            buffer += data;
-            if (data.indexOf("\n") !== -1) {
+            if (data && data.indexOf("\n") !== -1)
                 count += parseSearchResult(data);
-                buffer = '';
-            }
         });
         this.grep.stderr.on("data", function(data) {
-            if (!data)
-                return;
-            buffer += data;
-            if (data.indexOf("\n") !== -1) {
+            if (data && data.indexOf("\n") !== -1)
                 count += parseSearchResult(data);
-                buffer = '';
-            }
         });
         this.grep.on("exit", function(code, signal) {
-            send('\nResults: {"count": '+ count + ', "filecount":' + filecount + '}', 1);
+            send('\nResults: {"count": '+ count + ', "filecount":' + filecount + '}\n', 1);
         });
 
         function parseSearchResult(res) {
@@ -167,7 +163,7 @@ util.inherits(SearchPlugin, Plugin);
                 parts = aLines[i].split(":");
                 if (parts.length < 3) continue;
 
-                file = encodeURI(parts.shift().replace(options.path, "").trimRight(), "/");
+                file = encodeURI(options.uri + parts.shift().replace(options.path, "").trimRight(), "/");
 
                 lineno = parseInt(parts.shift(), 10);
                 if (!lineno) continue;
@@ -176,7 +172,7 @@ util.inherits(SearchPlugin, Plugin);
                 if (file !== prevFile) {
                     filecount++;
                     if (prevFile)
-                        result += "\n\n";
+                        result += "\n \n";
                     result += file + ":";
                     prevFile = file;
                 }
@@ -256,7 +252,7 @@ var escapeRegExp = function(str) {
 
 // taken from http://xregexp.com/
 var grepEscapeRegExp = function(str) {
-    return str.replace(/[-[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
+    return str.replace(/[[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
 }
 
 var escapeShell = function(str) {

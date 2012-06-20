@@ -66,7 +66,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var node = model.queryNode('//node()[@path="' 
                 + e.node.getAttribute("path").replace(/"/g, "&quot;") + '"]');
             
-            if (!e.doc.$page)
+            if (!node || !e.doc.$page)
                 return;
             
             if (node.getAttribute("customtype") == util.getContentType("c9search"))
@@ -76,7 +76,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             pgModel.addEventListener("update", 
               pgModel.$lstOpenFilesListener = function(){
                   if (!pgModel.data)
-                       return;
+                      return;
                   
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
@@ -134,7 +134,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
 
-            if (node && fNode && trNode) {
+            if (node && fNode) {
                 if (e.path)
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
                 if (e.filename)
@@ -191,7 +191,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (!node || this.selection.length > 1)
                 return;
 
-            ide.dispatchEvent("openfile", { doc: ide.createDocument(node) });
+            editors.gotoDocument({ doc: ide.createDocument(node) });
         });
         
         lstOpenFiles.addEventListener("afterremove", function(e){
@@ -212,7 +212,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             }
         });
         
-        tabEditors.addEventListener("afterswitch", function(e){
+        ide.addEventListener("tab.afterswitch", function(e){
             var page = e.nextPage;
             if (page && page.$model.data) {
                 var node = _self.model.queryNode("file[@path='" 

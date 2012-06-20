@@ -92,6 +92,7 @@ var config = {
                     "ext/searchreplace/searchreplace",
                     "ext/quickwatch/quickwatch",
                     "ext/gotoline/gotoline",
+                    "ext/anims/anims",
                     "ext/preview/preview",
                     "ext/log/log",
                     "ext/help/help",
