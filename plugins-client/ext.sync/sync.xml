@@ -148,8 +148,8 @@
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject('local')" skin="btn-default-css3" class="btn-red">Local Workspace</a:button>
-            <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject('remote')" skin="btn-default-css3" class="btn-red">Remote Workspace</a:button>
+            <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'local')" skin="btn-default-css3" class="btn-red">Local Workspace</a:button>
+            <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'remote')" skin="btn-default-css3" class="btn-red">Remote Workspace</a:button>
             <a:button id="btnQuestionCancel" onclick="winCannotSync.hide()" skin="btn-default-css3" default="3" class="btn-red">Cancel</a:button>
         </a:hbox>
     </a:window>
