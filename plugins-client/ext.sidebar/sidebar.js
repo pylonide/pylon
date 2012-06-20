@@ -64,21 +64,13 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             }), hboxTabBar.firstChild)
         );
     
-        var timer;
-        ide.addEventListener("panels.animate", function(e){
-            if (e.noanim) {
-                _self.animateToDefaultWidth(true);
-                if (e.activate)
-                    apf.setStyleClass(navbar.$int, "", ["closed"]);
-                else 
-                    apf.setStyleClass(navbar.$int, "closed");
-                
-                return;
-            }
-            
+        var timer, closed;
+        var panelAnimate = function(e, callback){
             //Stop and prevent any animation to happen
             clearTimeout(timer);
             _self.animating = true;
+
+            closed = e.toWidth ? false : true;
 
             var l = navbar.$int.lastChild.previousSibling;
             var w = l.offsetLeft + l.offsetWidth + (_self.btnArrow.visible ? 1 : 6);
@@ -95,16 +87,22 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     navbar.$int.style.boxShadow = shadowOpen;
                     _self.btnArrow.hide();
                 }
-            }, 50);
+            }, e.noanim ? 0 : 50);
 
             anims.animateSplitBoxNode(navbar, {
-                width: (e.toWidth ? (Math.max(parseInt(e.toWidth), w)) : 45) + "px", 
+                immediate: e.noanim,
+                width: (e.toWidth 
+                    ? (Math.max(parseInt(e.toWidth), w)) 
+                    : (editors.showTabs ? 45 : 9)) + "px", 
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
                 duration: 0.15
             }, function(){
+                callback && callback();
                 _self.animating = false;
             });
-        });
+        };
+        
+        ide.addEventListener("panels.animate", panelAnimate);
 
         splitterPanelLeft.addEventListener("dragmove", function(e){
             _self.setExpandedSize();
@@ -113,13 +111,31 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             _self.setExpandedSize();
         });
         
+        var toggleTabs =  function(e){
+            var setMinWidth = function(){
+                if (e.value)
+                    apf.setStyleClass(navbar.$int, "", ["minimized"]);
+
+                navbar.setAttribute("minwidth", !e.value ? 0 : 45);
+            }
+            
+            if (closed) {
+                if (!e.value) {
+                    navbar.setAttribute("minwidth", 0);
+                    apf.setStyleClass(navbar.$int, "minimized");
+                }
+                panelAnimate(e, setMinWidth);
+            }
+            else
+                setMinWidth();
+        };
+        
+        ide.addEventListener("tabs.visible", toggleTabs);
+        
         ide.addEventListener("settings.load", function(e){
             var activePanel = e.model.queryValue("auto/panels/@active");
             if (activePanel == "none") {
-                navbar.setWidth(45);
-                apf.setStyleClass(navbar.$int, "closed");
-                navbar.$int.style.boxShadow = shadowClosed;
-                _self.btnArrow.show();
+                panelAnimate({noanim: true});
             } else {
                 ide.addEventListener("init." + activePanel, function(e){
                     if (e.ext.button)
@@ -139,21 +155,10 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             }
             
             var showTabs = e.model.queryValue("auto/tabs/@show");
-            navbar.setAttribute("minwidth", apf.isTrue(showTabs) ? 45 : 0);
+            toggleTabs({value: apf.isTrue(showTabs)});
             
             _self.settingsLoaded = true;
         });
-        
-        ide.addEventListener("tabs.visible", function(e){
-            navbar.setAttribute("minwidth", 
-                !e.value ? 0 : 45);
-
-            if (e.value) {
-                apf.setStyleClass(navbar.$int, "", ["minimized"]);
-            } else {
-                apf.setStyleClass(navbar.$int, "minimized");
-            }
-        })
     },
     
     animateToFullWidth : function(){

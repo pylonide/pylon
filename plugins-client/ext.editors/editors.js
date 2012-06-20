@@ -88,8 +88,8 @@ module.exports = ext.register("ext/editors/editors", {
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
-                ide.dispatchEvent("tabs.visible", {value: true});
                 this.showTabs = true;
+                ide.dispatchEvent("tabs.visible", {value: true, noanim: noAnim});
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 1);
@@ -97,8 +97,8 @@ module.exports = ext.register("ext/editors/editors", {
         else {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "false");
-                ide.dispatchEvent("tabs.visible", {value: false});
                 this.showTabs = false;
+                ide.dispatchEvent("tabs.visible", {value: false, noanim: noAnim});
             }
 
             this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 0);
@@ -306,12 +306,16 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
+                
+                tabEditors.parentNode.setAttribute("margin", "0 0 0 0");
             }
             else {
                 tabEditors.$buttons.style.height = "7px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
+                
+                tabEditors.parentNode.setAttribute("margin", "-16 0 0 0");
             }
         }
     },

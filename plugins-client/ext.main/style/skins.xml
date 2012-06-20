@@ -424,14 +424,14 @@
             display : none;
         }
         
-
-        .black-menu-bar.closed.minimized,
+        .black-menu-bar.closed.minimized {
+            border-bottom-right-radius: 3px;
+        }
         .black-menu-bar.closed.minimized .toggle-black-menu-bar {
             border-bottom-right-radius: 3px;
             border-top-right-radius: 3px;
         }
         .black-menu-bar.closed.minimized {
-            padding-right: 9px !important;
             border-right: 1px solid rgba(31,31,31,.8);
             box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05) inset, 1px 0 1px 0 rgba(255,255,255,.05) 
         }   
@@ -445,6 +445,12 @@
         }
         .black-menu-bar.closed.minimized .toggle-black-menu-bar:hover {
             background-position: -48px -383px, 0 -1030px;
+        }
+        .black-menu-bar.closed.minimized>.mnubtn{
+            opacity : 0;
+        }
+        .black-menu-bar.closed.minimized>.toggle-black-menu-bar{
+            opacity : 1;
         }
      ]]></a:style>
 
