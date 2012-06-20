@@ -113,9 +113,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         
         var toggleTabs =  function(e){
             var setMinWidth = function(){
-                if (e.value)
-                    apf.setStyleClass(navbar.$int, "", ["minimized"]);
-
                 navbar.setAttribute("minwidth", !e.value ? 0 : 45);
             }
             
@@ -123,6 +120,10 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 if (!e.value) {
                     navbar.setAttribute("minwidth", 0);
                     apf.setStyleClass(navbar.$int, "minimized");
+                }
+                else {
+                    apf.setStyleClass(navbar.$int, "", ["minimized"]);
+                    navbar.setWidth(8);
                 }
                 panelAnimate(e, setMinWidth);
             }
