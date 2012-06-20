@@ -547,6 +547,14 @@ handler.analyze = function(doc, ast, callback) {
                 },
                 'Block(_)', function() {
                     this.setAnnotation("scope", scope);
+                },
+                'New(Var("require"), _)', function() {
+                    markers.push({
+                        pos: this[0].getPos(),
+                        type: 'warning',
+                        level: 'warning',
+                        message: "Applying 'new' to require()."
+                    });
                 }
             );
         }
