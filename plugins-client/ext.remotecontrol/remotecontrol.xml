@@ -12,8 +12,8 @@
       render    = "runtime"
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
-            <h3 id="winQuestionHeader">An Update to Cloud9 Local is Available!</h3>
-            <div id="winQuestionMsg" class="alertMsg">Would you like to download it?</div>
+            <h3>An Update to Cloud9 Local is Available!</h3>
+            <div class="alertMsg">Would you like to download it?</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">

@@ -143,8 +143,8 @@
       render    = "runtime"
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
-            <h3 id="winQuestionHeader">Your local workspace and your remote workspace both have files in them.</h3>
-            <div id="winQuestionMsg" class="alertMsg">Which workspace would you like to be leading? Newer files in the leading workspace will overwrite older files in the other workspace.</div>
+            <h3>Your local workspace and your remote workspace both have files in them.</h3>
+            <div class="alertMsg">Which workspace would you like to be leading? Newer files in the leading workspace will overwrite older files in the other workspace.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
