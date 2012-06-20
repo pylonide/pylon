@@ -697,10 +697,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         session.$searchHighlight = null;
     },
     
-    toggleConsoleSearch: function() {
-        
-    },
-    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
