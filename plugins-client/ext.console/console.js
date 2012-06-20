@@ -260,7 +260,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         }
 
-        if (tabConsole.activepage === "output")
+        if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults")
             tabConsole.set("console");
 
         parseLine || (parseLine = require("ext/console/parser"));
@@ -701,8 +701,8 @@ module.exports = ext.register("ext/console/console", {
 
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/console", [
-                ["autoshow", "true"]
-                //["clearonrun", "true"]
+                ["autoshow", "true"],
+                ["clearonrun", "false"]
             ]);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
