@@ -558,13 +558,11 @@ module.exports = ext.register("ext/sync/sync", {
                 
                 data = JSON.parse(data);
                 if (data.success === true) {
-                    // Success. Nothing more to do. (UI sync state will update via socket.io push event)
-                    
+                    // Success. Nothing more to do. (UI sync state will update via socket.io push event)                    
                     _self.showSyncInfo(true);
                     syncProgressBar.setValue(0)
                 }
-                //@todo I propose to rename to workspacesNotEmpty
-                else if (data.workspaceNotEmpty === true) {
+                else if (data.workspacesNotEmpty === true) {
                     winCannotSync.show();
                     _self.btnSyncStatus.setValue(false);
                 }
