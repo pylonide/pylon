@@ -882,7 +882,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     populateModel: function(revObj, model) {
         var page = tabEditors.getPage();
-        if (this.isNewPage(page)) {
+        if (this.isNewPage(page) || !Util.pageIsCode(page)) {
             return;
         }
 

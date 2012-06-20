@@ -96,6 +96,7 @@ module.exports = ext.register("ext/themes/themes", {
         var editorDiv = hboxMain.$ext;
         var editorHolder = tabEditors.parentNode.$ext;
         var tabsDiv = tabEditors.$buttons.parentNode.parentNode;
+        
         editorDiv.setAttribute("id", "editorDiv");
         tabsDiv.setAttribute("id", "tabsDiv");
         
@@ -119,9 +120,11 @@ module.exports = ext.register("ext/themes/themes", {
              apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
-        apf.setStyleClass(editorDiv, _self.lastTheme = cssClass);
-        apf.setStyleClass(editorHolder, _self.lastTheme = cssClass);
-        apf.setStyleClass(tabsDiv, _self.lastTheme = cssClass);
+        _self.lastTheme = cssClass;
+        
+        apf.setStyleClass(editorDiv, cssClass);
+        apf.setStyleClass(editorHolder, cssClass);
+        apf.setStyleClass(tabsDiv, cssClass);
         
         if (_self.loaded[path])
             return;
@@ -134,9 +137,10 @@ module.exports = ext.register("ext/themes/themes", {
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            (apf.isGecko ? [] : ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
-             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
-             + ";background-color: " + bg + " !important"]),
+            (apf.isGecko ? [] : 
+                ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
+                 (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
+                 + ";background-color: " + bg + " !important"]),
             ["#editorDiv." + cssClass + " > .basic, "
              + "#editorDiv." + cssClass + " > .vsplitbox, "
              + "#tabsDiv." + cssClass + ", " // > .editor_tab
@@ -151,7 +155,7 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + ".dark .revisions-list .revision, "
              + "." + cssClass + ".dark .cc_complete_option, "
              + "." + cssClass + " .searchresults > div",
-            "color:" + fg + ";"],
+             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")],
             ["." + cssClass + " .ace_corner", 
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]

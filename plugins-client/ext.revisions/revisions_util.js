@@ -3,6 +3,8 @@ define(function(require, exports, module) {
 var Range = require("ace/range").Range;
 var Anchor = require("ace/anchor").Anchor;
 var ide = require("core/ide");
+var util = require("core/util");
+var searchinfiles = require("ext/searchinfiles/searchinfiles");
 
 var TIMELAPSE = 10 * 60 * 1000;
 exports.compactRevisions = function(timestamps) {
@@ -135,7 +137,7 @@ exports.pageIsCode = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
     }
-    return page.type === "ext/code/code";
+    return page.type === "ext/code/code" && page.$doc.getNode().getAttribute("customtype") !== util.getContentType(searchinfiles.searchContentType);
 };
 
 exports.stripWSFromPath = function(path) {

@@ -474,14 +474,14 @@
             display : none;
         }
         
-
-        .black-menu-bar.closed.minimized,
+        .black-menu-bar.closed.minimized {
+            border-bottom-right-radius: 3px;
+        }
         .black-menu-bar.closed.minimized .toggle-black-menu-bar {
             border-bottom-right-radius: 3px;
             border-top-right-radius: 3px;
         }
         .black-menu-bar.closed.minimized {
-            padding-right: 9px !important;
             border-right: 1px solid rgba(31,31,31,.8);
             box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05) inset, 1px 0 1px 0 rgba(255,255,255,.05) 
         }   
@@ -495,6 +495,12 @@
         }
         .black-menu-bar.closed.minimized .toggle-black-menu-bar:hover {
             background-position: -48px -383px, 0 -1030px;
+        }
+        .black-menu-bar.closed.minimized>.mnubtn{
+            opacity : 0;
+        }
+        .black-menu-bar.closed.minimized>.toggle-black-menu-bar{
+            opacity : 1;
         }
      ]]></a:style>
 
@@ -3522,6 +3528,9 @@
         .aceSearchResults .ace_text-layer {
             pointer-events: auto;
         }
+        .aceSearchConsole .ace_marker-layer .ace_selection {
+            background: transparent !important;
+        }
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
             cursor: default;
         }
@@ -5738,7 +5747,6 @@
         }
         .searchresults .path {
             font-size: 11px;
-            opacity: .9;
         }
         .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
@@ -5747,6 +5755,12 @@
         .dark .searchresults>div.selected{
             background: none !important;
             box-shadow: none !important;
+        }
+        .searchresults>div.selected:hover{
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
+        }
+        .dark .searchresults>div.selected:hover{
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.3) inset;
         }
         .searchresults>div.selected,
         .searchresults>div.selected>span {
@@ -9269,7 +9283,7 @@
         box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
     }
     .editor_tab.hidetabs .btnsesssioncontainer {
-        padding-right: 80px;
+        clip: rect(0px 3000px 12px 0px); 
     }
         
     .editor_tab .btnsesssioncontainer > .session_btn {
@@ -9557,7 +9571,7 @@
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs {
-        box-shadow: -3px 0 0 0 #2B2B2B;
+        box-shadow: -1px 0 0 0 #2B2B2B;
     }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
