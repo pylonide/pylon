@@ -1,5 +1,6 @@
 var netutil = require("../cloud9.core/netutil");
 var connect = require("connect");
+var utils = require("connect/lib/utils");
 
 module.exports = function startup(options, imports, register) {
     imports.log.info("connect plugin start");
@@ -17,6 +18,9 @@ module.exports = function startup(options, imports, register) {
     var api = {
         getModule: function() {
             return connect;
+        },
+        getUtils: function() {
+            return utils;
         }
     };
     hookNames.forEach(function(name) {
