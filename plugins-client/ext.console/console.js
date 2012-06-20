@@ -1156,7 +1156,8 @@ module.exports = ext.register("ext/console/console", {
 
     _show: function(shouldShow, immediate) {
         var _self = this;
-        
+        var searchPage = tabConsole.getPage("pgSFResults");
+            
         if (this.hidden != shouldShow)
             return;
 
@@ -1168,6 +1169,7 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
+            
             setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
@@ -1197,15 +1199,19 @@ module.exports = ext.register("ext/console/console", {
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
             height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
-
+            
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
             cliBox.$ext.style.height = "28px";
 
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
-
+            
             if (!immediate && animOn) {
+                if (searchPage) {
+                    var renderer = searchPage.childNodes[0].$editor.renderer;
+                    renderer.onResize(true, null, null, height);
+                }
                 anims.animateSplitBoxNode(winDbgConsole, {
                     height: height + "px",
                     timingFunction: "cubic-bezier(.30, .08, 0, 1)",

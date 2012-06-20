@@ -3478,6 +3478,9 @@
         .aceSearchResults .ace_text-layer {
             pointer-events: auto;
         }
+        .aceSearchConsole .ace_marker-layer .ace_selection {
+            background: transparent !important;
+        }
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
             cursor: default;
         }

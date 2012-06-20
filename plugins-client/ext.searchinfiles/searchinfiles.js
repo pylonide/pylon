@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var settings = require("core/settings");
+var extSettings = require("ext/settings/settings");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
@@ -80,7 +81,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 ["regex", "false"],
                 ["matchcase", "false"],
                 ["wholeword", "false"],
-                ["console", "true"]
+                ["console", "true"],
+                ["consolelaunch", "false"]
             ]);
         });
         
@@ -436,7 +438,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults")
                 
                 _self.apfeditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
-                    _self.launchFileFromSearch(editor);
+                    _self.launchFileFromSearch(_self.apfeditor.$editor);
                 });
             }
             else {
@@ -637,9 +639,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
                 highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
                 autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
-                fadefoldwidgets   : "false",
-                wrapmodeViewport  : "true"
+                fadefoldwidgets   : "false"
             }));
+            
+            _self.searchConsole.$editor.session.setUseWrapMode(true);
+            _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
             
             this.$panel.addEventListener("afterclose", function(){
                 this.removeNode();
@@ -661,14 +665,22 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             _self.searchConsole.addEventListener("keyup", function(e) {
                 if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
-                    _self.launchFileFromSearch(_self.searchConsole.$editor);
-                    _self.returnFocus = true;
-                    return false;
+                    if (apf.isTrue(settings.model.queryValue("editors/code/filesearch/@consolelaunch"))) {
+                        _self.launchFileFromSearch(_self.searchConsole.$editor);
+                        _self.returnFocus = true;
+                        return false;
+                    }
                 }
             });
             
             _self.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(_self.searchConsole.$editor);
+            });
+            
+            tabConsole.addEventListener("afterswitch", function(e){
+                if (e.currentTarget.activepage == "pgSFResults") {
+                    apf.layout.forceResize(_self.searchConsole.$ext);
+                }
             });
         }
         else {
@@ -680,7 +692,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     
     setHighlight : function(session, query) {
         session.highlight(query);
-        session.c9SearchHighlight = session.$searchHighlight
+        session.c9SearchHighlight = session.$searchHighlight;
         session.$searchHighlight = null;
     },
     
