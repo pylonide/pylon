@@ -137,9 +137,10 @@ module.exports = ext.register("ext/themes/themes", {
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            (apf.isGecko ? [] : ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
-             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
-             + ";background-color: " + bg + " !important"]),
+            (apf.isGecko ? [] : 
+                ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
+                 (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
+                 + ";background-color: " + bg + " !important"]),
             ["#editorDiv." + cssClass + " > .basic, "
              + "#editorDiv." + cssClass + " > .vsplitbox, "
              + "#tabsDiv." + cssClass + ", " // > .editor_tab
@@ -154,7 +155,7 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + ".dark .revisions-list .revision, "
              + "." + cssClass + ".dark .cc_complete_option, "
              + "." + cssClass + " .searchresults > div",
-            "color:" + fg + ";"],
+             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")],
             ["." + cssClass + " .ace_corner", 
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]

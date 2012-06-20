@@ -5694,7 +5694,6 @@
         }
         .searchresults .path {
             font-size: 11px;
-            opacity: .9;
         }
         .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
@@ -5706,6 +5705,9 @@
         }
         .searchresults>div.selected:hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
+        }
+        .dark .searchresults>div.selected:hover{
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.3) inset;
         }
         .searchresults>div.selected,
         .searchresults>div.selected>span {
