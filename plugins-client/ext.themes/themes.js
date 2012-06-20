@@ -12,6 +12,8 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 
+require("ext/editors/editors");
+
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
     dev     : "Ajax.org",
