@@ -1168,9 +1168,7 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
-            if (shouldShow && tabConsole.getPage("pgSFResults"))
-                apf.layout.forceResize(tabConsole.getPage("pgSFResults").$ext);
-                
+            
             setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
@@ -1201,6 +1199,12 @@ module.exports = ext.register("ext/console/console", {
         if (shouldShow) {
             height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
 
+            var searchPage = tabConsole.getPage("pgSFResults");
+            if (searchPage) {
+                var renderer = searchPage.childNodes[0].$editor.renderer;
+                renderer.onResize(true, null, null, height);
+            }
+            
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";

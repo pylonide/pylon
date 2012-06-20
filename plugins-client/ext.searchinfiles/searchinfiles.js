@@ -693,7 +693,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     
     setHighlight : function(session, query) {
         session.highlight(query);
-        session.c9SearchHighlight = session.$searchHighlight
+        session.c9SearchHighlight = session.$searchHighlight;
         session.$searchHighlight = null;
     },
     
