@@ -279,7 +279,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revisionsPanel.appendChild(pgRevisions);
         });
         
-         apf.addEventListener("exit", function() {
+        apf.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
@@ -306,7 +306,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        this.$restoreSelection(page, page.$mdlRevisions);
+        // Commented the line below out because it would try to select 
+        // and update nodes in the cached representation.
+        //this.$restoreSelection(page, page.$mdlRevisions);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
