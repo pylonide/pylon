@@ -26,7 +26,7 @@ var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
-var MENU_SHOWN_ITEMS = 8;
+var MENU_SHOWN_ITEMS = 9;
 var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
@@ -376,6 +376,8 @@ module.exports = {
                     this.closeCompletionBox();
                     break;
                 }
+                e.stopPropagation();
+                e.preventDefault();
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
@@ -384,25 +386,24 @@ module.exports = {
                     this.scrollIdx++;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
-                e.stopPropagation();
-                e.preventDefault();
                 this.updateDoc();
                 break;
             case 38: // Up
-                this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
-                if(this.selectedIdx > 0) 
-                    this.selectedIdx--;
-                else {
+                if (this.matchEls.length === 1) {
                     this.closeCompletionBox();
-                    return;
+                    break;
                 }
+                e.stopPropagation();
+                e.preventDefault();
+                if (this.selectedIdx <= 0)
+                    return; 
+                this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
+                this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
                 if(this.selectedIdx < this.scrollIdx) {
                     this.scrollIdx--;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
-                e.stopPropagation();
-                e.preventDefault();
                 this.updateDoc();
                 break;
         }
