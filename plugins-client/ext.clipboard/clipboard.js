@@ -33,7 +33,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             if (apf.activeElement && apf.activeElement.localName == "codeeditor")
                 return !(event instanceof KeyboardEvent);
             
-            return self.trFiles && apf.activeElement == trFiles;
+            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming;
         };
         
         commands.addCommand({
