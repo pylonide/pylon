@@ -222,6 +222,8 @@ module.exports = {
                 barCompleterCont.setHeight(completionBoxHeight);
                 barCompleterCont.$ext.style.height = completionBoxHeight + "px";
                 sbCompleter.$resize();
+                // HACK: Need to set with non-falsy value first
+                _self.completionElement.scrollTop = 1;
                 _self.completionElement.scrollTop = 0;
             }
         });
