@@ -8,7 +8,7 @@ var NodeDebugProxy = require("./nodedebugproxy");
  * debug node scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, nodePath, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, nodePath, debugPort, callback) {
     var NodeRunner = runNode.Runner;
 
     // create methods on exports, that take a reference from NodeRunner
@@ -21,14 +21,14 @@ var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePort
     });
 
     function init(projectDir, url) {
-        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, usePortFlag, nodePath));
+        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, usePortFlag, nodePath, debugPort));
 
         callback();
     }
 };
 
 function setup (NodeRunner) {
-    exports.factory = function(vfs, sandbox, root, url, usePortFlag, nodePath) {
+    exports.factory = function(vfs, sandbox, root, url, usePortFlag, nodePath, debugPort) {
         return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
@@ -38,6 +38,7 @@ function setup (NodeRunner) {
             options.cwd = args.cwd;
             options.env = args.env;
             options.nodeVersion = args.nodeVersion;
+            options.debugPort = args.debugPort;
             options.nodePath = args.nodePath || nodePath;
             options.encoding = args.encoding;
             options.breakOnStart = args.breakOnStart;
@@ -45,7 +46,6 @@ function setup (NodeRunner) {
             options.eventName = eventName;
             options.url = url;
             options.usePortFlag = usePortFlag;
-
             options.sandbox = sandbox;
 
             return new Runner(vfs, options, callback);
@@ -55,6 +55,7 @@ function setup (NodeRunner) {
     var Runner = exports.Runner = function(vfs, options, callback) {
         NodeRunner.call(this, vfs, options, callback);
         this.breakOnStart = options.breakOnStart;
+        this.debugPort = options.debugPort;
         this.msgQueue = [];
     };
 
@@ -67,12 +68,11 @@ function setup (NodeRunner) {
         var proto = Class.prototype;
 
         proto.name = "node-debug";
-        proto.NODE_DEBUG_PORT = 5858;
 
         proto.createChild = function(callback) {
             var self = this;
 
-            var port = this.NODE_DEBUG_PORT;
+            var port = this.debugPort;
 
             if (self.breakOnStart)
                 self.nodeArgs.push("--debug-brk=" + port);
