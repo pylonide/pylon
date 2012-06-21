@@ -80,7 +80,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                 );
                 btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
                 btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
-            } 
+            }
             else if (_self.changedPaths[path]) {
                 util.question(
                     "File changed, reload tab?",
@@ -158,7 +158,8 @@ module.exports = ext.register("ext/watcher/watcher", {
 
             // allow another plugin to change the watcher behavior
             var eventData = {
-                path: path
+                path: path,
+                message: message
             };
 
             if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
@@ -166,8 +167,6 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
 
             switch (message.subtype) {
-                case "create":
-                    break;
                 case "remove":
                     if (!_self.removedPaths[path]) {
                         _self.removedPaths[path] = path;
@@ -183,6 +182,9 @@ module.exports = ext.register("ext/watcher/watcher", {
                         changedPathCount += 1;
                         checkPage();
                     }
+                    break;
+                case "create":
+                default:
                     break;
             }
         });

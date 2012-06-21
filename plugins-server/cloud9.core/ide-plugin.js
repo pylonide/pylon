@@ -31,7 +31,7 @@ module.exports = function setup(options, imports, register) {
     });
 
     function initUserAndProceed(uid, workspaceId, callback) {
-        permissions.getPermissions(uid, workspaceId, function(err, perm) {
+        permissions.getPermissions(uid, workspaceId, "cloud9.core.ide-plugin", function(err, perm) {
             if (err) {
                 callback(err);
                 return;
@@ -62,6 +62,8 @@ module.exports = function setup(options, imports, register) {
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
             hosted: options.hosted,
+            real: (options.real === true) ? true : false,
+            env: options.env,
             packed: (options.packed === true) ? true : false,
             packedName: options.packedName
         });
@@ -94,13 +96,13 @@ module.exports = function setup(options, imports, register) {
         ide.init(serverPlugins);
 
         connect.useAuth(baseUrl, function(req, res, next) {
-            if (!req.session.uid)
+            if (!(req.session.uid || req.session.anonid))
                 return next(new error.Unauthorized());
             // NOTE: This gets called multiple times!
 
             var pause = utils.pause(req);
 
-            initUserAndProceed(req.session.uid, ide.options.workspaceId, function(err) {
+            initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
                 if (err) {
                     next(err);
                     pause.resume();

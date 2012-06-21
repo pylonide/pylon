@@ -61,12 +61,8 @@ function typeAlongComplete(e) {
 function inputTriggerComplete(text, pasted) {
     if (editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
-    if (!pasted && text === "." && isInferAvailable())
+    if (!pasted && text === "." && completionUtil.isInferAvailable())
         handleChar(text);
-}
-
-function isInferAvailable() {
-    return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
 }
 
 function typeAlongCompleteTextInput(text, pasted) {
@@ -131,7 +127,7 @@ function preceededByIdentifier(line, column, postfix) {
 }
 
 function isRequireJSCall(line, column) {
-    if (editors.currentEditor.amlEditor.syntax !== "javascript" || !isInferAvailable())
+    if (editors.currentEditor.amlEditor.syntax !== "javascript" || !completionUtil.isInferAvailable())
         return false;
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     var LENGTH = 'require("'.length;

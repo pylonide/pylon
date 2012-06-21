@@ -13,7 +13,6 @@ var util = require("core/util");
 var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
-var ideConsole = require("ext/console/console");
 var menus = require("ext/menus/menus");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
@@ -401,8 +400,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var messageHeader = this.messageHeader(path, options);
         
         if (chkSFConsole.checked) {
-            // show the console
-            ideConsole.show();
+            // show the console; require here is necessary for c9local, please do not change
+            require("ext/console/console").show();
             
             this.makeSearchResultsPanel();
             
@@ -585,12 +584,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     makeSearchResultsPanel : function() {
         var _self = this;
         // create editor if it does not exist
-        if (!this.$panel) {
+        if (this.$panel == null) {
             this.$panel = tabConsole.add(this.pageTitle, this.pageID);
             this.$panel.setAttribute("closebtn", true);
     
-            tabConsole.set(_self.pageID);
-        
+            tabConsole.set(this.pageID);
+            
             this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
                 syntax            : "c9search",
                 "class"           : "nocorner aceSearchConsole aceSearchResults",
@@ -619,6 +618,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             this.$panel.addEventListener("afterclose", function(){
                 this.removeNode();
+                _self.$panel = null;
                 return false;
             });
             
@@ -648,10 +648,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             });
         }
         else {
+            if (apf.isTrue(settings.model.queryValue("auto/console/@clearonrun")))
+                this.consoleacedoc.removeLines(0, this.consoleacedoc.getLength());
+                
             tabConsole.appendChild(this.$panel);
             tabConsole.set(this.pageID);
-            this.consoleacedoc.removeLines(0, this.consoleacedoc.getLength());
-        } 
+        }
     },
     
     setHighlight : function(session, query) {

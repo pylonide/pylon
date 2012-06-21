@@ -5,6 +5,9 @@ var extensions = require("../configs/default.js").containers.master.plugins;
 var clientPlugins = [ ];
 var clientMappings = [ ];
 
+var arguments = process.argv.splice(2);
+var isClean = parseInt(arguments[0]);
+
 //console.log(extensions);
 
 for (var i in extensions) {
@@ -33,6 +36,9 @@ var appTemplate = fs.readFileSync("./build/app.build.tmpl.js", "utf8");
 
 // transform all variable paths out
 var appFile = appTemplate.replace(/%b/g, "build").replace(/%d/g, "plugins-client").replace('"%a"', '"node_modules/ace/lib/ace/worker"').replace('"%s"', clientPlugins).replace('"%m"', clientMappings).replace('"%o"', '"../plugins-client/lib.packed/www/packed.js"');
+
+if (isClean)
+    appFile = appFile.replace(/\/\/\s*optimize/, 'optimize');
 
 fs.writeFile("./build/app.build.js", appFile, "utf8", function(err) {
     if (err) {

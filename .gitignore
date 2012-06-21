@@ -6,6 +6,7 @@ common/apf
 client/icons/Thumbs.db
 client/common
 build/src
+build/app.build.js
 .settings.xml
 .project
 .settings

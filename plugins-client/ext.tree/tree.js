@@ -79,7 +79,7 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = colLeft;
 
         // Register this panel on the left-side panels
@@ -89,7 +89,7 @@ module.exports = ext.register("ext/tree/tree", {
             "class": "project_files",
             command: "opentreepanel"
         });
-        
+
         commands.addCommand({
             name: "opentreepanel",
             hint: "show the open settings panel",
@@ -212,14 +212,14 @@ module.exports = ext.register("ext/tree/tree", {
 
             var nodes   = parent.childNodes;
             var files   = e.files;
-            
+
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
                 for (var file in files) {
                     if (file.charAt(0) == '.')
                         delete files[file];
                 }
             }
-            
+
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
@@ -251,7 +251,7 @@ module.exports = ext.register("ext/tree/tree", {
     onReady : function() {
         var _self = this;
         trFiles.setAttribute("model", this.model);
-        
+
         if (this.loadedSettings === 1) {
             if (ide.inited) {
                 setTimeout(function() {
@@ -285,7 +285,7 @@ module.exports = ext.register("ext/tree/tree", {
             trFiles.selectable = false;
             //_self.button.enable();
         })
-        
+
         ide.addEventListener("afteronline", function(){
             trFiles.selectable = true;
         })
@@ -302,7 +302,7 @@ module.exports = ext.register("ext/tree/tree", {
                 setTimeout(function() {
                     _self.changed = true;
                     settings.save();
-                    
+
                     (davProject.realWebdav || davProject)
                         .setAttribute("showhidden", e.currentTarget.checked);
 
@@ -310,11 +310,11 @@ module.exports = ext.register("ext/tree/tree", {
                 });
             }
         }));
-        
+
         trFiles.filterUnique = function(pNode, nodes){
             var filtered = [];
-            for (i = 0, l = nodes.length; i < l; i++) {
-                if (!pNode.selectSingleNode("node()[@path=" 
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                if (!pNode.selectSingleNode("node()[@path="
                   + escapeXpathString(nodes[i].getAttribute("path")) + "]"))
                     filtered.push(nodes[i]);
             }
@@ -376,12 +376,12 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
             }
         });
-        
+
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
             _self.openSelection();
         });
-        
+
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
@@ -399,20 +399,20 @@ module.exports = ext.register("ext/tree/tree", {
             for (var i = 0, l = e.args.length; i < l; i++) {
                 args     = e.args[i].args;
                 filename = args[1].getAttribute("name");
-    
+
                 var count = 0;
                 filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
                 while (args[0].selectSingleNode('node()[@name=' + escapeXpathString(filename) + ']')) {
                     filename = filename.replace(/\.(\d+)$/, "");
-                    
-                    var idx  = filename.lastIndexOf("."); 
+
+                    var idx  = filename.lastIndexOf(".");
                     if (idx == -1) idx = filename.length;
-    
+
                     var name = filename.substr(0, idx), ext = filename.substr(idx);
                     filename = name + "." + ++count + ext;
                 }
                 args[1].setAttribute("newname", filename);
-    
+
                 rename(args[1], args[0], filename, count > 0);
             }
         });
@@ -471,7 +471,7 @@ module.exports = ext.register("ext/tree/tree", {
                 apf.DragServer.stop();
             }
         });
-        
+
         trFiles.addEventListener("scroll", $trScroll);
 
         trFiles.addEventListener("beforeadd", $cancelWhenOffline);
@@ -510,31 +510,62 @@ module.exports = ext.register("ext/tree/tree", {
         if (!ide.onLine && !ide.offlineFileSystemSupport)
             return false;
     },
-    
+
     openSelection : function(){
         if (!ide.onLine && !ide.offlineFileSystemSupport)
             return;
-        
+
         var sel = trFiles.getSelection();
         sel.forEach(function(node){
             if (!node || node.tagName != "file")
                 return;
-        
+
             editors.gotoDocument({node: node});
         });
     },
 
-    moveFile : function(path, newpath){
-        davProject.move(path, newpath);
+    moveFile : function(node, newpath){
+        var path = node.getAttribute("path");
+        davProject.move(path, newpath, true, false, function(data, state, extra) {
+            if (state !== apf.SUCCESS) {
+                // TODO: revert the move!!
+                return;
+            }
+
+            ide.dispatchEvent("afterupdatefile", {
+                path: node.getAttribute("oldpath"),
+                newPath: newpath,
+                xmlNode: node,
+                isFolder: node.getAttribute("type") === "folder"
+            });
+        });
         trFiles.enable();
         trFiles.focus();
+    },
+
+    renameFile : function(node) {
+        var path = node.getAttribute("path");
+        var oldpath = node.getAttribute("oldpath");
+        davProject.rename(oldpath, path, true, false, function(data, state, extra) {
+            if (state !== apf.SUCCESS) {
+                // TODO: revert the rename!!
+                return;
+            }
+
+            ide.dispatchEvent("afterupdatefile", {
+                path: oldpath,
+                newPath: path,
+                xmlNode: node,
+                isFolder: node.getAttribute("type") === "folder"
+            });
+        });
     },
 
     /**
      * Loads the project tree based on expandedNodes, which is an array of
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
-     * 
+     *
      * @param boolean animateScrollOnFinish
      */
     loadProjectTree : function(animateScrollOnFinish) {
@@ -602,7 +633,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (numFoldersLoaded === _self.expandedNodes.length)
                 return onFinish();
         }
-        
+
         if (!this.expandedNodes.length)
             return onFinish();
 
@@ -665,7 +696,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             _self.loading = false;
-            
+
             // Re-select the last selected item
             if(_self.treeSelection.path) {
                 var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
@@ -705,7 +736,7 @@ module.exports = ext.register("ext/tree/tree", {
      */
     refresh : function(){
         settings.save(true);
-        
+
         // When we clear the model below, it dispatches a scroll event which
         // we don't want to process, so remove that event listener
         trFiles.removeEventListener("scroll", $trScroll);
@@ -728,7 +759,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Now re-attach the scroll listener
         trFiles.addEventListener("scroll", $trScroll);
     },
-    
+
     show : function(e) {
         if (!this.panel || !this.panel.visible) {
             panels.activate(this);
@@ -737,7 +768,7 @@ module.exports = ext.register("ext/tree/tree", {
         else {
             panels.deactivate(null, true);
         }
-        
+
         return false;
     },
 
@@ -755,7 +786,7 @@ module.exports = ext.register("ext/tree/tree", {
 
     destroy : function(){
         commands.removeCommandByName("opentreepanel");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

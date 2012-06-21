@@ -27,6 +27,38 @@
         zindex   = "100000"
     />
 
+
+    <a:hbox id="view-mode-box-not-loggedin" visible="false" height="55" class="view-mode-box" align="center" edge="0 10">
+        <a href="http://c9.io" class="c9-logo-view-mode"></a>
+        <a:filler />
+        <a:hbox align="center">
+            <span class="yellow-label">You are in Guest mode <span class="blue-label">(no editing)</span></span>
+            <a href="http://c9.io/site/pricing/" target="_blank" class="nodecor-link">
+                <a:button skin="button-colorless" class="dark" onclick="" margin="0 10" width="65">Sign up</a:button>
+            </a>
+            or
+            <a:button skin="button-colorless" class="dark green" onclick="winLogin.show()" margin="0 10" width="115">Sign in to edit*</a:button>
+        </a:hbox>
+    </a:hbox>
+    <a:hbox id="view-mode-box-readonly" visible="false" height="35" class="view-mode-box" align="center" edge="0 10">
+        <span class="blue-label">This project you are viewing is owned by <span id="lblPrjUser" class="yellow-label"></span></span>
+        <a:filler />
+        <a:hbox align="center">
+            <span class="blue-label">Need edit-rights? Simply 
+                <a id="chatWithUser" href="javascript:void(0)" class="green-label">chat</a> with the project owner!</span>
+        </a:hbox>
+        <a:filler />
+        <a href="javascript:void(0)" class="white-label nodecor-link" 
+          onclick="
+              self['view-mode-box-readonly'].hide();
+              self['view-mode-box-readonly'].noshow=true;
+              apf.setStyleClass(vbMain.$ext, '', ['readonly']);
+              vbMain.setAttribute('anchors', '0 0 0 0');
+          ">
+            Hide this!
+        </a>
+    </a:hbox>
+
     <a:vsplitbox anchors="0 0 0 0" id="vbMain">
         <a:bar skin="c9-menu-bar" id="logobar" height="31">
             <a:bar class="fakehbox aligncenter padding3" id="barTools" height="25" style="padding-top:1px">
