@@ -12,11 +12,13 @@ var keyhandler = require("ext/language/keyhandler");
 var completionUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
-var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+var language;
+var complete;
 
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
+var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 2000;
@@ -25,7 +27,7 @@ var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
-var MENU_SHOWN_ITEMS = 8;
+var MENU_SHOWN_ITEMS = 9;
 var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
@@ -60,7 +62,7 @@ var undrawDocInvoke = lang.deferredCall(function() {
 });
 
 var killCrashedCompletionInvoke = lang.deferredCall(function() {
-    _self.closeCompletionBox();
+    complete.closeCompletionBox();
 });
 
 function isPopupVisible() {
@@ -142,7 +144,8 @@ var commands = require("ext/commands/commands");
 
 module.exports = {
     hook: function(ext, worker) {
-        var _self = this;
+        var _self = complete = this;
+        language = ext;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
             _self.onComplete(event);
@@ -253,7 +256,7 @@ module.exports = {
             if (match.icon)
                 hasIcons = true;
         });
-        var isInferAvailable = completionUtil.isInferAvailable();
+        var isInferAvailable = language.isInferAvailable();
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? CLASS_SELECTED : CLASS_UNSELECTED;
@@ -372,6 +375,12 @@ module.exports = {
                 e.preventDefault();
                 break;
             case 40: // Down
+                if (this.matchEls.length === 1) {
+                    this.closeCompletionBox();
+                    break;
+                }
+                e.stopPropagation();
+                e.preventDefault();
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
@@ -380,25 +389,24 @@ module.exports = {
                     this.scrollIdx++;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
-                e.stopPropagation();
-                e.preventDefault();
                 this.updateDoc();
                 break;
             case 38: // Up
-                this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
-                if(this.selectedIdx > 0) 
-                    this.selectedIdx--;
-                else {
+                if (this.matchEls.length === 1) {
                     this.closeCompletionBox();
-                    return;
+                    break;
                 }
+                e.stopPropagation();
+                e.preventDefault();
+                if (this.selectedIdx <= 0)
+                    return; 
+                this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
+                this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
                 if(this.selectedIdx < this.scrollIdx) {
                     this.scrollIdx--;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
-                e.stopPropagation();
-                e.preventDefault();
                 this.updateDoc();
                 break;
         }
