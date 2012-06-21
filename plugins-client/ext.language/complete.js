@@ -13,6 +13,7 @@ var completionUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
 var language;
+var complete;
 
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
@@ -61,7 +62,7 @@ var undrawDocInvoke = lang.deferredCall(function() {
 });
 
 var killCrashedCompletionInvoke = lang.deferredCall(function() {
-    _self.closeCompletionBox();
+    complete.closeCompletionBox();
 });
 
 function isPopupVisible() {
@@ -143,7 +144,7 @@ var commands = require("ext/commands/commands");
 
 module.exports = {
     hook: function(ext, worker) {
-        var _self = this;
+        var _self = complete = this;
         language = ext;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
