@@ -998,7 +998,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(options) {
         var row     = options.row;
-        var column  = options.column;
+        var column  = options.column || 0;
         var text    = options.text;
         var page    = options.page;
         
@@ -1021,7 +1021,7 @@ module.exports = ext.register("ext/editors/editors", {
                     var editor = _self.currentEditor.amlEditor;
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
-                        editor.$editor.find(text, null, false);
+                        editor.$editor.session.highlight(text);
 
                     editor.focus();
                     ide.dispatchEvent("aftereditorfocus");
