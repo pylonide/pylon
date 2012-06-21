@@ -93,7 +93,7 @@ module.exports = ext.register("ext/language/language", {
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
-                ["unusedFunctionArgs", "true"],
+                ["unusedFunctionArgs", "false"],
                 ["continuousComplete", "true"]
             ]);
         });
