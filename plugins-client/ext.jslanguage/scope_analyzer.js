@@ -456,12 +456,12 @@ handler.analyze = function(doc, ast, callback) {
                 'VarDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
-                'VarDeclInit(x, Function(_, _, _))', function() {
+                'VarDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
-                    return this;
-                },
-                'VarDeclInit(x, _)', function(b) {
-                    mustUseVars.push(scope.get(b.x.value));
+                    while (b.e.rewrite('Assign(_, _)'))
+                        b.e = b.e[1];
+                    if (!b.e.rewrite('Function(_, _, _)'))
+                        mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
                     if(!scope.isDeclared(b.x.value)) {
@@ -692,3 +692,4 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
 };
 
 });
+
