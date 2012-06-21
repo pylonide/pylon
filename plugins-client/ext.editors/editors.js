@@ -271,7 +271,7 @@ module.exports = ext.register("ext/editors/editors", {
                     if (x == 6) {
                         if (!dir)
                             apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
-                        
+
                         return;
                     }
                     
@@ -397,8 +397,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
-        var editor = this.fileExtensions[fileExtension]
-          && this.fileExtensions[fileExtension][0]
+        var editor = (this.fileExtensions[fileExtension]
+          && this.fileExtensions[fileExtension][0])
           || this.fileExtensions["default"];
 
         if (!init && this.currentEditor)
@@ -406,9 +406,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor) {
             util.alert(
-                "No editor is registered",
+                "No editor is registered!",
                 "Could not find an editor to display content",
-                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
+                "There is something wrong with the configuration of your IDE. No editor plugin is found");
             return;
         }
 
@@ -634,14 +634,14 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
-            var editor = this.fileExtensions[fileExtension]
-              && this.fileExtensions[fileExtension][0]
+            var editor = (this.fileExtensions[fileExtension]
+              && this.fileExtensions[fileExtension][0])
               || this.fileExtensions["default"];
 
             if (!editor) {
                 util.alert(
                     "No editor is registered",
-                    "Could not find an editor to display content",
+                    "Could not find an editor to display content!",
                     "There is something wrong with the configuration of your IDE. No editor plugin is found.");
                 return;
             }
@@ -948,7 +948,8 @@ module.exports = ext.register("ext/editors/editors", {
         if (rawState) {
             // build the real path, as the one in the hash is relative
             var path = ide.davPrefix.replace(/\/$/, "") + "/" + rawState[1];
-            var doc = ide.createDocument(this.createFileNodeFromPath(path));
+            // require here is necessary for c9local, please do not change
+            var doc = ide.createDocument(require("ext/filesystem/filesystem").createFileNodeFromPath(path));
 
             // if selection information was added, add that to the state
             if (rawState[2] && rawState[3]) {
@@ -978,26 +979,6 @@ module.exports = ext.register("ext/editors/editors", {
         return null;
     },
 
-    createFileNodeFromPath : function (path) {
-        var name = path.split("/").pop();
-        var node = apf.n("<file />")
-            .attr("name", name)
-            .attr("contenttype", util.getContentType(name))
-            .attr("path", path)
-            .node();
-        return node;
-    },
-
-    createFolderNodeFromPath : function (path) {
-        var name = path.split("/").pop();
-        var node = apf.n("<folder />")
-            .attr("name", name)
-            .attr("contenttype", util.getContentType(name))
-            .attr("path", path)
-            .node();
-        return node;
-    },
-
     pauseTabResize : function(){
         tabEditors.setAttribute("buttons", "close,order");
     },
@@ -1011,15 +992,16 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     gotoDocument : function(options) {
+        // require here is necessary for c9local, please do not change
         if (!options.node && options.path)
-            options.node = this.createFileNodeFromPath(options.path)
+            options.node = require("ext/filesystem/filesystem").createFileNodeFromPath(options.path);
 
         this.jump(options);
     },
 
     jump : function(options) {
         var row     = options.row;
-        var column  = options.column;
+        var column  = options.column || 0;
         var text    = options.text;
         var page    = options.page;
         
@@ -1042,7 +1024,7 @@ module.exports = ext.register("ext/editors/editors", {
                     var editor = _self.currentEditor.amlEditor;
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
-                        editor.$editor.find(text, null, false);
+                        editor.$editor.session.highlight(text);
 
                     editor.focus();
                     ide.dispatchEvent("aftereditorfocus");
