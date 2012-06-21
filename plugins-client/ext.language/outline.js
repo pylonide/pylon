@@ -57,12 +57,9 @@ module.exports = {
             });            
             txtGoToFile.addEventListener("keydown", function(e) {
                 _self.onKeyDown(e);
-            });             
+            });
             txtGoToFile.addEventListener("keyup", function(e) {
                 _self.onKeyUp(e);
-            });   
-            dgGoToFile.addEventListener("keydown", function(e) {
-                _self.onKeyDown(e);
             });
             winGoToFile.addEventListener("prop.visible", function(e) {
                 if (!e.value)
@@ -221,21 +218,15 @@ module.exports = {
         }
         else if (e.keyCode === 40) { // Down
             e.preventDefault();
-            if (treeOutline.childNodes.length === 0)
-                return;
-            var node = treeOutline.selection[0] || treeOutline.root.childNodes[0];
-            var select = this.getNodeAfter(node) || node;
-            treeOutline.select(select);
-            select.scrollIntoView();
+            delete e.currentTarget;
+            treeOutline.dispatchEvent("keydown", e);
+            return;
         }
         else if (e.keyCode === 38) { // Up
             e.preventDefault();
-            if (treeOutline.childNodes.length === 0 || !treeOutline.selection[0])
-                return;
-            var node = treeOutline.selection[0];
-            var select = this.getNodeBefore(node) || node;
-            treeOutline.select(select);
-            select.scrollIntoView();
+            delete e.currentTarget;
+            treeOutline.dispatchEvent("keydown", e);
+            return;
         }
         else if (this.isDirty) {
             this.renderOutline();
