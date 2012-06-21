@@ -527,9 +527,12 @@ module.exports = ext.register("ext/console/console", {
             var type = "tracer";
             var id = extra && extra.command_id;
         
-            if (!id) {
+            if (!id && !extra) {
                 type = "pid";
                 id = message.pid;
+            }
+            else {
+                return;
             }
         
             logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(id, type === "pid"), ide);
