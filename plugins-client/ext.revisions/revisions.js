@@ -14,9 +14,7 @@ var menus = require("ext/menus/menus");
 var tooltip = require("ext/tooltip/tooltip");
 var commands = require("ext/commands/commands");
 
-var TreeDocument = require("concorde/ace_document");
 var Save = require("ext/save/save");
-var Collab = require("ext/collaborate/collaborate");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/revisions/settings.xml");
@@ -116,11 +114,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 disabled: "{!tabEditors.length}",
                 command: "revisionpanel"
             }), 900),
-            menus.addItemByPath("File/Git Blame", new apf.item({
-                onclick : function() {
-                    require("ext/gitblame/gitblame").startBlame();
-                }
-            }), 909),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
@@ -250,7 +243,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Its items are not revision objects, but hold their own format (for
         // example, they have a generated timestamp of the moment of saving).
         if (localStorage.offlineQueue) {
-            this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+            try {
+                this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+            } catch(e) {
+                console.error("Error loading revisions from local storage", e);
+                this.offlineQueue = [];
+            }
         }
         else {
             this.offlineQueue = [];
@@ -990,8 +988,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      * otherwise
      **/
     isCollab: function(doc) {
+        if(!doc && !tabEditors.getPage())
+            return false;
+
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc instanceof TreeDocument;
+        return doc.acedoc.doc.$isTree;
     },
 
     /**
@@ -1376,21 +1377,30 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    getCollab: function() {
+        return require("core/ext").extLut["ext/collab/collab"];
+    },
+
     getUser: function(suffix, doc) {
         if (doc && doc.users && doc.users[suffix]) {
             var uid = doc.users[suffix].split("-")[0];
-            if (Collab.users[uid]) {
-                return Collab.users[uid];
+            var collab = this.getCollab();
+            if (collab && collab.users[uid]) {
+                return collab.users[uid];
             }
         }
     },
 
     getUserColorByEmail: function(email) {
         var color;
-        var user = Collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
+        var collab = this.getCollab();
+        if(!collab)
+            return;
+        var user = collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
+        // This cannot possibly do anything
     },
 
     /**
