@@ -99,7 +99,9 @@
                         });
                     }
                     else {
-                        loadAndBegin(ide, list);
+                        apf.addEventListener("load", function(){
+                            loadAndBegin(ide, list);
+                        });
                     }
                 });
                 preloaderImgs();

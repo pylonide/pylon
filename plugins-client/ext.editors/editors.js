@@ -397,8 +397,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
-        var editor = this.fileExtensions[fileExtension]
-          && this.fileExtensions[fileExtension][0]
+        var editor = (this.fileExtensions[fileExtension]
+          && this.fileExtensions[fileExtension][0])
           || this.fileExtensions["default"];
 
         if (!init && this.currentEditor)
@@ -406,9 +406,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor) {
             util.alert(
-                "No editor is registered",
+                "No editor is registered!",
                 "Could not find an editor to display content",
-                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
+                "There is something wrong with the configuration of your IDE. No editor plugin is found");
             return;
         }
 
@@ -633,14 +633,14 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
-            var editor = this.fileExtensions[fileExtension]
-              && this.fileExtensions[fileExtension][0]
+            var editor = (this.fileExtensions[fileExtension]
+              && this.fileExtensions[fileExtension][0])
               || this.fileExtensions["default"];
 
             if (!editor) {
                 util.alert(
                     "No editor is registered",
-                    "Could not find an editor to display content",
+                    "Could not find an editor to display content!",
                     "There is something wrong with the configuration of your IDE. No editor plugin is found.");
                 return;
             }
@@ -1006,7 +1006,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(options) {
         var row     = options.row;
-        var column  = options.column;
+        var column  = options.column || 0;
         var text    = options.text;
         var page    = options.page;
         
@@ -1029,7 +1029,7 @@ module.exports = ext.register("ext/editors/editors", {
                     var editor = _self.currentEditor.amlEditor;
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
-                        editor.$editor.find(text, null, false);
+                        editor.$editor.session.highlight(text);
 
                     editor.focus();
                     ide.dispatchEvent("aftereditorfocus");
