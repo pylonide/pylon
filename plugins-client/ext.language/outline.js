@@ -43,8 +43,7 @@ module.exports = {
         });
 
         this.nodes.push(
-            menus.addItemByPath("View/Outline", mnuItem, 190),
-            // menus.addItemByPath("File/Open definition...", mnuItem.cloneNode(false), 500),
+            menus.addItemByPath("Tools/Quick Outline", mnuItem, 100),
             menus.addItemByPath("Goto/Goto Definition...", mnuItem.cloneNode(false), 110)
         );
         
@@ -54,7 +53,7 @@ module.exports = {
             dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
             txtGoToFile.addEventListener("afterchange", function(e) {
                 _self.onAfterChange(e);
-            });            
+            }, true);            
             txtGoToFile.addEventListener("keydown", function(e) {
                 _self.onKeyDown(e);
             });
@@ -165,6 +164,7 @@ module.exports = {
     },
     
     renderOutline: function(ignoreFilter) {
+        require("core/ext").initExtension(gotofile);
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
         var outline = search.treeSearch(this.fullOutline, filter);
@@ -260,12 +260,16 @@ module.exports = {
     },
     
     onAfterChange: function(event) {
-        if (txtGoToFile.value === "@")
+        if (txtGoToFile.value === "@") 
             this.ignoreSelectOnce = true;
-        if (txtGoToFile.value.match(/^@/))
+            
+        if (txtGoToFile.value.match(/^@/)) {
             this.updateOutline();
-        else
+            gotofile.setEventsEnabled(false);
+        }
+        else {
             this.showFileSearch();
+        }
         this.renderOutline();
     },
 };
