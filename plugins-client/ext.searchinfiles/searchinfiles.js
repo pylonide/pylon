@@ -432,6 +432,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
                 _self.apfeditor = _self.searchPage.$editor.ceEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
+                _self.tabacedoc.node = node;
                 
                 apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults")
                 
@@ -461,22 +462,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         this.position = 0;
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
-
-        this.tabacedoc.node = node;
     },
 
     onMessage : function(e) {
         var message = e.message;
-        if (message.type != "codesearch")
+        if (message.extra != "codesearch")
             return false;
 
         if (!chkSFConsole.checked)
-            this.appendLines(this.tabacedoc, message.result);
+            this.appendLines(this.tabacedoc, message.data);
         else
-            this.appendLines(this.consoleacedoc, message.result);
+            this.appendLines(this.consoleacedoc, message.data);
 
         // finish
-        if (message.status == 1) {
+        if (message.type == "shell-exit") {
             if (!chkSFConsole.checked) {
                 var node = this.tabacedoc.node;
                 node.setAttribute("saving", "0");
@@ -484,6 +483,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             btnSFFind.$ext.innerText = "Find";
         }
+        return true;
     },
     
     launchFileFromSearch : function(editor) {

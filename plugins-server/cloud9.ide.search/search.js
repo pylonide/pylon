@@ -9,35 +9,75 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-//
-var GnuTools = require("gnu-tools");
 var platform = require("os").platform();
-var Spawn = require("child_process").spawn;
 
-
+var grepCmd, findCmd, perlCmd;
 var name = "search";
 
+var ProcessManager;
+var EventBus;
+
+
 module.exports = function setup(options, imports, register) {
+    grepCmd = options.grepCmd || "grep";
+    findCmd = options.findCmd || "find";
+    perlCmd = options.perlCmd || "perl";
+
+    ProcessManager = imports["process-manager"];
+    EventBus = imports.eventbus;
     imports.ide.register(name, SearchPlugin, register);
 };
 
 var SearchPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
-    this.name  = name;
+    this.name = name;
+    this.processCount = 0;
+    this.pm = ProcessManager;
+    this.eventbus = EventBus;
 };
 
 util.inherits(SearchPlugin, Plugin);
 
 (function() {
 
+    this.init = function() {
+        var self = this;
+        this.eventbus.on("search::filelist", function(msg) {
+            if (msg.type == "shell-start")
+                self.processCount += 1;
+            else if (msg.type == "shell-exit")
+                self.processCount -= 1;
+            else if (msg.stream != "stdout")
+                return;
+
+            self.ide.broadcast(JSON.stringify(msg), self.name);
+        });
+
+        this.eventbus.on("search::codesearch", function(msg) {
+            if (msg.type == "shell-start") {
+                self.processCount += 1;
+                self.filecount = 0;
+                self.count = 0;
+                self.prevFile = null;
+            } else if (msg.type == "shell-exit") {
+                self.processCount -= 1;
+            }
+
+            msg = self.parseSearchResult(msg);
+            if (msg)
+                self.ide.broadcast(JSON.stringify(msg), self.name);
+        });
+    };
+
     this.command = function(user, message, client) {
         if (message.command != "search")
             return false;
 
-        if (!message.path)
+        if (message.path == null)
             return true;
 
+        // todo is this a good way for handling the path?
         if (message.path.indexOf("/workspace/" >= 0))
             message.path = message.path.substr(11);
         message.uri = message.path;
@@ -47,32 +87,33 @@ util.inherits(SearchPlugin, Plugin);
         var absoluteFilePath = this.ide.workspaceDir + "/" + message.path;
         message.path = absoluteFilePath;
 
-        if (message.type == "codesearch") {
-            var cmd = this.assembleSearchCommand(message);
-            this.doCodesearch(cmd, message, send);
-        } else if (message.type == "filelist") {
-            this.doFilelist(message, send)
-        }
+        var type = message.type;
+        if (type == "codesearch")
+            var args = this.assembleSearchCommand(message);
+        else if (type == "filelist")
+            var args = this.assembleFileListCommand(message);
 
-        function send(result, status) {
-            client.send(JSON.stringify({
-                type: message.type,
-                result: result,
-                status: status
-            }));
-        }
+        if (!args)
+            return false;
+
+        var self = this;
+        self.options = message;
+        this.pm.spawn("shell", {
+            command: args.command,
+            args: args,
+            cwd: message.path,
+            extra: type,
+            encoding: "utf8"
+        }, "search::" + type, function(err, pid) {
+            if (err)
+                self.error(err, 1, "Could not spawn grep process for " + type, client);
+        });
 
         return true;
     };
 
-    this.dispose = function(callback) {
-        // TODO kill all running processes!
-        callback();
-    };
-
-
     this.assembleSearchCommand = function(options) {
-        var cmd = GREP_CMD + " -P -s -r --color=never --binary-files=without-match -n " + ( !options.casesensitive ? "-i" : "" );
+        var cmd = grepCmd + " -P -s -r --color=never --binary-files=without-match -n " + ( !options.casesensitive ? "-i" : "" );
         var include = "";
 
         if (options.pattern) { // handles grep peculiarities with --include
@@ -90,6 +131,8 @@ util.inherits(SearchPlugin, Plugin);
             cmd += " -w";
 
         var query = options.query;
+        if (!query)
+            return;
         // grep has a funny way of handling new lines (that is to say, it's non-existent)
         // if we're not doing a regex search, then we must split everything between the
         // new lines, escape the content, and then smush it back together; due to
@@ -113,81 +156,64 @@ util.inherits(SearchPlugin, Plugin);
         if (options.replaceAll) {
             if (!options.replacement)
                 options.replacement = "";
-            
+
             if (options.regexp)
                 query = escapeRegExp(query);
 
             // pipe the grep results into perl
-            cmd += " -l | xargs " + PERL_CMD +
+            cmd += " -l | xargs " + perlCmd +
             // print the grep result to STDOUT (to arrange in parseSearchResult())
             " -pi -e 'print STDOUT \"$ARGV:$.:$_\""     +
             // do the actual replace
             " if s/" + query + "/" + options.replacement + "/mg" + ( options.casesensitive ? "" : "i" ) + ";'"
         }
 
-        return cmd;
+        var args = ["-c", cmd];
+        args.command = "bash";
+        return args;
     }
 
-    this.doCodesearch = function(cmd, options, send) {
-        var filecount = 0;
-        var count = 0;
-        var prevFile;
-
-        try {
-            this.grep = Spawn("/bin/bash", ["-c", cmd]);
-        } catch (e) {
-            return send("Could not spawn grep process", 1);
+    this.parseSearchResult = function(msg) {
+        if (msg.type == "shell-exit") {
+            msg.data = '\nResults: {"count": '+ this.count + ', "filecount":' + this.filecount + '}\n'
+            return msg;
         }
 
-        this.grep.stdout.setEncoding("utf8");
-        this.grep.stderr.setEncoding("utf8");
+        var data = msg.data;
+        if (typeof data != "string" || data.indexOf("\n") == -1)
+            return;
+        var parts, file, lineno, result = "";
+        var aLines = data.split(/([\n\r]+)/g);
+        var count = 0;
 
-        this.grep.stdout.on("data", function(data) {
-            if (data && data.indexOf("\n") !== -1)
-                count += parseSearchResult(data);
-        });
-        this.grep.stderr.on("data", function(data) {
-            if (data && data.indexOf("\n") !== -1)
-                count += parseSearchResult(data);
-        });
-        this.grep.on("exit", function(code, signal) {
-            send('\nResults: {"count": '+ count + ', "filecount":' + filecount + '}\n', 1);
-        });
+        for (var i = 0, l = aLines.length; i < l; ++i) {
+            parts = aLines[i].split(":");
+            if (parts.length < 3) continue;
 
-        function parseSearchResult(res) {
-            var parts, file, lineno, result = "";
-            var aLines = (typeof res == "string" ? res : "").split(/([\n\r]+)/g);
-            var count = 0;
+            file = encodeURI(this.options.uri + parts.shift().replace(this.options.path, "").trimRight(), "/");
 
-            for (var i = 0, l = aLines.length; i < l; ++i) {
-                parts = aLines[i].split(":");
-                if (parts.length < 3) continue;
+            lineno = parseInt(parts.shift(), 10);
+            if (!lineno) continue;
 
-                file = encodeURI(options.uri + parts.shift().replace(options.path, "").trimRight(), "/");
-
-                lineno = parseInt(parts.shift(), 10);
-                if (!lineno) continue;
-
-                ++count;
-                if (file !== prevFile) {
-                    filecount++;
-                    if (prevFile)
-                        result += "\n \n";
-                    result += file + ":";
-                    prevFile = file;
-                }
-
-                result += "\n\t" + lineno + ": " + parts.join(":");
+            ++count;
+            if (file !== this.prevFile) {
+                this.filecount++;
+                if (this.prevFile)
+                    result += "\n \n";
+                result += file + ":";
+                this.prevFile = file;
             }
 
-            send(result);
-
-            return count;
+            result += "\n\t" + lineno + ": " + parts.join(":");
         }
+
+        msg.data = result;
+
+        return msg;
     };
 
 
-    this.doFilelist = function(options, onexit) {
+    this.assembleFileListCommand = function(options) {
         var excludeExtensions = [
             "\\.gz", "\\.bzr", "\\.cdv", "\\.dep", "\\.dot", "\\.nib",
             "\\.plst", "_darcs", "_sgbak", "autom4te\\.cache", "cover_db",
@@ -223,9 +249,8 @@ util.inherits(SearchPlugin, Plugin);
         if (platform !== "darwin")
             args.push("-regextype", "posix-extended", "-print");
 
-        this.spawnCommand(FIND_CMD, args, options.path || ".", null, null, function(code, err, out) {
-            onexit(out, err && "error")
-        })
+        args.command = findCmd;
+        return args;
     };
 
 }).call(SearchPlugin.prototype);
@@ -356,9 +381,3 @@ for (type in IGNORE_DIRS) {
 dirs = makeUnique(dirs);
 var PATTERN_DIR  = escapeRegExp(dirs.join("|"));
 var PATTERN_EDIR = dirs.join(",");
-var GREP_CMD = GnuTools.GREP_CMD;
-var FIND_CMD = GnuTools.FIND_CMD;
-var PERL_CMD = "perl";
-
-
-

@@ -30,21 +30,25 @@ module.exports = ext.register("ext/filelist/filelist", {
 
     onMessage : function(e) {
         var message = e.message;
-        if (message.type != "filelist")
+        if (message.extra != "filelist")
             return false;
 
-        var data = message.result;
-        var state = message.state == "error" ? apf.ERROR : apf.SUCCESS;
-        this.cache = data;
+        if (message.type == "shell-data") {
+            this.cached += message.data;
+            return true;
+        } else if (message.type == "shell-exit") {
+            var state = message.code == 0 ? apf.SUCCESS : apf.ERROR;
+            var data = this.cached;
 
-        var queue = this.queue;
-        this.queue = [];
-        this.retrieving = false;
+            var queue = this.queue;
+            this.queue = [];
+            this.retrieving = false;
 
-        queue.forEach(function(cb){ cb(data, state) });
+            queue.forEach(function(cb){ cb(data, state) });
 
-        ide.removeEventListener("socketMessage", this.$onMessage);
-        this.$onMessage = null;
+            ide.removeEventListener("socketMessage", this.$onMessage);
+            this.$onMessage = null;
+        }
         return true;
     },
 
@@ -61,13 +65,13 @@ module.exports = ext.register("ext/filelist/filelist", {
             ide.addEventListener("socketMessage", this.$onMessage);
         }
 
+        this.cached = "";
         ide.send({
             command: "search",
             type: "filelist",
             path: ide.davPrefix,
             showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
         });
-
         this.retrieving = true;
     },
 
