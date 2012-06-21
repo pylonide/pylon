@@ -23,28 +23,35 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
     init : function(amlNode){
         this.blamejs = new BlameJS();
-        this.originalGutterWidth = editors.currentEditor.amlEditor.$editor.renderer.getGutterWidth();
     },
 
     hook : function(){
-        var _self = this;
-
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
-
-        tabEditors.addEventListener("beforeswitch", function(e){
-            if (editors.currentEditor) {
-                editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
-                editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
-            }
-        });
-        
-        menus.addItemByPath("Tools/Git Blame", new apf.item({
+        var _self = this;        
+        menus.addItemByPath("Tools/Git/Blame", new apf.item({
             // @TODO: Support more CVSs? Just "Blame this File"
             onclick : function(){
-                ext.initExtension(_self);
-                _self.requestBlame();
+                _self.startBlame();
+            },
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
             }
         }), 500);
+        
+        menus.addItemByPath("File/Git Blame", new apf.item({
+            onclick : function() {
+                _self.startBlame();
+            },
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            }
+        }), 909)
+    },
+
+    startBlame : function() {
+        var _self = this;
+        
+        ext.initExtension(_self);
+        _self.requestBlame();
     },
 
     requestBlame : function() {
@@ -56,6 +63,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             file    : tabEditors.getPage().$model.data.getAttribute("path")
         };
 
+        ide.addEventListener("socketMessage", this.$onMessage = this.onMessage.bind(this));
         ide.dispatchEvent("track_action", {type: "blame", cmd: cmd});
         if (ext.execCommand(cmd, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + cmd, {
@@ -70,8 +78,6 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 }
                 else {
                     ide.send(data);
-                    // Set gutter width
-                    editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth("300px");
                 }
             }
         }
@@ -83,6 +89,12 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         if (message.type != "result" && message.subtype != "blame")
             return;
 
+        // Is the body coming in piecemeal? Process after this message
+        if (!message.body.out && !message.body.err)
+            return;
+
+        ide.removeEventListener("socketMessage", this.$onMessage = this.onMessage.bind(this));
+
         //console.log(message);
         if (message.body.err) {
             util.alert(
@@ -93,10 +105,6 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
             return;
         }
-
-        // Is the body coming in piecemeal? Process after this message
-        if (!message.body.out)
-            return;
 
         if (!this.blamejs.parseBlame(message.body.out)) {
             util.alert(
@@ -119,15 +127,30 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 var tempTime = new Date(parseInt(commit_data[line_data[li].hash].authorTime, 10) * 1000);
                 textHash[li-1] = {
                     text : commit_data[line_data[li].hash].author +
-                        " &raquo; " +
+                        " \xBB " +
                         line_data[li].hash.substr(0, 10),
                     title : commit_data[line_data[li].hash].summary + "\n" +
                         tempTime.toUTCString()
                 };
             }
         }
-        editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
-        editors.currentEditor.amlEditor.$editor.renderer.updateFull();
+        
+        if (!this.BlameGutter) {
+            require(["ext/gitblame/blame_gutter"], function(module) {
+                this.BlameGutter = module.BlameGutter;
+                addBlameGutter()
+            });
+        } else {
+            addBlameGutter()
+        }
+            
+        function addBlameGutter() {
+            var ace = editors.currentEditor.amlEditor.$editor
+            if (!ace.blameGutter)
+                new this.BlameGutter(ace);
+            
+            ace.blameGutter.setData(textHash);
+        }
     },
 
     enable : function(){
@@ -143,7 +166,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     },
 
     destroy : function(){
-        menus.remove("Tools/Git Blame");
+        menus.remove("Tools/Git/Blame");
         
         this.nodes.each(function(item){
             item.destroy(true, true);

@@ -84,7 +84,7 @@ var CSharpHighlightRules = function() {
                 token : "comment",
                 regex : "\\/\\/.*$"
             },
-            new DocCommentHighlightRules().getStartRule("doc-start"),
+            DocCommentHighlightRules.getStartRule("doc-start"),
             {
                 token : "comment", // multi line comment
                 regex : "\\/\\*",
@@ -153,7 +153,7 @@ var CSharpHighlightRules = function() {
     };
     
     this.embedRules(DocCommentHighlightRules, "doc-",
-        [ new DocCommentHighlightRules().getEndRule("start") ]);
+        [ DocCommentHighlightRules.getEndRule("start") ]);
 };
 
 oop.inherits(CSharpHighlightRules, TextHighlightRules);

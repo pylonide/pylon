@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/solarized_light',function(require, exports, module) {
+define('ace/theme/solarized_light', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = false;
 exports.cssClass = "ace-solarized-light";
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-light .ace_text-layer {\
-  cursor: text;\
   color: #586E75;\
 }\
 \
@@ -96,6 +95,10 @@ exports.cssText = "\
 \
 .ace-solarized-light .ace_marker-layer .ace_active_line {\
   background: #EEE8D5;\
+}\
+\
+.ace-solarized-light .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-solarized-light .ace_marker-layer .ace_selected_word {\

@@ -115,6 +115,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                 disabled: "{!tabEditors.length}",
                 command: "revisionpanel"
             }), 900),
+            menus.addItemByPath("File/Git Blame", new apf.item({
+                onclick : function() {
+                    require("ext/gitblame/gitblame").startBlame();
+                }
+            }), 909),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
@@ -272,7 +277,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revisionsPanel.appendChild(pgRevisions);
         });
         
-         apf.addEventListener("exit", function() {
+        apf.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
@@ -280,10 +285,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
 
         this.$onSwitchFileFn = this.onSwitchFile.bind(this);
-        ide.addEventListener("editorswitch", this.$onSwitchFileFn);
+        ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
-        tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
+        ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
@@ -299,7 +304,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        this.$restoreSelection(page, page.$mdlRevisions);
+        // Commented the line below out because it would try to select 
+        // and update nodes in the cached representation.
+        //this.$restoreSelection(page, page.$mdlRevisions);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
@@ -873,7 +880,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     populateModel: function(revObj, model) {
         var page = tabEditors.getPage();
-        if (this.isNewPage(page)) {
+        if (this.isNewPage(page) || !Util.pageIsCode(page)) {
             return;
         }
 
@@ -1455,10 +1462,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
 
         if (this.$onSwitchFileFn)
-            ide.removeEventListener("editorswitch", this.$onSwitchFileFn);
+            ide.removeEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         if (this.$onAfterSwitchFn)
-            ide.removeEventListener("afterswitch", this.$onAfterSwitchFn);
+            ide.removeEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         if (this.$afterSelectFn)
             lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
@@ -1490,10 +1497,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.addEventListener("afterfilesave", this.$onFileSaveFn);
 
         if (this.$onSwitchFileFn)
-            ide.addEventListener("editorswitch", this.$onSwitchFileFn);
+            ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         if (this.$onAfterSwitchFn)
-            ide.addEventListener("afterswitch", this.$onAfterSwitchFn);
+            ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         if (this.$afterSelectFn)
             lstRevisions.addEventListener("afterselect", this.$afterSelectFn);

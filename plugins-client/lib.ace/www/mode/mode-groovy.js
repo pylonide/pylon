@@ -306,6 +306,22 @@ var JavaScriptHighlightRules = function() {
                 ],
                 regex : "(" + identifierRe +")(\\s*)(=)(\\s*)(function)(\\s*)(\\()",
                 next: "function_arguments"
+            }, { // match stuff like: Sound.play = function play() {  }
+                token : [
+                    "storage.type",
+                    "punctuation.operator",
+                    "entity.name.function",
+                    "text",
+                    "keyword.operator",
+                    "text",
+                    "storage.type",
+                    "text",
+                    "entity.name.function",
+                    "text",
+                    "paren.lparen"
+                ],
+                regex : "(" + identifierRe + ")(\\.)(" + identifierRe +")(\\s*)(=)(\\s*)(function)(\\s+)(\\w+)(\\s*)(\\()",
+                next: "function_arguments"
             }, { // match regular function like: function myFunc(arg) { }
                 token : [
                     "storage.type",
@@ -1070,6 +1086,14 @@ var GroovyHighlightRules = function() {
                 token : "string.regexp",
                 regex : "[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/]\\w*\\s*(?=[).,;]|$)"
             }, {
+                token : "string",
+                regex : '"""',
+                next  : "qqstring"
+            }, {
+                token : "string",
+                regex : "'''",
+                next  : "qstring"
+            }, {
                 token : "string", // single line
                 regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
             }, {
@@ -1125,6 +1149,38 @@ var GroovyHighlightRules = function() {
                 token : "comment", // comment spanning whole line
                 merge : true,
                 regex : ".+"
+            }
+        ],
+        "qqstring" : [
+            {
+                token : "constant.language.escape",
+                regex : /\\(?:u[0-9A-Fa-f]{4}|.|$)/
+            }, {
+                token : "constant.language.escape",
+                regex : /\$[\w\d]+/
+            }, {
+                token : "constant.language.escape",
+                regex : /\$\{[^"\}]+\}?/
+            }, {
+                token : "string",
+                regex : '"{3,5}',
+                next : "start"
+            }, {
+                token : "string",
+                regex : '.+?'
+            }
+        ],
+        "qstring" : [
+            {
+                token : "constant.language.escape",
+                regex : /\\(?:u[0-9A-Fa-f]{4}|.|$)/
+            }, {
+                token : "string",
+                regex : "'{3,5}",
+                next : "start"
+            }, {
+                token : "string",
+                regex : ".+?"
             }
         ]
     };

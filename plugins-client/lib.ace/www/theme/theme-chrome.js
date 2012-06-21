@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/chrome',function(require, exports, module) {
+define('ace/theme/chrome', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.cssClass = "ace-chrome";
 exports.cssText = ".ace-chrome .ace_editor {\
@@ -58,7 +58,6 @@ exports.cssText = ".ace-chrome .ace_editor {\
 }\
 \
 .ace-chrome .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-chrome .ace_cursor {\
@@ -191,7 +190,10 @@ color:#FD971F;\
   color: rgb(255, 0, 0)\
 }\
 \
-.ace-chrome .ace_line .ace_string,\
+.ace-chrome .ace_line .ace_string{\
+  color: #1A1AA6;\
+}\
+\
 .ace-chrome .ace_entity.ace_other.ace_attribute-name{\
   color: #994409;\
 }";

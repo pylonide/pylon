@@ -20,7 +20,6 @@
                 border-right: none;
                 border-left: none;
             }
-
             .btnquicksearchnav span {
                 background-position: 0 0;
                 background-repeat:no-repeat;
@@ -48,7 +47,7 @@
                 height:17px;
                 line-height:0;
                 position:absolute;
-                right: -1px;
+                right: -2px;
                 top:4px;
                 width:0;
                 display: none;
@@ -56,19 +55,6 @@
 
             .btnquicksearchnav.withDivider .btnDivider {
                 display: block;
-            }
-        ]]></a:style>
-        <a:style condition="{apf.isGecko}"><![CDATA[
-            .basic .btnquicksearchnav.btnquicksearchnavLeft {
-                top : 14px !important;
-                right : 33px !important;
-            }
-            .basic .btnquicksearchnav.btnquicksearchnavRight {
-                top : 14px !important;
-                right : 13px !important;
-            }
-            .basic #divSearchCount {
-                top : 17px;
             }
         ]]></a:style>
         <a:presentation>

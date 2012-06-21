@@ -20,12 +20,52 @@ var commands = require("ext/commands/commands");
 
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
+
 var filterCommands = function(commands, word) {
-    var escapedWord = util.escapeRegExp(word);
-    return commands.filter(function(cmd) {
-        var regEx = new RegExp("^" + escapedWord, "i");
-        return cmd.search(regEx) !== -1;
-    }).sort();
+    if (!word)
+        return commands.sort();
+
+    var lowWord = word.toLowerCase();
+    var sortedData = [];
+
+    function springyIndex(commandName) {
+        var c = {name: commandName};
+        var lowName = c.name.toLowerCase();
+        var priority = 0;
+        var lastI = 0;
+        var ind1 = 0;
+        if (c.name.indexOf(word) === 0) {
+            c.priority = -2;
+            sortedData.push(c);
+            return; //exact match
+        }
+        for(var j = 0, ftLen = lowWord.length; j < ftLen; j++) {
+            lastI = lowName.indexOf(lowWord[j],ind1);
+            if (lastI === -1)
+                break; //doesn't match
+            priority += lastI - ind1;
+            ind1 = lastI+1;
+        }
+        if (lastI != -1) {
+            c.priority = priority;
+            sortedData.push(c);
+        }
+    }
+
+    var sortFields = ["priority", "name"];
+
+    commands.forEach(springyIndex);
+    sortedData.sort(function (a, b) {
+        for (var i = 0; i < sortFields.length; i++) {
+            var prop = sortFields[i];
+            if (a[prop] < b[prop])
+                return -1;
+            if (a[prop] > b[prop])
+                return 1;
+        }
+        return 0;
+    });
+    return sortedData.map(function(c) {return c.name;});
 };
 
 var mouseHandler = function(e) {
@@ -47,6 +87,12 @@ var hintLink = function(data) {
 
     var spanHotkey = "";
     var key = data.cmd.hotkey;
+    if (!key && data.cmd.bindKey) {
+        if (typeof data.cmd.bindKey == "string")
+            key = data.cmd.bindKey;
+        else
+            key = data.cmd.bindKey[commands.platform];
+    }
     if (key) {
         var notation = apf.isMac ? apf.hotkeys.toMacNotation(key) : key;
         spanHotkey = '<span class="hints_hotkey">' + notation + '</span>';
@@ -95,14 +141,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             apf.addListener(winHints, "mousemove", mouseHandler.bind(_self));
             apf.addListener(winHints, "click", _self.click.bind(_self));
             
-            apf.addListener(document, "click", function(e){
-                var node = e.target;
-                if (node.parentNode.parentNode === txtConsoleInput.$ext)
-                    return;
-                if (node.parentNode != hintsContent || node != hintsContent)
-                    _self.hide();
-            });
-            
             c9console.onMessageMethods.commandhints = function(message) {
                 var cmds = message.body;
                 for (var cmd in cmds)
@@ -128,11 +166,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     winHints.visible = true;
                 }
             });
+            txtConsoleInput.addEventListener("blur", function(e) {
+                _self.hide();
+            });
 
-            txtConsoleInput.addEventListener("keyup", function(e) {
-                // Ignore up/down cursor arrows, enter, here
-                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9 || e.keyCode === 13) 
-                    return;
+            txtConsoleInput.ace.session.on("change", function(e) {
                 var getCmdMatches = function(filtered) {
                     if (filtered.length && filtered[0] !== "[PATH]")
                         _self.show(txtConsoleInput, "", filtered, txtConsoleInput.getValue().length - 1);
@@ -140,14 +178,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                         _self.hide();
                     }
                 };
-
-                // dismiss on escape, else cliValue executes below
-                if (e.keyCode === 27) {
-                    _self.hide();
-                    return;
-                }
-
-                var cliValue = e.currentTarget.getValue();
+                
+                var cliValue = txtConsoleInput.getValue();
 
                 if (_self.lastCliValue === cliValue)
                     return;
@@ -158,43 +190,33 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     _self.getCmdCompletion(cliValue, getCmdMatches);
                 else
                     _self.hide();
-
             });
     
             // Below we are overwriting the Console default key events in function of
             // whether the hints are being displayed or not.
             var redefinedKeys = {
-                38: "selectUp",
-                40: "selectDown",
-                27: "hide",
-                13: "onEnterKey",
-                9: "onTabKey"
+                "up": "selectUp",
+                "tab": "onTabKey",
+                "down": "selectDown",
+                "esc": "hide",
+                "return": "onEnterKey",
             };
-    
-            Object.keys(redefinedKeys).forEach(function(keyCode) {
-                var previousKey = c9console.keyEvents[keyCode];
-                c9console.keyEvents[keyCode] = function(target) {
-                    if (winHints.style.display === "none" && previousKey) {
-                        previousKey(target);
-                    }
-                    else {
-                        // try executing the redefined mapping
-                        // if it returns false, then execute the old func
-                        if (!_self[redefinedKeys[keyCode]].call(_self)) {
-                            previousKey && previousKey(target);
-                            _self.hide();
-                        }
-                    }
-                };
+            
+            txtConsoleInput.ace.keyBinding.addKeyboardHandler({
+                handleKeyboard: function(data, hashId, keyString) {
+                    if (hashId == -1 || !redefinedKeys[keyString] || winHints.style.display === "none")
+                        return;                    
+                    
+                    if (_self[redefinedKeys[keyString]]() != false)
+                        return {command: "null"};                    
+                }
             });
         };
         
-        if (c9console && c9console.onMessageMethods) {
+        if (c9console && c9console.onMessageMethods)
             initConsoleDeps();
-        }
-        else {
+        else
             ide.addEventListener("init.ext/console/console", initConsoleDeps);
-        }
     },
     
     show: function(textbox, base, hints, cursorPos) {
@@ -220,7 +242,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         }).join("");
 
         hintsContent.innerHTML = content;
-        selectedHint = null;
+        selectedHint = -1;
 
         if (apf.getStyle(winHints, "display") === "none") {
             winHints.style.display = "block";
@@ -232,7 +254,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     hide: function() {
         winHints.style.display = "none";
         winHints.visible = false;
-        selectedHint = null;
+        selectedHint = -1;
 
         return true;
     },
@@ -352,8 +374,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     selectDown: function() {
         var newHint = selectedHint + 1;
-        if (newHint > hintsContent.childNodes.length)
-            newHint = 0;
+        if (newHint >= hintsContent.childNodes.length)
+            newHint = -1;
 
         this.select(newHint);
         return true;
@@ -365,6 +387,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         if (typeof hint === "number")
             hint = hintNodes[hint];
 
+        selectedHint = -1;
         for (var i = 0, l = hintNodes.length; i < l; ++i) {
             if (hintNodes[i] === hint) {
                 selectedHint = i;
@@ -373,7 +396,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             hintNodes[i].className = "";
         }
 
-        hint && (hint.className = "selected");
+        if (hint) {
+            hint.className = "selected";
+            var offset = hint.offsetTop + hint.offsetHeight - winHints.clientHeight;
+            if (winHints.scrollTop > hint.offsetTop)
+                winHints.scrollTop = hint.offsetTop;
+            else if (offset > winHints.scrollTop)
+                winHints.scrollTop = offset;
+        }
     },
     visible: function() {
         return winHints && !!winHints.visible;

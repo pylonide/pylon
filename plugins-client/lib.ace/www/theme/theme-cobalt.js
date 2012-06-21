@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/cobalt',function(require, exports, module) {
+define('ace/theme/cobalt', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-cobalt";
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-cobalt .ace_text-layer {\
-  cursor: text;\
   color: #FFFFFF;\
 }\
 \
@@ -96,6 +95,10 @@ exports.cssText = "\
 \
 .ace-cobalt .ace_marker-layer .ace_active_line {\
   background: rgba(0, 0, 0, 0.35);\
+}\
+\
+.ace-cobalt .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-cobalt .ace_marker-layer .ace_selected_word {\

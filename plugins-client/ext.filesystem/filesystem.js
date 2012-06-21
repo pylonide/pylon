@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var commands = require("ext/commands/commands");
+var editors = require("ext/editors/editors");
 
 require("ext/main/main"); //Make sure apf is inited.
 
@@ -21,6 +22,43 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
 
+    createFileNodeFromPath : function (path, attributes) {
+        var name = path.split("/").pop();
+        var node = apf.n("<file />")
+            .attr("name", name)
+            .attr("contenttype", util.getContentType(name))
+            .attr("type", "file")
+            .attr("path", path);
+        
+        if (attributes !== undefined) {
+            for (var a in attributes) {
+                if (a.indexOf("date") >= 0)
+                    attributes[a] = new Date(attributes[a]);
+                node.attr(a, attributes[a]);
+            }
+        }
+        
+        return node.node();
+    },
+
+    createFolderNodeFromPath : function (path, attributes) {
+        var name = path.split("/").pop();
+        var node = apf.n("<folder />")
+            .attr("name", name)
+            .attr("path", path)
+            .attr("type", "folder");
+            
+        if (attributes !== undefined) {
+            for (var a in attributes) {
+                if (a.indexOf("date") >= 0)
+                    attributes[a] = new Date(attributes[a]);
+                node.attr(a, attributes[a]);
+            }
+        }
+        
+        return node.node();
+    },
+    
     readFile : function (path, callback){
         if (!this.webdav) return;
         
@@ -225,7 +263,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     else {
                         node.setAttribute("name", filename);
                         node.setAttribute("path", path + "/" + filename);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:"newfile"});
+                        
+                        editors.gotoDocument({doc: ide.createDocument(node), type:"newfile"});
                     }
                 }
             };
@@ -356,34 +395,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         this.model.setAttribute("whitespace", false);
 
-        var processing = {};
-        this.model.addEventListener("update", function(e){
-            // Resort on move, copy, rename, add
-            if (e.action === "attribute" || e.action === "add" || e.action === "move") {
-                var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
-                if (processing[xmlNode.getAttribute("a_id")]) {
-                    return;
-                }
-                processing[xmlNode.getAttribute("a_id")] = true;
-
-                var sort = new apf.Sort();
-                sort.set({
-                    xpath: "@name",
-                    method: "filesort"
-                });
-                var nodes = sort.apply(pNode.childNodes);
-
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    if (nodes[i] == xmlNode) {
-                        if (xmlNode.nextSibling != nodes[i+1]) {
-                            apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
-
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
         this.webdav = apf.document.documentElement.appendChild(new apf.webdav({
             id  : "davProject",
@@ -411,6 +422,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var doc  = e.doc;
             var node = doc.getNode();
             var editor = e.doc.$page && e.doc.$page.$editor;
+            
+            // This make the tab animation nicer.
+            function dispatchAfterOpenFile(){
+                setTimeout(function(){
+                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                }, 150);
+            }
 
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
@@ -421,7 +439,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             });
 
             if (doc.hasValue()) {
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
                 return;
             }
 
@@ -429,12 +447,12 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             if (doc.cachedValue) {
                 doc.setValue(doc.cachedValue);
                 delete doc.cachedValue;
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
             }
             // if we're creating a new file then we'll fill the doc with nah dah
             else if ((e.type && e.type === "newfile") || Number(node.getAttribute("newfile") || 0) === 1) {
                 doc.setValue("");
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
             }
             // otherwise go on loading
             else {
@@ -472,7 +490,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             doc.setValue(data);
                             
                             // fire event
-                            ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                            dispatchAfterOpenFile();
                         //});
                     }
                 };

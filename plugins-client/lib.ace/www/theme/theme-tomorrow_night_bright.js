@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/tomorrow_night_bright',function(require, exports, module) {
+define('ace/theme/tomorrow_night_bright', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-tomorrow-night-bright";
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow-night-bright .ace_text-layer {\
-  cursor: text;\
   color: #DEDEDE;\
 }\
 \
@@ -96,6 +95,10 @@ exports.cssText = "\
 \
 .ace-tomorrow-night-bright .ace_marker-layer .ace_active_line {\
   background: #2A2A2A;\
+}\
+\
+.ace-tomorrow-night-bright .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-tomorrow-night-bright .ace_marker-layer .ace_selected_word {\

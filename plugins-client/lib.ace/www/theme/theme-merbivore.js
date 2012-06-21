@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/merbivore',function(require, exports, module) {
+define('ace/theme/merbivore', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-merbivore";
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-merbivore .ace_text-layer {\
-  cursor: text;\
   color: #E6E1DC;\
 }\
 \
@@ -96,6 +95,10 @@ exports.cssText = "\
 \
 .ace-merbivore .ace_marker-layer .ace_active_line {\
   background: #333435;\
+}\
+\
+.ace-merbivore .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-merbivore .ace_marker-layer .ace_selected_word {\
