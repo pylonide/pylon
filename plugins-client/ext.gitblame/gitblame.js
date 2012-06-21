@@ -26,7 +26,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     },
 
     hook : function(){
-        var _self = this;        
+        var _self = this;
         menus.addItemByPath("Tools/Git/Blame", new apf.item({
             // @TODO: Support more CVSs? Just "Blame this File"
             onclick : function(){
@@ -40,26 +40,41 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
     startBlame : function() {
         var _self = this;
-        
+
         ext.initExtension(_self);
         _self.requestBlame();
     },
 
     requestBlame : function() {
         var cmd = "gittools";
+        var page = tabEditors.getPage();
+        if (!page)
+            return;
+        var path = page.$model.data.getAttribute("path");
+
+        var lastSlash = path.lastIndexOf("/");
+        var fileName = path.substr(lastSlash + 1);
+        var dirName = path.substring(ide.davPrefix.length + 1, lastSlash)
+        if (dirName == "/")
+            dirName = "";
 
         var data = {
-            command : cmd,
-            subcommand : "blame",
-            file    : tabEditors.getPage().$model.data.getAttribute("path")
+            command: "git",
+            argv: ["", "blame", "-p", fileName],
+            extra: {type: "gitblame", path: path},
+            cwd: dirName // needed for nested repositories
         };
 
-        ide.addEventListener("socketMessage", this.$onMessage = this.onMessage.bind(this));
+        if (!this.$onMessage) {
+            this.$onMessage = this.onMessage.bind(this);
+            ide.addEventListener("socketMessage", this.$onMessage);
+            this.buffer = {};
+        }
+        this.buffer[path] = "";
+
         ide.dispatchEvent("track_action", {type: "blame", cmd: cmd});
         if (ext.execCommand(cmd, data) !== false) {
-            if (ide.dispatchEvent("consolecommand." + cmd, {
-              data: data
-            }) !== false) {
+            if (ide.dispatchEvent("consolecommand." + cmd, {data: data}) !== false) {
                 if (!ide.onLine) {
                     util.alert(
                         "Currently Offline",
@@ -77,40 +92,43 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     onMessage: function(e) {
         var message = e.message;
 
-        if (message.type != "result" && message.subtype != "blame")
-            return;
+        if (!message.extra || message.extra.type != "gitblame")
+            return false;
 
+        if (this.buffer[message.extra.path] == null)
+            return;
         // Is the body coming in piecemeal? Process after this message
-        if (!message.body.out && !message.body.err)
-            return;
-
-        ide.removeEventListener("socketMessage", this.$onMessage = this.onMessage.bind(this));
-
-        //console.log(message);
-        if (message.body.err) {
-            util.alert(
-                "Error",
-                "There was an error returned from the server:",
-                message.body.err
-            );
-
+        if (message.type == "shell-data") {
+            this.buffer[message.extra.path] += message.data
             return;
         }
+        if (message.type != "shell-exit")
+            return;
 
-        if (!this.blamejs.parseBlame(message.body.out)) {
+        var path = message.extra.path;
+        var result = this.buffer[path];
+        this.buffer = {};
+
+        if (message.code != 0) {
             util.alert(
-                "Problem Parsing",
-                "Problem Parsing",
+                "Error", "There was an error returned from the server:",
+-               message.data
+            );
+        }
+
+        if (!this.blamejs.parseBlame(result)) {
+            util.alert(
+                "Problem Parsing", "Problem Parsing",
                 "There was a problem parsing the blame output. Blame us, blame the file, but don't blame blame. Blame."
             );
             return false;
         }
 
         // Now formulate the output
-        this.formulateOutput(this.blamejs.getCommitData(), this.blamejs.getLineData());
+        this.formulateOutput(this.blamejs.getCommitData(), this.blamejs.getLineData(), path);
     },
 
-    formulateOutput : function(commit_data, line_data) {
+    formulateOutput : function(commit_data, line_data, path) {
         var textHash = {}, lastHash = "";
         for (var li in line_data) {
             if (line_data[li].numLines != -1 && line_data[li].hash != lastHash) {
@@ -125,7 +143,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 };
             }
         }
-        
+
         if (!this.BlameGutter) {
             require(["ext/gitblame/blame_gutter"], function(module) {
                 this.BlameGutter = module.BlameGutter;
@@ -134,12 +152,20 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         } else {
             addBlameGutter()
         }
-            
+
         function addBlameGutter() {
+            // todo support showing blame for background tabs
+            var page = tabEditors.getPage();
+            if (!page)
+                return;
+            var currentPath = page.$model.data.getAttribute("path");
+            if (path != currentPath)
+                return;
+
             var ace = editors.currentEditor.amlEditor.$editor
             if (!ace.blameGutter)
                 new this.BlameGutter(ace);
-            
+
             ace.blameGutter.setData(textHash);
         }
     },
@@ -158,7 +184,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
     destroy : function(){
         menus.remove("Tools/Git/Blame");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
