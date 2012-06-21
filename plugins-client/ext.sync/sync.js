@@ -57,8 +57,10 @@ module.exports = ext.register("ext/sync/sync", {
                         if (_self.syncEnabled)
                             this.setValue(true);
                     }
-                    else
+                    else {
                         mnuSyncPrj.hide();
+                        mnuInstallLocal.hide();
+                    }
                 }
             }));
             
@@ -410,7 +412,35 @@ module.exports = ext.register("ext/sync/sync", {
         });
     },
     
+    
+    callbacks : [],
+    queue : [],
     sendMessageToLocal : function(url, message){
+        var _self = this;
+        
+        if (ide.local)
+            return apf.ajax(url, message);
+        
+        message.type = "api";
+        message.url  = url;
+        
+    	if (message.callback) {
+    		message.uid = this.callbacks.push(message.callback) - 1;
+    		delete message.callback;
+    	}
+        
+        this.hasLocalInstalled(function(isInstalled){
+            if (isInstalled) {
+                _self.$iframe.contentWindow.postMessage(message, "*");
+            }
+            else {
+                _self.showInstallLocal();
+                delete _self.callbacks[message.uid];
+            }
+        });
+    },
+    
+    sendMessageAboutLocal : function(url, message){
         var _self = this;
         
         if (ide.local)
@@ -427,6 +457,7 @@ module.exports = ext.register("ext/sync/sync", {
     },
     
     showInstallLocal : function(){
+        var _self = this;
         var xml = new apf.getXml("<clients />"), doc = xml.ownerDocument, c;
         var found = false;
         for (var macAddress in this.syncClients) {
@@ -441,6 +472,9 @@ module.exports = ext.register("ext/sync/sync", {
         vboxSyncInstall.setAttribute("visible", !found);
         
         mnuInstallLocal.display(null, null, true, this.btnSyncStatus);
+        mnuInstallLocal.addEventListener("blur", function(e) {
+            _self.btnSyncStatus.setValue(false);
+        });
     },
     
     /**
@@ -450,9 +484,11 @@ module.exports = ext.register("ext/sync/sync", {
      * running it will retry until the client is running.
      */
     getLocalId : function(callback){
-        this.callLocalProxy({
+        var _self = this;
+        
+        var message = {
             type: "macAddress",
-            callback: function( data, state, extra ) {
+            uid: this.callbacks.push(function( data, state, extra ) {
                 if (state != apf.SUCCESS) {
                     callback(new Error("Unable to fetch mac address of local runtime."));
                     return;
@@ -463,50 +499,104 @@ module.exports = ext.register("ext/sync/sync", {
                     return;
                 }
                 callback(null, data.macAddress);
+            }) - 1
+    	};
+        
+        this.hasLocalInstalled(function(isInstalled){
+            if (isInstalled) {
+                _self.$iframe.contentWindow.postMessage(message, "*");
+            }
+            else {
+                _self.showInstallLocal();
+                delete _self.handler[message.uid];
             }
         });
     },
 
-    callLocalProxy__callbacks : [],
-    callLocalProxy__queue : [],
-    callLocalProxy: function(message) {
+    hasLocalInstalled : function(callback){
         var _self = this;
         
-        if (message.callback) {
-            message.uid = this.callLocalProxy__callbacks.push(message.callback) - 1;
-            delete message.callback;
-        }
-        
         if (!this.$iframe) {
-            window.addEventListener("message", function(e) {
-                try {
-                    var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
-                } catch (e) { return; }
-                
-                switch (json.type) {
-                    case "connect":
-                        _self.$iframe.connected = true;
-                        _self.callLocalProxy__queue.forEach(function(message){
-                            _self.$iframe.contentWindow.postMessage(message, "*");
-                        });
-                    break;
-                    case "response":
-                        if (_self.callLocalProxy__callbacks[json.uid])
-                            _self.callLocalProxy__callbacks[json.uid](json.data, json.state, json.extra);
-                    break;
-                }
-            });
-            
-            this.$iframe = document.body.appendChild(document.createElement("iframe"));
-            this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
+            this.$createIframeToLocal(function(isConnected){
+                _self.queue.forEach(function(func){
+                    func(isConnected);
+            	});
+                _self.queue = [];
+        	});
         }
         
-        if (!this.$iframe.connected) {
-            this.callLocalProxy__queue.push(message);
+        if (this.$iframe.connecting) {
+            //Wait for iframe to connect
+            this.queue.push(function(isConnected){
+                callback(isConnected);
+            }) - 1;
             return;
         }
+        
+        callback(this.$iframe.connected);
+    },
+    
+    $createIframeToLocal : function(callback){
+        var _self = this;
+        var timer;
 
-        this.$iframe.contentWindow.postMessage(message, "*");
+        window.addEventListener("message", function(e) {
+    		try {
+                var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
+            } catch (e) { return; }
+
+            switch (json.type) {
+            	case "connect":
+                    clearTimeout(timer);
+                    
+            		_self.$iframe.connected = true;
+                    
+                    callback(true);
+            	break;
+            	case "response":
+            		if (_self.callbacks[json.uid])
+            			_self.callbacks[json.uid](json.data, json.state, json.extra);
+            	break;
+            }
+		});
+        
+        function cleanup(){
+            _self.$iframe.removeEventListener("load", startTimeout);
+            _self.$iframe.removeEventListener("error", errorHandler);
+            _self.$iframe.parentNode.removeChild(_self.$iframe);
+            _self.$iframe = null;
+        }
+
+        //Main timeout for initial connect
+        timer = setTimeout(function(){
+            _self.$iframe.connecting = false;
+            callback(false);
+            cleanup();
+        }, 10000);
+
+        //Sub timeout for after html is loaded
+        var startTimeout = function(){
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                _self.$iframe.connecting = false;
+                callback(false);
+                cleanup();
+            }, 1000);
+        }
+        
+        var errorHandler = function(){
+            callback(false);
+        };
+
+		this.$iframe = document.body.appendChild(document.createElement("iframe"));
+        this.$iframe.addEventListener("load", startTimeout);
+        this.$iframe.addEventListener("error", errorHandler);
+
+        this.$iframe.connecting = true;
+        this.$iframe.connected = false;
+		this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
+        this.$iframe.style.width = "1px";
+        this.$iframe.style.height = "1px";
     },
 
     showSyncDialog : function(callback){

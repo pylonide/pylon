@@ -35,9 +35,9 @@
         <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncInstall">
             <a:label class="lblinstall">
                 <p style="margin-top:0"><strong>Offline syncing requires the c9 command line installed.</strong></p>
-                <p>Click <a href="#">here</a> to download the c9 cli or install via npm:</p>
+                <p>Click <a href="#">here</a> to download the c9 cli, or install via  <a href="http://npmjs.org/">npm</a>:</p>
                 <blockquote class="code">npm install -g c9</blockquote>
-                <p>If you already have c9 cli installed, it is probably not running. Start the cli using:</p>
+                <p>If you already have c9 cli installed, it might not be running. Start it by typing:</p>
                 <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
             </a:label>
         </a:vbox>
