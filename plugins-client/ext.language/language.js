@@ -94,11 +94,15 @@ module.exports = ext.register("ext/language/language", {
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
                 ["unusedFunctionArgs", "false"],
-                ["continuousComplete", "true"]
+                ["continuousComplete", _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 
         settings.addSettings("Language Support", markupSettings);
+    },
+
+    isInferAvailable : function() {
+        return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
     init : function() {

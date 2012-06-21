@@ -12,11 +12,12 @@ var keyhandler = require("ext/language/keyhandler");
 var completionUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
-var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+var language;
 
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
+var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 2000;
@@ -143,6 +144,7 @@ var commands = require("ext/commands/commands");
 module.exports = {
     hook: function(ext, worker) {
         var _self = this;
+        language = ext;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
             _self.onComplete(event);
@@ -251,7 +253,7 @@ module.exports = {
             if (match.icon)
                 hasIcons = true;
         });
-        var isInferAvailable = completionUtil.isInferAvailable();
+        var isInferAvailable = language.isInferAvailable();
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? CLASS_SELECTED : CLASS_UNSELECTED;
