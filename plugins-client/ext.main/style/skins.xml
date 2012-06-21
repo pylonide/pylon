@@ -11532,7 +11532,7 @@
             display : none !important;
         }
 
-        .filemgr-tree:not(.searchresults) .item-fix.selected {
+        .filemgr-tree .item-fix.selected {
             background : rgba(0,0,0,0.04);
         }
         .filemgr-tree .item-fix.selected label u {  
