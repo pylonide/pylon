@@ -129,6 +129,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             if (!noRename)
                                 tree.startRename();
 
+                            ide.dispatchEvent("newfolder", {
+                                folderName: name,
+                                parentPath: path,
+                                path: fullFolderPath
+                            });
                             callback && callback(folder);
                         });
                     });
@@ -219,6 +224,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                                 file = nodes[0];
 
                                 both++;
+                                ide.dispatchEvent("newfile", {
+                                    fileName: filename,
+                                    parentPath: path,
+                                    path: fullFilePath
+                                });
                                 done();
                             });
                         });
