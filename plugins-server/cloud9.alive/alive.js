@@ -3,7 +3,7 @@ module.exports = function setup(options, imports, register) {
 
     var alive = false;
 
-    imports.hub.on("containersDone", function() {
+    imports.hub.on("ready", function() {
         alive = true;
     });
 

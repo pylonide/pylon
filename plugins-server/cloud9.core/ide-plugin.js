@@ -90,13 +90,12 @@ module.exports = function setup(options, imports, register) {
         });
     }
 
-    hub.on("containersDone", function() {
+    hub.on("ready", function() {
         ide.init(serverPlugins);
 
         connect.useAuth(baseUrl, function(req, res, next) {
             if (!req.session.uid)
                 return next(new error.Unauthorized());
-
             // NOTE: This gets called multiple times!
 
             var pause = utils.pause(req);

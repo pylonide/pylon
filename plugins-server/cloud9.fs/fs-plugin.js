@@ -65,9 +65,8 @@ module.exports = function setup(options, imports, register) {
         });
 
         register(null, {
-            "onDestruct": function(callback) {
+            "onDestroy": function() {
                 davServer.unmount();
-                callback();
             },
             "dav": {
                 getServer: function() {
