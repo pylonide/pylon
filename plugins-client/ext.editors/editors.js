@@ -397,8 +397,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
-        var editor = this.fileExtensions[fileExtension]
-          && this.fileExtensions[fileExtension][0]
+        var editor = (this.fileExtensions[fileExtension]
+          && this.fileExtensions[fileExtension][0])
           || this.fileExtensions["default"];
 
         if (!init && this.currentEditor)
@@ -406,9 +406,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor) {
             util.alert(
-                "No editor is registered",
+                "No editor is registered!",
                 "Could not find an editor to display content",
-                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
+                "There is something wrong with the configuration of your IDE. No editor plugin is found");
             return;
         }
 
@@ -633,14 +633,14 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
-            var editor = this.fileExtensions[fileExtension]
-              && this.fileExtensions[fileExtension][0]
+            var editor = (this.fileExtensions[fileExtension]
+              && this.fileExtensions[fileExtension][0])
               || this.fileExtensions["default"];
 
             if (!editor) {
                 util.alert(
                     "No editor is registered",
-                    "Could not find an editor to display content",
+                    "Could not find an editor to display content!",
                     "There is something wrong with the configuration of your IDE. No editor plugin is found.");
                 return;
             }
