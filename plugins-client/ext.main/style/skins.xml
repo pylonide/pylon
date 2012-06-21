@@ -35,19 +35,19 @@
             white-space : nowrap;
         }
         
-        .fakehbox>div{
+        .fakehbox>*{
             display : inline-block;
         }
         
-        .fakehbox.aligntop>div{
+        .fakehbox.aligntop>*{
             vertical-align : top;
         }
         
-        .fakehbox.aligncenter>div{
+        .fakehbox.aligncenter>*{
             vertical-align : middle;
         }
         
-        .fakehbox.padding3>div{
+        .fakehbox.padding3>*{
             margin-left : 3px;
         }
         

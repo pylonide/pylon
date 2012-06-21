@@ -7,7 +7,7 @@
       class     = "downward sync-info-tooltip">
         <div>
             <a class="close-sync-info" href="javascript:void(0)" onclick="mnuSyncInfo.hide()"></a>
-            <span class="sync-info-title">Sync for offline use in progress...</span>
+            <span class="sync-info-title">Syncing for offline use...</span>
             <a:progressbar id="syncProgressBar"
               skin   = "progressbar-green" 
               value  = "20" 
@@ -44,35 +44,36 @@
         <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncRemoveLocal">
             <a:label class="lblinstall">
                 <p style="margin-top:0"><strong>The c9 command line is not running.</strong></p>
-                <p>This project is synced with one or more clients but they are currently not running</p>
-                <p>Click <a href="#">here</a> to download the c9 cli or install via npm:</p>
-                <blockquote class="code">npm install -g c9</blockquote>
-                <p>You can start the cli using:</p>
+                <p>You can start your runtime by typing the following into your command line:</p>
                 <blockquote class="code">c9 --start</blockquote>
+                <p>Then, try disabling again.</p>
             </a:label>    
             
-            <a:divider skin="c9-divider-hor" margin="-10 0 0 0" />
-            
-            <a:label class="lblinstall">    
-                Alternatively choose the client from the dropdown below:
-            </a:label>
-            
-            <a:dropdown id="ddLocalClients" 
-              skin       = "black_dropdown"
-              model      = "mdlSyncClients"
-              width      = "200"
-              each       = "[client]"
-              eachvalue  = "[@name]"
-              caption    = "[@label]"
-              visible2    = "{this.length}" />
+            <div visible="{mdlSyncClients.queryNodes('client').length > 1}">
+                <a:divider skin="c9-divider-hor" margin="-10 0 0 0" />
+                
+                <a:label class="lblinstall">    
+                    Alternatively, choose the client you want to disable from the dropdown below:
+                </a:label>
+                
+                <a:dropdown id="ddLocalClients" 
+                  skin       = "black_dropdown"
+                  model      = "mdlSyncClients"
+                  width      = "300"
+                  each       = "[client]"
+                  eachvalue  = "[@name]"
+                  caption    = "[@label]"
+                  visible2    = "{this.length}" />
+                
+            </div>
             
             <a:divider skin="c9-divider-hor" />
-            
+                
             <a:hbox pack="end" edge="0" padding="10">
                 <a:button
                   caption = "Cancel"
                   skin    = "c9-simple-btn"
-                  onclick = "mnuSyncPrj.hide()"
+                  onclick = "mnuInstallLocal.hide()"
                   style   = "cursor:pointer"
                   margin  = "5 0 0 0"
                 />
@@ -137,21 +138,20 @@
       title     = "Sync Error!"
       icon      = ""
       center    = "true"
-      kbclose   = "true"
-      buttons   = "close"
+      kbclose   = "false"
       width     = "600"
       skin      = "bk-window2"
       render    = "runtime"
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3>Your local workspace and your remote workspace both have files in them.</h3>
-            <div class="alertMsg">Which workspace would you like to be leading? Newer files in the leading workspace will overwrite older files in the other workspace.</div>
+            <div class="alertMsg">Which workspace would you like to be the source? Newer files in the source workspace will overwrite older files in the other workspace.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'local')" skin="btn-default-css3" class="btn-red">Local Workspace</a:button>
-            <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'remote')" skin="btn-default-css3" class="btn-red">Remote Workspace</a:button>
-            <a:button id="btnQuestionCancel" onclick="winCannotSync.hide()" skin="btn-default-css3" default="3" class="btn-red">Cancel</a:button>
+            <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'local'); winCannotSync.hide()" skin="btn-default-css3" class="btn-red">Local Workspace As Source</a:button>
+            <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'remote'); winCannotSync.hide()" skin="btn-default-css3" class="btn-red">Online Workspace As Source</a:button>
+            <a:button id="btnQuestionCancel" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winCannotSync.hide();" skin="btn-default-css3" default="3" class="btn-green">Cancel</a:button>
         </a:hbox>
     </a:window>
     
@@ -170,17 +170,19 @@
             btnYesDisable.dispatchEvent('click', {htmlEvent: {}});
         }
         if(event.keyCode == 78) {
-            btnQuestionNo.dispatchEvent('click', {htmlEvent: {}});
+            btnNoDisable.dispatchEvent('click', {htmlEvent: {}});
         }
       "
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3 id="winQuestionRevHeader">Are you sure you want to disable synching?</h3>
+            <div class="alertMsg" id="winLocalId" visible="{cloud9config.hosted}">Synching will be disabled for {MACADD}.</div>
+            <div class="alertMsg" visible="{mdlSyncClients.queryNodes('client').length > 1}">Synching will remained enabled for your other clients.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionNo" onclick = "winConfirmSyncOff.close();" default="3" skin="btn-default-css3" class="btn-green">No</a:button>
             <a:button id="btnYesDisable" onclick = "require('ext/sync/sync').disableSync()" skin="btn-default-css3" class="btn-red">Yes, disable it</a:button>
+            <a:button id="btnNoDisable" onclick = "winConfirmSyncOff.close();" default="3" skin="btn-default-css3" class="btn-green">No</a:button>
         </a:hbox>
     </a:window>
 </a:application>                                                                     

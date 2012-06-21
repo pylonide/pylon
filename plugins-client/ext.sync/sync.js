@@ -48,7 +48,7 @@ module.exports = ext.register("ext/sync/sync", {
                 "class" : "c9-sync" ,
                 state   : "true",
                 disabled : true,
-                onclick : function(){
+                onclick : function() {
                     ext.initExtension(_self);
                     
                     if (this.value || _self.syncEnabled) {
@@ -125,6 +125,7 @@ module.exports = ext.register("ext/sync/sync", {
                 
                 cloud9config.syncProjectName = name;
                 mnuSyncPrj.hide();
+                _self.btnSyncStatus.setValue(true);  
                 
                 if (isNew) {
                     _self.btnSyncStatus.disable();
@@ -143,7 +144,7 @@ module.exports = ext.register("ext/sync/sync", {
                     });
                 }
                 else {
-                    _self.syncProject(name);;
+                    _self.syncProject(name);
                 }
             }
         });
@@ -182,8 +183,8 @@ module.exports = ext.register("ext/sync/sync", {
         clearTimeout(this.syncInfoHideTimer);
         clearTimeout(this.syncInfoTimer);
         
-        if (mnuSyncInfo.visible)
-            return;
+        //if (mnuSyncInfo.visible)
+        //   return;
         
         this.syncInfoHideTimer = setTimeout(function(){
             anims.animate(mnuSyncInfo, {
@@ -248,10 +249,15 @@ module.exports = ext.register("ext/sync/sync", {
             _self.updateSyncInfo(message.args);
             
             if (message.args.event === "added") {
+                var fileExists = fs.pathExists(message.args.path);
                 if (cloud9config.debug)
-                    console.log("[SYNC] file added", message.args.path, message.args.mtime);
-                
-                this.createSyncFile(message.args.path, message.args.mtime);
+                    if (fileExists)
+                        console.log("[SYNC] file already exists", message.args.path, message.args.mtime);
+                    else
+                        console.log("[SYNC] file added", message.args.path, message.args.mtime);
+                        
+                if (fileExists)
+                    this.createSyncFile(message.args.path, message.args.mtime);
             }
             else if (message.args.event === "modified") {
                 if (cloud9config.debug)
@@ -439,7 +445,7 @@ module.exports = ext.register("ext/sync/sync", {
     
     /**
      * This function retrieves the mac address of the local client that is 
-     * installed. This function cashes the result so that the callback is only
+     * installed. This function caches the result so that the callback is only
      * called async once when the client was already running. If it wasn't 
      * running it will retry until the client is running.
      */
@@ -524,7 +530,7 @@ module.exports = ext.register("ext/sync/sync", {
                 mnuSyncPrj.display(null, null, false, _self.btnSyncStatus);
                 
                 mnuSyncPrj.addEventListener("prop.visible", function(e){
-                    if (!e.value && !cloud9config.syncProjectName)
+                    if (!e.value)
                         _self.btnSyncStatus.setValue(false);
                     mnuSyncPrj.removeEventListener("prop.visible", arguments.callee);
                 });
@@ -618,7 +624,6 @@ module.exports = ext.register("ext/sync/sync", {
                 }
                 else if (data.workspacesNotEmpty === true) {
                     winCannotSync.show();
-                    _self.btnSyncStatus.setValue(false);
                 }
             }
         });
@@ -628,16 +633,19 @@ module.exports = ext.register("ext/sync/sync", {
         var _self = this;
         
         if (this.syncEnabled) {
-            if (ide.local) 
+            if (ide.local)  {
                 winConfirmSyncOff.show();
+            }
             else {
                 this.getLocalId(function(err, localId){
                     if (err) {
                         _self.showInstallLocal();
                         _self.btnSyncStatus.setValue(true);
                     }
-                    else
+                    else if (!mnuInstallLocal.visible) {
                         winConfirmSyncOff.show();
+                        winLocalId.$ext.innerHTML = winLocalId.$ext.innerHTML.replace("{MACADD}", localId);
+                    }
                 });
             }
         }
