@@ -43,7 +43,12 @@ function findCompletions(prefix, allIdentifiers) {
     return matches;
 }
 
+function isInferAvailable() {
+    return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
+}
+
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
 exports.findCompletions = findCompletions;
+exports.isInferAvailable = isInferAvailable;
 
 });
