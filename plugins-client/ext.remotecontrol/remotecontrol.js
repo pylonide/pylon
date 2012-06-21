@@ -22,7 +22,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     alone  : true,
     deps   : [],
     markup : markup,
-    
+
     init : function(amlNode) {
         var _self = this;
         
@@ -81,7 +81,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
                 
                 tabbehaviors.revealInTree(node);
-            } 
+            }
             else if (event.message.action === "notify") {
                 var eventName = event.message.args.event.name;
                 if (eventName === "internet-available") {
@@ -97,7 +97,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
                 else if (eventName === "workspace-deleted") {
                     winWSDeleted.show();
-                }
+        }
             }
         }
     },

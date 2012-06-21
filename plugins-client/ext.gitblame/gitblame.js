@@ -37,6 +37,15 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 return editor && editor.ceEditor;
             }
         }), 500);
+        
+        menus.addItemByPath("File/Git Blame", new apf.item({
+            onclick : function() {
+                _self.startBlame();
+            },
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            }
+        }), 909)
     },
 
     startBlame : function() {
