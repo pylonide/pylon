@@ -372,6 +372,10 @@ module.exports = {
                 e.preventDefault();
                 break;
             case 40: // Down
+                if (this.matchEls.length === 1) {
+                    this.closeCompletionBox();
+                    break;
+                }
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
