@@ -115,11 +115,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 disabled: "{!tabEditors.length}",
                 command: "revisionpanel"
             }), 900),
-            menus.addItemByPath("File/Git Blame", new apf.item({
-                onclick : function() {
-                    require("ext/gitblame/gitblame").startBlame();
-                }
-            }), 909),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
