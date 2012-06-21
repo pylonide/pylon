@@ -5680,7 +5680,7 @@
         }
         .treeOutline .item span {
             left: 4px;
-            top: 7px;
+            top: 9px;
         }
         .searchresults>div,
         .treeOutline .item-fix{
