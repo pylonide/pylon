@@ -55,7 +55,8 @@ User.VISITOR_PERMISSIONS = {
 (function() {
 
     this.setPermissions = function(permissions) {
-        this.$server_exclude = c9util.arrayToMap(permissions.server_exclude.split("|"));
+        if (permissions && permissions.server_exclude)
+            this.$server_exclude = c9util.arrayToMap(permissions.server_exclude.split("|"));
         if (this.permissions === permissions)
             return;
 
@@ -63,7 +64,7 @@ User.VISITOR_PERMISSIONS = {
         this.emit("changePermissions", this);
     };
 
-    this.getPermissions = function(permissions) {
+    this.getPermissions = function() {
         return this.permissions;
     };
 

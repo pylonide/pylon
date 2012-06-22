@@ -103,54 +103,58 @@ apf.dbg = module.exports = function(struct, tagName){
             _self.$host = host;
             _self.$debugger = dbgImpl;
 
-            _self.$loadSources(function() {
-                dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
-                    var backtraceModel = new apf.model();
-                    backtraceModel.load("<frames></frames>");
+            // give debugger time to initialize
+            setTimeout(function() {
+                _self.$loadSources(function() {
+                    dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                        var backtraceModel = new apf.model();
+                        backtraceModel.load("<frames></frames>");
 
-                    _self.$debugger.backtrace(backtraceModel, function() {
-                        var frame = backtraceModel.queryNode("frame[1]");
-                        var allowAttach = _self.$allowAttaching(frame);
-                        
-                        if (!allowAttach) {
-                            _self.$debugger.continueScript();
-                        }
-                        else {
-                            _self.$mdlStack.load(backtraceModel.data);
-                            // throw out a nice break statement so others know that it fired
-                            _self.dispatchEvent("break");
-                        }
+                        _self.$debugger.backtrace(backtraceModel, function() {
+                            var frame = backtraceModel.queryNode("frame[1]");
+                            var allowAttach = _self.$allowAttaching(frame);
 
-                        dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
-
-                        _self.$stAttached.activate();
-                        _self.$stRunning.setProperty("active", dbgImpl.isRunning());
-
-                        dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
-                        dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
-                        dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-                        
-                        // monitor the first incoming event to verify whether it's allowed
-                        // to attach here
-                        var firstChangeFrame = function () {
-                            if (_self.$allowAttaching(_self.$debugger.getActiveFrame())) {
-                                _self.$onChangeFrame();
-                                // now bind to the real changeFrame method
-                                dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
-                                dbgImpl.removeEventListener("changeFrame", firstChangeFrame);
+                            if (!allowAttach) {
+                                _self.$debugger.continueScript();
                             }
-                        };
-                        dbgImpl.addEventListener("changeFrame", firstChangeFrame);
-                        
-                        if (allowAttach) {
-                            _self.setProperty("activeframe", frame);
-                        }
-                        
-                        _self.autoAttachComingIn = false;
+                            else {
+                                _self.$mdlStack.load(backtraceModel.data);
+                                // throw out a nice break statement so others know that it fired
+                                _self.dispatchEvent("break");
+                            }
+
+                            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
+
+                            _self.$stAttached.activate();
+                            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
+
+                            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+                            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+                            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+
+                            // monitor the first incoming event to verify whether it's allowed
+                            // to attach here
+                            var firstChangeFrame = function () {
+                                if (_self.$allowAttaching(_self.$debugger.getActiveFrame())) {
+                                    _self.$onChangeFrame();
+                                    // now bind to the real changeFrame method
+                                    dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
+                                    dbgImpl.removeEventListener("changeFrame", firstChangeFrame);
+                                }
+                            };
+                            dbgImpl.addEventListener("changeFrame", firstChangeFrame);
+
+                            if (allowAttach) {
+                                _self.setProperty("activeframe", frame);
+                            }
+
+                            _self.autoAttachComingIn = false;
+                        });
                     });
-                });
-            });
-        });
+                })
+            }, 1000);
+        })
+
     };
 
     this.$allowAttaching = function (frame) {
@@ -214,16 +218,16 @@ apf.dbg = module.exports = function(struct, tagName){
 
     this.$onDetach = function() {
         var _self = this;
-        
+
         if (this.$debugger) {
             // destroy doesnt destroy the event listeners
             // so do that by hand
-            Object.keys(_self.$debugger.$eventsStack).forEach(function (evname) { 
+            Object.keys(_self.$debugger.$eventsStack).forEach(function (evname) {
                 _self.$debugger.$eventsStack[evname].forEach(function (fn) {
                     _self.$debugger.removeEventListener(evname, fn);
                 });
             });
-            
+
             this.$debugger.destroy();
             this.$debugger = null;
         }
@@ -288,7 +292,7 @@ apf.dbg = module.exports = function(struct, tagName){
         }
         else {
             var scriptName = script.getAttribute("scriptname");
-            var bp = model.queryNode("breakpoint[@script='" + scriptName 
+            var bp = model.queryNode("breakpoint[@script='" + scriptName
                 + "' and @line='" + row + "']");
             if (bp) {
                 apf.xmldb.removeNode(bp);
@@ -315,7 +319,7 @@ apf.dbg = module.exports = function(struct, tagName){
             }
         }
     };
-    
+
     this.setBreakPointEnabled = function(node, value){
         if (this.$debugger) {
             this.$debugger.setBreakPointEnabled(node, value);

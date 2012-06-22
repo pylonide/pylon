@@ -37,7 +37,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     var state, lookup; //@todo wrong use of scope. 
     
     function findParentState(data, forceSearch){
-        var uniqueId = data.uniqueId;
+        var uniqueId = (data || {}).uniqueId;
         if (!uniqueId)
             return;
         var node = lookup[uniqueId].node;
@@ -266,6 +266,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (!state.bars) 
             return;
         
+        for (var i in state.bars) {
+            if(!state.bars[i])
+                delete state.bars[i];
+        }
+        
         state.bars.each(function(bar){
             bar.uniqueId = lookup.push({data: bar}) - 1;
             
@@ -280,7 +285,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         var bars = state.bars;
         for (var i = 0; i < bars.length; i++) {
-            addBarState.call(this, bars[i]);
+            if(bars[i])
+                addBarState.call(this, bars[i]);
         }
     };
     
@@ -385,7 +391,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     };*/
     
     this.addTo = function(def, uniqueId) {
-        var item = lookup[uniqueId].data;
+        var item = lookup[uniqueId] && lookup[uniqueId].data;
+        if(!item)
+            return false;
         
         if (item.buttons) {
             item.buttons.push(def);
@@ -399,9 +407,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     };
     
     this.show = function(uniqueId, byUser){
-        var item  = lookup[uniqueId].data;
+        var item  = lookup[uniqueId] && lookup[uniqueId].data;
+        if(!item)
+            return;
+            
         var before;
-        
         if (!item.bars && !item.sections) {
             var section = findParentState(lookup[uniqueId].data);
             if (!hasVisibleChildren(section.buttons)) {
@@ -483,6 +493,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         var bar = findParentState(findParentState(lookup[uniqueId].data));
+        
+        if(!bar)
+            return -1;
+            
         return lookup[bar.uniqueId].data.expanded;
     };
     
@@ -560,7 +574,6 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     function addButtonState(state, before, section){
         if (state.hidden > 0)
             return;
-        
         // code here to throw if no parentNode is set.
         section.parentNode;
         this.$addButton(section, before, section.$menu, 
@@ -655,6 +668,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 width     : bar.$dockData && bar.$dockData.width || 260,
                 splitters : true,
                 vdock     : 1,
+                minwidth  : 150,
                 "class"   : "dockcol unselectable expandedpanel",
                 childNodes : [
                     new apf.button({
@@ -860,7 +874,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         apf.setOpacity(dragged.$ext, 0.2);
         
-        apf.setStyleClass(dragged.$ext, 'dragging');
+        apf.setStyleClass(dragged.$ext, "dragging");
         
         var lastBar   = this.$getLastBar();
         var leftEdge  = apf.getAbsolutePosition(lastBar.$ext)[0];
@@ -1163,7 +1177,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 default:
                     indicator.style.display = "none";
                     //apf.setOpacity(dragged.$ext, 1);
-                    apf.setStyleClass(dragged.$ext, '', ['dragging']);
+                    apf.setStyleClass(dragged.$ext, "", ["dragging"]);
                     break;
             }
             
@@ -1669,6 +1683,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             skin      : options.skin ? options.skin : "dockwindowblack",
             resizable : options.resizable === false ? false : "left bottom",
             dock      : 1,
+            minwidth  : 150,
+            minheight : options.minHeight ? options.minHeight : 150,
             onhide    : function(e){
                 if (this.firstChild && this.firstChild.getPage())
                     this.firstChild.getPage().$dockbutton.$dockData.showMenu = false;
@@ -1678,6 +1694,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     _self.$currentMenu.hide();
                 _self.$currentMenu = this;
                 
+                var menuPos = apf.getAbsolutePosition(menu.$ext);
+                var height = apf.getWindowHeight();
                 var pos   = apf.getAbsolutePosition(menu.opener.$ext);
                 var width = apf.getWindowWidth();
                 var dist  = //menu.$ext.offsetWidth > width - pos[0] //Weird bug - chrome only??
@@ -1686,7 +1704,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
                 menu.$ext.style.right = (dist + 5) + "px";
                 menu.$ext.style.left = "";
-
+                
+                menu.maxheight = height - menuPos[1] > 150 ? height - menuPos[1] : 150;
                 var x;
                 setTimeout(x = function(){
 //                    menu.$ext.style.marginRight = "0";
@@ -2150,6 +2169,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 visible : options && (options.hidden < 0) || true, 
                 "class" : options["class"] || "",
                 draggable : drag,
+                onblur: function(){
+                   
+                },
                 onmousedown  : function(){
                     btnLock = true;
     
@@ -2159,15 +2181,24 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     btnLock = false;
                     
                     if (options && (tmp = options.primary)) {
+                        var icoState = !this.value ? tmp.activeState : tmp.defaultState;
                         var span = button.$ext.getElementsByTagName("span");
                         span[2].style.backgroundPosition = 
-                            tmp.activeState.x + 'px ' 
-                            + tmp.activeState.y + 'px';
+                            icoState.x + 'px ' 
+                            + icoState.y + 'px';
                 
                         if (tmp = options.secondary) {
                             span[1].style.backgroundPosition = 
-                                tmp.activeState.x + 'px ' 
-                                + tmp.activeState.y + 'px';
+                                icoState.x + 'px ' 
+                                + icoState.y + 'px';
+                        }
+                        if(!this.value) {
+                            if(options.cbOnPageShow)
+                                options.cbOnPageShow();
+                        }
+                        else {
+                            if(options.cbOnPageHide)
+                                options.cbOnPageHide();
                         }
                     }
                     
@@ -2182,34 +2213,37 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             function _setBtnIco(_btn){
                 if (options && (tmp = options.primary)) {
+                    var icoState = _btn.value ? tmp.activeState : tmp.defaultState;
                     var span = _btn.$ext.getElementsByTagName("span");
                     
                     _btn.setAttribute("tooltip", options.menu.split("/").pop());
                     
                     span[2].style.background = 'url("' 
                         + tmp.backgroundImage + '") '
-                        + tmp.defaultState.x + 'px '
-                        + tmp.defaultState.y + 'px no-repeat';
+                        + icoState.x + 'px '
+                        + icoState.y + 'px no-repeat';
                     
                     if (tmp = options.secondary) {
                         span[1].style.background = 'url("' 
                             + tmp.backgroundImage + '") '
-                            + tmp.defaultState.x + 'px '
-                            + tmp.defaultState.y + 'px no-repeat'
+                            + icoState.x + 'px '
+                            + icoState.y + 'px no-repeat'
                     }
                     
                     if (tmp = options.tertiary) {
                         span[0].style.background =
                             tmp.backgroundColor + ' url("'
                             + tmp.backgroundImage + '") '
-                            + tmp.defaultState.x + 'px '
-                            + tmp.defaultState.y + 'px no-repeat';
+                            + icoState.x + 'px '
+                            + icoState.y + 'px no-repeat';
                         span[0].style.border = "1px solid #c7c7c7";
                     }
                 }
             };
             
-            _setBtnIco(button);
+            setTimeout(function(){
+                _setBtnIco(button);
+            });
             
             // When the page is shown, we can reset the notification count
             page.addEventListener("prop.visible", function(e) {
@@ -2224,6 +2258,22 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 else if (e.value == false && options && options.cbOnPageHide)
                     options.cbOnPageHide();
             });
+            
+            button.addEventListener("prop.value", function(e){
+                if (options && (tmp = options.primary)) {
+                    var icoState = button.value ? tmp.activeState : tmp.defaultState;
+                    var span = button.$ext.getElementsByTagName("span");
+                    span[2].style.backgroundPosition = 
+                        icoState.x + 'px ' 
+                        + icoState.y + 'px';
+            
+                    if (tmp = options.secondary) {
+                        span[1].style.backgroundPosition = 
+                            icoState.x + 'px ' 
+                            + icoState.y + 'px';
+                    }
+                }
+            })
             
             button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
                 var originalButton = this;

@@ -31,6 +31,7 @@ var Ide = module.exports = function(options) {
     this.workspaceDir = options.workspaceDir;
 
     options.plugins = options.plugins || [];
+
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -47,16 +48,18 @@ var Ide = module.exports = function(options) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
+        real: (options.real === true) ? true : false,
+        hosted: !!options.hosted,
+        env: options.env,
         packed: (options.packed === true) ? true : false,
-        packedName: options.packedName,
-        hosted: !!options.hosted
+        packedName: options.packedName
     };
 
     this.$users = {};
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-    
+
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -97,7 +100,7 @@ util.inherits(Ide, EventEmitter);
                 "cache-control": "no-transform",
                 "Content-Type": "text/html"
             });
-            
+
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
@@ -109,9 +112,10 @@ util.inherits(Ide, EventEmitter);
             // TODO: Exclude applicable bundledPlugins
 
             var client_include = c9util.arrayToMap((permissions.client_include || "").split("|"));
-            for (var plugin in client_include)
+            for (var plugin in client_include) {
                 if (plugin)
                     plugins[plugin] = 1;
+            }
 
             var staticUrl = _self.options.staticUrl;
             var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
@@ -126,6 +130,8 @@ util.inherits(Ide, EventEmitter);
                 socketIoUrl: _self.options.socketIoUrl,
                 socketIoTransports: _self.options.socketIoTransports,
                 sessionId: req.sessionID, // set by connect
+                uid: req.session.uid || req.session.anonid || 0,
+                pid: _self.options.pid || process.pid || 0,
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
                 bundledPlugins: Object.keys(bundledPlugins),
@@ -136,6 +142,8 @@ util.inherits(Ide, EventEmitter);
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
+                real: _self.options.real ? "true" : "false",
+                env: _self.options.env || "local",
                 packed: _self.options.packed,
                 packedName: _self.options.packedName
             };
@@ -193,7 +201,7 @@ util.inherits(Ide, EventEmitter);
     };
 
     this.getUser = function(req) {
-        var uid = req.session.uid;
+        var uid = req.session.uid || req.session.anonid;
         if (!uid || !this.$users[uid])
             return null;
         else
@@ -211,13 +219,13 @@ util.inherits(Ide, EventEmitter);
 
     this.getPermissions = function(req) {
         var user = this.getUser(req);
-        
+
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
-            return user.getPermissions();
+            return user.getPermissions() || User.VISITOR_PERMISSIONS;
     };
-    
+
     this.hasUser = function(username) {
         return !!this.$users[username];
     };
@@ -228,6 +236,7 @@ util.inherits(Ide, EventEmitter);
             return this.workspace.error("No session for user " + username, 401, message, client);
 
         user.addClientConnection(client, message);
+        this.emit("clientConnection", client);
     };
 
     this.onUserMessage = function(user, message, client) {
@@ -262,7 +271,7 @@ util.inherits(Ide, EventEmitter);
 
     this.dispose = function(callback) {
         this.emit("destroy");
-        
+
         this.workspace.dispose(callback);
     };
 }).call(Ide.prototype);

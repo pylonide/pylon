@@ -510,7 +510,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var node = page.$model.data;
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
-                    xmlNode : node
+                    xmlNode : node,
+                    newPath: e.newPath
                 });
             }
         });
@@ -863,7 +864,8 @@ module.exports = ext.register("ext/editors/editors", {
                         forceOpen: true,
                         active   : active
                             ? active == node.getAttribute("path")
-                            : i == l - 1
+                            : i == l - 1,
+                        origin: "settings"
                     });
 
                     if (doc.state.type != "nofile")
@@ -966,7 +968,8 @@ module.exports = ext.register("ext/editors/editors", {
             // send it to the dispatcher
             editors.gotoDocument({
                 node : node,
-                active: true
+                active : true,
+                origin: "hash"
             });
             
             // and expand the tree
@@ -1047,6 +1050,7 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         if (!hasData) {
+            options.origin = "jump";
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 

@@ -67,11 +67,11 @@ util.inherits(Socket, EventEmitter);
 
             self._getSession(message.sessionId, function(err, session) {
                 if (err) {
-                    return client.send({
+                    return client.send(JSON.stringify({
                         "type": "error",
                         "code": err.code,
                         "message": err.message
-                    });
+                    }));
                 }
 
                 message.session = session;
@@ -85,7 +85,7 @@ util.inherits(Socket, EventEmitter);
             if (err)
                 return callback(new error.InternalServerError(err));
 
-            if (!session || !session.uid)
+            if (!session || !(session.uid || session.anonid))
                 return callback(new error.Unauthorized("Session ID missing"));
 
             return callback(null, session);

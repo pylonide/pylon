@@ -7,13 +7,13 @@ module.exports = function startup(options, imports, register) {
         if (!req.session.uid) {
             req.session.uid = req.sessionID;
         }
-        
+
         next();
     });
 
     register(null, {
         "workspace-permissions": {
-            getPermissions: function(uid, workspaceId, callback) {
+            getPermissions: function(uid, workspaceId, origin, callback) {
                 if (!uid)
                     return callback(new Error("Invalid user id: " + uid));
 

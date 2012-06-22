@@ -8,20 +8,19 @@
 "use strict";
 
 var Plugin = require("../cloud9.core/plugin");
-var Path = require("path");
+var fsnode = require("vfs-nodefs-adapter");
 var util = require("util");
 var assert = require("assert");
 
 var name = "settings";
 
 var SETTINGS_PATH;
-var fs;
+var VFS;
 
 module.exports = function setup(options, imports, register) {
     assert(options.settingsPath, "option 'settingsPath' is required");
     SETTINGS_PATH = options.settingsPath;
-    fs = imports["sandbox.fs"];
-
+    VFS = imports.vfs;
     imports.ide.register(name, SettingsPlugin, register);
 };
 
@@ -29,6 +28,7 @@ var SettingsPlugin = module.exports.SettingsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = name;
+    this.fs = fsnode(VFS);
     this.settingsPath = SETTINGS_PATH;
 };
 
@@ -61,10 +61,10 @@ util.inherits(SettingsPlugin, Plugin);
 
     this.loadSettings = function(user, callback) {
         // console.log("load settings", this.settingsPath);
-        var _self = this;
-        fs.exists(this.settingsPath, function(err, exists) {
+        var self = this;
+        this.fs.exists(this.settingsPath, function(exists) {
             if (exists) {
-                fs.readFile(_self.settingsPath, "utf8", callback);
+                self.fs.readFile(self.settingsPath, "utf8", callback);
             }
             else {
                 callback("settings file does not exist", "");
@@ -73,16 +73,16 @@ util.inherits(SettingsPlugin, Plugin);
     };
 
     this.storeSettings = function(user, settings, callback) {
-        var _self = this;
+        var self = this;
         // console.log("store settings", this.settingsPath);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
-        var tmpPath = _self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
-        fs.writeFile(tmpPath, settings, "utf8", function(err) {
+        var tmpPath = self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
+        this.fs.writeFile(tmpPath, settings, "utf8", function(err) {
             if (err) {
                 callback(err);
                 return;
             }
-            fs.rename(tmpPath, _self.settingsPath, callback);
+            self.fs.rename(tmpPath, self.settingsPath, callback);
         });
     };
 

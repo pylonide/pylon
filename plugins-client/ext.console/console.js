@@ -528,10 +528,12 @@ module.exports = ext.register("ext/console/console", {
             var id = extra && extra.command_id;
         
             if (!id) {
+                if (extra)
+                    return;
                 type = "pid";
                 id = message.pid;
             }
-        
+
             logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(id, type === "pid"), ide);
             return;
         }
@@ -579,7 +581,7 @@ module.exports = ext.register("ext/console/console", {
 
     hook: function() {
         var _self = this;
-        
+
         // Append the console window at the bottom below the tab
         this.markupInsertionPoint = consoleRow;
 
@@ -650,9 +652,9 @@ module.exports = ext.register("ext/console/console", {
                 checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]"
             }), 800)
         );
-        
+
         menus.addItemByPath("Tools/~", new apf.divider(), 30000);
-        
+
         var cmd = {
             "Git" : [
                 ["Status", "git status"],
@@ -675,15 +677,15 @@ module.exports = ext.register("ext/console/console", {
                 ["Uninstall", "npm uninstall", null, null, true]
             ]
         };
-        
+
         var idx = 40000;
         Object.keys(cmd).forEach(function(c) {
             menus.addItemByPath("Tools/" + c + "/", null, idx += 1000);
             var list = cmd[c];
-            
+
             var idx2 = 0;
             list.forEach(function(def) {
-                menus.addItemByPath("Tools/" + c + "/" + def[0], 
+                menus.addItemByPath("Tools/" + c + "/" + def[0],
                     new apf.item({
                         onclick : function(){
                             _self.showInput();
@@ -1024,14 +1026,14 @@ module.exports = ext.register("ext/console/console", {
 
     showInput : function(temporary, immediate){
         var _self = this;
-        
+
         if (!this.hiddenInput)
             return;
 
         ext.initExtension(this);
 
         this.$collapsedHeight = this.collapsedHeight;
-        
+
         cliBox.show();
         
         if (temporary) {

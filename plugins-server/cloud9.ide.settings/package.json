@@ -7,7 +7,7 @@
     "plugin": {
         "consumes": [
             "ide",
-            "sandbox.fs"
+            "vfs"
         ]
     }
 }

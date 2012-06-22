@@ -240,7 +240,7 @@ module.exports = ext.register("ext/code/code", {
         return this.amlEditor.getSession();
     },
 
-    setDocument : function(doc, actiontracker){
+    setDocument : function(doc, actiontracker, isLazy){
         var _self = this;
 
         var ceEditor = this.amlEditor;
@@ -272,6 +272,7 @@ module.exports = ext.register("ext/code/code", {
 
                 doc.acesession.setValue(e.value || "");
 
+
                 if (doc.state)
                     _self.setState(doc, doc.state);
 
@@ -287,10 +288,11 @@ module.exports = ext.register("ext/code/code", {
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
 
-            ceEditor.setProperty("value", doc.acesession || "");
+            if (!isLazy)
+                ceEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
-                if (this.editor != _self)
+                if (this.editor != _self || !doc)
                     return;
 
                 if (!doc.isInited)
@@ -760,8 +762,11 @@ module.exports = ext.register("ext/code/code", {
             setTimeout(function() {
                 var doc = page.$doc;
                 var syntax = _self.getSyntax(doc.getNode());
-                doc.acesession.setMode(ceEditor.getMode(syntax));
-                doc.acesession.syntax = syntax;
+                // This event is triggered also when closing files, so session may be gone already.
+                if(doc.acesession) {
+                    doc.acesession.setMode(ceEditor.getMode(syntax));
+                    doc.acesession.syntax = syntax;
+                }
             });
         });
 
