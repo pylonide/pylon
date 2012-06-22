@@ -5690,6 +5690,9 @@
             cursor : default;
             white-space : nowrap;
         }
+        .searchresults>div{
+            color : #666;
+        }
         .searchresults>div:not(.selected):hover,
         .treeOutline .item-fix:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
