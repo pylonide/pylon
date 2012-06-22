@@ -415,6 +415,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 this.lastSearch = null; //invalidate cache
                 this.filter(search);
             }
+            else {
+                this.filter("");
+            }
         }
         else if (self.winGoToFile && winGoToFile.visible) {
             if (!noanim) {

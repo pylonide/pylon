@@ -162,6 +162,7 @@ module.exports = {
         gotofile.setEventsEnabled(true);
         if (dgGoToFile.getProperty("visible"))
             return;
+        gotofile.filter(txtGoToFile.value.match(/^@/) ? "" : txtGoToFile.value, false, true);
         dgGoToFile.show();
         treeOutline.hide();
     },
