@@ -391,13 +391,19 @@ module.exports = ext.register("ext/sync/sync", {
         var _self = this;
 
         winConfirmSyncOff.close();
-        
+
+        var payload = {};
+
+        if (ide.local) {
+            payload.localWorkspaceId = ide.workspaceId;
+        } else {
+            payload.onlineWorkspaceId = ide.workspaceId.split("/").pop();
+        }
+
         this.sendMessageToLocal("/api/sync/disable", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
-            data: "payload=" + encodeURIComponent(JSON.stringify({
-	            localWorkspaceId: ide.workspaceId
-	        })),
+            data: "payload=" + encodeURIComponent(JSON.stringify(payload)),
             async: true,
             callback: function( data, state, extra ) {
                 if (state != apf.SUCCESS || JSON.parse(data).success !== true) {
