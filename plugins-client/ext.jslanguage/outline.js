@@ -100,16 +100,6 @@ function extractOutline(doc, node) {
             });
             return this;
         },
-        'VarDeclInit(x, ObjectInit(_))', function(b) {
-            results.push({
-                icon: 'property',
-                name: b.x.value,
-                pos: this[1].getPos(),
-                displayPos: b.x.getPos(),
-                items: extractOutline(doc, this[1])
-            });
-            return this;
-        },
         // x : function(...) { ... } -> name is x
         'PropertyInit(x, Function(name, fargs, body))', function(b) {
             results.push({
@@ -121,12 +111,56 @@ function extractOutline(doc, node) {
             });
             return this;
         },
+        /* UNDONE: properties in outline
         'PropertyInit(x, e)', function(b) {
             results.push({
                 icon: 'property',
                 name: b.x.value,
                 pos: this.getPos(),
                 displayPos: getIdentifierPosBefore(doc, this.getPos())
+            });
+            return this;
+        },
+        */
+        'VarDeclInit(x, e)', function(b) {
+            var items = extractOutline(doc, b.e);
+            if (items.length === 0)
+                return this;
+            results.push({
+                icon: 'property',
+                name: b.x.value,
+                pos: this[1].getPos(),
+                displayPos: b.x.getPos(),
+                items: items
+            });
+            return this;
+        },
+        'PropertyInit(x, e)', function(b) {
+            var items = extractOutline(doc, b.e);
+            if (items.length === 0)
+                return this;
+            results.push({
+                icon: 'property',
+                name: b.x.value,
+                pos: this[1].getPos(),
+                displayPos: getIdentifierPosBefore(doc, this.getPos()),
+                items: items
+            });
+            return this;
+        },
+        'Assign(x, e)', function(b) {
+            var name = expressionToName(b.x);
+            if (!name)
+                return false;
+            var items = extractOutline(doc, b.e);
+            if (items.length === 0)
+                return this;
+            results.push({
+                icon: 'property',
+                name: name,
+                pos: this[1].getPos(),
+                displayPos: getIdentifierPosBefore(doc, this.getPos()),
+                items: items
             });
             return this;
         },
@@ -203,4 +237,5 @@ function extractOutline(doc, node) {
 }
 
 });
+
 
