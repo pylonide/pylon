@@ -68,6 +68,30 @@ module.exports = function setup(options, imports, register) {
             packedName: options.packedName
         });
 
+        hub.on("ready", function() {
+            ide.init(serverPlugins);
+    
+            connect.useAuth(baseUrl, function(req, res, next) {
+                if (!(req.session.uid || req.session.anonid))
+                    return next(new error.Unauthorized());
+                // NOTE: This gets called multiple times!
+    
+                var pause = utils.pause(req);
+    
+                initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
+                    if (err) {
+                        next(err);
+                        pause.resume();
+                        return;
+                    }
+                    ide.handle(req, res, next);
+                    pause.resume();
+                });
+            });
+    
+            log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
+        });
+        
         register(null, {
             ide: {
                 register: function(name, plugin, callback) {
@@ -91,28 +115,4 @@ module.exports = function setup(options, imports, register) {
             }
         });
     }
-
-    hub.on("ready", function() {
-        ide.init(serverPlugins);
-
-        connect.useAuth(baseUrl, function(req, res, next) {
-            if (!(req.session.uid || req.session.anonid))
-                return next(new error.Unauthorized());
-            // NOTE: This gets called multiple times!
-
-            var pause = utils.pause(req);
-
-            initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
-                if (err) {
-                    next(err);
-                    pause.resume();
-                    return;
-                }
-                ide.handle(req, res, next);
-                pause.resume();
-            });
-        });
-
-        log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
-    });
 };
