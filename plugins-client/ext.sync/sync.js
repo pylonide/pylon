@@ -550,6 +550,7 @@ module.exports = ext.register("ext/sync/sync", {
                     clearTimeout(timer);
                     
             		_self.$iframe.connected = true;
+                    _self.$iframe.connecting = false;
                     
                     callback(true);
             	break;
@@ -568,6 +569,7 @@ module.exports = ext.register("ext/sync/sync", {
         }
 
         //Main timeout for initial connect
+        clearTimeout(timer);
         timer = setTimeout(function(){
             _self.$iframe.connecting = false;
             callback(false);
@@ -723,6 +725,8 @@ module.exports = ext.register("ext/sync/sync", {
         var _self = this;
         
         if (this.syncEnabled) {
+            ext.initExtension(this);
+            
             if (ide.local)  {
                 winConfirmSyncOff.show();
             }
@@ -734,7 +738,7 @@ module.exports = ext.register("ext/sync/sync", {
                     }
                     else if (!mnuInstallLocal.visible) {
                         winConfirmSyncOff.show();
-                        winLocalId.$ext.innerHTML = winLocalId.$ext.innerHTML.replace("{MACADD}", localId);
+                        winLocalId.$ext.innerHTML = winLocalId.$ext.innerHTML.replace("{MACADD}", _self.syncClients[localId].hostname + " (" + localId + ")");
                     }
                 });
             }

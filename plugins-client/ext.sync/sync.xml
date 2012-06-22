@@ -162,7 +162,7 @@
       center    = "true"
       kbclose   = "true"
       buttons   = "close"
-      width     = "450"
+      width     = "550"
       skin      = "bk-window2"
       render    = "runtime"
       onkeydown = "
@@ -174,7 +174,7 @@
         }
       "
       class     = "relative">
-        <a:vbox padding="10" edge="15 20 25 20">
+        <a:vbox padding="10" edge="10 20 25 20">
             <h3 id="winQuestionRevHeader">Are you sure you want to disable synching?</h3>
             <div class="alertMsg" id="winLocalId" visible="{cloud9config.hosted}">Synching will be disabled for {MACADD}.</div>
             <div class="alertMsg" visible="{mdlSyncClients.queryNodes('client').length > 1}">Synching will remained enabled for your other clients.</div>
