@@ -218,7 +218,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                 if (_self.disabled) {
                     return;
                 }
-                watcherFn(e.xmlNode, true);
+                watcherFn(e.xmlNode, false);
             });
         });
     },
