@@ -452,6 +452,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             ide.addEventListener("socketMessage", this.$onMessage);
         }
 
+        if (path.indexOf(ide.davPrefix) == 0)
+            path = path.slice(ide.davPrefix.length).replace(/^\//,"");
+
         options.command = "search";
         options.type = "codesearch";
         options.path = path;
