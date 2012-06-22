@@ -15,6 +15,7 @@ var search = require("ext/gotofile/search");
 module.exports = {
     nodes: [],
     fullOutline : [],
+    filteredOutline : [],
     ignoreSelectOnce : true,
     isDirty : false,
     
@@ -98,7 +99,8 @@ module.exports = {
                 xmlS.push('" ec="'); xmlS.push(pos.ec);
                 xmlS.push('" elx="'); xmlS.push(elem.pos.el);
             elem.meta && xmlS.push('" meta="') && xmlS.push(elem.meta);
-                elem === selected && xmlS.push('" selected="true');
+                if (elem === selected)
+                    xmlS.push('" selected="true');
                 xmlS.push('">\n');
             xmlS = xmlS.concat(this.outlineJsonToXml(elem.items, selected, 'entry'));
                 xmlS.push('</'); xmlS.push(tag); xmlS.push('>');
@@ -140,6 +142,7 @@ module.exports = {
         else if (txtGoToFile.value.match(/^@/)) {
             this.showOutline();
         }
+        this.scrollToSelected();
     },
     
     showOutline: function() {
@@ -167,20 +170,31 @@ module.exports = {
         require("core/ext").initExtension(gotofile);
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
-        var outline = search.treeSearch(this.fullOutline, filter);
+        
+        var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter);
         if (outline.items)
             outline = outline.items;
+    },
+    
+    scrollToSelected: function() {
+        var outline = this.filteredOutline;
         var ace = editors.currentEditor.amlEditor.$editor;
         
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
-        
-        var node = mdlOutline.queryNode("//entry[@selected]");
+
+        var node = mdlOutline.queryNode("//*[@selected]");
         if (node) {
             this.ignoreSelectOnce = true;
             treeOutline.select(node);
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
+        }
+        else { //if (mdlOutline.data.childNodes[0]) {        
+            // HACK: Need to set to non-falsy value first
+            treeOutline.$container.scrollTop = 1;
+            treeOutline.$container.scrollTop = 0;
+            //mdlOutline.data.childNodes[0].scrollIntoView();
         }
     },
 
@@ -274,4 +288,5 @@ module.exports = {
     },
 };
 });
+
 
