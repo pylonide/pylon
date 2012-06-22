@@ -1,5 +1,5 @@
 /**
- * Synching for the Cloud9 IDE
+ * Syncing for the Cloud9 IDE
  *
  * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
