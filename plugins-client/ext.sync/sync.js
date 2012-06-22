@@ -44,6 +44,7 @@ module.exports = ext.register("ext/sync/sync", {
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
             this.btnSyncStatus = barExtras.appendChild(new apf.button({
+                id      : "btnSync",
                 margin  : "3 0 0 0" ,
                 "class" : "c9-sync" ,
                 state   : "true",
@@ -60,6 +61,10 @@ module.exports = ext.register("ext/sync/sync", {
                     else {
                         mnuSyncPrj.hide();
                         mnuInstallLocal.hide();
+                        if (_self.syncIntervalId) {
+                            clearInterval(_self.syncIntervalId);
+                            _self.syncIntervalId = null;
+                        }
                     }
                 }
             }));
@@ -83,6 +88,7 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.handleMessage(event.message);
                 }
             });
+            
         }
     },
 
@@ -107,12 +113,12 @@ module.exports = ext.register("ext/sync/sync", {
             hideonclick : true,
             tooltip : mnuSyncInfo.$ext,
             getPosition : function(){
-            	mnuSyncInfo.show();
+                mnuSyncInfo.show();
             	
-            	var pos = apf.getAbsolutePosition(_self.btnSyncStatus.$ext);
-            	pos[0] -= mnuSyncInfo.getWidth() - _self.btnSyncStatus.getWidth();
-            	pos[1] += _self.btnSyncStatus.getHeight();
-            	return pos;
+                var pos = apf.getAbsolutePosition(_self.btnSyncStatus.$ext);
+                pos[0] -= mnuSyncInfo.getWidth() - _self.btnSyncStatus.getWidth();
+                pos[1] += _self.btnSyncStatus.getHeight();
+                return pos;
             },
             isAvailable : function(){
             	return !!_self.syncInfoAvailable;
@@ -354,32 +360,37 @@ module.exports = ext.register("ext/sync/sync", {
                     xmlNode, mdlSyncPrj.data.firstChild);
             }
             ddSyncPrj.select(xmlNode);
+            
+            if (_self.syncIntervalId) {
+                clearInterval(_self.syncIntervalId);
+                _self.syncIntervalId = null;
+            }
         });
     },
     
     isFSNodeVisibleInTree : function(path) {
-    	var xmlNode = fs.model.queryNode("//node()[@path=" 
+        var xmlNode = fs.model.queryNode("//node()[@path=" 
             + util.escapeXpathString(path) + "]")
-		if (!xmlNode) return false;
+        if (!xmlNode) return false;
 		
-		var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
-		if (!htmlNode) return false;
+        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
+        if (!htmlNode) return false;
 		
-		return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
+        return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
     },
     
     createFolderInTreeIfVisible : function(path) {
 		var file, li;
         do {
-        	li   = path.lastIndexOf("/");
-        	file = path.substr(li + 1);
-        	path = path.substr(0, li);
+            li   = path.lastIndexOf("/");
+            file = path.substr(li + 1);
+            path = path.substr(0, li);
         	
             if (this.isFSNodeVisibleInTree(path)) {
-            	if (!fs.model.queryNode("//node()[@path=" 
-            	  + util.escapeXpathString(path + "/" + file) + "]")) {
-	            	fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
-	              		"//node()[@path=" + util.escapeXpathString(path) + "]");
+                if (!fs.model.queryNode("//node()[@path=" 
+                  + util.escapeXpathString(path + "/" + file) + "]")) {
+	               fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
+    	                "//node()[@path=" + util.escapeXpathString(path) + "]");
             	}
               	
               	break;
@@ -478,8 +489,19 @@ module.exports = ext.register("ext/sync/sync", {
         vboxSyncInstall.setAttribute("visible", !found);
         
         mnuInstallLocal.display(null, null, true, this.btnSyncStatus);
+        
+        if (!this.syncIntervalId) {
+            this.syncIntervalId = setInterval(function() {
+                if (cloud9config.debug)
+                    console.log("Checking C9Local CLI....");
+                _self.setSync();
+            }, 5000);
+        }
+        
         mnuInstallLocal.addEventListener("blur", function(e) {
             _self.btnSyncStatus.setValue(false);
+            clearInterval(_self.syncIntervalId);
+            _self.syncIntervalId = null;
         });
     },
     
@@ -596,13 +618,13 @@ module.exports = ext.register("ext/sync/sync", {
             callback(false);
         };
 
-		this.$iframe = document.body.appendChild(document.createElement("iframe"));
+        this.$iframe = document.body.appendChild(document.createElement("iframe"));
         this.$iframe.addEventListener("load", startTimeout);
         this.$iframe.addEventListener("error", errorHandler);
 
         this.$iframe.connecting = true;
         this.$iframe.connected = false;
-		this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
+        this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
         this.$iframe.style.width = "1px";
         this.$iframe.style.height = "1px";
     },
@@ -623,16 +645,18 @@ module.exports = ext.register("ext/sync/sync", {
                 }
 
                 data = JSON.parse(data);
-                mdlSyncPrj.load(apf.getXml(_self.createSyncProjectsXml(data.projects)));
                 
-                mnuSyncPrj.display(null, null, false, _self.btnSyncStatus);
-                
-                mnuSyncPrj.addEventListener("prop.visible", function(e){
-                    if (!e.value)
-                        _self.btnSyncStatus.setValue(false);
-                    mnuSyncPrj.removeEventListener("prop.visible", arguments.callee);
-                });
-                
+                if (ide.local) {
+                    mdlSyncPrj.load(apf.getXml(_self.createSyncProjectsXml(data.projects)));
+                    
+                    mnuSyncPrj.display(null, null, false, _self.btnSyncStatus);
+                    
+                    mnuSyncPrj.addEventListener("prop.visible", function(e){
+                        if (!e.value)
+                            _self.btnSyncStatus.setValue(false);
+                        mnuSyncPrj.removeEventListener("prop.visible", arguments.callee);
+                    });
+                }
                 callback(data);
             }
         });
