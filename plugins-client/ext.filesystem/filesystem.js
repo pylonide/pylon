@@ -22,6 +22,43 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
 
+    createFileNodeFromPath : function (path, attributes) {
+        var name = path.split("/").pop();
+        var node = apf.n("<file />")
+            .attr("name", name)
+            .attr("contenttype", util.getContentType(name))
+            .attr("type", "file")
+            .attr("path", path);
+        
+        if (attributes !== undefined) {
+            for (var a in attributes) {
+                if (a.indexOf("date") >= 0)
+                    attributes[a] = new Date(attributes[a]);
+                node.attr(a, attributes[a]);
+            }
+        }
+        
+        return node.node();
+    },
+
+    createFolderNodeFromPath : function (path, attributes) {
+        var name = path.split("/").pop();
+        var node = apf.n("<folder />")
+            .attr("name", name)
+            .attr("path", path)
+            .attr("type", "folder");
+            
+        if (attributes !== undefined) {
+            for (var a in attributes) {
+                if (a.indexOf("date") >= 0)
+                    attributes[a] = new Date(attributes[a]);
+                node.attr(a, attributes[a]);
+            }
+        }
+        
+        return node.node();
+    },
+    
     readFile : function (path, callback){
         if (!this.webdav) return;
         
