@@ -1022,7 +1022,7 @@ module.exports = ext.register("ext/editors/editors", {
                 setTimeout(f = function() {
                     // TODO move this to the editor
                     var editor = _self.currentEditor.amlEditor;
-                    editor.$editor.gotoLine(row, column, false);
+                    editor.$editor.gotoLine(row, column, options.animate !== false);
                     if (text)
                         editor.$editor.session.highlight(text);
 

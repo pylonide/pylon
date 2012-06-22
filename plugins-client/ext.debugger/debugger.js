@@ -305,7 +305,13 @@ module.exports = ext.register("ext/debugger/debugger", {
         }
 
         if (file) {
-            editors.jump(file, row, column, text, null, true);
+            editors.jump({
+                node    : file, 
+                row     : row, 
+                column  : column, 
+                text    : text,
+                animate : false
+            });
         }
         else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
@@ -330,12 +336,25 @@ module.exports = ext.register("ext/debugger/debugger", {
                         .attr("scriptname", script.getAttribute("scriptname"))
                         .attr("lineoffset", "0").node();
                 }
-                editors.jump(node, row, column, text, null, page ? true : false);
+                editors.jump({
+                    node    : node, 
+                    row     : row, 
+                    column  : column, 
+                    text    : text, 
+                    animate : page ? false : true
+                });
             }
             else {
                 var page = tabEditors.getPage(value);
                 if (page)
-                    editors.jump(page.xmlRoot, row, column, text, null, true);
+                    editors.jump({
+                        node    : page.xmlRoot, 
+                        doc     : page.$doc,
+                        row     : row, 
+                        column  : column, 
+                        text    : text, 
+                        animate : false
+                    });
                 else {
                     var node = apf.n("<file />")
                         .attr("name", value)
@@ -348,7 +367,13 @@ module.exports = ext.register("ext/debugger/debugger", {
 
                     dbg.loadScript(script, function(source) {
                         var doc = ide.createDocument(node, source);
-                        editors.jump(node, row, column, text, doc);
+                        editors.jump({
+                            node    : node, 
+                            row     : row, 
+                            column  : column, 
+                            text    : text, 
+                            doc     : doc
+                        });
                     });
                 }
             }
