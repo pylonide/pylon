@@ -5732,7 +5732,7 @@
         }
         .searchresults>div.selected,
         .searchresults>div.selected>span,
-        .treeOutline .item-fix.selected,,
+        .treeOutline .item-fix.selected,
         .treeOutline .item-fix.selected>span {
             color : white !important;
         }
@@ -11535,7 +11535,7 @@
         .filemgr-tree .item-fix.selected {
             background : rgba(0,0,0,0.04);
         }
-        .filemgr-tree .item-fix.selected label u {  
+        .treeOutline .filemgr-tree .item-fix.selected label u {  
             color: white;
         }
         
@@ -11682,7 +11682,6 @@
         .filemgr-tree .item LABEL .caption {
             font-family : Tahoma, Arial;
             font-size   : 11px;
-            color       : #101010;
             display:block;
             position:relative;
             overflow:hidden;
@@ -11690,6 +11689,9 @@
             padding:1px 0 0 2px;
             text-decoration:none;
             white-space: nowrap;
+        }
+        .filemgr-tree.not(treeOutline) .item LABEL .caption {
+            color       : #101010;
         }
 
         .filemgr-tree .fileupload .item LABEL .caption {
