@@ -93,12 +93,16 @@ module.exports = ext.register("ext/language/language", {
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
-                ["unusedFunctionArgs", "true"],
-                ["continuousComplete", "false"]
+                ["unusedFunctionArgs", "false"],
+                ["continuousComplete", _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 
         settings.addSettings("Language Support", markupSettings);
+    },
+
+    isInferAvailable : function() {
+        return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
     init : function() {
@@ -192,7 +196,7 @@ module.exports = ext.register("ext/language/language", {
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
-        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") === "true";
+        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") != "false";
         this.setPath();
     },
 

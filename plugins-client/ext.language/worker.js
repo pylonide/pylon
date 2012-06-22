@@ -195,6 +195,8 @@ function asyncParForEach(array, fn, callback) {
                     // Ignore parse errors
                     next();
                 }
+            } else {
+                next();
             }
         }, function() {
             callback(_self.cachedAst);
