@@ -246,7 +246,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             this.position = -1;
 
             var editor = editors.currentEditor;
-            if (editor) {
+            if (editor && editor.getSelection) {
                 var sel   = editor.getSelection();
                 var doc   = editor.getDocument();
                 var range = sel.getRange();

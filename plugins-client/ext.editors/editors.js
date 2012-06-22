@@ -396,7 +396,8 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }
 
-        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
+        var fileExtension = (xmlNode.getAttribute("path") || "")
+            .split(".").pop().toLowerCase();
         var editor = this.fileExtensions[fileExtension]
           && this.fileExtensions[fileExtension][0]
           || this.fileExtensions["default"];
@@ -858,13 +859,15 @@ module.exports = ext.register("ext/editors/editors", {
                     _self.gotoDocument({
                         doc      : doc,
                         init     : true,
+                        type     : doc.state && doc.state.type,
                         forceOpen: true,
                         active   : active
                             ? active == node.getAttribute("path")
                             : i == l - 1
                     });
 
-                    checkExpand(node.getAttribute("path"), doc);
+                    if (doc.state.type != "nofile")
+                        checkExpand(node.getAttribute("path"), doc);
                 }
 
                 _self.loadedSettings = true;
@@ -1024,7 +1027,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (!options.doc) {
             var node    = options.node;
             var path    = node.getAttribute("path");
-        var tabs    = tabEditors;
+            var tabs    = tabEditors;
             
             hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
         }
