@@ -61,7 +61,7 @@ function typeAlongComplete(e) {
 function inputTriggerComplete(text, pasted) {
     if (editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
-    if (!pasted && text === "." && completionUtil.isInferAvailable())
+    if (!pasted && text === "." && language.isInferAvailable())
         handleChar(text);
 }
 
@@ -127,7 +127,7 @@ function preceededByIdentifier(line, column, postfix) {
 }
 
 function isRequireJSCall(line, column) {
-    if (editors.currentEditor.amlEditor.syntax !== "javascript" || !completionUtil.isInferAvailable())
+    if (editors.currentEditor.amlEditor.syntax !== "javascript" || !language.isInferAvailable())
         return false;
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     var LENGTH = 'require("'.length;
