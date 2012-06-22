@@ -5685,7 +5685,6 @@
         .searchresults>div,
         .treeOutline .item-fix{
             background : rgba(255,255,255,0.4);   
-            color : #666;
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
             cursor : default;
@@ -11645,8 +11644,12 @@
         .filemgr-tree U.root .item-fix.minlast .item SPAN,
         .filemgr-tree U.root .item-fix.plus .item SPAN,
         .filemgr-tree U.root .item-fix.pluslast .item SPAN,
-        .filemgr-tree .item-fix.root .item SPAN {
+        .filemgr-tree:not(.treeOutline) .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
+            background-repeat: no-repeat;
+        }
+        .treeOutline .item-fix.root.min .item SPAN {
+            background-image:url(images/tree_close_arrow_small.png) !important;
             background-repeat: no-repeat;
         }
         .dark .filemgr-tree U.root .item-fix.min .item SPAN,
