@@ -43,37 +43,44 @@ module.exports = ext.register("ext/sync/sync", {
             
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
-            this.btnSyncStatus = barExtras.appendChild(new apf.button({
-                id      : "btnSync",
-                margin  : "3 0 0 0" ,
-                "class" : "c9-sync" ,
-                state   : "true",
-                disabled : true,
-                onclick : function() {
-                    ext.initExtension(_self);
-                    
-                    if (this.value || _self.syncEnabled) {
-                        _self.setSync();
+            this.nodes.push(
+                menus.$insertByIndex(barExtras, new apf.label({
+                    "class"  : "c9-sync-state-info" 
+                                + (ide.local ? " available-online" : ""),
+                    "margin" : "4 2 0 0"
+                }), 10),
+                menus.$insertByIndex(barExtras, new apf.button({
+                    id      : "btnSync",
+                    margin  : "3 0 0 0" ,
+                    width   : "60",
+                    height  : "19",
+                    "class" : "c9-sync" ,
+                    skin    : "c9-topbar-btn",
+                    state   : "true",
+                    disabled : true,
+                    onclick : function() {
+                        ext.initExtension(_self);
                         
-                        if (_self.syncEnabled)
-                            this.setValue(true);
-                    }
-                    else {
-                        mnuSyncPrj.hide();
-                        mnuInstallLocal.hide();
-                        if (_self.syncIntervalId) {
-                            clearInterval(_self.syncIntervalId);
-                            _self.syncIntervalId = null;
+                        if (this.value || _self.syncEnabled) {
+                            _self.setSync();
+                            
+                            if (_self.syncEnabled)
+                                this.setValue(true);
+                        }
+                        else {
+                            mnuSyncPrj.hide();
+                            mnuInstallLocal.hide();
+                            if (_self.syncIntervalId) {
+                                clearInterval(_self.syncIntervalId);
+                                _self.syncIntervalId = null;
+                            }
                         }
                     }
-                }
-            }));
+                }), 11)
+            );
             
-            this.lblSyncState = barExtras.appendChild(new apf.label({
-                "class"  : "c9-sync-state-info" 
-                            + (ide.local ? " available-online" : ""),
-                "margin" : "4 2 0 0"
-            }), this.btnSyncStatus);
+            this.lblSyncState = barExtras.childNodes[1];
+            this.btnSyncStatus = barExtras.childNodes[2];
             
             ide.addEventListener("localOffline", function(){
                 _self.btnSyncStatus.disable();
@@ -114,14 +121,14 @@ module.exports = ext.register("ext/sync/sync", {
             tooltip : mnuSyncInfo.$ext,
             getPosition : function(){
                 mnuSyncInfo.show();
-            	
+                
                 var pos = apf.getAbsolutePosition(_self.btnSyncStatus.$ext);
                 pos[0] -= mnuSyncInfo.getWidth() - _self.btnSyncStatus.getWidth();
                 pos[1] += _self.btnSyncStatus.getHeight();
                 return pos;
             },
             isAvailable : function(){
-            	return !!_self.syncInfoAvailable;
+                return !!_self.syncInfoAvailable;
             }
         });
 
@@ -206,7 +213,7 @@ module.exports = ext.register("ext/sync/sync", {
             mnuSyncInfo.hide();
         }, long ? 5000 : 500);
     },
-	
+    
     handleMessage : function(message) {
         var _self = this;
             
@@ -290,15 +297,15 @@ module.exports = ext.register("ext/sync/sync", {
         var parentPath = ide.davPrefix + path.substring(0, path.lastIndexOf("/"));
         
         if (this.isFSNodeVisibleInTree(parentPath)) {
-	        if (!fs.pathExists(parentPath))
-	            fs.createFolderTree(parentPath);
-	            
-	        fs.model.appendXml(fs.createFileNodeFromPath(ide.davPrefix + path, 
-	            { "modifieddate": mtime }), 
-	            "//node()[@path=" + util.escapeXpathString(parentPath) + "]");
+            if (!fs.pathExists(parentPath))
+                fs.createFolderTree(parentPath);
+                
+            fs.model.appendXml(fs.createFileNodeFromPath(ide.davPrefix + path, 
+                { "modifieddate": mtime }), 
+                "//node()[@path=" + util.escapeXpathString(parentPath) + "]");
         }
         else {
-        	this.createFolderInTreeIfVisible(parentPath);
+            this.createFolderInTreeIfVisible(parentPath);
         }
     },    
     
@@ -306,26 +313,26 @@ module.exports = ext.register("ext/sync/sync", {
         var parentPath = ide.davPrefix + newPath.substring(0, newPath.lastIndexOf("/"));
         
         if (this.isFSNodeVisibleInTree(parentPath)) {
-	        if (!fs.pathExists(parentPath))
-	            fs.createFolderTree(parentPath);
-	        
-	        var file = fs.model.queryNode("//node()[@path=" 
-	            + util.escapeXpathString(ide.davPrefix + oldPath) + "]");
-	        var parent = fs.model.queryNode("//node()[@path=" 
-	                + util.escapeXpathString(parentPath) + "]");
-	
-			if (apf.getFilename(oldPath) != apf.getFilename(newPath))
-				fs.beforeRename(file, null, newPath);
-	
-	        if (file) {
-	            apf.xmldb.moveNode(parent, file);
-	            fs.beforeMove(parent, file);
-	        }
-	        else
-	            apf.xmldb.appendChild(parent, fs.createFileNodeFromPath(newPath));
+            if (!fs.pathExists(parentPath))
+                fs.createFolderTree(parentPath);
+            
+            var file = fs.model.queryNode("//node()[@path=" 
+                + util.escapeXpathString(ide.davPrefix + oldPath) + "]");
+            var parent = fs.model.queryNode("//node()[@path=" 
+                    + util.escapeXpathString(parentPath) + "]");
+    
+            if (apf.getFilename(oldPath) != apf.getFilename(newPath))
+                fs.beforeRename(file, null, newPath);
+    
+            if (file) {
+                apf.xmldb.moveNode(parent, file);
+                fs.beforeMove(parent, file);
+            }
+            else
+                apf.xmldb.appendChild(parent, fs.createFileNodeFromPath(newPath));
         }
         else {
-        	this.createFolderInTreeIfVisible(parentPath);
+            this.createFolderInTreeIfVisible(parentPath);
         }
     },
     
@@ -356,8 +363,11 @@ module.exports = ext.register("ext/sync/sync", {
                 }));
                 xmlNode.setAttribute("newws", "true");
                 
+                if (ide.local) {
                 xmlNode = apf.xmldb.appendChild(mdlSyncPrj.data,
                     xmlNode, mdlSyncPrj.data.firstChild);
+                }
+                _self.btnSyncStatus.setValue(true);
             }
             ddSyncPrj.select(xmlNode);
             
@@ -372,28 +382,28 @@ module.exports = ext.register("ext/sync/sync", {
         var xmlNode = fs.model.queryNode("//node()[@path=" 
             + util.escapeXpathString(path) + "]")
         if (!xmlNode) return false;
-		
+        
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
         if (!htmlNode) return false;
-		
+        
         return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
     },
     
     createFolderInTreeIfVisible : function(path) {
-		var file, li;
+        var file, li;
         do {
             li   = path.lastIndexOf("/");
             file = path.substr(li + 1);
             path = path.substr(0, li);
-        	
+            
             if (this.isFSNodeVisibleInTree(path)) {
                 if (!fs.model.queryNode("//node()[@path=" 
                   + util.escapeXpathString(path + "/" + file) + "]")) {
-	               fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
-    	                "//node()[@path=" + util.escapeXpathString(path) + "]");
-            	}
-              	
-              	break;
+                   fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
+                        "//node()[@path=" + util.escapeXpathString(path) + "]");
+                }
+                  
+                  break;
             }
         } while (path && path != ide.davPrefix);
     },
@@ -441,10 +451,10 @@ module.exports = ext.register("ext/sync/sync", {
         message.type = "api";
         message.url  = url;
         
-    	if (message.callback) {
-    		message.uid = this.callbacks.push(message.callback) - 1;
-    		delete message.callback;
-    	}
+        if (message.callback) {
+            message.uid = this.callbacks.push(message.callback) - 1;
+            delete message.callback;
+        }
         
         this.hasLocalInstalled(function(isInstalled){
             if (isInstalled) {
@@ -528,7 +538,7 @@ module.exports = ext.register("ext/sync/sync", {
                 }
                 callback(null, data.macAddress);
             }) - 1
-    	};
+        };
         
         this.hasLocalInstalled(function(isInstalled){
             if (isInstalled) {
@@ -548,9 +558,9 @@ module.exports = ext.register("ext/sync/sync", {
             this.$createIframeToLocal(function(isConnected){
                 _self.queue.forEach(function(func){
                     func(isConnected);
-            	});
+                });
                 _self.queue = [];
-        	});
+            });
         }
         
         if (this.$iframe.connecting) {
@@ -569,25 +579,25 @@ module.exports = ext.register("ext/sync/sync", {
         var timer;
 
         window.addEventListener("message", function(e) {
-    		try {
+            try {
                 var json = typeof e.data == "string" ? JSON.parse(e.data) : e.data;
             } catch (e) { return; }
 
             switch (json.type) {
-            	case "connect":
+                case "connect":
                     clearTimeout(timer);
                     
-            		_self.$iframe.connected = true;
+                    _self.$iframe.connected = true;
                     _self.$iframe.connecting = false;
                     
                     callback(true);
-            	break;
-            	case "response":
-            		if (_self.callbacks[json.uid])
-            			_self.callbacks[json.uid](json.data, json.state, json.extra);
-            	break;
+                break;
+                case "response":
+                    if (_self.callbacks[json.uid])
+                        _self.callbacks[json.uid](json.data, json.state, json.extra);
+                break;
             }
-		});
+        });
         
         function cleanup(){
             _self.$iframe.removeEventListener("load", startTimeout);
@@ -717,8 +727,8 @@ module.exports = ext.register("ext/sync/sync", {
     },
     
     syncProject: function(onlineWorkspaceId, master){
-    	var _self = this;
-    	
+        var _self = this;
+        
         if (!onlineWorkspaceId)
             onlineWorkspaceId = this.lastOnlineWorkspaceId;
         else
