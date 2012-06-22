@@ -1,4 +1,4 @@
-16/**
+/**
  * Cloud9 Language Foundation
  *
  * @copyright 2011, Ajax.org B.V.

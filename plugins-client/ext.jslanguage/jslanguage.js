@@ -23,6 +23,7 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
         language.registerLanguageHandler('ext/jslanguage/scope_analyzer');
         language.registerLanguageHandler('ext/jslanguage/narcissus_jshint');
         language.registerLanguageHandler('ext/jslanguage/debugger');
+        language.registerLanguageHandler('ext/jslanguage/outline');
     },
     
     enable : function() {
