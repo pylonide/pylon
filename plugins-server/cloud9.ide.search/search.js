@@ -35,6 +35,7 @@ var SearchPlugin = function(ide, workspace) {
     this.processCount = 0;
     this.pm = ProcessManager;
     this.eventbus = EventBus;
+    this.basePath = ide.workspaceDir;
 };
 
 util.inherits(SearchPlugin, Plugin);
@@ -74,20 +75,16 @@ util.inherits(SearchPlugin, Plugin);
         if (message.command != "search")
             return false;
 
+        var path = message.path;
+        var type = message.type;
+
         if (message.path == null)
             return true;
 
-        // todo is this a good way for handling the path?
-        if (message.path.indexOf("/workspace/" >= 0))
-            message.path = message.path.substr(11);
-        message.uri = message.path;
+        message.uri = path;
+        message.path = this.basePath + (path ? "/" + path : "");
 
-        var lastSlash = message.path.lastIndexOf("/");
-        var dirPath = "/" + message.path.substr(0, lastSlash);
-        var absoluteFilePath = this.ide.workspaceDir + "/" + message.path;
-        message.path = absoluteFilePath;
 
-        var type = message.type;
         if (type == "codesearch")
             var args = this.assembleSearchCommand(message);
         else if (type == "filelist")

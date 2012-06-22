@@ -69,7 +69,7 @@ module.exports = ext.register("ext/filelist/filelist", {
         ide.send({
             command: "search",
             type: "filelist",
-            path: ide.davPrefix,
+            path: "",
             showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
         });
         this.retrieving = true;
