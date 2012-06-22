@@ -90,7 +90,7 @@ module.exports = {
         p.on("cursorLeave", function() {
             p.detach();
             if(continuousCompletionWasEnabled)
-                _self.ext.setContinuousCompletion(true);
+                _self.ext.setContinuousCompletionEnabled(true);
             marker.enableMarkerType('occurrence_main');
             marker.enableMarkerType('occurrence_other');
         });
