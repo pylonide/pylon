@@ -175,9 +175,9 @@
       "
       class     = "relative">
         <a:vbox padding="10" edge="10 20 25 20">
-            <h3 id="winQuestionRevHeader">Are you sure you want to disable synching?</h3>
-            <div class="alertMsg" id="winLocalId" visible="{cloud9config.hosted}">Synching will be disabled for {MACADD}.</div>
-            <div class="alertMsg" visible="{mdlSyncClients.queryNodes('client').length > 1}">Synching will remained enabled for your other clients.</div>
+            <h3 id="winQuestionRevHeader">Are you sure you want to disable syncing?</h3>
+            <div class="alertMsg" id="winLocalId" visible="{cloud9config.hosted}">Syncing will be disabled for {MACADD}.</div>
+            <div class="alertMsg" visible="{mdlSyncClients.queryNodes('client').length > 1}">Syncing will remained enabled for your other clients.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
