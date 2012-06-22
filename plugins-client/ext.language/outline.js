@@ -136,6 +136,7 @@ module.exports = {
         
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
+            txtGoToFile.focus();
             this.showOutline();
             txtGoToFile.$input.selectionStart = 1;
         }
