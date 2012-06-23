@@ -9,9 +9,8 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var platform = require("os").platform();
 
-var grepCmd, findCmd, perlCmd;
+var grepCmd, findCmd, perlCmd, platform;
 var name = "search";
 
 var ProcessManager;
@@ -22,6 +21,7 @@ module.exports = function setup(options, imports, register) {
     grepCmd = options.grepCmd || "grep";
     findCmd = options.findCmd || "find";
     perlCmd = options.perlCmd || "perl";
+    platform = options.platform || require("os").platform();
 
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
@@ -247,6 +247,7 @@ util.inherits(SearchPlugin, Plugin);
             args.push("-regextype", "posix-extended", "-print");
 
         args.command = findCmd;
+        console.log(args)
         return args;
     };
 
