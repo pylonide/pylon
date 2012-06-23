@@ -270,7 +270,7 @@ module.exports = ext.register("ext/sync/sync", {
                     else
                         console.log("[SYNC] file added", message.args.path, message.args.mtime);
                         
-                if (fileExists)
+                if (!fileExists)
                     this.createSyncFile(message.args.path, message.args.mtime);
             }
             else if (message.args.event === "modified") {
