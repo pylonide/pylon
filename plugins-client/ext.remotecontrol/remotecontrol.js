@@ -63,8 +63,8 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                                 
                     ide.dispatchEvent("openfile", {doc: doc, node: node});
                 }
-                else {// Generic case: open the file
-                    editors.showFile(event.message.args.path);
+                else {// Generic and Workspace case: open a single file
+                    editors.gotoDocument({path: event.message.args.path});
                     
                     // Workspace case: the file is found in tree, expand it
                     if (event.message.args.options.name !== "generic") {
@@ -113,6 +113,9 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                     return util.alert("Update Error", 
                         "Unable to reboot runtime with update.", 
                         extra.http.responseText);
+                }
+                else {
+                    location.reload();
                 }
             }
         });
