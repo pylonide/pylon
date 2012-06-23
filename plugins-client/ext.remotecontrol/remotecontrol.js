@@ -101,10 +101,22 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
             }
         }
     },
-    
-    getUpdate : function() {
+
+    rebootWithUpdate : function() {
         winUpdate.hide();
-        alert("yep.");
+        apf.ajax("/c9local/reboot-with-update", {
+            method: "POST",
+            headers: {"Content-type": "application/x-www-form-urlencoded"},
+            async: true,
+            callback: function( data, state, extra) {
+                if (state != apf.SUCCESS) {
+                    return util.alert("Update Error", 
+                        "Unable to reboot runtime with update.", 
+                        extra.http.responseText);
+                }
+            }
+        });
+
     },
     
     enable : function(){

@@ -13,12 +13,12 @@
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3>An Update to Cloud9 Local is Available!</h3>
-            <div class="alertMsg">Would you like to download it?</div>
+            <div class="alertMsg">Would you like to restart your runtime now?</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
             <a:button onclick = "winUpdate.hide()" default="3" skin="btn-default-css3">Not now</a:button>
-            <a:button onclick = "require('ext/remotecontrol/remotecontrol').getUpdate()" skin="btn-default-css3" class="btn-green">Okay!</a:button>
+            <a:button onclick = "require('ext/remotecontrol/remotecontrol').rebootWithUpdate()" skin="btn-default-css3" class="btn-green">Okay!</a:button>
         </a:hbox>
     </a:window>
     
