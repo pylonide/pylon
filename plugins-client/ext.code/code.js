@@ -777,7 +777,7 @@ module.exports = ext.register("ext/code/code", {
         });
         
         ide.addEventListener("animate", function(e){
-            if (!ceEditor.parentNode.visible)
+            if (!ceEditor.$ext.offsetHeight)
                 return;
             
             if (e.type == "editor") {

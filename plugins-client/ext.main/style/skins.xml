@@ -9137,7 +9137,7 @@
     }
 
     .tab_console .btncontainer{
-        padding : 5px 106px 3px 6px;
+        padding : 4px 106px 3px 6px;
         height: 20px;
         overflow: visible;
         white-space: nowrap;
@@ -9158,23 +9158,32 @@
         top : 0;
         left : 0;
         right : 0;
+    
+        clip: rect(0px 3000px 30px 0px); 
+        display : -webkit-box;
+        display : -moz-box;
     }
-
-    .tab_console .btncontainer>div {
+    
+    .tab_console .btncontainer > .btntab {
+        cursor: default;
+        
+        min-width : 17px;
+        max-width : 70px;
+        -webkit-box-flex : 1;
+        -moz-box-flex : 1;
+        position : relative;
+        width : 0;
+        
         display: block;
-        display : inline-block;
         margin: 0 0 0 0;
         padding: 0;
-        position : relative;
-        vertical-align : bottom;
         height : 19px;
     }
 
     .tab_console .btncontainer .btntab {
         padding      : 4px 20px 2px 20px;
         position     : relative;
-        margin-top:-1px;
-        text-align: center;
+        text-align   : center;
     }
 
     .tab_console .btncontainer .btntab.btnclose {
@@ -9267,7 +9276,7 @@
     }
 
     .tab_console .btncontainer .btnclose strong:active {
-        background-position : 0 -28px;
+        background-position : 0 -2spx;
     }
 
     .tab_console .btncontainer .curbtn.btnclose strong {
@@ -9317,7 +9326,7 @@
 ]]></a:style>
 <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
     .tab_console .btncontainer .btntab {
-        padding      : 5px 20px 1px 20px;
+        padding      : 4px 20px 1px 20px;
     }
 
     .tab_console .btncontainer div.curbtn {
@@ -10623,7 +10632,12 @@
             overflow: visible;
             white-space: nowrap;
             width : auto;
+            
+            clip: rect(0px 3000px 30px 0px); 
+            display : -webkit-box;
+            display : -moz-box;
         }
+    
         .dockcol .docktab .btncontainer{
             padding-top: 4px;
             padding-left: 3px;
@@ -10635,18 +10649,19 @@
             background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
         }
 
-        .docktab .btncontainer>div {
+        .docktab .btncontainer .btntab {
             display: block;
-            display : inline-block;
             margin: 0 0 0 0;
             padding: 0;
             position : relative;
-            vertical-align : bottom;
             cursor : default;
-        }
-
-        .docktab .btncontainer .btntab {
-            float: left;
+            
+            min-width : 17px;
+            max-width : 100px;
+            -webkit-box-flex : 1;
+            -moz-box-flex : 1;
+            width : 0;
+            
             padding       : 3px 2px 4px;
             position      : relative;
             text-align    : center;

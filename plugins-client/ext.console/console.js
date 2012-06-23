@@ -113,8 +113,10 @@ module.exports = ext.register("ext/console/console", {
             this.pidToTracerMap[spi] = command_id;
 
             var containerEl = document.getElementById("console_section" + command_id);
-            containerEl.setAttribute("rel", command_id);
-            apf.setStyleClass(containerEl, "has_pid");
+            if (!containerEl) {
+                containerEl.setAttribute("rel", command_id);
+                apf.setStyleClass(containerEl, "has_pid");
+            }
 
             if (!proc.extra)
                 this.command_id_tracer++;
