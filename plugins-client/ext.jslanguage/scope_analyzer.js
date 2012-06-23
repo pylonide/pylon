@@ -617,7 +617,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         },
         'Function(x, _, _)', function(b) {
             // Only for named functions
-            if(!b.x.value)
+            if(!b.x.value || !this.getAnnotation("scope"))
                 return;
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");

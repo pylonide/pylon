@@ -107,7 +107,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     }
 
                     this.getRevisions(message.path, function(err, revObj) {
-                        if (err && !err.path.match(/\/Search Results$/)) {
+                        if (err) {
                             return console.error(
                                 "There was a problem retrieving the revisions" +
                                 " for the file " + message.path + ":\n", err);
