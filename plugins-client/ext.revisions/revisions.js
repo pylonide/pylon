@@ -1496,7 +1496,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     hide: function() {
         settings.model.setQueryValue("general/@revisionsvisible", false);
         ceEditor.$ext.style.right = "0";
-        tabEditors.getPage().$showRevisions = false;
+        var page = tabEditors.getPage();
+        if (!page) return;
+        
+        page.$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
 

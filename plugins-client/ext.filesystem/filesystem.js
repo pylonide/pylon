@@ -468,7 +468,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 dispatchAfterOpenFile();
             }
             // if we're creating a new file then we'll fill the doc with nah dah
-            else if ((e.type && e.type === "newfile") || Number(node.getAttribute("newfile") || 0) === 1) {
+            else if ((e.type && (e.type === "newfile" || e.type == "nofile")) 
+              || Number(node.getAttribute("newfile") || 0) === 1) {
                 doc.setValue("");
                 dispatchAfterOpenFile();
             }
