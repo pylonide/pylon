@@ -55,8 +55,7 @@ var Ide = module.exports = function(options) {
         env: options.env,
         local: options.local,
         packed: (options.packed === true) ? true : false,
-        packedName: options.packedName,
-        hosted: !!options.hosted
+        packedName: options.packedName
     };
 
     this.$users = {};
