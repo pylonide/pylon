@@ -411,7 +411,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             txtFind.select();
 
             //Animate
-            var toHeight = winSearchReplace.$ext.scrollHeight;
+            var toHeight = 38;//winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight + 4;
             
