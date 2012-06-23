@@ -9,7 +9,8 @@
         "consumes": [
             "ide",
             "process-manager",
-            "run-shell"
+            "run-shell",
+            "vfs"
         ]
     }
 }

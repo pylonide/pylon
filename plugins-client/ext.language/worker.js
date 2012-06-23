@@ -35,6 +35,9 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(500);
     
+    sender.on("outline", applyEventOnce(function(event) {
+        _self.outline(event);
+    }));
     sender.on("complete", applyEventOnce(function(pos) {
         _self.complete(pos);
     }));
@@ -192,12 +195,38 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
+                    if (e instanceof TypeError)
+                        throw e;
                     // Ignore parse errors
                     next();
                 }
+            } else {
+                next();
             }
         }, function() {
             callback(_self.cachedAst);
+        });
+    };
+
+    this.outline = function(event) {
+        var _self = this;
+        this.parse(function(ast) {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.outline(_self.doc, ast, function(outline) {
+                        if (outline) {
+                            outline.showNow = event.data.showNow;
+                            return _self.sender.emit("outline", outline);
+                        }
+                        else {
+                            next();
+                        }
+                    });
+                }
+                else
+                    next();
+            }, function() {
+            });
         });
     };
 

@@ -12,6 +12,8 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 
+require("ext/editors/editors");
+
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
     dev     : "Ajax.org",
@@ -80,6 +82,7 @@ module.exports = ext.register("ext/themes/themes", {
                 _self.setThemedGUI(path);
             }, 10);
         }
+        
         // fixes a problem with Ace architect loading /lib/ace, 
         // creating a conflict with themes
         if (theme.isDark === undefined) {
@@ -88,19 +91,26 @@ module.exports = ext.register("ext/themes/themes", {
             }, 10);
         }
         
+        this.isDark = theme.isDark;
+        
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;
-        var tabsDiv = tabEditors.$buttons;
+        var editorHolder = tabEditors.parentNode.$ext;
+        var tabsDiv = tabEditors.$buttons.parentNode.parentNode;
+        
         editorDiv.setAttribute("id", "editorDiv");
         tabsDiv.setAttribute("id", "tabsDiv");
         
         if (theme.isDark) {
             apf.setStyleClass(editorDiv, "dark");
-            apf.setStyleClass(tabsDiv, "dark");
+            apf.setStyleClass(editorHolder, "dark");
+            if (!apf.isGecko) 
+                apf.setStyleClass(tabsDiv, "dark");
         }
         else {
             apf.setStyleClass(editorDiv, "", ["dark"]);
+            apf.setStyleClass(editorHolder, "", ["dark"]);
             apf.setStyleClass(tabsDiv, "", ["dark"]);
         }
         
@@ -108,25 +118,35 @@ module.exports = ext.register("ext/themes/themes", {
         
         if (_self.lastTheme) {
             apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
-             apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+            apf.setStyleClass(editorHolder, "", [_self.lastTheme]);
+            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
-        apf.setStyleClass(editorDiv, _self.lastTheme = cssClass);
-        apf.setStyleClass(tabsDiv, _self.lastTheme = cssClass);
+        _self.lastTheme = cssClass;
+        
+        apf.setStyleClass(editorDiv, cssClass);
+        apf.setStyleClass(editorHolder, cssClass);
+        apf.setStyleClass(tabsDiv, cssClass);
         
         if (_self.loaded[path])
             return;
             
         _self.loaded[path] = true;
         
-        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
+        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "backgroundColor");
         var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
         
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            ["#editorDiv." + cssClass + " > .vbox, "
-             + "#tabsDiv." + cssClass + " .curbtn .tab_middle, "
+            (apf.isGecko ? [] : 
+                ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
+                 (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
+                 + ";background-color: " + bg + " !important"]),
+            ["#editorDiv." + cssClass + " > .basic, "
+             + "#editorDiv." + cssClass + " > .vsplitbox, "
+             + "#tabsDiv." + cssClass + ", " // > .editor_tab
+             + "." + cssClass + " .c9terminal, "
              + "." + cssClass + " .codeditorHolder, "
              + "." + cssClass + " .winGoToFile, "
              + "." + cssClass + " .revisionsBar .topbar, "
@@ -138,7 +158,7 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + ".dark .revisions-list .revision, "
              + "." + cssClass + ".dark .cc_complete_option, "
              + "." + cssClass + " .searchresults > div",
-            "color:" + fg + ";"],
+             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")],
             ["." + cssClass + " .ace_corner", 
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]

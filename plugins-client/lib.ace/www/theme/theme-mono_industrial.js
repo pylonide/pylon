@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-mono-industrial .ace_text-layer {\
-  cursor: text;\
   color: #FFFFFF;\
 }\
 \

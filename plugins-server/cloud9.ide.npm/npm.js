@@ -54,7 +54,8 @@ util.inherits(NpmPlugin, Plugin);
             args: message.argv.slice(1),
             cwd: message.cwd,
             nodeVersion: message.version,
-            extra: message.extra
+            extra: message.extra,
+            encoding: "ascii"
         }, this.workspaceId + "::npm", function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);

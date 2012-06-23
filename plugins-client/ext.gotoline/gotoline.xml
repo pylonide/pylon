@@ -5,10 +5,11 @@
       visible = "false"
       width   = "60"
       height  = "90"
-      left    = "-100"
+      left    = "0"
       top     = "-100"
-      zindex  = "100000">
-        <a:vbox anchors="0 0 0 0" padding="0" edge="5">
+      zindex  = "100000"
+      style   = "overflow:hidden">
+        <a:vbox top="0" right="0" bottom="0" width="61" padding="0" edge="5">
             <a:textbox id="txtLineNr"
               focusselect="true" />
             <a:list id="lstLineNumber"

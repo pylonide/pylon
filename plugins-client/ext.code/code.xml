@@ -30,18 +30,18 @@
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
+      readonly          = "{[@loading] || require('core/ide') || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
-    <a:menu id="mnuCtxEditor" render="runtime">
+    <a:menu id="mnuCtxEditor">
         <a:item command="undo">Undo</a:item>
         <a:item command="redo">Redo</a:item>
         <a:divider />
-        <a:item command="cut">Cut</a:item>
+        <a:item id="mnuCtxEditorCut" command="cut">Cut</a:item>
         <a:item command="copy">Copy</a:item>
         <a:item command="paste">Paste</a:item>
         <a:divider />
-        <a:item 
+        <a:item
           visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);
@@ -60,11 +60,14 @@
         <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>
         <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
         <a:item type="radio" value="text/css">CSS</a:item>
+        <a:item type="radio" value="text/diff">Diff</a:item>
+        <a:item type="radio" value="text/x-go">Golang</a:item>
         <a:item type="radio" value="text/x-groovy">Groovy</a:item>
+        <a:item type="radio" value="text/hx">haXe</a:item>
         <a:item type="radio" value="text/x-java-source">Java</a:item>
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
+        <a:item type="radio" value="application/json">JSON</a:item>
         <a:item type="radio" value="application/x-latex">Latex</a:item>
-        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
         <a:item type="radio" value="text/x-less">LESS</a:item>
         <a:item type="radio" value="text/x-lua">Lua</a:item>
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
@@ -76,9 +79,12 @@
         <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
         <a:item type="radio" value="text/x-scala">Scala</a:item>
         <a:item type="radio" value="text/x-scss">SCSS</a:item>
-        <a:item type="radio" value="text/x-sql">SQL</a:item>
+        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
+        <a:item type="radio" value="text/x-sql">(pg)SQL</a:item>
+        <a:item type="radio" value="image/svg+xml">SVG</a:item>
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
+        <a:item type="radio" value="application/x-yaml">YAML</a:item>
     </a:menu>
 </a:application>

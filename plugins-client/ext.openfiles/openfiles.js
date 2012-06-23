@@ -23,21 +23,21 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     type            : ext.GENERAL,
     markup          : markup,
     nodes           : [],
-    
+
     defaultWidth    : 130,
-    
+
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = colLeft;
-        
+
         panels.register(this, {
             position : 2000,
             caption: "Open Files",
             "class": "open_files",
             command: "openfilepanel"
         });
-        
+
         commands.addCommand({
             name: "openfilepanel",
             hint: "show the open files panel",
@@ -46,59 +46,58 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 _self.show();
             }
         });
-        
+
         var model = this.model = new apf.model().load("<files />");
-        
+
         ide.addEventListener("openfile", function(e){
             var node = e.doc.getNode();
             if (node) {
-                if (!model.queryNode('//node()[@path="' 
+                if (!model.queryNode('//node()[@path="'
                   + node.getAttribute("path").replace(/"/g, "&quot;") + '"]')) {
                     var xmlNode = model.appendXml(apf.getCleanCopy(node));
-                    
+
                     if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth)
                         _self.animateAdd(xmlNode);
                 }
             }
         });
-        
+
         ide.addEventListener("afteropenfile", function(e){
-            var node = model.queryNode('//node()[@path="' 
+            var node = model.queryNode('//node()[@path="'
                 + e.node.getAttribute("path").replace(/"/g, "&quot;") + '"]');
-            
-            if (!e.doc.$page)
+            if (!node || !e.doc.$page)
                 return;
             
             if (node.getAttribute("customtype") == util.getContentType("c9search"))
                 ide.dispatchEvent("c9searchopen", e);
                 
             var pgModel = e.doc.$page.$model;
-            pgModel.addEventListener("update", 
+            pgModel.addEventListener("update",
               pgModel.$lstOpenFilesListener = function(){
                   if (!pgModel.data)
-                       return;
+                      return;
                   
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
                       apf.xmldb.setAttribute(node, "changed", changed);
               });
         });
-        
+
         ide.addEventListener("filenotfound", function(e){
-            var node = model.queryNode('//node()[@path="' 
+            var node = model.queryNode('//node()[@path="'
                 + e.path.replace(/"/g, "&quot;") + '"]');
 
             if (node)
                 model.removeXml(node);
         });
-        
+
         var $close = function(e){
             if (e.returnValue === false)
                 return;
-            
-            var node = model.queryNode('//node()[@path="' 
+
+            var node = model.queryNode('//node()[@path="'
                 + e.page.id.replace(/"/g, "&quot;") + '"]');
-            
+
             if (!node || !node.parentNode || node.beingRemoved)
                 return;
             
@@ -107,7 +106,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 
             e.page.$model.removeEventListener("update", 
                 e.page.$model.$lstOpenFilesListener);
-            
+
             if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth) {
                 node.beingRemoved = true;
                 _self.animateRemove(node);
@@ -115,7 +114,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             else
                 model.removeXml(node);
         }
-        
+
         ide.addEventListener("closefile", $close);
         tabEditors.addEventListener("close", $close);
 
@@ -134,9 +133,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
 
+            if (!e.replace)
+                var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
             if (node && fNode) {
-                if (e.path)
+                if (e.path) {
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
+                    trNode && apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
+                }
+                if (e.newPath) {
+                    apf.xmldb.setAttribute(fNode, "path", e.newPath);
+                    trNode && apf.xmldb.setAttribute(trNode, "path", e.newPath);
+                }
                 if (e.filename)
                     apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
                 if (e.changed != undefined)
@@ -144,36 +151,36 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             }
         });
     },
-    
+
     animateAdd : function(xmlNode){
         if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
             return;
 
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
-            
+
         htmlNode.style.overflow = "hidden";
         apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
             //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
             {type: "left", to:0, from: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
         ], onfinish: function(){
-            
+
         }});
     },
-    
+
     animateRemove : function(xmlNode){
         var _self = this;
 
         if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
-            htmlNode.style.overflow = "hidden";
-            
-        apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
-            //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
-            {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
-        ], onfinish: function(){
-            htmlNode.style.display = 'none';
-            _self.model.removeXml(xmlNode);
-        }});
+            var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
+                htmlNode.style.overflow = "hidden";
+                
+            apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
+                //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
+                {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
+            ], onfinish: function(){
+                htmlNode.style.display = 'none';
+                _self.model.removeXml(xmlNode);
+            }});
         }
         else {
             _self.model.removeXml(xmlNode);
@@ -182,18 +189,18 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
     init : function() {
         var _self = this;
-        
+
         this.panel = winOpenFiles;
         this.nodes.push(winOpenFiles);
-        
+
         lstOpenFiles.addEventListener("afterselect", function(e) {
             var node = this.selected;
             if (!node || this.selection.length > 1)
                 return;
 
-            ide.dispatchEvent("openfile", { doc: ide.createDocument(node) });
+            editors.gotoDocument({ doc: ide.createDocument(node), origin: "openfiles" });
         });
-        
+
         lstOpenFiles.addEventListener("afterremove", function(e){
             //Close selected files
             var sel = this.getSelection(), page, isLast, pages = tabEditors.getPages();
@@ -203,7 +210,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 editors.close(page);
             }
         });
-        
+
         lstOpenFiles.addEventListener("click", function(e){
             if (e.htmlEvent.target.tagName == "SPAN") {
                 var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
@@ -212,17 +219,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             }
         });
         
-        tabEditors.addEventListener("afterswitch", function(e){
+        ide.addEventListener("tab.afterswitch", function(e){
             var page = e.nextPage;
             if (page && page.$model.data) {
-                var node = _self.model.queryNode("file[@path='" 
+                var node = _self.model.queryNode("file[@path='"
                     + page.$model.data.getAttribute("path") + "']");
                 if (node && !lstOpenFiles.isSelected(node))
                     lstOpenFiles.select(node);
             }
         });
     },
-    
+
     show : function(e) {
         if (!this.panel || !this.panel.visible) {
             panels.activate(this);
@@ -231,30 +238,30 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         else {
             panels.deactivate(null, true);
         }
-        
+
         return false;
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
         });
     },
-    
+
     destroy : function(){
         commands.removeCommandByName("openfilepanel");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
         this.nodes = [];
-        
+
         panels.unregister(this);
     },
 });

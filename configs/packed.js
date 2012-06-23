@@ -1,6 +1,6 @@
-var config = require("./default");
+var plugins = require("./default");
 
-config.containers.master.plugins.forEach(function(plugin) {
+plugins.forEach(function(plugin) {
     if (plugin.packagePath) {
         if (/\/cloud9.core$/.test(plugin.packagePath)) {
             plugin.socketIoTransports = ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"];
@@ -8,7 +8,7 @@ config.containers.master.plugins.forEach(function(plugin) {
     }
 });
 
-config.containers.master.plugins = config.containers.master.plugins.filter(function(plugin) {
+plugins = plugins.filter(function(plugin) {
    // returns false of any of these plugins are detected; lib.packed will emit them
    return !(/\/plugins-client\/cloud9.core$/.test(plugin) ||
             /\/plugins-client\/lib.ace$/.test(plugin) ||
@@ -17,6 +17,6 @@ config.containers.master.plugins = config.containers.master.plugins.filter(funct
             /\/plugins-client\/lib.v8debug$/.test(plugin))
 });
 
-config.containers.master.plugins.push("./../plugins-client/lib.packed");
+plugins.push("./../plugins-client/lib.packed");
 
-module.exports = config;
+module.exports = plugins;

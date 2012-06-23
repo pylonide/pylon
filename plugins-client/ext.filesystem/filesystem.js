@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var commands = require("ext/commands/commands");
+var editors = require("ext/editors/editors");
 
 require("ext/main/main"); //Make sure apf is inited.
 
@@ -21,11 +22,48 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
 
+    createFileNodeFromPath : function (path, attributes) {
+        var name = path.split("/").pop();
+        var node = apf.n("<file />")
+            .attr("name", name)
+            .attr("contenttype", util.getContentType(name))
+            .attr("type", "file")
+            .attr("path", path);
+        
+        if (attributes !== undefined) {
+            for (var a in attributes) {
+                if (a.indexOf("date") >= 0)
+                    attributes[a] = new Date(attributes[a]);
+                node.attr(a, attributes[a]);
+            }
+        }
+        
+        return node.node();
+    },
+
+    createFolderNodeFromPath : function (path, attributes) {
+        var name = path.split("/").pop();
+        var node = apf.n("<folder />")
+            .attr("name", name)
+            .attr("path", path)
+            .attr("type", "folder");
+            
+        if (attributes !== undefined) {
+            for (var a in attributes) {
+                if (a.indexOf("date") >= 0)
+                    attributes[a] = new Date(attributes[a]);
+                node.attr(a, attributes[a]);
+            }
+        }
+        
+        return node.node();
+    },
+    
     readFile : function (path, callback){
         if (!this.webdav) return;
-        
+
         var self = this;
-        
+
         // in webdav.read, if ide.onLine === 0, it is calling callback immediately without content
         // if we're not online, we'll add an event handler that listens to the socket connecting (or the ping or so)
         if (!ide.onLine) {
@@ -101,13 +139,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             callback && callback();
                             throw Error;
                         }
-                        
+
                         // parse xml
                         var nodesInDirXml = apf.getXml(data);
                         // we expect the new created file in the directory listing
                         var fullFolderPath = path + "/" + name;
                         var folder = nodesInDirXml.selectSingleNode("//folder[@path='" + fullFolderPath + "']");
-                        
+
                         // not found? display an error
                         if (!folder) {
                             util.alert("Error", "Folder '" + name + "' could not be created",
@@ -124,10 +162,15 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             folder = apf.queryNode(node, "folder[@path='"+ fullFolderPath +"']");
 
                             tree.select(folder);
-                            
+
                             if (!noRename)
                                 tree.startRename();
-                            
+
+                            ide.dispatchEvent("newfolder", {
+                                folderName: name,
+                                parentPath: path,
+                                path: fullFolderPath
+                            });
                             callback && callback(folder);
                         });
                     });
@@ -201,23 +244,28 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                                     return util.alert("Error", "File '" + filename + "' could not be created",
                                         "An error occurred while creating a new file, please try again.");
                                 }
-                                
+
                                 // parse xml
                                 var filesInDirXml = apf.getXml(data);
-                                
+
                                 // we expect the new created file in the directory listing
                                 var fullFilePath = path + "/" + filename;
                                 var nodes = filesInDirXml.selectNodes("//file[@path='" + fullFilePath + "']");
-                                
+
                                 // not found? display an error
                                 if (nodes.length === 0) {
                                     return util.alert("Error", "File '" + filename + "' could not be created",
                                         "An error occurred while creating a new file, please try again.");
                                 }
-                                
+
                                 file = nodes[0];
 
                                 both++;
+                                ide.dispatchEvent("newfile", {
+                                    fileName: filename,
+                                    parentPath: path,
+                                    path: fullFilePath
+                                });
                                 done();
                             });
                         });
@@ -225,7 +273,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     else {
                         node.setAttribute("name", filename);
                         node.setAttribute("path", path + "/" + filename);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), type:"newfile"});
+
+                        editors.gotoDocument({doc: ide.createDocument(node), type:"newfile", origin: "newfile"});
                     }
                 }
             };
@@ -267,46 +316,43 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         for (var i = 0; i < length; ++i) {
             var childNode = childNodes[i];
-            if(!childNode || childNode.nodeType != 1)
+            if (!childNode || childNode.nodeType != 1)
                 continue;
 
-            // The 'name' variable is redeclared here for some fucked up reason.
-            // The problem is that we are reusing that variable below. If the author
-            // of this would be so kind to fix this code as soon as he sees this
-            // comment, I would be eternally grateful. Sergi.
-            var name = childNode.getAttribute("name");
-
-            this.beforeRename(childNode, null, node.getAttribute("path") + "/" + name);
+            this.beforeRename(childNode, null,
+                node.getAttribute("path") + "/" + childNode.getAttribute("name"));
         }
-        
+
         ide.dispatchEvent("updatefile", {
             path: path,
             newPath: newPath,
             filename: name && name[0],
             xmlNode: node,
-            replace: isReplaceAction
+            replace: isReplaceAction,
+            isFolder: node.getAttribute("type") === "folder"
         });
     },
 
     beforeMove: function(parent, node, tree) {
         var path = node.getAttribute("path");
+        var newPath = parent.getAttribute("path") + "/" + node.getAttribute("name");
+        node.setAttribute("oldpath", path);
+        node.setAttribute("path", newPath);
+
         var page = tabEditors.getPage(path);
-        var newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
-
-        node.setAttribute("path", newpath);
         if (page)
-            page.setAttribute("id", newpath);
+            page.setAttribute("id", newPath);
 
-        var childNodes = node.childNodes;
-        var length = childNodes.length;
-
+        var length = node.childNodes.length;
         for (var i = 0; i < length; ++i) {
-            this.beforeMove(node, childNodes[i]);
+            this.beforeMove(node, node.childNodes[i]);
         }
 
         ide.dispatchEvent("updatefile", {
             path: path,
-            xmlNode: node
+            newPath: newPath,
+            xmlNode: node,
+            isFolder: node.getAttribute("type") === "folder"
         });
 
         return true;
@@ -314,25 +360,36 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     remove: function(path, callback) {
         var page = tabEditors.getPage(path);
-        if (page)
+        if (page) {
             tabEditors.remove(page);
+        }
 
-        var cb = function(data, state, extra) {
-            // In WebDAV, a 204 status from the DELETE verb means that the
-            // file was removed successfully.
-            if (extra && extra.status && extra.status === 204) {
-                ide.dispatchEvent("removefile", {
-                    path: path
-                });
-            }
+        // This is a very expensive way to find out whether the item to be
+        // removed is a file or a folder, since it involves creating a new model
+        // with the filesystem listing data, since the file node has already
+        // been removed from this module's model.
+        davProject.list(path, function(modelString) {
+            var model = new apf.model();
+            model.load(modelString);
 
-            if (callback)
-                callback(data, state, extra);
-        };
-        davProject.remove(path, false, cb);
+            var nodeToRemove = model.queryNode("//node()[@path='" + path + "']");
+            var isFolder = nodeToRemove && nodeToRemove.getAttribute("type") === "folder";
+            var cb = function(data, state, extra) {
+                // In WebDAV, a 204 status from the DELETE verb means that the
+                // file was removed successfully.
+                if (extra && extra.status && extra.status === 204) {
+                    ide.dispatchEvent("removefile", {
+                        path: path,
+                        isFolder: isFolder
+                    });
+                }
+
+                if (callback)
+                    callback(data, state, extra);
+            };
+            davProject.remove(path, false, cb);
+        });
     },
-
-    /**** Init ****/
 
     init : function() {
         commands.addCommand({
@@ -349,7 +406,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
             }
         });
-        
+
         this.model = new apf.model();
         this.model.load("<data><folder type='folder' name='" + ide.projectName +
             "' path='" + ide.davPrefix + "' root='1'/></data>");
@@ -384,6 +441,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var node = doc.getNode();
             var editor = e.doc.$page && e.doc.$page.$editor;
 
+            // This make the tab animation nicer.
+            function dispatchAfterOpenFile(){
+                setTimeout(function(){
+                    ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                }, 150);
+            }
+
             apf.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
                 if (e.node == node) {
@@ -393,7 +457,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             });
 
             if (doc.hasValue()) {
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
                 return;
             }
 
@@ -401,17 +465,18 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             if (doc.cachedValue) {
                 doc.setValue(doc.cachedValue);
                 delete doc.cachedValue;
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
             }
             // if we're creating a new file then we'll fill the doc with nah dah
-            else if ((e.type && e.type === "newfile") || Number(node.getAttribute("newfile") || 0) === 1) {
+            else if ((e.type && (e.type === "newfile" || e.type == "nofile")) 
+              || Number(node.getAttribute("newfile") || 0) === 1) {
                 doc.setValue("");
-                ide.dispatchEvent("afteropenfile", {doc: doc, node: node, editor: editor});
+                dispatchAfterOpenFile();
             }
             // otherwise go on loading
             else {
                 // add a way to hook into loading of files
-                if (ide.dispatchEvent("readfile", {doc: doc, node: node}) === false)
+                if (ide.dispatchEvent("readfile", {doc: doc, node: node, origin: e.origin || "fs"}) === false)
                     return;
 
                 var path = node.getAttribute("path");
@@ -428,7 +493,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         if (extra.status !== 404) {
                             console.log("Opening file failed for", path, "server responded with", state, extra);
                         }
-                        
+
                         // now invoke filenotfound every time
                         // because we can't be sure about the state so force a close of the file tab
                         // this will prevent things like empty files, etc.
@@ -442,13 +507,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         //doc.addEventListener("editor.ready", function(){
                             // populate the document
                             doc.setValue(data);
-                            
+
                             // fire event
-                            ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                            dispatchAfterOpenFile();
                         //});
                     }
                 };
-                
+
                 // offline / online detection has been moved into fs.readFile instead
                 fs.readFile(path, readfileCallback);
             }
@@ -491,7 +556,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     destroy : function(){
         commands.removeCommandsByName(["open", "c9"]);
-        
+
         this.webdav.destroy(true, true);
         this.model.destroy(true, true);
     }

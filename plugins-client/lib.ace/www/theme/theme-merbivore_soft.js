@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-merbivore-soft .ace_text-layer {\
-  cursor: text;\
   color: #E6E1DC;\
 }\
 \

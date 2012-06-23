@@ -24,6 +24,8 @@
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,
                 name: <%name%>,
+                uid: <%uid%>,
+                pid: <%pid%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
@@ -32,6 +34,7 @@
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
                 settings: <%settingsXml%>,
+                env: <%env%>,
                 packed: <%packed%> ? true : false,
                 packedName: <%packedName%>
             };
@@ -54,8 +57,8 @@
             else {
                var apfLoc = "";
             }
-            
-            var config = <%requirejsConfig%>; 
+
+            var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
                 if (!cloud9config.packed) {
@@ -66,7 +69,7 @@
                 else {
                     var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "packed.js")];
                 }
-                
+
                 require(list, function(ide, ext, util){
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
@@ -74,14 +77,14 @@
                     else {
                         var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
                     }
-                    
+
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
                     aceConfig.set("workerPath", "/static/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
-                    
+
                     //Load extensions
                     if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
@@ -91,7 +94,9 @@
                         });
                     }
                     else {
-                        loadAndBegin(ide, list);
+                        apf.addEventListener("load", function(){
+                            loadAndBegin(ide, list);
+                        });
                     }
                 });
                 preloaderImgs();
@@ -101,7 +106,7 @@
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time " 
+                console.log("Total Load Time "
                     + (cloud9config.totalTime) + "ms");
 
                 ide.addEventListener("$event.extload", function(cb){
