@@ -5669,27 +5669,45 @@
             position : relative;
         }
         
-        .searchresults>div{
-            background : rgba(255,255,255,0.4);   
-            color : #666;
+        .searchresults>div {
             padding : 2px 3px 4px 10px;
+        }
+        .treeOutline .item-fix label {
+            padding : 3px 3px 4px 14px;
+        }
+        .treeOutline .item-fix {
+            padding: 0
+        }
+        .treeOutline .item span {
+            left: 4px;
+            top: 9px;
+        }
+        .searchresults>div,
+        .treeOutline .item-fix{
+            background : rgba(255,255,255,0.4);   
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
             cursor : default;
             white-space : nowrap;
         }
-        .searchresults>div:hover{
+        .searchresults>div{
+            color : #666;
+        }
+        .searchresults>div:not(.selected):hover,
+        .treeOutline .item-fix:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
         }
-        .dark .searchresults>div {
+        .dark .searchresults>div,
+        .dark .treeOutline .item-fix{
             background : rgba(255,255,255,0.1);   
             border-top-color: rgba(255,255,255,0.05);
             border-bottom-color : rgba(0,0,0,0.3);
         }
-        .dark .searchresults>div:hover{
+        .dark .searchresults>div:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
         }
-        .searchresults>div>span{
+        .searchresults>div>span,
+        .treeOutline .item-fix>span{
             font-size : 14px;
             color : #333;
             display : block;
@@ -5698,11 +5716,13 @@
         .searchresults .path {
             font-size: 11px;
         }
-        .searchresults>div.selected{
+        .searchresults>div.selected,
+        .treeOutline .item-fix.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
         }
-        .dark .searchresults>div.selected{
+        .dark .searchresults>div.selected,
+        .dark .treeOutline .item-fix.selected{
             background: none !important;
             box-shadow: none !important;
         }
@@ -5713,14 +5733,18 @@
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.3) inset;
         }
         .searchresults>div.selected,
-        .searchresults>div.selected>span {
+        .searchresults>div.selected>span,
+        .treeOutline .item-fix.selected,
+        .treeOutline .item-fix.selected>span {
             color : white !important;
         }
         
-        .searchresults>div.selected>span{
+        .searchresults>div.selected>span,
+        .treeOutline .item-fix.selected>span{
             color : #f1f1f1;
         }
-        .searchresults>div.selected>span>strong{
+        .searchresults>div.selected>span>strong,
+        .treeOutline .item-fix.selected>span>strong{
             color : #fff;
         }
         .searchresults .message{
@@ -5749,6 +5773,7 @@
         </a:empty>
     </a:presentation>
 </a:list>
+
 <a:list name="list">
     <a:style><![CDATA[
         .list{
@@ -11481,18 +11506,18 @@
 
         .filemgr-tree .item-fix {
             position:relative;
-            height:18px;
-            border-top:1px solid transparent;
-            border-bottom:1px solid transparent;
             /*width:100%;*/
         }
-        
+        .filemgr-tree:not(.searchresults) .item-fix {
+            border-top:1px solid transparent;
+            border-bottom:1px solid transparent;
+            height:18px;
+        }
         .filemgr-treeDisabled .item-fix{
             opacity : 0.3;
         }
 
         .filemgr-tree .item-fix .item {
-            height:18px;
             padding:0 0 0 14px;
             position:relative;
             /*overflow:hidden;*/
@@ -11512,6 +11537,10 @@
         .filemgr-tree .item-fix.selected {
             background : rgba(0,0,0,0.04);
         }
+        .treeOutline .filemgr-tree .item-fix.selected label u {  
+            color: white;
+        }
+        
 
         .filemgr-dragtree .item .caption,
         .filemgr-tree .item-fix.dragAppend .item,
@@ -11618,9 +11647,19 @@
         .filemgr-tree U.root .item-fix.minlast .item SPAN,
         .filemgr-tree U.root .item-fix.plus .item SPAN,
         .filemgr-tree U.root .item-fix.pluslast .item SPAN,
-        .filemgr-tree .item-fix.root .item SPAN {
+        .filemgr-tree:not(.treeOutline) .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
+        }
+        .treeOutline .item-fix.root.min .item SPAN {
+            background-image:url(images/tree_close_arrow_small.png) !important;
+            background-repeat: no-repeat;
+        }
+        .dark .filemgr-tree U.root .item-fix.min .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.minlast .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.plus .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.pluslast .item SPAN,
+        .dark .filemgr-tree .item-fix.root .item SPAN {
         }
 
         .filemgr-tree .item-fix.min .item SPAN,
@@ -11642,11 +11681,13 @@
             background-repeat:no-repeat;
             padding-left:21px;
         }
+        .filemgr-tree.searchresults .item LABEL {
+            background-position: 3px 50%;
+        }
 
         .filemgr-tree .item LABEL .caption {
             font-family : Tahoma, Arial;
             font-size   : 11px;
-            color       : #101010;
             display:block;
             position:relative;
             overflow:hidden;
@@ -11654,6 +11695,9 @@
             padding:1px 0 0 2px;
             text-decoration:none;
             white-space: nowrap;
+        }
+        .filemgr-tree.not(treeOutline) .item LABEL .caption {
+            color       : #101010;
         }
 
         .filemgr-tree .fileupload .item LABEL .caption {
