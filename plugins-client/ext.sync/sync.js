@@ -259,6 +259,13 @@ module.exports = ext.register("ext/sync/sync", {
             }
         }
         else if (message.action === "notify-file") {
+            if (ide.dispatchEvent("beforewatcherchange", {
+                subtype : ({"added":"create","removed":"remove","modified":"change"})[message.args.event],
+                path    : message.args.path,
+                //@todo Why are these messages in a different format from the watcher's?
+            }) === false)
+                return;
+            
             _self.showSyncInfo();
             _self.updateSyncInfo(message.args);
             
