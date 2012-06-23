@@ -2,7 +2,7 @@
 
     <a:window
       id        = "winUpdate"
-      title     = "Update Availble"
+      title     = "Update Available"
       icon      = ""
       center    = "true"
       kbclose   = "true"
@@ -13,7 +13,7 @@
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3>An Update to Cloud9 Local is Available!</h3>
-            <div class="alertMsg">Would you like to restart your runtime now?</div>
+            <div class="alertMsg">Cloud9 Local will restart its runtime. Your browser will also refresh.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
