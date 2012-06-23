@@ -14,7 +14,7 @@
         <a:vbox padding="10" edge="15" anchors="0 0 0 0">
             <a:text id="offlineNotifyText" class="tgDesc modal_text">
             	<h4 style="margin:0">Your local runtime has stopped.</h4>
-                <p>To restore the IDE, type <em>c9</em> on the command line.</p>
+                <p>To restore the IDE, type <em>c9 --restart</em> on the command line.</p>
             </a:text>
 	    </a:vbox>
     </a:window>

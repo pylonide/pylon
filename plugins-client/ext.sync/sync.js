@@ -263,7 +263,7 @@ module.exports = ext.register("ext/sync/sync", {
             _self.updateSyncInfo(message.args);
             
             if (message.args.event === "added") {
-                var fileExists = fs.pathExists(message.args.path);
+                var fileExists = fs.pathExists(ide.davPrefix + message.args.path);
                 if (cloud9config.debug)
                     if (fileExists)
                         console.log("[SYNC] file already exists", message.args.path, message.args.mtime);
