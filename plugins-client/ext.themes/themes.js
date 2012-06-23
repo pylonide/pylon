@@ -146,6 +146,7 @@ module.exports = ext.register("ext/themes/themes", {
             ["#editorDiv." + cssClass + " > .basic, "
              + "#editorDiv." + cssClass + " > .vsplitbox, "
              + "#tabsDiv." + cssClass + ", " // > .editor_tab
+             + "." + cssClass + " .c9terminal, "
              + "." + cssClass + " .codeditorHolder, "
              + "." + cssClass + " .winGoToFile, "
              + "." + cssClass + " .revisionsBar .topbar, "

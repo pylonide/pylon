@@ -8,23 +8,22 @@
 "use strict";
 
 var Plugin = require("../cloud9.core/plugin");
-var Path = require("path");
+var fsnode = require("vfs-nodefs-adapter");
 var util = require("util");
 var assert = require("assert");
 
 var name = "settings";
 
 var SETTINGS_PATH;
+var VFS;
 var trimFilePrefix;
 var locationsToSwap = {"files" : "active", "file" : "path", "tree_selection": "path" };  
 var propertiesToSwap= ["projecttree", "tabcycle", "recentfiles"];
 
-var fs;
-
 module.exports = function setup(options, imports, register) {
     assert(options.settingsPath, "option 'settingsPath' is required");
     SETTINGS_PATH = options.settingsPath;
-    fs = imports["sandbox.fs"];
+    VFS = imports.vfs;
 
     // If absolute settings path option is set we use that path and NodeJS's FS.
     // This is needed by c9local where settings file cannot be stored at `/.settings`.
@@ -41,6 +40,7 @@ var SettingsPlugin = module.exports.SettingsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = name;
+    this.fs = fsnode(VFS);
     this.settingsPath = SETTINGS_PATH;
 };
 
@@ -73,10 +73,10 @@ util.inherits(SettingsPlugin, Plugin);
 
     this.loadSettings = function(user, callback) {
         // console.log("load settings", this.settingsPath);
-        var _self = this;
-        fs.exists(this.settingsPath, function(err, exists) {
+        var self = this;
+        this.fs.exists(this.settingsPath, function(exists) {
             if (exists) {
-                fs.readFile(_self.settingsPath, "utf8", function(err, settings) {
+                self.fs.readFile(self.settingsPath, "utf8", function(err, settings) {
                     if (err) {
                         callback(err);
                         return;
@@ -115,11 +115,11 @@ util.inherits(SettingsPlugin, Plugin);
     };
 
     this.storeSettings = function(user, settings, callback) {
-        var _self = this;
+        var self = this;
         // console.log("store settings", this.settingsPath);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
-        var tmpPath = _self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
-
+        var tmpPath = self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
+        
         // for local version, we need to rewrite the paths in settings to store as "/workspace"
         if (trimFilePrefix !== undefined) {
             var attrSet = '="';
@@ -141,13 +141,13 @@ util.inherits(SettingsPlugin, Plugin);
                 }
             });
         }
-        
-        fs.writeFile(tmpPath, settings, "utf8", function(err) {
+                
+        this.fs.writeFile(tmpPath, settings, "utf8", function(err) {
             if (err) {
                 callback(err);
                 return;
-            }        
-            fs.rename(tmpPath, _self.settingsPath, callback);
+            }
+            self.fs.rename(tmpPath, self.settingsPath, callback);
         });
     };
 

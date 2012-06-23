@@ -22,7 +22,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
     autodisable : ext.ONLINE | ext.LOCAL,
-    
+
     createFileNodeFromPath : function (path, attributes) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
@@ -167,6 +167,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             if (!noRename)
                                 tree.startRename();
                             
+                            ide.dispatchEvent("newfolder", {
+                                folderName: name,
+                                parentPath: path,
+                                path: fullFolderPath
+                            });
                             callback && callback(folder);
                         });
                     });
@@ -257,6 +262,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                                 file = nodes[0];
 
                                 both++;
+                                ide.dispatchEvent("newfile", {
+                                    fileName: filename,
+                                    parentPath: path,
+                                    path: fullFilePath
+                                });
                                 done();
                             });
                         });
@@ -265,7 +275,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         node.setAttribute("name", filename);
                         node.setAttribute("path", path + "/" + filename);
                         
-                        editors.gotoDocument({doc: ide.createDocument(node), type:"newfile"});
+                        editors.gotoDocument({doc: ide.createDocument(node), type:"newfile", origin: "newfile"});
                     }
                 }
             };
@@ -335,13 +345,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             if(!childNode || childNode.nodeType != 1)
                 continue;
 
-            // The 'name' variable is redeclared here for some fucked up reason.
-            // The problem is that we are reusing that variable below. If the author
-            // of this would be so kind to fix this code as soon as he sees this
-            // comment, I would be eternally grateful. Sergi.
-            var name = childNode.getAttribute("name");
-
-            this.beforeRename(childNode, null, node.getAttribute("path") + "/" + name);
+            this.beforeRename(childNode, null,
+                node.getAttribute("path") + "/" + childNode.getAttribute("name"));
         }
         
         ide.dispatchEvent("updatefile", {
@@ -349,30 +354,31 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             newPath: newPath,
             filename: name && name[0],
             xmlNode: node,
-            replace: isReplaceAction
+            replace: isReplaceAction,
+            isFolder: node.getAttribute("type") === "folder"
         });
     },
 
     beforeMove: function(parent, node) {
         var path = node.getAttribute("path");
+        var newPath = parent.getAttribute("path") + "/" + node.getAttribute("name");
+        node.setAttribute("oldpath", path);
+        node.setAttribute("path", newPath);
+
         var page = tabEditors.getPage(path);
-        var newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
-
-        node.setAttribute("path", newpath);
         if (page)
-            page.setAttribute("id", newpath);
+            page.setAttribute("id", newPath);
 
-        var childNodes = node.childNodes;
-        var length = childNodes.length;
-
+        var length = node.childNodes.length;
         for (var i = 0; i < length; ++i) {
-            this.beforeMove(node, childNodes[i]);
+            this.beforeMove(node, node.childNodes[i]);
         }
 
         ide.dispatchEvent("updatefile", {
             path: path,
-            newPath: newpath,
-            xmlNode: node
+            newPath: newPath,
+            xmlNode: node,
+            isFolder: node.getAttribute("type") === "folder"
         });
 
         return true;
@@ -380,15 +386,27 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     remove: function(path, callback) {
         var page = tabEditors.getPage(path);
-        if (page)
+        if (page) {
             tabEditors.remove(page);
+        }
 
+        // This is a very expensive way to find out whether the item to be
+        // removed is a file or a folder, since it involves creating a new model
+        // with the filesystem listing data, since the file node has already
+        // been removed from this module's model.
+        davProject.list(path, function(modelString) {
+            var model = new apf.model();
+            model.load(modelString);
+
+            var nodeToRemove = model.queryNode("//node()[@path='" + path + "']");
+            var isFolder = nodeToRemove && nodeToRemove.getAttribute("type") === "folder";
         var cb = function(data, state, extra) {
             // In WebDAV, a 204 status from the DELETE verb means that the
             // file was removed successfully.
             if (extra && extra.status && extra.status === 204) {
                 ide.dispatchEvent("removefile", {
-                    path: path
+                        path: path,
+                        isFolder: isFolder
                 });
             }
 
@@ -396,9 +414,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 callback(data, state, extra);
         };
         davProject.remove(path, false, cb);
+        });
     },
-
-    /**** Init ****/
 
     init : function() {
         commands.addCommand({
@@ -477,14 +494,15 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 dispatchAfterOpenFile();
             }
             // if we're creating a new file then we'll fill the doc with nah dah
-            else if ((e.type && e.type === "newfile") || Number(node.getAttribute("newfile") || 0) === 1) {
+            else if ((e.type && (e.type === "newfile" || e.type == "nofile")) 
+              || Number(node.getAttribute("newfile") || 0) === 1) {
                 doc.setValue("");
                 dispatchAfterOpenFile();
             }
             // otherwise go on loading
             else {
                 // add a way to hook into loading of files
-                if (ide.dispatchEvent("readfile", {doc: doc, node: node}) === false)
+                if (ide.dispatchEvent("readfile", {doc: doc, node: node, origin: e.origin || "fs"}) === false)
                     return;
 
                 var path = node.getAttribute("path");
@@ -542,14 +560,16 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         fs.readFile(path, readfileCallback);
                         ide.removeEventListener("afteronline", arguments.callee);
                     });
-                } else if (state != apf.SUCCESS) {
+                } 
+                else if (state != apf.SUCCESS) {
                     if (extra.status == 404)
                         ide.dispatchEvent("filenotfound", {
                             node : node,
                             url  : extra.url,
                             path : path
                         });
-                } else {
+                } 
+                else {
                    ide.dispatchEvent("afterreload", {doc : doc, data : data});
                 }
             };

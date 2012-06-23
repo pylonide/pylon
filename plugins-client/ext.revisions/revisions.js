@@ -14,9 +14,7 @@ var menus = require("ext/menus/menus");
 var tooltip = require("ext/tooltip/tooltip");
 var commands = require("ext/commands/commands");
 
-//var TreeDocument = require("concorde/AceDocument");
 var Save = require("ext/save/save");
-//var Collab = require("c9/ext/collaborate/collaborate");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/revisions/settings.xml");
@@ -37,7 +35,7 @@ var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
-    
+
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
@@ -52,6 +50,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
+    tempEnableAutoSave: false,
     isAutoSaveEnabled: false,
 
     /**
@@ -120,17 +119,68 @@ module.exports = ext.register("ext/revisions/revisions", {
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
+        ide.addEventListener("init.ext/tabbehaviors/tabbehaviors", function() {
+            menus.addItemByPath("~", new apf.divider(), 2000, mnuContextTabs);
+            menus.addItemByPath("File Revision History...", new apf.item({
+                command : "revisionpanel"
+            }), 2100, mnuContextTabs);
+        });
+
+        ide.addEventListener("init.ext/code/code", function() {
+            self.nodes.push(
+                mnuCtxEditor.insertBefore(new apf.item({
+                    id : "mnuCtxEditorRevisions",
+                    caption : "File Revision History...",
+                    command: "revisionpanel"
+                }), mnuCtxEditorCut),
+                mnuCtxEditor.insertBefore(new apf.divider({
+                    visible : "{mnuCtxEditorRevisions.visible}"
+                }), mnuCtxEditorCut)
+            );
+        });
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
+        });
+
+        // Remove the revision file if the file is removed.
+        ide.addEventListener("removefile", function(data) {
+            ide.send({
+                command: "revisions",
+                subCommand: "removeRevision",
+                isFolder: data.isFolder,
+                path: Util.stripWSFromPath(data.path)
+            });
+        });
+
+        // Rename/move the revision file if the file is renamed/moved
+        ide.addEventListener("updatefile", function(data) {
+            if (data && data.path && data.newPath) {
+                var path = Util.stripWSFromPath(data.path);
+                var newPath = Util.stripWSFromPath(data.newPath);
+
+                // Remove reference by path to old path in `rawRevisions and
+                // create reference with the new path.
+                if (self.rawRevisions[path]) {
+                    self.rawRevisions[newPath] = self.rawRevisions[path];
+                    delete self.rawRevisions[path];
+                }
+
+                ide.send({
+                    command: "revisions",
+                    subCommand: "moveRevision",
+                    path: path,
+                    newPath: newPath
+                });
+            }
         });
 
         btnSave.setAttribute("caption", "");
@@ -195,7 +245,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Its items are not revision objects, but hold their own format (for
         // example, they have a generated timestamp of the moment of saving).
         if (localStorage.offlineQueue) {
-            this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+            try {
+                this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+            } catch(e) {
+                console.error("Error loading revisions from local storage", e);
+                this.offlineQueue = [];
+            }
         }
         else {
             this.offlineQueue = [];
@@ -228,23 +283,23 @@ module.exports = ext.register("ext/revisions/revisions", {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
                 if (btnSave.currentState !== SAVING) {
-                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                    apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
                     btnSave.currentState = SAVING;
                     btnSave.setCaption("Saving");
                 }
             }
             else if (!hasChanged) {
                 if (btnSave.currentState !== SAVED) {
-                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                    apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
                     btnSave.currentState = SAVED;
                     btnSave.setCaption("Changes saved");
                 }
             }
         }
         else {
-            btnSave.setCaption("");
+        btnSave.setCaption("");
         }
     },
 
@@ -273,7 +328,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
-        
+
         apf.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
@@ -301,7 +356,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        // Commented the line below out because it would try to select 
+        // Commented the line below out because it would try to select
         // and update nodes in the cached representation.
         //this.$restoreSelection(page, page.$mdlRevisions);
         this.model = page.$mdlRevisions;
@@ -369,7 +424,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
-        
+
         // Force initialization of extension (so that UI is available)
         ext.initExtension(this);
 
@@ -552,9 +607,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var page = doc.$page;
-        var self = this;
         if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
-            setTimeout(function(){
+            var self = this;
+            setTimeout(function() {
                 self.setSaveButtonCaption();
             });
 
@@ -708,7 +763,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                             var revisionNode = apf.getXml(revisionString);
                             apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
                             }
-                        }
+                    }
                 }
                 break;
 
@@ -918,10 +973,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                 "silentsave='" + revision.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-        var contributors = "";
+            var contributors = "";
         if (revision.contributors && revision.contributors.length) {
             contributors = revision.contributors.map(contributorToXml).join("");
-        }
+            }
 
         xmlString += "<contributors>" + contributors + "</contributors></revision>";
         return xmlString;
@@ -935,9 +990,24 @@ module.exports = ext.register("ext/revisions/revisions", {
      * otherwise
      **/
     isCollab: function(doc) {
-        //var doc = (doc || tabEditors.getPage().$doc);
-        //return doc.acedoc.doc instanceof TreeDocument;
-        return false;
+        if(!doc && !tabEditors.getPage())
+            return false;
+
+        var doc = (doc || tabEditors.getPage().$doc);
+        return doc.acedoc.doc.$isTree;
+    },
+
+    /**
+     * Revisions#iAmMaster(path) -> Boolean
+     * - path(String): Path for the document to be checked
+     *
+     * Returns true if the current user is the "master" document in a collab
+     * session. That means that the contents of his document will be the ones
+     * saved in the collab session.
+     **/
+    iAmMaster: function(path) {
+        // Has to be implemented.
+        return true;
     },
 
     getRevision: function(id, content) {
@@ -1246,48 +1316,48 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var data = {
-            command: "revisions",
-            subCommand: "saveRevisionFromMsg",
             path: docPath,
             silentsave: !!silentsave,
             restoring: restoring,
-            contributors: contributors
+            contributors: contributors,
+            type: "newRevision",
+            lastContent: doc.getValue()
         };
 
         this.setSaveButtonCaption();
 
-        // If we are not in a collaboration document we do all the processing
-        // in a worker istead of sending over to the server. Later on, we'll
-        // send the new revision to the server.
-        if (!this.isCollab(doc)) {
-            data.type = "newRevision";
-            data.lastContent = doc.getValue();
-
-            if (ide.onLine === false) {
-                data.ts = Date.now();
-                this.offlineQueue.push(data);
+        if (ide.onLine === false) {
+            data.ts = Date.now();
+            this.offlineQueue.push(data);
+        }
+        else {
+            if (this.isCollab() && !this.iAmMaster(docPath)) {
+                // We are not master, so we want to tell the server to tell
+                // master to save for us. For now, since the master is saving
+                // every .5 seconds and auto-save is mandatory, we are not
+                // taking care of it
                 return;
             }
+
+            // We should get here if we are in collab AND we are master, OR if
+            // we are in single mode. In both situations, we just want the
+            // current user to save its docs contents
+            var revObj = this.$getRevisionObject(docPath);
+            if (revObj.hasBeenSentToWorker === true) {
+                this.worker.postMessage({
+                    type: "newRevision",
+                    path: docPath,
+                    lastContent: data.lastContent,
+                    hasBeenSentToWorker: true
+                });
+            }
             else {
-                var revObj = this.$getRevisionObject(docPath);
                 data.revisions = revObj.allRevisions;
-                if (revObj.hasBeenSentToWorker === true) {
-                    this.worker.postMessage({
-                        type: "newRevision",
-                        path: docPath,
-                        lastContent: data.lastContent,
-                        hasBeenSentToWorker: true
-                    });
-                }
-                else {
-                    this.worker.postMessage(data);
-                    revObj.hasBeenSentToWorker = true;
-                }
-                return;
+                this.worker.postMessage(data);
+                revObj.hasBeenSentToWorker = true;
             }
         }
 
-        ide.send(data);
         this.$resetEditingUsers(docPath);
     },
 
@@ -1309,28 +1379,30 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    getUser: function(suffix, doc) {
-        return null;
+    getCollab: function() {
+        return require("core/ext").extLut["ext/collab/collab"];
+    },
 
-        /*
+    getUser: function(suffix, doc) {
         if (doc && doc.users && doc.users[suffix]) {
             var uid = doc.users[suffix].split("-")[0];
-            if (Collab.users[uid]) {
-                return Collab.users[uid];
+            var collab = this.getCollab();
+            if (collab && collab.users[uid]) {
+                return collab.users[uid];
             }
         }
-        */
     },
 
     getUserColorByEmail: function(email) {
         var color;
-        /*
-        var user = Collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
+        var collab = this.getCollab();
+        if(!collab)
+            return;
+        var user = collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
-        */
-        return color;
+        // This cannot possibly do anything
     },
 
     /**
@@ -1426,7 +1498,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     hide: function() {
         settings.model.setQueryValue("general/@revisionsvisible", false);
         ceEditor.$ext.style.right = "0";
-        tabEditors.getPage().$showRevisions = false;
+        var page = tabEditors.getPage();
+        if (!page) return;
+        
+        page.$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
 

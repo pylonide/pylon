@@ -32,7 +32,7 @@ module.exports = function setup(options, imports, register) {
     });
 
     function initUserAndProceed(uid, workspaceId, callback) {
-        permissions.getPermissions(uid, workspaceId, function(err, perm) {
+        permissions.getPermissions(uid, workspaceId, "cloud9.core.ide-plugin", function(err, perm) {
             if (err) {
                 callback(err);
                 return;
@@ -64,11 +64,37 @@ module.exports = function setup(options, imports, register) {
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
             hosted: options.hosted,
+            real: (options.real === true) ? true : false,
+            env: options.env,
             packed: (options.packed === true) ? true : false,
             packedName: options.packedName,
             local: options.local
         });
 
+        hub.on("ready", function() {
+            ide.init(serverPlugins);
+    
+            connect.useAuth(baseUrl, function(req, res, next) {
+                if (!(req.session.uid || req.session.anonid))
+                    return next(new error.Unauthorized());
+                // NOTE: This gets called multiple times!
+    
+                var pause = utils.pause(req);
+    
+                initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
+                    if (err) {
+                        next(err);
+                        pause.resume();
+                        return;
+                    }
+                    ide.handle(req, res, next);
+                    pause.resume();
+                });
+            });
+    
+            log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
+        });
+        
         register(null, {
             ide: {
                 register: function(name, plugin, callback) {
@@ -92,29 +118,4 @@ module.exports = function setup(options, imports, register) {
             }
         });
     }
-
-    hub.on("containersDone", function() {
-        ide.init(serverPlugins);
-
-        connect.useAuth(baseUrl, function(req, res, next) {
-            if (!req.session.uid)
-                return next(new error.Unauthorized());
-
-            // NOTE: This gets called multiple times!
-
-            var pause = utils.pause(req);
-
-            initUserAndProceed(req.session.uid, ide.options.workspaceId, function(err) {
-                if (err) {
-                    next(err);
-                    pause.resume();
-                    return;
-                }
-                ide.handle(req, res, next);
-                pause.resume();
-            });
-        });
-
-        log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
-    });
 };

@@ -36,7 +36,7 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     hook : function(){
         var _self = this;
-        
+
         commands.addCommand({
             name: "resume",
             hint: "resume the current paused process",
@@ -108,6 +108,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 {
                     height     : 30,
                     width      : 150,
+                    minHeight  : 30,
                     noflex     : true,
                     draggable  : false,
                     resizable  : false,
@@ -306,7 +307,13 @@ module.exports = ext.register("ext/debugger/debugger", {
         }
 
         if (file) {
-            editors.jump(file, row, column, text, null, true);
+            editors.jump({
+                node    : file, 
+                row     : row, 
+                column  : column, 
+                text    : text,
+                animate : false
+            });
         }
         else {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
@@ -331,12 +338,25 @@ module.exports = ext.register("ext/debugger/debugger", {
                         .attr("scriptname", script.getAttribute("scriptname"))
                         .attr("lineoffset", "0").node();
                 }
-                editors.jump(node, row, column, text, null, page ? true : false);
+                editors.jump({
+                    node    : node, 
+                    row     : row, 
+                    column  : column, 
+                    text    : text, 
+                    animate : page ? false : true
+                });
             }
             else {
                 var page = tabEditors.getPage(value);
                 if (page)
-                    editors.jump(page.xmlRoot, row, column, text, null, true);
+                    editors.jump({
+                        node    : page.xmlRoot, 
+                        doc     : page.$doc,
+                        row     : row, 
+                        column  : column, 
+                        text    : text, 
+                        animate : false
+                    });
                 else {
                     var node = apf.n("<file />")
                         .attr("name", value)
@@ -349,7 +369,13 @@ module.exports = ext.register("ext/debugger/debugger", {
 
                     dbg.loadScript(script, function(source) {
                         var doc = ide.createDocument(node, source);
-                        editors.jump(node, row, column, text, doc);
+                        editors.jump({
+                            node    : node, 
+                            row     : row, 
+                            column  : column, 
+                            text    : text, 
+                            doc     : doc
+                        });
                     });
                 }
             }
@@ -434,7 +460,7 @@ module.exports = ext.register("ext/debugger/debugger", {
     destroy : function(){
         commands.removeCommandsByName(
             ["resume", "stepinto", "stepover", "stepout"]);
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
             dock.unregisterPage(item);

@@ -25,25 +25,32 @@
 
         "mappings": "0.1.x",
         "amd-loader": "~0.0.4",
-        "async": "0.1.21"
+        "async": "0.1.21",
+        "netutil": "~0.0.1",
+        "architect": "~0.1.1",
+        "connect-architect": "~0.0.1"
     },
 
     "devDependencies": {
         "nodeunit": "~0.7.4",
         "sinon": "~1.3.4",
-        "rimraf": "~2.0.1"
+        "rimraf": "~2.0.1",
+        "async": "~0.1.21",
+        "vfs-local": "~0.0.0",
+        "vfs-nodefs-adapter": "~0.0.1"
     },
 
     "mappings": {
         "connect":      ["npm", "https://github.com/ajaxorg/connect/tarball/cf3b4b2bd18579aa915759d7860061d83c5d0c57"],
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/6f51592c8045c77ca8e6cd7358e2497939cc7ffd"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/dbab677c413aec097bf2e7f95a9e245a4526ce88"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/df4aa3c5ad997bc985b741e4fa9301bbd3085338"],
-        "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/7fc5b36a5074668f40aad8b45f82a6fbbec04c88"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/5d279d21e984dc621ff23ae77726ddd015880b7d"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"]
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"],
+        "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
+        "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/1069a644c7560245dde01bd5c3a4c7e0e9ce8c10"],
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/1fc26f6855be18e46af260e9c2244924c051878e"]
     },
 
     "repository" : {

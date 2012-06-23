@@ -15,8 +15,9 @@
         ],
         "consumes": [
             "process-manager",
-            "sandbox",
-            "run-node"
+            "run-node",
+            "vfs",
+            "sandbox"
         ]
     }
 }

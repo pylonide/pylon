@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-var fs = require("fs");
 var copy = require('dryice').copy;
 
 var ACE_HOME = __dirname + "/node_modules/ace"
@@ -58,7 +57,8 @@ function worker(project) {
                     'ext/jslanguage/parse',
                     'ext/jslanguage/scope_analyzer',
                     'ext/jslanguage/narcissus_jshint',
-                    'ext/jslanguage/debugger'
+                    'ext/jslanguage/debugger',
+                    'ext/jslanguage/outline'
                 ]
             })
         ],

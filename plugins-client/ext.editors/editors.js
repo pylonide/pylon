@@ -396,7 +396,8 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }
 
-        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
+        var fileExtension = (xmlNode.getAttribute("path") || "")
+            .split(".").pop().toLowerCase();
         var editor = (this.fileExtensions[fileExtension]
           && this.fileExtensions[fileExtension][0])
           || this.fileExtensions["default"];
@@ -509,7 +510,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var node = page.$model.data;
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
-                    xmlNode : node
+                    xmlNode : node,
+                    newPath: e.newPath
                 });
             }
         });
@@ -865,13 +867,16 @@ module.exports = ext.register("ext/editors/editors", {
                     _self.gotoDocument({
                         doc      : doc,
                         init     : true,
+                        type     : doc.state && doc.state.type,
                         forceOpen: true,
                         active   : active
                             ? active == node.getAttribute("path")
-                            : i == l - 1
+                            : i == l - 1,
+                        origin: "settings"
                     });
 
-                    checkExpand(node.getAttribute("path"), doc);
+                    if (doc.state.type != "nofile")
+                        checkExpand(node.getAttribute("path"), doc);
                 }
 
                 _self.loadedSettings = true;
@@ -968,9 +973,10 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             // send it to the dispatcher
-            editors.gotoDocument({
-                node : node,
-                active: true
+            this.gotoDocument({
+                doc    : doc,
+                active : true,
+                origin : "hash"
             });
             
             // and expand the tree
@@ -1014,7 +1020,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (!options.doc) {
             var node    = options.node;
             var path    = node.getAttribute("path");
-        var tabs    = tabEditors;
+            var tabs    = tabEditors;
             
             hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
         }
@@ -1027,13 +1033,13 @@ module.exports = ext.register("ext/editors/editors", {
                 setTimeout(f = function() {
                     // TODO move this to the editor
                     var editor = _self.currentEditor.amlEditor;
-                    editor.$editor.gotoLine(row, column, false);
+                    editor.$editor.gotoLine(row, column, options.animate !== false);
                     if (text)
                         editor.$editor.session.highlight(text);
 
                     editor.focus();
                     ide.dispatchEvent("aftereditorfocus");
-                }, 100);
+                }, 1); 
             };
 
             if (hasData) {
@@ -1052,6 +1058,7 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         if (!hasData) {
+            options.origin = "jump";
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 

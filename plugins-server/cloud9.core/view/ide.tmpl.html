@@ -21,7 +21,7 @@
         [%scripts%]
         <script type="text/javascript">
         //<![CDATA[
-                
+
             window.cloud9config = {
                 startdate: new Date(),
                 davPrefix: <%davPrefix%>,
@@ -30,6 +30,8 @@
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,
                 name: <%name%>,
+                uid: <%uid%>,
+                pid: <%pid%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
@@ -38,10 +40,11 @@
                 socketIoUrl: <%socketIoUrl%>,
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
+                local: <%local%>,
+                env: <%env%>,
                 settings: <%settingsXml%>,
-                packed: <%packed%>,
-                packedName: <%packedName%>,
-                local: <%local%>
+                packed: <%packed%> ? true : false,
+                packedName: <%packedName%>
             };
 
             // prevent console messages from crashing our app!
@@ -49,7 +52,7 @@
                 var K = function() {};
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
-                
+
             if (!cloud9config.packed) {
                 var RELEASE = "release";
                 var DEBUG   = "debug";

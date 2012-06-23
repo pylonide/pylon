@@ -56,7 +56,6 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             
             if (autoRun == "none")
                 return;
-            
             if (autoRun == "selection" && _self.dgTestProject) {
                 var sel = dgTestProject.getSelection();
                 if (sel.length)
@@ -127,7 +126,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                   || !ide.onLine && !ide.offlineFileSystemSupport)
                     return;
                         
-                editors.gotoDocument({doc: ide.createDocument(node)});
+                editors.gotoDocument({doc: ide.createDocument(node), origin: "testpanel"});
                 
                 //@todo choose a test or an assert should select that code
                 //      inside ace.
@@ -192,7 +191,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         var doc = ide.createDocument(node);
         doc.cachedValue = pattern;
                     
-        editors.gotoDocument({doc: doc, node: node});
+        editors.gotoDocument({doc: doc, node: node, origin: "testpanel"});
         
         ide.addEventListener("beforefilesave", function(e){
             if (e.node == node) {

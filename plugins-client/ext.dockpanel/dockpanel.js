@@ -40,11 +40,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             function(arrExtension){
                 if (!arrExtension || !_self.dockpanels[arrExtension[0]])
                     return false;
-
-                var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
+        
+                var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];      
+                
                 if (item.page)
                     return item.page;
-
+                
                 var page = item.getPage();
                 
                 if (page)
@@ -86,24 +87,24 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
         );
 
-        //@todo was loadsettings
         ide.addEventListener("extload", function(e){
-            var model = settings.model;
-            var strSettings = model.queryValue("auto/dockpanel/text()");
-
-            var state = _self.defaultState;
-            if (strSettings) {
-                // JSON parse COULD fail
-                try {
-                    state = JSON.parse(strSettings);
+            ide.addEventListener("settings.load", function(e){
+                var model = settings.model;
+                var strSettings = model.queryValue("auto/dockpanel/text()");
+    
+                var state = _self.defaultState;
+                if (strSettings) {
+                    // JSON parse COULD fail
+                    try {
+                        state = JSON.parse(strSettings);
+                    }
+                    catch (ex) {}
                 }
-                catch (ex) {}
-            }
-            
-            ide.dispatchEvent("dockpanel.load.settings", {state: state});
-            
-            _self.layout.loadState(state);
-            _self.loaded = true;
+                
+                ide.dispatchEvent("dockpanel.load.settings", {state: state});
+                _self.layout.loadState(state);
+                _self.loaded = true;
+            });
         });
         
         this.nodes.push(
@@ -166,13 +167,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         this.layout.clearState();
     },
 
-    register : function(name, type, options, getPage){
+    register : function(name, type, options, getPage){            
         var panel = this.dockpanels[name] || (this.dockpanels[name] = {});
         panel[type] = {
             options : options,
             getPage : getPage
         };
-
         var layout = this.layout, _self = this;
 
         panel[type].mnuItem = menus.addItemByPath(
@@ -198,7 +198,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
     },
 
-    addDockable : function(def){        
+    addDockable : function(def){   
         var state = this.defaultState;
             
         if (!def.barNum)
@@ -236,6 +236,25 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
+    
+    removeButton : function(name, type, state){
+        state = state || this.layout.getState(true);        
+        if(!state || !name || !type)
+            return;
+        
+        if(!state.bars)
+            state = state.state;
+            
+        state.bars.each(function(bar){
+            bar.sections.each(function(section){
+                for (var k = 0; k < section.buttons.length; k++) {
+                    var button = section.buttons[k];
+                    if (button.ext[0] == name && button.ext[1] == type) 
+                        section.buttons.remove(button);
+                }
+            });
+        });
+    },
     
     getButtons : function(name, type, state){
         state = state || this.layout.getState(true);
@@ -402,11 +421,37 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      */
     updateNotificationElement: function(btnObj, count){
         var countInner = count === 0 ? "" : count;
-
+        var notificationEl = btnObj.$ext.getElementsByClassName("dock_notification")[0];
         if (apf.isGecko)
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
+            notificationEl.textContent = countInner;
         else
-            btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
+            notificationEl.innerText = countInner;
+        
+        if (count > 0)
+            notificationEl.style.display = "block";
+        else
+            notificationEl.style.display = "none";
+        
+        var btnPage = btnObj.$dockpage;
+        if(!btnPage.initCaption)
+            btnPage.initCaption = btnPage.getAttribute("caption");
+            
+        var caption = btnPage.initCaption;
+        
+        if(!btnPage.$active) {
+            if (count > 0) {
+                caption += " (" + count + ")";
+                apf.setStyleClass(btnPage.$button, "un-read-message");
+            }
+            else {
+                apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+            }
+            btnPage.setAttribute("caption", caption);
+        }
+        else {
+            btnPage.setAttribute("caption", caption);
+            apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+        }
         
         return true;
     }

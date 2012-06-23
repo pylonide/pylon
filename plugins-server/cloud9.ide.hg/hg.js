@@ -71,7 +71,8 @@ util.inherits(HgPlugin, Plugin);
             command: "hg",
             args: message.argv.slice(1),
             cwd: message.cwd,
-            extra: message.extra
+            extra: message.extra,
+            encoding: "ascii"
         }, this.channel, function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);

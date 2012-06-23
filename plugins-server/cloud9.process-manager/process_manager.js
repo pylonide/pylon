@@ -45,12 +45,12 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.spawn = function(runnerId, options, eventName, callback) {
         if (this.disposed)
             return callback("cannot run script - the process manager has already been disposed");
-            
+
         var self = this;
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
             return callback("Could not find runner with ID " + runnerId);
-            
+
         runnerFactory(options, this.eventEmitter, eventName, function (err, child) {
             if (err)
                 return callback(err);
@@ -58,7 +58,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
             child.spawn(function(err) {
                 if (err)
                     return callback(err);
-    
+
                 self.processes[child.pid] = child;
                 callback(null, child.pid, child);
             });
@@ -72,9 +72,9 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.exec = function(runnerId, options, onStart, onExit) {
         if (this.disposed)
             return onStart("cannot run script - the process manager has already been disposed");
-            
+
         var self = this;
-        
+
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
             return onStart("Could not find runner with ID " + runnerId);
@@ -86,10 +86,10 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
             child.exec(function(err, pid) {
                 if (err)
                     return onStart(err);
-    
+
                 self.processes[child.pid] = child;
                 onStart(null, child.pid);
-    
+
             }, onExit);
         });
     };
@@ -100,6 +100,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         var err = "";
         async.list(cmds)
             .each(function(cmd, next) {
+                //console.log("CMD", cmd)
                 _self.exec(
                     runnerId, cmd,
                     function(err, pid) {
@@ -107,6 +108,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
                             next(err);
                     },
                     function(code, stdout, stderr) {
+                        //console.log(code, stdout, stderr)
                         out += stdout;
                         err += stderr;
                         if (code)

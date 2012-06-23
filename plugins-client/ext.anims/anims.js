@@ -105,6 +105,7 @@ module.exports = ext.register("ext/anims/anims", {
                 oNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();
                 
+                
                 if (aNode.parentNode) {
                     if (pNode.$vbox)
                         aNode.setHeight(parseInt(options.height));

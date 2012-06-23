@@ -653,7 +653,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         if (_self.openOnUpload) {
             if (file.size < MAX_OPENFILE_SIZE)
-                ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
+                ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode), origin: "upload"});
         }
         
         setTimeout(function() {

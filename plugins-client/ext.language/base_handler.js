@@ -94,7 +94,7 @@ module.exports = {
      * Invoked when an outline is required
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(ast, callback) {
+    outline: function(doc, ast, callback) {
         callback();
     },
     

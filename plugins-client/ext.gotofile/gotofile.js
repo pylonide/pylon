@@ -27,10 +27,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
 
-    dirty   : true,
-    nodes   : [],
+    eventsEnabled : true,
+    dirty         : true,
+    nodes         : [],
     
     arraySearchResults : [],
+    arrayCache : [],
+    arrayCacheLastSearch : [],
 
     hook : function(){
         var _self = this;
@@ -65,11 +68,18 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.updateFileCache();
         });
     },
+    
+    setEventsEnabled : function(enabled) {
+        this.eventsEnabled = enabled;
+    },
 
     init : function() {
         var _self = this;
         
-        txtGoToFile.addEventListener("keydown", function(e){
+        txtGoToFile.addEventListener("keydown", function(e) {
+            if (!_self.eventsEnabled)
+                return;
+            
             if (e.keyCode == 27)
                 _self.toggleDialog(-1);
             
@@ -102,7 +112,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        txtGoToFile.addEventListener("afterchange", function(e){
+        txtGoToFile.addEventListener("afterchange", function(e) {
+            if (!_self.eventsEnabled)
+                return;
             _self.filter(txtGoToFile.value);
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
@@ -111,7 +123,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        dgGoToFile.addEventListener("keydown", function(e) {
+        dgGoToFile.addEventListener("keydown", function(e) {                
             if (e.keyCode == 27) {
                 _self.toggleDialog(-1);
             }
@@ -255,11 +267,11 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else
                 nodes = this.arrayCache;
                 
-            var cache = []
+            var cache = [];
 
             dgGoToFile.$viewport.setScrollTop(0);
 
-            this.arraySearchResults = search(nodes, keyword, cache);
+            this.arraySearchResults = search.fileSearch(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
         }
         
@@ -404,6 +416,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 this.lastSearch = null; //invalidate cache
                 this.filter(search);
             }
+            else {
+                this.filter("");
+            }
         }
         else if (self.winGoToFile && winGoToFile.visible) {
             if (!noanim) {
@@ -459,3 +474,4 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 });
 
 });
+

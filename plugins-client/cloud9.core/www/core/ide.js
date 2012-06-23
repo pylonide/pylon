@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
 
-    ide = new apf.Class().$init(); 
+    ide = new apf.Class().$init();
 
     ide.createDocument = function(node, value){
         return new Document(node, value);
@@ -25,6 +25,9 @@ define(function(require, exports, module) {
         this.workspaceId    = window.cloud9config.workspaceId;
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;
+        this.uid            = window.cloud9config.uid;
+        this.pid            = window.cloud9config.pid;
+        this.env            = window.cloud9config.env;
         this.local          = window.cloud9config.local;
 
         this.loggedIn       = true;
@@ -33,7 +36,7 @@ define(function(require, exports, module) {
         this.offlineFileSystemSupport = false;
 
         this.dispatchEvent("load");
-        
+
        var loc = location.href;
         if (
             location.protocol !== "file:"
@@ -52,7 +55,7 @@ define(function(require, exports, module) {
                     })
                 });
             };
-    
+
             //Catch all APF Routed errors
             apf.addEventListener("error", function(e){
                 apf.ajax("/api/debug", {
@@ -153,13 +156,15 @@ define(function(require, exports, module) {
 
             if (message.type === "error") {
                 // TODO: Don't display all errors?
-                util.alert(
-                    "Error on server",
-                    "Received following error from server:",
-                    JSON.stringify(message.message)
-                );
+                if (ide.dispatchEvent("showerrormessage", message) !== false) {
+                    util.alert(
+                        "Error on server",
+                        "Received following error from server:",
+                        JSON.stringify(message.message)
+                    );
+                }
             }
-            
+
             ide.dispatchEvent("socketMessage", {
                 message: message
             });
@@ -245,9 +250,9 @@ define(function(require, exports, module) {
         var corrected = this.dispatchEvent("activepagemodel", {
             model: page.$model
         });
-        
-        return corrected && corrected.data 
-            ? corrected.data 
+
+        return corrected && corrected.data
+            ? corrected.data
             : page.$model.data;
     };
 
