@@ -23,100 +23,28 @@ module.exports = ext.register("ext/watcher/watcher", {
     deps    : [tree],
 
     init : function() {
+        var _self = this;
+        
         this.expandedPaths = {};
 
         this.removedPaths = {};
         this.changedPaths = {};
 
-        var removedPathCount = 0;
-        var changedPathCount = 0;
-        var _self = this;
+        this.removedPathCount = 0;
+        this.changedPathCount = 0;
 
-        function checkPage() {
-            var page = tabEditors.getPage();
+         //@todo do this with an event
+        function checkPage(path) {
+            var page = tabEditors.getPage(path);
             var data = page && page.$model && page.$model.data;
             if (!data || !data.getAttribute)
                 return;
 
             var path = data.getAttribute("path");
-            if (_self.removedPaths[path]) {
-                util.question(
-                    "File removed, keep tab open?",
-                    path + " has been deleted, or is no longer available.",
-                    "Do you wish to keep the file open in the editor?",
-                    function() { // Yes
-                        apf.xmldb.setAttribute(data, "changed", "1");
-                        delete _self.removedPaths[path];
-                        --removedPathCount;
-                        winQuestion.hide();
-                    },
-                    function() { // Yes to all
-                        var pages = tabEditors.getPages();
-
-                        pages.forEach(function(page) {
-                           apf.xmldb.setAttribute(page.$model.data, "changed", "1");
-                        });
-                        _self.removedPaths = {};
-                        removedPathCount = 0;
-                        winQuestion.hide();
-                    },
-                    function() { // No
-                        tabEditors.remove(page);
-                        delete _self.removedPaths[path];
-                        --removedPathCount;
-                        winQuestion.hide();
-                    },
-                    function() { // No to all
-                        var pages = tabEditors.getPages();
-
-                        pages.forEach(function(page) {
-                            if (_self.removedPaths[page.$model.data.getAttribute("path")])
-                                tabEditors.remove(page);
-                        });
-                        this.removedPaths = {};
-                        removedPathCount = 0;
-                        winQuestion.hide();
-                    }
-                );
-                btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
-                btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
-            } 
-            else if (_self.changedPaths[path]) {
-                util.question(
-                    "File changed, reload tab?",
-                    path + " has been changed by another application.",
-                    "Do you want to reload it?",
-                    function() { // Yes
-                        ide.dispatchEvent("reload", {doc : page.$doc});
-                        delete _self.changedPaths[path];
-                        --changedPathCount;
-                        winQuestion.hide();
-                    },
-                    function() { // Yes to all
-                        var pages = tabEditors.getPages();
-
-                        pages.forEach(function (page) {
-                            if (_self.changedPaths[page.$model.data.getAttribute("path")])
-                                ide.dispatchEvent("reload", {doc : page.$doc});
-                        });
-                        _self.changedPaths = {};
-                        changedPathCount = 0;
-                        winQuestion.hide();
-                    },
-                    function() { // No
-                        delete _self.changedPaths[path];
-                        --changedPathCount;
-                        winQuestion.hide();
-                    },
-                    function() { // No to all
-                        _self.changedPaths = {};
-                        changedPathCount = 0;
-                        winQuestion.hide();
-                    }
-                );
-                btnQuestionYesToAll.setAttribute("visible", changedPathCount > 1);
-                btnQuestionNoToAll.setAttribute("visible", changedPathCount > 1);
-            }
+            if (_self.removedPaths[path])
+                _self.confirmRemoved(path, _self.removedPathCount > 1);
+            else if (_self.changedPaths[path])
+                _self.confirmReload(path, _self.changedPathCount > 1);
         }
 
         ide.addEventListener("openfile", function(e) {
@@ -171,8 +99,8 @@ module.exports = ext.register("ext/watcher/watcher", {
                 case "remove":
                     if (!_self.removedPaths[path]) {
                         _self.removedPaths[path] = path;
-                        removedPathCount += 1;
-                        checkPage();
+                        _self.removedPathCount += 1;
+                        checkPage(path);
                     }
                     break;
                 case "change":
@@ -180,21 +108,21 @@ module.exports = ext.register("ext/watcher/watcher", {
                     var currentPageLastMod = new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime();
                     if (!_self.changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
                         _self.changedPaths[path] = path;
-                        changedPathCount += 1;
-                        checkPage();
+                        _self.changedPathCount += 1;
+                        checkPage(path);
                     }
                     break;
             }
         });
 
-        ide.addEventListener("init.ext/editors/editors", function(e) {
-            ide.addEventListener("tab.afterswitch", function(e) {
-                if (_self.disabled) {
-                    return;
-                }
-                checkPage();
-            });
-        });
+//        ide.addEventListener("init.ext/editors/editors", function(e) {
+//            ide.addEventListener("tab.afterswitch", function(e) {
+//                if (_self.disabled) {
+//                    return;
+//                }
+//                checkPage();
+//            });
+//        });
 
         ide.addEventListener("init.ext/tree/tree", function() {
             var watcherFn = function(node, shouldWatch) {
@@ -219,6 +147,90 @@ module.exports = ext.register("ext/watcher/watcher", {
                 watcherFn(e.xmlNode, true);
             });
         });
+    },
+    
+    confirmRemoved : function(path, multiple){
+        var _self = this;
+        
+        util.question(
+            "File removed, keep tab open?",
+            path + " has been deleted, or is no longer available.",
+            "Do you wish to keep the file open in the editor?",
+            function() { // Yes
+                apf.xmldb.setAttribute(data, "changed", "1");
+                delete _self.removedPaths[path];
+                --_self.removedPathCount;
+                winQuestion.hide();
+            },
+            function() { // Yes to all
+                var pages = tabEditors.getPages();
+
+                pages.forEach(function(page) {
+                   apf.xmldb.setAttribute(page.$model.data, "changed", "1");
+                });
+                _self.removedPaths = {};
+                _self.removedPathCount = 0;
+                winQuestion.hide();
+            },
+            function() { // No
+                tabEditors.remove(page);
+                delete _self.removedPaths[path];
+                --_self.removedPathCount;
+                winQuestion.hide();
+            },
+            function() { // No to all
+                var pages = tabEditors.getPages();
+
+                pages.forEach(function(page) {
+                    if (_self.removedPaths[page.$model.data.getAttribute("path")])
+                        tabEditors.remove(page);
+                });
+                this.removedPaths = {};
+                _self.removedPathCount = 0;
+                winQuestion.hide();
+            }
+        );
+        btnQuestionYesToAll.setAttribute("visible", multiple);
+        btnQuestionNoToAll.setAttribute("visible", multiple);
+    },
+    
+    confirmReload : function(path, multiple){
+        var _self = this;
+        
+        util.question(
+            "File changed, reload tab?",
+            path + " has been changed by another application.",
+            "Do you want to reload it?",
+            function() { // Yes
+                ide.dispatchEvent("reload", {doc : page.$doc});
+                delete _self.changedPaths[path];
+                --_self.changedPathCount;
+                winQuestion.hide();
+            },
+            function() { // Yes to all
+                var pages = tabEditors.getPages();
+
+                pages.forEach(function (page) {
+                    if (_self.changedPaths[page.$model.data.getAttribute("path")])
+                        ide.dispatchEvent("reload", {doc : page.$doc});
+                });
+                _self.changedPaths = {};
+                _self.changedPathCount = 0;
+                winQuestion.hide();
+            },
+            function() { // No
+                delete _self.changedPaths[path];
+                --_self.changedPathCount;
+                winQuestion.hide();
+            },
+            function() { // No to all
+                _self.changedPaths = {};
+                _self.changedPathCount = 0;
+                winQuestion.hide();
+            }
+        );
+        btnQuestionYesToAll.setAttribute("visible", multiple);
+        btnQuestionNoToAll.setAttribute("visible", multiple);
     },
 
     sendWatchFile : function(path) {

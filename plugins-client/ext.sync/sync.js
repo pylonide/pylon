@@ -16,6 +16,7 @@ var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var anims = require("ext/anims/anims");
 var tooltip = require("ext/tooltip/tooltip");
+var watcher = require("ext/watcher/watcher");
 
 var markup = require("text!ext/sync/sync.xml");
 var cssString = require("text!ext/sync/style.css");
@@ -259,42 +260,50 @@ module.exports = ext.register("ext/sync/sync", {
             }
         }
         else if (message.action === "notify-file") {
+            var options = message.args;
+            
             if (ide.dispatchEvent("beforewatcherchange", {
-                subtype : ({"added":"create","removed":"remove","modified":"change"})[message.args.event],
-                path    : message.args.path,
+                subtype : ({"added":"create","removed":"remove","modified":"change"})[options.event],
+                path    : options.path,
                 //@todo Why are these messages in a different format from the watcher's?
             }) === false)
                 return;
             
             _self.showSyncInfo();
-            _self.updateSyncInfo(message.args);
+            _self.updateSyncInfo(options);
             
-            if (message.args.event === "added") {
-                var fileExists = fs.pathExists(ide.davPrefix + message.args.path);
+            if (options.event === "added") {
+                var fileExists = fs.pathExists(ide.davPrefix + options.path);
                 if (cloud9config.debug)
                     if (fileExists)
-                        console.log("[SYNC] file already exists", message.args.path, message.args.mtime);
+                        console.log("[SYNC] file already exists", options.path, options.mtime);
                     else
-                        console.log("[SYNC] file added", message.args.path, message.args.mtime);
+                        console.log("[SYNC] file added", options.path, options.mtime);
                         
                 if (!fileExists)
-                    this.createSyncFile(message.args.path, message.args.mtime);
+                    this.createSyncFile(options.path, options.mtime);
             }
-            else if (message.args.event === "modified") {
+            else if (options.event === "modified") {
                 if (cloud9config.debug)
-                    console.log("[SYNC] file modified", message.args.path, message.args.mtime);
-            }
-            else if (message.args.event === "moved") {
-                if (cloud9config.debug)
-                    console.log("[SYNC] file moved", message.args.oldPath, " -> ", message.args.path);
+                    console.log("[SYNC] file modified", options.path, options.mtime);
                 
-                this.moveSyncFile(message.args.oldPath, message.args.path);
+                if (tabEditors.getPage(options.path)) //@todo do this with an event
+                    watcher.confirmReload.call(this, options.path);
             }
-            else if (message.args.event === "removed") {
+            else if (options.event === "moved") {
                 if (cloud9config.debug)
-                    console.log("[SYNC] file removed", message.args.path);
+                    console.log("[SYNC] file moved", options.oldPath, " -> ", options.path);
                 
-                this.removeSyncFile(message.args.path);
+                this.moveSyncFile(options.oldPath, options.path);
+            }
+            else if (options.event === "removed") {
+                if (cloud9config.debug)
+                    console.log("[SYNC] file removed", options.path);
+                
+                this.removeSyncFile(options.path);
+                
+                if (tabEditors.getPage(options.path)) //@todo do this with an event
+                    watcher.confirmRemoved.call(this, options.path);
             }
         }
     },
