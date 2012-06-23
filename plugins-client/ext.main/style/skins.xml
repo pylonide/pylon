@@ -294,30 +294,14 @@
             width: 10px;
         }
 
-        .c9-sync {
-            display:none;
-        }
-
         .c9-menu-bar.local .c9-mbar-bcont .c9-sync {
-            display: block;
+            background:url(images/sync_toggle.png) no-repeat 0 -20px;
         }
         
         .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnChecked {
-            float:right;
-            overflow:hidden;
             background:url(images/sync_toggle.png) no-repeat 0 0;
-            width:60px;
-            height:20px;
         }
 
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync {
-            float:right;
-            overflow:hidden;
-            background:url(images/sync_toggle.png) no-repeat 0 -20px;
-            width:60px;
-            height:20px;
-        }
-        
         .c9-menu-bar.local .c9-mbar-bcont .c9-sync.undetermined {
             background-position: 0 -80px;
         }

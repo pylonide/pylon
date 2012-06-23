@@ -72,3 +72,13 @@ blockquote.code{
 .lblinstall a{
     color : #f1f1f1;
 }
+
+#syncFolderSelect {
+    position: absolute;
+    left: 140px;
+    right: 10px;
+    top: 56px;
+    width: 130px;
+    height: 30px;
+    opacity: 0;
+}

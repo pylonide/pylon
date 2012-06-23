@@ -34,10 +34,11 @@
       style     = "margin-top:8px;margin-left:8px;">
         <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncInstall">
             <a:label class="lblinstall">
-                <p style="margin-top:0"><strong>Offline syncing requires the c9 command line installed.</strong></p>
-                <p>Click <a href="#">here</a> to download the c9 cli, or install via  <a href="http://npmjs.org/">npm</a>:</p>
+                <p style="margin-top:0"><strong>Syncing requires Cloud9 Local installed &amp; running</strong></p>
+                <p>Cloud9 Local needs to be installed in order to manage syncing on your local machine.</p>
+                <p>Click <a href="#">here</a> to download Cloud9 Local, or install it via <a href="http://npmjs.org/">npm</a>:</p>
                 <blockquote class="code">npm install -g c9</blockquote>
-                <p>If you already have c9 cli installed, it might not be running. Start it by typing:</p>
+                <p>If you already have Cloud9 Local installed, it might not be running. Start it by typing:</p>
                 <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
             </a:label>
         </a:vbox>
@@ -133,6 +134,35 @@
         </a:vbox>
     </a:menu>
 
+    <a:menu
+      id        = "mnuSyncFolderSelect"
+      skin      = "menu-bk"
+      width     = "283"
+      style     = "margin-top:8px;margin-left:8px;">
+        <a:vbox padding="10" edge="10 10 8 10">
+            You'll need to choose a folder on your computer where you want this synced project to reside.
+            
+            <a:divider skin="c9-divider-hor" />
+            
+            <a:hbox pack="end" edge="0" padding="10">
+                <a:button
+                  caption = "Cancel"
+                  skin    = "c9-simple-btn"
+                  onclick = "mnuSyncFolderSelect.hide()"
+                  style   = "cursor:pointer"
+                  margin  = "5 0 0 0"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Choose Folder"
+                  skin = "btn-default-css3"
+                  id = "btnSyncFolderOK"
+                  height = "24"
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:menu>
+    
     <a:window
       id        = "winCannotSync"
       title     = "Sync Error!"
@@ -185,4 +215,4 @@
             <a:button id="btnNoDisable" onclick = "winConfirmSyncOff.close();" default="3" skin="btn-default-css3" class="btn-green">No</a:button>
         </a:hbox>
     </a:window>
-</a:application>                                                                     
+</a:application>        
