@@ -54,8 +54,7 @@ module.exports = ext.register("ext/sync/sync", {
                     margin  : "3 0 0 0" ,
                     width   : "60",
                     height  : "19",
-                    "class" : "c9-sync" ,
-                    skin    : "c9-topbar-btn",
+                    "class" : "c9-sync",
                     state   : "true",
                     disabled : true,
                     onclick : function() {
@@ -634,7 +633,7 @@ module.exports = ext.register("ext/sync/sync", {
 
         this.$iframe.connecting = true;
         this.$iframe.connected = false;
-        this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html";
+        this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html?sid=" + cloud9config.sessionId;
         this.$iframe.style.width = "1px";
         this.$iframe.style.height = "1px";
     },
