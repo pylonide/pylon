@@ -517,7 +517,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 // offline / online detection has been moved into fs.readFile instead
                 fs.readFile(path, readfileCallback);
             }
-        });
+        }); 
 
         ide.addEventListener("reload", function(e) {
             var doc  = e.doc,
@@ -534,15 +534,17 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         fs.readFile(path, readfileCallback);
                         ide.removeEventListener("afteronline", arguments.callee);
                     });
-                } else if (state != apf.SUCCESS) {
+                } 
+                else if (state != apf.SUCCESS) {
                     if (extra.status == 404)
                         ide.dispatchEvent("filenotfound", {
                             node : node,
                             url  : extra.url,
                             path : path
                         });
-                } else {
-                   ide.dispatchEvent("afterreload", {doc : doc, data : data});
+                } 
+                else {
+                    ide.dispatchEvent("afterreload", {doc : doc, data : data});
                 }
             };
 

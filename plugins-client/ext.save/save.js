@@ -185,6 +185,16 @@ module.exports = ext.register("ext/save/save", {
             itmRevertToSaved.enable();
             saveAsItem.enable();
         });
+        
+        ide.addEventListener("afterreload", function(e){
+            var doc = e.doc;
+            var at = doc.$page.$at;
+            
+            at.addEventListener("afterchange", function(){
+                at.undo_ptr = at.$undostack[at.$undostack.length-1];
+                apf.xmldb.removeAttribute(doc.getNode(), "changed");
+            });
+        });
     },
 
     init : function(amlNode){
