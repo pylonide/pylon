@@ -275,8 +275,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    pathExists : function(path) {
-        return !!this.model.queryNode("//node()[@path=" 
+    getFileNode : function(path) {
+        return this.model.queryNode("//node()[@path=" 
             + util.escapeXpathString(path) + "]");
     },
     
@@ -371,6 +371,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         ide.dispatchEvent("updatefile", {
             path: path,
+            newPath: newpath,
             xmlNode: node
         });
 

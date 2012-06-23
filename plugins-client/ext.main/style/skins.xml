@@ -11760,7 +11760,7 @@
             height:18px;
             background-position:3px 1px;
             background-repeat:no-repeat;
-            padding-left:21px;
+            padding-left:0px;
         }
 
         .filemgr-tree .item LABEL .caption {
@@ -11771,7 +11771,7 @@
             position:relative;
             overflow:hidden;
             height:16px;
-            padding:1px 0 0 2px;
+            padding:1px 0 0 23px;
             text-decoration:none;
             white-space: nowrap;
         }
@@ -11882,11 +11882,39 @@
             font-size : 11px;
             padding : 5px;
         }
+        
+        .filemgr-tree .syncing .caption{ 
+            background : url(icons/syncing_unsel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing.selected .caption{ 
+            background : url(icons/syncing_sel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .synced .caption{ 
+            background : url(icons/synced_unsel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .synced.selected .caption{ 
+            background : url(icons/synced_sel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .conflict .caption{ 
+            background : url(icons/conflict_unsel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .conflict.selected .caption{ 
+            background : url(icons/conflict_sel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added .caption{ 
+            background : url(icons/syncing_unsel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added.selected .caption{ 
+            background : url(icons/syncing_sel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
+            opacity : 0.5;
+        }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
-            padding:2px 0 0 2px;
+            padding:2px 0 0 23px;
         }
 
         #txt_rename {

@@ -45,12 +45,12 @@ module.exports = ext.register("ext/sync/sync", {
             apf.importCssString(util.replaceStaticPrefix(cssString));
             
             this.nodes.push(
-                menus.$insertByIndex(barExtras, new apf.label({
+                this.lblSyncState = menus.$insertByIndex(barExtras, new apf.label({
                     "class"  : "c9-sync-state-info" 
                                 + (ide.local ? " available-online" : ""),
                     "margin" : "4 2 0 0"
                 }), 10),
-                menus.$insertByIndex(barExtras, new apf.button({
+                this.btnSyncStatus = menus.$insertByIndex(barExtras, new apf.button({
                     id      : "btnSync",
                     margin  : "3 0 0 0" ,
                     width   : "60",
@@ -79,9 +79,6 @@ module.exports = ext.register("ext/sync/sync", {
                 }), 11)
             );
             
-            this.lblSyncState = barExtras.childNodes[1];
-            this.btnSyncStatus = barExtras.childNodes[2];
-            
             ide.addEventListener("localOffline", function(){
                 _self.btnSyncStatus.disable();
             });
@@ -96,6 +93,33 @@ module.exports = ext.register("ext/sync/sync", {
                 }
             });
             
+//            ide.addEventListener("init.ext/tree/tree", function(){
+//                _self.btnSyncStatus.addEventListener("onprop.value", function(e){
+//                    if (e.value) {
+//                        if (!_self.cssBindRule) {
+//                            _self.cssBindRule = apf.document.createElementNS(apf.ns.aml, "css");
+//                            _self.cssBindRule.setAttribute("match", "[node()[@syncstate]]");
+//                            _self.cssBindRule.setAttribute("value", "[@syncstate]");
+//                        }
+//                        trFiles.firstChild.appendChild(_self.cssBindRule);
+//                    }
+//                    else {
+//                        if (_self.cssBindRule)
+//                            _self.cssBindRule.parentNode.removeChild(_self.cssBindRule);
+//                    }
+//                });
+//                
+//                trFiles.addEventListener("beforeinsert", function(e){
+//                    if (!_self.btnSyncStatus)
+//                        return;
+//                    
+//                    var nodes = e.xmlNode.childNodes;
+//                    for (var i = 0, l = nodes.length; i < l; i++) {
+//                        nodes[i].setAttribute("syncstatus", 
+//                            _self.getSyncStatus(nodes[i]));
+//                    }
+//                });
+//            });
         }
     },
 
@@ -253,6 +277,12 @@ module.exports = ext.register("ext/sync/sync", {
             else if (event.name === "status") {
                 if (event.value == "synced" && self.mnuSyncInfo) {
                     _self.hideSyncInfo();
+                    
+                    //Reset all syncstate attributes in the tree.
+                    var nodes = fs.model.queryNode("//node()[not(@syncstate='synced']");
+                    Array.protototype.forEach.call(nodes, function(node){
+                        apf.xmldb.setAttribute(node, "syncstate", "synced");
+                    });
                 }
                 
                 if (cloud9config.debug)
@@ -269,34 +299,38 @@ module.exports = ext.register("ext/sync/sync", {
             }) === false)
                 return;
             
+            var state = options.status;
+            
             _self.showSyncInfo();
             _self.updateSyncInfo(options);
             
+            var fileNode;
             if (options.event === "added") {
-                var fileExists = fs.pathExists(ide.davPrefix + options.path);
-                if (cloud9config.debug)
-                    if (fileExists)
+                fileNode = fs.getFileNode(ide.davPrefix + options.path);
+                if (cloud9config.debug) {
+                    if (fileNode)
                         console.log("[SYNC] file already exists", options.path, options.mtime);
                     else
                         console.log("[SYNC] file added", options.path, options.mtime);
+                }
                         
-                if (!fileExists)
+                if (!fileNode)
                     this.createSyncFile(options.path, options.mtime);
             }
             else if (options.event === "modified") {
                 if (cloud9config.debug)
                     console.log("[SYNC] file modified", options.path, options.mtime);
                 
-                if (tabEditors.getPage(options.path)) //@todo do this with an event
+                if (tabEditors.getPage(options.path) && state != "syncing") //@todo do this with an event
                     watcher.confirmReload.call(this, options.path);
             }
-            else if (options.event === "moved") {
+            else if (options.event === "moved" && state != "syncing") {
                 if (cloud9config.debug)
                     console.log("[SYNC] file moved", options.oldPath, " -> ", options.path);
                 
-                this.moveSyncFile(options.oldPath, options.path);
+                fileNode = this.moveSyncFile(options.oldPath, options.path);
             }
-            else if (options.event === "removed") {
+            else if (options.event === "removed" && state != "syncing") {
                 if (cloud9config.debug)
                     console.log("[SYNC] file removed", options.path);
                 
@@ -305,30 +339,77 @@ module.exports = ext.register("ext/sync/sync", {
                 if (tabEditors.getPage(options.path)) //@todo do this with an event
                     watcher.confirmRemoved.call(this, options.path);
             }
+            
+//            this.updateSyncStatus(options.path, 
+//                options.event == "added" && state == "syncing" 
+//                    ? "syncing_added" 
+//                    : state, fileNode);
         }
     },
+    
+//    syncState : {},
+//
+//    getSyncStatus : function(){
+//        
+//    },
+//    
+//    updateStatus : function(path, state, fileNode){
+//        var paths = path.split("/");
+//        
+//        if (state == "synced")
+//            state = "";
+//        
+//        if (state)
+//            this.syncState[path] = [1, state];
+//        else 
+//            delete this.syncState[path];
+//        
+//        if (fileNode) {
+//            apf.xmldb.setAttribute(fileNode, "syncstate", state);
+//            paths.pop();
+//        }
+//        
+//        var oState;
+//        var parentNode = fileNode && fileNode.parentNode;
+//        while (!parentNode && paths.length) {
+//            path = paths.join("/");
+//            parentNode = fs.getFileNode(ide.davPrefix + path);
+//            if (!oState, this.syncState[path])
+//                oState = this.syncState[path] = {};
+//            else
+//                oState[
+//            
+//            apf.xmldb.setAttribute(fileNode, "syncstate", oState[1]);
+//            paths.pop();
+//        }
+//        
+//        var pstate = parentNode.getAttribute("syncstate");
+//        if (pstate != state) {
+//            
+//        }
+//    },
 
     createSyncFile: function(path, mtime) {
         var parentPath = ide.davPrefix + path.substring(0, path.lastIndexOf("/"));
         
-        if (this.isFSNodeVisibleInTree(parentPath)) {
-            if (!fs.pathExists(parentPath))
+        if (this.isFSNodeInModel(parentPath)) {
+            if (!fs.getFileNode(parentPath))
                 fs.createFolderTree(parentPath);
                 
-            fs.model.appendXml(fs.createFileNodeFromPath(ide.davPrefix + path, 
+            return fs.model.appendXml(fs.createFileNodeFromPath(ide.davPrefix + path, 
                 { "modifieddate": mtime }), 
                 "//node()[@path=" + util.escapeXpathString(parentPath) + "]");
         }
         else {
-            this.createFolderInTreeIfVisible(parentPath);
+            this.createFolderInModelIfLoaded(parentPath);
         }
     },    
     
     moveSyncFile : function(oldPath, newPath) {
         var parentPath = ide.davPrefix + newPath.substring(0, newPath.lastIndexOf("/"));
         
-        if (this.isFSNodeVisibleInTree(parentPath)) {
-            if (!fs.pathExists(parentPath))
+        if (this.isFSNodeInModel(parentPath)) {
+            if (!fs.getFileNode(parentPath))
                 fs.createFolderTree(parentPath);
             
             var file = fs.model.queryNode("//node()[@path=" 
@@ -342,12 +423,15 @@ module.exports = ext.register("ext/sync/sync", {
             if (file) {
                 apf.xmldb.moveNode(parent, file);
                 fs.beforeMove(parent, file);
+                
+                return file;
             }
             else
-                apf.xmldb.appendChild(parent, fs.createFileNodeFromPath(newPath));
+                return apf.xmldb.appendChild(parent, 
+                    fs.createFileNodeFromPath(newPath));
         }
         else {
-            this.createFolderInTreeIfVisible(parentPath);
+            this.createFolderInModelIfLoaded(parentPath);
         }
     },
     
@@ -393,25 +477,27 @@ module.exports = ext.register("ext/sync/sync", {
         });
     },
     
-    isFSNodeVisibleInTree : function(path) {
+    isFSNodeInModel : function(path) {
         var xmlNode = fs.model.queryNode("//node()[@path=" 
             + util.escapeXpathString(path) + "]")
         if (!xmlNode) return false;
         
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
-        if (!htmlNode) return false;
-        
-        return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
+//        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, trFiles);
+//        if (!htmlNode) return false;
+//        
+//        return apf.getStyle(htmlNode.nextElementSibling, "display") == "block";
+
+        return true;
     },
     
-    createFolderInTreeIfVisible : function(path) {
+    createFolderInModelIfLoaded : function(path) {
         var file, li;
         do {
             li   = path.lastIndexOf("/");
             file = path.substr(li + 1);
             path = path.substr(0, li);
             
-            if (this.isFSNodeVisibleInTree(path)) {
+            if (this.isFSNodeInModel(path)) {
                 if (!fs.model.queryNode("//node()[@path=" 
                   + util.escapeXpathString(path + "/" + file) + "]")) {
                    fs.model.appendXml(fs.createFolderNodeFromPath(path + "/" + file), 
