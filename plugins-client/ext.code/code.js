@@ -749,8 +749,6 @@ module.exports = ext.register("ext/code/code", {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
-
-            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
 
         ide.addEventListener("updatefile", function(e){

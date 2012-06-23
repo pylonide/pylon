@@ -966,10 +966,10 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             // send it to the dispatcher
-            editors.gotoDocument({
-                node : node,
+            this.gotoDocument({
+                doc    : doc,
                 active : true,
-                origin: "hash"
+                origin : "hash"
             });
             
             // and expand the tree
@@ -1031,7 +1031,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                     editor.focus();
                     ide.dispatchEvent("aftereditorfocus");
-                }, 100);
+                }, 1); 
             };
 
             if (hasData) {
