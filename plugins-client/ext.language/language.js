@@ -16,6 +16,7 @@ var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
+var outline = require('ext/language/outline');
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
@@ -27,7 +28,7 @@ var settings = require("ext/settings/settings");
 var isContinuousCompletionEnabled;
 
 module.exports = ext.register("ext/language/language", {
-    name    : "Javascript Outline",
+    name    : "Javascript Language Services",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, code],
@@ -80,6 +81,7 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
@@ -93,12 +95,16 @@ module.exports = ext.register("ext/language/language", {
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
-                ["unusedFunctionArgs", "true"],
-                ["continuousComplete", "false"]
+                ["unusedFunctionArgs", "false"],
+                ["continuousComplete", _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 
         settings.addSettings("Language Support", markupSettings);
+    },
+
+    isInferAvailable : function() {
+        return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
     init : function() {
@@ -192,7 +198,7 @@ module.exports = ext.register("ext/language/language", {
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
-        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") === "true";
+        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") != "false";
         this.setPath();
     },
 
