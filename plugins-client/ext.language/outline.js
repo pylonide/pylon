@@ -72,7 +72,10 @@ module.exports = {
                 _self.onSelect(treeOutline.selected);
             });
             treeOutline.addEventListener("onafterchoose", function() {
-                setTimeout(gotofile.toggleDialog(-1), 500);
+                setTimeout(gotofile.toggleDialog(-1), 1000);
+            });
+            treeOutline.addEventListener("click", function() {
+                setTimeout(gotofile.toggleDialog(-1), 1000);
             });
             txtGoToFile.addEventListener("blur", function() {
                 selStart = txtGoToFile.$input.selectionStart;
