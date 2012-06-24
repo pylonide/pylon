@@ -10,6 +10,7 @@ build/app.build.js
 .settings.xml
 .project
 .settings
+.sessions
 /demo
 .settings.xml.old
 .DS_Store
