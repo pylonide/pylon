@@ -85,6 +85,7 @@ module.exports = {
                     txtGoToFile.$input.selectionEnd = selEnd;
                 }
             });
+            treeOutline.bufferselect = false;
         });   
 
     },
