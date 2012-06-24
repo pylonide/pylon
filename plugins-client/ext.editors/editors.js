@@ -741,6 +741,7 @@ module.exports = ext.register("ext/editors/editors", {
 
         ide.addEventListener("openfile", function(e){
             _self.openEditor(e.doc, e.init, e.active, e.forceOpen);
+            ide.dispatchEvent("afteropeneditor", { doc: e.doc});
         });
 
         ide.addEventListener("filenotfound", function(e) {

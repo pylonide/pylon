@@ -462,7 +462,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         ide.addEventListener("consolecommand.c9",   openHandler);
 
         var fs = this;
-        ide.addEventListener("openfile", function(e){
+        ide.addEventListener("afteropeneditor", function(e){
             var doc  = e.doc;
             var node = doc.getNode();
             var editor = e.doc.$page && e.doc.$page.$editor;
