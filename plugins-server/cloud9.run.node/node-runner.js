@@ -72,6 +72,10 @@ var Runner = exports.Runner = function(options, callback) {
         self.nodeArgs.push("--setuid=" + options.uid);    
     }
     
+    if (options.allowChildProcess) {
+        self.nodeArgs.push("--allow-childprocess");
+    }
+    
     // first we need to get an open port
     options.sandbox.getPort(function (err, port) {
         if (err) {
@@ -112,7 +116,7 @@ var Runner = exports.Runner = function(options, callback) {
         if (options.usePortFlag) {
             self.nodeArgs.push("--ports=" + self.port);
         }
-    
+        
         // a nice debug message for our users when we fire up the process
         var debugMessageListener = function (msg) {
             // process dies? then we die as well
