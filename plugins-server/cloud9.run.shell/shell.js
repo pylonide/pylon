@@ -79,9 +79,7 @@ var Runner = exports.Runner = function(options, callback) {
 
     this.exec = function(onStart, onExit) {
         var self = this;
-        
-        console.log("HI FROM SHELL", this.createChild);
-        
+
         this.createChild(function(err, child) {
             if (err)
                 return onStart(err);
@@ -120,13 +118,10 @@ var Runner = exports.Runner = function(options, callback) {
     };
 
     this.createChild = function(callback) {
-        console.log("\nSHELL CREATE CHILD");
         if (this.uid) {
             this.args = ["-HEu", "#" + this.uid, this.command].concat(this.args);
             this.command = "sudo";
         }
-        
-        console.log("\ncreateChild", this.command, this.args, this.runOptions);
         
         try {
             var child = spawn(this.command, this.args, this.runOptions);
