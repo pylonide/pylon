@@ -9,10 +9,11 @@ define(function(require, exports, module) {
 
 var ext     = require("core/ext");
 var ide     = require("core/ide");
-var menus = require("ext/menus/menus");
+var menus   = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gitblame/blamejs");
 var util    = require("core/util");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/gitblame/gitblame", {
     name     : "Git Blame",
@@ -67,12 +68,15 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         var fileName = path.substr(lastSlash + 1);
         var dirName = path.substring(ide.davPrefix.length + 1, lastSlash)
         if (dirName == "/")
-            dirName = "";
+            dirName = ide.workspaceDir;
+        else
+            dirName = ide.workspaceDir + "/" + dirName;
 
         var data = {
             command: "git",
-            argv: ["", "blame", "-p", fileName],
-            extra: {type: "gitblame", path: path},
+            argv: ["git", "blame", "-p", fileName],
+            extra: {type: "gitblame", path: path, original_line: ""},
+            requireshandling: !commands.commands.git,
             cwd: dirName // needed for nested repositories
         };
 
@@ -108,12 +112,13 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
         if (this.buffer[message.extra.path] == null)
             return;
+        var type = message.type.substr(-5);
         // Is the body coming in piecemeal? Process after this message
-        if (message.type == "shell-data") {
+        if (type == "-data") {
             this.buffer[message.extra.path] += message.data
             return;
         }
-        if (message.type != "shell-exit")
+        if (type != "-exit")
             return;
 
         var path = message.extra.path;
