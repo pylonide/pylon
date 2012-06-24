@@ -80,7 +80,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 ["regex", "false"],
                 ["matchcase", "false"],
                 ["wholeword", "false"],
-                ["console", "true"]
+                ["console", "true"],
+                ["consolelaunch", "false"]
             ]);
         });
         
@@ -407,7 +408,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             this.makeSearchResultsPanel();
             
             // the search results already exist
-            if (_self.consoleacedoc !== undefined && _self.consoleacedoc.getLength().length > 0) { // append to tab editor if it exists
+            if (_self.consoleacedoc) {
                 _self.appendLines(_self.consoleacedoc, messageHeader);
             }
             else {
@@ -448,6 +449,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             _self.setHighlight(_self.searcheditor.getSession(), options.query);
         }
         
+        if (options.query.length == 0)
+            return;
+            
+        _self.toggleDialog(-1, null, true);
+        
+        this.firstRun = true;
+        
         if (!this.$onMessage) {
             this.$onMessage = this.onMessage.bind(this)
             ide.addEventListener("socketMessage", this.$onMessage);
@@ -471,11 +479,25 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var message = e.message;
         if (message.extra != "codesearch")
             return false;
-
-        if (!chkSFConsole.checked)
+        
+        if (!chkSFConsole.checked) {
+            if (this.firstRun) {
+                var currLength = this.tabacedoc.getLength() - 2; // the distance to the last message
+                this.searcheditor.scrollToLine(currLength, false, true);
+                this.firstRun = false;
+            }
+            
             this.appendLines(this.tabacedoc, message.data);
-        else
+        }
+        else {
+            if (this.firstRun) {
+                var currLength = this.consoleacedoc.getLength() - 2; // the distance to the last message
+                this.searchConsole.$editor.scrollToLine(currLength, false, true);
+                this.firstRun = false;
+            }
+            
             this.appendLines(this.consoleacedoc, message.data);
+        }
 
         // finish
         if (message.type == "shell-exit") {
@@ -612,9 +634,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 wrapmodeViewport  : "true"
             }));
             
+            _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
+            
             this.$panel.addEventListener("afterclose", function(){
                 this.removeNode();
                 _self.$panel = null;
+                _self.consoleacedoc = null;
                 return false;
             });
             
@@ -623,24 +648,32 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     if (e.altKey === false) {
                         _self.launchFileFromSearch(_self.searchConsole.$editor);
                         _self.returnFocus = false;
-        }
-        else {
+                    }
+                    else {
                         editor.insert("\n");
-        } 
+                    } 
                     return false;
                 }
             });
 
             _self.searchConsole.addEventListener("keyup", function(e) {
                 if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
-                    _self.launchFileFromSearch(_self.searchConsole.$editor);
-                    _self.returnFocus = true;
-                    return false;
+                    if (apf.isTrue(settings.model.queryValue("editors/code/filesearch/@consolelaunch"))) {
+                        _self.launchFileFromSearch(_self.searchConsole.$editor);
+                        _self.returnFocus = true;
+                        return false;
+                    }
                 }
             });
             
             _self.searchConsole.$editor.renderer.scroller.addEventListener("dblclick", function() {
                 _self.launchFileFromSearch(_self.searchConsole.$editor);
+            });
+            
+            tabConsole.addEventListener("afterswitch", function(e){	
+                if (e.currentTarget.activepage == "pgSFResults") {
+                    apf.layout.forceResize(_self.searchConsole.$ext);
+                }
             });
         }
         else {
@@ -654,7 +687,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     
     setHighlight : function(session, query) {
         session.highlight(query);
-        session.c9SearchHighlight = session.$searchHighlight
+        session.c9SearchHighlight = session.$searchHighlight;
         session.$searchHighlight = null;
     },
     
