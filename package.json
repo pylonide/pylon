@@ -14,6 +14,7 @@
     "dependencies": {
         "socket.io": "0.9.x",
         "socket.io-client": "0.9.x",
+        "connect": "1.8.x",
 
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",
@@ -41,7 +42,6 @@
     },
 
     "mappings": {
-        "connect":      ["npm", "https://github.com/ajaxorg/connect/tarball/cf3b4b2bd18579aa915759d7860061d83c5d0c57"],
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/dbab677c413aec097bf2e7f95a9e245a4526ce88"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/df4aa3c5ad997bc985b741e4fa9301bbd3085338"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
