@@ -19,7 +19,6 @@ module.exports = {
     nodes: [],
     fullOutline : [],
     filteredOutline : [],
-    ignoreSelectOnce : true,
     isDirty : false,
     
     hook: function(oExt, worker) {
@@ -63,10 +62,6 @@ module.exports = {
             });
             txtGoToFile.addEventListener("keyup", function(e) {
                 _self.onKeyUp(e);
-            });
-            winGoToFile.addEventListener("prop.visible", function(e) {
-                if (!e.value)
-                    _self.showFileSearch();
             });
             treeOutline.addEventListener("onafterselect", function() {
                 _self.onSelect(treeOutline.selected);
@@ -163,7 +158,6 @@ module.exports = {
             txtGoToFile.setValue("@");
         else
             txtGoToFile.setValue(txtGoToFile.value);
-        this.ignoreSelectOnce = true;
         dgGoToFile.hide();
         treeOutline.show();
     },
@@ -178,7 +172,7 @@ module.exports = {
     },
     
     renderOutline: function(ignoreFilter) {
-        require("core/ext").initExtension(gotofile);
+        ext.initExtension(gotofile);
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
         
@@ -196,7 +190,6 @@ module.exports = {
 
         var node = mdlOutline.queryNode("//*[@selected]");
         if (node) {
-            this.ignoreSelectOnce = true;
             treeOutline.select(node);
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
@@ -210,10 +203,6 @@ module.exports = {
     },
 
     onSelect: function(el) {
-        if (this.ignoreSelectOnce) {
-            this.ignoreSelectOnce = false;
-            return;
-        }
         var editor = editors.currentEditor.amlEditor.$editor;
         var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
             +el.getAttribute("el"), +el.getAttribute("ec"));
@@ -285,9 +274,6 @@ module.exports = {
     },
     
     onAfterChange: function(event) {
-        if (txtGoToFile.value === "@") 
-            this.ignoreSelectOnce = true;
-            
         if (txtGoToFile.value.match(/^@/)) {
             this.updateOutline();
             gotofile.setEventsEnabled(false);
