@@ -1,7 +1,7 @@
 /**
- * Git Blame module for the Cloud9 IDE
+ * Search module for the Cloud9 IDE
  *
- * @copyright 2011, Ajax.org B.V.
+ * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
