@@ -1073,6 +1073,9 @@ apf.window = function(){
 
     //IE selection handling
     apf.addListener(document, "selectstart", function(e){
+        if (!apf.isIE)
+            return;
+        
         if (!e) e = event;
 
         var amlNode   = apf.findHost(e.srcElement);
