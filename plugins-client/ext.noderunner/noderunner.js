@@ -76,6 +76,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         switch(message.type) {
             case "node-debug-ready":
             case "php-debug-ready":
+            case "python-debug-ready":
+            case "ruby-debug-ready":
                 ide.dispatchEvent("debugready");
                 break;
 
@@ -87,6 +89,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
             case "node-exit":
             case "php-exit":
+            case "python-exit":
+            case "ruby-exit":
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
                 break;
@@ -231,6 +235,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
             return "php";
+        
+        if (path.match(/\.py$/))
+            return "python";
+        
+        if (path.match(/\.rb$/))
+            return "ruby";
         
         return "node";
     }

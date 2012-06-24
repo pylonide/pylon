@@ -1,5 +1,5 @@
 /**
- * Python Runtime Module for the Cloud9 IDE
+ * Ruby Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -8,47 +8,47 @@
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
-var name = "python-runtime";
+var name = "ruby-runtime";
 var ProcessManager;
 var EventBus;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
-    imports.ide.register(name, PythonRuntimePlugin, register);
+    imports.ide.register(name, RubyRuntimePlugin, register);
 };
 
-var PythonRuntimePlugin = function(ide, workspace) {
+var RubyRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.pm = ProcessManager;
     this.eventbus = EventBus;
     this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
 
-    this.channel = this.workspaceId + "::python-runtime";
+    this.channel = this.workspaceId + "::ruby-runtime";
 
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
 };
 
-util.inherits(PythonRuntimePlugin, Plugin);
+util.inherits(RubyRuntimePlugin, Plugin);
 
 (function() {
 
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            msg.type = msg.type.replace(/^python-debug-(start|data|exit)$/, "python-$1");
+            msg.type = msg.type.replace(/^ruby-debug-(start|data|exit)$/, "ruby-$1");
             var type = msg.type;
 
-            if (type == "python-start" || type == "python-exit")
+            if (type == "ruby-start" || type == "ruby-exit")
                 self.workspace.getExt("state").publishState();
 
-            if (msg.type == "python-start")
+            if (msg.type == "ruby-start")
                 self.processCount += 1;
 
-            if (msg.type == "python-exit")
+            if (msg.type == "ruby-exit")
                 self.processCount -= 1;
 
             self.ide.broadcast(JSON.stringify(msg), self.name);
@@ -57,7 +57,7 @@ util.inherits(PythonRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/python/.test(message.runner)))
+        if (!(/ruby/.test(message.runner)))
             return false;
 
         var res = true;
@@ -91,7 +91,7 @@ util.inherits(PythonRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("python", {
+            self.pm.spawn("ruby", {
                 file: file,
                 args: args,
                 env: env,
@@ -113,7 +113,7 @@ util.inherits(PythonRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("python-debug", {
+            self.pm.spawn("ruby-debug", {
                 file: file,
                 args: args,
                 env: env,
@@ -138,4 +138,4 @@ util.inherits(PythonRuntimePlugin, Plugin);
         return this.processCount === 0;
     };
 
-}).call(PythonRuntimePlugin.prototype);
+}).call(RubyRuntimePlugin.prototype);
