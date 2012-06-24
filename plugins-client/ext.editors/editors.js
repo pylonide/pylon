@@ -875,7 +875,7 @@ module.exports = ext.register("ext/editors/editors", {
                         origin: "settings"
                     });
 
-                    if (doc.state.type != "nofile")
+                    if (doc.state && doc.state.type != "nofile")
                         checkExpand(node.getAttribute("path"), doc);
                 }
 

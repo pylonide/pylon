@@ -1,5 +1,5 @@
 var connect = require("connect");
-var connect_static = require("connect-architect/connect/middleware/static");
+//var connect_static = require("connect-architect/connect/middleware/static");
 
 module.exports = function startup(options, imports, register) {
 
