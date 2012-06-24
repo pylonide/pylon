@@ -3532,11 +3532,12 @@
         .aceSearchResults .ace_text-layer {
             pointer-events: auto;
         }
-        .aceSearchConsole .ace_marker-layer .ace_selection {
-            background: transparent !important;
-        }
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
             cursor: default;
+        }
+        
+        .aceSearchConsole.ace-monokai .ace_marker-layer .ace_selected_word {
+            border: 1px solid #ccc;
         }
         
         .ace_gutter .ace_gutter_active_line, .aceSearchConsole .ace_gutter .ace_gutter_active_line {
