@@ -528,28 +528,16 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     appendLines : function(doc, content) {
         if (content.length == 0) // blank lines can get through
             return;
-            
-        var currLength = doc.getLength();
         
-        var contentArray = typeof content == "string" 
-            ? content.split("\n")
-            : content;
-        var contentLength = contentArray.length;
-        
-        // reached the end of grep
-        if (contentLength > 0 && contentArray[contentLength - 1].indexOf("Results:") == 0) {
-            var count = contentArray.pop();
-            count = count.substring(count.indexOf(" ") + 1);
-            
-            var countJSON = JSON.parse(count);
-            var finalMessage = this.messageFooter(countJSON);
+        if (typeof content == "string") {
+            content = content.split("\n");
+        } else if (typeof content.count == "number") {
+            // final message
+            content = ["\n", this.messageFooter(content), "\n", "\n", "\n"];
         }
-        
+
         if (content.length > 0)
-            doc.insertLines(currLength, contentArray);
-        
-        if (countJSON !== undefined)
-            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n", "\n"]);
+            doc.insertLines(doc.getLength(), content);
     },
     
     messageHeader : function(path, options) {
