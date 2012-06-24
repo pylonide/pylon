@@ -1,4 +1,5 @@
 var connect = require("connect");
+var connect_static = require("connect-architect/connect/middleware/static");
 
 module.exports = function startup(options, imports, register) {
 
@@ -15,7 +16,8 @@ module.exports = function startup(options, imports, register) {
                 for (var i = 0; i < statics.length; i++) {
                     var s = statics[i];
 
-                    console.log("MOUNT", s.mount, s.path, prefix);
+//                    console.log("MOUNT", s.mount, s.path, prefix);
+
                     staticServer.use(s.mount, connect.static(s.path));
 
                     var libs = s.rjs || {};
