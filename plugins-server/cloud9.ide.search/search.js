@@ -247,7 +247,6 @@ util.inherits(SearchPlugin, Plugin);
             args.push("-regextype", "posix-extended", "-print");
 
         args.command = findCmd;
-        console.log(args)
         return args;
     };
 
