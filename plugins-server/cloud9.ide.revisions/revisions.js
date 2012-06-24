@@ -174,11 +174,11 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         toPath += "." + FILE_SUFFIX;
                     }
 
-                    Path.exists(fromPath, function(fromPathExists) {
+                    fs.exists(fromPath, function(fromPathExists) {
                         if (!fromPathExists) {
                             return;
                         }
-                        Path.exists(Path.dirname(toPath), function(toPathExists) {
+                        fs.exists(Path.dirname(toPath), function(toPathExists) {
                             var renameFn = function() {
                                 fs.rename(fromPath, toPath, function(err) {
                                     if (err) {
@@ -469,101 +469,51 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }));
     };
 
-    this.createNewRevisionsFile = function(path, callback) {
-        var parentDir = this.getRevisionsPath(Path.dirname(path));
-        var originalPath = path;
-        var absPath = this.getRevisionsPath(path);
-
-        fs.readFile(originalPath, function(err, data) {
-            if (err) {
-                return callback(err);
-            }
-
-            var writeFile = function (err) {
-                if (err) return callback(err);
-
-                // We just created the revisions file. Since we
-                // don't have a 'previous revision, our first revision will
-                // consist of the previous contents of the file.
-                var contents = data.toString();
-                var ts = Date.now();
-                var revision = {
-                    ts: ts,
-                    silentsave: true,
-                    restoring: false,
-                    patch: [Diff.patch_make("", contents)],
-                    length: contents.length
-                };
-                var revisionString = JSON.stringify(revision);
-                var revObj = {};
-                revObj[ts] = revision;
-
-                fs.writeFile(absPath, revisionString + "\n", function(err) {
-                    if (err) {
-                        return callback(err);
-                    }
-                    callback(null, revObj);
-                });
-            };
-
-            fs.exists(parentDir, function (err, exists) {
-                if (err) return callback(err);
-
-                if (exists) {
-                    writeFile();
-                }
-                else {
-                    fs.mkdir(parentDir, "0755", writeFile);
-                }
-            });
-        });
-    };
-
     this.saveSingleRevision = function(path, revision, callback) {
-        var self = this;
-        Path.exists(path, function(exists) {
-            if (!exists) {
-                self.createNewRevisionsFile(path, function() {
-                    self.appendToFile(path, revision, callback);
-            });
-            }
-            else {
-                self.appendToFile(path, revision, callback);
-            }
-        });
-    };
-
-    this.appendToFile = function(path, revision, callback) {
+        // console.log(path, revision)
         if (!path || !revision) {
             return callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
         }
 
         var absPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
-        fs.exists(absPath, function(err, exists) {
+
+        fs.exists(absPath, function(exists) {
+            if (!exists) {
+                fs.readFile(path, "utf8", function(err, data) {
+                    if (err)
+                        return;
+
+                    create(JSON.stringify({
+                        ts: Date.now(),
+                        silentsave: true,
+                        restoring: false,
+                        patch: [Diff.patch_make("", data)],
+                        length: data.length
+                    }) + "\n");
+                });
+            }
+            else {
+                fs.readFile(absPath, "utf8", write)
+            }
+        });
+
+        function write(err, oldContent) {
             if (err)
                 return callback(err);
-
-            if (!exists)
-                return callback(new Error("Backup file path doesn't exist:" + absPath));
-
-            fs.open(absPath, "a", 666, function(err, id) {
-                if (err) return callback(err);
-
-                fs.write(id, JSON.stringify(revision) + "\n", null, "utf8", function(err, written, buffer) {
-                    if (err) {
-                        callback(new Error("Could not save backup file" + absPath));
-                    }
-                    else {
-                        fs.close(id, function(err) {
-                            callback(err, {
-                                absPath: absPath,
-                                path: path,
-                                revision: revision.ts
-                            });
-                        });
-                    }
+            fs.writeFile(absPath, oldContent + JSON.stringify(revision) + "\n", "utf8", function(err) {
+                callback(err, {
+                    absPath: absPath,
+                    path: path,
+                    revision: revision.ts
                 });
             });
-        });
+        }
+
+        function create(data) {
+            fs.mkdirP(Path.dirname(absPath), "0755", function(err) {
+                if (!err)
+                    write(null, data);
+            })
+        }
     };
 }).call(RevisionsPlugin.prototype);
