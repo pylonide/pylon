@@ -329,7 +329,7 @@ BODY {
     -webkit-animation: loading-spinner 1.2s linear 0s infinite normal;
 	   -moz-animation: loading-spinner 1.2s linear 0s infinite normal;
 	        animation: loading-spinner 1.2s linear 0s infinite normal;
-
+}
 .view-mode-box {
     background-color: #232e38;
     color: #e9e9e9;
