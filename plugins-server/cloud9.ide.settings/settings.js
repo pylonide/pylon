@@ -14,8 +14,9 @@ var assert = require("assert");
 
 var name = "settings";
 
+var FS;
 var SETTINGS_PATH;
-var VFS;
+
 var trimFilePrefix;
 var locationsToSwap = {"files" : "active", "file" : "path", "tree_selection": "path" };  
 var propertiesToSwap= ["projecttree", "tabcycle", "recentfiles"];
@@ -23,24 +24,28 @@ var propertiesToSwap= ["projecttree", "tabcycle", "recentfiles"];
 module.exports = function setup(options, imports, register) {
     assert(options.settingsPath, "option 'settingsPath' is required");
     SETTINGS_PATH = options.settingsPath;
-    VFS = imports.vfs;
 
-    // If absolute settings path option is set we use that path and NodeJS's FS.
-    // This is needed by c9local where settings file cannot be stored at `/.settings`.
-    if (typeof options.absoluteSettingsPath !== "undefined") {
-        fs = require("fs");
-        fs.exists = Path.exists;
-        SETTINGS_PATH = options.absoluteSettingsPath;
-    }
-    trimFilePrefix = options.trimFilePrefix;
-    imports.ide.register(name, SettingsPlugin, register);
+    imports.sandbox.getProjectDir(function(err, projectDir) {
+        FS = fsnode(imports.vfs, projectDir);
+
+        // If absolute settings path option is set we use that path and NodeJS's FS.
+        // This is needed by c9local where settings file cannot be stored at `/.settings`.
+        if (typeof options.absoluteSettingsPath !== "undefined") {
+            FS = require("fs");
+            FS.exists = require("path").exists;
+            SETTINGS_PATH = options.absoluteSettingsPath;        
+        }
+
+        trimFilePrefix = options.trimFilePrefix;
+        imports.ide.register(name, SettingsPlugin, register);
+    });
 };
 
 var SettingsPlugin = module.exports.SettingsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = name;
-    this.fs = fsnode(VFS);
+    this.fs = FS;
     this.settingsPath = SETTINGS_PATH;
 };
 
