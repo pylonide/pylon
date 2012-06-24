@@ -74,8 +74,10 @@ module.exports = {
             treeOutline.addEventListener("onafterchoose", function() {
                 setTimeout(gotofile.toggleDialog(-1), 1000);
             });
-            treeOutline.addEventListener("click", function() {
-                setTimeout(gotofile.toggleDialog(-1), 1000);
+            treeOutline.addEventListener("click", function(e) {
+                var COLLAPSE_AREA = 14
+                if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
+                    setTimeout(gotofile.toggleDialog(-1), 1000);
             });
             txtGoToFile.addEventListener("blur", function() {
                 selStart = txtGoToFile.$input.selectionStart;
