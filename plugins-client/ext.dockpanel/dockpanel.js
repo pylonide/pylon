@@ -24,7 +24,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
 
     nodes          : [],
-    dockpanels     : [],
+    dockpanels     : {},
     
     loaded : false,
     
