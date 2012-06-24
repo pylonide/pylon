@@ -42,7 +42,7 @@ var _loadKeyboardHandler = function(path, callback) {
             return callback();
 
         var base = path.split("/").pop();
-        var filename = "/static/ace/build/keybinding-" + base + ".js";
+        var filename = ide.staticPrefix + "/ace/build/keybinding-" + base + ".js";
         var aceNetModule = "ace/lib/net";
         require(aceNetModule).loadScript(filename, callback);
     }

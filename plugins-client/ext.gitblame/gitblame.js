@@ -20,7 +20,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     alone    : true,
     type     : ext.GENERAL,
     nodes    : [],
-
+    autodisable : ext.ONLINE | ext.LOCAL,
+    
     init : function(amlNode){
         this.blamejs = new BlameJS();
     },

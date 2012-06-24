@@ -1,5 +1,5 @@
 /**
- * Revisions Module for the Cloud9 IDE.
+ * Revisions Module for the Cloud9 IDE!
  *
  * @author Sergi Mansilla <sergi@c9.io>
  * @copyright 2012, Ajax.org B.V.
@@ -27,6 +27,8 @@ var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/revisions/revisions.xml");
 var skin = require("text!ext/revisions/skin.xml");
 var cssString = require("text!ext/revisions/style.css");
+
+markup = markup.replace("{ide.staticPrefix}", ide.staticPrefix);
 
 var beautify = require("ext/beautify/beautify");
 var quicksearch = require("ext/quicksearch/quicksearch");
@@ -258,14 +260,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $initWorker: function() {
-        var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
+        var worker = this.worker = new Worker(ide.workerPrefix + "/ext/revisions/revisions_worker.js");
         worker.onmessage = this.onWorkerMessage.bind(this);
         worker.onerror = function(error) {
             throw(new Error("Error from worker:\n" + error.message));
         };
         // Preload diff libraries so they are available to the worker in case we
         // go offline.
-        worker.postMessage({ type: "preloadlibs" });
+        worker.postMessage({ type: "preloadlibs", prefix: ide.workerPrefix });
     },
 
     setSaveButtonCaption: function(page) {

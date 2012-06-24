@@ -38,8 +38,8 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("outline", applyEventOnce(function(event) {
         _self.outline(event);
     }));
-    sender.on("complete", applyEventOnce(function(pos) {
-        _self.complete(pos);
+    sender.on("complete", applyEventOnce(function(data) {
+        _self.complete(data);
     }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
@@ -528,7 +528,8 @@ function asyncParForEach(array, fn, callback) {
     }
     
     this.complete = function(event) {
-        var pos = event.data;
+        var data = event.data;
+        var pos = data.pos;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
         var _self = this;
@@ -549,7 +550,7 @@ function asyncParForEach(array, fn, callback) {
             var matches = [];
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                    handler.complete(_self.doc, ast, data, currentNode, function(completions) {
                         if (completions)
                             matches = matches.concat(completions);
                         next();

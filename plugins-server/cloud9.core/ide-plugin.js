@@ -16,7 +16,8 @@ module.exports = function setup(options, imports, register) {
     var sandbox = imports.sandbox;
     var baseUrl = options.baseUrl || "";
     var staticPrefix = imports.static.getStaticPrefix();
-
+    var workerPrefix = imports.static.getWorkerPrefix() || "/static";
+    
     var socketUrl = options.socketUrl || "/socket.io";
 
     var ide;
@@ -51,6 +52,7 @@ module.exports = function setup(options, imports, register) {
             socketIoTransports: options.socketIoTransports,
             baseUrl: baseUrl,
             debug: (options.debug === true) ? true : false,
+            workerUrl: workerPrefix,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,
             name: options.name || workspaceId,
@@ -65,7 +67,8 @@ module.exports = function setup(options, imports, register) {
             real: (options.real === true) ? true : false,
             env: options.env,
             packed: (options.packed === true) ? true : false,
-            packedName: options.packedName
+            packedName: options.packedName,
+            local: options.local
         });
 
         hub.on("ready", function() {

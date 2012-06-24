@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 
 var editors, parseLine, predefinedCmds; // These modules are loaded on demand
 var ide = require("core/ide");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var ext = require("core/ext");
@@ -31,7 +32,7 @@ module.exports = ext.register("ext/console/console", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    css    : css + theme,
+    css    : util.replaceStaticPrefix(css) + theme,
     height : 200,
     hidden : true,
 

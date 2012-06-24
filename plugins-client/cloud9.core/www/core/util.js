@@ -9,6 +9,18 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var markup = require("text!core/util.xml");
 
+exports.escapeXpathString = function(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
+
+
 exports.alert = function(title, header, msg, onhide) {
     if (!self.winAlert)
         apf.document.documentElement.insertMarkup(markup);
@@ -335,6 +347,10 @@ exports.isTrue = function(c){
  */
 exports.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
+};
+
+exports.replaceStaticPrefix = function (string) {
+    return string.replace(new RegExp("{ide.staticPrefix}", "g"), window.cloud9config.staticUrl);
 };
 
 /*

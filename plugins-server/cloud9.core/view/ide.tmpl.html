@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse=[%packed%]>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse="[%packed%]">
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
-
+        <script type="text/javascript">
+        //<![CDATA[
+            if (<%local%>)
+                document.title += " Local";
+        //]]>
+        </script>
         <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
+        [%loadedDetectionScript%]
         <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
@@ -29,12 +35,14 @@
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
+                workerUrl: "[%workerUrl%]",
                 staticUrl: "[%staticUrl%]",
                 socketIoUrl: <%socketIoUrl%>,
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
-                settings: <%settingsXml%>,
+                local: <%local%>,
                 env: <%env%>,
+                settings: <%settingsXml%>,
                 packed: <%packed%> ? true : false,
                 packedName: <%packedName%>
             };
@@ -57,8 +65,8 @@
             else {
                var apfLoc = "";
             }
-
-            var config = <%requirejsConfig%>;
+            
+            var config = <%requirejsConfig%>; 
 
             require(config, [apfLoc], function(){
                 if (!cloud9config.packed) {
@@ -69,7 +77,7 @@
                 else {
                     var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "packed.js")];
                 }
-
+                
                 require(list, function(ide, ext, util){
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
@@ -77,14 +85,14 @@
                     else {
                         var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
                     }
-
+                    
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
-                    aceConfig.set("workerPath", "/static/ace/worker");
+                    aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
-
+                    
                     //Load extensions
                     if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
@@ -106,7 +114,7 @@
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time "
+                console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
 
                 ide.addEventListener("$event.extload", function(cb){

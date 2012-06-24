@@ -1,6 +1,6 @@
 .uploadactivity-header {
     width: 100%;
-    background: url(/static/ext/uploadfiles/style/images/list_uploadactivity_header_bg.png) no-repeat 0 0;
+    background: url({ide.staticPrefix}/ext/uploadfiles/style/images/list_uploadactivity_header_bg.png) no-repeat 0 0;
     background-size: 100% 30px;
 }
 
@@ -21,22 +21,22 @@
 .uploadDropArea {
     height: 95px;
     width: 335px;
-    background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 0;
+    background: url({ide.staticPrefix}/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 0;
 }
 
 .uploadDropArea.over {
-    background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 -95px;
+    background: url({ide.staticPrefix}/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 -95px;
 }
 .uploadOrText {
     height: 12px;
     width: 18px;
-    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 1px;
+    background: url({ide.staticPrefix}/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 1px;
 }
 
 .uploadOrSelectText {
     height: 15px;
     width: 77px;
-    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-select-text.png) no-repeat 0 0;
+    background: url({ide.staticPrefix}/ext/uploadfiles/style/images/upload-dialog-or-select-text.png) no-repeat 0 0;
 }
 
 .txtUploadTargetFolder {

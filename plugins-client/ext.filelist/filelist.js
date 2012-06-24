@@ -24,7 +24,8 @@ module.exports = ext.register("ext/filelist/filelist", {
     type  : ext.GENERAL,
     alone : true,
     queue : [],
-
+    autodisable : ext.ONLINE | ext.LOCAL,
+    
     init : function(){
     },
 

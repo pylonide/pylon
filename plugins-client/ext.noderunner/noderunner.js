@@ -22,6 +22,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     type    : ext.GENERAL,
     alone   : true,
     offline : false,
+    autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
 
     NODE_VERSION: "auto",
