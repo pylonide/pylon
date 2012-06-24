@@ -98,7 +98,8 @@
                                 <element caption="Node.js (Auto)" value="node auto" />
                                 <element caption="Node.js 0.6.x" value="node 0.6.x" />
                                 <element caption="Node.js 0.4.x" value="node 0.4.x" />
-                                <element caption="PHP cli" value="php" />
+                                <element caption="Apache+PHP" value="apache" />
+                                <element caption="PHP CLI" value="php" />
                                 <element caption="Python" value="python" />
                                 <element caption="Ruby" value="ruby" />
                             </data>
