@@ -617,7 +617,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
 
         apf.xmldb.setAttribute(doc.getNode(), "clone", true);
-        editors.openEditor(doc, false, false, true);
+        editors.openEditor(doc, "clone", "clone", false, false, true);
     },
 
     endCloneView: function(page) {

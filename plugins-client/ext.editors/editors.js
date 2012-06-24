@@ -383,7 +383,7 @@ module.exports = ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}, keepEditor : true});
     },
 
-    openEditor : function(doc, init, active, forceOpen) {
+    openEditor : function(doc, type, origin, init, active, forceOpen) {
         var xmlNode  = doc.getNode();
         var filepath = xmlNode.getAttribute("path");
         var tabs = tabEditors;
@@ -479,6 +479,8 @@ module.exports = ext.register("ext/editors/editors", {
         }, 100);
 
         settings.save();
+
+        ide.dispatchEvent("afteropeneditor", { doc: doc, type: type, origin: origin});
     },
 
     initEditorEvents: function(page, model) {
@@ -740,8 +742,7 @@ module.exports = ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc, e.init, e.active, e.forceOpen);
-            ide.dispatchEvent("afteropeneditor", { doc: e.doc});
+            _self.openEditor(e.doc, e.type, e.origin, e.init, e.active, e.forceOpen);
         });
 
         ide.addEventListener("filenotfound", function(e) {
