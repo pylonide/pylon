@@ -27,6 +27,7 @@ var Ide = module.exports = function(options) {
    // assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
+    var workerUrl = options.workerUrl || "/static";
 
     this.workspaceDir = options.workspaceDir;
 
@@ -40,6 +41,7 @@ var Ide = module.exports = function(options) {
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         debug: (options.debug === true) ? true : false,
+        workerUrl: workerUrl,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
         plugins: options.plugins,
@@ -51,6 +53,7 @@ var Ide = module.exports = function(options) {
         real: (options.real === true) ? true : false,
         hosted: !!options.hosted,
         env: options.env,
+        local: options.local,
         packed: (options.packed === true) ? true : false,
         packedName: options.packedName
     };
@@ -59,7 +62,7 @@ var Ide = module.exports = function(options) {
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-
+    
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -100,7 +103,7 @@ util.inherits(Ide, EventEmitter);
                 "cache-control": "no-transform",
                 "Content-Type": "text/html"
             });
-
+            
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
@@ -118,14 +121,21 @@ util.inherits(Ide, EventEmitter);
             }
 
             var staticUrl = _self.options.staticUrl;
+            var workerUrl = _self.options.workerUrl;
             var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
                 + staticUrl + '/ace/build/ace'
                 + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
+
+            var loadedDetectionScript = "";
+            if (_self.options.local) {
+                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' + _self.options.workspaceId + '"></script>';
+            }
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
                 debug: _self.options.debug,
+                workerUrl: workerUrl,
                 staticUrl: staticUrl,
                 socketIoUrl: _self.options.socketIoUrl,
                 socketIoTransports: _self.options.socketIoTransports,
@@ -145,7 +155,9 @@ util.inherits(Ide, EventEmitter);
                 real: _self.options.real ? "true" : "false",
                 env: _self.options.env || "local",
                 packed: _self.options.packed,
-                packedName: _self.options.packedName
+                packedName: _self.options.packedName,
+                local: _self.options.local,
+                loadedDetectionScript: loadedDetectionScript
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
@@ -219,13 +231,13 @@ util.inherits(Ide, EventEmitter);
 
     this.getPermissions = function(req) {
         var user = this.getUser(req);
-
+        
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
             return user.getPermissions() || User.VISITOR_PERMISSIONS;
     };
-
+    
     this.hasUser = function(username) {
         return !!this.$users[username];
     };
@@ -271,7 +283,7 @@ util.inherits(Ide, EventEmitter);
 
     this.dispose = function(callback) {
         this.emit("destroy");
-
+        
         this.workspace.dispose(callback);
     };
 }).call(Ide.prototype);

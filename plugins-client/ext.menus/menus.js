@@ -36,7 +36,7 @@ module.exports = ext.register("ext/menus/menus", {
                 style : "padding : 0 5px 0 5px;position:static",
             }), logobar.firstChild),
 
-            //this.setRootMenu("Project", 10),
+//            this.setRootMenu("Workspace", 10),
             this.setRootMenu("File", 100),
             this.setRootMenu("Edit", 200),
             this.setRootMenu("Selection", 300),

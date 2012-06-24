@@ -28,7 +28,7 @@ function determineDistance(score) {
 module.exports = {
     "test basic completion" : function(next) {
         var doc = new Document("hel hello2 hello3  hello2 abc");
-        var matches = completer.complete(doc, null, {row: 0, column: 3}, null, function(matches) {
+        var matches = completer.complete(doc, null, {"pos": {row: 0, column: 3}}, null, function(matches) {
             matchSorter(matches);
             //console.log("Matches:", matches);
             assert.equal(matches.length, 2);
@@ -42,14 +42,14 @@ module.exports = {
 
     "test basic completion 2" : function(next) {
         var doc = new Document("assert.equal(matchers[0].name, matches[0].score);\nassert.eq(matches[0].name, mat[0].score);\n");
-        completer.complete(doc, null, {row: 1, column: 9}, null, function(matches) { // .eq|
+        completer.complete(doc, null, {"pos": {row: 1, column: 9}}, null, function(matches) { // .eq|
             matchSorter(matches);
             assert.equal(matches.length, 1);
             assert.equal(matches[0].name, "equal");
             assert.equal(determineDistance(matches[0].score), 9);
         });
 
-        completer.complete(doc, null, {row: 1, column: 30}, null, function(matches) {  // .mat|[0]
+        completer.complete(doc, null, {"pos": {row: 1, column: 30}}, null, function(matches) {  // .mat|[0]
             matchSorter(matches);
             assert.equal(matches.length, 2);
             assert.equal(matches[0].name, "matches");

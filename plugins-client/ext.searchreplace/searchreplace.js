@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -29,7 +30,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    css     : css,
+    css     : util.replaceStaticPrefix(css),
     markup  : markup,
 
     skin    : {

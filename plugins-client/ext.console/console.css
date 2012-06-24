@@ -99,7 +99,7 @@
     color: #909090;
 }
 .console_text .prompt_spinner {
-    background: url(/static/ext/main/style/images/console_spinner_proc.gif) no-repeat 0 0;
+    background: url({ide.staticPrefix}/ext/main/style/images/console_spinner_proc.gif) no-repeat 0 0;
     display: inline;
     width: 21px;
     height: 14px;
@@ -119,25 +119,25 @@
     box-shadow: inset 0px 0px 0px 1px #372a2a, inset 6px 0px 0px 0px #b0423f;
 }
 .console_text .output_section.loading.has_pid:hover .prompt_spinner {
-    background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 0;
+    background: url({ide.staticPrefix}/ext/main/style/images/console-action-cancel.png) no-repeat 0 0;
 }
 .console_text .output_section.loading.has_pid:hover .prompt_spinner:active {
-    background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 -22px;
+    background: url({ide.staticPrefix}/ext/main/style/images/console-action-cancel.png) no-repeat 0 -22px;
 }
 .console_text div.loaded .prompt_spinner {
-    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat 1px 1px;
+    background: url({ide.staticPrefix}/ext/main/style/images/cli-block-expand.png) no-repeat 1px 1px;
 }
 
 .console_text div.loaded .prompt_spinner:hover {
-    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -23px 1px;
+    background: url({ide.staticPrefix}/ext/main/style/images/cli-block-expand.png) no-repeat -23px 1px;
 }
 
 .console_text div.loaded.collapsed .prompt_spinner {
-    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -48px 1px
+    background: url({ide.staticPrefix}/ext/main/style/images/cli-block-expand.png) no-repeat -48px 1px
 }
 
 .console_text div.loaded.collapsed .prompt_spinner:hover {
-    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -73px 1px
+    background: url({ide.staticPrefix}/ext/main/style/images/cli-block-expand.png) no-repeat -73px 1px
 }
 
 .cmd_msg > span { float: left; }

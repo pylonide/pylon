@@ -19,6 +19,7 @@ module.exports = ext.register("ext/newresource/newresource", {
     name    : "New Resource",
     alone   : true,
     offline : false,
+    autodisable : ext.ONLINE | ext.LOCAL,
     type    : ext.GENERAL,
     markup  : markup,
     deps    : [fs],

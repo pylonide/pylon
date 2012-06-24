@@ -1,0 +1,218 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:menu
+      id        = "mnuSyncInfo"
+      skin      = "menu-bk"
+      width     = "350"
+      pinned    = "true"
+      class     = "downward sync-info-tooltip">
+        <div>
+            <a class="close-sync-info" href="javascript:void(0)" onclick="mnuSyncInfo.hide()"></a>
+            <span class="sync-info-title">Syncing for offline use...</span>
+            <a:progressbar id="syncProgressBar"
+              skin   = "progressbar-green" 
+              value  = "20" 
+              margin = "5 0 8"/>
+            <a:hbox>
+                <div id="syncFileName" class="sync-file-label" flex="1">Connecting...</div>
+                <!--a:button id="btnPauseSync" 
+                  pack="end"
+                  skin="btn-default-css3" 
+                  width="37"
+                  height="25"
+                  class="pause-sync" 
+                  onclick="require('ext/sync/sync').setSync();"/-->
+            </a:hbox>
+        </div>
+        <div class="arrow"></div>
+    </a:menu>
+    
+    <a:model id="mdlSyncClients"></a:model>
+    <a:menu
+      id        = "mnuInstallLocal"
+      skin      = "menu-bk"
+      width     = "330"
+      style     = "margin-top:8px;margin-left:8px;">
+        <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncInstall">
+            <a:label class="lblinstall">
+                <p style="margin-top:0"><strong>Syncing requires Cloud9 Local installed &amp; running</strong></p>
+                <p>Cloud9 Local needs to be installed in order to manage syncing on your local machine.</p>
+                <p>Click <a href="#">here</a> to download Cloud9 Local, or install it via <a href="http://npmjs.org/">npm</a>:</p>
+                <blockquote class="code">npm install -g c9</blockquote>
+                <p>If you already have Cloud9 Local installed, it might not be running. Start it by typing:</p>
+                <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
+            </a:label>
+        </a:vbox>
+        <a:vbox padding="10" edge="5 10 8 10" id="vboxSyncRemoveLocal">
+            <a:label class="lblinstall">
+                <p style="margin-top:0"><strong>The c9 command line is not running.</strong></p>
+                <p>You can start your runtime by typing the following into your command line:</p>
+                <blockquote class="code">c9 --start</blockquote>
+                <p>Then, try disabling again.</p>
+            </a:label>    
+            
+            <div visible="{mdlSyncClients.queryNodes('client').length > 1}">
+                <a:divider skin="c9-divider-hor" margin="-10 0 0 0" />
+                
+                <a:label class="lblinstall">    
+                    Alternatively, choose the client you want to disable from the dropdown below:
+                </a:label>
+                
+                <a:dropdown id="ddLocalClients" 
+                  skin       = "black_dropdown"
+                  model      = "mdlSyncClients"
+                  width      = "300"
+                  each       = "[client]"
+                  eachvalue  = "[@name]"
+                  caption    = "[@label]"
+                  visible2    = "{this.length}" />
+                
+            </div>
+            
+            <a:divider skin="c9-divider-hor" />
+                
+            <a:hbox pack="end" edge="0" padding="10">
+                <a:button
+                  caption = "Cancel"
+                  skin    = "c9-simple-btn"
+                  onclick = "mnuInstallLocal.hide()"
+                  style   = "cursor:pointer"
+                  margin  = "5 0 0 0"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Disable Sync"
+                  skin    = "btn-default-css3"
+                  id      = "btnDisableSync"
+                  height  = "24"
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:menu>
+    
+    <a:model id="mdlSyncPrj" />
+    <a:menu
+      id        = "mnuSyncPrj"
+      skin      = "menu-bk"
+      width     = "283"
+      style     = "margin-top:8px;margin-left:8px;">
+        <a:vbox padding="10" edge="10 10 8 10">
+            <a:hbox padding="5">
+                <a:label width="50" style="padding:4px 0 0 0">Sync with:</a:label>
+                <a:dropdown id="ddSyncPrj" 
+                  skin = "black_dropdown"
+                  model      = "mdlSyncPrj"
+                  each       = "[project]"
+                  eachvalue  = "[@newws]"
+                  caption    = "{[@name] + (apf.isTrue([@newws]) ? ' [New]' : '')}"
+                  empty-message = "You don't have any projects yet" 
+                  flex = "1" />
+            </a:hbox>
+            <a:hbox visible="{apf.isTrue(ddSyncPrj.value)}" margin="-5 0 0 0" padding="5">
+                <a:label width="50" style="padding:4px 0 0 0">Type:</a:label>
+                <a:radiobutton skin="radio_black">Private</a:radiobutton>
+                <a:radiobutton skin="radio_black" selected="true">Public</a:radiobutton>
+            </a:hbox>
+            
+            <a:divider skin="c9-divider-hor" />
+            
+            <a:hbox pack="end" edge="0" padding="10">
+                <a:button
+                  caption = "Cancel"
+                  skin    = "c9-simple-btn"
+                  onclick = "mnuSyncPrj.hide()"
+                  style   = "cursor:pointer"
+                  margin  = "5 0 0 0"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Sync"
+                  skin = "btn-default-css3"
+                  id = "btnSyncOK"
+                  height = "24"
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:menu>
+
+    <a:menu
+      id        = "mnuSyncFolderSelect"
+      skin      = "menu-bk"
+      width     = "283"
+      style     = "margin-top:8px;margin-left:8px;">
+        <a:vbox padding="10" edge="10 10 8 10">
+            You'll need to choose a folder on your computer where you want this synced project to reside.
+            
+            <a:divider skin="c9-divider-hor" />
+            
+            <a:hbox pack="end" edge="0" padding="10">
+                <a:button
+                  caption = "Cancel"
+                  skin    = "c9-simple-btn"
+                  onclick = "mnuSyncFolderSelect.hide()"
+                  style   = "cursor:pointer"
+                  margin  = "5 0 0 0"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Choose Folder"
+                  skin = "btn-default-css3"
+                  id = "btnSyncFolderOK"
+                  height = "24"
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:menu>
+    
+    <a:window
+      id        = "winCannotSync"
+      title     = "Sync Error!"
+      icon      = ""
+      center    = "true"
+      kbclose   = "false"
+      width     = "600"
+      skin      = "bk-window2"
+      render    = "runtime"
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3>Your local workspace and your remote workspace both have files in them.</h3>
+            <div class="alertMsg">Which workspace would you like to be the source? Newer files in the source workspace will overwrite older files in the other workspace.</div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'local'); winCannotSync.hide()" skin="btn-default-css3" class="btn-red">Local Workspace As Source</a:button>
+            <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'remote'); winCannotSync.hide()" skin="btn-default-css3" class="btn-red">Online Workspace As Source</a:button>
+            <a:button id="btnQuestionCancel" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winCannotSync.hide();" skin="btn-default-css3" default="3" class="btn-green">Cancel</a:button>
+        </a:hbox>
+    </a:window>
+    
+    <a:window
+      id        = "winConfirmSyncOff"
+      title     = "Disable sync?"
+      icon      = ""
+      center    = "true"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "550"
+      skin      = "bk-window2"
+      render    = "runtime"
+      onkeydown = "
+        if(event.keyCode == 89) {
+            btnYesDisable.dispatchEvent('click', {htmlEvent: {}});
+        }
+        if(event.keyCode == 78) {
+            btnNoDisable.dispatchEvent('click', {htmlEvent: {}});
+        }
+      "
+      class     = "relative">
+        <a:vbox padding="10" edge="10 20 25 20">
+            <h3 id="winQuestionRevHeader">Are you sure you want to disable syncing?</h3>
+            <div class="alertMsg" id="winLocalId" visible="{cloud9config.hosted}">Syncing will be disabled for {MACADD}.</div>
+            <div class="alertMsg" visible="{mdlSyncClients.queryNodes('client').length > 1}">Syncing will remained enabled for your other clients.</div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnYesDisable" onclick = "require('ext/sync/sync').disableSync()" skin="btn-default-css3" class="btn-red">Yes, disable it</a:button>
+            <a:button id="btnNoDisable" onclick = "winConfirmSyncOff.close();" default="3" skin="btn-default-css3" class="btn-green">No</a:button>
+        </a:hbox>
+    </a:window>
+</a:application>        

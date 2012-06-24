@@ -19,6 +19,7 @@ define(function(require, exports, module) {
     ide.start = function() {
         this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
         this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+        this.workerPrefix   = window.cloud9config.workerUrl;
         this.staticPrefix   = window.cloud9config.staticUrl;
         this.sessionId      = window.cloud9config.sessionId;
         this.workspaceId    = window.cloud9config.workspaceId;
@@ -28,7 +29,7 @@ define(function(require, exports, module) {
         this.pid            = window.cloud9config.pid;
         this.env            = window.cloud9config.env;
         this.local          = window.cloud9config.local;
-        
+
         this.loggedIn       = true;
 
         this.onLine         = false;

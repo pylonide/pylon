@@ -71,6 +71,8 @@ util.inherits(WatcherPlugin, Plugin);
     };
 
     this.removeWatcher = function(path) {
+        if (!this.watchers[path])
+            return;
         this.watchers[path].close();
         delete this.watchers[path];
     }

@@ -25,6 +25,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     type    : ext.GENERAL,
     markup  : markup,
     offline : false,
+    autodisable : ext.ONLINE | ext.LOCAL,
 
     eventsEnabled : true,
     dirty         : true,

@@ -35,19 +35,19 @@
             white-space : nowrap;
         }
         
-        .fakehbox>div{
+        .fakehbox>*{
             display : inline-block;
         }
         
-        .fakehbox.aligntop>div{
+        .fakehbox.aligntop>*{
             vertical-align : top;
         }
         
-        .fakehbox.aligncenter>div{
+        .fakehbox.aligncenter>*{
             vertical-align : middle;
         }
         
-        .fakehbox.padding3>div{
+        .fakehbox.padding3>*{
             margin-left : 3px;
         }
         
@@ -128,7 +128,7 @@
     <a:style><![CDATA[
         body > .vbox,
         .editor_tab .curbtn .tab_middle {
-            background-color: #e8e8e8 !important; /*#0c9*/
+        	background-color: #e8e8e8 !important; /*#0c9*/
         }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar expanded
@@ -163,6 +163,21 @@
             display:block;
         }
         
+        .c9-menu-bar .c9-mbar-bcont .c9-local {
+            width:42px;
+            height:21px;
+            position:absolute;
+            background:url(images/local_green.png) no-repeat 0 0;
+            top:40px;
+            right: 3px;
+            display: none;
+            z-index: 100000;
+        }
+
+        .c9-menu-bar.offline.local .c9-mbar-bcont .c9-local {
+            display:block;
+        }
+        
         .c9-mbar-logo{
             padding-top: 4px;
         }
@@ -170,7 +185,7 @@
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
             width: 158px;
             height: auto;
-            line-height : 15px;
+            line-height : 19px;
             position: absolute;
             top: 42px;
             right: 3px;
@@ -187,7 +202,6 @@
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo .offlineInfoWarn{
             color: #91c478;
-            margin-top : 10px;
         }
 
         .c9-menu-bar .c9-mbar-cont {
@@ -196,14 +210,14 @@
             padding: 0 74px 0 22px;
             margin: 0;
             height: 25px;
-
+            
             background: -moz-linear-gradient(top,  #292929, #242424); /* FF3.6+ */
             background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#292929), color-stop(100%,#242424)); /* Chrome,Safari4+ */
             background: -webkit-linear-gradient(top,  #292929,#242424); /* Chrome10+,Safari5.1+ */
             background: -o-linear-gradient(top,  #292929,#242424); /* Opera 11.10+ */
             background: -ms-linear-gradient(top,  #292929,#242424); /* IE10+ */
             background: linear-gradient(top,  #292929,#242424); /* W3C */
-
+            
             box-shadow: 0 1px 0 0 #353535 inset;
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
@@ -214,7 +228,7 @@
             vertical-align : top;
         }
 
-        .c9-menu-bar .c9-mbar-cont .c9-divider-double,
+        .c9-menu-bar .c9-mbar-cont .c9-divider-double, 
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize {
             border-right: 1px solid #1B1B1B;
             box-shadow: 1px 0 0 0 rgba(255,255,255,.08);
@@ -263,15 +277,18 @@
             top: 4px;
             width: 37px;
         }
+               .updateAvailable .c9-mbar-round .mainlogo {
+                   background: url("images/c9-no-repeat.png") no-repeat -96px -44px;
+                   cursor: pointer;
+               }
 
-        .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
-            top: 55px;
-        }
+                .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+                  top: 55px;
+               }
 
-        .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
-            top: 35px;
-        }
-
+                .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+                   top: 35px;
+        }        
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
         	height: 10px;
@@ -290,6 +307,22 @@
             width: 10px;
         }
 
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync {
+            background:url(images/sync_toggle.png) no-repeat 0 -20px;
+        }
+        
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnChecked {
+            background:url(images/sync_toggle.png) no-repeat 0 0;
+        }
+
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.undetermined {
+            background-position: 0 -80px;
+        }
+        
+        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnDisabled {
+            background-position: 0 -60px;
+        }
+        
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
@@ -322,10 +355,11 @@
                 <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">
                         <div class="c9-mbar-cont"> </div>
-
+                        
                         <div class="c9-mbar-round">
-                            <a href="http://c9.io/" class="mainlogo" target="_blank" title="Go to c9.io">c9.io</a>
+                            <a id="backToC9" href="http://c9.io/" class="mainlogo backToC9" target="_blank" title="Go to c9.io">c9.io</a>
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
+                            <div class="c9-local"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
                         </div>
@@ -445,8 +479,8 @@
         }
         .black-menu-bar.closed.minimized {
             border-right: 1px solid rgba(31,31,31,.8);
-            box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05) inset, 1px 0 1px 0 rgba(255,255,255,.05)
-        }
+            box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05) inset, 1px 0 1px 0 rgba(255,255,255,.05) 
+        }   
         .black-menu-bar.closed.minimized .toggle-black-menu-bar {
             background-image: url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
             background-position: -38px -383px, 0 -1090px;
@@ -586,10 +620,10 @@
             position           : relative;
             line-height        : 17px;
             -moz-user-select: -moz-none;
-            -khtml-user-select: none;
+            -khtml-user-select : none;
             -webkit-user-select: none;
             -o-user-select: none;
-            user-select: none;
+            user-select        : none;
         }
 
         .btn.smallbtn {
@@ -1184,7 +1218,7 @@
         .btn_console_openOpen.btn_console_openDown:hover {
             background-position: -18px 50%;
         }
-
+        
 
         .btn_console_openOpen {
             background-position: 0 50%;
@@ -1210,10 +1244,10 @@
             height             : 21px;
             width              : 22px;
             -moz-user-select: -moz-none;
-            -khtml-user-select: none;
+            -khtml-user-select : none;
             -webkit-user-select: none;
             -o-user-select: none;
-            user-select: none;
+            user-select        : none;
         }
 
         .btn_icon_onlyDown.tabmenubtn {
@@ -1290,10 +1324,10 @@
             background-repeat:no-repeat;
             background-position: 0 0;
             -moz-user-select: -moz-none;
-            -khtml-user-select: none;
+            -khtml-user-select : none;
             -webkit-user-select: none;
             -o-user-select: none;
-            user-select: none;
+            user-select        : none;
         }
 
         .dockButton-footer {
@@ -1681,10 +1715,10 @@
     <a:style><![CDATA[
         .c9-simple-btn {
             -moz-user-select: -moz-none;
-            -khtml-user-select: none;
+            -khtml-user-select : none;
             -webkit-user-select: none;
             -o-user-select: none;
-            user-select: none;
+            user-select        : none;
         }
     ]]></a:style>
 
@@ -1774,10 +1808,10 @@
             line-height        : 17px;
             border:1px solid transparent;
             -moz-user-select: -moz-none;
-            -khtml-user-select: none;
+            -khtml-user-select : none;
             -webkit-user-select: none;
             -o-user-select: none;
-            user-select: none;
+            user-select        : none;
         }
 
         .with-arrow.c9-toolbarbutton {
@@ -1951,16 +1985,16 @@
             width: 4px;
         }
         .c9-toolbarbutton-glossyOver .c9-label {
-            background-position: 0px -457px;
+            background-position: 0px -457px; 
         }
         .c9-toolbarbutton-glossyOver .c9-label:after {
-            background-position: -476px -457px;
+            background-position: -476px -457px; 
         }
         .c9-toolbarbutton-glossyDown .c9-label {
-            background-position: 0px -490px;
+            background-position: 0px -490px; 
         }
         .c9-toolbarbutton-glossyDown .c9-label:after {
-            background-position: -476px -490px;
+            background-position: -476px -490px; 
         }
         
         .c9-toolbarbutton-glossyDisabled .c9-label{
@@ -1995,7 +2029,7 @@
         .btnSave .c9-label {
             padding-right: 4px;
         }
-
+        
         @-webkit-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
            @-moz-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
                @-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
@@ -2037,12 +2071,12 @@
             background-color: white;
             opacity: .2;
         }
-
+        
         .c9-menu-bar .c9-mbar-bcont .c9-activity .saving {
             -webkit-animation: saving .4s linear 0 infinite;
                -moz-animation: saving .4s linear 0 infinite;
                     animation: saving .4s linear 0 infinite;
-
+            
             background-position: -102px 0px !important;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-activity .saved {
@@ -2310,24 +2344,24 @@
         }
 
         .panel-settings {
-            background-position: 0px -270px;
-            right: 0;
+        	background-position: 0px -270px;
+        	right: 0;
         }
         .panel-settings:hover,
         .panel-settings.header-btnDown {
-            background-position: -30px -270px;
+        	background-position: -30px -270px;
         }
         .c9-header-plus {
-            background-position: 0px -294px;
-            right:31px;
-            top: 0;
+        	background-position: 0px -294px;
+        	right:31px;
+        	top: 0;
         }
         .deploy.c9-header-plus {
             right: 1px;
         }
-
+        
         .c9-header-plus.header-btnOver {
-            background-position: -30px -294px;
+        	background-position: -30px -294px;
         }
         .c9-header-plus.header-btnDisabled {
             background-position: -60px -294px;
@@ -2337,16 +2371,16 @@
             right: 1px;
             top: 0;
         }
-
+        
         .deploy.c9-header-minus {
             right: -30px;
         }
-
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
         .c9-header-minus.header-btnDisabled {
-            background-position: -60px -320px;
+            background-position: -60px -320px;   
         }
         .header-btnOver {
             background-color: rgba(255,255,255,.3);
@@ -2497,13 +2531,13 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-            height   : 26px !important;
-            position : relative;
-            cursor   : default;
-            overflow : hidden;
-            display  : block;
-            border   : 0;
-            width    : 30px;
+			height   : 26px !important;
+			position : relative;
+			cursor   : default;
+			overflow : hidden;
+			display  : block;
+			border   : 0;
+			width    : 30px;
         }
 
         .mnubtnOver,
@@ -2518,29 +2552,29 @@
         .mnubtnDown {
             background-position: 50% -217px;
         }
-
+        
         .mnubtnDisabled .icon, .mnubtnDisabled SPAN{
             opacity : 0.3
         }
 
         .mnubtn .icon {
-            background-image  : url(images/c9-repeat-x.png);
-            background-repeat : no-repeat;
-            width             : 100%;
-            height            : 26px;
+			background-image  : url(images/c9-repeat-x.png);
+			background-repeat : no-repeat;
+			width             : 100%;
+			height            : 26px;
         }
 
         .mnubtnDisabled .icon {
-            opacity: 0.3;
+        	opacity: 0.3;
         }
 
         .mnubtnDisabled {
-            box-shadow: none;
-            background-image: none;
+        	box-shadow: none;
+        	background-image: none;
         }
 
         .mnubtn .pointer {
-            display: none;
+            display             : none;
         }
 
         .mnubtn SPAN {
@@ -2770,7 +2804,7 @@
             text-shadow   : #626267 0px 1px 0px;
             color: #38383d;
         }
-
+        
         .btn-default-css3 .caption {
             border-top: 1px solid #93939B;
             padding: 3px 18px 4px;
@@ -3026,7 +3060,7 @@
             top        : 2px;
             background : url("images/checkbox.png") no-repeat 0 -12px;
         }
-
+        
         .cbcontainerDown .checkbox {
             background-position : 0 -36px;
         }
@@ -3128,15 +3162,15 @@
         .grouped_checkbox_holder .chkPreserveCase.cbcontainerChecked .checkbox { background-position: 50% -715px; }
         .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
         .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
-
+        
         .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
         .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -915px; }
-
+        
         .grouped_checkbox_holder .chkSearchSelection .checkbox { background-position: 50% -840px; }
         .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -865px; }
         .grouped_checkbox_holder .chkHighlightMatches .checkbox { background-position: 50% -740px; }
         .grouped_checkbox_holder .chkHighlightMatches.cbcontainerChecked .checkbox { background-position: 50% -765px; }
-
+        
         .grouped_checkbox_holder .chkConsole .checkbox { background-position: 50% -1235px; }
         .grouped_checkbox_holder .chkConsole.cbcontainerChecked .checkbox { background-position: 50% -1268px; }
 
@@ -3171,7 +3205,7 @@
             font-size     : 11px;
             line-height   : 14px;
             cursor:default;
-
+            
             padding     : 1px 3px 2px 0px;
             position    : relative;
             top         : -2px;
@@ -3184,14 +3218,14 @@
 
         .cbmcontainerFocus span {
         }
-
+        
         .cbmcontainerOver  {
             background-color : #262626;
             color : #F5B53C;
         }
-
+        
         .cbmcontainerChecked.cbmcontainerDown.cbmcontainerFocus .checkbox {
-
+            
         }
 
         .cbmcontainer .checkbox {
@@ -3203,9 +3237,9 @@
             top        : 1px;
             background: none;
         }
-
+        
         .cbmcontainerDown .checkbox {
-
+            
         }
 
         .cbmcontainerChecked .checkbox {
@@ -3439,10 +3473,10 @@
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_editor {
-            position: relative;
+          position: relative;
             overflow: hidden;
-            font-family: Monaco, Menlo, Consolas, monospace;
-            color: black;
+          font-family: Monaco, Menlo, Consolas, monospace;
+          color: black;
             -moz-user-select: -moz-none;
             -khtml-user-select: none;
             -webkit-user-select: none;
@@ -3525,7 +3559,7 @@
             height : 10px;
             z-index : 10000;
         }
-
+        
         .ace_scroller.horscroll {
             box-shadow: 17px 0px 16px -16px rgba(0,0,0,0.4) inset;
         }
@@ -3644,7 +3678,7 @@
     ]]></a:style>
     <a:presentation>
         <a:main content="." corner="div[1]">
-            <div class="ce">
+            <div class="ce"> 
                 <div class="ace_corner"></div>
             </div>
         </a:main>
@@ -3680,11 +3714,11 @@
         }
 
         .noscrollbar .headings {
-            margin : -21px 1px 0 0;
-        }
-        .noscrollbar .datagrid{
-            background : transparant;
-        }
+    	    margin : -21px 1px 0 0;
+		}
+		.noscrollbar .datagrid{
+		    background : transparant;
+		}
 
         .datagrid .headings div{
             background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
@@ -4724,7 +4758,7 @@
         .modal-divider {
             border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
         }
-
+        
         .divider-status-bar {
             border: none;
             background: url(images/toolbar-divider.png) 0px 0px repeat-y;
@@ -5532,26 +5566,26 @@
     ]]></a:style>
     <a:style condition="apf.isIE6">
         .frame {
-            height: 1%;
-        }
+    	    height: 1%;
+    	}
     </a:style>
     <a:style condition="!apf.isIE">
-        .frame .legend{
-            margin : 5px 0 2px -3px;
-        }
+    	.frame .legend{
+    	    margin : 5px 0 2px -3px;
+    	}
     </a:style>
     <a:style condition="apf.isWebkit">
-        .frame .legend{
-            height:15px
-        }
+    	.frame .legend{
+    	    height:15px
+    	}
     </a:style>
     <a:style condition="apf.isIE &gt; 7">
         .frame {
             padding-top : 10px;
         }
         .frame .legend{
-            margin : -15px 0 2px -3px;
-        }
+    	    margin : -15px 0 2px -3px;
+    	}
     </a:style>
     <a:style condition="apf.isChrome"><![CDATA[
         .frame {
@@ -5656,7 +5690,7 @@
             color: #303030;
             font-size: 12px;
         }
-
+        
         .menu-bk .label {
             color: #F1F1F1;
         }
@@ -5671,15 +5705,15 @@
 <a:list name="lineselect">
     <a:style><![CDATA[
         .lineselect{
-
+            
         }
-
+        
         .searchresults {
             position : relative;
         }
-
+        
         .searchresults>div{
-            background : rgba(255,255,255,0.4);
+            background : rgba(255,255,255,0.4);   
             color : #666;
             padding : 2px 3px 4px 10px;
         }
@@ -5909,19 +5943,19 @@
             padding    : 2px 2px 2px 2px;
             color      : #333;
         }
-
+        
         .listBP .bpItem{
             padding    : 2px 2px 2px 22px;
             position : relative;
         }
-
+        
         .listBP .content{
             cursor : pointer;
             font-family : Arial, Tahoma;
             font-size : 12px;
             padding : 2px 0 0 0;
         }
-
+        
         .listBP .content div{
             font-family : Courier New;
             padding : 2px 0 0 0;
@@ -5942,7 +5976,7 @@
         .listBP .bpItem .checkbox:hover{
             background-position : 0 -85px;
         }
-
+        
         .listBP .bpItem .checkbox:active{
             background-position : 0 -51px;
         }
@@ -5950,7 +5984,7 @@
         .listBP .checked .checkbox:active {
             background-position : 0 -17px !important;
         }
-
+        
         .listBP .checked .checkbox {
             background-position : 0 -34px;
         }
@@ -5975,7 +6009,7 @@
         </a:main>
         <a:item class="." caption="div" icon="div" select="." check="span">
             <div class="bpItem">
-                <span class="checkbox"> </span>
+                <span class="checkbox"> </span> 
                 <div class="content"> </div>
             </div>
         </a:item>
@@ -6109,7 +6143,7 @@
     <a:style><![CDATA[
         .menu-bk {
             display  : none;
-
+            
             /* fallback (Older Opera) */
             background: #272727;
             /* Mozilla: */
@@ -6123,10 +6157,10 @@
             -webkit-box-shadow    : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.21);
             box-shadow            : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
             border: 1px solid #000000;
-
+            
             margin-left: 5px;
-
-
+            
+            
             margin: -1px 0 0 0;
             padding: 3px 0 3px 0;
             z-index: 10000;
@@ -6139,7 +6173,7 @@
             color         : #f1f1f1;
             cursor:default;
         }
-
+        
         .menu-bk.share-url {
             text-align: center;
             background-image: linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
@@ -6157,11 +6191,11 @@
             margin-top: -10px;
             margin-left: 6px;
         }
-
+        
         .menu-bk.downward {
             margin-top: 30px;
         }
-
+        
         .menu-bk.share-url.upward {
             margin-top: -12px !important;
             margin-left: 5px !important;
@@ -6175,7 +6209,7 @@
         .menu-bk.moveright {
             margin-left: -8px;
         }
-
+        
         .menu-bk .arrow {
             position : absolute;
             width: 24px;
@@ -6188,7 +6222,7 @@
         .menu-bk.moveright .arrow {
             left: 9px;
         }
-
+        
         .menu-bk.upward .arrow {
             top: auto;
             bottom: -14px;
@@ -6286,18 +6320,18 @@
             background-repeat: no-repeat;
             background-position: 0 -16px;
         }
-
+        
         .menu-bk.c9-tooltip {
             padding : 7px 10px 10px 12px;
             line-height : 17px;
             width : 250px;
             color : #f1f1f1;
         }
-
+        
         .menu-bk.c9-tooltip a, .menu-bk.c9-tooltip span{
             color: #91c478;
         }
-
+        
         .menu-bk.c9-tooltip .arrow{
             left : 50%;
             margin-left : -12px;
@@ -6342,7 +6376,7 @@
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
-
+        
         .dockwindowblack .arrow {
             background-image: url(images/black-panel_arrow.png);
             background-repeat: no-repeat;
@@ -6353,13 +6387,13 @@
             width: 22px;
             height: 22px;
         }
-
+        
         .dockwindowblack.left .arrow {
             background-position: 0 -22px;
             right: auto;
             left: -22px;
         }
-
+        
         .dockwindowblack.noarrow .arrow {
             display: none;
         }
@@ -6494,49 +6528,49 @@
 </a:menu>
 
 <a:modalwindow name="fm-window">
-    <a:style><![CDATA[
-        .fm-window {
-            position : relative;
-            overflow : hidden;
-            z-index  : 10000;
-            padding  : 30px 0 0 0;
-            border-right: 1px solid rgba(43,43,43,0.4);
-        }
-        .dark .fm-window {
-            border-right: 1px solid rgba(128,128,128,0.7);
-        }
+        <a:style><![CDATA[
+            .fm-window {
+                position : relative;
+                overflow : hidden;
+                z-index  : 10000;
+                padding  : 30px 0 0 0;
+                border-right: 1px solid rgba(43,43,43,0.4);
+            }
+            .dark .fm-window {
+                border-right: 1px solid rgba(128,128,128,0.7);
+            }
 
-        .fm-window .fm-header {
-            position : relative;
-            overflow : hidden;
-            height   : 32px;
-            top      : -30px;
-        }
+            .fm-window .fm-header {
+                position : relative;
+                overflow : hidden;
+                height   : 32px;
+                top      : -30px;
+            }
 
-        .fm-window .fm-header .hcontent {
-            background-color: rgba(220, 220, 220, 0.93);
-            background-image: url(images/c9-repeat-x.png),
-                              url(images/c9-noise-light-10.png),
-                              url(images/c9-noise-light-10.png),
-                              url(images/c9-noise-light-10.png);
-            background-position: 0 -138px, 0 0;
-            background-repeat: repeat-x;
-            position      : relative;
-            overflow      : hidden;
-            height        : 26px;
-            padding       : 7px 0 0 7px;
-            font-family   : Arial;
-            font-size     : 11.3px;
-            line-height   : 14px;
-            color         : #595959;
-            text-shadow   : #fff 0px 1px 0px;
-            box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
-            text-transform : uppercase;
-        }
-        
-        .dark .fm-window .fm-header .hcontent{
-            background-position: 0 -1318px, 0 0;
-        }
+            .fm-window .fm-header .hcontent {
+                background-color: rgba(220, 220, 220, 0.93);
+                background-image: url(images/c9-repeat-x.png),
+                                  url(images/c9-noise-light-10.png),
+                                  url(images/c9-noise-light-10.png),
+                                  url(images/c9-noise-light-10.png);
+                background-position: 0 -138px, 0 0;
+                background-repeat: repeat-x;
+                position      : relative;
+                overflow      : hidden;
+                height        : 26px;
+                padding       : 7px 0 0 7px;
+                font-family   : Arial;
+                font-size     : 11.3px;
+                line-height   : 14px;
+                color         : #595959;
+                text-shadow   : #fff 0px 1px 0px;
+                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
+                text-transform : uppercase;
+            }
+            
+            .dark .fm-window .fm-header .hcontent{
+                background-position: 0 -1318px, 0 0;
+            }
 
         .fm-window .fm-header {
             position : relative;
@@ -6560,45 +6594,45 @@
             text-transform : uppercase;
         }
 
-        .fm-window .fm-content {
-            position:absolute;
-            overflow:visible;
-            left : 0;
-            top  : 32px;
-            right : 0;
-            bottom : 0;
+            .fm-window .fm-content {
+                position:absolute;
+                overflow:visible;
+                left : 0;
+                top  : 32px;
+                right : 0;
+                bottom : 0;
             box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
                         -1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
             background-color: rgba(220, 220, 220, 0.8);
-            background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
+                background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
+                					url(images/c9-noise-light-10.png),
+                					url(images/c9-noise-light-10.png),
                                 url(images/c9-noise-light-10.png),
-                                url(images/c9-noise-light-10.png),
-                                url(images/c9-noise-light-10.png),
-                                url(images/c9-noise-light-10.png);
-        }
-    ]]></a:style>
+                					url(images/c9-noise-light-10.png);
+            }
+        ]]></a:style>
 
-    <a:presentation>
-        <a:main
-          collapsed-height = "30"
-          minheight        = "30"
-          minwidth         = "60"
-          container        = "div[2]"
-          drag             = "div[2]"
-          title            = "div[1]/div[1]/text()"
-          icon             = "div[1]/div[1]/div[1]"
-          buttons          = "div[1]/div[1]/div[2]">
-            <div class="fm-window">
-                <div class="fm-header">
-                    <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+        <a:presentation>
+            <a:main
+              collapsed-height = "30"
+              minheight        = "30"
+              minwidth         = "60"
+              container        = "div[2]"
+              drag             = "div[2]"
+              title            = "div[1]/div[1]/text()"
+              icon             = "div[1]/div[1]/div[1]"
+              buttons          = "div[1]/div[1]/div[2]">
+                <div class="fm-window">
+                    <div class="fm-header">
+                        <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
+                    </div>
+                    <div class="fm-content"> </div>
                 </div>
-                <div class="fm-content"> </div>
-            </div>
-        </a:main>
-        <a:button>
-            <div> </div>
-        </a:button>
-    </a:presentation>
+            </a:main>
+            <a:button>
+                <div> </div>
+            </a:button>
+        </a:presentation>
 </a:modalwindow>
 <a:scrollbar name="sbios">
     <a:style><![CDATA[
@@ -6624,11 +6658,11 @@
             bottom              : 0;
             z-index             : 1;
         }
-
+        
         .deploy-sb.sbios .filler {
             left: 2px;
         }
-
+        
         .sbios .mainrail {
             height              : 100%;
             width               : 6px;
@@ -7154,7 +7188,7 @@
         }
 
         .bk-window .bk-header .hcontent {
-
+            
             position      : relative;
             height        : 26px;
             margin       : 8px 14px 0;
@@ -7209,11 +7243,11 @@
             left: 0;
             z-index: 0;
         }
-
+        
         .bk-window.dark-bg .bg-bk-content {
             background:url(images/modalbg-dark.png) repeat 0 0;
         }
-
+        
         .bk-window.nofooter .bg-bk-content {
             bottom: 0;
         }
@@ -7771,7 +7805,7 @@
             line-height: 13px;
             white-space: nowrap;
             text-overflow: ellipsis;
-            color: #333;
+            color: #f1f1f1;
         }
 
         .rb_blackFocus span {
@@ -8533,13 +8567,13 @@
             box-shadow: none;
             height: 23px;
         }
-        .btnRun .main {
-            background-position: 0px -424px;
+        .btnRun .main { 
+            background-position: 0px -424px; 
             margin-right: 3px;
             overflow: visible;
         }
         .btnRun .main:after {
-            background-position: -397px -424px;
+            background-position: -397px -424px; 
             content: "";
             display: block;
             left: 100%;
@@ -8555,33 +8589,33 @@
             left: 3px;
             top: 3px;
         }
-        .btnRun .main.c9-dropdown-btnOver {
-            background-position: 0px -457px;
+        .btnRun .main.c9-dropdown-btnOver { 
+            background-position: 0px -457px; 
         }
         .btnRun .main.c9-dropdown-btnOver:after {
-            background-position: -397px -457px;
+            background-position: -397px -457px; 
         }
-        .btnRun .c9-dropdown-btnDown.main {
-            background-position: 0px -490px;
+        .btnRun .c9-dropdown-btnDown.main { 
+            background-position: 0px -490px; 
         }
-        .btnRun .c9-dropdown-btnDown.main:after {
-            background-position: -397px -490px;
+        .btnRun .c9-dropdown-btnDown.main:after { 
+            background-position: -397px -490px; 
         }
 
-        .btnRun .arrow {
-            background-position: -400px -424px;
-            width: 16px;
+        .btnRun .arrow { 
+            background-position: -400px -424px; 
+            width: 16px; 
         }
-        .btnRun .arrow.c9-dropdown-btnOver {
-            background-position: -400px -457px;
+        .btnRun .arrow.c9-dropdown-btnOver { 
+            background-position: -400px -457px; 
         }
-        .btnRun .c9-dropdown-btnDown.arrow {
-            background-position: -400px -490px;
+        .btnRun .c9-dropdown-btnDown.arrow { 
+            background-position: -400px -490px; 
         }
         .btnRun .arrow .c9-arrow {
             display: none;
         }
-
+        
         .testpanel .fm-content .c9-header-plus {
             top: -31px;
             right: 32px;
@@ -8785,7 +8819,7 @@
             position : relative;
             z-index  : 90000;
             background-color: #e8e8e8;
-
+            
             display  : -moz-box;
             display  : -webkit-box;
             display  : -ms-box;
@@ -8820,11 +8854,11 @@
             vertical-align: middle;
             width: 6px;
         }
-
+        
         .darksplitterMoving.vertical,
         .darksplitter.vertical:hover {
             border-right: 1px solid #d7d7d7;
-
+            
             background: -moz-linear-gradient(left,  #e8e8e8 50%, #f0f0f0 100%); /* FF3.6+ */
             background: -webkit-gradient(linear, left top, right top, color-stop(50%,#e8e8e8), color-stop(100%,#f0f0f0)); /* Chrome,Safari4+ */
             background: -webkit-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* Chrome10+,Safari5.1+ */
@@ -8832,7 +8866,7 @@
             background: -ms-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* IE10+ */
             background: linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* W3C */
         }
-
+        
         .darksplitter.vertical span {
             width: 3px;
             height: 11px;
@@ -8850,7 +8884,7 @@
             position: relative;
             margin : -2px 0 0 0;
             height: 6px;
-
+            
             border-top: 1px solid #c7c7c7;
             border-bottom: 1px solid #e8e8e8;
         }
@@ -8858,7 +8892,7 @@
         .darksplitterMoving.horizontal,
         .darksplitter.horizontal:hover {
             border-bottom: 1px solid #d7d7d7;
-
+            
             background: -moz-linear-gradient(top,  #e8e8e8 50%, #f2f2f2 100%); /* FF3.6+ */
             background: -webkit-gradient(linear, left top, left bottom, color-stop(50%,#e8e8e8), color-stop(100%,#f2f2f2)); /* Chrome,Safari4+ */
             background: -webkit-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* Chrome10+,Safari5.1+ */
@@ -8873,7 +8907,7 @@
             margin-left: 49%;
             margin-top: 1px;
         }
-
+        
         .darksplitterMoving.horizontal span,
         .darksplitter.horizontal:hover span {
             background-position: 0 -15px;
@@ -9122,6 +9156,93 @@
     </a:presentation>
 </a:progressbar>
 
+<a:progressbar name="progressbar-green">
+    <a:style><![CDATA[
+        .progressbar-green {
+            position: relative;
+            cursor : default;
+        }
+
+        .progressbar-green .lbl {
+            display: none;
+        }
+        
+        .progressbar-green .left {
+            background-color: #191818;
+            border: 1px solid #111010;
+            -webkit-box-shadow: 0 1px 0 0 #474748;
+           -moz-box-shadow: 0 1px 0 0 #474748;
+                box-shadow: 0 1px 0 0 #474748;
+            
+            border-radius : 3px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            
+            background-image: linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -o-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -moz-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -webkit-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -ms-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+        }
+        
+        .progressbar-greenDisabled {
+            
+        }
+
+        .progressbar-greenDisabled .left {
+            
+        }
+
+        .progressbar-green .filledbar {
+            overflow: hidden;            
+            display : none;
+            width : 0%;
+            z-index: 1000;
+            
+            background-image: linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -o-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -moz-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -webkit-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -ms-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            
+            border-right: 1px solid #475b21;
+            border-left: 1px solid #475b21;
+            height: 3px;
+        }
+
+        .progressbar-greenDisabled .filledbar {
+        }
+
+        .progressbar-greenDisabled .left {
+            
+        }
+
+        .progressbar-greenRunning .filledbar {
+            display: block;
+        }
+
+        .progressbar-greenComplete .left {
+
+        }
+
+        .progressbar-greenComplete .lbl {
+        
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main progress="div[2]/div" caption="div[1]/span/text()">
+            <div class="progressbar-green">
+                <div class="lbl"><span>0%</span></div>
+                <div class="left">
+                    <div class="filledbar"> </div>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:progressbar>
+
 <a:tab name="tab_console">
 <a:style><![CDATA[
     .tab_console {
@@ -9163,7 +9284,7 @@
         display : -webkit-box;
         display : -moz-box;
     }
-    
+
     .tab_console .btncontainer > .btntab {
         cursor: default;
         
@@ -9183,7 +9304,7 @@
     .tab_console .btncontainer .btntab {
         padding      : 4px 20px 2px 20px;
         position     : relative;
-        text-align   : center;
+        text-align: center;
     }
 
     .tab_console .btncontainer .btntab.btnclose {
@@ -9201,11 +9322,11 @@
     .tab_console .btncontainer .btntab .tab_console_title {
         overflow : hidden;
         padding  : 0 0 0 0;
-        -moz-user-select: -moz-none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -o-user-select: none;
-        user-select: none;
+		-moz-user-select: -moz-none;
+	    -khtml-user-select: none;
+	    -webkit-user-select: none;
+	    -o-user-select: none;
+	    user-select: none;
     }
 
     .tab_console .btncontainer .btntab.btnclose .tab_console_title {
@@ -9362,7 +9483,7 @@
         margin : 0 auto;
         position:relative;
     }
-
+    
     .editor_tab .btnsesssioncontainer {
         padding : 5px 4px 0 21px;	
         height: 22px;
@@ -9430,7 +9551,7 @@
         position : relative;
         padding  : 4px 0 0 0;
     }
-
+    
     .editor_tab .tab_middle:before,
     .editor_tab .tab_middle:after {
         background-color : inherit;
@@ -9442,7 +9563,7 @@
         -webkit-mask     : url(images/c9-no-repeat.png) no-repeat;
         top              : 0;
     }
-
+        
     .editor_tab .tab_middle:before {
         left                  : -17px;
         -webkit-mask-position : 0 -96px;
@@ -9561,13 +9682,13 @@
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
         overflow : hidden;
         padding  : 0 0 0 0;
-        -moz-user-select: -moz-none;
-        -khtml-user-select: none;
+           -moz-user-select: -moz-none;
+         -khtml-user-select: none;
         -webkit-user-select: none;
-        -o-user-select: none;
-        user-select: none;
+             -o-user-select: none;
+                user-select: none;
     }
-
+     
     .editor_tab #q5 {
         top: 2px !important;
     }
@@ -9588,26 +9709,26 @@
         vertical-align : top;
     }
     .editor_tab .btnsesssioncontainer .plus_tab_button:hover {
-        background-position: -58px -106px;
+		background-position: -58px -106px;
     }
     .editor_tab .btnsesssioncontainer .plus_tab_button:active {
-        background-position: -58px -132px;
+		background-position: -58px -132px;
     }
 
     .editor_tab .btnsesssioncontainer > .tabmenubtn {
-        background: url(images/c9-no-repeat.png) no-repeat -98px -80px;
-        height: 17px;
-        left: 4px;
-        position: absolute;
-        top: 7px;
-        width: 19px;
+    	background: url(images/c9-no-repeat.png) no-repeat -98px -80px;
+    	height: 17px;
+    	left: 4px;
+    	position: absolute;
+    	top: 7px;
+    	width: 19px;
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn:hover {
-        background-position: -98px -106px;
+    	background-position: -98px -106px;
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
-        background-position: -98px -132px;
-        z-index: 10000000;
+    	background-position: -98px -132px;
+    	z-index: 10000000;
     }
     .tabsContextMenu:before {
         background: url(images/c9-no-repeat.png) no-repeat -98px -132px;
@@ -9622,8 +9743,8 @@
     }
 
     /* ------------------------------------------------------------------------------------------
-     * LEGACY CODE
-     * --------------------------------------------------------------------------------------- */
+	 * LEGACY CODE
+	 * --------------------------------------------------------------------------------------- */
     .editor_tab .tab_middle {
         background-image    : url(images/editor_tab.png);
         background-position : 0 -104px;
@@ -9695,33 +9816,33 @@
     }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
-        display: none;
+    	display: none;
     }
     .editor_tab.hidetabs .tab_middle:before,
     .editor_tab.hidetabs .tab_middle:after {
-        -webkit-mask-image  : none;
-        top                 : 0;
-        width: 19px;
-    }
-
+		-webkit-mask-image  : none;
+		top                 : 0;
+		width: 19px;
+    }        
+    
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
-        border-bottom: 2px solid transparent;
+    	border-bottom: 2px solid transparent;
         height: 5px;
     	overflow: hidden;
         top : 0px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
-        overflow: visible;
+    	overflow: visible;
     }
     .editor_tab.hidetabs .session_btn .tab_left,
     .editor_tab.hidetabs .session_btn .tab_right {
-        display: none;
+    	display: none;
     }
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
-        background-color: #7A7A7A;
+    	background-color: #7A7A7A;
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
         background-position : 50% -124px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
@@ -9737,13 +9858,13 @@
     }
 
     .editor_tab.hidetabs .tab_middle {
-        border-top-right-radius: 1px;
+    	border-top-right-radius: 1px;
     }
     .editor_tab.hidetabs .tab_middle:before {
-        border-top-left-radius: 1px;
+    	border-top-left-radius: 1px;
     }
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:after {
-        display: none;
+    	display: none;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9764,7 +9885,7 @@
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
         background-position : 50% -123px, 0 -111px;
         background-repeat   : no-repeat, repeat-x;
-        border-top-right-radius: 1px;
+        border-top-right-radius: 1px;   
     }
     .dark .editor_tab.hidetabs .curbtn .tab_middle {
         background-position: 50% -129px, 0 -1185px;
@@ -9773,13 +9894,13 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -111px;
         background-repeat   : repeat-x;
-        border-top-left-radius: 1px;
+    	border-top-left-radius: 1px;	
     }
     .dark .editor_tab.hidetabs .curbtn .tab_middle:before {
         background-position: 0 -1185px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:after {
-        display: none;
+    		display: none;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9791,36 +9912,36 @@
      * Minimized tab elements
      * --------------------------------------------------------------------------------------- */
     /*.editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button {
-        background-position: -58px -158px;
-        height: 10px;
-        margin: 0px 0px 5px 3px;
-        top: 2px;
+		background-position: -58px -158px;
+		height: 10px;
+		margin: 0px 0px 5px 3px;
+		top: 2px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:hover {
-        background-position: -58px -178px;
+		background-position: -58px -178px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:active {
-        background-position: -58px -198px;
+		background-position: -58px -198px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn {
-        background-position: -98px -158px;
-        height: 9px;
-        left: 1px;
-        top: 2px;
-        width: 19px;
+    	background-position: -98px -158px;
+    	height: 9px;
+    	left: 1px;
+    	top: 2px;
+    	width: 19px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn:hover {
-        background-position: -98px -178px;
+    	background-position: -98px -178px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
-        background-position: -98px -198px;
+    	background-position: -98px -198px;
     }*/
-
+    
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button,
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn {
         opacity : 0;
     }
-
+    
     /* ------------------------------------------------------------------------------------------
      * Animation steps
      * --------------------------------------------------------------------------------------- */
@@ -9924,7 +10045,7 @@
     .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
         background-image: url(images/load-indicator-inactive-tab.gif);
     }*/
-
+  
     .editor_tab .btnsesssioncontainer div.down {
         text-shadow: none;
         color: #d9d9d9;
@@ -9994,7 +10115,6 @@
         border-radius : 4px;
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
-        -webkit-border-radius: 4px;
     }
 
     .editor_tab .editor_bg .editor_bg_content .editor_bg_message {
@@ -10054,7 +10174,7 @@
         display : block;
     }
 
-
+    
 /*
     .editor_tab.hidetabs .btnsesssioncontainer:hover {
         height: 32px;
@@ -10064,7 +10184,7 @@
     .editor_tab.hidetabs .btnsesssioncontainer:hover ~ .session_page {
         top: 30px;
     }
-
+    
     .editor_tab.hidetabs .btnsesssioncontainer:hover .tab_middle{
         text-indent: 0;
     }*/
@@ -10095,15 +10215,15 @@
     }
 </a:style>
 <a:style condition="apf.isWebkit">
-    /* ------------------------------------------------------------------------------------------
+	/* ------------------------------------------------------------------------------------------
      * Tab shape
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .tab_middle {
+	.editor_tab .tab_middle {
         overflow: visible;
     }
     .editor_tab .tab_left,
     .editor_tab .tab_right {
-        display: none;
+    	display: none;
     }
     .editor_tab .scale .btn .tab_middle {
         display : block;
@@ -10655,7 +10775,7 @@
             padding: 0;
             position : relative;
             cursor : default;
-            
+
             min-width : 17px;
             max-width : 100px;
             -webkit-box-flex : 1;
@@ -11324,7 +11444,7 @@
         .ta{
             overflow: auto;
             resize: none;
-
+            
             padding: 2px 6px;
             border: 1px solid #AFAFAF;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, white),color-stop(1, #EBEBEB));
@@ -11334,7 +11454,7 @@
             -webkit-box-shadow: 0px 1px 0px #ffffff;
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
-
+            
             font-size: 12px;
             color: #333;
             font-family: Arial;
@@ -11712,7 +11832,7 @@
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
         }
-
+        
         .filemgr-treeDisabled .item-fix{
             opacity : 0.3;
         }
@@ -11723,11 +11843,11 @@
         }
         .filemgr-tree.openfile .item-fix .item{
         }
-
+        
         .rundebug .item-fix .item label{
             padding-left : 4px;
         }
-
+        
         .rundebug .curfile span{
             display : none !important;
         }
@@ -11758,12 +11878,12 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-
+        
         .filemgr-tree .item-fix.dragAppendUpload .label-content > LABEL {
             background: url(images/tree_upload_icon.png) no-repeat 0 0 !important;
             background-position: 3 0;
         }
-
+        
         .filemgr-tree .item-fix.dragDenied {
 
         }
@@ -11772,7 +11892,7 @@
 
         }
 
-        .filemgr-treeFocus .item-fix.selected,
+        .filemgr-treeFocus .item-fix.selected, 
         .filemgr-tree.openfile .item-fix.selected{
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
@@ -11806,7 +11926,7 @@
             overflow:hidden;
             text-indent : -2000px;
         }
-
+        
         .filemgr-tree.openfile .item SPAN{
             left: 3px;
             display: block;
@@ -11840,7 +11960,7 @@
         .filemgr-tree.openfile .item-fix.selected SPAN:active{
             color : red;
         }
-
+        
         .filemgr-tree U.root .item-fix.min .item SPAN,
         .filemgr-tree U.root .item-fix.minlast .item SPAN,
         .filemgr-tree U.root .item-fix.plus .item SPAN,
@@ -11876,7 +11996,7 @@
             height:18px;
             background-position:3px 1px;
             background-repeat:no-repeat;
-            padding-left:21px;
+            padding-left:0px;
         }
         .filemgr-tree.searchresults .item LABEL {
             background-position: 3px 50%;
@@ -11889,7 +12009,7 @@
             position:relative;
             overflow:hidden;
             height:16px;
-            padding:1px 0 0 2px;
+            padding:1px 0 0 23px;
             text-decoration:none;
             white-space: nowrap;
         }
@@ -11901,7 +12021,7 @@
             color: #a6a6a6;
             text-shadow : #ffffff 0px 1px 0px;
         }
-
+        
         .filemgr-tree .loading .item {
             background : url(images/file-tree-load-spinner.gif) no-repeat 17px 1px;
         }
@@ -11994,17 +12114,45 @@
             white-space     : nowrap;
             text-shadow : #8394a2 0px 1px 0px;
         }
-
+        
         .openfile .ldng, .openfile .message{
             text-align : center;
             font-size : 11px;
             padding : 5px;
         }
+        
+        .filemgr-tree .syncing .caption{ 
+            background : url(icons/syncing_unsel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing.selected .caption{ 
+            background : url(icons/syncing_sel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .synced .caption{ 
+            background : url(icons/synced_unsel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .synced.selected .caption{ 
+            background : url(icons/synced_sel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .conflict .caption{ 
+            background : url(icons/conflict_unsel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .conflict.selected .caption{ 
+            background : url(icons/conflict_sel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added .caption{ 
+            background : url(icons/syncing_unsel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added.selected .caption{ 
+            background : url(icons/syncing_sel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
+            opacity : 0.5;
+        }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
-            padding:2px 0 0 2px;
+            padding:2px 0 0 23px;
         }
 
         #txt_rename {
@@ -12421,7 +12569,7 @@
             </a:main>
         </a:presentation>
     </a:button>
-
+    
     <a:label name="tooltipLabel">
         <a:style><![CDATA[
             .tooltipLabel {
@@ -12442,7 +12590,7 @@
                 text-shadow: 0 1px 0 rgba(0,0,0,.14);
                 z-index: 100000;
             }
-
+            
             /* Temporary spot */
             .find-and-replace {
                 background-image: url(images/c9-find-and-replace.png), url(images/c9-noise-with-background.png);
@@ -12451,7 +12599,7 @@
                 box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
                 border-top: 1px solid #000;
             }
-
+            
             .find-and-replace .rb_grey span{
                 color : #eee;
             }
@@ -12481,7 +12629,7 @@
                 max-height       : 95px;
                 min-height       : 18px;
             }
-
+            
             .searchTxt.tb_console {
                 margin: 0;
             }
@@ -12489,15 +12637,15 @@
                 background-color: #F2F2F2;
                 border-radius: 3px;
             }
-
+            
             .tb_textboxInitial .sbtb_middle .input {
                 color : #777777;
             }
-
+    
             .tb_textboxDisabled .sbtb_middle .input {
                 color : #CCC;
             }
-
+            
             .searchbox.tb_console .sbtb_middle .input {
                 height: auto;
                 position: relative;
@@ -12506,26 +12654,26 @@
                 color: #BABABA !important;
                 text-shadow: 0 1px 0 #FFFFFF;
             }
-
+            
             .searchbox span, .searchbox font{
                 text-shadow : none;
                 padding : 1px 0 1px 0;
             }
-
+            
             .searchbox{
                 height : auto !important;
             }
-
+            
             .searchbox.tb_console .sbtb_middle{
                 height : auto !important;
                 padding : 4px 7px 3px 7px;
                 box-shadow: inset 0 2px 3px 0 rgba(0,0,0,.3);
             }
-
+            
             .searchbox.tb_console.buttonsright .sbtb_middle{
                 padding-right : 114px;
             }
-
+            
             .searchTxt .btnclose {
                 position: absolute;
                 top: 6px;
@@ -12538,9 +12686,9 @@
             }
             .searchTxt .btnclose:hover {
                 background-position: 0 -14px;
-            }
+            }   
         ]]></a:style>
-
+    
         <a:presentation>
             <a:main input="div[1]/div" button="div[2]">
                 <div class="tb_textbox searchbox searchTxt tb_console">
@@ -12552,7 +12700,8 @@
             </a:main>
         </a:presentation>
     </a:textbox>
-    <a:button name="button-colorless">
+
+<a:button name="button-colorless">
         <a:style><![CDATA[
             .button-colorless {
                 background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);

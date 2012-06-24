@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
 var menus = require("ext/menus/menus");
@@ -21,17 +22,6 @@ var filelist = require("ext/filelist/filelist");
 var parser = require("treehugger/js/parse");
 require("treehugger/traverse");
 
-function escapeXpathString(name){
-    if (name.indexOf('"') > -1) {
-        var out = [], parts = name.split('"');
-        parts.each(function(part) {
-            out.push(part == '' ? "'\"'" : '"' + part + '"');
-        })
-        return "concat(" + out.join(", ") + ")";
-    }
-    return '"' + name + '"';
-}
-
 module.exports = ext.register("ext/nodeunit/nodeunit", {
     name            : "Node Unit Test Manager",
     dev             : "Ajax.org",
@@ -39,7 +29,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
     type            : ext.GENERAL,
     nodes           : [],
     template        : template,
-
+    autodisable     : ext.ONLINE | ext.LOCAL,
+    
     hook : function(){
         var _self = this;
         ide.addEventListener("init.ext/testpanel/testpanel", function(){
@@ -110,7 +101,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                 return;
 
             var path = node.getAttribute("path");
-            var fileNode = mdlTests.queryNode("//file[@path=" + escapeXpathString(path) + "]");
+            var fileNode = mdlTests.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
             if (!fileNode) {
                 fileNode = apf.xmldb.getCleanCopy(node);
                 fileNode.setAttribute("type", "nodeunit");
@@ -230,7 +221,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         if(!match)
                             continue;
 
-                        var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
+                        var testNode = fileNode.selectSingleNode("test[@name=" + util.escapeXpathString(match[3]) + "]");
                         if (!testNode) {
                             var doc  = fileNode.ownerDocument;
                             testNode = doc.createElement("test");
@@ -256,7 +247,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         if(!match)
                             continue;
 
-                        var testNode = fileNode.selectSingleNode("test[@name=" + escapeXpathString(match[3]) + "]");
+                        var testNode = fileNode.selectSingleNode("test[@name=" + util.escapeXpathString(match[3]) + "]");
                         if(!testNode) {
                             var doc  = fileNode.ownerDocument;
                             testNode = doc.createElement("test");
@@ -374,7 +365,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                             var name = init[0].value;
 
                             node = xmlNode.selectSingleNode("test[@name="
-                              + escapeXpathString(name) + "]");
+                              + util.escapeXpathString(name) + "]");
 
                             if (!node) {
                                 node = doc.createElement("test");
