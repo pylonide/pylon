@@ -151,7 +151,6 @@ module.exports = {
         language = ext;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
-            event.what = "SDF";
             _self.onComplete(event);
         });
         this.$onChange = this.onChange.bind(this);
@@ -405,7 +404,7 @@ module.exports = {
                 if (this.selectedIdx <= 0)
                     return; 
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
-                    this.selectedIdx--;
+                this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
                 if(this.selectedIdx < this.scrollIdx) {
                     this.scrollIdx--;
