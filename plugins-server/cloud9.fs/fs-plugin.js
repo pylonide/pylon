@@ -7,6 +7,7 @@ var jsDAV = require("jsDAV");
 var jsDAV_Tree_Filesystem = require("./fs/tree").jsDAV_Tree_Filesystem;
 var BrowserPlugin = require("jsDAV/lib/DAV/plugins/browser");
 var DavFilewatch = require("./dav/filewatch");
+var DavPermission = require("./dav/permission");
 
 module.exports = function setup(options, imports, register) {
 
@@ -42,6 +43,7 @@ module.exports = function setup(options, imports, register) {
         var davServer = jsDAV.mount(davOptions);
         davServer.plugins["filewatch"] = filewatch.getPlugin();
         davServer.plugins["browser"] = BrowserPlugin;
+        davServer.plugins["permission"] = DavPermission;
 
         imports.connect.useAuth(function(req, res, next) {
             if (req.url.indexOf(options.urlPrefix) !== 0)
