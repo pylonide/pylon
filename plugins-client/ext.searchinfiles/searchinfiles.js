@@ -511,6 +511,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         if (path.charAt(path.length - 1) == ":")
             path = path.substring(0, path.length-1);
+            
+        // prevent double '//' in paths
+        if(path[0] === '/')
+            path = path.substring(1);
         
         if (path !== undefined && path.length > 0)
             editors.gotoDocument({
