@@ -93,8 +93,6 @@ util.inherits(WatcherPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        var that, subtype, files;
-
         if (!message || message.command !== "watcher")
             return false;
 
