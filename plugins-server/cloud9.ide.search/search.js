@@ -172,7 +172,7 @@ util.inherits(SearchPlugin, Plugin);
 
     this.parseSearchResult = function(msg) {
         if (msg.type == "shell-exit") {
-            msg.data = '\nResults: {"count": '+ this.count + ', "filecount":' + this.filecount + '}\n'
+            msg.data = {count: this.count, filecount: this.filecount};
             return msg;
         }
 
@@ -204,6 +204,7 @@ util.inherits(SearchPlugin, Plugin);
             result += "\n\t" + lineno + ": " + parts.join(":");
         }
 
+        this.count += count;
         msg.data = result;
 
         return msg;
@@ -247,7 +248,6 @@ util.inherits(SearchPlugin, Plugin);
             args.push("-regextype", "posix-extended", "-print");
 
         args.command = findCmd;
-        console.log(args)
         return args;
     };
 
