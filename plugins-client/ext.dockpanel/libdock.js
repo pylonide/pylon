@@ -1737,7 +1737,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     anchors : options.noTab ? "1 -7 0 4" : "5 4 5 4", 
                     skin    : options.noTab ? "dockbar" : "docktab",
                     buttons : "scale, close",
-                    anims   : "remove",
+                    anims   : "",
                     dock    : 1,
                     nosplitter : options.noTab ? true : false,
                     flex    : options.flex || (options.noflex ? 0 : 1), 
