@@ -23,6 +23,7 @@ module.exports = {
     filteredOutline : [],
     ignoreSelectOnce : false,
     isDirty : false,
+    isKeyDownAfterDirty : false,
     lastGoToFileText : "",
     lastOutlineText : "@",
     
@@ -152,7 +153,6 @@ module.exports = {
         }
         
         this.fullOutline = event.data.body;
-        this.renderOutline(event.data.showNow);
         
         var editor = editors.currentEditor;
         var ace = editor.ceEditor.$editor;
@@ -160,16 +160,15 @@ module.exports = {
         this.$originalLine = cursor.row + 1;
         this.$originalColumn = cursor.column;
         
+        var selected = this.renderOutline(event.data.showNow);
+        
         if (event.data.showNow)
             this.showOutline(true);
         else if (txtGoToFile.value.match(/^@/))
             this.showOutline();
-            
-        var outline = this.filteredOutline;
-        var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
-        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
 
-        this.scrollToSelected(selected);
+        if (event.data.showNow)
+            this.scrollToSelected(selected);
     },
     
     /**
@@ -215,6 +214,7 @@ module.exports = {
         ext.initExtension(gotofile);
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
+        this.isKeyDownAfterDirty = false;
         
         var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter, true);
 
@@ -224,6 +224,12 @@ module.exports = {
         else
             treeOutline.$removeClearMessage();
         */
+
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
+        var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
+        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
+        return selected;
     },
     
     scrollToSelected: function(selected) {
@@ -235,10 +241,17 @@ module.exports = {
             htmlNode.scrollIntoView();
         }
         else {
-            // HACK: Need to set to non-falsy value first
-            treeOutline.$container.scrollTop = 1;
-            treeOutline.$container.scrollTop = 0;
+            this.scrollToTop();
         }
+    },
+    
+    scrollToTop: function(selectFirstItem) {
+        if (selectFirstItem && mdlOutline.data.childNodes[0]) {
+            treeOutline.select(mdlOutline.data.childNodes[0]);
+        }
+        // HACK: Need to set to non-falsy value first
+        treeOutline.$container.scrollTop = 1;
+        treeOutline.$container.scrollTop = 0;
     },
 
     onSelect: function(el) {
@@ -294,13 +307,19 @@ module.exports = {
             return;
         }
         else if (this.isDirty) {
-            this.renderOutline();
+            this.isKeyDownAfterDirty = true;
         }
     },
     
     onKeyUp: function(e) {
-        if (e.keyCode === 50) // @
+        if (e.keyCode === 50) { // @
             this.updateOutline();
+        }
+        else if (this.isDirty && this.isKeyDownAfterDirty) {
+            this.renderOutline();
+            this.scrollToTop(true);
+            this.isDirty = false;
+        }
     },
     
     getNodeAfter: function(node) {
@@ -333,6 +352,7 @@ module.exports = {
             this.showGoToFile();
         }
         this.renderOutline();
+        this.scrollToTop(true);
     }
 };
 });
