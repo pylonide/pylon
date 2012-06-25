@@ -16,6 +16,7 @@ var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var gotofile = require("ext/gotofile/gotofile");
 var search = require("ext/gotofile/search");
+var outline;
 
 module.exports = {
     nodes: [],
@@ -30,6 +31,7 @@ module.exports = {
     hook: function(oExt, worker) {
         this.worker = worker;
         var _self = this;
+        outline = oExt;
         
         worker.on("outline", function(event) {
             _self.openOutline(event);
@@ -167,8 +169,9 @@ module.exports = {
         else if (txtGoToFile.value.match(/^@/))
             this.showOutline();
 
-        if (event.data.showNow)
-            this.scrollToSelected(selected);
+        // UNDONE: Scroll to selected
+        // if (event.data.showNow)
+        //     this.scrollToSelected(selected);
     },
     
     /**
@@ -176,12 +179,14 @@ module.exports = {
      * instead of the file list.
      */
     showOutline: function(makeVisible) {
+        ext.initExtension(outline);
         if (makeVisible) {
             gotofile.toggleDialog(1);
             txtGoToFile.focus();
             this.showOutline();
             if (txtGoToFile.value.length > 0)
                 txtGoToFile.$input.selectionStart = 1;
+            this.scrollToTop();
         }
         gotofile.setEventsEnabled(false);
         if (!dgGoToFile.getProperty("visible"))
@@ -249,7 +254,8 @@ module.exports = {
         if (selectFirstItem && mdlOutline.data.childNodes[0]) {
             treeOutline.select(mdlOutline.data.childNodes[0]);
         }
-        // HACK: Need to set to non-falsy value first
+        // HACK: Need to set to non-falsy values first
+        treeOutline.$container.scrollTop = 2;
         treeOutline.$container.scrollTop = 1;
         treeOutline.$container.scrollTop = 0;
     },
