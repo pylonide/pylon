@@ -65,7 +65,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
 };
 
 var isWorkerEnabled = exports.isWorkerEnabled = function() {
-    return window.location.search.match(/[?&]noworker=1/);
+    return !window.location || !window.location.search.match(/[?&]noworker=1/);
 };
 
 exports.createUIWorkerClient = function() {
@@ -179,8 +179,8 @@ function asyncParForEach(array, fn, callback) {
             var handler = require(path);
             this.handlers.push(handler);
         } catch (e) {
-            if (!isWorkerEnabled())
-                throw e;
+            if (isWorkerEnabled())
+                throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {

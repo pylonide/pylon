@@ -56,7 +56,7 @@ module.exports = ext.register("ext/language/language", {
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
             var worker;
-            if (isWorkerEnabled()) {
+            if (!isWorkerEnabled()) {
                 worker = _self.worker = createUIWorkerClient();
             }
             else {
