@@ -58,7 +58,8 @@ util.inherits(WatcherPlugin, Plugin);
                 return
             }
             if (!self.filenames[path]) {
-                watcher.close();
+				if (watcher)
+                    watcher.close();
                 return;
             }
             var watcher = meta.watcher;
