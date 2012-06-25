@@ -5755,7 +5755,6 @@
         .searchresults>div>span,
         .treeOutline .item-fix>span{
             font-size : 14px;
-            color : #333;
             display : block;
             padding : 2px;
         }

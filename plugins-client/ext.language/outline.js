@@ -1,5 +1,8 @@
 /**
- * Module that implements outlines
+ * Outline support.
+ *
+ * @copyright 2012, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
 
@@ -16,7 +19,6 @@ module.exports = {
     nodes: [],
     fullOutline : [],
     filteredOutline : [],
-    ignoreSelectOnce : true,
     isDirty : false,
     
     hook: function(oExt, worker) {
@@ -61,15 +63,16 @@ module.exports = {
             txtGoToFile.addEventListener("keyup", function(e) {
                 _self.onKeyUp(e);
             });
-            winGoToFile.addEventListener("prop.visible", function(e) {
-                if (!e.value)
-                    _self.showFileSearch();
-            });
             treeOutline.addEventListener("onafterselect", function() {
                 _self.onSelect(treeOutline.selected);
             });
             treeOutline.addEventListener("onafterchoose", function() {
-                setTimeout(gotofile.toggleDialog(-1), 500);
+                gotofile.toggleDialog(-1);
+            });
+            treeOutline.addEventListener("click", function(e) {
+                var COLLAPSE_AREA = 14
+                if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
+                    gotofile.toggleDialog(-1);
             });
             txtGoToFile.addEventListener("blur", function() {
                 selStart = txtGoToFile.$input.selectionStart;
@@ -82,6 +85,7 @@ module.exports = {
                     txtGoToFile.$input.selectionEnd = selEnd;
                 }
             });
+            treeOutline.bufferselect = false;
         });   
 
     },
@@ -154,7 +158,6 @@ module.exports = {
             txtGoToFile.setValue("@");
         else
             txtGoToFile.setValue(txtGoToFile.value);
-        this.ignoreSelectOnce = true;
         dgGoToFile.hide();
         treeOutline.show();
     },
@@ -169,7 +172,7 @@ module.exports = {
     },
     
     renderOutline: function(ignoreFilter) {
-        require("core/ext").initExtension(gotofile);
+        ext.initExtension(gotofile);
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
         
@@ -187,7 +190,6 @@ module.exports = {
 
         var node = mdlOutline.queryNode("//*[@selected]");
         if (node) {
-            this.ignoreSelectOnce = true;
             treeOutline.select(node);
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
@@ -201,10 +203,6 @@ module.exports = {
     },
 
     onSelect: function(el) {
-        if (this.ignoreSelectOnce) {
-            this.ignoreSelectOnce = false;
-            return;
-        }
         var editor = editors.currentEditor.amlEditor.$editor;
         var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
             +el.getAttribute("el"), +el.getAttribute("ec"));
@@ -276,9 +274,6 @@ module.exports = {
     },
     
     onAfterChange: function(event) {
-        if (txtGoToFile.value === "@") 
-            this.ignoreSelectOnce = true;
-            
         if (txtGoToFile.value.match(/^@/)) {
             this.updateOutline();
             gotofile.setEventsEnabled(false);
