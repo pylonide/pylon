@@ -32,7 +32,7 @@ var Ide = module.exports = function(options) {
     this.workspaceDir = options.workspaceDir;
 
     options.plugins = options.plugins || [];
-
+    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -50,11 +50,10 @@ var Ide = module.exports = function(options) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        real: (options.real === true) ? true : false,
         hosted: !!options.hosted,
         env: options.env,
         local: options.local,
-        packed: (options.packed === true) ? true : false,
+        packed: options.packed,
         packedName: options.packedName
     };
 
@@ -152,7 +151,6 @@ util.inherits(Ide, EventEmitter);
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
-                real: _self.options.real ? "true" : "false",
                 env: _self.options.env || "local",
                 packed: _self.options.packed,
                 packedName: _self.options.packedName,

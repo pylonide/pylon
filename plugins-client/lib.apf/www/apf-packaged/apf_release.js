@@ -55038,9 +55038,6 @@ apf.menu = function(struct, tagName){
     this.$booleanProperties["matchhide"] = true;
     
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
-        if (!this.$ext)
-            return;
-        
         if (value) {
             this.$ext.style.display = "block";
             if (this.opener && this.opener.localName.indexOf('item') > -1)

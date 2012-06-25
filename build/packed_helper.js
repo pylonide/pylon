@@ -1,7 +1,16 @@
 
 var fs = require('fs');
 
-var extensions = require("../configs/default.js").containers.master.plugins;
+var config = require("../configs/default.js");
+var extensions;
+
+for (var c in config) {
+    if (config[c].clientPlugins) {
+        extensions = config[c].clientPlugins;
+        break;
+    }
+}
+
 var clientPlugins = [ ];
 var clientMappings = [ ];
 
@@ -10,22 +19,17 @@ var isClean = parseInt(arguments[0]);
 
 //console.log(extensions);
 
-for (var i in extensions) {
-    if (extensions[i].packagePath && extensions[i].packagePath.indexOf("cloud9.core") >= 0) {
-        for (var p in extensions[i].clientPlugins) {
-        	var name = extensions[i].clientPlugins[p].split("/")[1];
+for (var e in extensions) {
+    var name = extensions[e].split("/")[1];
 
-            if (name === "log")
-                continue;
-            
-        	var dir = "plugins-client/ext." + name;
-            var mapping = "ext/" + name;
+    if (name === "log")
+        continue;
+    
+    var dir = "plugins-client/ext." + name;
+    var mapping = "ext/" + name;
 
-            clientMappings.push(mapping + "': '" + dir);
-        	clientPlugins.push(mapping + "/" + name);
-        }
-        break; // stop looking for cloud9.core
-    }
+    clientMappings.push(mapping + "': '" + dir);
+    clientPlugins.push(mapping + "/" + name);
 }
 
 clientMappings.push("ext/uploadfiles': 'plugins-client/ext.uploadfiles"); // TODO: why is this not automatically added?

@@ -43,7 +43,7 @@
                 local: <%local%>,
                 env: <%env%>,
                 settings: <%settingsXml%>,
-                packed: <%packed%> ? true : false,
+                packed: <%packed%>,
                 packedName: <%packedName%>
             };
 
@@ -82,9 +82,6 @@
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
                     }
-                    else {
-                        var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
-                    }
                     
                     var aceConfig = require("ace/config");
 
@@ -102,7 +99,8 @@
                         });
                     }
                     else {
-                        apf.addEventListener("load", function(){
+                        apf.addEventListener("load", function() {
+                            var ide = require("core/ide");
                             loadAndBegin(ide, list);
                         });
                     }

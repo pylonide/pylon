@@ -118,6 +118,7 @@ var config = [
             "ext/zen/zen",
             "ext/codecomplete/codecomplete",
             "ext/vim/vim",
+            "ext/anims/anims",
             "ext/guidedtour/guidedtour",
             "ext/quickstart/quickstart",
             "ext/jslanguage/jslanguage",
