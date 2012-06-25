@@ -14,6 +14,7 @@ var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var gotofile = require("ext/gotofile/gotofile");
 var search = require("ext/gotofile/search");
+var gotoline = require("ext/gotoline/gotoline");
 
 module.exports = {
     nodes: [],
@@ -138,6 +139,11 @@ module.exports = {
         this.fullOutline = event.data.body;
         this.renderOutline(event.data.showNow);
         
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
+        var cursor = ace.getCursorPosition();
+        this.$originalLine = cursor.row + 1;
+            
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
             txtGoToFile.focus();
@@ -225,6 +231,12 @@ module.exports = {
             return;
             
         if (e.keyCode === 27) { // Escape
+            if (this.$originalLine) {
+                var editor = editors.currentEditor;
+                var ace = editor.ceEditor.$editor;
+                ace.gotoLine(this.$originalLine);
+                delete this.$originalLine;
+            }
             gotofile.toggleDialog(-1);
         }
         else if (e.keyCode === 13) { // Enter
