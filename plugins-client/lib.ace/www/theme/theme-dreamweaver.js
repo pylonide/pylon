@@ -61,6 +61,7 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
 }\
 \
 .ace-dreamweaver .ace_text-layer {\
+  cursor: text;\
 }\
 \
 .ace-dreamweaver .ace_cursor {\

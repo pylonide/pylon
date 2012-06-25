@@ -63,6 +63,7 @@ exports.cssText = "\
 }\
 \
 .ace-idle-fingers .ace_text-layer {\
+  cursor: text;\
   color: #FFFFFF;\
 }\
 \

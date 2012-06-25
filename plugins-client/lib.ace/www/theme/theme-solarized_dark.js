@@ -63,6 +63,7 @@ exports.cssText = "\
 }\
 \
 .ace-solarized-dark .ace_text-layer {\
+  cursor: text;\
   color: #93A1A1;\
 }\
 \

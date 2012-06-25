@@ -63,6 +63,7 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow-night-bright .ace_text-layer {\
+  cursor: text;\
   color: #DEDEDE;\
 }\
 \

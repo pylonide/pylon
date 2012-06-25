@@ -459,7 +459,7 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         if (active === false) // init && !
-            return;
+            return {editor: editor, page: fake};
 
         //Set active page
         tabs.set(filepath);
@@ -479,6 +479,8 @@ module.exports = ext.register("ext/editors/editors", {
         }, 100);
 
         settings.save();
+        
+        return {editor: editor, page: fake};
     },
 
     initEditorEvents: function(page, model) {
@@ -738,10 +740,6 @@ module.exports = ext.register("ext/editors/editors", {
           }, function(oExtension){
             _self.unregister(oExtension);
           });
-
-        ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc, e.init, e.active, e.forceOpen);
-        });
 
         ide.addEventListener("filenotfound", function(e) {
             var page = tabEditors.getPage(e.path);
@@ -1062,7 +1060,8 @@ module.exports = ext.register("ext/editors/editors", {
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 
-            ide.dispatchEvent("openfile", options);
+            var extraOptions = this.openEditor(options.doc, options.init, options.active, options.forceOpen);
+            ide.dispatchEvent("openfile", apf.extend(options, extraOptions));
         }
         else
             tabs.set(path);
