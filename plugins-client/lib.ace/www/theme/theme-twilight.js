@@ -63,6 +63,7 @@ exports.cssText = "\
 }\
 \
 .ace-twilight .ace_text-layer {\
+  cursor: text;\
   color: #F8F8F8;\
 }\
 \

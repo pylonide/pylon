@@ -63,6 +63,7 @@ exports.cssText = "\
 }\
 \
 .ace-dawn .ace_text-layer {\
+  cursor: text;\
   color: #080808;\
 }\
 \

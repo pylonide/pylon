@@ -63,6 +63,7 @@ exports.cssText = "\
 }\
 \
 .ace-vibrant-ink .ace_text-layer {\
+  cursor: text;\
   color: #FFFFFF;\
 }\
 \
