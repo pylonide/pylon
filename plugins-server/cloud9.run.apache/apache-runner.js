@@ -8,30 +8,25 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
  * Run apache scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, pm, sandbox, usePortFlag, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, usePortFlag, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
-        sandbox.getUnixId(function(err, unixId) {
-            if (err) return callback(err);
-            
-            init(projectDir, unixId, url);
-        });
+        init(projectDir, url);
     });
 
-    function init(projectDir, unixId, url) {
-        pm.addRunner("apache", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
+    function init(projectDir, url) {
+        pm.addRunner("apache", exports.factory(vfs, sandbox, projectDir, url, usePortFlag));
 
         callback();
     }
 };
 
-exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+exports.factory = function(vfs, sandbox, root, url, usePortFlag) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.root = root;
-        options.uid = uid;
         options.file = args.file;
         options.args = args.args;
         options.cwd = args.cwd;
@@ -45,11 +40,11 @@ exports.factory = function(sandbox, root, uid, url, usePortFlag) {
         
         options.sandbox = sandbox;
         
-        new Runner(options, callback);
+        new Runner(vfs, options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options, callback) {
+var Runner = exports.Runner = function(vfs, options, callback) {
     var self = this;
     
     if (!options.sandbox) {
@@ -57,7 +52,6 @@ var Runner = exports.Runner = function(options, callback) {
     }
     
     self.root = options.root;
-    self.uid = options.uid;
     self.apacheVersion = options.apacheVersion || "auto";
 
     self.file = options.file || "";
@@ -118,15 +112,17 @@ var Runner = exports.Runner = function(options, callback) {
         // a nice debug message for our users when we fire up the process
         var debugMessageListener = function (msg) {
             // process dies? then we die as well
-            if (msg.type === "run-exit") {
+            if (msg.type === "apache-exit") {
                 return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
             }
             
-            if (msg.type === "run-start") {
-                var info = [];
+            if (msg.type === "apache-start") {
+                var info = [
+                    "Tip: you can access long running processes, like a server, at '" + url + "'."
+                ];
                 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "debug-data",
+                    type: "apache-data",
                     stream: "stdout",
                     data: info.join("\n"),
                     extra: null,
@@ -139,7 +135,7 @@ var Runner = exports.Runner = function(options, callback) {
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "httpd";
         
-        ShellRunner.call(self, options, callback);
+        ShellRunner.call(self, vfs, options, callback);
     }
 };
 

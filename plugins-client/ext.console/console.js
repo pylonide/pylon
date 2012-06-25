@@ -415,9 +415,22 @@ module.exports = ext.register("ext/console/console", {
         this.command_id_tracer++;
         return command_id;
     },
+    
+    createApacheProcessLog: function (message_pid) {
+        var command_id = this.createOutputBlock("Running Apache Process", true);
+        this.tracerToPidMap[command_id] = message_pid;
+        this.pidToTracerMap[message_pid] = command_id;
+
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+
+        this.command_id_tracer++;
+        return command_id;
+    },
 
     createPythonProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running python Process", true);
+        var command_id = this.createOutputBlock("Running Python Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
 
@@ -430,7 +443,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     createRubyProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running ruby Process", true);
+        var command_id = this.createOutputBlock("Running Ruby Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
 
@@ -468,6 +481,9 @@ module.exports = ext.register("ext/console/console", {
             case "php-start":
                 this.createPhpProcessLog(message.pid);
                 return;
+            case "apache-start":
+                this.createApacheProcessLog(message.pid);
+                return;
             case "python-start":
                 this.createPythonProcessLog(message.pid);
                 return;
@@ -475,6 +491,7 @@ module.exports = ext.register("ext/console/console", {
                 this.createRubyProcessLog(message.pid);
                 return;
             case "node-data":
+            case "apache-data":
             case "php-data":
             case "python-data":
             case "ruby-data":
@@ -526,6 +543,7 @@ module.exports = ext.register("ext/console/console", {
             case "php-exit":
             case "python-exit":
             case "ruby-exit":
+            case "apache-exit":
                 this.markProcessAsCompleted(message.pid, true);
                 return;
             case "npm-module-start":
