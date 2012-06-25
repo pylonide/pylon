@@ -74,7 +74,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 return;
             
             txtLineNr.setValue(this.selected.getAttribute("nr"));
-            _self.execGotoLine(null, true);
+            _self.execGotoLine(null, null, true);
         });
 
         var restricted = [38, 40, 36, 35];
@@ -106,8 +106,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 ceEditor.focus();
                 
                 if (_self.$originalLine) {
-                    _self.execGotoLine(_self.$originalLine, true);
+                    _self.execGotoLine(_self.$originalLine, _self.$originalColumn, true);
+                    
                     delete _self.$originalLine;
+                    delete _self.$originalColumn;
                 }
                 
                 return false;
@@ -125,7 +127,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             
             if (!e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
                 setTimeout(function(){
-                    _self.execGotoLine(null, true);
+                    _self.execGotoLine(null, null, true);
                 });
             }
         });
@@ -148,7 +150,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var cursor = ace.getCursorPosition();
 
         this.$originalLine = cursor.row + 1;
-
+        this.$originalColumn = cursor.column;
+        
         //Set the current line
         txtLineNr.setValue(txtLineNr.getValue() || cursor.row + 1);
 
@@ -215,7 +218,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         return false;
     },
 
-    execGotoLine: function(line, preview) {
+    execGotoLine: function(line, column, preview) {
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
@@ -228,7 +231,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         if (!this.lastLine || this.lastLine != line 
           || !ace.isRowFullyVisible(line)) {
-            ace.gotoLine(line);
+            ace.gotoLine(line, column);
             this.lastLine = line;
         }
         
