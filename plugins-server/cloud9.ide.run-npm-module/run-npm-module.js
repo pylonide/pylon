@@ -14,11 +14,17 @@ var ProcessManager;
 var EventBus;
 var VFS;
 var AllowShell;
+var USER;
+var ALLOWEDDIRS;
+var ALLOWEDEXECUTABLES;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
     VFS = imports.vfs;
+    USER = options.user;
+    ALLOWEDDIRS = options.allowedDirs;
+    ALLOWEDEXECUTABLES = options.allowedExecs;
     AllowShell = !!options.allowShell;
     imports.ide.register(name, NpmRuntimePlugin, register);
 };
@@ -32,7 +38,7 @@ var NpmRuntimePlugin = function(ide, workspace) {
     this.workspace = workspace;
     this.channel = workspace.workspaceId + "::npm-runtime"; // wtf this should not be needed
     this.children = {};
-
+    
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
@@ -119,7 +125,11 @@ util.inherits(NpmRuntimePlugin, Plugin);
             return callback(null, false);
 
         var self = this;
-        var cwd = message.cwd || self.workspaceDir;
+        var ws   = self.ide.workspaceDir;
+        var cwd  = message.cwd || ws;
+
+        var isAllowedExecutable = !USER || USER.runvmSsh || !ALLOWEDEXECUTABLES 
+            || ALLOWEDEXECUTABLES.indexOf(message.command) > -1;
 
         this.pm.exec("shell", {
             command: "which",
@@ -128,6 +138,20 @@ util.inherits(NpmRuntimePlugin, Plugin);
         }, function(code, out, err) {
             if (code)
                 return callback(null, false);
+            
+            if (!isAllowedExecutable) {
+                var found = false;
+                for (var i = 0, wsl = ws.length; i < ALLOWEDDIRS.length; i++) {
+                    if (out.substr(0, wsl + ALLOWEDDIRS[i].length) == ws + ALLOWEDDIRS[i]) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found)
+                    return callback("This command is only available in premium plans. "
+                        + "<a href='javascript:void(0)' onclick='require(\"ext/upgrade/upgrade\").suggestUpgrade()'>Click here to Upgrade.</a>", false);
+            }
 
             // use resolved command
             message.argv[0] = out.split("\n")[0];
