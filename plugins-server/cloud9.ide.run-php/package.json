@@ -9,8 +9,7 @@
         "consumes": [
             "ide",
             "process-manager",
-            "run-node",
-            "run-node-debug",
+            "run-php",
             "ide.ext.state",
             "eventbus"
         ]

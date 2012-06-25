@@ -4,10 +4,11 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
     var sandbox = imports.sandbox;
-    
-    PhpRunner.call(this, options.url, pm, sandbox, false, function (err) {
+    var vfs = imports.vfs;
+
+    PhpRunner.call(this, options.url, vfs, pm, sandbox, function (err) {
         if (err) return register(err);
-        
+
         register(null, {
             "run-php": {
                 Runner: PhpRunner.Runner

@@ -53,7 +53,6 @@ var Runner = exports.Runner = function(vfs, options, callback) {
 
     self.vfs = vfs;
     self.root = options.root;
-    self.uid = options.uid;
     self.nodeVersion = options.nodeVersion || "auto";
     self.file = options.file || "";
     options.env = options.env || {};
@@ -98,7 +97,6 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         self.port = port;
 
         if (self.port) {
-            options.env.C9_PORT = self.port;
             options.env.PORT = self.port;
         }
 

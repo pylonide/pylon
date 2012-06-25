@@ -67,12 +67,6 @@ util.inherits(PythonRuntimePlugin, Plugin);
             case "rundebugbrk":
                 this.$run(message.file, message.args || [], message.env || {}, message.version, message, client);
                 break;
-/*            case "rundebug":
-                this.$debug(message.file, message.args || [], message.env || {}, false, message.version, message, client);
-                break;
-            case "rundebugbrk":
-                this.$debug(message.file, message.args || [], message.env || {}, true, message.version, message, client);
-                break;*/
             case "kill":
                 this.$kill(message.pid, message, client);
                 break;
@@ -90,7 +84,7 @@ util.inherits(PythonRuntimePlugin, Plugin);
 
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
-
+console.log("\nPYTHON", file, args, env, version, message)
             self.pm.spawn("python", {
                 file: file,
                 args: args,
