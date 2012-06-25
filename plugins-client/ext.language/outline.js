@@ -4,6 +4,7 @@
  * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -22,6 +23,8 @@ module.exports = {
     filteredOutline : [],
     ignoreSelectOnce : false,
     isDirty : false,
+    lastGoToFileText : "",
+    lastOutlineText : "@",
     
     hook: function(oExt, worker) {
         this.worker = worker;
@@ -72,7 +75,7 @@ module.exports = {
                 gotofile.toggleDialog(-1);
             });
             treeOutline.addEventListener("click", function(e) {
-                var COLLAPSE_AREA = 14
+                var COLLAPSE_AREA = 14;
                 if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
                     gotofile.toggleDialog(-1);
             });
@@ -84,8 +87,12 @@ module.exports = {
                 txtGoToFile.focus();
                 if (selStart && selEnd) {
                     txtGoToFile.$input.selectionStart = selStart;
-                    txtGoToFile.$input.selectionEnd = selEnd;
+                    tgxtGoToFile.$input.selectionEnd = selEnd;
                 }
+            });
+            winGoToFile.addEventListener("prop.visible", function(e) {
+                if (!e.value)
+                    _self.showGoToFile();
             });
             treeOutline.bufferselect = false;
         });   
@@ -174,10 +181,10 @@ module.exports = {
         gotofile.setEventsEnabled(false);
         if (!dgGoToFile.getProperty("visible"))
             return;
-        if (!txtGoToFile.value.match(/^@/))
-            txtGoToFile.setValue("@");
-        else
-            txtGoToFile.setValue(txtGoToFile.value);
+        if (!txtGoToFile.value.match(/^@/)) {
+            this.lastGoToFileText = txtGoToFile.value;
+-           txtGoToFile.setValue(this.lastOutlineText);
+        }
         this.ignoreSelectOnce = true;
         dgGoToFile.hide();
         treeOutline.show();
@@ -185,11 +192,15 @@ module.exports = {
             txtGoToFile.$input.selectionStart = 1;
     },
     
-    showFileSearch: function() {
+    showGoToFile: function() {
         gotofile.setEventsEnabled(true);
         if (dgGoToFile.getProperty("visible"))
             return;
-        gotofile.filter(txtGoToFile.value.match(/^@/) ? "" : txtGoToFile.value, false, true);
+        if (txtGoToFile.value.match(/^@/)) {
+            this.lastOutlineText = txtGoToFile.value;
+-           txtGoToFile.setValue(this.lastGoToFileText);
+        }
+        gotofile.filter(txtGoToFile.value, false, true);
         dgGoToFile.show();
         treeOutline.hide();
     },
@@ -320,11 +331,9 @@ module.exports = {
             gotofile.setEventsEnabled(false);
         }
         else {
-            this.showFileSearch();
+            this.showGoToFile();
         }
         this.renderOutline();
     }
 };
 });
-
-
