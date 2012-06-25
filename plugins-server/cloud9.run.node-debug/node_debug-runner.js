@@ -11,6 +11,8 @@ var NodeDebugProxy = require("./nodedebugproxy");
 var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, nodePath, debugPort, callback) {
     var NodeRunner = runNode.Runner;
 
+    debugPort = parseInt(debugPort);
+
     // create methods on exports, that take a reference from NodeRunner
     setup(NodeRunner);
 
