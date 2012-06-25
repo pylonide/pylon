@@ -120,18 +120,20 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
     return res;
 };
 
-var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensitive) {
+var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensitive, results, head) {
     if (caseInsensitive)
         keyword = keyword.toLowerCase();
-    var results = [];
+    results = results || [];
+    head = head || 0;
     for (var i = 0; i < tree.length; i++) {
         var node = tree[i];
         var name = node.name;
         if (caseInsensitive)
             name = name.toLowerCase();
-        if (name.lastIndexOf(keyword) === -1) {
+        var index = name.indexOf(keyword);
+        if (index === -1) {
             if (node.items)
-                results = results.concat(treeSearch(node.items, keyword, caseInsensitive));
+                results = treeSearch(node.items, keyword, caseInsensitive, results, head);
             continue
         }
         var result = {
@@ -141,7 +143,13 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensi
             if (node.hasOwnProperty(p) && p !== "items")
                 result[p] = node[p];
         }
-        results.push(result);
+        if (index === 0) {
+            results.splice(head, 0, result);
+            head++;
+        }
+        else {
+            results.push(result);
+        }
     }
     return results;
 };
