@@ -216,7 +216,7 @@ module.exports = {
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
         
-        var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter);
+        var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter, true);
 
         /* TODO: set "empty" message
         if (outline.length === 0)
