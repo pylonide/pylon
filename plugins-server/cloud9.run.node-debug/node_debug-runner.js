@@ -38,7 +38,7 @@ function setup (NodeRunner) {
             options.cwd = args.cwd;
             options.env = args.env;
             options.nodeVersion = args.nodeVersion;
-            options.debugPort = args.debugPort;
+            options.debugPort = debugPort;
             options.nodePath = args.nodePath || nodePath;
             options.encoding = args.encoding;
             options.breakOnStart = args.breakOnStart;
@@ -115,7 +115,7 @@ function setup (NodeRunner) {
             function send(msg) {
                 self.eventEmitter.emit(self.eventName, msg);
             }
-
+            
             this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
             this.nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
