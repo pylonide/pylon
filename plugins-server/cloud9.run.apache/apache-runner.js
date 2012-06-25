@@ -8,7 +8,7 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
  * Run apache scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, pm, sandbox, usePortFlag, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, usePortFlag, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
@@ -20,13 +20,13 @@ var exports = module.exports = function (url, pm, sandbox, usePortFlag, callback
     });
 
     function init(projectDir, unixId, url) {
-        pm.addRunner("apache", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
+        pm.addRunner("apache", exports.factory(vfs, sandbox, projectDir, unixId, url, usePortFlag));
 
         callback();
     }
 };
 
-exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+exports.factory = function(vfs, sandbox, root, uid, url, usePortFlag) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -45,11 +45,11 @@ exports.factory = function(sandbox, root, uid, url, usePortFlag) {
         
         options.sandbox = sandbox;
         
-        new Runner(options, callback);
+        new Runner(vfs, options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options, callback) {
+var Runner = exports.Runner = function(vfs, options, callback) {
     var self = this;
     
     if (!options.sandbox) {
@@ -139,7 +139,7 @@ var Runner = exports.Runner = function(options, callback) {
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "httpd";
         
-        ShellRunner.call(self, options, callback);
+        ShellRunner.call(self, vfs, options, callback);
     }
 };
 
