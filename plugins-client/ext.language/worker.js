@@ -189,8 +189,12 @@ function asyncParForEach(array, fn, callback) {
         }   
     };
 
-    this.parse = function(callback) {
+    this.parse = function(callback, allowCached) {
         var _self = this;
+        if (allowCached && this.cachedAst) {
+            callback(_self.cachedAst);
+            return;
+        }
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
@@ -233,7 +237,7 @@ function asyncParForEach(array, fn, callback) {
                     next();
             }, function() {
             });
-        });
+        }, true);
     };
 
     this.scheduleEmit = function(messageType, data) {
