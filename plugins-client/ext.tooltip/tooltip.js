@@ -91,8 +91,8 @@ module.exports = ext.register("ext/tooltip/tooltip", {
     $ttmouseout : function(e){
         var tooltip = require("ext/tooltip/tooltip");
         
-    	if (apf.isChildOf(this, e.target, true))
-    		return;
+    	//if (apf.isChildOf(this, e.target, true))
+    	//	return;
     	
         tooltip.$mouseout.call(this.companion);
     },
