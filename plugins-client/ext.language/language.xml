@@ -16,6 +16,7 @@
           startcollapsed  = "false"
           nocollapse      = "true"
           empty-message   = "No outline available"
+          loading-message = "Loading outline. One moment please..."
           maxheight       = "350"
           visible         = "false"
           scrollbar       = "sbShared 32 7 7">
@@ -29,7 +30,6 @@
                     value.replace(re, <strong>$1</strong>);
                     !![@meta] ? "<code style='color:gray;'> : [@meta]</code>" : "";
                 ?></a:caption>
-                
                 
                 <a:icon value="/static/ext/language/img/[@icon].png" />
             </a:each>

@@ -12016,6 +12016,9 @@
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
             color       : #101010;
         }
+        .treeOutline.filemgr-tree .item LABEL .caption {
+            padding: 1px 0 0 2px;
+        }
 
         .filemgr-tree .fileupload .item LABEL .caption {
             color: #a6a6a6;
@@ -12152,6 +12155,8 @@
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
+        }
+        .filemgr-tree.not(treeOutline) .item LABEL .caption {
             padding:2px 0 0 23px;
         }
 
