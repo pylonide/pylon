@@ -205,7 +205,7 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
-                    if (e instanceof TypeError)
+                    if (e instanceof TypeError || e instanceof ReferenceError)
                         throw e;
                     // Ignore parse errors
                     next();
