@@ -126,8 +126,8 @@ module.exports = {
         return xmlS.join('');
     },
     
-    updateOutline : function(showNow) {
-        this.showOutline(showNow);
+    updateOutline : function(showNow, ignoreInputText) {
+        this.showOutline(showNow, ignoreInputText);
         /* TODO: set loading message if file has changed
         treeOutline.$setClearMessage(treeOutline["loading-message"], "loading");
         apf.setOpacity(winGoToFile.$ext, 1);
@@ -178,8 +178,8 @@ module.exports = {
      * Show the outline view in the goto dialog,
      * instead of the file list.
      */
-    showOutline: function(makeVisible) {
-        ext.initExtension(outline);
+    showOutline: function(makeVisible, ignoreInputText) {
+        ext.initExtension(gotofile);
         if (makeVisible) {
             gotofile.toggleDialog(1);
             txtGoToFile.focus();
@@ -191,9 +191,9 @@ module.exports = {
         gotofile.setEventsEnabled(false);
         if (!dgGoToFile.getProperty("visible"))
             return;
-        if (!txtGoToFile.value.match(/^@/)) {
+        if (!txtGoToFile.value.match(/^@/) && !ignoreInputText) {
             this.lastGoToFileText = txtGoToFile.value;
--           txtGoToFile.setValue(this.lastOutlineText);
+            txtGoToFile.setValue(this.lastOutlineText);
         }
         this.ignoreSelectOnce = true;
         dgGoToFile.hide();
@@ -319,7 +319,7 @@ module.exports = {
     
     onKeyUp: function(e) {
         if (e.keyCode === 50) { // @
-            this.updateOutline();
+            this.updateOutline(false, true);
         }
         else if (this.isDirty && this.isKeyDownAfterDirty) {
             this.renderOutline();
