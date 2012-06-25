@@ -20,7 +20,7 @@ module.exports = {
     nodes: [],
     fullOutline : [],
     filteredOutline : [],
-    ignoreSelectOnce : true,
+    ignoreSelectOnce : false,
     isDirty : false,
     
     hook: function(oExt, worker) {
@@ -315,9 +315,6 @@ module.exports = {
     },
     
     onAfterChange: function(event) {
-        if (txtGoToFile.value === "@")
-            this.ignoreSelectOnce = true;
-        
         if (txtGoToFile.value.match(/^@/)) {
             this.updateOutline();
             gotofile.setEventsEnabled(false);
