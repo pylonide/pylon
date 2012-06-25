@@ -12,26 +12,21 @@ var exports = module.exports = function (url, vfs, pm, sandbox, usePortFlag, cal
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
-        sandbox.getUnixId(function(err, unixId) {
-            if (err) return callback(err);
-            
-            init(projectDir, unixId, url);
-        });
+        init(projectDir, url);
     });
 
-    function init(projectDir, unixId, url) {
-        pm.addRunner("ruby", exports.factory(vfs, sandbox, projectDir, unixId, url, usePortFlag));
+    function init(projectDir, url) {
+        pm.addRunner("ruby", exports.factory(vfs, sandbox, projectDir, url, usePortFlag));
 
         callback();
     }
 };
 
-exports.factory = function(vfs, sandbox, root, uid, url, usePortFlag) {
+exports.factory = function(vfs, sandbox, root, url, usePortFlag) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.root = root;
-        options.uid = uid;
         options.file = args.file;
         options.args = args.args;
         options.cwd = args.cwd;
@@ -57,7 +52,6 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     }
     
     self.root = options.root;
-    self.uid = options.uid;
     self.rubyVersion = options.rubyVersion || "auto";
 
     self.file = options.file || "";
@@ -68,10 +62,6 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     self.scriptArgs = options.args || [];
     self.rubyArgs = [];
 
-    if (options.uid) {
-        self.rubyArgs.push("--setuid=" + options.uid);    
-    }
-    
     // first we need to get an open port
     options.sandbox.getPort(function (err, port) {
         if (err) {

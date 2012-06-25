@@ -8,6 +8,8 @@ module.exports = function setup(options, imports, register) {
     RubyRunner.call(this, options.url, imports.vfs, pm, sandbox, false, function (err) {
         if (err) return register(err);
         
+        console.log("RUBY RUNNER CALLBACK");
+        
         register(null, {
             "run-ruby": {
                 Runner: RubyRunner.Runner
