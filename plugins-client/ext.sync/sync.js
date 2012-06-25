@@ -61,11 +61,8 @@ module.exports = ext.register("ext/sync/sync", {
                     onclick : function() {
                         ext.initExtension(_self);
                         
-                        if (this.value || _self.syncEnabled) {
-                            _self.setSync();
-                            
-                            if (_self.syncEnabled)
-                                this.setValue(true);
+                        if (this.value) {
+                            winThisIsBeta.show();
                         }
                         else {
                             mnuSyncPrj.hide();
@@ -122,7 +119,7 @@ module.exports = ext.register("ext/sync/sync", {
 //            });
         }
     },
-
+    
     init : function(amlNode){
         var _self = this;
         
@@ -279,7 +276,7 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.hideSyncInfo();
                     
                     //Reset all syncstate attributes in the tree.
-                    var nodes = fs.model.queryNode("//node()[not(@syncstate='synced']");
+                    var nodes = fs.model.queryNode("//node()[not(@syncstate='synced')]");
                     Array.protototype.forEach.call(nodes, function(node){
                         apf.xmldb.setAttribute(node, "syncstate", "synced");
                     });
@@ -512,7 +509,7 @@ module.exports = ext.register("ext/sync/sync", {
     disableSync: function() {
         var _self = this;
 
-        winConfirmSyncOff.close();
+        winConfirmSyncOff.hide();
 
         var payload = {};
 
