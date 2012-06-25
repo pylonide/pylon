@@ -285,8 +285,9 @@ module.exports = {
         var linesVisible = editor.renderer.$size.height / lineHeight;
         lineEnd = Math.min(lineEnd, line + linesVisible);
         if (lineVisibleStart <= line && lineEnd <= lineVisibleStart + linesVisible)
-            return; 
-        editor.scrollToLine((line + lineEnd) / 2 - 1, true);  
+            return;
+        var SAFETY = 1.5;
+        editor.scrollToLine(Math.round((line + lineEnd) / 2 - SAFETY), true)
     },
     
     onKeyDown: function(e) {
