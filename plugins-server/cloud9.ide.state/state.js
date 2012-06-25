@@ -76,7 +76,7 @@ util.inherits(StatePlugin, Plugin);
 
             for (var pid in ps) {
                 var processType = ps[pid].type;
-                if (processType == "node")
+                if (processType == "node" || processType == "apache" || processType == "php" || processType == "python" || processType == "ruby")
                     state.processRunning = pid;
                 else if (processType == "node-debug") {
                     state.processRunning = pid;

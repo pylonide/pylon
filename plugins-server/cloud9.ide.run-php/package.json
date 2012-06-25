@@ -1,15 +1,15 @@
 {
-    "name": "cloud9.ide.run-python",
+    "name": "cloud9.ide.run-php",
     "version": "0.0.1",
 
-    "main": "./run-python.js",
+    "main": "./run-php.js",
     "private": true,
 
     "plugin": {
         "consumes": [
             "ide",
             "process-manager",
-            "run-python",
+            "run-php",
             "ide.ext.state",
             "eventbus"
         ]

@@ -4,10 +4,7 @@ var util = require("util");
 var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
-/**
- * Run node scripts with restricted user rights
- */
-var exports = module.exports = function(url, vfs, pm, sandbox, usePort, nodePath, callback) {
+var exports = module.exports = function(url, vfs, pm, sandbox, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
 
@@ -15,13 +12,13 @@ var exports = module.exports = function(url, vfs, pm, sandbox, usePort, nodePath
     });
 
     function init(projectDir, url) {
-        pm.addRunner("node", exports.factory(vfs, sandbox, projectDir, url, nodePath, usePort));
+        pm.addRunner("php", exports.factory(vfs, sandbox, projectDir, url));
 
         callback();
     }
 };
 
-exports.factory = function(vfs, sandbox, root, url, nodePath, usePort) {
+exports.factory = function(vfs, sandbox, root, url) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -30,13 +27,10 @@ exports.factory = function(vfs, sandbox, root, url, nodePath, usePort) {
         options.args = args.args;
         options.cwd = args.cwd;
         options.env = args.env;
-        options.nodePath = args.nodePath || nodePath || process.execPath;
-        options.nodeVersion = args.nodeVersion;
         options.encoding = args.encoding;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
         options.url = url;
-        options.usePort = usePort;
 
         options.sandbox = sandbox;
 
@@ -53,16 +47,8 @@ var Runner = exports.Runner = function(vfs, options, callback) {
 
     self.vfs = vfs;
     self.root = options.root;
-    self.nodeVersion = options.nodeVersion || "auto";
     self.file = options.file || "";
     options.env = options.env || {};
-
-    self.scriptArgs = options.args || [];
-    self.nodeArgs = [];
-
-    if (options.uid) {
-        self.nodeArgs.push("--setuid=" + options.uid);
-    }
 
     // first we need to get an open port
     options.sandbox.getPort(function (err, port) {
@@ -70,13 +56,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             return console.error("getPort failed");
         }
 
-        // the port flag is only present in the precompiled binaries that we provide
-        // in the hosted version, so only add it then
-        if (options.usePort) {
-            self.nodeArgs.push("--ports=" + port);
-        }
-
-        // then create a url.
+        // create a url.
         // this can be passed in as an option, or we can construct it
         // based on the host and the port
         if (!options.url) {
@@ -93,32 +73,28 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         }
     });
 
-    function startProcess (url, port) {
+    function startProcess(url, port) {
         self.port = port;
 
         if (self.port) {
             options.env.PORT = self.port;
         }
 
-        if (options.usePort) {
-            self.nodeArgs.push("--ports=" + self.port);
-        }
-
         // a nice debug message for our users when we fire up the process
         var debugMessageListener = function (msg) {
             // process dies? then we die as well
-            if (msg.type === "node-exit") {
+            if (msg.type === "php-exit") {
                 return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
             }
 
-            if (msg.type === "node-start") {
+            if (msg.type === "php-start") {
                 var info = [
                     "Tip: you can access long running processes, like a server, at '" + url + "'.",
                     "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "node-debug-data",
+                    type: "php-debug-data",
                     stream: "stdout",
                     data: info.join("\n"),
                     extra: null,
@@ -129,7 +105,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         options.eventEmitter.on(options.eventName, debugMessageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
-        options.command = options.nodePath || process.execPath;
+        options.command = "php";
 
         ShellRunner.call(self, vfs, options, callback);
     }

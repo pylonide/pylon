@@ -1,5 +1,5 @@
 /**
- * Python Runtime Module for the Cloud9 IDE
+ * PHP Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -8,47 +8,47 @@
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
-var name = "python-runtime";
+var name = "php-runtime";
 var ProcessManager;
 var EventBus;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
-    imports.ide.register(name, PythonRuntimePlugin, register);
+    imports.ide.register(name, PhpRuntimePlugin, register);
 };
 
-var PythonRuntimePlugin = function(ide, workspace) {
+var PhpRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.pm = ProcessManager;
     this.eventbus = EventBus;
     this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
 
-    this.channel = this.workspaceId + "::python-runtime";
+    this.channel = this.workspaceId + "::php-runtime";
 
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
 };
 
-util.inherits(PythonRuntimePlugin, Plugin);
+util.inherits(PhpRuntimePlugin, Plugin);
 
 (function() {
 
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            msg.type = msg.type.replace(/^python-debug-(start|data|exit)$/, "python-$1");
+            msg.type = msg.type.replace(/^php-debug-(start|data|exit)$/, "php-$1");
             var type = msg.type;
 
-            if (type == "python-start" || type == "python-exit")
+            if (type == "php-start" || type == "php-exit")
                 self.workspace.getExt("state").publishState();
 
-            if (msg.type == "python-start")
+            if (msg.type == "php-start")
                 self.processCount += 1;
 
-            if (msg.type == "python-exit")
+            if (msg.type == "php-exit")
                 self.processCount -= 1;
 
             self.ide.broadcast(JSON.stringify(msg), self.name);
@@ -57,7 +57,7 @@ util.inherits(PythonRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/python/.test(message.runner)))
+        if (!(/php/.test(message.runner)))
             return false;
 
         var res = true;
@@ -67,6 +67,12 @@ util.inherits(PythonRuntimePlugin, Plugin);
             case "rundebugbrk":
                 this.$run(message.file, message.args || [], message.env || {}, message.version, message, client);
                 break;
+/*            case "rundebug":
+                this.$debug(message.file, message.args || [], message.env || {}, false, message.version, message, client);
+                break;
+            case "rundebugbrk":
+                this.$debug(message.file, message.args || [], message.env || {}, true, message.version, message, client);
+                break;*/
             case "kill":
                 this.$kill(message.pid, message, client);
                 break;
@@ -84,8 +90,8 @@ util.inherits(PythonRuntimePlugin, Plugin);
 
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
-console.log("\nPYTHON", file, args, env, version, message)
-            self.pm.spawn("python", {
+
+            self.pm.spawn("php", {
                 file: file,
                 args: args,
                 env: env,
@@ -107,7 +113,7 @@ console.log("\nPYTHON", file, args, env, version, message)
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("python-debug", {
+            self.pm.spawn("php-debug", {
                 file: file,
                 args: args,
                 env: env,
@@ -132,4 +138,4 @@ console.log("\nPYTHON", file, args, env, version, message)
         return this.processCount === 0;
     };
 
-}).call(PythonRuntimePlugin.prototype);
+}).call(PhpRuntimePlugin.prototype);

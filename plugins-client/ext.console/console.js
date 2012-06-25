@@ -403,6 +403,45 @@ module.exports = ext.register("ext/console/console", {
         return command_id;
     },
 
+    createPhpProcessLog : function(message_pid) {
+        var command_id = this.createOutputBlock("Running PHP Process", true);
+        this.tracerToPidMap[command_id] = message_pid;
+        this.pidToTracerMap[message_pid] = command_id;
+
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+
+        this.command_id_tracer++;
+        return command_id;
+    },
+
+    createPythonProcessLog : function(message_pid) {
+        var command_id = this.createOutputBlock("Running python Process", true);
+        this.tracerToPidMap[command_id] = message_pid;
+        this.pidToTracerMap[message_pid] = command_id;
+
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+
+        this.command_id_tracer++;
+        return command_id;
+    },
+
+    createRubyProcessLog : function(message_pid) {
+        var command_id = this.createOutputBlock("Running ruby Process", true);
+        this.tracerToPidMap[command_id] = message_pid;
+        this.pidToTracerMap[message_pid] = command_id;
+
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+
+        this.command_id_tracer++;
+        return command_id;
+    },
+
     onMessage: function(e) {
         if (!e.message.type)
                 return;
@@ -426,7 +465,20 @@ module.exports = ext.register("ext/console/console", {
                 //if (apf.isTrue(clearOnRun) && window["txtOutput"]) txtOutput.clear();
                 this.createNodeProcessLog(message.pid);
                 return;
+            case "php-start":
+                this.createPhpProcessLog(message.pid);
+                return;
+            case "python-start":
+                this.createPythonProcessLog(message.pid);
+                return;
+            case "ruby-start":
+                this.createRubyProcessLog(message.pid);
+                return;
             case "node-data":
+            case "php-data":
+            case "python-data":
+            case "ruby-data":
+            case "php-data":            
                 if (message.data && message.data.indexOf("Tip: you can") === 0) {
                     (function () {
                         var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
@@ -471,6 +523,9 @@ module.exports = ext.register("ext/console/console", {
                 logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
+            case "php-exit":
+            case "python-exit":
+            case "ruby-exit":
                 this.markProcessAsCompleted(message.pid, true);
                 return;
             case "npm-module-start":
