@@ -75,6 +75,10 @@ require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
         else {
             this.vfs.mkfile(path, {}, function(err, meta) {
                 if (err) return callback(err);
+                
+                meta.stream.on("error", function(err) {
+                    console.error("Stream error:", err);
+                });
 
                 track = handler.server.chunkedUploads[path] = {
                     stream: meta.stream,
