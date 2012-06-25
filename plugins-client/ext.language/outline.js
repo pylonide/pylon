@@ -8,13 +8,13 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var gotofile = require("ext/gotofile/gotofile");
 var search = require("ext/gotofile/search");
-var gotoline = require("ext/gotoline/gotoline");
 
 module.exports = {
     nodes: [],
@@ -143,7 +143,8 @@ module.exports = {
         var ace = editor.ceEditor.$editor;
         var cursor = ace.getCursorPosition();
         this.$originalLine = cursor.row + 1;
-            
+        this.$originalColumn = cursor.column;
+        
         if (event.data.showNow) {
             gotofile.toggleDialog(1);
             txtGoToFile.focus();
@@ -234,8 +235,10 @@ module.exports = {
             if (this.$originalLine) {
                 var editor = editors.currentEditor;
                 var ace = editor.ceEditor.$editor;
-                ace.gotoLine(this.$originalLine);
+                ace.gotoLine(this.$originalLine, this.$originalColumn, apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll")));
+                
                 delete this.$originalLine;
+                delete this.$originalColumn;
             }
             gotofile.toggleDialog(-1);
         }
