@@ -75,9 +75,13 @@ module.exports = {
                 _self.onSelect(treeOutline.selected);
             });
             treeOutline.addEventListener("onafterchoose", function() {
+                _self.ignoreSelectOnce = false;
+                _self.onSelect(treeOutline.selected);
                 gotofile.toggleDialog(-1);
             });
             treeOutline.addEventListener("click", function(e) {
+                _self.ignoreSelectOnce = false;
+                _self.onSelect(treeOutline.selected);
                 var COLLAPSE_AREA = 14;
                 if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
                     gotofile.toggleDialog(-1);
@@ -261,6 +265,9 @@ module.exports = {
     },
 
     onSelect: function(el) {
+        if (gotofile.eventsEnabled)
+            return;
+            
         if (this.ignoreSelectOnce) {
             this.ignoreSelectOnce = false;
             return;
@@ -298,6 +305,8 @@ module.exports = {
             gotofile.toggleDialog(-1);
         }
         else if (e.keyCode === 13) { // Enter
+            this.ignoreSelectOnce = false;
+            this.onSelect(treeOutline.selected);
             gotofile.toggleDialog(-1);
         }
         else if (e.keyCode === 40) { // Down
