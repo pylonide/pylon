@@ -180,6 +180,7 @@ var config = [
         allowShell: true
     },
     "./cloud9.ide.run-python",
+    "./cloud9.run.python",
     //"./cloud9.ide.revisions",
     {
         packagePath: "./cloud9.ide.settings",
