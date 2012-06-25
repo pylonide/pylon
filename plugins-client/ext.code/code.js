@@ -779,7 +779,7 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("animate", function(e){
             if (!ceEditor.$ext.offsetHeight)
                 return;
-            
+        
             if (e.type == "editor") {
                 var renderer = ceEditor.$editor.renderer;
                 renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);

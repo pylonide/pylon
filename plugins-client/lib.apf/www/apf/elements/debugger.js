@@ -105,6 +105,9 @@ apf.dbg = module.exports = function(struct, tagName){
 
             // give debugger time to initialize
             setTimeout(function() {
+                if (!_self.$debugger)
+                    return;
+                
                 _self.$loadSources(function() {
                     dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
                         var backtraceModel = new apf.model();

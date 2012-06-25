@@ -895,8 +895,9 @@ module.exports = ext.register("ext/editors/editors", {
 
             if (pages.length) {
                 var active = tabEditors.activepage;
+                var page   = tabEditors.getPage();
                 
-                if (tabEditors.getPage(active).$model.data.getAttribute("ignore") !== "1")
+                if (page && page.$model.data.getAttribute("ignore") !== "1")
                     e.model.setQueryValue("auto/files/@active", active);
 
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");

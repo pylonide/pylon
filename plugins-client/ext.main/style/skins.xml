@@ -11133,9 +11133,9 @@
             box-shadow      : inset 0 2px 3px 0 rgba(0,0,0,.5);
             color           : #202020;
             font-size       : 14px;
-            height          : 20px;
+            height          : 19px;
             line-height     : 18px;
-            padding         : 1px 4px 0px 4px;
+            padding         : 2px 4px 0px 4px;
             outline         : none;
             text-overflow   : ellipsis;
         }
@@ -11834,7 +11834,7 @@
         }
         
         .filemgr-treeDisabled .item-fix{
-            opacity : 0.3;
+            opacity : 0.9;
         }
 
         .filemgr-tree .item-fix .item {
