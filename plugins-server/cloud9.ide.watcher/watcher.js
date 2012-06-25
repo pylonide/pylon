@@ -124,7 +124,7 @@ util.inherits(WatcherPlugin, Plugin);
     this.dispose = function(callback) {
         for (var filename in this.filenames) {
             delete this.filenames[filename];
-            removeWatcher(filename);
+            this.removeWatcher(filename);
         }
         callback();
     };
