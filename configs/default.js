@@ -169,6 +169,7 @@ var config = [
     "./cloud9.run.npmnode",
     "./cloud9.run.ruby",
     "./cloud9.run.python",
+    "./cloud9.run.apache",
     "./cloud9.run.php",
     "architect/plugins/architect.log",
     "./cloud9.ide.auth",
@@ -183,6 +184,7 @@ var config = [
         allowShell: true
     },
     "./cloud9.ide.run-python",
+    "./cloud9.ide.run-apache",
     "./cloud9.ide.run-ruby",
     "./cloud9.ide.run-php",
     "./cloud9.run.python",
