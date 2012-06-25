@@ -87,13 +87,15 @@ module.exports = {
                 txtGoToFile.focus();
                 if (selStart && selEnd) {
                     txtGoToFile.$input.selectionStart = selStart;
-                    tgxtGoToFile.$input.selectionEnd = selEnd;
+                    txtGoToFile.$input.selectionEnd = selEnd;
                 }
             });
             winGoToFile.addEventListener("prop.visible", function(e) {
                 if (!e.value)
                     _self.showGoToFile();
             });
+            var editor = editors.currentEditor.amlEditor.$editor;
+            
             treeOutline.bufferselect = false;
         });   
 
@@ -162,8 +164,12 @@ module.exports = {
             this.showOutline(true);
         else if (txtGoToFile.value.match(/^@/))
             this.showOutline();
+            
+        var outline = this.filteredOutline;
+        var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
+        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
 
-        this.scrollToSelected();
+        this.scrollToSelected(selected);
     },
     
     /**
@@ -220,13 +226,7 @@ module.exports = {
         */
     },
     
-    scrollToSelected: function() {
-        var outline = this.filteredOutline;
-        var ace = editors.currentEditor.amlEditor.$editor;
-        
-        var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
-        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
-
+    scrollToSelected: function(selected) {
         var node = mdlOutline.queryNode("//*[@selected]");
         if (node) {
             this.ignoreSelectOnce = true;
@@ -234,11 +234,10 @@ module.exports = {
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
         }
-        else { //if (mdlOutline.data.childNodes[0]) {        
+        else {
             // HACK: Need to set to non-falsy value first
             treeOutline.$container.scrollTop = 1;
             treeOutline.$container.scrollTop = 0;
-            //mdlOutline.data.childNodes[0].scrollIntoView();
         }
     },
 
