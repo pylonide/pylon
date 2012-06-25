@@ -237,7 +237,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
     
-    removeButton : function(name, type, state){
+    removeButton : function(name, type, state, removeItem){
+        var _self = this;
         state = state || this.layout.getState(true);        
         if(!state || !name || !type)
             return;
@@ -249,8 +250,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             bar.sections.each(function(section){
                 for (var k = 0; k < section.buttons.length; k++) {
                     var button = section.buttons[k];
-                    if (button.ext[0] == name && button.ext[1] == type) 
+                    if (button.ext[0] == name && button.ext[1] == type) {
+                        if(removeItem)
+                            delete menus.items["View/Dock Panels/" + button.caption];
                         section.buttons.remove(button);
+                        delete _self.dockpanels[name][type];
+                    }
                 }
             });
         });
