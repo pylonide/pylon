@@ -114,6 +114,11 @@ module.exports = {
     },
     
     updateOutline : function(showNow) {
+        this.showOutline(showNow);
+        /* TODO: set loading message if file has changed
+        treeOutline.$setClearMessage(treeOutline["loading-message"], "loading");
+        apf.setOpacity(winGoToFile.$ext, 1);
+        */
         this.worker.emit("outline", { data : { showNow: showNow } });
     },
 
@@ -145,19 +150,26 @@ module.exports = {
         this.$originalLine = cursor.row + 1;
         this.$originalColumn = cursor.column;
         
-        if (event.data.showNow) {
-            gotofile.toggleDialog(1);
-            txtGoToFile.focus();
+        if (event.data.showNow)
+            this.showOutline(true);
+        else if (txtGoToFile.value.match(/^@/))
             this.showOutline();
-            txtGoToFile.$input.selectionStart = 1;
-        }
-        else if (txtGoToFile.value.match(/^@/)) {
-            this.showOutline();
-        }
+
         this.scrollToSelected();
     },
     
-    showOutline: function() {
+    /**
+     * Show the outline view in the goto dialog,
+     * instead of the file list.
+     */
+    showOutline: function(makeVisible) {
+        if (makeVisible) {
+            gotofile.toggleDialog(1);
+            txtGoToFile.focus();
+            this.showOutline();
+            if (txtGoToFile.value.length > 0)
+                txtGoToFile.$input.selectionStart = 1;
+        }
         gotofile.setEventsEnabled(false);
         if (!dgGoToFile.getProperty("visible"))
             return;
@@ -167,6 +179,8 @@ module.exports = {
             txtGoToFile.setValue(txtGoToFile.value);
         dgGoToFile.hide();
         treeOutline.show();
+        if (makeVisible)
+            txtGoToFile.$input.selectionStart = 1;
     },
     
     showFileSearch: function() {
@@ -184,8 +198,13 @@ module.exports = {
         this.isDirty = ignoreFilter;
         
         var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter);
-        if (outline.items)
-            outline = outline.items;
+
+        /* TODO: set "empty" message
+        if (outline.length === 0)
+            treeOutline.clear(treeOutline["empty-message"], "empty");
+        else
+            treeOutline.$removeClearMessage();
+        */
     },
     
     scrollToSelected: function() {
