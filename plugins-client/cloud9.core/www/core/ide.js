@@ -30,7 +30,7 @@ define(function(require, exports, module) {
         this.env            = window.cloud9config.env;
         this.local          = window.cloud9config.local;
 
-        this.loggedIn       = true;
+        this.loggedIn       = parseInt(this.uid) > 0;
 
         this.onLine         = false;
         this.offlineFileSystemSupport = false;
