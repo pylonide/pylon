@@ -746,6 +746,22 @@ module.exports = ext.register("ext/editors/editors", {
                 settings.model.setQueryValue("editors/code/@fontsize", --currSize < 1 ? 1 : currSize);
             }
         });
+
+        menus.addItemByPath("View/Font Size/", null, 199),
+        
+        menus.addItemByPath("View/Font Size/Increase Font Size", new apf.item({
+            command : "largerfont"
+        }), 1);
+        
+        menus.addItemByPath("View/Font Size/Decrease Font Size", new apf.item({
+            command : "smallerfont"
+        }), 2);
+        
+        menus.addItemByPath("View/Tab Buttons", new apf.item({
+            type: "check",
+            checked : "[{require('core/settings').model}::auto/tabs/@show]",
+            command : "toggleTabs"
+        }), 300);
         
         menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
