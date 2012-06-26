@@ -277,17 +277,17 @@
             top: 4px;
             width: 37px;
         }
-               .updateAvailable .c9-mbar-round .mainlogo {
-                   background: url("images/c9-no-repeat.png") no-repeat -96px -44px;
-                   cursor: pointer;
-               }
+       .updateAvailable .c9-mbar-round .mainlogo {
+           background: url("images/c9-no-repeat.png") no-repeat -96px -44px;
+           cursor: pointer;
+       }
 
-                .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
-                  top: 55px;
-               }
+        .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+          top: 55px;
+       }
 
-                .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
-                   top: 35px;
+        .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+           top: 35px;
         }        
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
