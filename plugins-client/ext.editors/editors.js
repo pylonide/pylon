@@ -762,12 +762,6 @@ module.exports = ext.register("ext/editors/editors", {
             checked : "[{require('core/settings').model}::auto/tabs/@show]",
             command : "toggleTabs"
         }), 300);
-        
-        menus.addItemByPath("View/Tab Buttons", new apf.item({
-            type: "check",
-            checked : "[{require('core/settings').model}::auto/tabs/@show]",
-            command : "toggleTabs"
-        }), 300);
 
         ext.addType("Editor", function(oExtension){
             _self.register(oExtension);
