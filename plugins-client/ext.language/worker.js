@@ -225,7 +225,7 @@ function asyncParForEach(array, fn, callback) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
                         if (outline) {
-                            outline.showNow = event.data.showNow;
+                            outline.ignoreFilter = event.data. ignoreFilter;
                             return _self.sender.emit("outline", outline);
                         }
                         else {

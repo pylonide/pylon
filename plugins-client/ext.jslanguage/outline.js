@@ -8,6 +8,10 @@ var outlineHandler = module.exports = Object.create(baseLanguageHandler);
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 
+var NOT_EVENT_HANDLERS = {
+    addMarker: true
+};
+
 outlineHandler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
@@ -167,7 +171,7 @@ function extractOutline(doc, node) {
         // e.on("listen", function(...) { ... }) -> name is listen
         'Call(e, args)', function(b) {
             var name = expressionToName(b.e);
-            if (!name || b.args.length < 2)
+            if (!name || b.args.length < 2 || NOT_EVENT_HANDLERS[name])
                 return false;
             // Require handler at first or second position
             var s;
