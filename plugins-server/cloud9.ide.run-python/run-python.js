@@ -84,13 +84,14 @@ util.inherits(PythonRuntimePlugin, Plugin);
 
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
-console.log("\nPYTHON", file, args, env, version, message)
+
             self.pm.spawn("python", {
                 file: file,
                 args: args,
                 env: env,
                 nodeVersion: version,
-                extra: message.extra
+                extra: message.extra,
+                encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     self.error(err, 1, message, client);
@@ -113,7 +114,8 @@ console.log("\nPYTHON", file, args, env, version, message)
                 env: env,
                 breakOnStart: breakOnStart,
                 nodeVersion: version,
-                extra: message.extra
+                extra: message.extra,
+                encoding: "ascii"
             }, self.channel, function(err, pid) {
                 if (err)
                     self.error(err, 1, message, client);

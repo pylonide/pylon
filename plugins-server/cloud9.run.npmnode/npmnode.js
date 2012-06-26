@@ -51,7 +51,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     options.command = options.nodePath || process.execPath;
     options.nodePath = options.nodePath || process.execPath;
 
-    ShellRunner.call(self, options, callback);
+    ShellRunner.call(self, vfs, options, callback);
 };
 
 util.inherits(Runner, ShellRunner);

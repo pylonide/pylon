@@ -22,7 +22,7 @@ module.exports = function setup(options, imports, register) {
     this.name = "php";
 
     this.createChild = function(callback) {
-        this.args = this.phpArgs.concat(this.file, this.scriptArgs);
+        this.args = (this.phpArgs || []).concat(this.file, this.scriptArgs);
         ShellRunner.prototype.createChild.call(this, callback);
     };
 

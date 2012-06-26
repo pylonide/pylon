@@ -189,7 +189,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         path = path.trim();
 
-        if (nodeVersion == 'default' || nodeVersion == '') {
+        if (nodeVersion == 'default' || !nodeVersion) {
             runner = this.detectRunner(path);
             nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
         } else {

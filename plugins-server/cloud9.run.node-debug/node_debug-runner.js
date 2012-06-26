@@ -11,6 +11,8 @@ var NodeDebugProxy = require("./nodedebugproxy");
 var exports = module.exports = function (url, vfs, pm, sandbox, runNode, usePortFlag, nodePath, debugPort, callback) {
     var NodeRunner = runNode.Runner;
 
+    debugPort = parseInt(debugPort);
+
     // create methods on exports, that take a reference from NodeRunner
     setup(NodeRunner);
 
@@ -38,7 +40,7 @@ function setup (NodeRunner) {
             options.cwd = args.cwd;
             options.env = args.env;
             options.nodeVersion = args.nodeVersion;
-            options.debugPort = args.debugPort;
+            options.debugPort = debugPort;
             options.nodePath = args.nodePath || nodePath;
             options.encoding = args.encoding;
             options.breakOnStart = args.breakOnStart;
@@ -53,23 +55,25 @@ function setup (NodeRunner) {
     };
 
     var Runner = exports.Runner = function(vfs, options, callback) {
-        NodeRunner.call(this, vfs, options, callback);
         this.breakOnStart = options.breakOnStart;
         this.debugPort = options.debugPort;
         this.msgQueue = [];
+        
+        NodeRunner.call(this, vfs, options, callback);
     };
 
     util.inherits(Runner, NodeRunner);
     mixin(Runner, NodeRunner);
 
     function mixin(Class, Parent) {
-
+        
         Class.prototype = Class.prototype || {};
         var proto = Class.prototype;
 
         proto.name = "node-debug";
 
         proto.createChild = function(callback) {
+             
             var self = this;
 
             var port = this.debugPort;
@@ -78,7 +82,7 @@ function setup (NodeRunner) {
                 self.nodeArgs.push("--debug-brk=" + port);
             else
                 self.nodeArgs.push("--debug=" + port);
-
+            
             Parent.prototype.createChild.call(self, callback);
 
             setTimeout(function() {
@@ -115,7 +119,7 @@ function setup (NodeRunner) {
             function send(msg) {
                 self.eventEmitter.emit(self.eventName, msg);
             }
-
+            
             this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
             this.nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)

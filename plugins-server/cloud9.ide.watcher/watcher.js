@@ -8,7 +8,6 @@
 
 var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
-var async = require("asyncjs");
 
 var IGNORE_TIMEOUT = 50;
 var ignoredPaths = {};
@@ -64,8 +63,12 @@ util.inherits(WatcherPlugin, Plugin);
             }
             var watcher = meta.watcher;
             watcher.on("change", function (event, filename) {
-                if (event == "change")
+                if (watcher.timeout)
+                    return;
+                watcher.timeout = setTimeout(function() {
+                    watcher.timeout = null;
                     self.onChange(path);
+                }, 150);
             });
             self.watchers[path] = watcher;
         });
@@ -124,7 +127,7 @@ util.inherits(WatcherPlugin, Plugin);
     this.dispose = function(callback) {
         for (var filename in this.filenames) {
             delete this.filenames[filename];
-            removeWatcher(filename);
+            this.removeWatcher(filename);
         }
         callback();
     };
@@ -144,10 +147,18 @@ util.inherits(WatcherPlugin, Plugin);
         var self = this;
 
         vfs.stat(path, {}, function(err, stat) {
-            if (stat.mime.indexOf("directory") != -1) {
+            if (err || !stat) {
+                self.send({
+                    "type"      : "watcher",
+                    "subtype"   : "remove",
+                    "path"      : path,
+                    "files"     : files,
+                });
+            } if (stat.mime.search(/directory|file/) != -1) {
                 var files = {};
 
-                async.readdir(path)
+                // vfs statdir?
+                /*vfs.readdir(path)
                     .stat()
                     .each(function(file) {
                         files[file.name] = {
@@ -167,7 +178,7 @@ util.inherits(WatcherPlugin, Plugin);
                             "lastmod"   : stat.mtime
                         });
                         //console.log("Sent " + subtype + " notification for file " + path);
-                    });
+                    });*/
             } else {
                 self.send({
                     "type"      : "watcher",

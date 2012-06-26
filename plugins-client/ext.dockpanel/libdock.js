@@ -1684,7 +1684,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             resizable : options.resizable === false ? false : "left bottom",
             dock      : 1,
             minwidth  : 150,
-            minheight : options.minHeight ? options.minHeight : 150,
+            minheight : options.minHeight ? options.minHeight : (options.height || 150),
             onhide    : function(e){
                 if (this.firstChild && this.firstChild.getPage())
                     this.firstChild.getPage().$dockbutton.$dockData.showMenu = false;
