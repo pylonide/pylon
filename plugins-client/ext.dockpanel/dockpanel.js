@@ -42,7 +42,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     return false;
         
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];      
-                
+                if (!item)
+                    return false;
+                    
                 if (item.page)
                     return item.page;
                 
@@ -75,7 +77,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 if (!arrExtension || !_self.dockpanels[arrExtension[0]])
                     return false;
 
-                return _self.dockpanels[arrExtension[0]][arrExtension[1]].options;
+                var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
+
+                return item && item.options;
             },
             //Change State Handler
             function(){

@@ -157,9 +157,10 @@ util.inherits(Ide, EventEmitter);
                 local: _self.options.local,
                 loadedDetectionScript: loadedDetectionScript
             };
-
+            
             var settingsPlugin = _self.workspace.getExt("settings");
             var user = _self.getUser(req);
+            
             if (!settingsPlugin || !user) {
                 index = template.fill(index, replacements);
                 res.end(index);

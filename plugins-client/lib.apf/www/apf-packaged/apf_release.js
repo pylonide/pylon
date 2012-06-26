@@ -4898,6 +4898,8 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
                 var rules = sheets[j][apf.styleSheetRules];
+                if (!rules) return false;
+                
                 for (var i = 0; i < rules.length; i++) {
                     if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                         rules.item(i).style[type] = value;
@@ -4913,6 +4915,8 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
             stylesheet = (win || self).document.styleSheets[0];
         
         var rules = stylesheet[apf.styleSheetRules];
+        if (!rules) return false;
+        
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 rules.item(i).style[type] = value;
@@ -10272,13 +10276,13 @@ apf.layout = {
  */
 apf.getWindowWidth = function(){
     return apf.isIE ? document.documentElement.offsetWidth - apf.windowHorBorder : window.innerWidth;
-}
+};
 /**
  * @private
  */
 apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
-}
+};
 
 
 
