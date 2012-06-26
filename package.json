@@ -49,7 +49,7 @@
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"],
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/1069a644c7560245dde01bd5c3a4c7e0e9ce8c10"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/abe51f5a9573229dcc5ebe1efd144628d7fceb03"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/cb8fd0483417ac6ffb8532b994d23dbf13ad9022"]
     },
 
     "repository" : {
