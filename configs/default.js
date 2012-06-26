@@ -163,8 +163,14 @@ var config = [
     "./cloud9.eventbus",
     "./cloud9.process-manager",
     "./cloud9.run.shell",
-    "./cloud9.run.node",
-    "./cloud9.run.node-debug",
+    {
+        packagePath: "./cloud9.run.node",
+        listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
+    },
+    {
+        packagePath: "./cloud9.run.node-debug",
+        listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
+    },
     "./cloud9.run.npm",
     "./cloud9.run.npmnode",
     "architect/plugins/architect.log",
