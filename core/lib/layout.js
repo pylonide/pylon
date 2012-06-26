@@ -407,10 +407,10 @@ apf.layout = {
  */
 apf.getWindowWidth = function(){
     return apf.isIE ? document.documentElement.offsetWidth - apf.windowHorBorder : window.innerWidth;
-}
+};
 /**
  * @private
  */
 apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
-}
+};

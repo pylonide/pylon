@@ -1058,10 +1058,10 @@ apf.$debugwin = {
 
             apf.getWindowWidth = function(){
                 return document.body.offsetWidth;
-            }
+            };
             apf.getWindowHeight = function(){
                 return document.body.offsetHeight;
-            }
+            };
             
             setTimeout(function(){
                 apf.$debugwin.$iframe.src = apf.basePath + "debugwin/debugwin.html";
