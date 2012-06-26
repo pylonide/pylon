@@ -136,7 +136,7 @@ module.exports = {
         treeOutline.$setClearMessage(treeOutline["loading-message"], "loading");
         apf.setOpacity(winGoToFile.$ext, 1);
         */
-        this.worker.emit("outline", { data : { showNow: showNow } });
+        this.worker.emit("outline", { data : { ignoreFilter: showNow } });
     },
 
     findCursorInOutline: function(json, cursor) {
@@ -168,9 +168,7 @@ module.exports = {
         
         var selected = this.renderOutline(event.data.showNow);
         
-        if (event.data.showNow)
-            this.showOutline(true);
-        else if (txtGoToFile.value.match(/^@/))
+        if (txtGoToFile.value.match(/^@/))
             this.showOutline();
 
         // UNDONE: Scroll to selected
