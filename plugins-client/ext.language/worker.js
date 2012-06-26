@@ -300,8 +300,6 @@ function asyncParForEach(array, fn, callback) {
             } else {
                 next();
             }
-            else
-                next();
         }, function() {
             callback(_self.cachedAst);
         });
