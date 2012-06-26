@@ -18,7 +18,6 @@
       optimize = "true">
         <a:button
           skin="header-btn"
-          right="5"
           class="panel-settings"
           submenu="mnuFilesSettings"/>
           
@@ -29,12 +28,12 @@
             <a:divider />
         </a:menu>
 
-        <a:vbox id="vboxTreeContainer" anchors="0 0 0 0">
+        <a:vsplitbox id="vboxTreeContainer" anchors="0 0 0 0" minheight="1">
             <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
               contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
               onbeforeremove="return require('core/util').removeInteractive(this)"
               onbeforemove="this.disable();" 
-              flex="1" scrollbar="sbShared 2 2 2"
+              scrollbar="sbShared 2 2 2"
             >
                 <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                     <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
@@ -48,7 +47,7 @@
     
                 <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
                 <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
+                <a:rename match="[file|folder[not(@root)]]" set="{davProject.rename([@name], [@oldpath])}" />
                 <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
                 <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
                 <a:copy match="[file|folder]" set="{
@@ -63,16 +62,18 @@
                 <a:drop match="[folder|file]" target="[file]"
                     action="insert-before" copy="{event.ctrlKey}" />    
             </a:tree>
-        </a:vbox>
+        </a:vsplitbox>
         
         <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active}}" render="runtime">
             <a:item match="[file]" class="strong"  onclick="
-                require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
+                require('ext/tree/tree').openSelection();
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
+            <a:divider />
+            <a:item match="[file|folder]" command="searchinfiles">Search Files in this Folder</a:item>
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;

@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/mono_industrial',function(require, exports, module) {
+define('ace/theme/mono_industrial', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = true;
 exports.cssClass = "ace-mono-industrial";
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-mono-industrial .ace_text-layer {\
-  cursor: text;\
   color: #FFFFFF;\
 }\
 \
@@ -96,6 +95,10 @@ exports.cssText = "\
 \
 .ace-mono-industrial .ace_marker-layer .ace_active_line {\
   background: rgba(12, 13, 12, 0.25);\
+}\
+\
+.ace-mono-industrial .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-mono-industrial .ace_marker-layer .ace_selected_word {\

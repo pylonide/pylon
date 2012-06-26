@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/textmate',function(require, exports, module) {
+define('ace/theme/textmate', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 
 exports.isDark = false;
@@ -63,7 +63,6 @@ exports.cssText = ".ace-tm .ace_editor {\
 }\
 \
 .ace-tm .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-tm .ace_cursor {\

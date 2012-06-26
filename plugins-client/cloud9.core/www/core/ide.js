@@ -24,7 +24,8 @@ define(function(require, exports, module) {
         this.workspaceId    = window.cloud9config.workspaceId;
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;
-
+        this.local          = window.cloud9config.local;
+        
         this.loggedIn       = true;
 
         this.onLine         = false;
@@ -115,19 +116,21 @@ define(function(require, exports, module) {
             // and retry every 5 seconds indefinitely.
             var retries = 0;
             function retryTimer(delay) {
-                clearInterval(ide.$retryTimer);
-                ide.$retryTimer = setInterval(function() {
-                    retries += 1;
-                    if (retries === 5) {
-                        ide.dispatchEvent("socketDisconnect");
-                        retryTimer(5000);
-                    } else {
-                        var sock = ide.socket.socket;
-                        if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn) {
-                            sock.connect();
+                if (ide) {
+                    clearInterval(ide.$retryTimer);
+                    ide.$retryTimer = setInterval(function() {
+                        retries += 1;
+                        if (retries === 5) {
+                            ide.dispatchEvent("socketDisconnect");
+                            retryTimer(5000);
+                        } else {
+                            var sock = ide.socket.socket;
+                            if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn) {
+                                sock.connect();
+                            }
                         }
-                    }
-                }, delay);
+                    }, delay);
+                }
             }
             retryTimer(1000);
         };

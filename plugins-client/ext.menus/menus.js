@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var main = require("ext/main/main");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/menus/menus", {
     name    : "Menus",
@@ -30,11 +31,10 @@ module.exports = ext.register("ext/menus/menus", {
         var _self = this;
         
         this.nodes.push(
-            this.menubar = logobar.firstChild.insertBefore(new apf.hbox({
-                edge    : "0 5 0 5",
-                padding : "3",
-                align   : "center"
-            }), logobar.firstChild.firstChild),
+            this.menubar = logobar.insertBefore(new apf.bar({
+                "class" : "fakehbox aligncenter",
+                style : "padding : 0 5px 0 5px;position:static",
+            }), logobar.firstChild),
 
             //this.setRootMenu("Project", 10),
             this.setRootMenu("File", 100),
@@ -73,7 +73,7 @@ module.exports = ext.register("ext/menus/menus", {
             clearTimeout(timer);
             timer = setTimeout(function(){
                 _self.restore(true);
-            }, 200);
+            }, 500);
         });
         logobar.$ext.addEventListener("mouseout",function(e){
             if (!_self.minimized || !ide.inited
@@ -84,15 +84,15 @@ module.exports = ext.register("ext/menus/menus", {
             if (apf.popup.isShowing(apf.popup.last)) {
                 timer = setTimeout(function(){
                     if (apf.popup.isShowing(apf.popup.last))
-                        timer = setTimeout(arguments.callee, 300);
+                        timer = setTimeout(arguments.callee, 500);
                     else
                         _self.minimize(true);
-                }, 300);
+                }, 500);
             }
             else {
                 timer = setTimeout(function(){
                     _self.minimize(true);
-                }, 300);
+                }, 500);
             }
         });
         
@@ -307,7 +307,6 @@ module.exports = ext.register("ext/menus/menus", {
         }
         
         //index...
-//        if (name.indexOf("Tools/B") > -1) debugger;
         if (typeof index == "number")
             this.$insertByIndex(parent, item, index);
         else
@@ -374,83 +373,47 @@ module.exports = ext.register("ext/menus/menus", {
         return menu.id;
     },
     
-    /**
-     * - Bug in APF, appendChild children while not parent attached dont render
-     * - mnuXXX throughout C9 need to be using this plugin
-     * - Architect submenus used in multiple location
-     */
-    
     restore : function(preview){
-        if (this.animateControl)
-            this.animateControl.stop();
-
         apf.setStyleClass(logobar.$ext, "", ["minimized"]);
         
-        if (apf.isTrue(settings.model.queryValue("general/@animateui"))) {
-            logobar.$ext.style.overflow = "hidden";
-            
-            apf.tween.single(logobar.$ext, {
-                from : logobar.$ext.offsetHeight,
-                to : 31,
-                anim : apf.tween.easeOutCubic,
-                type : "height",
-                control : this.animateControl = {},
-                interval : apf.isWebkit ? 0 : 10,
-                steps : 5,
-                oneach : function(){
-                    apf.layout.forceResize(tabEditors.$ext);
-                },
-                onfinish : function(){
-                    apf.layout.forceResize(tabEditors.$ext);
-                    logobar.$ext.style.overflow = "";
-                }
-            });
-        }
-        else {
-            logobar.$ext.style.height = "31px";
+        logobar.$ext.style.overflow = "hidden";
+        
+        anims.animateSplitBoxNode(logobar, {
+            height: "31px", 
+            timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+            duration: 0.2
+        }, function(){
             apf.layout.forceResize(tabEditors.$ext);
-        }
+            logobar.$ext.style.overflow = "";
+        });
         
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "false");
             this.minimized = false;
+            
+            ide.dispatchEvent("menus.restore");
         }
     },
     
     minimize : function(preview, noAnim){
-        if (this.animateControl)
-            this.animateControl.stop();
+        logobar.$ext.style.overflow = "hidden";
 
-        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
-        if (noAnim || !animate) {
+        anims.animateSplitBoxNode(logobar, {
+            height: "12px", 
+            timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+            duration: 0.2,
+            immediate: noAnim
+        }, function(){
             apf.setStyleClass(logobar.$ext, "minimized");
-            logobar.$ext.style.height = "12px";
             apf.layout.forceResize();
-        }
-        else {
-            logobar.$ext.style.overflow = "hidden";
-            apf.tween.single(logobar.$ext, {
-                from : logobar.$ext.offsetHeight,
-                to : 12,
-                anim : apf.tween.easeOutCubic,
-                type : "height",
-                control : this.animateControl = {},
-                interval : apf.isWebkit ? 0 : 10,
-                steps : 5,
-                oneach : function(){
-                    apf.layout.forceResize(tabEditors.$ext);
-                },
-                onfinish : function(){
-                    apf.setStyleClass(logobar.$ext, "minimized");
-                    apf.layout.forceResize();
-                    logobar.$ext.style.overflow = "";
-                }
-            });
-        }
+            logobar.$ext.style.overflow = "";
+        });
 
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "true");
             this.minimized = true;
+            
+            ide.dispatchEvent("menus.minimize");
         }
     },
 

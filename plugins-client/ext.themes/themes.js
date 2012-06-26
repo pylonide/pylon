@@ -12,6 +12,8 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 
+require("ext/editors/editors");
+
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
     dev     : "Ajax.org",
@@ -81,36 +83,81 @@ module.exports = ext.register("ext/themes/themes", {
             }, 10);
         }
         
+        // fixes a problem with Ace architect loading /lib/ace, 
+        // creating a conflict with themes
+        if (theme.isDark === undefined) {
+            return setTimeout(function(){
+                _self.setThemedGUI(path);
+            }, 10);
+        }
+        
+        this.isDark = theme.isDark;
+        
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
-        if (theme.isDark)
-            apf.setStyleClass(document.body, "dark");
-        else
-            apf.setStyleClass(document.body, "", ["dark"]);
+        var editorDiv = hboxMain.$ext;
+        var editorHolder = tabEditors.parentNode.$ext;
+        var tabsDiv = tabEditors.$buttons.parentNode.parentNode;
+        
+        editorDiv.setAttribute("id", "editorDiv");
+        tabsDiv.setAttribute("id", "tabsDiv");
+        
+        if (theme.isDark) {
+            apf.setStyleClass(editorDiv, "dark");
+            apf.setStyleClass(editorHolder, "dark");
+            if (!apf.isGecko) 
+                apf.setStyleClass(tabsDiv, "dark");
+        }
+        else {
+            apf.setStyleClass(editorDiv, "", ["dark"]);
+            apf.setStyleClass(editorHolder, "", ["dark"]);
+            apf.setStyleClass(tabsDiv, "", ["dark"]);
+        }
         
         var cssClass = theme.cssClass;
         
-        if (_self.lastTheme)
-            apf.setStyleClass(document.body, "", [_self.lastTheme]);
+        if (_self.lastTheme) {
+            apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
+            apf.setStyleClass(editorHolder, "", [_self.lastTheme]);
+            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+        }
         
-        apf.setStyleClass(document.body, _self.lastTheme = cssClass);
+        _self.lastTheme = cssClass;
+        
+        apf.setStyleClass(editorDiv, cssClass);
+        apf.setStyleClass(editorHolder, cssClass);
+        apf.setStyleClass(tabsDiv, cssClass);
         
         if (_self.loaded[path])
             return;
             
         _self.loaded[path] = true;
         
-        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
+        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "backgroundColor");
         var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
         
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
-            ["body." + cssClass + " > .vbox, "
-             + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
+            (apf.isGecko ? [] : 
+                ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
+                 (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
+                 + ";background-color: " + bg + " !important"]),
+            ["#editorDiv." + cssClass + " > .basic, "
+             + "#editorDiv." + cssClass + " > .vsplitbox, "
+             + "#tabsDiv." + cssClass + ", " // > .editor_tab
              + "." + cssClass + " .codeditorHolder, "
+             + "." + cssClass + " .winGoToFile, "
+             + "." + cssClass + " .revisionsBar .topbar, "
+             + "." + cssClass + " .revisionsBar .revisionsHolder, "
+             + "." + cssClass + " .code_complete_text_holder, "
              + "." + cssClass + " .session_page", 
              "color:" + fg + " !important; background-color: " + bg + " !important"],
+            ["." + cssClass + " .searchresults > div > span, "
+             + "." + cssClass + ".dark .revisions-list .revision, "
+             + "." + cssClass + ".dark .cc_complete_option, "
+             + "." + cssClass + " .searchresults > div",
+             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")],
             ["." + cssClass + " .ace_corner", 
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]

@@ -48,7 +48,6 @@ var config = {
             "./../plugins-client/lib.treehugger", 
             "./../plugins-client/lib.v8debug",
             "./../plugins-client/lib.requirejs",
-            "./../plugins-client/lib.packed",
 
             // server plugins
             {
@@ -67,7 +66,8 @@ var config = {
                 bundledPlugins: [
                     "helloworld"
                 ],
-                real: false,
+                packed: false,
+                packedName: "",
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
@@ -89,6 +89,7 @@ var config = {
                     "ext/searchreplace/searchreplace",
                     "ext/quickwatch/quickwatch",
                     "ext/gotoline/gotoline",
+                    "ext/anims/anims",
                     "ext/preview/preview",
                     "ext/log/log",
                     "ext/help/help",
@@ -131,7 +132,10 @@ var config = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
+                    "ext/gitblame/gitblame",
+                    //"ext/githistory/githistory",
                     "ext/revisions/revisions",
+                    "ext/quicksearch/quicksearch",
                     "ext/language/liveinspect"
                     //"ext/splitview/splitview"
                     //"ext/minimap/minimap"

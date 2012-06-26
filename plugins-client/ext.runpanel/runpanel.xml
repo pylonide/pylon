@@ -46,7 +46,7 @@
           submenu="mnuDebugSettings"
           flex="1" />
         
-        <a:menu id="mnuDebugSettings">
+        <a:menu id="mnuDebugSettings" style="margin-left:-63px">
             <a:item
               type    = "check"
               checked = "[{require('ext/settings/settings').model}::auto/configurations/@debug]"

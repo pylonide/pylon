@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/clouds',function(require, exports, module) {
+define('ace/theme/clouds', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 
 exports.isDark = false;
 exports.cssClass = "ace-clouds";
@@ -63,7 +63,6 @@ exports.cssText = "\
 }\
 \
 .ace-clouds .ace_text-layer {\
-  cursor: text;\
   color: #000000;\
 }\
 \
@@ -96,6 +95,10 @@ exports.cssText = "\
 \
 .ace-clouds .ace_marker-layer .ace_active_line {\
   background: #FFFBD1;\
+}\
+\
+.ace-clouds .ace_gutter_active_line {\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-clouds .ace_marker-layer .ace_selected_word {\

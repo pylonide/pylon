@@ -110,7 +110,7 @@ var WebdavWrapper = function(webdav, sync, fIdent, callback) {
     
     this.report = function(sPath, reportName, oProperties, callback) {
         //if (ide.onLine)
-            this.realWebdav.report.apply(this.realWebdav, arguments);
+            return this.realWebdav.report.apply(this.realWebdav, arguments);
     }
     
     this.getProperties = function(sPath, iDepth, callback, oHeaders) {

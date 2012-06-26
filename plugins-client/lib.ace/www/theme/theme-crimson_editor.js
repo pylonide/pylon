@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/theme/crimson_editor',function(require, exports, module) {
+define('ace/theme/crimson_editor', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 exports.isDark = false;
 exports.cssText = ".ace-crimson-editor .ace_editor {\
   border: 2px solid rgb(159, 159, 159);\
@@ -62,7 +62,6 @@ exports.cssText = ".ace-crimson-editor .ace_editor {\
 }\
 \
 .ace-crimson-editor .ace_text-layer {\
-  cursor: text;\
   color: rgb(64, 64, 64);\
 }\
 \

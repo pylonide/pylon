@@ -120,7 +120,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
         
         ide.addEventListener("init.ext/editors/editors", function(e){
-            tabEditors.addEventListener("afterswitch", function(e){
+            ide.addEventListener("tab.afterswitch", function(e){
                 var editor = e.nextPage.$editor;
                 if (!editor.ceEditor) {
                     barIdeStatus.hide();

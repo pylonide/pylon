@@ -36,17 +36,17 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/e496e734b27188f5d5f213a3eef0610e55dc2318"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/10179a17662c221c72bb010bd7e4feda485d2b34"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/6f51592c8045c77ca8e6cd7358e2497939cc7ffd"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/df4aa3c5ad997bc985b741e4fa9301bbd3085338"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/21c6fea18d3480ef2641d9889e531ded60216082"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/ed2b6ebb8a812de48f0dfb12b675b91c4e4b3170"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/7fc5b36a5074668f40aad8b45f82a6fbbec04c88"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/f06d2074f60366a544aedd5dfa8100321c15b565"],
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/5d279d21e984dc621ff23ae77726ddd015880b7d"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"],
         "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#661582a40f907ae236b8275b5b0daa9db93d65d2"],
         "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#f009b612421d5c3a6f1edf936a91dac8258201ba"],
-        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#73fc3bb7825879518154325b236b0210fef8dd5a"]
+        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#73fc3bb7825879518154325b236b0210fef8dd5a"],
     },
 
     "repository" : {
@@ -59,6 +59,8 @@
     }],
 
     "scripts": {
-        "start": "sh ./bin/cloud9.sh"
+        "start": "sh ./bin/cloud9.sh",
+        "build-debug": "node ./scripts/build-debug",
+        "build-packed": "node ./scripts/build-packed"
     }
 }

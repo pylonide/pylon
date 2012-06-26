@@ -77,17 +77,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var _self = this;
         
         settings.addSettings("Code Tools", markupSettings);
-
+        
         ide.addEventListener("settings.load", function(e){
-            settings.setDefaults("editors/codewidget", [
-                ["colorpicker", "false"]
-            ]);
-            
             _self.updateSetting();
+            if (apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker")))
+                _self.setEvents();
         });
     },
-    
-    updateSetting : function(){
+
+    updateSetting : function(){  
         this.enabled = apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker"));
         
         if (this.enabled)
@@ -273,7 +271,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 _self.hideColorTooltips();
         }
         // hide all markers and the colorpicker upon tab-/ editorswitch
-        ide.addEventListener("beforeeditorswitch", function() {
+        ide.addEventListener("tab.beforeswitch", function() {
             switchOrClose();
         });
 
@@ -288,7 +286,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             }
         });
         
-        codetools.register(this);
+        ide.addEventListener("afteropenfile", function() {
+            codetools.register(this);
+        });
     },
     
     removeEvents : function(){

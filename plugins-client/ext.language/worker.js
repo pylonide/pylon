@@ -159,6 +159,32 @@ exports.createUIWorkerClient = function() {
     return result;
 };
 
+exports.createUIWorkerClient = function() {
+    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
+    var result = new LanguageWorker(emitter);
+    result.on = function(name, f) {
+        emitter.on.call(result, name, f);
+    };
+    result.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+    result.send = function(cmd, args) {
+        setTimeout(function() { result[cmd].apply(result, args); }, 0);
+    };
+    result.emit = function(event, data) {
+        emitter._dispatchEvent.call(emitter, event, data);
+    };
+    emitter.emit = function(event, data) {
+        emitter._dispatchEvent.call(result, event, { data: data });
+    };
+    return result;
+};
+
 /**
  * Ensure that an event handler is called only once if multiple
  * events are received at the same time.
@@ -271,6 +297,8 @@ function asyncParForEach(array, fn, callback) {
                     // Ignore parse errors
                     next();
                 }
+            } else {
+                next();
             }
             else
                 next();
@@ -714,10 +742,13 @@ function asyncParForEach(array, fn, callback) {
                         return 1;
                     else
                         return 0;
-                });
-                // Don't slice the results to benefit from caching
+                });                
+                // Removed for the java completion result caching cases
                 // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", matches);
+                _self.sender.emit("complete", {
+                    pos: pos,
+                    matches: matches
+                });
             });
         });
     };

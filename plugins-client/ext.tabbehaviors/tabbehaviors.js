@@ -89,7 +89,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             name: "closealltotheleft",
             isAvailable : function(){
                 return ide.onLine && tabEditors.length > 1 
-                  && mnuContextTabs.$page != tabEditors.getPage(0);
+                  && tabEditors.getPages().indexOf(mnuContextTabs.$page) != 0;
             },
             exec: function (editor, args) { 
                 _self.closealltotheleft(args[0]); 
@@ -242,7 +242,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         var cycleKey = apf.isMac ? 18 : 17;
-        tabEditors.addEventListener("afterswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage;
 
             if (!_self.cycleKeyPressed) {
@@ -305,7 +305,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (_self.accessList.changed) {
                 var list = _self.accessList.slice(0);
                 list.forEach(function(page, i){
-                    if (page)
+                    if (page && page.id)
                         this[i] = page.id;
                 }, list);
                 e.model.setQueryValue("auto/tabcycle/text()", JSON.stringify(list));
@@ -401,27 +401,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     closepage : function(page, callback) {
-        var _self = this;
-        if (page.$doc.getNode().getAttribute("changed") == "1") {
-            page.noAnim = true; // turn off animation on closing tab
+        var node = page.$doc.getNode();
+        if (node.getAttribute("changed") == "1" 
+          && (!node.getAttribute("newfile") || page.$doc.getValue())) {
             this.changedPages.push(page);
-
-            page.addEventListener("aftersavedialogclosed", function(e) {
-                var curPage = _self.changedPages[0];
-                if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
-                    return;
-                _self.changedPages.shift();
-                this.removeEventListener("aftersavedialogclosed", arguments.callee);
-                if (_self.changedPages.length === 0) {
-                    _self.closeUnchangedPages(function() {
-                        if (callback)
-                            callback();
-                    });
-                }
-                else {
-                    tabEditors.remove(_self.changedPages[0], null, true);
-                }
-            });
         }
         else {
             this.unchangedPages.push(page);
@@ -430,7 +413,32 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     
     checkPageRender : function(callback) {
         if (this.changedPages.length) {
-            tabEditors.remove(this.changedPages[0], null, true);
+            var pages = this.changedPages.slice(0);
+            var i = 0;
+            var _self = this;
+            
+            function close(e) {
+                this.removeEventListener("aftersavedialogclosed", close);
+                next();
+            }
+            
+            function next(){
+                var page = pages[i];
+                if (page) {
+                    page.noAnim = true; // turn off animation on closing tab
+                    page.addEventListener("aftersavedialogclosed", close);
+                    tabEditors.remove(page, null, true);
+                    i++;
+                }
+                else {
+                    _self.closeUnchangedPages(function() {
+                        if (callback)
+                            callback();
+                    });
+                }
+            }
+            
+            next();
         }
         else {
             this.closeUnchangedPages(function() {
@@ -491,6 +499,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.accessedTab = 0;
 
         var next = this.accessList[this.accessedTab];
+        if (typeof next != "object")
+            return this.nexttab();
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
@@ -504,6 +514,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.accessedTab = this.accessList.length - 1;
 
         var next = this.accessList[this.accessedTab];
+        if (typeof next != "object")
+            return this.nexttab();
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
