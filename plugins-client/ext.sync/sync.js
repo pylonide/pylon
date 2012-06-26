@@ -278,10 +278,10 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.hideSyncInfo();
                     
                     //Reset all syncstate attributes in the tree.
-                    var nodes = fs.model.queryNode("//node()[not(@syncstate='synced')]");
+                    /*var nodes = fs.model.queryNode("//node()[not(@syncstate='synced')]");
                     Array.protototype.forEach.call(nodes, function(node){
                         apf.xmldb.setAttribute(node, "syncstate", "synced");
-                    });
+                    });*/
                 }
                 
                 if (cloud9config.debug)

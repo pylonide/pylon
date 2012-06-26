@@ -36,7 +36,7 @@
             <a:label class="lblinstall">
                 <p style="margin-top:0"><strong>Syncing requires Cloud9 Local installed &amp; running</strong></p>
                 <p>Cloud9 Local needs to be installed in order to manage syncing on your local machine.</p>
-                <p>Click <a href="#">here</a> to download Cloud9 Local, or install it via <a href="http://npmjs.org/">npm</a>:</p>
+                <p>Download it now for <a href="http://d6ff1xmuve0sx.cloudfront.net/c9local/prod/c9local-latest.dmg">OS X</a> or <a href="http://d6ff1xmuve0sx.cloudfront.net/c9local/prod/c9local-latest.tgz">*nix</a>, or install it via <a href="http://npmjs.org/">npm</a>:</p>
                 <blockquote class="code">npm install -g c9</blockquote>
                 <p>If you already have Cloud9 Local installed, it might not be running. Start it by typing:</p>
                 <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
@@ -205,7 +205,7 @@
                         <li>There's a syncing limit of 1,000 files; this will increase to 100,000 soon</li>
                     </ul>
                 </p>
-                <p>Syncing is best used on a high-speed internet connection.</p>
+                <p>Syncing is best used on a high-speed internet connection. <strong>Your project files have the potential to be deleted--make sure to back them up!</strong></p>
             </div>
         </a:vbox>
 
