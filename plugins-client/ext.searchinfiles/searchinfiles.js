@@ -427,7 +427,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         else {
             if (_self.searchPage === null) { // the results are not open, create a new page
                 doc.cachedValue = messageHeader;
-                ide.dispatchEvent("openfile", {doc: doc, node: node});
+                editors.gotoDocument({
+                    doc      : doc,
+                    node     : node,
+                    forceOpen : true
+                });
                 
                 _self.searchPage = tabEditors.getPage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;

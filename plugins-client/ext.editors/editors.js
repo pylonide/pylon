@@ -729,6 +729,24 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
+        commands.addCommand({
+            name: "largerfont",
+            bindKey : { mac : "Ctrl-Shift-.", win : "Ctrl-Shift-." },
+            exec: function(e){
+                var currSize = settings.model.queryValue("editors/code/@fontsize");
+                settings.model.setQueryValue("editors/code/@fontsize", ++currSize > 72 ? 72 : currSize);
+            }
+        });
+
+        commands.addCommand({
+            name: "smallerfont",
+            bindKey : { mac : "Ctrl-Shift-,", win : "Ctrl-Shift-," },
+            exec: function(e) {
+                var currSize = settings.model.queryValue("editors/code/@fontsize");
+                settings.model.setQueryValue("editors/code/@fontsize", --currSize < 1 ? 1 : currSize);
+            }
+        });
+        
         menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
             checked : "[{require('core/settings').model}::auto/tabs/@show]",

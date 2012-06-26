@@ -36,7 +36,7 @@
             <a:label class="lblinstall">
                 <p style="margin-top:0"><strong>Syncing requires Cloud9 Local installed &amp; running</strong></p>
                 <p>Cloud9 Local needs to be installed in order to manage syncing on your local machine.</p>
-                <p>Click <a href="#">here</a> to download Cloud9 Local, or install it via <a href="http://npmjs.org/">npm</a>:</p>
+                <p>Download it now for <a href="http://d6ff1xmuve0sx.cloudfront.net/c9local/prod/c9local-latest.dmg">OS X</a> or <a href="http://d6ff1xmuve0sx.cloudfront.net/c9local/prod/c9local-latest.tgz">*nix</a>, or install it via <a href="http://npmjs.org/">npm</a>:</p>
                 <blockquote class="code">npm install -g c9</blockquote>
                 <p>If you already have Cloud9 Local installed, it might not be running. Start it by typing:</p>
                 <blockquote class="code" style="margin-bottom:0">c9 --start</blockquote>
@@ -165,7 +165,7 @@
     
     <a:window
       id        = "winCannotSync"
-      title     = "Sync Error!"
+      title     = "Sync Conflict!"
       icon      = ""
       center    = "true"
       kbclose   = "false"
@@ -181,7 +181,37 @@
         <a:hbox edge="6 10 10" pack="end" padding="8">
             <a:button id="btnQuestionLocal"  onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'local'); winCannotSync.hide()" skin="btn-default-css3" class="btn-red">Local Workspace As Source</a:button>
             <a:button id="btnQuestionRemote" onclick="require('ext/sync/sync').syncProject(cloud9config.syncProjectName, 'remote'); winCannotSync.hide()" skin="btn-default-css3" class="btn-red">Online Workspace As Source</a:button>
-            <a:button id="btnQuestionCancel" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winCannotSync.hide();" skin="btn-default-css3" default="3" class="btn-green">Cancel</a:button>
+            <a:button id="btnQuestionCancel" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winCannotSync.hide();" skin="btn-default-css3" default="3">Cancel</a:button>
+        </a:hbox>
+    </a:window>
+
+    <a:window
+      id        = "winThisIsBeta"
+      title     = "Syncing is Experimental"
+      icon      = ""
+      center    = "true"
+      kbclose   = "false"
+      width     = "600"
+      skin      = "bk-window2"
+      render    = "runtime"
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <div class="alertMsg">
+                <p>Currently, syncing projects between your local machine and c9.io is <strong>experimental</strong>. There is a potential for losing data in rare circumstances. Your projects on c9.io are always backed up and secure. It is <strong>not</strong> recommended for critical work just yet.</p>
+                <p>Syncing also has the following limitations:
+                    <ul>
+                        <li>Folders states are not synced (but the files inside them are)</li>
+                        <li>Symlinks are not synced</li>
+                        <li>There's a syncing limit of 1,000 files; this will increase to 100,000 soon</li>
+                    </ul>
+                </p>
+                <p>Syncing is best used on a high-speed internet connection. <strong>Your project files have the potential to be deleted--make sure to back them up!</strong></p>
+            </div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnQuestionBackout" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winThisIsBeta.hide()" skin="btn-default-css3" class="btn-green">Not right now</a:button>
+            <a:button id="btnQuestionSyncOn" onclick="require('ext/sync/sync').setSync(); winThisIsBeta.hide()" skin="btn-default-css3" default="3" class="btn-red">I understand and want to sync</a:button>
         </a:hbox>
     </a:window>
     
@@ -205,7 +235,7 @@
       "
       class     = "relative">
         <a:vbox padding="10" edge="10 20 25 20">
-            <h3 id="winQuestionRevHeader">Are you sure you want to disable syncing?</h3>
+            <h3 id="winQuestionDisableSync">Are you sure you want to disable syncing?</h3>
             <div class="alertMsg" id="winLocalId" visible="{cloud9config.hosted}">Syncing will be disabled for {MACADD}.</div>
             <div class="alertMsg" visible="{mdlSyncClients.queryNodes('client').length > 1}">Syncing will remained enabled for your other clients.</div>
         </a:vbox>

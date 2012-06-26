@@ -88,9 +88,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             }
 
             if (msg.type === "php-start") {
-                var info = [
-                    "Tip: you can access long running processes, like a server, at '" + url + "'."
-                ];
+                var info = [];
 
                 options.eventEmitter.emit(options.eventName, {
                     type: "php-debug-data",

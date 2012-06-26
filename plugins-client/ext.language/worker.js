@@ -64,6 +64,10 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     });
 };
 
+var isWorkerEnabled = exports.isWorkerEnabled = function() {
+    return !window.location || !window.location.search.match(/[?&]noworker=1/);
+};
+
 exports.createUIWorkerClient = function() {
     var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
     var result = new LanguageWorker(emitter);
@@ -175,6 +179,8 @@ function asyncParForEach(array, fn, callback) {
             var handler = require(path);
             this.handlers.push(handler);
         } catch (e) {
+            if (isWorkerEnabled())
+                throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {
@@ -183,8 +189,12 @@ function asyncParForEach(array, fn, callback) {
         }   
     };
 
-    this.parse = function(callback) {
+    this.parse = function(callback, allowCached) {
         var _self = this;
+        if (allowCached && this.cachedAst) {
+            callback(_self.cachedAst);
+            return;
+        }
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
@@ -215,7 +225,7 @@ function asyncParForEach(array, fn, callback) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
                         if (outline) {
-                            outline.showNow = event.data.showNow;
+                            outline.ignoreFilter = event.data. ignoreFilter;
                             return _self.sender.emit("outline", outline);
                         }
                         else {
@@ -227,7 +237,7 @@ function asyncParForEach(array, fn, callback) {
                     next();
             }, function() {
             });
-        });
+        }, true);
     };
 
     this.scheduleEmit = function(messageType, data) {

@@ -39,11 +39,13 @@ module.exports = ext.register("ext/sync/sync", {
     hook : function(){
         var _self = this;
         
-        if (ide.local || cloud9config.hosted) {
+        if (ide.local) {
             apf.setStyleClass(logobar.$ext, "local");
-            
-            apf.importCssString(util.replaceStaticPrefix(cssString));
-            
+        }
+        
+        apf.importCssString(util.replaceStaticPrefix(cssString));
+
+        if (ide.local || cloud9config.hosted) {
             this.nodes.push(
                 this.lblSyncState = menus.$insertByIndex(barExtras, new apf.label({
                     "class"  : "c9-sync-state-info" 
@@ -61,11 +63,8 @@ module.exports = ext.register("ext/sync/sync", {
                     onclick : function() {
                         ext.initExtension(_self);
                         
-                        if (this.value || _self.syncEnabled) {
-                            _self.setSync();
-                            
-                            if (_self.syncEnabled)
-                                this.setValue(true);
+                        if (this.value) {
+                            winThisIsBeta.show();
                         }
                         else {
                             mnuSyncPrj.hide();
@@ -122,7 +121,7 @@ module.exports = ext.register("ext/sync/sync", {
 //            });
         }
     },
-
+    
     init : function(amlNode){
         var _self = this;
         
@@ -279,10 +278,10 @@ module.exports = ext.register("ext/sync/sync", {
                     _self.hideSyncInfo();
                     
                     //Reset all syncstate attributes in the tree.
-                    var nodes = fs.model.queryNode("//node()[not(@syncstate='synced']");
+                    /*var nodes = fs.model.queryNode("//node()[not(@syncstate='synced')]");
                     Array.protototype.forEach.call(nodes, function(node){
                         apf.xmldb.setAttribute(node, "syncstate", "synced");
-                    });
+                    });*/
                 }
                 
                 if (cloud9config.debug)
@@ -512,7 +511,7 @@ module.exports = ext.register("ext/sync/sync", {
     disableSync: function() {
         var _self = this;
 
-        winConfirmSyncOff.close();
+        winConfirmSyncOff.hide();
 
         var payload = {};
 

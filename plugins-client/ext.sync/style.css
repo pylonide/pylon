@@ -1,7 +1,7 @@
 
-.c9-menu-bar.local .c9-sync.btn .left, 
-.c9-menu-bar.local .c9-sync.btn .right,
-.c9-menu-bar.local .c9-sync.btn .lbl{
+.c9-menu-bar .c9-sync.btn .left, 
+.c9-menu-bar .c9-sync.btn .right,
+.c9-menu-bar .c9-sync.btn .lbl{
     background-image: none;  
 }
 

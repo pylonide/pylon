@@ -107,7 +107,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             } catch(e) {}
             aceClipboardText = ace.getCopyText() || aceClipboardText;
 
-            ace.$nativeCommands.exec("cut", ace);
+            var cutCommand = ace.$nativeCommands.commands.cut;
+            ace.commands.exec(cutCommand, ace);
         }
     },
 

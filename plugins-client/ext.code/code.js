@@ -460,10 +460,16 @@ module.exports = ext.register("ext/code/code", {
                 editor.afterOpenFile(editor.getSession());
         });
 
+        // Override ACE key bindings (conflict with goto definition)
+        commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Ctrl-Shift-R" };
+        commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Ctrl-Alt-R" };
+        commands.addCommand(commands.commands.togglerecording);
+        commands.addCommand(commands.commands.replaymacro);
+
         c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
-            addEditorMenu("Tools/Record Macro", "togglerecording"), //@todo this needs some more work
+            addEditorMenu("Tools/Toggle Macro Recording", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
 

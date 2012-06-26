@@ -11,6 +11,8 @@ var NodeDebugProxy = require("./nodedebugproxy");
 var exports = module.exports = function (url, listenHint, vfs, pm, sandbox, runNode, usePortFlag, nodePath, debugPort, callback) {
     var NodeRunner = runNode.Runner;
 
+    debugPort = parseInt(debugPort);
+
     // create methods on exports, that take a reference from NodeRunner
     setup(NodeRunner);
 
@@ -54,23 +56,25 @@ function setup (NodeRunner) {
     };
 
     var Runner = exports.Runner = function(vfs, options, callback) {
-        NodeRunner.call(this, vfs, options, callback);
         this.breakOnStart = options.breakOnStart;
         this.debugPort = options.debugPort;
         this.msgQueue = [];
+        
+        NodeRunner.call(this, vfs, options, callback);
     };
 
     util.inherits(Runner, NodeRunner);
     mixin(Runner, NodeRunner);
 
     function mixin(Class, Parent) {
-
+        
         Class.prototype = Class.prototype || {};
         var proto = Class.prototype;
 
         proto.name = "node-debug";
 
         proto.createChild = function(callback) {
+             
             var self = this;
 
             var port = this.debugPort;
@@ -79,7 +83,7 @@ function setup (NodeRunner) {
                 self.nodeArgs.push("--debug-brk=" + port);
             else
                 self.nodeArgs.push("--debug=" + port);
-
+            
             Parent.prototype.createChild.call(self, callback);
 
             setTimeout(function() {
