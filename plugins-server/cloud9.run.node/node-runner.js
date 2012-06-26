@@ -7,7 +7,7 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 /**
  * Run node scripts with restricted user rights
  */
-var exports = module.exports = function(url, vfs, pm, sandbox, usePort, nodePath, callback) {
+var exports = module.exports = function(url, listenHint, vfs, pm, sandbox, usePort, nodePath, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
 
@@ -15,13 +15,13 @@ var exports = module.exports = function(url, vfs, pm, sandbox, usePort, nodePath
     });
 
     function init(projectDir, url) {
-        pm.addRunner("node", exports.factory(vfs, sandbox, projectDir, url, nodePath, usePort));
+        pm.addRunner("node", exports.factory(vfs, sandbox, projectDir, url, listenHint, nodePath, usePort));
 
         callback();
     }
 };
 
-exports.factory = function(vfs, sandbox, root, url, nodePath, usePort) {
+exports.factory = function(vfs, sandbox, root, url, listenHint, nodePath, usePort) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -37,6 +37,7 @@ exports.factory = function(vfs, sandbox, root, url, nodePath, usePort) {
         options.eventName = eventName;
         options.url = url;
         options.usePort = usePort;
+        options.listenHint = listenHint;
 
         options.sandbox = sandbox;
 
@@ -114,7 +115,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             if (msg.type === "node-start") {
                 var info = [
                     "Tip: you can access long running processes, like a server, at '" + url + "'.",
-                    "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
+                    options.listenHint
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
