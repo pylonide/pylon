@@ -39,11 +39,13 @@ module.exports = ext.register("ext/sync/sync", {
     hook : function(){
         var _self = this;
         
-        if (ide.local || cloud9config.hosted) {
+        if (ide.local) {
             apf.setStyleClass(logobar.$ext, "local");
-            
-            apf.importCssString(util.replaceStaticPrefix(cssString));
-            
+        }
+        
+        apf.importCssString(util.replaceStaticPrefix(cssString));
+
+        if (ide.local || cloud9config.hosted) {
             this.nodes.push(
                 this.lblSyncState = menus.$insertByIndex(barExtras, new apf.label({
                     "class"  : "c9-sync-state-info" 

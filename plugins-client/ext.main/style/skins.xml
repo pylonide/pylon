@@ -307,19 +307,19 @@
             width: 10px;
         }
 
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync {
+        .c9-menu-bar .c9-mbar-bcont .c9-sync {
             background:url(images/sync_toggle.png) no-repeat 0 -20px;
         }
         
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnChecked {
+        .c9-menu-bar .c9-mbar-bcont .c9-sync.btnChecked {
             background:url(images/sync_toggle.png) no-repeat 0 0;
         }
 
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.undetermined {
+        .c9-menu-bar .c9-mbar-bcont .c9-sync.undetermined {
             background-position: 0 -80px;
         }
         
-        .c9-menu-bar.local .c9-mbar-bcont .c9-sync.btnDisabled {
+        .c9-menu-bar .c9-mbar-bcont .c9-sync.btnDisabled {
             background-position: 0 -60px;
         }
         

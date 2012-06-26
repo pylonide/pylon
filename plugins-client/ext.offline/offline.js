@@ -58,8 +58,10 @@ module.exports = ext.register("ext/offline/offline", {
         var img = new Image();
         img.src = ide.staticPrefix + "/ext/main/style/images/offline.png";
 
-        img = new Image();
-        img.src = ide.staticPrefix + "/ext/main/style/images/local_green.png";
+        if (ide.local) {
+            img = new Image();
+            img.src = ide.staticPrefix + "/ext/main/style/images/local_green.png";
+        }
         
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
@@ -93,8 +95,8 @@ module.exports = ext.register("ext/offline/offline", {
             ide.onLine = false;
             apf.setStyleClass(logobar.$ext, "offline");
 
-			if (ide.local)
-				offlineNotifyDialog.show();
+            if (ide.local)
+                offlineNotifyDialog.show();
 			
             _self.bringExtensionsOffline();
         });
@@ -138,17 +140,17 @@ module.exports = ext.register("ext/offline/offline", {
 
             _self.bringExtensionsOnline();
             
-			if (ide.local)
-				offlineNotifyDialog.hide();
+            if (ide.local)
+                offlineNotifyDialog.hide();
 
         });
 
-		ide.addEventListener("localOffline", function(e) {
-			 apf.setStyleClass(logobar.$ext, "offline local");
-		});
+        ide.addEventListener("localOffline", function(e) {
+            apf.setStyleClass(logobar.$ext, "offline local");
+        });
 
-		ide.addEventListener("localOnline", function(e) {
-			apf.setStyleClass(logobar.$ext, "", ["offline"]);
+        ide.addEventListener("localOnline", function(e) {
+            apf.setStyleClass(logobar.$ext, "", ["offline"]);
         });
 
         /**** File System ****/
