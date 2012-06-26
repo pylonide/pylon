@@ -9606,13 +9606,17 @@
         width            : 13px;
     }
     
-    .editor_tab .btnsesssioncontainer .loading .tab_middle strong,
-    .editor_tab .btnsesssioncontainer .saving .tab_middle strong {
+    .dark .editor_tab .btnsesssioncontainer .loading.btnclose .tab_middle strong,
+    .dark .editor_tab .btnsesssioncontainer .saving.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .loading.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .saving.btnclose .tab_middle strong {
         display: none;
     }
     
-    .editor_tab .btnsesssioncontainer .loading.over .tab_middle strong,
-    .editor_tab .btnsesssioncontainer .saving.over .tab_middle strong {
+    .dark .editor_tab .btnsesssioncontainer .loading.over.btnclose .tab_middle strong,
+    .dark .editor_tab .btnsesssioncontainer .saving.over.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .loading.over.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .saving.over.btnclose .tab_middle strong {
         display: block;
     }
     /* ------------------------------------------------------------------------------------------
@@ -9663,10 +9667,15 @@
         width            : 15px;
     }
     
+    .dark .editor_tab .loading_active.btnclose .tab_middle strong,
+    .dark .editor_tab .saving_active.btnclose .tab_middle strong,
     .editor_tab .loading_active .tab_middle strong,
     .editor_tab .saving_active .tab_middle strong {
         display: none;
     }
+    
+    .dark .editor_tab .loading_active.over.btnclose .tab_middle strong,
+    .dark .editor_tab .saving_active.over.btnclose .tab_middle strong,
     .editor_tab .loading_active.over .tab_middle strong,
     .editor_tab .saving_active.over .tab_middle strong {
         display: block;
