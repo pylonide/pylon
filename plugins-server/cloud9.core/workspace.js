@@ -55,9 +55,9 @@ var Workspace = module.exports = function(ide) {
                     extra: message.extra
                 }, message);
             }
-
+            
             if (this.plugins["npm-runtime"]) {
-                this.plugins["npm-runtime"].searchAndRunModuleHook(message, function(err, found) {
+                this.plugins["npm-runtime"].searchAndRunModuleHook(message, user, function(err, found) {
                     if (err || !found)
                         sendCommandNotFound(err);
                 });
