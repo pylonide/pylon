@@ -522,39 +522,3 @@ module.exports = {
 };
 
 });
-
-/**
-16
-
-<<<<<<< HEAD
-        if(forceBox) {
-            clearTimeout(this.hideTimer);
-            this.hideTimer = setTimeout(function() {
-                // Completion takes or crashed
-                _self.closeCompletionBox();
-            }, 4000);
-        }
-=======
-        var _self = this;
-        if(forceBox)
-            killCrashedCompletionInvoke(CRASHED_COMPLETION_TIMEOUT);
->>>>>>> master
-
-
-<<<<<<< HEAD
-        clearTimeout(this.hideTimer);
-        var identifierLowered = identifier.toLowerCase();
-
-        if (identifierLowered.indexOf(this.cachedIden.toLowerCase()) != 0)
-            return this.closeCompletionBox();
-
-=======
-        killCrashedCompletionInvoke.cancel();
-
-        if (pos.column !== eventPos.column || pos.row !== eventPos.row)
-            return;
-    
-        var matches = event.data.matches;
-        
->>>>>>> master
-*/
