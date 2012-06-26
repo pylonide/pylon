@@ -100,7 +100,7 @@ module.exports = ext.register("ext/language/language", {
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
                 ["unusedFunctionArgs", "false"],
-                ["continuousComplete", _self.isInferAvailable() ? "true" : "false"]
+                ["continuousComplete", cloud9config.hosted ? "true" : "false"] // always returns false _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 
