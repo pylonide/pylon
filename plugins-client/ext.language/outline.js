@@ -181,6 +181,7 @@ module.exports = {
      * instead of the file list.
      */
     showOutline: function(makeVisible, ignoreInputText) {
+        ext.initExtension(outline);
         ext.initExtension(gotofile);
         if (makeVisible) {
             gotofile.toggleDialog(1);
