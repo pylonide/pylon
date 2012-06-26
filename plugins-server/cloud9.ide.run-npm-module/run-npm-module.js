@@ -96,9 +96,19 @@ util.inherits(NpmRuntimePlugin, Plugin);
         });
     };
 
-    this.searchAndRunModuleHook = function(message, cb) {
+    this.searchAndRunModuleHook = function(message, user, cb) {
         if (!message.command || !message.argv)
             return cb(null, false);
+
+        if (user.permissions.fs != "rw")
+            return cb("Permission denied", false);
+            
+        var server_exclude = (user.permissions.server_exclude || "").split("|");
+        for (var command in server_exclude) {
+            if (message.command == command || message.argv.join(" ").indexOf(command) > -1) {
+                return cb("Permission denied", false);
+            }
+        }
 
         if (message.command === "node")
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);

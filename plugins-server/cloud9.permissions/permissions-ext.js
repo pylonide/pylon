@@ -18,6 +18,12 @@ module.exports = function startup(options, imports, register) {
                     return callback(new Error("Invalid user id: " + uid));
 
                 return callback(null, User.OWNER_PERMISSIONS);
+            },
+            getRole: function(uid, workspaceId, callback) {
+                return callback(null, 1);
+            },
+            getConfig: function() {
+                return {};
             }
         }
     });
