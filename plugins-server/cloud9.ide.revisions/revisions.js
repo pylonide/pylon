@@ -66,10 +66,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         if (!message.command || message.command !== "revisions") {
             return false;
         }
-console.log( message.revision,
-message.subCommand,
-message.path
-    )
+
         var self = this;
         if (message.subCommand) {
             switch (message.subCommand) {
@@ -425,7 +422,6 @@ message.path
     };
 
     this.saveSingleRevision = function(path, revision, callback) {
-        // console.log(path, revision)
         if (!path) {
             return callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
         }
@@ -439,7 +435,7 @@ message.path
                         return console.error(err);
 
                     // We just created the revisions file. Since we
-                    // don't have a 'previous revision, our first revision will
+                    // don't have a previous revision, our first revision will
                     // consist of the previous contents of the file.
                     var ts = Date.now();
                     var firstRevision = {
@@ -466,20 +462,23 @@ message.path
         function write(err, content) {
             if (err)
                 return callback(err);
-            // broadcast first revision
-            if (revObj) {
-                callback(null, revObj);
-                if (!revision)
-                    return; // was called just to create first revision
-            }
 
-            content += JSON.stringify(revision) + "\n";
-            fs.writeFile(absPath, content, "utf8", function(err) {
-                callback(err, {
+            // broadcast first revision
+            var returnValue;
+            if (revObj) {
+                returnValue = revObj;
+            }
+            else {
+                content += JSON.stringify(revision) + "\n";
+                returnValue = {
                     absPath: absPath,
                     path: path,
                     revision: revision.ts
-                });
+                };
+            }
+
+            fs.writeFile(absPath, content, "utf8", function(err) {
+                callback(err, returnValue);
             });
         }
 

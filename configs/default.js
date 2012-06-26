@@ -128,7 +128,7 @@ var config = [
             "ext/colorpicker/colorpicker",
             "ext/gitblame/gitblame",
             //"ext/githistory/githistory",
-            //"ext/revisions/revisions",
+            "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
             "ext/language/liveinspect"
             //"ext/splitview/splitview"
@@ -188,7 +188,7 @@ var config = [
     "./cloud9.ide.run-ruby",
     "./cloud9.ide.run-php",
     "./cloud9.run.python",
-    //"./cloud9.ide.revisions",
+    "./cloud9.ide.revisions",
     {
         packagePath: "./cloud9.ide.settings",
         settingsPath: ".settings",
