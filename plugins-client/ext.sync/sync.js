@@ -632,6 +632,7 @@ module.exports = ext.register("ext/sync/sync", {
                     return;
                 }
                 data = JSON.parse(data);
+console.info("DATA", data);                
                 if (!data.macAddress) {
                     callback(new Error("Error fetching mac address of local runtime. `macAddress` not in response"));
                     return;
@@ -734,7 +735,13 @@ module.exports = ext.register("ext/sync/sync", {
 
         this.$iframe.connecting = true;
         this.$iframe.connected = false;
-        this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html?sid=" + cloud9config.sessionId;
+
+        var sessionHistory = apf.getcookie("sessionhistory").split(";");
+        if (sessionHistory.length === 0) {
+            console.error("No session ID found!");
+            return;
+        }
+        this.$iframe.src = "http://localhost:13338/c9local/api-proxy.html?sidkey=" + encodeURIComponent(cloud9config.sidkey) + "&sid=" + encodeURIComponent(sessionHistory[0]);
         this.$iframe.style.width = "1px";
         this.$iframe.style.height = "1px";
     },

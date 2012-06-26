@@ -38,6 +38,7 @@ var Ide = module.exports = function(options) {
         mountDir: options.mountDir || this.workspaceDir,
         socketIoUrl: options.socketIoUrl,
         socketIoTransports: options.socketIoTransports,
+        sidkey: options.sidkey,
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         debug: (options.debug === true) ? true : false,
@@ -138,6 +139,7 @@ util.inherits(Ide, EventEmitter);
                 staticUrl: staticUrl,
                 socketIoUrl: _self.options.socketIoUrl,
                 socketIoTransports: _self.options.socketIoTransports,
+                sidkey: _self.options.sidkey,
                 sessionId: req.sessionID, // set by connect
                 uid: req.session.uid || req.session.anonid || 0,
                 pid: _self.options.pid || process.pid || 0,

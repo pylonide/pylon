@@ -50,6 +50,7 @@ module.exports = function setup(options, imports, register) {
             projectName: options.projectName || "",
             socketIoUrl: socketUrl.replace(/^\//, ""),
             socketIoTransports: options.socketIoTransports,
+            sidkey: options.sidkey,
             baseUrl: baseUrl,
             debug: (options.debug === true) ? true : false,
             workerUrl: workerPrefix,

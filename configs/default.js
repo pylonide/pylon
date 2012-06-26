@@ -59,6 +59,7 @@ var config = [
         fsUrl: fsUrl,
         hosted: false,
         socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
+        sidkey: "cloud9.sid." + port,
         bundledPlugins: [
             "helloworld"
         ],
