@@ -6601,17 +6601,14 @@
                 top  : 32px;
                 right : 0;
                 bottom : 0;
-                background:url(images/panelBg.png) repeat-y right 0;
-                border-right:1px solid #7b7b7b;
-                /*
-            box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
-                        -1px 0 0 0 rgba(255,255,255,.9) inset; 
-            background-color: rgba(220, 220, 220, 0.8);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
+                            -1px 0 0 0 rgba(255,255,255,.9) inset; 
+                background-color: rgba(220, 220, 220, 0.9);
                 background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
                 					url(images/c9-noise-light-10.png),
                 					url(images/c9-noise-light-10.png),
                                 url(images/c9-noise-light-10.png),
-                					url(images/c9-noise-light-10.png);*/
+                					url(images/c9-noise-light-10.png);
             }
         ]]></a:style>
 
