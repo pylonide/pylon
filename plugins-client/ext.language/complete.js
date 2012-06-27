@@ -137,8 +137,17 @@ function replaceText(editor, prefix, match) {
     
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
+    
+    var cursorCol = pos.column + colOffset - prefix.length;
+    
+    if (line.substring(0, pos.column).match(/require\("[^\"]+$/)) {
+        if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
+            cursorCol++;
+        if (line.substr(pos.column + postfix.length + 1, 1) === ')')
+            cursorCol++;
+    }
     setTimeout(function() {
-        editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
+        editor.moveCursorTo(pos.row + rowOffset, cursorCol);
     }, 50);
 }
 
