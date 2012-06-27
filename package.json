@@ -46,7 +46,7 @@
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"],
         "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#e1d6748af3aca3589ce99db6f147ee06381007d4"],
         "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#f009b612421d5c3a6f1edf936a91dac8258201ba"],
-        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#e9f29edab54eb9486cb7c56f0daac20dda8340e4"],
+        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#352f09f87f3f50902d1d4f1ea40bfcefee2d8d75"],
     },
 
     "repository" : {

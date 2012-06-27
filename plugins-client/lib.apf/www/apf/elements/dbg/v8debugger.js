@@ -73,6 +73,7 @@ var V8Debugger = module.exports = function(dbg, host) {
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
             "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
             "' lineoffset='", script.lineOffset,
+            "' native='", !! script.native,
             "' debug='true' />"
         ].join("");
     };

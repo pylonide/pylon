@@ -312,6 +312,9 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (!script)
                 return;
 
+            if (script.getAttribute("native")) {
+                return alert("Source not found !");
+            }
             var name = script.getAttribute("scriptname");
             var value = name.split("/").pop();
 
