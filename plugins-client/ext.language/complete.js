@@ -104,7 +104,7 @@ function replaceText(editor, prefix, match) {
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
-    if (match.replaceText === "require(^^)") {
+    if (match.replaceText === "require(^^)" && completionUtil.isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
@@ -140,7 +140,7 @@ function replaceText(editor, prefix, match) {
     
     var cursorCol = pos.column + colOffset - prefix.length;
     
-    if (line.substring(0, pos.column).match(/require\("[^\"]+$/)) {
+    if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && completionUtil.isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
             cursorCol++;
         if (line.substr(pos.column + postfix.length + 1, 1) === ')')
