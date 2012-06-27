@@ -632,7 +632,7 @@ module.exports = ext.register("ext/sync/sync", {
                     return;
                 }
                 data = JSON.parse(data);
-console.info("DATA", data);                
+   
                 if (!data.macAddress) {
                     callback(new Error("Error fetching mac address of local runtime. `macAddress` not in response"));
                     return;
