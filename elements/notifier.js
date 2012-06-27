@@ -129,7 +129,7 @@ apf.notifier = function(struct, tagName){
     };
     
     this.$propHandlers["start-padding"] = function(value) {
-        this.startPadding = value;
+        this.startPadding = parseInt(value);
     };
     
     this.$propHandlers["timeout"] = function(value) {
