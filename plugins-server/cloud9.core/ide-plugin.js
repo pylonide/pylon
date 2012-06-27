@@ -73,6 +73,9 @@ module.exports = function setup(options, imports, register) {
                     serverPlugins[name] = plugin;
                     callback();
                 },
+                getPlugin: function(name, callback) {
+                    callback(null, serverPlugins[name]);
+                },
                 getServer: function() {
                     return ide;
                 },

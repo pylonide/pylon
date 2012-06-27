@@ -57,7 +57,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/default|auto|0\.6\.x|0\.4\.x/.test(message.runner))
+        if (!(/^node-(0\.6\.x|0\.4\.x)$/.test(message.runner))
             && !(cmd.indexOf("debugnode") > -1))
             return false;
 

@@ -1,0 +1,14 @@
+{
+    "name": "cloud9.ide.run-auto",
+    "version": "0.0.1",
+
+    "main": "./run-auto.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "sandbox.fs"
+        ]
+    }
+}

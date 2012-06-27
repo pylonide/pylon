@@ -96,8 +96,8 @@
                             <data>
                                 <element caption="Default" value="default" />
                                 <element caption="Auto" value="auto" />
-                                <element caption="Node.js 0.6.x" value="0.6.x" />
-                                <element caption="Node.js 0.4.x" value="0.4.x" />
+                                <element caption="Node.js 0.6.x" value="node-0.6.x" />
+                                <element caption="Node.js 0.4.x" value="node-0.4.x" />
                                 <element caption="Java" value="java" />
                                 <element caption="Java Web" value="java-web" />
                                 <element caption="Jython" value="jpy" />
