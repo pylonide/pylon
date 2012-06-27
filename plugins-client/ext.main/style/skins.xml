@@ -6601,9 +6601,9 @@
                 top  : 32px;
                 right : 0;
                 bottom : 0;
-            box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
-                        -1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
-            background-color: rgba(220, 220, 220, 0.8);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
+                            -1px 0 0 0 rgba(255,255,255,.9) inset; 
+                background-color: rgba(220, 220, 220, 0.9);
                 background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
                 					url(images/c9-noise-light-10.png),
                 					url(images/c9-noise-light-10.png),
@@ -9593,7 +9593,7 @@
         background-repeat   : no-repeat;
         background-position : 0 -14px;
     }
-
+    
     .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
         background-image : url(images/tab-save-spinner-inactive.gif);
@@ -9601,6 +9601,20 @@
         right            : 0px;
         top              : 5px;
         width            : 13px;
+    }
+    
+    .dark .editor_tab .btnsesssioncontainer .loading.btnclose .tab_middle strong,
+    .dark .editor_tab .btnsesssioncontainer .saving.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .loading.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .saving.btnclose .tab_middle strong {
+        display: none;
+    }
+    
+    .dark .editor_tab .btnsesssioncontainer .loading.over.btnclose .tab_middle strong,
+    .dark .editor_tab .btnsesssioncontainer .saving.over.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .loading.over.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .saving.over.btnclose .tab_middle strong {
+        display: block;
     }
     /* ------------------------------------------------------------------------------------------
      * Unselected tab hover
@@ -9645,11 +9659,24 @@
     .editor_tab .saving_active .sessiontab_saving {
         background-image : url(images/tab-save-spinner-active.gif);
         height           : 15px;
-        right            : -1px;
+        right            : -2px;
         top              : 4px;
         width            : 15px;
     }
-
+    
+    .dark .editor_tab .loading_active.btnclose .tab_middle strong,
+    .dark .editor_tab .saving_active.btnclose .tab_middle strong,
+    .editor_tab .loading_active .tab_middle strong,
+    .editor_tab .saving_active .tab_middle strong {
+        display: none;
+    }
+    
+    .dark .editor_tab .loading_active.over.btnclose .tab_middle strong,
+    .dark .editor_tab .saving_active.over.btnclose .tab_middle strong,
+    .editor_tab .loading_active.over .tab_middle strong,
+    .editor_tab .saving_active.over .tab_middle strong {
+        display: block;
+    }
     /* ------------------------------------------------------------------------------------------
      * Selected tab hover
      * --------------------------------------------------------------------------------------- */
@@ -12048,6 +12075,7 @@
             height:16px;
             padding-left:1px;
             margin-top:0px;
+            margin-left: 21px;
 
             font-family : Tahoma, Arial;
             font-size   : 11px;
