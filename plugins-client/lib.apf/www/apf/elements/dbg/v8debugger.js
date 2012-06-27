@@ -90,7 +90,7 @@ var V8Debugger = module.exports = function(dbg, host) {
             "' id='", getId(frame),
             "' ref='", frame.ref,
             "' line='", frame.line,
-            "' script='", this.$strip(script.name),
+            "' script='", this.$strip(script.name || frame.script.name),
             "' scriptid='", frame.func.scriptId, //script.id,
             "'>"
         );

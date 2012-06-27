@@ -7,6 +7,7 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
+var Async = require("asyncjs");
 
 var name = "automatic-runner";
 var NODE_RUNTIME = "node-runtime";
@@ -38,7 +39,7 @@ util.inherits(AutomaticRunnerPlugin, Plugin);
         if (!(/^(default|auto)$/.test(message.runner)))
             return false;
 
-        async.list(this.projectTypes)
+        Async.list(this.projectTypes)
             .some(function checkProject(pType, next) {
                 Fs.exists(pType.file, function (err, exists) {
                     if (err || ! exists)
