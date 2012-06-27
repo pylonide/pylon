@@ -47,7 +47,7 @@ var deferredInvoke = lang.deferredCall(function() {
 var isInvokeScheduled = false;
 
 var drawDocInvoke = lang.deferredCall(function() {
-    if (isPopupVisible()) {
+    if (isPopupVisible() && complete.matches[complete.selectedIdx].doc) {
         isDocShown = true;
         txtCompleterDoc.parentNode.show();
     }
