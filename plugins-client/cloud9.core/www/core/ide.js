@@ -78,7 +78,7 @@ define(function(require, exports, module) {
 
     ide.start();
 
-    ide.addEventListener("extload", function() {
+    ide.addEventListener("extload", ide.initSocket = function() {
         // fire up the socket connection:
         var options = {
             "remember transport": false,
@@ -97,9 +97,8 @@ define(function(require, exports, module) {
             }
         };
 
+        var retries = 0;
         ide.socketConnect = function() {
-            clearInterval(ide.$retryTimer);
-
             // NOTE: This is a workaround for an init bug in socket.io
             // @see https://github.com/LearnBoost/socket.io-client/issues/390
             if (!ide.socket.socket.transport) {
@@ -107,6 +106,8 @@ define(function(require, exports, module) {
                 // NOTE: This may log a connection error to the error console but will recover gracefully and eventually connect.
                 ide.socketDisconnect();
             } else {
+                retries = 0;
+                
                 ide.socket.json.send({
                     command: "attach",
                     sessionId: ide.sessionId,
@@ -116,29 +117,23 @@ define(function(require, exports, module) {
         };
 
         ide.socketDisconnect = function() {
-            // On disconnect retry every 1 second for 5 seconds then issue `disconnected`
-            // and retry every 5 seconds indefinitely.
-            var retries = 0;
-            function retryTimer(delay) {
-                if (ide) {
-                    clearInterval(ide.$retryTimer);
-                    ide.$retryTimer = setInterval(function() {
-                        retries += 1;
-                        if (retries === 5) {
-                            ide.dispatchEvent("socketDisconnect");
-                            retryTimer(5000);
-                        } else {
-                            var sock = ide.socket.socket;
-                            if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn) {
-                                sock.connect();
-                            }
-                        }
-                    }, delay);
+            //Do Nothing
+        };
+        
+        ide.reconnectIfNeeded = function(){
+            var sock = ide.socket.socket;
+            if (!sock.connected && !sock.connecting && !sock.reconnecting) { //ide.loggedIn
+                retries++;
+
+                if (retries < 10 || retries < 60 && retries % 10 == 0 || retries % 50 == 0) {
+                    sock.connect();
+                    
+                    if (retries == 5)
+                        ide.dispatchEvent("socketDisconnect");
                 }
             }
-            retryTimer(1000);
-        };
-
+        }
+        
         ide.socketMessage = function(message) {
             if (typeof message == "string") {
                 try {
@@ -219,6 +214,9 @@ define(function(require, exports, module) {
         ide.socket.on("message",    ide.socketMessage);
         ide.socket.on("connect",    ide.socketConnect);
         ide.socket.on("disconnect", ide.socketDisconnect);
+        
+        setInterval(ide.reconnectIfNeeded, 100);
+        
         this.inited = true;
     });
 
