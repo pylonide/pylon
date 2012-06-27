@@ -49,7 +49,7 @@ exports.cssText = "\
 }\
 \
 .ace-mono-industrial .ace_gutter {\
-  background: #e8e8e8;\
+  background: #1d2521;\
   color: #333;\
 }\
 \

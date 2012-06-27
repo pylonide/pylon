@@ -46,7 +46,7 @@ exports.cssText = ".ace-crimson-editor .ace_editor {\
 }\
 \
 .ace-crimson-editor .ace_gutter {\
-  background: #e8e8e8;\
+  background: #ebebeb;\
   color: #333;\
   overflow : hidden;\
 }\
