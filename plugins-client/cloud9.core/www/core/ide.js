@@ -86,7 +86,9 @@ define(function(require, exports, module) {
             reconnect: false,
             resource: window.cloud9config.socketIoUrl,
             "connect timeout": 500,
+            //"polling duration": 10,
             "try multiple transports": true,
+            //"force new connection": true,
             "transport options": {
                 "xhr-polling": {
                     timeout: 60000
@@ -108,6 +110,7 @@ define(function(require, exports, module) {
             } else {
                 retries = 0;
                 
+                ide.connecting = true;
                 ide.socket.json.send({
                     command: "attach",
                     sessionId: ide.sessionId,
@@ -126,10 +129,12 @@ define(function(require, exports, module) {
                 retries++;
 
                 if (retries < 10 || retries < 60 && retries % 10 == 0 || retries % 50 == 0) {
-                    sock.connect();
+                    sock.reconnect();
                     
-                    if (retries == 5)
+                    if (retries == 5) {
                         ide.dispatchEvent("socketDisconnect");
+                        ide.connected = false;
+                    }
                 }
             }
         }
@@ -146,6 +151,8 @@ define(function(require, exports, module) {
             }
 
             if (message.type == "attached") {
+                ide.connecting = false;
+                ide.connected = true;
                 ide.dispatchEvent("socketConnect"); //This is called too often!!
             }
 
