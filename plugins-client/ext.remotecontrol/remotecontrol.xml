@@ -13,7 +13,7 @@
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3>An Update to Cloud9 Local is Available!</h3>
-            <div class="alertMsg">After installing, run <code>c9 --restart</code> on your command line. Your browser will also refresh.</div>
+            <div class="alertMsg">Please run <code>c9 --restart</code> on your command line and refresh your browser.</div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
