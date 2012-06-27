@@ -34,8 +34,8 @@ var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
-    if(keyhandler.preceededByIdentifier(line, pos.column) ||
-       line[pos.column - 1] === '.' ||
+    if (keyhandler.preceededByIdentifier(line, pos.column) ||
+       (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(ID_REGEX))) ||
        keyhandler.isRequireJSCall(line, pos.column)) {
         module.exports.invoke(true);
     }
