@@ -22,7 +22,7 @@ module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
     VFS = imports.vfs;
-    USER = options.user;
+    USER = JSON.stringify(options.user);
     ALLOWEDDIRS = options.allowedDirs;
     ALLOWEDEXECUTABLES = options.allowedExecs;
     AllowShell = !!options.allowShell;
@@ -38,6 +38,7 @@ var NpmRuntimePlugin = function(ide, workspace) {
     this.workspace = workspace;
     this.channel = workspace.workspaceId + "::npm-runtime"; // wtf this should not be needed
     this.children = {};
+    this.user = JSON.parse(USER);
     
     this.hooks = ["command"];
     this.name = name;
@@ -138,7 +139,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
         var ws   = self.ide.workspaceDir;
         var cwd  = message.cwd || ws;
 
-        var isAllowedExecutable = !USER || USER.runvmSsh || !ALLOWEDEXECUTABLES 
+        var isAllowedExecutable = !this.user || this.user.runvmSsh || !ALLOWEDEXECUTABLES 
             || ALLOWEDEXECUTABLES.indexOf(message.command) > -1;
 
         this.pm.exec("shell", {
