@@ -7,9 +7,14 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var outlineHandler = module.exports = Object.create(baseLanguageHandler);
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+var EVENT_REGEX = /[a-zA-Z_0-9\$\_\ \(\)\[\]/@]/;
 
 var NOT_EVENT_HANDLERS = {
-    addMarker: true
+    addMarker: true,
+    once: true,
+    traverseUp : true,
+    traverse : true,
+    topdown : true
 };
 
 outlineHandler.handlesLanguage = function(language) {
@@ -187,6 +192,8 @@ function extractOutline(doc, node) {
             else {
                 return false;
             }
+            if (!s[0].value.match(EVENT_REGEX))
+                return false;
             // Ignore if more handler-like arguments exist
             if (b.args.length >= 4 && b.args[2].cons === 'String' && b.args[3].cons === 'Function')
                 return false;
