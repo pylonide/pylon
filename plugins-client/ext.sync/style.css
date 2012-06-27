@@ -1,0 +1,84 @@
+
+.c9-menu-bar .c9-sync.btn .left, 
+.c9-menu-bar .c9-sync.btn .right,
+.c9-menu-bar .c9-sync.btn .lbl{
+    background-image: none;  
+}
+
+.menu-bk.sync-info-tooltip {
+    color: #d6d6d6;
+    text-shadow : rgba(0, 0, 0, .60) 0px 1px 0px;
+    
+    margin-top:8px;
+    margin-left:8px;
+    padding: 15px 10px 10px 12px;
+    line-height:17px;
+}
+.sync-info-tooltip .close-sync-info {
+    background: url("{ide.staticPrefix}/ext/main/style/images/close-btn.png") no-repeat 0 0;
+    height: 14px;
+    width: 13px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: default;
+    display: block;
+}
+
+.sync-info-tooltip .sync-info-title {
+    padding-left: 5px;    
+}
+
+.sync-info-tooltip .close-sync-info:hover { 
+    background-position: 0 -14px;    
+}
+
+.sync-info-tooltip .sync-file-label {
+    color: #818080;
+    padding-left: 5px;
+    white-space : nowrap;
+    overflow : hidden;
+    text-overflow : ellipsis;
+}
+
+.sync-info-tooltip .pause-sync .caption {
+    background: url("{ide.staticPrefix}/ext/main/style/images/pause-icon.png") no-repeat 13px 5px;
+    height: 13px;
+}
+.sync-info-tooltip.menu-bk.c9-tooltip .arrow {
+    left: 65%;
+}
+
+.c9-sync-state-info {
+    width: 98px;
+    height: 8px;
+    background: url("{ide.staticPrefix}/ext/main/style/images/sync-state-label.png") no-repeat 0 4px;
+}
+
+.c9-sync-state-info.available-online {
+    background-position: 0 -13px;
+}
+
+blockquote.code{
+    font-family : Courier New;
+    font-size : 12px;
+    margin : 10px;
+}
+
+.lblinstall{
+    white-space:normal;
+}
+
+.lblinstall a{
+    color : #f1f1f1;
+}
+
+#syncFolderSelect {
+    position: absolute;
+    left: 140px;
+    right: 10px;
+    top: 56px;
+    width: 130px;
+    height: 30px;
+    opacity: 0;
+}

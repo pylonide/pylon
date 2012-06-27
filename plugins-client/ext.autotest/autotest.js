@@ -17,7 +17,8 @@ module.exports = ext.register("ext/autotest/autotest", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-
+    autodisable : ext.ONLINE | ext.LOCAL,
+    
     hook : function() {
         ide.addEventListener("afterfilesave", function(e) {
             // We don't want to run tests if it is an auto-save.

@@ -19,7 +19,8 @@
         "consumes": [
             "connect",
             "workspace-permissions",
-            "sandbox"
+            "sandbox",
+            "vfs"
         ]
     }
 }

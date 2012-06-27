@@ -6,6 +6,7 @@
  */
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
@@ -136,7 +137,9 @@ function replaceText(editor, prefix, match) {
     
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
+    setTimeout(function() {
+        editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
+    }, 50);
 }
 
 var menus = require("ext/menus/menus");
@@ -263,7 +266,7 @@ module.exports = {
             var html = "";
             
             if (match.icon)
-                html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
+                html = "<img src='" + ide.staticPrefix + "/ext/language/img/" + match.icon + ".png'/>";
                 
             if (!isInferAvailable || match.icon) {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
@@ -438,7 +441,7 @@ module.exports = {
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
         setTimeout(function() {
-            worker.emit("complete", {data: editor.getCursorPosition()});
+            worker.emit("complete", {data: { pos: editor.getCursorPosition(), staticPrefix: ide.staticPrefix}});
         });
         var _self = this;
         if(forceBox)

@@ -16,7 +16,9 @@
           startcollapsed  = "false"
           nocollapse      = "true"
           empty-message   = "No outline available"
+          loading-message = "Loading outline. One moment please..."
           maxheight       = "350"
+          visible         = "false"
           scrollbar       = "sbShared 32 7 7">
             <a:each
               match         = "[entries|entry]"
@@ -29,8 +31,7 @@
                     !![@meta] ? "<code style='color:gray;'> : [@meta]</code>" : "";
                 ?></a:caption>
                 
-                
-                <a:icon value="/static/ext/language/img/[@icon].png" />
+                <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
             </a:each>
         </a:tree>
       </a:hbox>
@@ -85,7 +86,7 @@
                         <a:caption>
                           <?lm [@name]{!![@meta] ? "<code style='color:gray;'> - [@meta]</code>" : ""} ?>
                         </a:caption>
-                        <a:icon value="/static/ext/language/img/[@icon].png" />
+                        <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
                     </a:each>
                 </a:tree>
                 <a:scrollbar

@@ -1,0 +1,17 @@
+{
+    "name": "cloud9.ide.run-php",
+    "version": "0.0.1",
+
+    "main": "./run-php.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-php",
+            "ide.ext.state",
+            "eventbus"
+        ]
+    }
+}

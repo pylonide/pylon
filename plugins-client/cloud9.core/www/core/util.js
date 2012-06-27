@@ -5,13 +5,26 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
-    
+
+var ide = require("core/ide");
 var markup = require("text!core/util.xml");
+
+exports.escapeXpathString = function(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
+
 
 exports.alert = function(title, header, msg, onhide) {
     if (!self.winAlert)
         apf.document.documentElement.insertMarkup(markup);
-    
+
     winAlert.show();
     winAlert.setAttribute('title', title);
     winAlertHeader.$ext.innerHTML = header;
@@ -28,7 +41,7 @@ exports.alert = function(title, header, msg, onhide) {
 exports.confirm = function(title, header, msg, onconfirm, oncancel) {
     if (!self.winConfirm)
         apf.document.documentElement.insertMarkup(markup);
-    
+
     winConfirm.show();
     winConfirm.setAttribute("title", title);
     winConfirmHeader.$ext.innerHTML = header;
@@ -40,7 +53,7 @@ exports.confirm = function(title, header, msg, onconfirm, oncancel) {
 exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoall) {
     if (!self.winQuestion)
         apf.document.documentElement.insertMarkup(markup);
-    
+
     winQuestion.show();
     winQuestion.setAttribute("title", title);
     winQuestionHeader.$ext.innerHTML = header;
@@ -52,7 +65,7 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
 };
 
 exports.removeInteractive = function (amlNode) {
-    if (window.cloud9config.readonly == true)
+    if (ide.readonly == true)
         return false;
 
     if (amlNode.confirmed == undefined)
@@ -334,6 +347,10 @@ exports.isTrue = function(c){
  */
 exports.isFalse = function(c){
     return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
+};
+
+exports.replaceStaticPrefix = function (string) {
+    return string.replace(new RegExp("{ide.staticPrefix}", "g"), window.cloud9config.staticUrl);
 };
 
 /*

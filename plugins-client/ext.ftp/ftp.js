@@ -20,6 +20,7 @@ module.exports = ext.register("ext/ftp/ftp", {
     type     : ext.GENERAL,
     alone    : true,
     offline  : false,
+    autodisable  : ext.ONLINE,
     markup   : markup,
     pageTitle: "FTP log",
     pageID   : "pgFtpConsole",

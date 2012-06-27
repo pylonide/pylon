@@ -1,27 +1,37 @@
 /**
- * Module that implements outlines
+ * Outline support.
+ *
+ * @copyright 2012, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var gotofile = require("ext/gotofile/gotofile");
 var search = require("ext/gotofile/search");
+var outline;
 
 module.exports = {
     nodes: [],
     fullOutline : [],
     filteredOutline : [],
-    ignoreSelectOnce : true,
+    ignoreSelectOnce : false,
     isDirty : false,
+    isKeyDownAfterDirty : false,
+    lastGoToFileText : "",
+    lastOutlineText : "@",
     
     hook: function(oExt, worker) {
         this.worker = worker;
         var _self = this;
+        outline = oExt;
         
         worker.on("outline", function(event) {
             _self.openOutline(event);
@@ -61,15 +71,20 @@ module.exports = {
             txtGoToFile.addEventListener("keyup", function(e) {
                 _self.onKeyUp(e);
             });
-            winGoToFile.addEventListener("prop.visible", function(e) {
-                if (!e.value)
-                    _self.showFileSearch();
-            });
             treeOutline.addEventListener("onafterselect", function() {
                 _self.onSelect(treeOutline.selected);
             });
             treeOutline.addEventListener("onafterchoose", function() {
-                setTimeout(gotofile.toggleDialog(-1), 500);
+                _self.ignoreSelectOnce = false;
+                _self.onSelect(treeOutline.selected);
+                gotofile.toggleDialog(-1);
+            });
+            treeOutline.addEventListener("click", function(e) {
+                _self.ignoreSelectOnce = false;
+                _self.onSelect(treeOutline.selected);
+                var COLLAPSE_AREA = 14;
+                if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
+                    gotofile.toggleDialog(-1);
             });
             txtGoToFile.addEventListener("blur", function() {
                 selStart = txtGoToFile.$input.selectionStart;
@@ -82,6 +97,13 @@ module.exports = {
                     txtGoToFile.$input.selectionEnd = selEnd;
                 }
             });
+            winGoToFile.addEventListener("prop.visible", function(e) {
+                if (!e.value)
+                    _self.showGoToFile();
+            });
+            var editor = editors.currentEditor.amlEditor.$editor;
+            
+            treeOutline.bufferselect = false;
         });   
 
     },
@@ -108,8 +130,13 @@ module.exports = {
         return xmlS.join('');
     },
     
-    updateOutline : function(showNow) {
-        this.worker.emit("outline", { data : { showNow: showNow } });
+    updateOutline : function(showNow, ignoreInputText) {
+        this.showOutline(showNow, ignoreInputText);
+        /* TODO: set loading message if file has changed
+        treeOutline.$setClearMessage(treeOutline["loading-message"], "loading");
+        apf.setOpacity(winGoToFile.$ext, 1);
+        */
+        this.worker.emit("outline", { data : { ignoreFilter: showNow } });
     },
 
     findCursorInOutline: function(json, cursor) {
@@ -132,59 +159,88 @@ module.exports = {
         }
         
         this.fullOutline = event.data.body;
-        this.renderOutline(event.data.showNow);
         
-        if (event.data.showNow) {
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
+        var cursor = ace.getCursorPosition();
+        this.$originalLine = cursor.row + 1;
+        this.$originalColumn = cursor.column;
+        
+        var selected = this.renderOutline(event.data.showNow);
+        
+        if (txtGoToFile.value.match(/^@/))
+            this.showOutline();
+
+        // UNDONE: Scroll to selected
+        // if (event.data.showNow)
+        //     this.scrollToSelected(selected);
+    },
+    
+    /**
+     * Show the outline view in the goto dialog,
+     * instead of the file list.
+     */
+    showOutline: function(makeVisible, ignoreInputText) {
+        ext.initExtension(outline);
+        ext.initExtension(gotofile);
+        if (makeVisible) {
             gotofile.toggleDialog(1);
             txtGoToFile.focus();
             this.showOutline();
-            txtGoToFile.$input.selectionStart = 1;
+            if (txtGoToFile.value.length > 0)
+                txtGoToFile.$input.selectionStart = 1;
+            this.scrollToTop();
         }
-        else if (txtGoToFile.value.match(/^@/)) {
-            this.showOutline();
-        }
-        this.scrollToSelected();
-    },
-    
-    showOutline: function() {
         gotofile.setEventsEnabled(false);
         if (!dgGoToFile.getProperty("visible"))
             return;
-        if (!txtGoToFile.value.match(/^@/))
-            txtGoToFile.setValue("@");
-        else
-            txtGoToFile.setValue(txtGoToFile.value);
+        if (!txtGoToFile.value.match(/^@/) && !ignoreInputText) {
+            this.lastGoToFileText = txtGoToFile.value;
+            txtGoToFile.setValue(this.lastOutlineText);
+        }
         this.ignoreSelectOnce = true;
         dgGoToFile.hide();
         treeOutline.show();
+        if (makeVisible)
+            txtGoToFile.$input.selectionStart = 1;
     },
     
-    showFileSearch: function() {
+    showGoToFile: function() {
         gotofile.setEventsEnabled(true);
         if (dgGoToFile.getProperty("visible"))
             return;
-        gotofile.filter(txtGoToFile.value.match(/^@/) ? "" : txtGoToFile.value, false, true);
+        if (txtGoToFile.value.match(/^@/)) {
+            this.lastOutlineText = txtGoToFile.value;
+-           txtGoToFile.setValue(this.lastGoToFileText);
+        }
+        gotofile.filter(txtGoToFile.value, false, true);
         dgGoToFile.show();
         treeOutline.hide();
     },
     
     renderOutline: function(ignoreFilter) {
-        require("core/ext").initExtension(gotofile);
+        ext.initExtension(gotofile);
         var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
         this.isDirty = ignoreFilter;
+        this.isKeyDownAfterDirty = false;
         
-        var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter);
-        if (outline.items)
-            outline = outline.items;
-    },
-    
-    scrollToSelected: function() {
-        var outline = this.filteredOutline;
-        var ace = editors.currentEditor.amlEditor.$editor;
-        
+        var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter, true);
+
+        /* TODO: set "empty" message
+        if (outline.length === 0)
+            treeOutline.clear(treeOutline["empty-message"], "empty");
+        else
+            treeOutline.$removeClearMessage();
+        */
+
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
         mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
-
+        return selected;
+    },
+    
+    scrollToSelected: function(selected) {
         var node = mdlOutline.queryNode("//*[@selected]");
         if (node) {
             this.ignoreSelectOnce = true;
@@ -192,15 +248,25 @@ module.exports = {
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
         }
-        else { //if (mdlOutline.data.childNodes[0]) {        
-            // HACK: Need to set to non-falsy value first
-            treeOutline.$container.scrollTop = 1;
-            treeOutline.$container.scrollTop = 0;
-            //mdlOutline.data.childNodes[0].scrollIntoView();
+        else {
+            this.scrollToTop();
         }
+    },
+    
+    scrollToTop: function(selectFirstItem) {
+        if (selectFirstItem && mdlOutline.data.childNodes[0]) {
+            treeOutline.select(mdlOutline.data.childNodes[0]);
+        }
+        // HACK: Need to set to non-falsy values first
+        treeOutline.$container.scrollTop = 2;
+        treeOutline.$container.scrollTop = 1;
+        treeOutline.$container.scrollTop = 0;
     },
 
     onSelect: function(el) {
+        if (gotofile.eventsEnabled)
+            return;
+            
         if (this.ignoreSelectOnce) {
             this.ignoreSelectOnce = false;
             return;
@@ -218,8 +284,9 @@ module.exports = {
         var linesVisible = editor.renderer.$size.height / lineHeight;
         lineEnd = Math.min(lineEnd, line + linesVisible);
         if (lineVisibleStart <= line && lineEnd <= lineVisibleStart + linesVisible)
-            return; 
-        editor.scrollToLine((line + lineEnd) / 2 - 1, true);  
+            return;
+        var SAFETY = 1.5;
+        editor.scrollToLine(Math.round((line + lineEnd) / 2 - SAFETY), true)
     },
     
     onKeyDown: function(e) {
@@ -227,9 +294,19 @@ module.exports = {
             return;
             
         if (e.keyCode === 27) { // Escape
+            if (this.$originalLine) {
+                var editor = editors.currentEditor;
+                var ace = editor.ceEditor.$editor;
+                ace.gotoLine(this.$originalLine, this.$originalColumn, apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll")));
+                
+                delete this.$originalLine;
+                delete this.$originalColumn;
+            }
             gotofile.toggleDialog(-1);
         }
         else if (e.keyCode === 13) { // Enter
+            this.ignoreSelectOnce = false;
+            this.onSelect(treeOutline.selected);
             gotofile.toggleDialog(-1);
         }
         else if (e.keyCode === 40) { // Down
@@ -245,13 +322,19 @@ module.exports = {
             return;
         }
         else if (this.isDirty) {
-            this.renderOutline();
+            this.isKeyDownAfterDirty = true;
         }
     },
     
     onKeyUp: function(e) {
-        if (e.keyCode === 50) // @
-            this.updateOutline();
+        if (e.keyCode === 50) { // @
+            this.updateOutline(false, true);
+        }
+        else if (this.isDirty && this.isKeyDownAfterDirty) {
+            this.renderOutline();
+            this.scrollToTop(true);
+            this.isDirty = false;
+        }
     },
     
     getNodeAfter: function(node) {
@@ -276,19 +359,15 @@ module.exports = {
     },
     
     onAfterChange: function(event) {
-        if (txtGoToFile.value === "@") 
-            this.ignoreSelectOnce = true;
-            
         if (txtGoToFile.value.match(/^@/)) {
             this.updateOutline();
             gotofile.setEventsEnabled(false);
         }
         else {
-            this.showFileSearch();
+            this.showGoToFile();
         }
         this.renderOutline();
-    },
+        this.scrollToTop(true);
+    }
 };
 });
-
-

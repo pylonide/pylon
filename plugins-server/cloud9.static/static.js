@@ -1,10 +1,12 @@
 var connect = require("connect");
+//var connect_static = require("connect-architect/connect/middleware/static");
 
 module.exports = function startup(options, imports, register) {
 
     var rjs = {};
     var prefix = options.prefix || "/static";
-
+    var workerPrefix = options.workerPrefix || "/static";
+    
     var staticServer = connect.createServer();
     imports.connect.useMain(options.bindPrefix || prefix, staticServer)
 
@@ -14,7 +16,8 @@ module.exports = function startup(options, imports, register) {
                 for (var i = 0; i < statics.length; i++) {
                     var s = statics[i];
 
-                    console.log("MOUNT", s.mount, s.path, prefix);
+//                    console.log("MOUNT", s.mount, s.path, prefix);
+
                     staticServer.use(s.mount, connect.static(s.path));
 
                     var libs = s.rjs || {};
@@ -30,6 +33,10 @@ module.exports = function startup(options, imports, register) {
 
             getStaticPrefix: function() {
                 return prefix;
+            },
+            
+            getWorkerPrefix: function() {
+                return workerPrefix;
             }
         }
     });

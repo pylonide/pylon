@@ -32,6 +32,11 @@ var util = require("core/util");
 //    this.name = value;
 //};
 
+// used for local
+const OFFLINE = 1 << 2;
+const LOCAL = 1 << 4;
+const ONLINE = 1 << 6;
+
 var ext;
 module.exports = ext = {
     //Extension types

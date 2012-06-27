@@ -22,6 +22,7 @@ var markupSettings =  require("text!ext/vim/settings.xml");
 var VIM_ENABLED = false;
 var isLoading = false;
 var vimHandler = null;
+var cliAutoOpened = null;
 
 var _loadKeyboardHandler = function(path, callback) {
     var _self = this;
@@ -42,7 +43,7 @@ var _loadKeyboardHandler = function(path, callback) {
             return callback();
 
         var base = path.split("/").pop();
-        var filename = "/static/ace/build/keybinding-" + base + ".js";
+        var filename = ide.staticPrefix + "/ace/build/keybinding-" + base + ".js";
         var aceNetModule = "ace/lib/net";
         require(aceNetModule).loadScript(filename, callback);
     }
@@ -72,7 +73,11 @@ var enableVim = function enableVim() {
                 editor.setKeyboardHandler(vimHandler);
                 editor.on("vimMode", vimHandler.$statusListener);
                 ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-                require("ext/console/console").showInput();
+                var cli = require("ext/console/console");
+                if (cli.hiddenInput) {
+                    cli.showInput();
+                    cliAutoOpened = true;
+                }
                 cliCmds.addCommands(vimHandler);
             })
         }
@@ -87,6 +92,12 @@ var disableVim = function() {
     }
     ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
     VIM_ENABLED = false;
+    
+    var cli = require("ext/console/console");
+    if (!cli.hiddenInput && cliAutoOpened) {
+        cli.hideInput();
+        cliAutoOpened = false;
+    }
 };
 
 module.exports = ext.register("ext/vim/vim", {

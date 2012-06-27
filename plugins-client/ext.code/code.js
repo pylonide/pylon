@@ -240,7 +240,7 @@ module.exports = ext.register("ext/code/code", {
         return this.amlEditor.getSession();
     },
 
-    setDocument : function(doc, actiontracker){
+    setDocument : function(doc, actiontracker, isLazy){
         var _self = this;
 
         var ceEditor = this.amlEditor;
@@ -272,6 +272,7 @@ module.exports = ext.register("ext/code/code", {
 
                 doc.acesession.setValue(e.value || "");
 
+
                 if (doc.state)
                     _self.setState(doc, doc.state);
 
@@ -287,10 +288,11 @@ module.exports = ext.register("ext/code/code", {
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
 
-            ceEditor.setProperty("value", doc.acesession || "");
+            if (!isLazy)
+                ceEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
-                if (this.editor != _self)
+                if (this.editor != _self || !doc)
                     return;
 
                 if (!doc.isInited)
@@ -458,10 +460,16 @@ module.exports = ext.register("ext/code/code", {
                 editor.afterOpenFile(editor.getSession());
         });
 
+        // Override ACE key bindings (conflict with goto definition)
+        commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Ctrl-Shift-R" };
+        commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Ctrl-Alt-R" };
+        commands.addCommand(commands.commands.togglerecording);
+        commands.addCommand(commands.commands.replaymacro);
+
         c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
-            addEditorMenu("Tools/Record Macro", "togglerecording"), //@todo this needs some more work
+            addEditorMenu("Tools/Toggle Macro Recording", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
 
@@ -747,8 +755,6 @@ module.exports = ext.register("ext/code/code", {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
-
-            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
 
         ide.addEventListener("updatefile", function(e){
@@ -760,8 +766,11 @@ module.exports = ext.register("ext/code/code", {
             setTimeout(function() {
                 var doc = page.$doc;
                 var syntax = _self.getSyntax(doc.getNode());
-                doc.acesession.setMode(ceEditor.getMode(syntax));
-                doc.acesession.syntax = syntax;
+                // This event is triggered also when closing files, so session may be gone already.
+                if(doc.acesession) {
+                    doc.acesession.setMode(ceEditor.getMode(syntax));
+                    doc.acesession.syntax = syntax;
+                }
             });
         });
 
@@ -774,6 +783,9 @@ module.exports = ext.register("ext/code/code", {
         });
         
         ide.addEventListener("animate", function(e){
+            if (!ceEditor.$ext.offsetHeight)
+                return;
+        
             if (e.type == "editor") {
                 var renderer = ceEditor.$editor.renderer;
                 renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);

@@ -80,7 +80,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     apf.setStyleClass(navbar.$int, "closed");
                     navbar.$int.style.boxShadow = shadowClosed;
                     _self.btnArrow.show();
-                    panels.lastPanel.button.$setState("Out", {});
+                    if (panels.lastPanel)
+                        panels.lastPanel.button.$setState("Out", {});
                 }
                 else {
                     apf.setStyleClass(navbar.$int, "", ["closed"]);

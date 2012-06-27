@@ -8,6 +8,7 @@
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
+var util = require("core/util");
 var markup = require("text!ext/keybindings_default/keybindings_default.xml");
 var css = require("text!ext/keybindings_default/keybindings_default.css");
 var commands = require("ext/commands/commands");
@@ -67,6 +68,7 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
     nodes   : [],
 
     hook : function(){
+        css = util.replaceStaticPrefix(css);
         apf.importCssString(css || "");
         
         this.hotitems.keybindings = [this.nodes[0]];

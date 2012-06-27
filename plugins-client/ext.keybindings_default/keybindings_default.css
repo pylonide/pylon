@@ -1,13 +1,13 @@
 .keybindings_default .bg-bk-content {
-    background: url(/static/ext/main/style/images/gitui_menu_backg.png);
+    background: url({ide.staticPrefix}/ext/main/style/images/gitui_menu_backg.png);
 }
 
 /*.keybindings_default_vbox {
-    background: url(/static/ext/main/style/images/gitui_menu_backg.png);
+    background: url({ide.staticPrefix}/ext/main/style/images/gitui_menu_backg.png);
 }*/
 
 .keybindings_default_bar {
-    background: url(/static/ext/keybindings_default/res/divider.png) repeat-y top left;
+    background: url({ide.staticPrefix}/ext/keybindings_default/res/divider.png) repeat-y top left;
     position: relative;
     left: 0px;
     right: 7px;

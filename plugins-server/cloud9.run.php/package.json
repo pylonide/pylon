@@ -1,0 +1,18 @@
+{
+    "name": "cloud9.run.php",
+    "version": "0.0.1",
+
+    "main": "./php-plugin.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "run-php"
+        ],
+        "consumes": [
+            "process-manager",
+            "sandbox",
+            "vfs"
+        ]
+    }
+}

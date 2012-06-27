@@ -351,7 +351,7 @@
         }
 
         .versions_search .sbtb_icon {
-            background: url('/static/style/images/revisions_search.png') 0px -1px;
+            background: url('{ide.staticPrefix}/style/images/revisions_search.png') 0px -1px;
         }
 
         .versions_search .sbtb_middle {
@@ -367,7 +367,7 @@
         }
 
         .versions_search .btnclose {
-            background-image: url('/static/style/images/versions_search_close.png');
+            background-image: url('{ide.staticPrefix}/style/images/versions_search_close.png');
             background-position: 0px 0px;
         }
         #versionsHistoricalSlider {
