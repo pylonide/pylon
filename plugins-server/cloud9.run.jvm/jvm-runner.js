@@ -13,30 +13,25 @@ var WebJVMInstance = jvm.WebJVMInstance;
  * Run JVM apps
  */
 
-var exports = module.exports = function (url, pm, sandbox, usePortFlag, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
-        sandbox.getUnixId(function(err, unixId) {
-            if (err) return callback(err);        
-
-            init(projectDir, unixId, url);
-        });
+        init(projectDir, url);
     });
 
-    function init(projectDir, unixId, url) {
-        pm.addRunner("jvm", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
+    function init(projectDir, url) {
+        pm.addRunner("jvm", exports.factory(vfs, sandbox, projectDir, url));
 
         callback();
     }
 };
 
-exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+exports.factory = function(vfs, sandbox, root, url) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.root = root;
-        options.uid = uid;
         options.file = args.file;
         options.args = args.args;
         options.cwd = args.cwd;
@@ -46,11 +41,10 @@ exports.factory = function(sandbox, root, uid, url, usePortFlag) {
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
         options.url = url;
-        options.usePortFlag = usePortFlag;
 
         options.sandbox = sandbox;
 
-        return new Runner(options, callback);
+        return new Runner(vfs, options, callback);
     };
 };
 
@@ -114,7 +108,7 @@ function getJVMInstance(options, callback) {
     }
 }
 
-var Runner = exports.Runner = function(options, callback) {
+var Runner = exports.Runner = function(vfs, options, callback) {
     var self = this;
 
     this.options = options;
@@ -123,6 +117,7 @@ var Runner = exports.Runner = function(options, callback) {
         return callback("No sandbox specified");
     }
 
+    this.vfs = vfs;
     this.root = options.root;
     this.uid = options.uid;
 
@@ -191,7 +186,7 @@ var Runner = exports.Runner = function(options, callback) {
 
             jvmInstance.runArgs(function (runArgs) {
                 self.args = options.args = self.jvmArgs.concat(runArgs).concat(self.scriptArgs);
-                ShellRunner.call(self, options, callback);
+                ShellRunner.call(self, vfs, options, callback);
             });
         });
     }

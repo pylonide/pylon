@@ -17,6 +17,7 @@
         "consumes": [
             "process-manager",
             "sandbox",
+            "vfs",
             "run-jvm"
         ]
     }

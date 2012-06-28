@@ -3,18 +3,18 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var util = require("util");
-var NodeSocket = require("v8debug").NodeSocket;
+var VfsSocket = require("../cloud9.run.node-debug/vfs_socket");
 var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
 
-var DebugProxy = module.exports = function(port, options) {
+var DebugProxy = module.exports = function(vfs, port, options) {
 
     process.EventEmitter.call(this);
     var _self = this;
 
     this.connected = false;
 
-    var socket = this.socket = new NodeSocket("localhost", port);
-    socket.on("connect", function (argument) {
+    var socket = this.socket = new VfsSocket(vfs, port);
+    socket.on("connect", function initRequest() {
         _self.send({
             seq: 0,
             type: 'request',
@@ -24,6 +24,7 @@ var DebugProxy = module.exports = function(port, options) {
                 sourcepath: options.sourcepath
             }
         });
+        socket.removeListener("connect", initRequest);
     });
     socket.on("end", function(errorInfo) {
         _self.connected = false;

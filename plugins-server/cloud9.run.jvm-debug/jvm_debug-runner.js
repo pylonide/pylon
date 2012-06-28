@@ -2,7 +2,6 @@
 
 var util = require("util");
 var Path = require("path");
-var netutil = require("../cloud9.core/netutil");
 var c9util = require("../cloud9.core/util");
 var JavaDebugProxy = require("./javadebugproxy");
 
@@ -11,8 +10,10 @@ var JAVA_DEBUG_PORT = 6000;
 /**
  * Debug java apps with restricted user rights
  */
-var exports = module.exports = function (url, pm, sandbox, runJvm, usePortFlag, callback) {
+var exports = module.exports = function (url, vfs, pm, sandbox, runJvm, debugPort, callback) {
     var JvmRunner = runJvm.Runner;
+
+    debugPort = parseInt(debugPort);
 
     // create methods on exports, that take a reference from JvmRunner
     setup(JvmRunner);
@@ -20,81 +21,72 @@ var exports = module.exports = function (url, pm, sandbox, runJvm, usePortFlag, 
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
 
-        sandbox.getUnixId(function(err, unixId) {
-            if (err) return callback(err);
-
-            init(projectDir, unixId, url);
-        });
+        init(projectDir, url);
     });
 
-    function init(projectDir, unixId, url) {
-        pm.addRunner("jvm-debug", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
+    function init(projectDir, url) {
+        pm.addRunner("jvm-debug", exports.factory(vfs, sandbox, projectDir, url, debugPort));
 
         callback();
     }
 };
 
 function setup (JvmRunner) {
-    exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+    exports.factory = function(vfs, sandbox, root, url, debugPort) {
         return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
             options.root = root;
-            options.uid = uid;
             options.file = args.file;
             options.args = args.args;
             options.cwd = args.cwd;
             options.env = args.env;
+            options.debugPort = debugPort;
             options.jvmType = args.jvmType;
             options.encoding = args.encoding;
             options.breakOnStart = args.breakOnStart;
             options.eventEmitter = eventEmitter;
             options.eventName = eventName;
             options.url = url;
-            options.usePortFlag = usePortFlag;
 
             options.sandbox = sandbox;
 
-            return new Runner(options, callback);
+            return new Runner(vfs, options, callback);
         };
     };
     
-    var Runner = exports.Runner = function(options, callback) {
+    var Runner = exports.Runner = function(vfs, options, callback) {
         var self = this;
 
         this.breakOnStart = options.breakOnStart;
+        this.debugPort = options.debugPort;
         this.msgQueue = [];
 
-        netutil.findFreePort(JAVA_DEBUG_PORT, 64000, "localhost", function(err, port) {
-            if (err)
-                return callback("Could not find a free port");
+        var debugParams = "-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=localhost:"
+                + options.debugPort + ",server=y,suspend=";
 
-            var debugParams = "-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=localhost:"
-                    + port + ",server=y,suspend=";
+        if (this.breakOnStart)
+            debugParams += "y";
+        else
+            debugParams += "n";
 
-            if (self.breakOnStart)
-                debugParams += "y";
-            else
-                debugParams += "n";
+        options.jvmArgs = debugParams.split(" ");
 
-            options.jvmArgs = debugParams.split(" ");
+        JvmRunner.call(this, vfs, options, function (err) {
+            if (err) return callback(err);
 
-            JvmRunner.call(self, options, function (err) {
-                if (err) return callback(err);
+            callback.apply(null, arguments);
 
-                callback.apply(null, arguments);
-
-                // Start debug as soon as the "Listening for socket" message is printed
-                var startDebugListener = function (msg) {
-                    if ((msg.type == "node-debug-data" || msg.type == "node-data") && /dt_socket/.test(msg.data)) {
-                        self._startDebug(port, options);
-                        options.eventEmitter.removeListener(options.eventName, startDebugListener);
-                    } else if (msg.type === "node-exit") {
-                        options.eventEmitter.removeListener(options.eventName, startDebugListener);
-                    }
+            // Start debug as soon as the "Listening for socket" message is printed
+            var startDebugListener = function (msg) {
+                if ((msg.type == "node-debug-data" || msg.type == "node-data") && /dt_socket/.test(msg.data)) {
+                    self._startDebug(options.debugPort, options);
+                    options.eventEmitter.removeListener(options.eventName, startDebugListener);
+                } else if (msg.type === "node-exit") {
+                    options.eventEmitter.removeListener(options.eventName, startDebugListener);
                 }
-                options.eventEmitter.on(options.eventName, startDebugListener);
-            });
+            }
+            options.eventEmitter.on(options.eventName, startDebugListener);
         });
     };
 
@@ -126,18 +118,18 @@ function setup (JvmRunner) {
             this.msgQueue = [];
         };
 
-        this._startDebug = function(port, options) {
+        this._startDebug = function(debugPort, options) {
             var self = this;
             function send(msg) {
                 options.eventEmitter.emit(options.eventName, msg);
             }
 
             var debugOptions = {
-                port: port,
+                port: debugPort,
                 sourcepath: Path.join(options.cwd, "src")
             };
 
-            this.javaDebugProxy = new JavaDebugProxy(JAVA_DEBUG_PORT, debugOptions);
+            this.javaDebugProxy = new JavaDebugProxy(this.vfs, JAVA_DEBUG_PORT, debugOptions);
             this.javaDebugProxy.on("message", function(body) {
                 // console.log("\nRECV", body);
                 send({
