@@ -49,13 +49,13 @@ exports.cssText = "\
 }\
 \
 .ace-cobalt .ace_gutter {\
-  background: #e8e8e8;\
+  background: #011e3a;\
   color: #333;\
 }\
 \
 .ace-cobalt .ace_print_margin {\
   width: 1px;\
-  background: #e8e8e8;\
+  background: #011e3a;\
 }\
 \
 .ace-cobalt .ace_scroller {\
