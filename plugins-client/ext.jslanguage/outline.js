@@ -11,7 +11,6 @@ var EVENT_REGEX = /[a-zA-Z_0-9\$\_\ \(\)\[\]/@]/;
 
 var NOT_EVENT_HANDLERS = {
     addMarker: true,
-    once: true,
     traverseUp : true,
     traverse : true,
     topdown : true
