@@ -78,154 +78,162 @@ define(function(require, exports, module) {
 
     ide.start();
 
-    ide.addEventListener("extload", ide.initSocket = function() {
-        // fire up the socket connection:
-        var options = {
-            "remember transport": false,
-            transports: window.cloud9config.socketIoTransports,
-            reconnect: false,
-            resource: window.cloud9config.socketIoUrl,
-            "connect timeout": 500,
-            //"polling duration": 10,
-            "try multiple transports": true,
-            //"force new connection": true,
-            "transport options": {
-                "xhr-polling": {
-                    timeout: 60000
-                },
-                "jsonp-polling": {
-                    timeout: 60000
-                }
-            }
-        };
-
-        var retries = 0;
-        ide.socketConnect = function() {
-            // NOTE: This is a workaround for an init bug in socket.io
-            // @see https://github.com/LearnBoost/socket.io-client/issues/390
-            if (!ide.socket.socket.transport) {
-                // Try and connect until we succeed.
-                // NOTE: This may log a connection error to the error console but will recover gracefully and eventually connect.
-                ide.socketDisconnect();
-            } else {
-                retries = 0;
-                
-                ide.connecting = true;
-                ide.socket.json.send({
-                    command: "attach",
-                    sessionId: ide.sessionId,
-                    workspaceId: ide.workspaceId
-                });
-            }
-        };
-
-        ide.socketDisconnect = function() {
-            //Do Nothing
-        };
-        
-        ide.reconnectIfNeeded = function(){
-            var sock = ide.socket.socket;
-            if (!sock.connected && !sock.connecting && !sock.reconnecting) { //ide.loggedIn
-                retries++;
-
-                if (retries < 10 || retries < 60 && retries % 10 == 0 || retries % 50 == 0) {
-                    sock.reconnect();
-                    
-                    if (retries == 5) {
-                        ide.dispatchEvent("socketDisconnect");
-                        ide.connected = false;
-                    }
-                }
+    // fire up the socket connection:
+    var options = {
+        "remember transport": false,
+        transports: window.cloud9config.socketIoTransports,
+        reconnect: false,
+        resource: window.cloud9config.socketIoUrl,
+        "connect timeout": 500,
+        "try multiple transports": true,
+        "transport options": {
+            "xhr-polling": {
+                timeout: 60000
+            },
+            "jsonp-polling": {
+                timeout: 60000
             }
         }
-        
-        ide.socketMessage = function(message) {
-            if (typeof message == "string") {
-                try {
-                    message = JSON.parse(message);
-                }
-                catch(e) {
-                    window.console && console.error("Error parsing socket message", e, "message:", message);
-                    return;
-                }
-            }
+    };
 
-            if (message.type == "attached") {
-                ide.connecting = false;
-                ide.connected = true;
-                ide.dispatchEvent("socketConnect"); //This is called too often!!
-            }
-
-            if (message.type === "error") {
-                // TODO: Don't display all errors?
-                if (ide.dispatchEvent("showerrormessage", message) !== false) {
-                    util.alert(
-                        "Error on server",
-                        "Received following error from server:",
-                        JSON.stringify(message.message)
-                    );
-                }
-            }
-
-            ide.dispatchEvent("socketMessage", {
-                message: message
+    var retries = 0;
+    ide.socketConnect = function() {
+        // NOTE: This is a workaround for an init bug in socket.io
+        // @see https://github.com/LearnBoost/socket.io-client/issues/390
+        if (!ide.socket.socket.transport) {
+            // Try and connect until we succeed.
+            // NOTE: This may log a connection error to the error console but will recover gracefully and eventually connect.
+            ide.socketDisconnect();
+        } else {
+            retries = 0;
+            
+            ide.connecting = true;
+            ide.socket.json.send({
+                command: "attach",
+                sessionId: ide.sessionId,
+                workspaceId: ide.workspaceId
             });
-        };
-
-        // for unknown reasons io is sometimes undefined
-        try {
-            ide.socket = io.connect(null, options);
         }
-        catch (e) {
-            util.alert(
-                "Error starting up",
-                "Error starting up the IDE", "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
-                function() {
-                    window.location.reload();
-                }
-            );
+    };
 
-            var socketIoScriptEl = Array.prototype.slice.call(
-                document.getElementsByTagName("script")).filter(function(script) {
-                    return script.src && script.src.indexOf("socket.io.js") >= 0;
+    ide.socketDisconnect = function() {
+        //Do Nothing
+    };
+    
+    ide.reconnectIfNeeded = function(){
+        var sock = ide.socket.socket;
+        if (!sock.connected && !sock.connecting && !sock.reconnecting) { //ide.loggedIn
+            retries++;
+            if (retries < 10 || retries < 60 && retries % 10 == 0 || retries % 50 == 0) {
+                sock.disconnect();
+                sock.connect();
+                
+                if (retries == 5) {
+                    ide.dispatchEvent("socketDisconnect");
+                    ide.connected = false;
                 }
-            )[0];
-
-            var status;
-            if (socketIoScriptEl) {
-                apf.ajax(socketIoScriptEl.src, {
-                    callback: function(data, state, extra) {
-                        try {
-                            status = parseInt(extra.http.status, 10);
-                        } catch(ex) {}
-                        apf.dispatchEvent("error", {
-                            message: "socket.io client lib not loaded",
-                            error: {
-                                status: status,
-                                state: state,
-                                data: data,
-                                extra: extra
-                            }
-                        });
-                    }
-                });
-            } else {
-                apf.dispatchEvent("error", {
-                    message: "socket.io client lib not loaded",
-                    error: e
-                });
             }
-            return;
+        }
+    }
+    
+    ide.socketMessage = function(message) {
+        if (typeof message == "string") {
+            try {
+                message = JSON.parse(message);
+            }
+            catch(e) {
+                window.console && console.error("Error parsing socket message", e, "message:", message);
+                return;
+            }
         }
 
+        if (message.type == "attached") {
+            ide.connecting = false;
+            ide.connected = true;
+            ide.dispatchEvent("socketConnect"); //This is called too often!!
+        }
+
+        if (message.type === "error") {
+            // TODO: Don't display all errors?
+            if (ide.dispatchEvent("showerrormessage", message) !== false) {
+                util.alert(
+                    "Error on server",
+                    "Received following error from server:",
+                    JSON.stringify(message.message)
+                );
+            }
+        }
+
+        ide.dispatchEvent("socketMessage", {
+            message: message
+        });
+    };
+
+    // for unknown reasons io is sometimes undefined
+    try {
+        ide.socket = io.connect(null, options);
+        
+        var transportReadyHandler = function(){
+            setInterval(ide.reconnectIfNeeded, 100);
+            
+            ide.socket.removeListener("connect_failed", transportReadyHandler);
+            ide.socket.removeListener("error", transportReadyHandler);
+            ide.socket.removeListener("connecting", transportReadyHandler);
+        }
+        
+        ide.socket.on("connect_failed", transportReadyHandler);
+        ide.socket.on("error", transportReadyHandler);
+        ide.socket.on("connecting", transportReadyHandler);
+        
         ide.socket.on("message",    ide.socketMessage);
         ide.socket.on("connect",    ide.socketConnect);
         ide.socket.on("disconnect", ide.socketDisconnect);
-        
-        setInterval(ide.reconnectIfNeeded, 100);
-        
-        this.inited = true;
-    });
+    }
+    catch (e) {
+        util.alert(
+            "Error starting up",
+            "Error starting up the IDE", 
+            "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
+            function() {
+                window.location.reload();
+            }
+        );
+
+        var socketIoScriptEl = Array.prototype.slice.call(
+            document.getElementsByTagName("script")).filter(function(script) {
+                return script.src && script.src.indexOf("socket.io.js") >= 0;
+            }
+        )[0];
+
+        var status;
+        if (socketIoScriptEl) {
+            apf.ajax(socketIoScriptEl.src, {
+                callback: function(data, state, extra) {
+                    try {
+                        status = parseInt(extra.http.status, 10);
+                    } catch(ex) {}
+                    
+                    apf.dispatchEvent("error", {
+                        message: "socket.io client lib not loaded",
+                        error: {
+                            status: status,
+                            state: state,
+                            data: data,
+                            extra: extra
+                        }
+                    });
+                }
+            });
+        } else {
+            apf.dispatchEvent("error", {
+                message: "socket.io client lib not loaded",
+                error: e
+            });
+        }
+        return;
+    }
+
+    this.inited = true;
 
     ide.$msgQueue = [];
     ide.addEventListener("socketConnect", function() {
