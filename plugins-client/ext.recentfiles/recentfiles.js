@@ -27,19 +27,19 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         var _self = this;
 
         this.nodes.push(
-            this.menu = 
+            this.menu =
                 menus.addItemByPath("File/Open Recent/", null, 600),
-            
-            this.divider = 
+
+            this.divider =
               menus.addItemByPath("File/Open Recent/~", new apf.divider(), 1000000),
-            
+
             menus.addItemByPath("File/Open Recent/Clear Menu", new apf.item({
                 onclick : function(){
                     _self.clearMenu();
                 }
             }), 2000000)
         );
-        
+
         ide.addEventListener("settings.load", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/recentfiles");
@@ -98,7 +98,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             };
 
             _self.$add(obj);
-            
+
             settings.save();
         }
 
@@ -133,7 +133,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                     node.setAttribute("name", def.caption);
                     node.setAttribute("path", def.value);
 
-                    editors.gotoDocument({doc: ide.createDocument(node)});
+                    editors.gotoDocument({doc: ide.createDocument(node), origin: "recentfiles"});
                 }
             }), this.menu.firstChild);
         }
@@ -168,7 +168,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
 
     destroy : function(){
         menus.remove("File/Open Recent");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

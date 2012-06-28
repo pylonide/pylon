@@ -2,63 +2,39 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barOutline" skinset="language_skin" skin="codecomplete" width="300" visible="false">
-        <a:vbox anchors="0 0 0 0">
-            <a:toolbar>
-                <a:bar height = "36">
-                    <a:hbox edge="5">
-                        <a:textbox 
-                          id              = "tbOutlineSearch"
-                          realtime        = "true"
-                          flex            = "1"
-                          skin            = "searchbox_textbox"
-                          class           = "small_font"
-                          focusselect     = "true"
-                          initial-message = "Search Outline"
-                        />
-                    </a:hbox>
-                </a:bar>
-            </a:toolbar>
-            <a:hbox flex="1">
-                <a:model id="mdlOutline">
-                    <data>
-                    </data>
-                </a:model>
-                <a:tree
-                  id              = "treeOutline"
-                  skin            = "outline-tree"
-                  opencloseaction = "onmouseup"
-                  onafterchoose   = "require('ext/language/outline').jumpToAndClose(this.selected)"
-                  onafterselect   = "require('ext/language/outline').jumpTo(this.selected)"
-                  onkeyup         = "require('ext/language/outline').escapeOutline(event)"
-                  model           = "mdlOutline"
-                  openadd         = "false"
-                  startcollapsed  = "false"
-                  empty-message   = "No outline avaialble"
-                  flex            = "1"
-                  anchors = "0 0 0 0">
-                    <a:each
-                      match         = "[entries|entry]"
-                      filter        = "{tbOutlineSearch.value}"
-                      filter-groups = "entries"
-                      filter-fields = "@name"
-                    >
-                        <a:caption>
-                          <?lm [@name]{!![@meta] ? "<cpde style='color:gray;'> : [@meta]</code>" : ""} ?>
-                        </a:caption>
-                        <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
-                    </a:each>
-                </a:tree>
-                <a:scrollbar
-                  for      = "treeOutline"
-                  id       = "sbOutline"
-                  margin   = "2"
-                  skin     = "sbios"
-                  width    = "7"
-                  overflow2 = "auto"/>
-              </a:hbox>
-        </a:vbox>
-    </a:bar>
+    <a:hbox flex="1" visible="false">
+        <a:model id="mdlOutline">
+            <data>
+            </data>
+        </a:model>
+        <a:tree
+          id              = "treeOutline"
+          class           = "searchresults treeOutline"
+          opencloseaction = "onmouseup"
+          model           = "mdlOutline"
+          openadd         = "false"
+          startcollapsed  = "false"
+          nocollapse      = "true"
+          empty-message   = "No outline available"
+          loading-message = "Loading outline. One moment please..."
+          maxheight       = "350"
+          visible         = "false"
+          scrollbar       = "sbShared 32 7 7">
+            <a:each
+              match         = "[entries|entry]"
+            >   
+                <a:caption><?lm
+                    var re = new RegExp("({txtGoToFile.value.substr(1)})", 'i');
+                    var value = [@name];
+                    
+                    value.replace(re, <strong>$1</strong>);
+                    !![@meta] ? "<code style='color:gray;'> : [@meta]</code>" : "";
+                ?></a:caption>
+                
+                <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
+            </a:each>
+        </a:tree>
+    </a:hbox>
 
     <a:bar id="barHierarchy" skinset="language_skin" skin="codecomplete" width="300" visible="false">
         <a:vbox anchors="0 0 0 0">

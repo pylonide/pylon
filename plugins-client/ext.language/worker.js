@@ -86,17 +86,17 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(500);
 
-    sender.on("outline", function(event) {
-        _self.outline();
-    });
     sender.on("hierarchy", function(event) {
         _self.hierarchy(event);
     });
     sender.on("code_format", function(event) {
         _self.codeFormat();
     });
-    sender.on("complete", applyEventOnce(function(event) {
-        _self.complete(event);
+    sender.on("outline", applyEventOnce(function(event) {
+        _self.outline(event);
+    }));
+    sender.on("complete", applyEventOnce(function(data) {
+        _self.complete(data);
     }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
@@ -157,6 +157,10 @@ exports.createUIWorkerClient = function() {
         emitter._dispatchEvent.call(result, event, { data: data });
     };
     return result;
+};
+
+var isWorkerEnabled = exports.isWorkerEnabled = function() {
+    return !window.location || !window.location.search.match(/[?&]noworker=1/);
 };
 
 exports.createUIWorkerClient = function() {
@@ -272,6 +276,8 @@ function asyncParForEach(array, fn, callback) {
             handler.sender = this.sender;
             this.handlers.push(handler);
         } catch (e) {
+            if (isWorkerEnabled())
+                throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {
@@ -282,8 +288,12 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.parse = function(callback) {
+    this.parse = function(callback, allowCached) {
         var _self = this;
+        if (allowCached && this.cachedAst) {
+            callback(_self.cachedAst);
+            return;
+        }
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
@@ -294,6 +304,8 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
+                    if (e instanceof TypeError)
+                        throw e;
                     // Ignore parse errors
                     next();
                 }
@@ -305,23 +317,26 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    this.outline = function() {
+    this.outline = function(event) {
         var _self = this;
         this.parse(function(ast) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
-                        if(outline)
+                        if (outline) {
+                            outline.ignoreFilter = event.data. ignoreFilter;
                             return _self.sender.emit("outline", outline);
-                        else
+                        }
+                        else {
                             next();
+                        }
                     });
                 }
                 else
                     next();
             }, function() {
             });
-        });
+        }, true);
     };
 
     this.hierarchy = function(event) {
@@ -686,7 +701,8 @@ function asyncParForEach(array, fn, callback) {
     }
     
     this.complete = function(event) {
-        var pos = event.data;
+        var data = event.data;
+        var pos = data.pos;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
         var _self = this;
@@ -708,7 +724,7 @@ function asyncParForEach(array, fn, callback) {
             
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                    handler.complete(_self.doc, ast, data, currentNode, function(completions) {
                         if (completions)
                             matches = matches.concat(completions);
                         next();

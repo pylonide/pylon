@@ -1,47 +1,142 @@
 /**
- * Module that implements outlines
+ * Outline support.
+ *
+ * @copyright 2012, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
+var ext = require("core/ext");
+var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
-var ide = require("core/ide");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
+var gotofile = require("ext/gotofile/gotofile");
+var search = require("ext/gotofile/search");
+var outline;
 
 module.exports = {
-    hook: function(ext, worker) {
+    nodes: [],
+    fullOutline : [],
+    filteredOutline : [],
+    ignoreSelectOnce : false,
+    isDirty : false,
+    isKeyDownAfterDirty : false,
+    lastGoToFileText : "",
+    lastOutlineText : "@",
+    
+    hook: function(oExt, worker) {
+        this.worker = worker;
         var _self = this;
+        outline = oExt;
         
         worker.on("outline", function(event) {
-            _self.renderOutline(event);
+            _self.openOutline(event);
+        }); 
+        
+        commands.addCommand({
+            name: "outline",
+            hint: "search for a definition and jump to it",
+            bindKey: {mac: "Command-Shift-E", win: "Ctrl-Shift-E"},
+            isAvailable : function(editor) {
+                return editor && editor.ceEditor;
+            },
+            exec: function () {
+                _self.updateOutline(true);
+            }
+        });
+        
+        var mnuItem = new apf.item({
+            command : "outline"
         });
 
-        ext.nodes.push(
-            menus.addItemByPath("View/Outline", new apf.item({
-                onclick: function() {
-                    worker.emit("outline", {data: {}});
-                }
-            }))
+        this.nodes.push(
+            menus.addItemByPath("Tools/Quick Outline", mnuItem, 100),
+            menus.addItemByPath("Goto/Goto Definition...", mnuItem.cloneNode(false), 110)
         );
+        
+        ide.addEventListener("init.ext/gotofile/gotofile", function() {
+            var selStart, selEnd;
+            
+            dgGoToFile.parentNode.insertBefore(treeOutline, dgGoToFile);
+            txtGoToFile.addEventListener("afterchange", function(e) {
+                _self.onAfterChange(e);
+            }, true);            
+            txtGoToFile.addEventListener("keydown", function(e) {
+                _self.onKeyDown(e);
+            });
+            txtGoToFile.addEventListener("keyup", function(e) {
+                _self.onKeyUp(e);
+            });
+            treeOutline.addEventListener("onafterselect", function() {
+                _self.onSelect(treeOutline.selected);
+            });
+            treeOutline.addEventListener("onafterchoose", function() {
+                _self.ignoreSelectOnce = false;
+                _self.onSelect(treeOutline.selected);
+                gotofile.toggleDialog(-1);
+            });
+            treeOutline.addEventListener("click", function(e) {
+                _self.ignoreSelectOnce = false;
+                _self.onSelect(treeOutline.selected);
+                var COLLAPSE_AREA = 14;
+                if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
+                    gotofile.toggleDialog(-1);
+            });
+            txtGoToFile.addEventListener("blur", function() {
+                selStart = txtGoToFile.$input.selectionStart;
+                selEnd = txtGoToFile.$input.selectionEnd;
+            });
+            treeOutline.addEventListener("focus", function() {
+                txtGoToFile.focus();
+                if (selStart && selEnd) {
+                    txtGoToFile.$input.selectionStart = selStart;
+                    txtGoToFile.$input.selectionEnd = selEnd;
+                }
+            });
+            winGoToFile.addEventListener("prop.visible", function(e) {
+                if (!e.value)
+                    _self.showGoToFile();
+            });
+            var editor = editors.currentEditor.amlEditor.$editor;
+            
+            treeOutline.bufferselect = false;
+        });   
+
     },
 
     outlineJsonToXml: function(array, selected, tag) {
         var xmlS = [];
         for (var i = 0; i < array.length; i++) {
             var elem = array[i];
+            var pos = elem.displayPos || elem.pos;
             xmlS.push('<'); xmlS.push(tag); xmlS.push(' name="'); xmlS.push(elem.name);
-                xmlS.push('" icon="' + elem.icon);
-                xmlS.push('" sl="'); xmlS.push(elem.pos.sl);
-                xmlS.push('" el="'); xmlS.push(elem.pos.el);
-                xmlS.push('" sc="'); xmlS.push(elem.pos.sc)
-                xmlS.push('" ec="'); xmlS.push(elem.pos.ec);
+                xmlS.push('" icon="' + (elem.icon || "method"));
+                xmlS.push('" sl="'); xmlS.push(pos.sl);
+                xmlS.push('" el="'); xmlS.push(pos.el);
+                xmlS.push('" sc="'); xmlS.push(pos.sc);
+                xmlS.push('" ec="'); xmlS.push(pos.ec);
+                xmlS.push('" elx="'); xmlS.push(elem.pos.el);
             elem.meta && xmlS.push('" meta="') && xmlS.push(elem.meta);
-                elem === selected && xmlS.push('" selected="true');
+                if (elem === selected)
+                    xmlS.push('" selected="true');
                 xmlS.push('">\n');
             xmlS = xmlS.concat(this.outlineJsonToXml(elem.items, selected, 'entry'));
                 xmlS.push('</'); xmlS.push(tag); xmlS.push('>');
         }
         return xmlS.join('');
+    },
+    
+    updateOutline : function(showNow, ignoreInputText) {
+        this.showOutline(showNow, ignoreInputText);
+        /* TODO: set loading message if file has changed
+        treeOutline.$setClearMessage(treeOutline["loading-message"], "loading");
+        apf.setOpacity(winGoToFile.$ext, 1);
+        */
+        this.worker.emit("outline", { data : { ignoreFilter: showNow } });
     },
 
     findCursorInOutline: function(json, cursor) {
@@ -55,77 +150,224 @@ module.exports = {
         return null;
     },
 
-    renderOutline : function(event) {
-        var ace = editors.currentEditor.amlEditor.$editor;
+    openOutline : function(event) {
         var data = event.data;
-        if (! data.success) {
-            // TODO pop up an error dialog
+        if (data.error || data.success === false) {
+            // TODO: show error in outline?
+            console.log("Oh noes! " + data.error);
             return;
         }
-        var outline = data.body;
         
-        barOutline.setAttribute('visible', true);
+        this.fullOutline = event.data.body;
+        
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
+        var cursor = ace.getCursorPosition();
+        this.$originalLine = cursor.row + 1;
+        this.$originalColumn = cursor.column;
+        
+        var selected = this.renderOutline(event.data.showNow);
+        
+        if (txtGoToFile.value.match(/^@/))
+            this.showOutline();
+
+        // UNDONE: Scroll to selected
+        // if (event.data.showNow)
+        //     this.scrollToSelected(selected);
+    },
+    
+    /**
+     * Show the outline view in the goto dialog,
+     * instead of the file list.
+     */
+    showOutline: function(makeVisible, ignoreInputText) {
+        ext.initExtension(outline);
+        ext.initExtension(gotofile);
+        if (makeVisible) {
+            gotofile.toggleDialog(1);
+            txtGoToFile.focus();
+            this.showOutline();
+            if (txtGoToFile.value.length > 0)
+                txtGoToFile.$input.selectionStart = 1;
+            this.scrollToTop();
+        }
+        gotofile.setEventsEnabled(false);
+        if (!dgGoToFile.getProperty("visible"))
+            return;
+        if (!txtGoToFile.value.match(/^@/) && !ignoreInputText) {
+            this.lastGoToFileText = txtGoToFile.value;
+            txtGoToFile.setValue(this.lastOutlineText);
+        }
+        this.ignoreSelectOnce = true;
+        dgGoToFile.hide();
+        treeOutline.show();
+        if (makeVisible)
+            txtGoToFile.$input.selectionStart = 1;
+    },
+    
+    showGoToFile: function() {
+        gotofile.setEventsEnabled(true);
+        if (dgGoToFile.getProperty("visible"))
+            return;
+        if (txtGoToFile.value.match(/^@/)) {
+            this.lastOutlineText = txtGoToFile.value;
+-           txtGoToFile.setValue(this.lastGoToFileText);
+        }
+        gotofile.filter(txtGoToFile.value, false, true);
+        dgGoToFile.show();
+        treeOutline.hide();
+    },
+    
+    renderOutline: function(ignoreFilter) {
+        ext.initExtension(gotofile);
+        var filter = ignoreFilter ? "" : txtGoToFile.value.substr(1);
+        this.isDirty = ignoreFilter;
+        this.isKeyDownAfterDirty = false;
+        
+        var outline = this.filteredOutline = search.treeSearch(this.fullOutline, filter, true);
+
+        /* TODO: set "empty" message
+        if (outline.length === 0)
+            treeOutline.clear(treeOutline["empty-message"], "empty");
+        else
+            treeOutline.$removeClearMessage();
+        */
+
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
-        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline.items, selected, 'entries') + '</data>'));
-        
-        var node = mdlOutline.queryNode("//entry[@selected]");
-        if(node) {
+        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
+        return selected;
+    },
+    
+    scrollToSelected: function(selected) {
+        var node = mdlOutline.queryNode("//*[@selected]");
+        if (node) {
+            this.ignoreSelectOnce = true;
             treeOutline.select(node);
             var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
         }
-        //document.addEventListener("click", this.closeOutline);
-        ace.container.addEventListener("DOMMouseScroll", this.closeOutline);
-        ace.container.addEventListener("mousewheel", this.closeOutline);
-
-        apf.popup.setContent("outline", barOutline.$ext);
-        setTimeout(function() {
-            apf.popup.show("outline", {
-                x        : editors.currentEditor.amlEditor.getWidth()/2 - 150,
-                y        : 0,
-                animate  : false,
-                ref      : ace.container,
-                callback : function() {
-                    barOutline.setHeight(300);
-                    barOutline.setWidth(300);
-                    sbOutline.$resize();
-                    setTimeout(function() {
-                        treeOutline.focus();
-                    }, 100);
-                }
-            });
-        }, 0);
-    },
-
-    jumpTo: function(el) {
-        setTimeout(function() {
-            var editor = editors.currentEditor.amlEditor.$editor;
-            var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
-                +el.getAttribute("el"), +el.getAttribute("ec"));
-            editor.selection.setSelectionRange(range);
-            editor.centerSelection();
-        });
-    },
-
-    jumpToAndClose: function(el) {
-        this.closeOutline();
-    },
-
-    closeOutline : function(event) {
-        var ace = editors.currentEditor.amlEditor.$editor;
-        //document.removeEventListener("click", this.closeOutline);
-        ace.container.removeEventListener("DOMMouseScroll", this.closeOutline);
-        ace.container.removeEventListener("mousewheel", this.closeOutline);
-        barOutline.$ext.style.display = "none";
-        setTimeout(function() {
-            editors.currentEditor.amlEditor.$editor.focus();
-        }, 100);
-    },
-
-    escapeOutline: function(event) {
-        if(event.keyCode === 27) {
-            this.closeOutline();
+        else {
+            this.scrollToTop();
         }
+    },
+    
+    scrollToTop: function(selectFirstItem) {
+        if (selectFirstItem && mdlOutline.data.childNodes[0]) {
+            treeOutline.select(mdlOutline.data.childNodes[0]);
+        }
+        // HACK: Need to set to non-falsy values first
+        treeOutline.$container.scrollTop = 2;
+        treeOutline.$container.scrollTop = 1;
+        treeOutline.$container.scrollTop = 0;
+    },
+
+    onSelect: function(el) {
+        if (gotofile.eventsEnabled)
+            return;
+            
+        if (this.ignoreSelectOnce) {
+            this.ignoreSelectOnce = false;
+            return;
+        }
+        var editor = editors.currentEditor.amlEditor.$editor;
+        var range = new Range(+el.getAttribute("sl"), +el.getAttribute("sc"),
+            +el.getAttribute("el"), +el.getAttribute("ec"));
+        this.scrollToDefinition(editor, +el.getAttribute("sl"), +el.getAttribute("elx") || +el.getAttribute("el"));
+        editor.selection.setSelectionRange(range);
+    },
+    
+    scrollToDefinition: function(editor, line, lineEnd) {
+        var lineHeight = editor.renderer.$cursorLayer.config.lineHeight;
+        var lineVisibleStart = editor.renderer.scrollTop / lineHeight
+        var linesVisible = editor.renderer.$size.height / lineHeight;
+        lineEnd = Math.min(lineEnd, line + linesVisible);
+        if (lineVisibleStart <= line && lineEnd <= lineVisibleStart + linesVisible)
+            return;
+        var SAFETY = 1.5;
+        editor.scrollToLine(Math.round((line + lineEnd) / 2 - SAFETY), true)
+    },
+    
+    onKeyDown: function(e) {
+        if (gotofile.eventsEnabled)
+            return;
+            
+        if (e.keyCode === 27) { // Escape
+            if (this.$originalLine) {
+                var editor = editors.currentEditor;
+                var ace = editor.ceEditor.$editor;
+                ace.gotoLine(this.$originalLine, this.$originalColumn, apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll")));
+                
+                delete this.$originalLine;
+                delete this.$originalColumn;
+            }
+            gotofile.toggleDialog(-1);
+        }
+        else if (e.keyCode === 13) { // Enter
+            this.ignoreSelectOnce = false;
+            this.onSelect(treeOutline.selected);
+            gotofile.toggleDialog(-1);
+        }
+        else if (e.keyCode === 40) { // Down
+            e.preventDefault();
+            delete e.currentTarget;
+            treeOutline.dispatchEvent("keydown", e);
+            return;
+        }
+        else if (e.keyCode === 38) { // Up
+            e.preventDefault();
+            delete e.currentTarget;
+            treeOutline.dispatchEvent("keydown", e);
+            return;
+        }
+        else if (this.isDirty) {
+            this.isKeyDownAfterDirty = true;
+        }
+    },
+    
+    onKeyUp: function(e) {
+        if (e.keyCode === 50) { // @
+            this.updateOutline(false, true);
+        }
+        else if (this.isDirty && this.isKeyDownAfterDirty) {
+            this.renderOutline();
+            this.scrollToTop(true);
+            this.isDirty = false;
+        }
+    },
+    
+    getNodeAfter: function(node) {
+        if (node.childNodes[1] && treeOutline.isCollapsed(node.childNodes[1])) {
+            return node.childNodes[1];
+        } else {
+            while (!node.nextSibling && node.parentNode)
+                node = node.parentNode;
+            return node.nextSibling;
+        }
+    },
+    
+    getNodeBefore: function(node) {
+        if (node.previousSibling && node.previousSibling.attributes) {
+            node = node.previousSibling;
+            while (node.childNodes[1] && treeOutline.isCollapsed(node.childNodes[1]))
+                node = node.childNodes[1];
+            return node;
+        } else {
+            return node.parentNode == treeOutline.root ? null : node.parentNode;
+        }
+    },
+    
+    onAfterChange: function(event) {
+        if (txtGoToFile.value.match(/^@/)) {
+            this.updateOutline();
+            gotofile.setEventsEnabled(false);
+        }
+        else {
+            this.showGoToFile();
+        }
+        this.renderOutline();
+        this.scrollToTop(true);
     }
 };
 });

@@ -94,7 +94,7 @@ module.exports = {
      * @param fullAst the entire AST of the current file (if exists)
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(doc, fullAst, callback) {
+    outline: function(doc, ast, callback) {
         callback();
     },
 
@@ -120,11 +120,11 @@ module.exports = {
      * Performs code completion for the user based on the current cursor position
      * @param doc the Document object repersenting the source
      * @param fullAst the entire AST of the current file (if exists)
-     * @param cursorPos the current cursor position (object with keys 'row' and 'column')
+     * @param data contains pos, the current cursor position (object with keys 'row' and 'column')
+     *        and staticPrefix, the current loading URL
      * @param currentNode the AST node the cursor is currently at (if exists)
-     * @return an array of completion matches
      */
-    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
+    complete: function(doc, fullAst, data, currentNode, callback) {
         callback();
     },
 

@@ -1,5 +1,5 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * File name and definition search for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -25,7 +25,7 @@ var fileTypes = {
 /**
  * Search through a list of filenames.
  */
-module.exports = function(filelist, keyword, cache) {
+module.exports.fileSearch = function(filelist, keyword, cache) {
     var klen = keyword.length;
     
     /**
@@ -101,7 +101,7 @@ module.exports = function(filelist, keyword, cache) {
                 value : 2000000 - value,
                 //name  : value + ", " + name
                 name  : name
-            })
+            });
         }
     }
 
@@ -118,6 +118,41 @@ module.exports = function(filelist, keyword, cache) {
     res = res.join("\n").split("\n");
     
     return res;
-}
+};
+
+var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensitive, results, head) {
+    if (caseInsensitive)
+        keyword = keyword.toLowerCase();
+    results = results || [];
+    head = head || 0;
+    for (var i = 0; i < tree.length; i++) {
+        var node = tree[i];
+        var name = node.name;
+        if (caseInsensitive)
+            name = name.toLowerCase();
+        var index = name.indexOf(keyword);
+        if (index === -1) {
+            if (node.items)
+                results = treeSearch(node.items, keyword, caseInsensitive, results, head);
+            continue
+        }
+        var result = {
+            items: node.items ? treeSearch(node.items, keyword, caseInsensitive) : []
+        };
+        for (var p in node) {
+            if (node.hasOwnProperty(p) && p !== "items")
+                result[p] = node[p];
+        }
+        if (index === 0) {
+            results.splice(head, 0, result);
+            head++;
+        }
+        else {
+            results.push(result);
+        }
+    }
+    return results;
+};
+
 
 });

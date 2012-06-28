@@ -134,6 +134,8 @@ module.exports = {
             ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
         }
 
+        if(this.ext.isContinuousCompletionEnabled())
+            this.ext.setContinuousCompletionEnabled(false);
         p.on("cursorLeave", function() {
             _self.finishRefactoring();
         });
@@ -175,6 +177,8 @@ module.exports = {
     },
 
     $cleanup: function() {
+        if(this.ext.isContinuousCompletionEnabled())
+            this.ext.setContinuousCompletionEnabled(true);
         marker.enableMarkerType('occurrence_main');
         marker.enableMarkerType('occurrence_other');
         this.placeHolder = null;

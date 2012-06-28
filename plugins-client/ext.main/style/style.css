@@ -47,7 +47,7 @@ BODY {
     padding : 10px;
     position : absolute;
     left : 0;
-    top : 0; 
+    top : 0;
     right : 0;
     bottom : 0;
     z-index : 100;
@@ -89,13 +89,13 @@ BODY {
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    
+
     -webkit-box-shadow: 0px 3px 5px 0px #000000;
     -moz-box-shadow: 0px 3px 5px 0px #000000;
-    box-shadow: 0px 3px 5px 0px #000000; 
-    
+    box-shadow: 0px 3px 5px 0px #000000;
+
     height: 11px;
-    
+
     min-width: 4%;
     margin: 0 auto;
     width: 4%;
@@ -154,7 +154,7 @@ BODY {
 /*    border-left : 1px solid #333;*/
 /*    -moz-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;
     -webkit-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;*/
-    
+
     background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
     background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
 }
@@ -175,7 +175,7 @@ BODY {
     border-radius         : 0;
 }
 .dockcol .basic {
-    
+
 }
 .dockcol .basic .expand-panel-bg {
     background-image: linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
@@ -186,7 +186,7 @@ BODY {
     right: -3px
 }
 .dockcol .basic .hbox {
-    
+
 }
 
 .text.interactive_output {
@@ -228,9 +228,9 @@ BODY {
 /**
  * SERVICE SIGNIN BUTTONS
  */
- 
+
 .signin_options {
-    margin: 15px 16px 0;
+    margin: 0;
     text-align: right;
 }
 
@@ -271,7 +271,7 @@ BODY {
     width: 26px;
     height: 24px;
     background:url(images/signin_facebook.png) no-repeat 0 0;
-    
+
     display: inline-block;
     float: right;
     height: 24px;
@@ -288,7 +288,7 @@ BODY {
     width: 26px;
     height: 24px;
     background:url(images/signin_google.png) no-repeat 0 0;
-    
+
     display: inline-block;
     float: right;
     height: 24px;
@@ -305,7 +305,7 @@ BODY {
     width: 26px;
     height: 24px;
     background:url(images/signin_twitter.png) no-repeat 0 0;
-    
+
     display: inline-block;
     float: right;
     height: 24px;
@@ -316,4 +316,53 @@ BODY {
 
 .twitter-signin.btn-over {
     background-position:0 -24px;
+}
+
+@-webkit-keyframes loading-spinner { 0%, 8.32% { background-position: -0px -0px; } 8.33%, 16.65% { background-position: -15px -0px; } 16.66%, 24.99% { background-position: -30px -0px; } 25%, 33.32% { background-position: -45px -0px; } 33.33%, 41.65% { background-position: -60px -0px; } 41.66%, 49.99% { background-position: -75px -0px; } 50%, 58.32% { background-position: -90px -0px; } 58.33%, 66.65% { background-position: -105px -0px; } 66.66%, 74.99% { background-position: -120px -0px; } 75%, 83.32% { background-position: -135px -0px; } 83.33%, 91.65% { background-position: -150px -0px; } 91.66%, 99.99% { background-position: -165px -0px; } } 
+   @-moz-keyframes loading-spinner { 0%, 8.32% { background-position: -0px -0px; } 8.33%, 16.65% { background-position: -15px -0px; } 16.66%, 24.99% { background-position: -30px -0px; } 25%, 33.32% { background-position: -45px -0px; } 33.33%, 41.65% { background-position: -60px -0px; } 41.66%, 49.99% { background-position: -75px -0px; } 50%, 58.32% { background-position: -90px -0px; } 58.33%, 66.65% { background-position: -105px -0px; } 66.66%, 74.99% { background-position: -120px -0px; } 75%, 83.32% { background-position: -135px -0px; } 83.33%, 91.65% { background-position: -150px -0px; } 91.66%, 99.99% { background-position: -165px -0px; } } 
+        @keyframes loading-spinner { 0%, 8.32% { background-position: -0px -0px; } 8.33%, 16.65% { background-position: -15px -0px; } 16.66%, 24.99% { background-position: -30px -0px; } 25%, 33.32% { background-position: -45px -0px; } 33.33%, 41.65% { background-position: -60px -0px; } 41.66%, 49.99% { background-position: -75px -0px; } 50%, 58.32% { background-position: -90px -0px; } 58.33%, 66.65% { background-position: -105px -0px; } 66.66%, 74.99% { background-position: -120px -0px; } 75%, 83.32% { background-position: -135px -0px; } 83.33%, 91.65% { background-position: -150px -0px; } 91.66%, 99.99% { background-position: -165px -0px; } } 
+
+.editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
+.editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving,
+.loading-spinner {     
+    background: url(images/tab-save-spinner-active.png) no-repeat;
+    -webkit-animation: loading-spinner 1.2s linear 0s infinite normal;
+	   -moz-animation: loading-spinner 1.2s linear 0s infinite normal;
+	        animation: loading-spinner 1.2s linear 0s infinite normal;
+}
+.view-mode-box {
+    background-color: #232e38;
+    color: #e9e9e9;
+    font-size: 13px;
+}
+.c9-logo-view-mode {
+    background:url(images/logo-viewmode.png) no-repeat 0 0;
+    width: 210px;
+    height: 35px;
+}
+.blue-label {
+    color: #aec8de;
+}
+.green-label {
+    color: #d2f4c7;
+}
+.yellow-label {
+    color: #ffb017;
+}
+.white-label {
+    color: #e9f8fd;
+    font-size: 13px;
+}
+
+.nodecor-link {
+    text-decoration: none;
+}
+
+.needsignin {
+    font-size: 13px;
+}
+.rights-change {
+    font-size: 11px;
+    line-height: 15px;
+    text-align: center;
 }

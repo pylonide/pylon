@@ -10,6 +10,7 @@ build/app.build.js
 .settings.xml
 .project
 .settings
+.sessions
 /demo
 .settings.xml.old
 .DS_Store
@@ -40,4 +41,4 @@ deps/ace/
 plugins-server/fixtures/node_env/hello.js
 npm-debug.log
 plugins-client/lib.apf/www/apf-packaged/apf_debug.js
-
+.sessions/

@@ -396,7 +396,8 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }
 
-        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
+        var fileExtension = (xmlNode.getAttribute("path") || "")
+            .split(".").pop().toLowerCase();
         var editor = (this.fileExtensions[fileExtension]
           && this.fileExtensions[fileExtension][0])
           || this.fileExtensions["default"];
@@ -458,7 +459,7 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         if (active === false) // init && !
-            return;
+            return {editor: editor, page: fake};
 
         //Set active page
         tabs.set(filepath);
@@ -478,6 +479,8 @@ module.exports = ext.register("ext/editors/editors", {
         }, 100);
 
         settings.save();
+        
+        return {editor: editor, page: fake};
     },
 
     initEditorEvents: function(page, model) {
@@ -509,7 +512,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var node = page.$model.data;
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
-                    xmlNode : node
+                    xmlNode : node,
+                    newPath: e.newPath
                 });
             }
         });
@@ -725,6 +729,24 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
+        commands.addCommand({
+            name: "largerfont",
+            bindKey : { mac : "Ctrl-Shift-.", win : "Ctrl-Shift-." },
+            exec: function(e){
+                var currSize = settings.model.queryValue("editors/code/@fontsize");
+                settings.model.setQueryValue("editors/code/@fontsize", ++currSize > 72 ? 72 : currSize);
+            }
+        });
+
+        commands.addCommand({
+            name: "smallerfont",
+            bindKey : { mac : "Ctrl-Shift-,", win : "Ctrl-Shift-," },
+            exec: function(e) {
+                var currSize = settings.model.queryValue("editors/code/@fontsize");
+                settings.model.setQueryValue("editors/code/@fontsize", --currSize < 1 ? 1 : currSize);
+            }
+        });
+        
         menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
             checked : "[{require('core/settings').model}::auto/tabs/@show]",
@@ -736,10 +758,6 @@ module.exports = ext.register("ext/editors/editors", {
           }, function(oExtension){
             _self.unregister(oExtension);
           });
-
-        ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc, e.init, e.active, e.forceOpen);
-        });
 
         ide.addEventListener("filenotfound", function(e) {
             var page = tabEditors.getPage(e.path);
@@ -841,6 +859,13 @@ module.exports = ext.register("ext/editors/editors", {
                     var state = node.getAttribute("state");
                     var doc   = ide.createDocument(node);
 
+                    // for some reason c9local can aggresively cache open files; this prevents
+                    // open files from one workspace appearing in another
+                    if (ide.local) {
+                        if (node.getAttribute("path").split("/")[2] !== ide.workspaceId)
+                            continue;
+                    }
+                    
                     try {
                         if (state)
                             doc.state = JSON.parse(state);
@@ -858,13 +883,16 @@ module.exports = ext.register("ext/editors/editors", {
                     _self.gotoDocument({
                         doc      : doc,
                         init     : true,
+                        type     : doc.state && doc.state.type,
                         forceOpen: true,
                         active   : active
                             ? active == node.getAttribute("path")
-                            : i == l - 1
+                            : i == l - 1,
+                        origin: "settings"
                     });
 
-                    checkExpand(node.getAttribute("path"), doc);
+                    if (doc.state && doc.state.type != "nofile")
+                        checkExpand(node.getAttribute("path"), doc);
                 }
 
                 _self.loadedSettings = true;
@@ -885,8 +913,9 @@ module.exports = ext.register("ext/editors/editors", {
 
             if (pages.length) {
                 var active = tabEditors.activepage;
+                var page   = tabEditors.getPage();
                 
-                if (tabEditors.getPage(active).$model.data.getAttribute("ignore") !== "1")
+                if (page && page.$model.data.getAttribute("ignore") !== "1")
                     e.model.setQueryValue("auto/files/@active", active);
 
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
@@ -961,9 +990,10 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             // send it to the dispatcher
-            editors.gotoDocument({
-                node : node,
-                active: true
+            this.gotoDocument({
+                doc    : doc,
+                active : true,
+                origin : "hash"
             });
             
             // and expand the tree
@@ -996,6 +1026,7 @@ module.exports = ext.register("ext/editors/editors", {
         this.jump(options);
     },
 
+
     jump : function(options) {
         var row     = options.row;
         var column  = options.column || 0;
@@ -1006,7 +1037,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (!options.doc) {
             var node    = options.node;
             var path    = node.getAttribute("path");
-        var tabs    = tabEditors;
+            var tabs    = tabEditors;
             
             hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
         }
@@ -1019,13 +1050,13 @@ module.exports = ext.register("ext/editors/editors", {
                 setTimeout(f = function() {
                     // TODO move this to the editor
                     var editor = _self.currentEditor.amlEditor;
-                    editor.$editor.gotoLine(row, column, false);
+                    editor.$editor.gotoLine(row, column, options.animate !== false);
                     if (text)
                         editor.$editor.session.highlight(text);
 
                     editor.focus();
                     ide.dispatchEvent("aftereditorfocus");
-                }, 100);
+                }, 1); 
             };
 
             if (hasData) {
@@ -1044,10 +1075,12 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         if (!hasData) {
+            options.origin = "jump";
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 
-            ide.dispatchEvent("openfile", options);
+            var extraOptions = this.openEditor(options.doc, options.init, options.active, options.forceOpen);
+            ide.dispatchEvent("openfile", apf.extend(options, extraOptions));
         }
         else
             tabs.set(path);

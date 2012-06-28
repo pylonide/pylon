@@ -12,6 +12,7 @@ var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
+var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
@@ -47,6 +48,9 @@ module.exports = ext.register("ext/language/language", {
 
     hook : function() {
         var _self = this;
+        
+        if (!createUIWorkerClient || !isWorkerEnabled)
+            throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
 
         var deferred = lang.deferredCall(function() {
             _self.setPath();
@@ -55,7 +59,7 @@ module.exports = ext.register("ext/language/language", {
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
             var worker;
-            if (window.location.search.match(/[?&]noworker=1/)) {
+            if (!isWorkerEnabled()) {
                 worker = _self.worker = createUIWorkerClient();
             }
             else {
@@ -138,7 +142,7 @@ module.exports = ext.register("ext/language/language", {
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
                 ["unusedFunctionArgs", "false"],
-                ["continuousComplete", _self.isInferAvailable() ? "true" : "false"]
+                ["continuousComplete", cloud9config.hosted ? "true" : "false"] // always returns false _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 

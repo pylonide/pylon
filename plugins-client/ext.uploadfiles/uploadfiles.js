@@ -32,10 +32,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         "media-path" : ide.staticPrefix + "/ext/uploadfiles/style/images/"
     },
     type        : ext.GENERAL,
-    css         : css,
+    css         : util.replaceStaticPrefix(css),
     markup      : markup,
     deps        : [],
     offline     : false,
+    autodisable     : ext.ONLINE | ext.LOCAL,
     worker      : null,
     
     currentSettings : [],
@@ -150,7 +151,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     initWorker: function() {
         var _self = this;
         
-        this.worker = new Worker('/static/ext/uploadfiles/uploadworker.js');
+        this.worker = new Worker(ide.workerPrefix + '/ext/uploadfiles/uploadworker.js');
         this.worker.onmessage = function(e) {  
             var data = e.data;
             if (!data.type) {
@@ -652,7 +653,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         if (_self.openOnUpload) {
             if (file.size < MAX_OPENFILE_SIZE)
-                ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
+                ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode), origin: "upload"});
         }
         
         setTimeout(function() {

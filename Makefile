@@ -36,6 +36,10 @@ core: ace
 helper: 
 	node build/packed_helper.js
 
+helper_clean:
+	mkdir -p build/src
+	node build/packed_helper.js 1
+	
 # packages ext
 ext: 
 	node build/r.js -o build/app.build.js
@@ -88,6 +92,8 @@ gzip:
 
 c9core: apf ace core worker mode theme
     
+package_clean: helper_clean c9core ext
+
 package: helper c9core ext
 
 test:

@@ -83,10 +83,10 @@ if (debug == false && packed == false)
 
 function boot() {
 	var configPath = path.resolve(__dirname, "./configs/", configName);
-	var config = require(configPath);
+	var plugins = require(configPath);
 
 	// server plugins
-	config.containers.master.plugins.forEach(function(plugin) {
+	plugins.forEach(function(plugin) {
 	   if (plugin.packagePath && /\.\/cloud9.core$/.test(plugin.packagePath)) {
 	       plugin.debug = debug;
 	       plugin.packed = packed;
@@ -94,9 +94,7 @@ function boot() {
 	   }
 	});
 
-	architect.createApp(config, {
-	   console: ((debug)?console:null)
-	}, function (err, app) {
+  architect.createApp(architect.resolveConfig(plugins, __dirname + "/plugins-server"), function (err, app) {
 	   if (err) {
 	       console.error("While starting the '%s':", configPath);
 	       throw err;

@@ -111,7 +111,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    css    : css,
+    css    : util.replaceStaticPrefix(css),
     deps   : [c9console],
     hidden : true,
     nodes  : [],

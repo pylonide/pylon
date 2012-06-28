@@ -1,0 +1,17 @@
+{
+    "name": "cloud9.ide.run-ruby",
+    "version": "0.0.1",
+
+    "main": "./run-ruby.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-ruby",
+            "ide.ext.state",
+            "eventbus"
+        ]
+    }
+}

@@ -5,142 +5,133 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict";
-
-var Path = require("path");
-var Spawn = require("child_process").spawn;
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
 var name = "python-runtime";
+var ProcessManager;
+var EventBus;
 
 module.exports = function setup(options, imports, register) {
+    ProcessManager = imports["process-manager"];
+    EventBus = imports.eventbus;
     imports.ide.register(name, PythonRuntimePlugin, register);
 };
 
 var PythonRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
+    this.pm = ProcessManager;
+    this.eventbus = EventBus;
     this.workspace = workspace;
+    this.workspaceId = workspace.workspaceId;
+
+    this.channel = this.workspaceId + "::python-runtime";
+
     this.hooks = ["command"];
     this.name = name;
+    this.processCount = 0;
 };
 
 util.inherits(PythonRuntimePlugin, Plugin);
 
 (function() {
+
     this.init = function() {
-        var _self = this;
-        this.workspace.getExt("state").on("statechange", function(state) {
-            state.pythonProcessRunning = !!_self.child;
+        var self = this;
+        this.eventbus.on(this.channel, function(msg) {
+            msg.type = msg.type.replace(/^python-debug-(start|data|exit)$/, "python-$1");
+            var type = msg.type;
+
+            if (type == "python-start" || type == "python-exit")
+                self.workspace.getExt("state").publishState();
+
+            if (msg.type == "python-start")
+                self.processCount += 1;
+
+            if (msg.type == "python-exit")
+                self.processCount -= 1;
+
+            self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
 
-    this.PYTHON_DEBUG_PORT = 7984;
-
     this.command = function(user, message, client) {
-        if (!(/py/.test(message.runner)))
-        return false;
+        var cmd = (message.command || "").toLowerCase();
+        if (!(/python/.test(message.runner)))
+            return false;
 
-        var _self = this;
-
-        var cmd = (message.command || "").toLowerCase(),
-            res = true;
+        var res = true;
         switch (cmd) {
-            case "run": case "rundebug": case "rundebugbrk": // We don't debug python just yet.
-                this.$run(message, client);
+            case "run":
+            case "rundebug":
+            case "rundebugbrk":
+                this.$run(message.file, message.args || [], message.env || {}, message.version, message, client);
                 break;
             case "kill":
-                this.$kill();
+                this.$kill(message.pid, message, client);
                 break;
             default:
                 res = false;
-                break;
         }
         return res;
     };
 
-    this.$kill = function() {
-        var child = this.child;
-        if (!child)
-            return;
-        try {
-            child.kill();
-            // check after 2sec if the process is really dead
-            // If not kill it harder
-            setTimeout(function() {
-                if (child.pid > 0)
-                    child.kill("SIGKILL");
-            }, 2000)
-        }
-        catch(e) {}
-    };
+    this.$run = function(file, args, env, version, message, client) {
+        var self = this;
+        this.workspace.getExt("state").getState(function(err, state) {
+            if (err)
+                return self.error(err, 1, message, client);
 
-    this.$run = function(message, client) {
-        var _self = this;
+            if (state.processRunning)
+                return self.error("Child process already running!", 1, message);
 
-        if (this.child)
-            return _self.ide.error("Child process already running!", 1, message);
-
-        var file = _self.ide.workspaceDir + "/" + message.file;
-
-        Path.exists(file, function(exists) {
-           if (!exists)
-               return _self.ide.error("File does not exist: " + message.file, 2, message);
-
-           var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
-           Path.exists(cwd, function(exists) {
-               if (!exists)
-                   return _self.ide.error("cwd does not exist: " + message.cwd, 3, message);
-                // lets check what we need to run
-                var args = [].concat(file).concat(message.args || []);
-                _self.$runProc('python', args, cwd, message.env || {}, message.debug || false);
-           });
+            self.pm.spawn("python", {
+                file: file,
+                args: args,
+                env: env,
+                nodeVersion: version,
+                extra: message.extra,
+                encoding: "ascii"
+            }, self.channel, function(err, pid, child) {
+                if (err)
+                    self.error(err, 1, message, client);
+            });
         });
     };
 
-    this.$runProc = function(proc, args, cwd, env, debug) {
-        var _self = this;
+    this.$debug = function(file, args, env, breakOnStart, version, message, client) {
+        var self = this;
+        this.workspace.getExt("state").getState(function(err, state) {
+            if (err)
+                return self.error(err, 1, message, client);
 
-        // mixin process env
-        for (var key in process.env) {
-            if (!(key in env))
-                env[key] = process.env[key];
-        }
+            if (state.processRunning)
+                return self.error("Child process already running!", 1, message);
 
-        console.log("Executing python "+proc+" "+args.join(" ")+" "+cwd);
-
-        var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
-        _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
-        _self.workspace.getExt("state").publishState();
-        _self.ide.broadcast(JSON.stringify({"type": "node-start"}), _self.name);
-
-        child.stdout.on("data", sender("stdout"));
-        child.stderr.on("data", sender("stderr"));
-
-        function sender(stream) {
-            return function(data) {
-                var message = {
-                    "type": "node-data",
-                    "stream": stream,
-                    "data": data.toString("utf8")
-                };
-                _self.ide.broadcast(JSON.stringify(message), _self.name);
-            };
-        }
-
-        child.on("exit", function(code) {
-            _self.ide.broadcast(JSON.stringify({"type": "node-exit"}), _self.name);
-
-            _self.debugClient = false;
-            delete _self.child;
+            self.pm.spawn("python-debug", {
+                file: file,
+                args: args,
+                env: env,
+                breakOnStart: breakOnStart,
+                nodeVersion: version,
+                extra: message.extra,
+                encoding: "ascii"
+            }, self.channel, function(err, pid) {
+                if (err)
+                    self.error(err, 1, message, client);
+            });
         });
-
-        return child;
     };
 
-    this.dispose = function(callback) {
-        this.$kill();
-        callback();
+    this.$kill = function(pid, message, client) {
+        this.pm.kill(pid, function(err) {
+            if (err)
+                return this.error(err, 1, message, client);
+        });
+    };
+
+    this.canShutdown = function() {
+        return this.processCount === 0;
     };
 
 }).call(PythonRuntimePlugin.prototype);

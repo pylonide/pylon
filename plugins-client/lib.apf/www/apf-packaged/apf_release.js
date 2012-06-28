@@ -4898,6 +4898,8 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
                 var rules = sheets[j][apf.styleSheetRules];
+                if (!rules) return false;
+                
                 for (var i = 0; i < rules.length; i++) {
                     if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                         rules.item(i).style[type] = value;
@@ -4913,6 +4915,8 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
             stylesheet = (win || self).document.styleSheets[0];
         
         var rules = stylesheet[apf.styleSheetRules];
+        if (!rules) return false;
+        
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 rules.item(i).style[type] = value;
@@ -10272,13 +10276,13 @@ apf.layout = {
  */
 apf.getWindowWidth = function(){
     return apf.isIE ? document.documentElement.offsetWidth - apf.windowHorBorder : window.innerWidth;
-}
+};
 /**
  * @private
  */
 apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
-}
+};
 
 
 
@@ -31750,11 +31754,11 @@ apf.BaseTab = function(){
  */
 apf.BaseTree = function(){
     this.$init(true);
-    
+
     
     this.$dynCssClasses = [];
     
-    
+
     this.$nodes = [];
 };
 
@@ -31782,18 +31786,18 @@ apf.BaseTree = function(){
     this.$focussable   = true; // This object can get the focus.
     this.multiselect   = false; // Initially multiselect is disabled.
     this.bufferselect  = true;
-    
+
     this.startcollapsed  = true;
     this.$animType       = apf.tween.NORMAL;
     this.$animOpenStep   = 3;
     this.$animCloseStep  = 1;
     this.$animSpeed      = 10;
-    
+
     var HAS_CHILD = 1 << 1,
         IS_CLOSED = 1 << 2,
         IS_LAST   = 1 << 3,
         IS_ROOT   = 1 << 4;
-    
+
     var treeState = this.$treeState = {};
     this.$treeState[0]                               = "";
     this.$treeState[HAS_CHILD]                       = "min";
@@ -31802,7 +31806,7 @@ apf.BaseTree = function(){
     this.$treeState[IS_LAST | HAS_CHILD]             = "minlast";
     this.$treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     this.$treeState[IS_ROOT]                         = "root";
-    
+
     /**** Properties and Attributes ****/
 
     /**
@@ -31822,25 +31826,25 @@ apf.BaseTree = function(){
     this.$booleanProperties["removecontainer"] = true;
     this.$booleanProperties["dragroot"]        = true;
     this.$booleanProperties["disableremove"]   = true;
-    
+
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
         "singleopen", "prerender", "removecontainer", "animation", "dragroot",
         "disableremove");
-    
+
     this.openadd        = true;
     this.startcollapsed = 1;
     this.prerender      = true;
     this.disableremove  = false;
-    
+
     /**** Public Methods ****/
-    
+
     /**
      * Expands all items in the tree
      */
     this.expandAll    = function(){
         if (!this.xmlRoot)
             return;
-        
+
         var xpath = this.each.split('|')
                         .join('[' + this.each.replace(/\|/g, " or ") + ']|.//'),
             _self = this;
@@ -31854,30 +31858,45 @@ apf.BaseTree = function(){
             }
         })(this.xmlRoot);
     };
-    
+
     /**
      * Collapses all items in the tree
      */
     this.collapseAll   = function(){
         if (!this.xmlRoot)
             return;
-        
+
         var pNodes = this.xmlRoot.selectNodes(".//" + this.each
           .split('|').join('[' + this.each.replace(/\|/g, " or ") + ']|.//'));
-        
+
         for (var o, i = pNodes.length - 1; i >=0; i--) {
             if (o = apf.xmldb.getHtmlNode(pNodes[i], this))
                 this.slideToggle(o, 2, true);
         }
     };
-    
+
+    /**
+     * Collapse a single node in the tree
+     */
+    this.collapse = function(xmlNode) {
+        if (!this.xmlRoot)
+            return;
+
+        if (this.isCollapsed(xmlNode))
+            return;
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+        if (!htmlNode)
+            return;
+        this.slideToggle(htmlNode, 2, true);
+    };
+
     /**
      * Selects a node and expands each parent of it.
      */
     this.expandAndSelect = function(xmlNode) {
         if (!this.xmlRoot)
             return;
-        
+
         var _self = this;
         if ((function _recur(loopNode){
             var pNode = _self.getTraverseParent(loopNode);
@@ -31886,12 +31905,12 @@ apf.BaseTree = function(){
 
             if (!pNode || _recur(pNode) === false)
                 return false;
-                
+
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
         })(xmlNode) !== false)
             this.select(xmlNode);
     };
-    
+
     /**
      * Loads a list of folders
      * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
@@ -31904,18 +31923,18 @@ apf.BaseTree = function(){
         // recursive load function
         function expand(currentSelector, allSelectors) {
             var selectorNode = root.selectSingleNode(currentSelector);
-            
+
             // if the node could not be found,
             // just tell the consumer that it has expanded
             if (!selectorNode) {
                 return hasExpanded(currentSelector);
             }
-            
+
             // first expand the item passed in
             _self.slideToggle(apf.xmldb.getHtmlNode(selectorNode, _self), 1, true, null, function () {
                 // the number of times the callback has fired, prevent it from executing forever
                 var timesRan = 0;
-                
+
                 // the callback fires, but we might be waiting for data from the server
                 var callback = function () {
                     // check whether the node is loaded
@@ -31930,30 +31949,30 @@ apf.BaseTree = function(){
                             // still failing? call 'hasExpanded' for this one and all its children
                             // cause we're ignoring everything from now;
                             // and we need the callback to be fired anyway
-                            var allAncestors = allSelectors.filter(function (s) { 
+                            var allAncestors = allSelectors.filter(function (s) {
                                 return s.indexOf(currentSelector + "/") === 0;
                             });
-                            
+
                             hasExpanded(currentSelector);
                             allAncestors.forEach(function (sel) {
                                 hasExpanded(sel);
                             });
-                                
+
                             return null;
                         }
                     }
-                    
+
                     // notify
                     hasExpanded();
-                    
+
                     // when finished, find all the other selectors that start with the current selector
                     // plus a slash to make it really really sure
                     // plus we check whether it's a child and not a grand child
-                    var childSelectors = allSelectors.filter(function (s) { 
+                    var childSelectors = allSelectors.filter(function (s) {
                         return s.indexOf(currentSelector + "/") === 0
                                 && currentSelector.split("/").length + 1 === s.split("/").length;
                     });
-                    
+
                     // then expand each of the child items
                     childSelectors.forEach(function (selector) {
                         expand(selector, allSelectors);
@@ -31979,32 +31998,32 @@ apf.BaseTree = function(){
         rootNodes.forEach(function (node) {
             expand(node, paths);
         });
-    }; 
-    
+    };
+
     /**
      * @notimplemented
      * @todo who's volunteering?
      * @private
      */
     this.selectPath = function(path){};
-    
+
     /**** Sliding functions ****/
-    
+
     /**
      * @private
      */
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
         callback = typeof callback === "function" ? callback : function () {};
-        
+
         if (this.nocollapse || userAction && this.disabled)
             return callback();
 
         if (!htmlNode)
             htmlNode = this.$selected;
-        
+
         if (!htmlNode)
             return callback();
-        
+
         var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
             id = (htmlNode = htmlNode.parentNode)
@@ -32012,7 +32031,7 @@ apf.BaseTree = function(){
 
         var container = this.$getLayoutNode("item", "container", htmlNode);
         if (!container) return callback();
-        
+
         if (apf.getStyle(container, "display") == "block") {
             if (force == 1) {
                 if (callback) callback();
@@ -32030,12 +32049,12 @@ apf.BaseTree = function(){
             this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate, callback);
         }
     };
-    
+
     this.isCollapsed = function(xmlNode){
         return (apf.getStyle(this.$getLayoutNode("item", "container",
             apf.xmldb.getHtmlNode(xmlNode, this)), "display") == "none");
     }
-    
+
     var lastOpened = {};
     /**
      * @event expand Fires when a tree leaf is expanded from collapsed view to
@@ -32049,23 +32068,23 @@ apf.BaseTree = function(){
         var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
-        
+
         //We don't slide open elements without children.
-        if ((!container.childNodes.length || container.firstChild.nodeType == 3 
+        if ((!container.childNodes.length || container.firstChild.nodeType == 3
           && container.firstChild.nodeValue.trim() == "")
           && !this.$getBindRule("insert", xmlNode)
           && !this.getTraverseNodes(xmlNode).length)
-            return callback && callback(); 
+            return callback && callback();
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode),
                 p     = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
-            if (lastOpened[p] && lastOpened[p][1] != xmlNode 
+            if (lastOpened[p] && lastOpened[p][1] != xmlNode
               && this.getTraverseParent(lastOpened[p][1]) == pNode)
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
             lastOpened[p] = [htmlNode, xmlNode];
         }
-        
+
         if (!this.nocollapse)
             container.style.display = "block";
 
@@ -32083,7 +32102,7 @@ apf.BaseTree = function(){
 
             if (this.$hasLoadStatus(xmlNode, "potential"))
                 return this.$extend(xmlNode, container, immediate, callback);
-            
+
             this.dispatchEvent("expand", {xmlNode: xmlNode});
             return callback && callback();
         }
@@ -32097,7 +32116,7 @@ apf.BaseTree = function(){
         var height = container.scrollHeight;
         container.style.overflow = "hidden";
         container.style.height = prevHeight;
-        
+
         function finishSlide() {
             if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                 $setTimeout(function(){
@@ -32122,22 +32141,22 @@ apf.BaseTree = function(){
                 _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
         }
-        
+
         if (!this.animation) {
             var diff = apf.getHeightDiff(container),
                 oInt = container;
 
             container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop = oInt.scrollHeight 
+            oInt.scrollTop = oInt.scrollHeight
                 - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
             finishSlide();
         }
         else {
             apf.tween.single(container, {
-                type    : 'scrollheight', 
-                from    : container.offsetHeight, 
-                to      : height, 
-                anim    : this.$animType, 
+                type    : 'scrollheight',
+                from    : container.offsetHeight,
+                to      : height,
+                anim    : this.$animType,
                 steps   : this.$animOpenStep,
                 interval: this.$animSpeed,
                 onfinish: function(container){
@@ -32153,28 +32172,28 @@ apf.BaseTree = function(){
      * @private
      */
     this.slideClose = function(container, xmlNode, immediate){
-        if (this.nocollapse) 
+        if (this.nocollapse)
             return;
-        
+
         if (!xmlNode)
             xmlNode = this.selected;
-        
+
         if (this.singleopen) {
             var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
                 .getAttribute(apf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
-        
+
         if (!container) {
             var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
             container = this.$findContainer(htmlNode);
         }
-        
+
         if (container != this.$container) {
             container.style.height   = container.offsetHeight;
             container.style.overflow = "hidden";
         }
-        
+
         if (immediate) {
             if (container != this.$container)
                 container.style.height = 0;
@@ -32185,10 +32204,10 @@ apf.BaseTree = function(){
 
         var _self = this;
         apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.scrollHeight, 
-            to      : 0, 
-            anim    : this.$animType, 
+            type    : 'scrollheight',
+            from    : container.scrollHeight,
+            to      : 0,
+            anim    : this.$animType,
             steps   : this.$animCloseStep,
             interval: this.$animSpeed,
             onfinish: function(container, data){
@@ -32197,13 +32216,13 @@ apf.BaseTree = function(){
             }
         });
     };
-    
+
     /**** Databinding Support ****/
 
     this.$isStartCollapsed = function(xmlNode){
         return this.$hasBindRule("collapsed")
             ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
-            : (this.$hasBindRule("expanded") 
+            : (this.$hasBindRule("expanded")
                 ? (this.$getDataNode("expanded", xmlNode) ? false : true)
                 : this.startcollapsed);
     }
@@ -32217,7 +32236,7 @@ apf.BaseTree = function(){
                 loopNode = loopNode.parentNode;
             }
         }
-        
+
         var loadChildren     = this.$getBindRule("insert", xmlNode) ? true : false,
             traverseNodes    = this.getTraverseNodes(xmlNode),
             hasTraverseNodes = traverseNodes.length ? true : false,
@@ -32232,7 +32251,7 @@ apf.BaseTree = function(){
 
         if (!startcollapsed && !this.nocollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
-        
+
         var msg, removeContainer = (!this.removecontainer || hasChildren);
 
         //TEMP on for dynamic subloading
@@ -32244,20 +32263,20 @@ apf.BaseTree = function(){
             eachLength = traverseNodes.length;
 
         if (hasChildren && !this.prerender && eachLength > 2 && startcollapsed
-          || loadChildren && (!this.$hasLoadStatus(xmlNode) 
+          || loadChildren && (!this.$hasLoadStatus(xmlNode)
           || this.$hasLoadStatus(xmlNode, "potential")))
             this.$setLoading(xmlNode, container);
         else if (!hasTraverseNodes && (msg = this.$applyBindRule("empty", xmlNode))) {
             this.$setEmptyMessage(container, msg);
         }
 
-        if ((!htmlParentNode || htmlParentNode == this.$container) 
+        if ((!htmlParentNode || htmlParentNode == this.$container)
           && xmlParentNode == this.xmlRoot && !beforeNode
           || action == "insert") {
             this.$nodes.push(htmlNode);
             if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
                 this.$nodes.push(container);
-            
+
             if (action != "insert") {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
@@ -32266,11 +32285,11 @@ apf.BaseTree = function(){
         else {
             if (!htmlParentNode) {
                 htmlParentNode = apf.xmldb.getHtmlNode(xmlNode.parentNode, this);
-                htmlParentNode = htmlParentNode 
-                    ? this.$getLayoutNode("item", "container", htmlParentNode) 
+                htmlParentNode = htmlParentNode
+                    ? this.$getLayoutNode("item", "container", htmlParentNode)
                     : this.$container;
             }
-            
+
             if (htmlParentNode == this.$container) {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
@@ -32283,18 +32302,18 @@ apf.BaseTree = function(){
             }
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
-        
-            if (htmlParentNode.style 
-              && this.getTraverseNodes(xmlNode.parentNode).length == 1) 
+
+            if (htmlParentNode.style
+              && this.getTraverseNodes(xmlNode.parentNode).length == 1)
                 this.$removeEmptyMessage(htmlParentNode);
-        
+
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 var isChildOfHtmlNode = !apf.isChildOf(htmlNode, container, true)
                 htmlNode = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
                 if (isChildOfHtmlNode && removeContainer)
-                    var container = apf.insertHtmlNode(container, 
+                    var container = apf.insertHtmlNode(container,
                         htmlParentNode, beforeNode);
                 else
                     var container = this.$getLayoutNode("item", "container", htmlNode);
@@ -32307,17 +32326,17 @@ apf.BaseTree = function(){
 
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
-                if (this.openadd && htmlParentNode != this.$container 
-                  && htmlParentNode.style.display != "block") { 
+                if (this.openadd && htmlParentNode != this.$container
+                  && htmlParentNode.style.display != "block") {
                     if (!this.$isStartCollapsed(xmlParentNode))
                         this.slideOpen(htmlParentNode, xmlParentNode, true);
                 }
-                
+
                 if (!this.$fillParent)
                     this.$fillParent = xmlParentNode;
-                
+
                 var next = nextNode == undefined ? this.getNextTraverse(xmlNode, true) : nextNode;
-                
+
                 var html;
                 if (next && (html = apf.xmldb.getHtmlNode(next, this))) //should use each here
                     this.$fixItem(next, html);
@@ -32333,7 +32352,7 @@ apf.BaseTree = function(){
 
         return container;
     };
-    
+
     this.$fill = function(){
         if (this.$useiframe)
             this.$pHtmlDoc = this.oDoc;
@@ -32343,16 +32362,16 @@ apf.BaseTree = function(){
             this.$nodes.length = 0;
             delete this.$fillParentHtml;
         }
-        
+
         if (this.$fillParent) {
             this.$fixItem(this.$fillParent, apf.xmldb.getHtmlNode(this.$fillParent, this));
             delete this.$fillParent;
         }
     };
-    
+
     this.$getParentNode = function(htmlNode){
-        return htmlNode 
-            ? this.$getLayoutNode("item", "container", htmlNode) 
+        return htmlNode
+            ? this.$getLayoutNode("item", "container", htmlNode)
             : this.$container;
     };
 
@@ -32364,19 +32383,19 @@ apf.BaseTree = function(){
             var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
                 this.$fixItem(prevSib, this.$findHtmlNode(prevSib
-                    .getAttribute(apf.xmldb.xmlIdTag) + "|" 
+                    .getAttribute(apf.xmldb.xmlIdTag) + "|"
                     + this.$uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage && xmlNode.parentNode.selectNodes(this.each).length == 1)
                 this.$fixItem(xmlNode.parentNode, this.$findHtmlNode(
-                    xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
-                    + "|" + this.$uniqueId), null, false, true); 
+                    xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag)
+                    + "|" + this.$uniqueId), null, false, true);
         }
         else {
             var container   = this.$getLayoutNode("item", "container", htmlNode),
                 hasChildren = false;
-            if (noChildren) 
+            if (noChildren)
                 hasChildren = false;
             else if (this.getTraverseNodes(xmlNode).length > 0)
                 hasChildren = true;
@@ -32399,7 +32418,7 @@ apf.BaseTree = function(){
             if(this.$getLayoutNode("item", "openclose", htmlNode))
                 this.$getLayoutNode("item", "openclose", htmlNode)
                     .setAttribute("children", hasChildren);
-            
+
             if (container) {
                 if (!hasChildren)
                     container.style.display = "none";
@@ -32413,23 +32432,23 @@ apf.BaseTree = function(){
         //Lookup container
         var containerNode = this.$getLayoutNode("item", "container", htmlNode),
             pContainer    = htmlNode.parentNode;
-        
+
         //Remove htmlNodes from tree
         containerNode.parentNode.removeChild(containerNode);
         pContainer.removeChild(htmlNode);
-        
+
         //Datagrid??
         if (this.$withContainer)
             htmlNode.parentNode.removeChild(htmlNode.nextSibling);
-        
+
         //Fix Images (+, - and lines)
         if (xmlNode.parentNode != this.xmlRoot)
             this.$fixItem(xmlNode, htmlNode, true);
-        
+
         var msg;
         if (!pContainer.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
             this.$setEmptyMessage(pContainer, msg);
-        
+
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode, true);
         //this.$fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
@@ -32437,11 +32456,11 @@ apf.BaseTree = function(){
         if(xmlNode.previousSibling) //should use each here
             this.$fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
-    
+
     this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
-        if (!apf.debug && !htmlNode) 
+        if (!apf.debug && !htmlNode)
             return;
-            
+
         var container;
         if (this.$hasLoadStatus(xmlNode.parentNode, "potential")) {
             container = this.$getLayoutNode("item", "container", htmlNode);
@@ -32450,27 +32469,27 @@ apf.BaseTree = function(){
             this.$extend(xmlNode.parentNode);
             return;
         }
-        
+
         var nSibling = this.getNextTraverse(xmlNode),
             beforeNode = nSibling
                 ? apf.xmldb.getHtmlNode(nSibling, this)
                 : null;
-        
+
         var next = htmlNode.nextSibling;
         if (next && next.tagName != htmlNode.tagName)
             next = next.nextSibling;
         if (next && beforeNode == next)
             return;
-        
+
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
-        
+
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
-        
+
         container = this.$getLayoutNode("item", "container", htmlNode);
 
         if (pContainer != oPHtmlNode && this.getTraverseNodes(xmlNode.parentNode).length == 1)
@@ -32479,22 +32498,22 @@ apf.BaseTree = function(){
         pContainer.insertBefore(htmlNode, beforeNode);
         if (container)
             pContainer.insertBefore(container, beforeNode);
-        
+
         /*if (!this.startcollapsed) {
             pContainer.style.display = "block";
             pContainer.style.height = "auto";
         }*/
-        
+
         var msg;
         if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
             this.$setEmptyMessage(oPHtmlNode, msg);
-        
-//        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
+
+//        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block")
 //            this.slideOpen(pContainer, pHtmlNode, true);
-        
+
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
-        
+
         this.$fixItem(tParent, apf.xmldb.getHtmlNode(tParent, this));
         this.$updateNode(oldXmlParent, apf.xmldb.getHtmlNode(oldXmlParent, this));
         var next;
@@ -32502,35 +32521,35 @@ apf.BaseTree = function(){
             this.$fixItem(next, apf.xmldb.getHtmlNode(next, this));
         }
     };
-    
+
     //???
     this.$setLoading = function(xmlNode, container){
         this.$setLoadStatus(xmlNode, "potential");
-        
+
         var len = this.getTraverseNodes(xmlNode).length;
         if (!len || len > 20) {
             this.$getNewContext("loading");
             apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
         }
     };
-    
+
     //???
     this.$removeLoading = function(xmlNode){
         if (!xmlNode) return;
-        
+
         if (this.$timers)
             clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
-        
-        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (htmlNode) {
             this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
             this.$setStyleClass(htmlNode, "", ["loading"]);
         }
     };
-    
+
     //check databinding for how this is normally implemented
     this.$extend = function(xmlNode, container, immediate, callback){
-        if (!this.$hasLoadStatus(xmlNode, "potential")) 
+        if (!this.$hasLoadStatus(xmlNode, "potential"))
             return;
 
         var rule       = this.$getBindRule("insert", xmlNode),
@@ -32541,18 +32560,18 @@ apf.BaseTree = function(){
 
         if (rule && xmlContext) {
             this.$setLoadStatus(xmlNode, "loading");
-            
+
             var _self = this;
             (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = $setTimeout(function(){;
                 _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), "loading");
             }, 100);
-            
+
             if (rule.get) {
                 
-                
+
                 this.getModel().$insertFrom(rule.getAttribute("get"), {
                     xmlNode     : xmlContext,
-                    insertPoint : xmlContext, 
+                    insertPoint : xmlContext,
                     amlNode     : this,
                     callback    : function(data, state, extra){
                         if (state != apf.SUCCESS) {
@@ -32563,7 +32582,7 @@ apf.BaseTree = function(){
                         else {
                             _self.slideOpen(null, xmlNode);
                         }
-                        
+
                         if (callback)
                             callback(data, state, extra);
                     }
@@ -32578,17 +32597,17 @@ apf.BaseTree = function(){
             this.$setLoadStatus(xmlNode, "loaded");
             this.$removeLoading(xmlNode);
             xmlUpdateHandler.call(this, {
-                action  : "insert", 
-                xmlNode : xmlNode, 
+                action  : "insert",
+                xmlNode : xmlNode,
                 result  : this.$addNodes(xmlNode, container, true, null, null, null, "extend"), //checkChildren ???
                 anim    : !immediate
             });
         }
     };
-    
+
     function xmlUpdateHandler(e){
         /*
-            Display the animation if the item added is 
+            Display the animation if the item added is
             * Not in the cache
             - Being insterted using xmlUpdate
             - there is at least 1 child inserted
@@ -32598,7 +32617,7 @@ apf.BaseTree = function(){
             this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
         if (e.action != "insert") return;
-        
+
         var htmlNode = this.$findHtmlNode(e.xmlNode.getAttribute(
             apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         if (!htmlNode) return;
@@ -32620,11 +32639,11 @@ apf.BaseTree = function(){
         //if (this.$hasLoadStatus(e.xmlNode, "loading"))
             //this.$setLoadStatus(e.xmlNode, "loaded");
     }
-    
+
     this.addEventListener("xmlupdate", xmlUpdateHandler);
-    
+
     /**** Keyboard Support ****/
-    
+
     
     this.addEventListener("beforerename", function(){
         if (this.$tempsel) {
@@ -32636,14 +32655,14 @@ apf.BaseTree = function(){
         }
     });
     
-    
+
     this.scrollIntoView = function(sNode, onTop) {
         var selHtml = apf.xmldb.getHtmlNode(sNode, this), top;
         if (!selHtml)
             return;
-            
+
         top     = apf.getAbsolutePosition(selHtml, this.$container)[1];
-        
+
         if (onTop) {
             if (top <= this.$container.scrollTop)
                 this.$container.scrollTop = top;
@@ -32653,7 +32672,7 @@ apf.BaseTree = function(){
                 this.$container.scrollTop = top - this.$container.offsetHeight + selHtml.offsetHeight;
         }
     }
-    
+
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode,
@@ -32672,10 +32691,10 @@ apf.BaseTree = function(){
             case 13:
                 if (this.$tempsel)
                     this.$selectTemp();
-            
+
                 if (this.ctrlselect == "enter")
                     this.select(this.caret, true);
-            
+
                 this.choose(selHtml);
                 break;
             case 32:
@@ -32716,7 +32735,7 @@ apf.BaseTree = function(){
                 var lastNode = this.getLastTraverseNode();
                 while (!this.isCollapsed(lastNode))
                     lastNode = this.getLastTraverseNode(lastNode);
-                
+
                 this.$setTempSelected(lastNode, false, shiftKey, true);
                 oExt.scrollTop = oExt.scrollHeight;
                 return false;
@@ -32724,7 +32743,7 @@ apf.BaseTree = function(){
                 //LEFT
                 if (this.$tempsel)
                     this.$selectTemp();
-                if (this.caret.selectSingleNode(this.each) 
+                if (this.caret.selectSingleNode(this.each)
                   && !this.isCollapsed(this.caret))
                     this.slideToggle(this.$caret || this.$selected, 2)
                 else if ((pNode = this.getTraverseParent(this.caret))
@@ -32737,8 +32756,8 @@ apf.BaseTree = function(){
                 //RIGHT
                 if (this.$tempsel)
                     this.$selectTemp();
-            
-                if (this.$hasLoadStatus(this.caret, "potential") 
+
+                if (this.$hasLoadStatus(this.caret, "potential")
                   || this.getFirstTraverseNode(this.caret))
                     this.slideToggle(this.$caret || this.$selected, 1)
                 break;
@@ -32750,21 +32769,21 @@ apf.BaseTree = function(){
                 break;
             case 38:
                 //UP
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
 
-                node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 sNode = this.getNextTraverse(node, true);
                 if (sNode && sNode != node) {
                     nodes = this.getTraverseNodes(sNode);
-                    
+
                     do {
                         container = this.$getLayoutNode("item", "container",
                             this.$findHtmlNode(apf.xmldb.getID(sNode, this)));
-                        if (container && apf.getStyle(container, "display") == "block" 
+                        if (container && apf.getStyle(container, "display") == "block"
                           && nodes.length) {
                                 sNode = nodes[nodes.length-1];
                         }
@@ -32785,23 +32804,23 @@ apf.BaseTree = function(){
                    this.$setTempSelected(sNode, ctrlKey, shiftKey, true);
                 else
                     return false;
-                
+
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      //- (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
-                
+
                 return false;
             case 40:
                 //DOWN
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
 
-                node = this.$tempsel 
+                node = this.$tempsel
                     ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 sNode = this.getFirstTraverseNode(node);
                 if (sNode) {
                     container = this.$getLayoutNode("item", "container",
@@ -32809,11 +32828,11 @@ apf.BaseTree = function(){
                     if (container && apf.getStyle(container, "display") != "block")
                         sNode = null;
                 }
-                
+
                 while (!sNode) {
                     pNode = this.getTraverseParent(node);
                     if (!pNode) break;
-                    
+
                     var i = 0;
                     nodes = this.getTraverseNodes(pNode);
                     while (nodes[i] && nodes[i] != node)
@@ -32846,7 +32865,7 @@ apf.BaseTree = function(){
                     sNode = apf.xmldb.findXmlNode(el);
                 }
                 this.select(sNode);
-                
+
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      - (selHtml.offsetHeight);
@@ -32866,7 +32885,7 @@ apf.BaseTree = function(){
                     sNode = apf.xmldb.findXmlNode(el);
                 }
                 this.select(sNode);
-                
+
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight);
@@ -32882,11 +32901,11 @@ apf.BaseTree = function(){
                 else if (key == 65 && ctrlKey) {
                     this.selectAll();
                     return false;
-                } 
+                }
                 //@todo make this work with the sorted column
                 else if (this.caption || (this.bindingRules || {})["caption"]) {
                     if (!this.xmlRoot) return;
-                    
+
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()
                       - this.lookup.date.getTime() > 300)
@@ -32894,18 +32913,18 @@ apf.BaseTree = function(){
                             str  : "",
                             date : new Date()
                         };
-                    
+
                     this.lookup.str += String.fromCharCode(key);
-    
+
                     var nodes = this.getTraverseNodes(); //@todo start at current indicator
                     for (var v, i = 0; i < nodes.length; i++) {
                         v = this.$applyBindRule("caption", nodes[i]);
                         if (v && v.substr(0, this.lookup.str.length)
                           .toUpperCase() == this.lookup.str) {
-                            
+
                             if (!this.isSelected(nodes[i]))
                                 this.select(nodes[i]);
-                            
+
                             if (selHtml)
                                 this.$container.scrollTop = selHtml.offsetTop
                                     - (this.$container.offsetHeight
@@ -32919,9 +32938,9 @@ apf.BaseTree = function(){
         }
     }, true);
     
-    
+
     /**** Rename Support ****/
-    
+
     
     this.$getCaptionElement = function(){
         if (!this.$selected) return false;
@@ -32929,14 +32948,14 @@ apf.BaseTree = function(){
         return x.nodeType == 1 ? x : x.parentNode;
     };
     
-    
+
     /**** Selection Support ****/
     /*
         nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
-                ? this.xmlRoot.selectNodes(this.$isTreeArch 
+                ? this.xmlRoot.selectNodes(this.$isTreeArch
                     ? this.each
                     : ".//" + this.each.split('|').join('|.//'))
-                : 
+                :
     */
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r     = [],
@@ -32954,7 +32973,7 @@ apf.BaseTree = function(){
             if (nodes[i] == xmlEndNode)
                 f = false;
         }
-        
+
         if (!r.length || f) {
             r = [];
             for (f = false, i = nodes.length - 1; i >= 0; i--) {
@@ -32966,19 +32985,19 @@ apf.BaseTree = function(){
                     f = false;
             }
         }
-        
+
         return r;
     };
-    
+
     this.$findContainer = function(htmlNode){
         return this.$getLayoutNode("item", "container", htmlNode);
     };
-    
+
     this.$selectDefault = function(xmlNode){
         var firstNode = this.getFirstTraverseNode(xmlNode);
         if (!firstNode)
             return;
-        
+
         if (this.select(firstNode, null, null, null, true)) {
             return true;
         }
@@ -32990,7 +33009,7 @@ apf.BaseTree = function(){
             }
         }
     };
-    
+
     this.$setEmptyMessage = function(htmlNode, msg){
         this.$getNewContext("empty");
         var xmlEmpty = this.$getLayoutNode("empty");
@@ -33002,16 +33021,16 @@ apf.BaseTree = function(){
 
         if (caption)
             apf.setNodeValue(caption, msg || "");
-        
+
         if (htmlNode.style)
             this.slideOpen(htmlNode, null, true);
         else if (this.nocollapse)
             htmlNode.setAttribute("style", "display:inline-block;");
-        else 
-            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;"); 
-        
+        else
+            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;");
+
     }
-    
+
     this.$removeEmptyMessage = function(htmlNode){
         var cNode = htmlNode.firstElementChild || htmlNode.firstChild;
         if (!cNode)
@@ -33026,7 +33045,7 @@ apf.BaseTree = function(){
         }
         while(cNode);
     }
-    
+
     /**** Init ****/
 
     /**
@@ -33045,18 +33064,18 @@ apf.BaseTree = function(){
             this.skin = mode + "tree";
             this.$loadSkin();
         }*/
-        
+
         //Build Main Skin
-        this.$ext = this.$getExternal(); 
+        this.$ext = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
         this.opencloseaction = this.$getOption("main", "openclose");
-        
+
         //Need fix...
         //this.$ext.style.MozUserSelect = "none";
 
         if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
-        
+
         var _self = this;
         this.$ext.onclick = function(e){
             _self.dispatchEvent("click", {htmlEvent : e || event});
@@ -33074,17 +33093,17 @@ apf.BaseTree = function(){
             _self.dispatchEvent("mousemove", {htmlEvent : e || event});
         };
     };
-    
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){
         if (this.nocollapse)
             this.startcollapsed = false;
         else if (this.startcollapsed === 1)
             this.startcollapsed = !apf.isFalse(this.$getOption("main", "startcollapsed"));
     });
-    
+
     this.addEventListener("DOMNodeRemovedFromDocument", function(){
         this.$ext.onclick = null;
-        
+
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     });
@@ -38044,6 +38063,9 @@ apf.window = function(){
 
     //IE selection handling
     apf.addListener(document, "selectstart", function(e){
+        if (!apf.isIE)
+            return;
+        
         if (!e) e = event;
 
         var amlNode   = apf.findHost(e.srcElement);
@@ -55020,6 +55042,9 @@ apf.menu = function(struct, tagName){
     this.$booleanProperties["matchhide"] = true;
     
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
+        if (!this.$ext)
+            return;
+        
         if (value) {
             this.$ext.style.display = "block";
             if (this.opener && this.opener.localName.indexOf('item') > -1)

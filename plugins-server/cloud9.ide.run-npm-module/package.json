@@ -12,7 +12,7 @@
             "run-node",
             "ide.ext.state",
             "eventbus",
-            "sandbox.fs"
+            "vfs"
         ]
     }
 }

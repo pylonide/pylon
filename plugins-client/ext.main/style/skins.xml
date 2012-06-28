@@ -35,19 +35,19 @@
             white-space : nowrap;
         }
         
-        .fakehbox>div{
+        .fakehbox>*{
             display : inline-block;
         }
         
-        .fakehbox.aligntop>div{
+        .fakehbox.aligntop>*{
             vertical-align : top;
         }
         
-        .fakehbox.aligncenter>div{
+        .fakehbox.aligncenter>*{
             vertical-align : middle;
         }
         
-        .fakehbox.padding3>div{
+        .fakehbox.padding3>*{
             margin-left : 3px;
         }
         
@@ -137,6 +137,11 @@
             position      : relative;
             overflow      : visible;
             background    : url(images/c9-repeat-x.png) repeat-x 0 0 #49a8fa;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
         .c9-menu-bar .c9-mbar-bcont {
             position   : relative;
@@ -158,6 +163,21 @@
             display:block;
         }
         
+        .c9-menu-bar .c9-mbar-bcont .c9-local {
+            width:42px;
+            height:21px;
+            position:absolute;
+            background:url(images/local_green.png) no-repeat 0 0;
+            top:40px;
+            right: 3px;
+            display: none;
+            z-index: 100000;
+        }
+
+        .c9-menu-bar.offline.local .c9-mbar-bcont .c9-local {
+            display:block;
+        }
+        
         .c9-mbar-logo{
             padding-top: 4px;
         }
@@ -165,7 +185,7 @@
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
             width: 158px;
             height: auto;
-            line-height : 15px;
+            line-height : 19px;
             position: absolute;
             top: 42px;
             right: 3px;
@@ -182,7 +202,6 @@
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo .offlineInfoWarn{
             color: #91c478;
-            margin-top : 10px;
         }
 
         .c9-menu-bar .c9-mbar-cont {
@@ -258,7 +277,18 @@
             top: 4px;
             width: 37px;
         }
+       .updateAvailable .c9-mbar-round .mainlogo {
+           background: url("images/c9-no-repeat.png") no-repeat -96px -44px;
+           cursor: pointer;
+       }
 
+        .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+          top: 55px;
+       }
+
+        .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+           top: 35px;
+        }        
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
         	height: 10px;
@@ -277,6 +307,22 @@
             width: 10px;
         }
 
+        .c9-menu-bar .c9-mbar-bcont .c9-sync {
+            background:url(images/sync_toggle.png) no-repeat 0 -20px;
+        }
+        
+        .c9-menu-bar .c9-mbar-bcont .c9-sync.btnChecked {
+            background:url(images/sync_toggle.png) no-repeat 0 0;
+        }
+
+        .c9-menu-bar .c9-mbar-bcont .c9-sync.undetermined {
+            background-position: 0 -80px;
+        }
+        
+        .c9-menu-bar .c9-mbar-bcont .c9-sync.btnDisabled {
+            background-position: 0 -60px;
+        }
+        
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
@@ -311,8 +357,9 @@
                         <div class="c9-mbar-cont"> </div>
                         
                         <div class="c9-mbar-round">
-                            <a href="http://c9.io/" class="mainlogo" target="_blank" title="Go to c9.io">c9.io</a>
+                            <a id="backToC9" href="http://c9.io/" class="mainlogo backToC9" target="_blank" title="Go to c9.io">c9.io</a>
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
+                            <div class="c9-local"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
                         </div>
@@ -423,7 +470,6 @@
         .black-menu-bar .toggle-black-menu-bar .icon{
             display : none;
         }
-        
         .black-menu-bar.closed.minimized {
             border-bottom-right-radius: 3px;
         }
@@ -467,9 +513,6 @@
             overflow         : hidden;
             width            : 39px;
             border-left      : 1px solid #1e1e1e;
-            /*-webkit-box-shadow: -1px 0px 0px 0px #1e1e1e;
-            -moz-box-shadow: -1px 0px 0px 0px #1e1e1e;
-            box-shadow: -1px 0px 0px 0px #1e1e1e; */
             background       : url(images/debug-panel_bg.png) 0 0;
             padding-left: 1px;
         }
@@ -494,7 +537,6 @@
             left        : 1px;
             right       : 0;
             bottom      : 0;
-            /*border-left : 1px solid #38393b;*/
         }
     ]]></a:style>
 
@@ -576,10 +618,12 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select : none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select        : none;
         }
 
         .btn.smallbtn {
@@ -1071,9 +1115,6 @@
                 overflow           : hidden;
                 position           : relative;
                 cursor             : pointer;
-                -moz-user-select   : none;
-                -khtml-user-select : none;
-                user-select        : none;
                 background-color   : #1f7224;
                 filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22');
                 -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22')";
@@ -1086,6 +1127,12 @@
                 -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
                 -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
                 box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
+
+                -moz-user-select: -moz-none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
             }
 
             .github-button .icon {
@@ -1151,13 +1198,15 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             height             : 31px;
             width              : 18px;
             background-repeat   : no-repeat;
             background-position : -36px 50%;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .btn_console_openOver {
@@ -1192,11 +1241,13 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             height             : 21px;
             width              : 22px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select : none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select        : none;
         }
 
         .btn_icon_onlyDown.tabmenubtn {
@@ -1270,19 +1321,17 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             background-repeat:no-repeat;
             background-position: 0 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select : none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select        : none;
         }
 
         .dockButton-footer {
             height: 10px;
-            /*filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5');
-            -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#f3f3f3', endColorstr='#e5e5e5')";
-            background       : -webkit-gradient(linear, left center, right center, from(#f3f3f3), color-stop(1, #e5e5e5));
-            background       : -moz-linear-gradient(center left, #f3f3f3 0%, #e5e5e5 100%) repeat scroll 0 0 transparent;*/
         }
 
         .dockButtonOver {
@@ -1312,35 +1361,27 @@
             -moz-border-radius    : 3px;
             border-radius         : 3px;
             margin                : 0px 1px 2px 4px;
-            /*background-image: -webkit-gradient(
-               linear,
-               left bottom,
-               left top,
-               color-stop(0.5, rgb(175,225,201)),
-               color-stop(1, rgb(221,242,232)),
-               color-stop(0.5, rgb(197,233,216))
-            );
-            background-image: -moz-linear-gradient(
-               center bottom,
-               rgb(175,225,201) 50%,
-               rgb(221,242,232) 100%,
-               rgb(197,233,216) 50%
-            );*/
         }
 
         .dockButton .dock_notification {
             position    : absolute;
-            top         : 1px;
+            top         : 2px;
             right       : 1px;
-            width       : 12px;
+            width       : 11px;
             text-align  : center;
-            background  : url('images/dock_notification_bg.png') 0px 0px no-repeat;
             color       : #fff;
-            font-size   : 5pt;
-            padding     : 0px 1px 1px 3px;
-            text-shadow : 1px 1px 0px #000;
             letter-spacing: 1px;
-            line-height : 9pt;
+
+            border-radius: 11px;
+            box-shadow: 0px 1px 1px black;
+            background  : #CE0E0F url('images/bg_counter.png') repeat-x 0px 0px;
+
+            font-size: 9px;
+            height: 8px;
+            line-height: 8px;
+            padding     : 2px 1px 1px 1px;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
+            display: none;
         }
 
         .dockButton .dock_icon_image {
@@ -1353,6 +1394,7 @@
             left                  : 3px;
             width                 : 34px;
             height                : 33px;
+            cursor: default;
         }
 
         .dockButton .dock_icon_image.dii_primary {
@@ -1599,9 +1641,6 @@
             overflow           : visible;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
             display            : inline-block;
         }
@@ -1675,8 +1714,10 @@
 <a:button name="c9-simple-btn">
     <a:style><![CDATA[
         .c9-simple-btn {
-            -moz-user-select   : none;
+            -moz-user-select: -moz-none;
             -khtml-user-select : none;
+            -webkit-user-select: none;
+            -o-user-select: none;
             user-select        : none;
         }
     ]]></a:style>
@@ -1764,11 +1805,13 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
             border:1px solid transparent;
+            -moz-user-select: -moz-none;
+            -khtml-user-select : none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select        : none;
         }
 
         .with-arrow.c9-toolbarbutton {
@@ -2029,7 +2072,6 @@
             opacity: .2;
         }
         
-
         .c9-menu-bar .c9-mbar-bcont .c9-activity .saving {
             -webkit-animation: saving .4s linear 0 infinite;
                -moz-animation: saving .4s linear 0 infinite;
@@ -2065,9 +2107,6 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
             border:1px solid transparent;
             padding-bottom: 1px;
@@ -2089,6 +2128,12 @@
             background         :-moz-linear-gradient(center bottom, #2e2e2e 0%, #282828 100%) repeat scroll 0 0 transparent;
 
             width: 25px;
+
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-sidepanelsbutton .c9-icon {
@@ -2196,12 +2241,14 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 13px;
             margin:            : 0 1px;
             border             : 1px solid transparent;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-toolbarbutton2 .c9-icon {
@@ -2286,12 +2333,14 @@
             cursor              : pointer;
             position            : absolute;
             cursor              : default;
-            -khtml-user-select  : none;
-              -moz-user-select  : none;
-                   user-select  : none;
             background-image    : url(images/c9-no-repeat.png);
             background-repeat   : no-repeat;
             top: -32px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .panel-settings {
@@ -2351,6 +2400,11 @@
             position: absolute;
             top: 0;
             width: 2px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
     ]]></a:style>
 
@@ -2372,12 +2426,14 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none;
-            -khtml-user-select  : none;
-            user-select         : none;
             background-position : 0 27px;
             background-repeat   : no-repeat;
             background-image    : url(images/browser_button.png);
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .browser-btn span{
@@ -2411,8 +2467,6 @@
 <a:button name="dockheader">
     <a:style><![CDATA[
         .dockheader {
-            /*border-top : 1px solid #595a5c;
-            border-bottom : 1px solid #f1f1f1;*/
             position : relative;
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#3E3F41', endColorstr='#303132')";
@@ -2439,7 +2493,6 @@
         }
 
         .dockheaderOver {
-            /*border-top : 1px solid #595a5c;*/
             filter           : progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647');
             -ms-filter       : "progid:DXImageTransform.Microsoft.gradient(GradientType=1,startColorstr='#525354', endColorstr='#454647')";
             background       : -webkit-gradient(linear, center top, center bottom, from(#525354), color-stop(1, #454647));
@@ -2521,14 +2574,6 @@
         }
 
         .mnubtn .pointer {
-            /*background-image    : url(images/gitui_close_arrow.png);
-            background-position : 0 0;
-            background-repeat   : no-repeat;
-            position            : absolute;
-            width               : 11px;
-            height              : 9px;
-            top                 : 6px;
-            right               : 5px;*/
             display             : none;
         }
 
@@ -2547,7 +2592,6 @@
         }
 
         .mnubtnDown .pointer {
-            /*display:block;*/
         }
 
         .mnubtn.spacer {
@@ -2653,12 +2697,14 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none;
-            -khtml-user-select  : none;
-            user-select         : none;
             background-repeat   : no-repeat;
             background-image    : url("images/c9-topbar-btns.png");
             background-position : 0 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         /* dashboard */
@@ -3208,8 +3254,6 @@
             z-index: 10;
             text-align: right;
             padding-left: 15px;
-            /*margin-right: -15px;
-            position : absolute;*/
             float : right;
         }
 
@@ -3337,6 +3381,10 @@
             background-position : 0 -68px;
         }
 
+        .cbgrey.cbcontainerChecked.cbcontainerDisabled .checkbox {
+            background-position : 0 -119px;
+        }
+
         .cbgrey.cbcontainerDisabled span {
             color : #bebebe;
         }
@@ -3426,8 +3474,14 @@
     <a:style><![CDATA[
         .ace_editor {
           position: relative;
+            overflow: hidden;
           font-family: Monaco, Menlo, Consolas, monospace;
           color: black;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .ace_scroller {
@@ -3478,11 +3532,12 @@
         .aceSearchResults .ace_text-layer {
             pointer-events: auto;
         }
-        .aceSearchConsole .ace_marker-layer .ace_selection {
-            background: transparent !important;
-        }
         .aceSearchResults .ace_c9searchresults, .aceSearchResults .ace_string {
             cursor: default;
+        }
+        
+        .aceSearchConsole.ace-monokai .ace_marker-layer .ace_selected_word {
+            border: 1px solid #ccc;
         }
         
         .ace_gutter .ace_gutter_active_line, .aceSearchConsole .ace_gutter .ace_gutter_active_line {
@@ -3654,7 +3709,6 @@
             left : 0;
             height : 20px;
             z-index : 10;
-            /*padding-left : 5px;*/
             background-color : #e6e6e6;
             margin : -20px 15px 0 0;
             white-space : nowrap;
@@ -3755,7 +3809,6 @@
         .datagrid .records .row span{
             height : 18px;
             background : white no-repeat 0 50%;
-            /*border-bottom : 1px solid #d6d6d6;*/
         }
 
         .datagrid .records .row span u{
@@ -3800,8 +3853,6 @@
         }
 
         .datagridFocus .records .indicate span{
-            /*border: 1px dotted #BBB;
-            border-width : 1px 0 1px 0;*/
             padding : 0;
             color : #333;
         }
@@ -3826,7 +3877,6 @@
 
         .datagrid .records .testhead span {
             border-top : 4px solid #c3c3c3;
-            /*background : #ddd;*/
         }
 
         .datagrid .records .current_execution span {
@@ -3881,7 +3931,6 @@
             padding : 0 0 10px 50px;
             font-size : 11px;
             margin-top : 10px;
-            /*text-align : center;*/
             border-bottom : 1px solid #eee;
         }
 
@@ -4097,7 +4146,6 @@
             position: relative;
             border: 1px solid #c3c3c3;
             background-color: white;
-            /*cursor: default;*/
             overflow : hidden;
             font-family: Tahoma, Arial;
             font-size: 8pt;
@@ -4356,8 +4404,6 @@
         }
 
         .dgcheckFocus .records .indicate span{
-            /*border: 1px dotted #BBB;
-            border-width : 1px 0 1px 0;*/
             padding : 0;
             color : #333;
         }
@@ -4420,7 +4466,6 @@
             padding : 0 0 10px 50px;
             font-size : 11px;
             margin-top : 10px;
-            /*text-align : center;*/
             border-bottom : 1px solid #eee;
         }
 
@@ -5508,7 +5553,6 @@
             padding-right: 6px;
         }
         .frame .legend{
-            /*margin-top: 0px;
             position: absolute;
             background : #fafbfc;
             left: 5px;
@@ -5673,36 +5717,57 @@
             background : rgba(255,255,255,0.4);   
             color : #666;
             padding : 2px 3px 4px 10px;
+        }
+        .treeOutline .item-fix label {
+            padding : 3px 3px 4px 14px;
+        }
+        .treeOutline .item-fix {
+            padding: 0
+        }
+        .treeOutline .item span {
+            left: 4px;
+            top: 9px;
+        }
+        .searchresults>div,
+        .treeOutline .item-fix{
+            background : rgba(255,255,255,0.4);   
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
             cursor : default;
             white-space : nowrap;
         }
-        .searchresults>div:hover{
+        .searchresults>div{
+            color : #666;
+        }
+        .searchresults>div:not(.selected):hover,
+        .treeOutline .item-fix:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
         }
-        .dark .searchresults>div {
+        .dark .searchresults>div,
+        .dark .treeOutline .item-fix{
             background : rgba(255,255,255,0.1);   
             border-top-color: rgba(255,255,255,0.05);
             border-bottom-color : rgba(0,0,0,0.3);
         }
-        .dark .searchresults>div:hover{
+        .dark .searchresults>div:not(.selected):hover{
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
         }
-        .searchresults>div>span{
+        .searchresults>div>span,
+        .treeOutline .item-fix>span{
             font-size : 14px;
-            color : #333;
             display : block;
             padding : 2px;
         }
         .searchresults .path {
             font-size: 11px;
         }
-        .searchresults>div.selected{
+        .searchresults>div.selected,
+        .treeOutline .item-fix.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
         }
-        .dark .searchresults>div.selected{
+        .dark .searchresults>div.selected,
+        .dark .treeOutline .item-fix.selected{
             background: none !important;
             box-shadow: none !important;
         }
@@ -5713,14 +5778,18 @@
             box-shadow : 0 0 0 1000em rgba(255,255,255,0.3) inset;
         }
         .searchresults>div.selected,
-        .searchresults>div.selected>span {
+        .searchresults>div.selected>span,
+        .treeOutline .item-fix.selected,
+        .treeOutline .item-fix.selected>span {
             color : white !important;
         }
         
-        .searchresults>div.selected>span{
+        .searchresults>div.selected>span,
+        .treeOutline .item-fix.selected>span{
             color : #f1f1f1;
         }
-        .searchresults>div.selected>span>strong{
+        .searchresults>div.selected>span>strong,
+        .treeOutline .item-fix.selected>span>strong{
             color : #fff;
         }
         .searchresults .message{
@@ -5749,6 +5818,7 @@
         </a:empty>
     </a:presentation>
 </a:list>
+
 <a:list name="list">
     <a:style><![CDATA[
         .list{
@@ -5796,7 +5866,6 @@
         .listFocus>.indicate>SPAN>U{
             border: 1px dotted #BBB;/*#25a8e7;*/
             color : black;
-            /*background-color : #e4f4fc;*/
             padding: 1px 3px 1px 1px;
         }
 
@@ -6010,8 +6079,6 @@
             z-index: 10;
             text-align: right;
             padding-left: 15px;
-            /*margin-right: -15px;
-            position : absolute;*/
             float : right;
         }
 
@@ -6107,6 +6174,15 @@
             cursor:default;
         }
         
+        .menu-bk.share-url {
+            text-align: center;
+            background-image: linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -o-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -moz-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -webkit-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -ms-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+        }
+
         .menu-bk.moveleft {
             margin-left: 6px;
         }
@@ -6120,6 +6196,16 @@
             margin-top: 30px;
         }
         
+        .menu-bk.share-url.upward {
+            margin-top: -12px !important;
+            margin-left: 5px !important;
+        }
+
+        .menu-bk.share-url.downward {
+            margin-top: 9px !important;
+            margin-left: 5px !important;
+        }
+
         .menu-bk.moveright {
             margin-left: -8px;
         }
@@ -6191,8 +6277,6 @@
             z-index: 10;
             text-align: right;
             padding-left: 15px;
-            /*margin-right: -15px;
-            position : absolute;*/
             float : right;
         }
 
@@ -6213,10 +6297,8 @@
 
         .menu-bk>div.menu_item.disabled{
             color: gray;
-            /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
         }
         .menu-bk>div.menu_item.disabled>span{
-            /*display : none;*/
         }
 
         .menu-bk>div.menu_item>u{
@@ -6254,6 +6336,11 @@
             left : 50%;
             margin-left : -12px;
         }
+
+        .menu-bk.share-url .arrow {
+            right: 10px;
+            left: auto;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -6282,8 +6369,6 @@
             background            : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
             padding               : 5px 4px 4px;
 
-
-            /*margin-left : -42px;*/
             margin-top : -20px;
             border : 1px solid #000;
 
@@ -6421,8 +6506,6 @@
             position : relative;
             background: #333;
             border : 1px solid #333;
-            /*-moz-border-radius: 7px 0 0 0;
-            -webkit-border-radius: 7px 0 0 0;*/
             margin-left : -42px;
             margin-top : 10px;
             border-top : 3px solid #333;
@@ -6489,6 +6572,28 @@
                 background-position: 0 -1318px, 0 0;
             }
 
+        .fm-window .fm-header {
+            position : relative;
+            overflow : hidden;
+            height   : 32px;
+            top      : -30px;
+        }
+
+        .fm-window .fm-header .hcontent {
+            background    : url(images/c9-repeat-x.png)  repeat-x 0 -138px;
+            position      : relative;
+            overflow      : hidden;
+            height        : 26px;
+            padding       : 7px 0 0 7px;
+            font-family   : Arial;
+            font-size     : 11.3px;
+            line-height   : 14px;
+            color         : #595959;
+            text-shadow   : #fff 0px 1px 0px;
+            box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.8) inset;
+            text-transform : uppercase;
+        }
+
             .fm-window .fm-content {
                 position:absolute;
                 overflow:visible;
@@ -6496,12 +6601,13 @@
                 top  : 32px;
                 right : 0;
                 bottom : 0;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,0.3) inset, /* top */
-                			-1px 0 0 0 rgba(255,255,255,.4) inset; /* right */
-                background-color: rgba(220, 220, 220, 0.93);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
+                            -1px 0 0 0 rgba(255,255,255,.9) inset; 
+                background-color: rgba(220, 220, 220, 0.9);
                 background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
                 					url(images/c9-noise-light-10.png),
                 					url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png),
                 					url(images/c9-noise-light-10.png);
             }
         ]]></a:style>
@@ -6527,7 +6633,7 @@
                 <div> </div>
             </a:button>
         </a:presentation>
-    </a:modalwindow>
+</a:modalwindow>
 <a:scrollbar name="sbios">
     <a:style><![CDATA[
         .sbios {
@@ -7084,7 +7190,6 @@
         .bk-window .bk-header .hcontent {
             
             position      : relative;
-            /*overflow      : hidden;*/
             height        : 26px;
             margin       : 8px 14px 0;
             font-family   : Arial;
@@ -7129,7 +7234,7 @@
             position: relative;
         }
 
-        .bg-bk-content {
+        .bk-window .bg-bk-content {
             background:url(images/modalbg.png) repeat 0 0;
             position: absolute;
             top  : 33px;
@@ -7247,6 +7352,171 @@
                 <div class="bk-container">
                     <div class="bk-win-footer"></div>
                 </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div/>
+        </a:button>
+    </a:presentation>
+</a:modalwindow>
+<a:modalwindow name="bk-win-noisebg">
+    <a:style><![CDATA[
+        .bk-win-noisebg {
+            position : relative;
+            overflow : hidden;
+            z-index  : 10000;
+
+            border : 1px solid #000;
+            -moz-border-radius : 8px;
+            -webkit-border-radius : 8px;
+            border-radius : 8px;
+            background : -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+            background : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+            padding : 0 0 10px;
+
+            color: #ffffff;
+
+            margin-top : 10px;
+            border : 1px solid #000;
+
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .bk-win-noisebg .noise_bg {
+            background: url(images/noise_pattern_transparent.png) 0 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.1;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .bk-win-noisebg .bk-header {
+            position : relative;
+            overflow : hidden;
+            height   : 20px;
+            top      : 0;
+            padding-top: 5px;
+
+            -moz-border-radius    : 8px 8px 0 0;
+            -webkit-border-radius : 8px 8px 0 0;
+            border-radius         : 8px 8px 0 0;
+
+            -webkit-box-shadow: inset 0px 1px 0px 0px #424242;
+            -moz-box-shadow: inset 0px 1px 0px 0px #424242;
+            box-shadow: inset 0px 1px 0px 0px #424242;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent {
+            position      : relative;
+            /*overflow      : hidden;*/
+            height        : 15px;
+            margin       : 5px 10px 0;
+            font-family   : Arial;
+            font-size     : 14px;
+            line-height   : 16px;
+            font-weight   : bold;
+            color         : #ffffff;
+            cursor        : default;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent .buttons {
+            position: absolute;
+            right: -5px;
+            top: -5px;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent .buttons .close {
+            background: url(images/bk-close-btn.png)  no-repeat 0 0;
+            width: 13px;
+            height: 15px;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent .buttons .close.hover {
+            background-position: 0 -19px;
+        }
+        .bk-win-noisebg .bk-header .hcontent .buttons .close.down {
+            background-position: 0 -39px;
+        }
+
+        .bk-win-noisebg .bk-container {
+            position:relative;
+            overflow:visible;
+            left : 0;
+            top  : 0;
+            right : 0;
+            bottom : 0;
+            z-index: 1;
+        }
+
+        .bk-win-noisebg .bg-bk-content {
+            position: absolute;
+            top  : 30px;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .bk-win-noisebg .text-header {
+            font-size: 18px;
+        }
+
+        .bk-win-noisebg .text-content {
+            font-size: 13px;
+        }
+
+        .bk-win-noisebg .smile-icon {
+            width: 45px;
+            height: 46px;
+            background: url(images/smile-image.png) no-repeat 0 0;
+        }
+
+        .bk-window-cover {
+            background:url(images/bg-overlay.png) repeat 0 0;
+            opacity: 1;
+        }
+
+        .bk-window-cover .header {
+            background: url(images/cover-heaeder.png) repeat-x 0 0;
+            height: 12px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+        }
+        .bk-window-cover .logo {
+            background: url(images/cover-logo.png) no-repeat 0 0;
+            width: 215px;
+            height: 44px;
+            position: absolute;
+            right: 20px;
+            top: 25px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          collapsed-height = "26"
+          minheight        = "50"
+          minwidth         = "50"
+          container        = "div[2]"
+          drag             = "div[1]/div[1]"
+          title            = "div[1]/div[1]/text()"
+          icon             = "div[1]/div[1]/div[1]"
+          buttons          = "div[1]/div[1]/div[2]">
+            <div class="bk-win-noisebg">
+                <div class="bk-header">
+                    <div class="hcontent">
+                        -
+                        <div class="icon"></div>
+                        <div class="buttons"></div>
+                    </div>
+                </div>
+                <div class="bk-container"> </div>
             </div>
         </a:main>
         <a:button>
@@ -7535,7 +7805,7 @@
             line-height: 13px;
             white-space: nowrap;
             text-overflow: ellipsis;
-            color: #333;
+            color: #f1f1f1;
         }
 
         .rb_blackFocus span {
@@ -8498,7 +8768,6 @@
         }
 
         .splitter.vertical.panelsplitter div {
-            /*margin-left: -5px;*/
             width: 3px;
         }
 
@@ -8887,6 +9156,93 @@
     </a:presentation>
 </a:progressbar>
 
+<a:progressbar name="progressbar-green">
+    <a:style><![CDATA[
+        .progressbar-green {
+            position: relative;
+            cursor : default;
+        }
+
+        .progressbar-green .lbl {
+            display: none;
+        }
+        
+        .progressbar-green .left {
+            background-color: #191818;
+            border: 1px solid #111010;
+            -webkit-box-shadow: 0 1px 0 0 #474748;
+           -moz-box-shadow: 0 1px 0 0 #474748;
+                box-shadow: 0 1px 0 0 #474748;
+            
+            border-radius : 3px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            
+            background-image: linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -o-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -moz-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -webkit-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+            background-image: -ms-linear-gradient(bottom, rgb(26,26,26) 0%, rgb(25,24,24) 51%);
+        }
+        
+        .progressbar-greenDisabled {
+            
+        }
+
+        .progressbar-greenDisabled .left {
+            
+        }
+
+        .progressbar-green .filledbar {
+            overflow: hidden;            
+            display : none;
+            width : 0%;
+            z-index: 1000;
+            
+            background-image: linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -o-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -moz-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -webkit-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            background-image: -ms-linear-gradient(bottom, rgb(127,193,4) 0%, rgb(168,239,37) 51%);
+            
+            border-right: 1px solid #475b21;
+            border-left: 1px solid #475b21;
+            height: 3px;
+        }
+
+        .progressbar-greenDisabled .filledbar {
+        }
+
+        .progressbar-greenDisabled .left {
+            
+        }
+
+        .progressbar-greenRunning .filledbar {
+            display: block;
+        }
+
+        .progressbar-greenComplete .left {
+
+        }
+
+        .progressbar-greenComplete .lbl {
+        
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main progress="div[2]/div" caption="div[1]/span/text()">
+            <div class="progressbar-green">
+                <div class="lbl"><span>0%</span></div>
+                <div class="left">
+                    <div class="filledbar"> </div>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:progressbar>
+
 <a:tab name="tab_console">
 <a:style><![CDATA[
     .tab_console {
@@ -8902,7 +9258,7 @@
     }
 
     .tab_console .btncontainer{
-        padding : 5px 106px 3px 6px;
+        padding : 4px 106px 3px 6px;
         height: 20px;
         overflow: visible;
         white-space: nowrap;
@@ -8923,22 +9279,31 @@
         top : 0;
         left : 0;
         right : 0;
+    
+        clip: rect(0px 3000px 30px 0px); 
+        display : -webkit-box;
+        display : -moz-box;
     }
 
-    .tab_console .btncontainer>div {
+    .tab_console .btncontainer > .btntab {
+        cursor: default;
+        
+        min-width : 17px;
+        max-width : 70px;
+        -webkit-box-flex : 1;
+        -moz-box-flex : 1;
+        position : relative;
+        width : 0;
+        
         display: block;
-        display : inline-block;
         margin: 0 0 0 0;
         padding: 0;
-        position : relative;
-        vertical-align : bottom;
         height : 19px;
     }
 
     .tab_console .btncontainer .btntab {
         padding      : 4px 20px 2px 20px;
         position     : relative;
-        margin-top:-1px;
         text-align: center;
     }
 
@@ -8966,6 +9331,11 @@
 
     .tab_console .btncontainer .btntab.btnclose .tab_console_title {
         margin-right : 15px;
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        user-select: none;
     }
 
     .tab_console .scale .btntab .tab_console_title{
@@ -8973,6 +9343,11 @@
         overflow : hidden;
         text-overflow : ellipsis;
         white-space : nowrap;
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        user-select: none;
     }
 
     .tab_console .btncontainer div.over {
@@ -9012,7 +9387,6 @@
         position            : absolute;
         right               : 6px;
         top                 : 6px;
-        /*cursor              : default;*/
         background-image    : url(images/console-tab-close-button.png);
         background-repeat   : no-repeat;
         background-position : 0 0;
@@ -9023,7 +9397,7 @@
     }
 
     .tab_console .btncontainer .btnclose strong:active {
-        background-position : 0 -28px;
+        background-position : 0 -2spx;
     }
 
     .tab_console .btncontainer .curbtn.btnclose strong {
@@ -9073,7 +9447,7 @@
 ]]></a:style>
 <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
     .tab_console .btncontainer .btntab {
-        padding      : 5px 20px 1px 20px;
+        padding      : 4px 20px 1px 20px;
     }
 
     .tab_console .btncontainer div.curbtn {
@@ -9219,7 +9593,7 @@
         background-repeat   : no-repeat;
         background-position : 0 -14px;
     }
-
+    
     .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
     .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
         background-image : url(images/tab-save-spinner-inactive.gif);
@@ -9227,6 +9601,20 @@
         right            : 0px;
         top              : 5px;
         width            : 13px;
+    }
+    
+    .dark .editor_tab .btnsesssioncontainer .loading.btnclose .tab_middle strong,
+    .dark .editor_tab .btnsesssioncontainer .saving.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .loading.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .saving.btnclose .tab_middle strong {
+        display: none;
+    }
+    
+    .dark .editor_tab .btnsesssioncontainer .loading.over.btnclose .tab_middle strong,
+    .dark .editor_tab .btnsesssioncontainer .saving.over.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .loading.over.btnclose .tab_middle strong,
+    .editor_tab .btnsesssioncontainer .saving.over.btnclose .tab_middle strong {
+        display: block;
     }
     /* ------------------------------------------------------------------------------------------
      * Unselected tab hover
@@ -9271,11 +9659,24 @@
     .editor_tab .saving_active .sessiontab_saving {
         background-image : url(images/tab-save-spinner-active.gif);
         height           : 15px;
-        right            : -1px;
+        right            : -2px;
         top              : 4px;
         width            : 15px;
     }
-
+    
+    .dark .editor_tab .loading_active.btnclose .tab_middle strong,
+    .dark .editor_tab .saving_active.btnclose .tab_middle strong,
+    .editor_tab .loading_active .tab_middle strong,
+    .editor_tab .saving_active .tab_middle strong {
+        display: none;
+    }
+    
+    .dark .editor_tab .loading_active.over.btnclose .tab_middle strong,
+    .dark .editor_tab .saving_active.over.btnclose .tab_middle strong,
+    .editor_tab .loading_active.over .tab_middle strong,
+    .editor_tab .saving_active.over .tab_middle strong {
+        display: block;
+    }
     /* ------------------------------------------------------------------------------------------
      * Selected tab hover
      * --------------------------------------------------------------------------------------- */
@@ -9315,6 +9716,10 @@
                 user-select: none;
     }
      
+    .editor_tab #q5 {
+        top: 2px !important;
+    }
+
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_icon {
         display: none;
     }
@@ -9673,6 +10078,9 @@
         color: #d9d9d9;
     }
 
+    .codeditorHolder {
+    }
+
     .editor_tab.offline .btnsesssioncontainer .btnclose strong{
         display : none;
     }
@@ -9734,7 +10142,6 @@
         border-radius : 4px;
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
-        -webkit-border-radius: 4px;
     }
 
     .editor_tab .editor_bg .editor_bg_content .editor_bg_message {
@@ -9782,8 +10189,6 @@
         right : 0;
         z-index : 10;
         margin: 0 auto;
-        /*background-color: #e8e8e8;*/
-        /*border-bottom: 1px solid #8C8C8C;*/
         padding-top:6px;
         clear: both;
         box-shadow: 0 1px 0 0 rgba(255, 255, 255, .9) inset;
@@ -9896,6 +10301,7 @@
         background-position : -31px -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
+
     .dark .editor_tab .session_btn .tab_middle:after {
         background-position : -31px -158px, 0 -1155px;
     }
@@ -9989,7 +10395,6 @@
             overflow: hidden;
             position:relative;
             padding-top: 17px;
-            /*border-bottom: 1px solid white;*/
         }
 
         .tab .btncontainer{
@@ -10004,10 +10409,6 @@
             font-size : 11px;
             border-bottom : 1px solid #8c8c8c;
 
-            /*border-top : 1px solid #ffffff;
-            border-right : 1px solid #8c8c8c;
-            border-left : 1px solid #8c8c8c;*/
-
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             margin-top : -16px;
@@ -10016,7 +10417,6 @@
 
         .tab .btncontainer>div {
             display: block;
-            /*float: left;*/
             display : inline-block;
             margin: 0 0 0 0;
             padding: 0;
@@ -10100,7 +10500,6 @@
             position            : absolute;
             right               : 0;
             top                 : 7px;
-            /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : 0 -14px;
@@ -10137,9 +10536,6 @@
             z-index : 10;
             margin: 0 auto;
             background-color: #f6f6f6;
-            /*border-left: 1px solid #8c8c8c;
-            border-right: 1px solid #8c8c8c;
-            border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
             clear: both;
             font-family : Arial;
@@ -10245,8 +10641,6 @@
         .extensions_tab .btncontainer div.curbtn {
             color       : #202020;
             z-index     : 1;
-            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0.6 rgb(246,246,246)),color-stop(1, rgb(237,237,237)));
-            background: -moz-linear-gradient(center bottom,rgb(246,246,246) 60%,rgb(237,237,237) 100%);*/
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
@@ -10310,8 +10704,6 @@
         }
 
         .expandedpanel .dockbar {
-            /*border-bottom: 1px solid #000000;
-            box-shadow: 0 1px 0 #505053;*/
             border-bottom: 1px solid #38393b;
         }
 
@@ -10371,15 +10763,6 @@
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
             border-radius: 4px;
-
-            /*-webkit-border-bottom-left-radius: 4px;
-            -webkit-border-bottom-right-radius: 4px;
-            -moz-border-radius-bottomleft: 4px;
-            -moz-border-radius-bottomright: 4px;
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;*/
-
-            /*border-bottom: 1px solid white;*/
         }
 
         .dockcol .docktab,
@@ -10387,9 +10770,6 @@
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
             border-radius: 0;
-            /*-webkit-box-shadow: 0 2px 10px 1px #6d6d6d;
-            -moz-box-shadow: 0 2px 10px 1px #6d6d6d;
-            box-shadow: 0 2px 10px 1px #6d6d6d;*/
         }
 
         .docktab .btncontainer{
@@ -10399,10 +10779,12 @@
             overflow: visible;
             white-space: nowrap;
             width : auto;
-            /*border-bottom : 1px solid #ffffff;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
-            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);*/
+            
+            clip: rect(0px 3000px 30px 0px); 
+            display : -webkit-box;
+            display : -moz-box;
         }
+    
         .dockcol .docktab .btncontainer{
             padding-top: 4px;
             padding-left: 3px;
@@ -10414,18 +10796,19 @@
             background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
         }
 
-        .docktab .btncontainer>div {
+        .docktab .btncontainer .btntab {
             display: block;
-            display : inline-block;
             margin: 0 0 0 0;
             padding: 0;
             position : relative;
-            vertical-align : bottom;
             cursor : default;
-        }
 
-        .docktab .btncontainer .btntab {
-            float: left;
+            min-width : 17px;
+            max-width : 100px;
+            -webkit-box-flex : 1;
+            -moz-box-flex : 1;
+            width : 0;
+            
             padding       : 3px 2px 4px;
             position      : relative;
             text-align    : center;
@@ -10436,18 +10819,6 @@
             -webkit-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
 
             background: url(images/black-tab_btn_bg.png) 0 0;
-
-            /*background : -moz-linear-gradient(top, #d6d6d6, #c7c7c7 );
-            background : -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d6d6d6), to(#c7c7c7));
-            -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
-            -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;*/
-
-            /*-webkit-border-top-left-radius: 4px;
-            -webkit-border-top-right-radius: 4px;
-            -moz-border-radius-topleft: 4px;
-            -moz-border-radius-topright: 4px;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;*/
         }
 
         .docktab .btncontainer .btntab.firstbtn {
@@ -10504,9 +10875,6 @@
         }
 
         .docktab .btncontainer div.over {
-            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
-            background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);*/
-
             background: url(images/black-tab_btn_bg.png) 0 -22px;
             cursor: default;
         }
@@ -10542,11 +10910,9 @@
         .docktab .btncontainer .btnclose strong {
             width               : 14px;
             height              : 14px;
-            /*display             : none;*/
             position            : absolute;
             right               : 2px;
             top                 : 5px;
-            /*cursor              : pointer;*/
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : 0 -14px;
@@ -10610,9 +10976,6 @@
             z-index : 10;
             margin: 0 auto;
             background-color: #f6f6f6;
-            /*border-left: 1px solid #8c8c8c;
-            border-right: 1px solid #8c8c8c;
-            border-bottom: 1px solid #8c8c8c;*/
             overflow: hidden;
             border-radius: 0 0 4px 4px;
         }
@@ -10639,6 +11002,20 @@
         .docktab .page.curpage{
             display : block;
         }
+
+        /**
+         * blink 182
+         */
+        @-webkit-keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
+        @-moz-keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
+        @keyframes blink_tab { 0%, 49.99% { color: rgba(206, 164, 164, 1) } 50%, 100% { color: rgba(206, 164, 164, 0.5) }  }
+
+        .un-read-message .tab_title {
+            -webkit-animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
+            -moz-animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
+            animation:blink_tab 2s/*this is the time*/ linear 0s infinite normal;
+        }
+
     ]]></a:style>
     <a:style condition="apf.isWebkit">
         .docktab .btncontainer .btntab {
@@ -10663,7 +11040,7 @@
             </div>
         </a:main>
         <a:button
-          caption   = "div[1]/text()"
+          caption   = "div[1]"
           container = "."
           maxwidth  = "100"
           minwidth  = "10">
@@ -10783,16 +11160,15 @@
             box-shadow      : inset 0 2px 3px 0 rgba(0,0,0,.5);
             color           : #202020;
             font-size       : 14px;
-            height          : 20px;
+            height          : 19px;
             line-height     : 18px;
-            padding         : 1px 4px 0px 4px;
+            padding         : 2px 4px 0px 4px;
             outline         : none;
             text-overflow   : ellipsis;
         }
         .tb_consoleFocus .sbtb_middle,
         .tb_consoleOver .sbtb_middle,
         .tb_console .sbtb_middle:hover {
-            /*background      : #eee;*/
         }
 
         .topborder .sbtb_middle{
@@ -11288,9 +11664,6 @@
         }
 
         .toolbar .subbar {
-            /*background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
-            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);*/
-
             background-image: linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
             background-image: -o-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
             background-image: -moz-linear-gradient(bottom, rgb(236,239,242) 0%, rgb(237,240,243) 50%, rgb(243,246,248) 51%, rgb(249,251,254) 100%);
@@ -11301,7 +11674,6 @@
 
             font-family: Arial;
             font-size: 12px;
-            /*border-bottom: 1px solid #b2b2b2;*/
             border-bottom: 1px solid #E1E5EA;
             position: relative;
             padding: 0;
@@ -11384,6 +11756,8 @@
             -moz-user-select: none;
             -o-user-select: none;
             user-select: none;
+            
+            color: #222;
         }
 
         .hboxTrFiles {
@@ -11481,24 +11855,22 @@
 
         .filemgr-tree .item-fix {
             position:relative;
-            height:18px;
+            /*width:100%;*/
+        }
+        .filemgr-tree:not(.searchresults) .item-fix {
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
-            /*width:100%;*/
         }
         
         .filemgr-treeDisabled .item-fix{
-            opacity : 0.3;
+            opacity : 0.9;
         }
 
         .filemgr-tree .item-fix .item {
-            height:18px;
             padding:0 0 0 14px;
             position:relative;
-            /*overflow:hidden;*/
         }
         .filemgr-tree.openfile .item-fix .item{
-            /*padding-left : 2px;*/
         }
         
         .rundebug .item-fix .item label{
@@ -11512,6 +11884,10 @@
         .filemgr-tree .item-fix.selected {
             background : rgba(0,0,0,0.04);
         }
+        .treeOutline .filemgr-tree .item-fix.selected label u {  
+            color: white;
+        }
+        
 
         .filemgr-dragtree .item .caption,
         .filemgr-tree .item-fix.dragAppend .item,
@@ -11618,9 +11994,19 @@
         .filemgr-tree U.root .item-fix.minlast .item SPAN,
         .filemgr-tree U.root .item-fix.plus .item SPAN,
         .filemgr-tree U.root .item-fix.pluslast .item SPAN,
-        .filemgr-tree .item-fix.root .item SPAN {
+        .filemgr-tree:not(.treeOutline) .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
+        }
+        .treeOutline .item-fix.root.min .item SPAN {
+            background-image:url(images/tree_close_arrow_small.png) !important;
+            background-repeat: no-repeat;
+        }
+        .dark .filemgr-tree U.root .item-fix.min .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.minlast .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.plus .item SPAN,
+        .dark .filemgr-tree U.root .item-fix.pluslast .item SPAN,
+        .dark .filemgr-tree .item-fix.root .item SPAN {
         }
 
         .filemgr-tree .item-fix.min .item SPAN,
@@ -11636,24 +12022,31 @@
         .filemgr-tree .item LABEL {
             display:block;
             position:relative;
-            /*overflow:hidden;*/
             height:18px;
             background-position:3px 1px;
             background-repeat:no-repeat;
-            padding-left:21px;
+            padding-left:0px;
+        }
+        .filemgr-tree.searchresults .item LABEL {
+            background-position: 3px 50%;
         }
 
         .filemgr-tree .item LABEL .caption {
             font-family : Tahoma, Arial;
             font-size   : 11px;
-            color       : #101010;
             display:block;
             position:relative;
             overflow:hidden;
             height:16px;
-            padding:1px 0 0 2px;
+            padding:1px 0 0 23px;
             text-decoration:none;
             white-space: nowrap;
+        }
+        .filemgr-tree.not(treeOutline) .item LABEL .caption {
+            color       : #101010;
+        }
+        .treeOutline.filemgr-tree .item LABEL .caption {
+            padding: 1px 0 0 2px;
         }
 
         .filemgr-tree .fileupload .item LABEL .caption {
@@ -11679,12 +12072,10 @@
         }
 
         #txt_rename {
-            /*border:1px solid #2084d6;
-            background-color: #d7e7f4;*/
-
             height:16px;
             padding-left:1px;
             margin-top:0px;
+            margin-left: 21px;
 
             font-family : Tahoma, Arial;
             font-size   : 11px;
@@ -11762,11 +12153,41 @@
             font-size : 11px;
             padding : 5px;
         }
+        
+        .filemgr-tree .syncing .caption{ 
+            background : url(icons/syncing_unsel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing.selected .caption{ 
+            background : url(icons/syncing_sel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .synced .caption{ 
+            background : url(icons/synced_unsel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .synced.selected .caption{ 
+            background : url(icons/synced_sel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .conflict .caption{ 
+            background : url(icons/conflict_unsel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .conflict.selected .caption{ 
+            background : url(icons/conflict_sel.png) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added .caption{ 
+            background : url(icons/syncing_unsel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added.selected .caption{ 
+            background : url(icons/syncing_sel.gif) no-repeat 2px 9px; 
+        }
+        .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
+            opacity : 0.5;
+        }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
-            padding:2px 0 0 2px;
+        }
+        .filemgr-tree.not(treeOutline) .item LABEL .caption {
+            padding:2px 0 0 23px;
         }
 
         #txt_rename {
@@ -12262,7 +12683,6 @@
             
             .searchbox.tb_console .sbtb_middle .input {
                 height: auto;
-                /*line-height: 19px;*/
                 position: relative;
             }
             .searchTxt.tb_textboxInitial .sbtb_middle .input {
@@ -12316,6 +12736,98 @@
         </a:presentation>
     </a:textbox>
 
+<a:button name="button-colorless">
+        <a:style><![CDATA[
+            .button-colorless {
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                border: 1px solid rgba(0,0,0,.1);
+                border-radius: 4px;
+                box-shadow: 0 1px 0px 0 rgba(237,237,237,.37) inset,
+                            0 1px 0 0 rgba(0,0,0,.08),
+                            0 1px 2px 1px rgba(0,0,0,.1);
+                color: #FFFFFF;
+                cursor: pointer;
+                font-family: Arial;
+                font-size: 13px;
+                height: 25px;
+                line-height: 23px;
+                text-align: center;
+                text-shadow: 0 1px 0 rgba(0,0,0,.25);
+            }
+
+            .button-colorlessOver {
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+            }
+            .button-colorlessDown {
+                background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+            }
+            .button-colorlessDisabled {
+                color: rgba(0,0,0,.5);
+                text-shadow: 0 1px 0 rgba(255,255,255,.15)
+            }
+            .button-colorlessFocus {
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
+                            0 0 2px 1px rgba(255,255,255,.2) inset,
+                            0 0 1px 0 rgba(255,255,255,.4) inset,
+                            0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Dark
+             */
+            .button-colorless.dark {
+                border: 1px solid rgba(0,0,0,.89);
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.37) inset,0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Colors
+             */
+            .button-colorless.grey {
+                background-color: #303030;
+            }
+            .button-colorless.lightGrey {
+                background-color: #494850;
+            }
+            .button-colorless.lighterGrey {
+                background-color: #7d7d7d;
+            }
+            .button-colorless.red {
+                background-color: #B60000;
+            }
+            .button-colorless.green {
+                background-color: #088E04;
+            }
+            .button-colorless.lightGreen {
+                background-color: #7ca734;
+            }
+            .button-colorless.lightBlue {
+                background-color: #415566;
+            }
+            .button-colorless.blue {
+                background-color: #1473DA;
+            }
+            .button-colorless.orange {
+                background-color: #bb3411;
+            }
+
+            /* larger buttons */
+            .button-colorless.large {
+                height: 42px;
+                line-height: 42px;
+                font-size: 14px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 
     <a:codebox name="codebox">
         <a:style><![CDATA[

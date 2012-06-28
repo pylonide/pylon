@@ -119,7 +119,7 @@ module.exports = ext.register("ext/themes/themes", {
         if (_self.lastTheme) {
             apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
             apf.setStyleClass(editorHolder, "", [_self.lastTheme]);
-            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+             apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
         _self.lastTheme = cssClass;
@@ -146,6 +146,7 @@ module.exports = ext.register("ext/themes/themes", {
             ["#editorDiv." + cssClass + " > .basic, "
              + "#editorDiv." + cssClass + " > .vsplitbox, "
              + "#tabsDiv." + cssClass + ", " // > .editor_tab
+             + "." + cssClass + " .c9terminal, "
              + "." + cssClass + " .codeditorHolder, "
              + "." + cssClass + " .winGoToFile, "
              + "." + cssClass + " .revisionsBar .topbar, "
@@ -162,7 +163,7 @@ module.exports = ext.register("ext/themes/themes", {
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]
         ], self, _self.stylesheet);
-        
+          
         ide.dispatchEvent("theme.init", {theme: theme, path: path});
     },
 
