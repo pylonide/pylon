@@ -148,7 +148,8 @@ function replaceText(editor, prefix, match) {
             cursorCol++;
     }
     setTimeout(function() {
-        editor.moveCursorTo(pos.row + rowOffset, cursorCol);
+        var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
+        editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
     }, 50);
 }
 
