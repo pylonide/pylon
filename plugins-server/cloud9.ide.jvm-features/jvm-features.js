@@ -9,7 +9,7 @@
 var Path = require("path");
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var netutil = require("../cloud9.core/netutil");
+var netutil = require("netutil");
 var EclipseClient = require("jvm_features").EclipseClient;
 
 var ECLIPSE_START_PORT = 10000;
