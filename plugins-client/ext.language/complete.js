@@ -45,6 +45,7 @@ var deferredInvoke = lang.deferredCall(function() {
     isInvokeScheduled = false;
 });
 var isInvokeScheduled = false;
+var ignoreMouseOnce = false;
 
 var drawDocInvoke = lang.deferredCall(function() {
     if (isPopupVisible() && complete.matches[complete.selectedIdx].doc) {
@@ -226,6 +227,8 @@ module.exports = {
         var innerCompletionBoxHeight = Math.min(10 * this.lineHeight, innerBoxLength * (this.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
+        ignoreMouseOnce = !isPopupVisible();
+        
         apf.popup.show("completionBox", {
             x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
             y        : _self.cursorConfig.lineHeight,
@@ -293,6 +296,10 @@ module.exports = {
             html += '</span>';
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
+                if (ignoreMouseOnce) {
+                    ignoreMouseOnce = false;
+                    return;
+                }
                 _self.matchEls[_self.selectedIdx].className = CLASS_UNSELECTED;
                 _self.selectedIdx = idx;
                 _self.matchEls[_self.selectedIdx].className = CLASS_SELECTED;
