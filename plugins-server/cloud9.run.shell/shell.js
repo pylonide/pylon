@@ -133,7 +133,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data,
+                    "data": data.toString(),
                     "extra": self.extra
                 });
             };

@@ -3,7 +3,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var util = require("util");
-var VfsSocket = require("../cloud9.run.node-debug/vfs_socket");
+var NodeSocket = require("v8debug").NodeSocket;
 var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
 
 var DebugProxy = module.exports = function(vfs, port, options) {
@@ -13,7 +13,7 @@ var DebugProxy = module.exports = function(vfs, port, options) {
 
     this.connected = false;
 
-    var socket = this.socket = new VfsSocket(vfs, port);
+    var socket = this.socket = new NodeSocket("localhost", port);
     socket.on("connect", function initRequest() {
         _self.send({
             seq: 0,

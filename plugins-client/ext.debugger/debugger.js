@@ -320,7 +320,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (!script)
                 return;
 
-            if (script.getAttribute("native")) {
+            if (script.getAttribute("native") === "true") {
                 return alert("Source not found !");
             }
             var name = script.getAttribute("scriptname");
