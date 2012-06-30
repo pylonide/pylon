@@ -318,7 +318,7 @@ var convertToHierarchyTree = function(doc, root) {
             else
               outline = convertToOutlineTree(doc, message.body);
             // Error handling in the callback
-            callback({success: message.success, body: outline});
+            callback({error: !message.success, body: outline && outline.items});
           });
           _self.proxy.send(command);
         };
