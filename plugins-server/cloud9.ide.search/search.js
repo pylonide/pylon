@@ -1,6 +1,7 @@
 /**
- * Search module for the Cloud9 IDE
- *
+ * Search module for the Cloud9 IDE.
+ * Deals with gotofile and searchinfiles
+ * 
  * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -10,7 +11,7 @@
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
-var grepCmd, findCmd, perlCmd, platform;
+var ackCmd, perlCmd;
 var name = "search";
 
 var ProcessManager;
@@ -18,11 +19,9 @@ var EventBus;
 
 
 module.exports = function setup(options, imports, register) {
-    grepCmd = options.grepCmd || "grep";
-    findCmd = options.findCmd || "find";
+    ackCmd = options.ackCmd || "./ack";
     perlCmd = options.perlCmd || "perl";
-    platform = options.platform || require("os").platform();
-
+    
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
     imports.ide.register(name, SearchPlugin, register);
@@ -110,59 +109,20 @@ util.inherits(SearchPlugin, Plugin);
     };
 
     this.assembleSearchCommand = function(options) {
-        var cmd = grepCmd + " -P -s -r --color=never --binary-files=without-match -n " + ( !options.casesensitive ? "-i" : "" );
-        var include = "";
-
-        if (options.pattern) { // handles grep peculiarities with --include
-            if (options.pattern.split(",").length > 1)
-                include = "{" + options.pattern + "}";
-            else
-                include = options.pattern;
-        } else {
-            include = "\\*{" + PATTERN_EXT + "}";
-        }
-
-        if (options.maxresults)
-            cmd += "-m " + parseInt(options.maxresults, 10);
-        if (options.wholeword)
-            cmd += " -w";
+        var cmd = ackCmd + " --nocolor " + 
+            ( !options.casesensitive ? "-i" : "" ) +
+            ( options.wholeword ? "-w" : "") +
+            ( !options.regexp ? "-Q" : "");
 
         var query = options.query;
         if (!query)
             return;
-        // grep has a funny way of handling new lines (that is to say, it's non-existent)
-        // if we're not doing a regex search, then we must split everything between the
-        // new lines, escape the content, and then smush it back together; due to
-        // new lines, this is also why we're  now passing -P as default to grep
-        if (!options.replaceAll && !options.regexp) {
-            var splitQuery = query.split("\\n");
-
-            for (var q in splitQuery) {
-                splitQuery[q] = grepEscapeRegExp(splitQuery[q]);
-            }
-            query = splitQuery.join("\\n");
-        }
-
-        query = query.replace(new RegExp("\\\'", "g"), "'\\''"); // ticks must be double escaped for BSD grep
-
-        cmd += " --exclude=*{" + PATTERN_EDIR + "}*"
-            +  " --include=" + include
-            + " '" + query.replace(/-/g, "\\-") + "'"
-            + " \"" + escapeShell(options.path) + "\"";
-
+ 
         if (options.replaceAll) {
             if (!options.replacement)
                 options.replacement = "";
 
-            if (options.regexp)
-                query = escapeRegExp(query);
-
-            // pipe the grep results into perl
-            cmd += " -l | xargs " + perlCmd +
-            // print the grep result to STDOUT (to arrange in parseSearchResult())
-            " -pi -e 'print STDOUT \"$ARGV:$.:$_\""     +
-            // do the actual replace
-            " if s/" + query + "/" + options.replacement + "/mg" + ( options.casesensitive ? "" : "i" ) + ";'"
+            cmd = "perl -i -p -e 's/" + query + "/" + options.replacement + "/g' $(" + cmd + ")";
         }
 
         var args = ["-c", cmd];
@@ -212,26 +172,14 @@ util.inherits(SearchPlugin, Plugin);
 
 
     this.assembleFileListCommand = function(options) {
-        var excludeExtensions = [
-            "\\.gz", "\\.bzr", "\\.cdv", "\\.dep", "\\.dot", "\\.nib",
-            "\\.plst", "_darcs", "_sgbak", "autom4te\\.cache", "cover_db",
-            "_build", "\\.tmp"
-        ]
-
-        var excludeDirectories = [
-            "\\.c9revisions", "\\.architect", "\\.sourcemint",
-            "\\.git", "\\.hg", "\\.pc", "\\.svn", "blib",
-            "CVS", "RCS", "SCCS", "\\.DS_Store"
-        ];
-
-        var args = ["-L", ".", "-type", "f", "-a"];
+        var args = ["-f", "."];
 
         if (platform === "darwin")
             args.unshift("-E");
 
         //Hidden Files
         if (options.showHiddenFiles)
-            args.push("!", "-regex", "\\/\\.[^\\/]*$");
+            args.push("-a");
 
         if (options.maxdepth)
             args.push("-maxdepth", options.maxdepth);
@@ -247,7 +195,7 @@ util.inherits(SearchPlugin, Plugin);
         if (platform !== "darwin")
             args.push("-regextype", "posix-extended", "-print");
 
-        args.command = findCmd;
+        args.command = ackCmd;
         return args;
     };
 
@@ -268,7 +216,7 @@ var makeUnique = function(arr){
 
     return arr;
 };
-
+/*
 var escapeRegExp = function(str) {
     return str.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
 };
@@ -280,9 +228,9 @@ var grepEscapeRegExp = function(str) {
 
 var escapeShell = function(str) {
     return str.replace(/([\\"'`$\s\(\)<>])/g, "\\$1");
-};
+};*/
 
-
+/*
 // file types
 
 var IGNORE_DIRS = {
@@ -379,3 +327,4 @@ for (type in IGNORE_DIRS) {
 dirs = makeUnique(dirs);
 var PATTERN_DIR  = escapeRegExp(dirs.join("|"));
 var PATTERN_EDIR = dirs.join(",");
+*/
