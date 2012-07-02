@@ -52,7 +52,7 @@
         "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/9d0c0631f390538134a7d1f841db2c72d79f8cb4"]
       , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#e1d6748af3aca3589ce99db6f147ee06381007d4"],
         "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#08096259b10e15527304f3993460b3eb7e88b6e0"],
-        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#352f09f87f3f50902d1d4f1ea40bfcefee2d8d75"]
+        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#5fdfd104825667b436f7eed0d7c148f056fe3cab"]
     },
 
     "repository" : {
