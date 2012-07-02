@@ -11,6 +11,7 @@ var User = module.exports = function (uid, permissions, data) {
     this.clients = [];
     this.last_message_time = new Date().getTime();
     this.$server_exclude = {};
+    this.permissions = User.OWNER_PERMISSIONS;
 };
 
 util.inherits(User, EventEmitter);
