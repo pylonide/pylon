@@ -229,16 +229,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
         if (window.cloud9config.hosted || !this.isCollab()) {
-            apf.ajax("/api/context/getemail", {
-                method: "get",
-                callback: function(data, state, extra) {
-                    if (state === 200 && data) {
-                        self.defaultUser = {
-                            email: data
-                        };
+            if (ide.loggedIn) {
+                apf.ajax("/api/context/getemail", {
+                    method: "get",
+                    callback: function(data, state, extra) {
+                        if (state === 200 && data) {
+                            self.defaultUser = {
+                                email: data
+                            };
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         // Contains the revisions that have been saved during Cloud9 being offline.
