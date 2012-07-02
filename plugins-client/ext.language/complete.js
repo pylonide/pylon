@@ -356,11 +356,6 @@ module.exports = {
     onKeyPress : function(e, hashKey, keyCode) {
         var _self = this;
         
-        if(keyCode === 9 && !e.shiftKey) // Tab
-            keyCode = 40; // Up
-        else if(keyCode === 9 && e.shiftKey) // Shift-Tab
-            keyCode = 38; // Down
-        
         if(e.metaKey || e.ctrlKey || e.altKey) {
             this.closeCompletionBox();
             return;
@@ -389,6 +384,7 @@ module.exports = {
                 e.preventDefault();
                 break;
             case 13: // Enter
+            case 9: // Tab
                 var editor = editors.currentEditor.amlEditor.$editor;
                 replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
