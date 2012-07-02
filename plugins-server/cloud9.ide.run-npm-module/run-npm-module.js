@@ -168,8 +168,8 @@ util.inherits(NpmRuntimePlugin, Plugin);
             message.argv[0] = out.split("\n")[0];
 
             self.pm.spawn("shell", {
-                command: "sh",
-                args: ["-c", message.argv.join(" ")],
+                command: out.trim(),
+                args: message.argv.slice(1),
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
