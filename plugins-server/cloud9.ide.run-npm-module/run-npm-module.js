@@ -167,26 +167,19 @@ util.inherits(NpmRuntimePlugin, Plugin);
             // use resolved command
             message.argv[0] = out.split("\n")[0];
             
-            message.argv = message.argv.map(function (arg) {
-                // if an argument has spaces, then wrap it in double quotes
-                // to ensure that it gets correctly ran by our good friend shell
-                if (arg.indexOf(" ") > -1) {
-                    return '"' + arg + '"';
-                }
-                
-                return arg;
-            });
-
             self.pm.spawn("shell", {
                 command: "sh",
-                args: ["-c", message.argv.join(" ")],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message);
-
+                
+                // pipe the original line through to sh
+                child.child.stdin.write(message.line);
+                child.child.stdin.end();
+                    
                 self.children[pid] = child;
             });
         });
