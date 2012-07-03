@@ -32,7 +32,8 @@ handler.analyze = function(doc, ast, callback) {
             passfail: false,
             devel: true,
             browser: true,
-            node: true
+            node: true,
+            esnext: true
         });
         
         lint.errors.forEach(function(warning) {
