@@ -43,11 +43,11 @@ function onCommandKey(e) {
 }
 
 function typeAlongComplete(e) {
-    if(e.metaKey || e.altKey || e.ctrlKey)
+    if (e.metaKey || e.altKey || e.ctrlKey)
         return false;
-    if(editors.currentEditor.amlEditor.syntax !== "javascript")
+    if (!completionUtil.isJavaScript())
         return false;
-    if(e.keyCode === 8) { // Backspace
+    if (e.keyCode === 8) { // Backspace
         var complete = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
@@ -59,14 +59,14 @@ function typeAlongComplete(e) {
 }
 
 function inputTriggerComplete(text, pasted) {
-    if (editors.currentEditor.amlEditor.syntax !== "javascript")
+    if (!completionUtil.isJavaScript())
         return false;
     if (!pasted && text === "." && language.isInferAvailable())
         handleChar(text);
 }
 
 function typeAlongCompleteTextInput(text, pasted) {
-    if(editors.currentEditor.amlEditor.syntax !== "javascript")
+    if (!completionUtil.isJavaScript())
         return false;
     if(!pasted)
         handleChar(text);
