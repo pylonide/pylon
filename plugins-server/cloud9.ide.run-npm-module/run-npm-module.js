@@ -115,19 +115,20 @@ util.inherits(NpmRuntimePlugin, Plugin);
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
-        this.searchAndRunShell(message, function(err, found) {
-            if (err || found)
-                return cb(err, found);
+        // first try to find a module hook
+        self.searchForModuleHook(message.command, function(found, filePath) {
+            // if not found
+            if (!found) {
+                // then run it on the server via sh
+                self.searchAndRunShell(message, cb);
+                return;
+            }
 
-            self.searchForModuleHook(message.command, function(found, filePath) {
-                if (!found)
-                    return cb(null, false);
+            // otherwise execute the bastard!
+            if (message.argv.length)
+                message.argv.shift();
 
-                if (message.argv.length)
-                    message.argv.shift();
-
-                self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
-            });
+            self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
         });
     };
 
