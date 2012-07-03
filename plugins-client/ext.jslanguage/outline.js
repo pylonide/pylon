@@ -196,11 +196,11 @@ function extractOutline(doc, node) {
             // Ignore if more handler-like arguments exist
             if (b.args.length >= 4 && b.args[2].cons === 'String' && b.args[3].cons === 'Function')
                 return false;
-            var fargs = fun[1];
+            var fargs = fargsToString(fun[1]);
             var body = fun[2];
             results.push({
                 icon: 'event',
-                name: s[0].value + fargsToString(fargs),
+                name: s[0].value + (fargs === "()" ? "" : fargs),
                 pos: this.getPos(),
                 displayPos: fixStringPos(doc, s),
                 items: extractOutline(doc, body)
@@ -247,5 +247,3 @@ function extractOutline(doc, node) {
 }
 
 });
-
-
