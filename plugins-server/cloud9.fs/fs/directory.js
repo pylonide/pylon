@@ -14,7 +14,6 @@ var jsDAV_iCollection = require("jsDAV/lib/DAV/iCollection").jsDAV_iCollection;
 var jsDAV_iQuota      = require("jsDAV/lib/DAV/iQuota").jsDAV_iQuota;
 
 var Path              = require("path");
-var Fs                = require("fs");
 var Exc               = require("jsDAV/lib/DAV/exceptions");
 var Stream            = require('stream').Stream;
 
@@ -177,13 +176,13 @@ require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
             var nodes = [];
 
             stream.on("data", function(stat) {
-                var path = Path.join(self.path, stat.name);
-                if(Fs.lstatSync(path).isSymbolicLink()) {
-                    path = Fs.realpathSync(path);
-                    if(Fs.statSync(path).isDirectory()) {
-                        stat.mime = "inode/directory";
-                    }
-                }
+                if(stat.mime === 'inode/symlink') {
+                    stat = stat.linkStat;
+                }                    
+                var path = (stat.fullPath
+                    ? stat.fullPath
+                    : Path.join(self.path, stat.name)
+                );
                 nodes.push(stat.mime === "inode/directory"
                     ? new jsDAV_FS_Directory(self.vfs, path, stat)
                     : new jsDAV_FS_File(self.vfs, path, stat)
