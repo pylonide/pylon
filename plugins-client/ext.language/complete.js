@@ -34,8 +34,8 @@ var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
-    if(keyhandler.preceededByIdentifier(line, pos.column) ||
-       line[pos.column - 1] === '.' ||
+    if (keyhandler.preceededByIdentifier(line, pos.column) ||
+       (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(ID_REGEX))) ||
        keyhandler.isRequireJSCall(line, pos.column)) {
         module.exports.invoke(true);
     }
@@ -45,9 +45,10 @@ var deferredInvoke = lang.deferredCall(function() {
     isInvokeScheduled = false;
 });
 var isInvokeScheduled = false;
+var ignoreMouseOnce = false;
 
 var drawDocInvoke = lang.deferredCall(function() {
-    if (isPopupVisible()) {
+    if (isPopupVisible() && complete.matches[complete.selectedIdx].doc) {
         isDocShown = true;
         txtCompleterDoc.parentNode.show();
     }
@@ -104,7 +105,7 @@ function replaceText(editor, prefix, match) {
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
-    if (match.replaceText === "require(^^)") {
+    if (match.replaceText === "require(^^)" && completionUtil.isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
@@ -137,8 +138,18 @@ function replaceText(editor, prefix, match) {
     
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
+    
+    var cursorCol = pos.column + colOffset - prefix.length;
+    
+    if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && completionUtil.isJavaScript()) {
+        if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
+            cursorCol++;
+        if (line.substr(pos.column + postfix.length + 1, 1) === ')')
+            cursorCol++;
+    }
     setTimeout(function() {
-        editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
+        var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
+        editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
     }, 50);
 }
 
@@ -217,6 +228,8 @@ module.exports = {
         var innerCompletionBoxHeight = Math.min(10 * this.lineHeight, innerBoxLength * (this.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
+        ignoreMouseOnce = !isPopupVisible();
+        
         apf.popup.show("completionBox", {
             x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
             y        : _self.cursorConfig.lineHeight,
@@ -284,6 +297,10 @@ module.exports = {
             html += '</span>';
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
+                if (ignoreMouseOnce) {
+                    ignoreMouseOnce = false;
+                    return;
+                }
                 _self.matchEls[_self.selectedIdx].className = CLASS_UNSELECTED;
                 _self.selectedIdx = idx;
                 _self.matchEls[_self.selectedIdx].className = CLASS_SELECTED;
@@ -339,11 +356,6 @@ module.exports = {
     onKeyPress : function(e, hashKey, keyCode) {
         var _self = this;
         
-        if(keyCode === 9 && !e.shiftKey) // Tab
-            keyCode = 40; // Up
-        else if(keyCode === 9 && e.shiftKey) // Shift-Tab
-            keyCode = 38; // Down
-        
         if(e.metaKey || e.ctrlKey || e.altKey) {
             this.closeCompletionBox();
             return;
@@ -372,6 +384,7 @@ module.exports = {
                 e.preventDefault();
                 break;
             case 13: // Enter
+            case 9: // Tab
                 var editor = editors.currentEditor.amlEditor.$editor;
                 replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
