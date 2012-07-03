@@ -1,5 +1,3 @@
-var editors = require("ext/editors/editors");
-
 define(function(require, exports, module) {
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
@@ -45,12 +43,7 @@ function findCompletions(prefix, allIdentifiers) {
     return matches;
 }
 
-function isJavaScript() {
-    return editors.currentEditor.amlEditor.syntax === "javascript";
-}
-
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
 exports.findCompletions = findCompletions;
-exports.isJavaScript = isJavaScript;
 
 });
