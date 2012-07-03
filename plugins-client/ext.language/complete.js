@@ -10,7 +10,7 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
-var completionUtil = require("ext/codecomplete/complete_util");
+var editors = require("ext/editors/editors");
 
 var lang = require("ace/lib/lang");
 var language;
@@ -93,6 +93,10 @@ function retrieveFollowingIdentifier(text, pos) {
     return buf;
 }
 
+function isJavaScript() {
+    return editors.currentEditor.amlEditor.syntax === "javascript";
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
  * indicates the cursor position after the replacement.
@@ -105,7 +109,7 @@ function replaceText(editor, prefix, match) {
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
-    if (match.replaceText === "require(^^)" && completionUtil.isJavaScript()) {
+    if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
@@ -141,7 +145,7 @@ function replaceText(editor, prefix, match) {
     
     var cursorCol = pos.column + colOffset - prefix.length;
     
-    if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && completionUtil.isJavaScript()) {
+    if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
             cursorCol++;
         if (line.substr(pos.column + postfix.length + 1, 1) === ')')
