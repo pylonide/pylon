@@ -1,3 +1,4 @@
+var middleware = require("../cloud9.core/middleware");
 
 module.exports = function startup(options, imports, register) {
 
@@ -7,11 +8,17 @@ module.exports = function startup(options, imports, register) {
     var connectModule = connect.getModule();
     var server = connectModule();
 
+    server.use(middleware.errorHandler());
+
     ide.use("/api", server);
 
     register(null, {
         "ide-routes" : {
-            use: server.use.bind(server)
+            use: function(route, handle) {
+                var last = server.stack.pop();
+                server.use(route, handle);
+                server.stack.push(last);
+            }
         }
     });
 };

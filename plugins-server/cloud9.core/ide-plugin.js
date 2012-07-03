@@ -3,6 +3,7 @@ var utils = require("connect").utils;
 var error = require("http-error");
 var IdeServer = require("./ide");
 var parseUrl = require("url").parse;
+var middleware = require("./middleware");
 
 module.exports = function setup(options, imports, register) {
 
@@ -98,6 +99,7 @@ module.exports = function setup(options, imports, register) {
         hub.on("ready", function() {
             ide.init(serverPlugins);
             server.use(ide.handle.bind(ide));
+            server.use(middleware.errorHandler());
             log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
         });
 
