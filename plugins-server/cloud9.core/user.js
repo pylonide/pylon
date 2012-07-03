@@ -6,12 +6,13 @@ var User = module.exports = function (uid, permissions, data) {
     EventEmitter.call(this);
 
     this.uid = uid;
-    this.permissions = permissions;
     this.data = data;
     this.clients = [];
     this.last_message_time = new Date().getTime();
-    this.$server_exclude = {};
-    this.permissions = User.OWNER_PERMISSIONS;
+    this.permissions = permissions || User.VISITOR_PERMISSIONS;
+    this.$server_exclude = this.permissions.server_exclude
+        ? c9util.arrayToMap(this.permissions.server_exclude.split("|"))
+        : {};
 };
 
 util.inherits(User, EventEmitter);
