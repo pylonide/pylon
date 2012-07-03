@@ -17,7 +17,7 @@ module.exports = function setup(options, imports, register) {
     var baseUrl = options.baseUrl || "";
     var staticPrefix = imports.static.getStaticPrefix();
     var workerPrefix = imports.static.getWorkerPrefix() || "/static";
-    
+
     var socketUrl = options.socketUrl || "/socket.io";
 
     var ide;
@@ -72,14 +72,14 @@ module.exports = function setup(options, imports, register) {
 
         hub.on("ready", function() {
             ide.init(serverPlugins);
-    
+
             connect.useAuth(baseUrl, function(req, res, next) {
                 if (!(req.session.uid || req.session.anonid))
                     return next(new error.Unauthorized());
                 // NOTE: This gets called multiple times!
-    
+
                 var pause = utils.pause(req);
-    
+
                 initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
                     if (err) {
                         next(err);
@@ -90,10 +90,10 @@ module.exports = function setup(options, imports, register) {
                     pause.resume();
                 });
             });
-    
+
             log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
         });
-        
+
         register(null, {
             ide: {
                 register: function(name, plugin, callback) {
@@ -106,6 +106,9 @@ module.exports = function setup(options, imports, register) {
                 },
                 getSocketUrl: function() {
                     return socketUrl;
+                },
+                getBaseUrl: function() {
+                    return baseUrl;
                 },
                 getWorkspaceId: function() {
                     return ide.options.workspaceId.toString();
