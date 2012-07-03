@@ -264,7 +264,7 @@ module.exports = {
     },
 
     onSelect: function(el) {
-        if (gotofile.eventsEnabled)
+        if (gotofile.eventsEnabled || !el)
             return;
             
         if (this.ignoreSelectOnce) {
