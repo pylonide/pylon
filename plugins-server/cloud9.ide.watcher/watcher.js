@@ -50,28 +50,28 @@ util.inherits(WatcherPlugin, Plugin);
     this.addWatcher = function(path) {
         if (this.watchers[path])
             return;
-        var self = this;
+        var _self = this;
         vfs.watch(path, {persistent:false}, function (err, meta) {
             if (err) {
-                console.log("can't add watcher for " + path);
-                return
+                console.error("can't add watcher for " + path);
+                return;
             }
-            if (!self.filenames[path]) {
-				if (watcher)
+            if (!_self.filenames[path]) {
+                if (watcher)
                     watcher.close();
                 return;
             }
             var watcher = meta.watcher;
-            watcher.on("change", function (event, filename) {
-                console.log(event, filename)
+ 
+            watcher.on("change", function (currStat, prevStat) {
                 if (watcher.timeout)
                     return;
                 watcher.timeout = setTimeout(function() {
                     watcher.timeout = null;
-                    self.onChange(path);
+                    _self.onChange(path, currStat, prevStat);
                 }, 150);
             });
-            self.watchers[path] = watcher;
+            _self.watchers[path] = watcher;
         });
     };
 
@@ -105,7 +105,7 @@ util.inherits(WatcherPlugin, Plugin);
         var type = message.type;
 
         path = this.basePath + (path ? "/" + path : "");
-        
+
         switch (type) {
             case "watchFile":
                 if (this.filenames[path]) {
@@ -117,7 +117,7 @@ util.inherits(WatcherPlugin, Plugin);
                     this.filenames[path] = 1;
                     return;
                 }
-                return true;
+                return  true;
             case "unwatchFile":
                 return this.unwatchFile(path);
             default:
@@ -132,7 +132,7 @@ util.inherits(WatcherPlugin, Plugin);
         callback();
     };
 
-    this.onChange = function (path, isDirectory) {
+    this.onChange = function (path, currStat, prevStat) {
         // console.log('Detected event', path, ignoredPaths);
         if (ignoredPaths[path]) {
             clearTimeout(ignoreTimers[path]);
@@ -143,69 +143,26 @@ util.inherits(WatcherPlugin, Plugin);
             return;
         }
 
-        var subtype = "change";
-        var self = this;
+        if (!currStat) {
+            this.removeWatcher(path);
+            this.send({
+                "type"      : "watcher",
+                "subtype"   : "remove",
+                "path"      : path
+                //"files"     : files,
+            });
 
-        vfs.stat(path, {}, function(err, stat) {
-            if (err)
-                return;
-
-            if (!stat) {
-                self.removeWatcher(path);
-                self.send({
-                    "type"      : "watcher",
-                    "subtype"   : "remove",
-                    "path"      : path,
-                    "files"     : files,
-                });
-            } if (stat.mime.search(/directory|file/) != -1) {
-                var files = {};
-                vfs.readdir(path, {encoding: null}, function(err, meta) {
-                    if (err)
-                        return console.error(err);
-
-                    var stream = meta.stream;
-
-                    stream.on("data", function(stat) {
-                        // console.log(stat)
-                        if (!stat || !stat.mime || !stat.name)
-                            return;
-                        files[stat.name] = {
-                            type : stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
-                            name : stat.name
-                        };
-                    });
-
-                    var called;
-                    stream.on("error", function(err) {
-                        if (called) return;
-                        called = true;
-                        console.error(err);
-                    });
-
-                    stream.on("end", function() {
-                        if (called) return;
-                        called = true;
-                        // console.log(files)
-                        self.send({
-                            "type"      : "watcher",
-                            "subtype"   : subtype,
-                            "path"      : path,
-                            "files"     : files,
-                            "lastmod"   : stat.mtime
-                        });
-                    });
-                });
-            } else {
-                self.send({
-                    "type"      : "watcher",
-                    "subtype"   : subtype,
-                    "path"      : path,
-                    "files"     : files,
-                    "lastmod"   : stat.mtime
-                });
-            }
+            return;
+        }
+         
+        this.send({
+            "type"      : "watcher",
+            "subtype"   : "change",
+            "path"      : path,
+            //"files"     : files,
+            "lastmod"   : currStat.mtime
         });
+            //}
     }
 
 }).call(WatcherPlugin.prototype);
