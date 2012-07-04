@@ -91,8 +91,8 @@ module.exports = function setup(options, imports, register) {
                     return;
                 }
 
-                pause.resume();
                 next();
+                pause.resume();
             });
         });
 
@@ -122,7 +122,11 @@ module.exports = function setup(options, imports, register) {
                 getWorkspaceId: function() {
                     return ide.options.workspaceId.toString();
                 },
-                use: server.use.bind(server),
+                use: function(route, handle) {
+                    var last = server.stack.pop();
+                    server.use(route, handle);
+                    server.stack.push(last);
+                },
                 canShutdown: ide.canShutdown.bind(ide),
                 initUserAndProceed: initUserAndProceed,
                 on: ide.on.bind(ide),
