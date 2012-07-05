@@ -47,6 +47,13 @@ module.exports = {
         return true;
     },
 
+    /**
+     * Returns whether the analysis engine requires an AST representation of the code
+     */
+    getIdentifierRegex: function() {
+        return /[A-Za-z0-9\$\_]/;
+    },
+
     // OVERRIDABLE ACTIONS AND EVENT HANDLERS
 
     /**
