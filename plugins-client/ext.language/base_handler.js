@@ -162,7 +162,7 @@ module.exports = {
      * @param doc the Document object repersenting the source
      * @param oldId the old identifier wanted to be refactored
      */
-    startRefactoring: function(doc) {
+    onRenameBegin: function(doc) {
       this.refactorInProgress = true;
     },
 
@@ -173,7 +173,7 @@ module.exports = {
      * @param newName the new name of the element after refactoring
      * @return boolean indicating whether to progress or an error message if refactoring failed
      */
-    finishRefactoring: function(doc, oldId, newName, callback) {
+    commitRename: function(doc, oldId, newName, callback) {
         this.refactorInProgress = false;
         callback();
     },
@@ -181,7 +181,7 @@ module.exports = {
     /**
      * Invoked when a refactor request is cancelled
      */
-    cancelRefactoring: function(callback) {
+    onRenameCancel: function(callback) {
         this.refactorInProgress = false;
         callback();
     },

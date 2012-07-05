@@ -269,7 +269,7 @@ var convertToHierarchyTree = function(doc, root) {
         this.$saveFileAndDo(doGetVariablePositions);
     };
 
-    this.finishRefactoring = function(doc, oldId, newName, callback) {
+    this.commitRename = function(doc, oldId, newName, callback) {
         var _self = this;
 
         var offset = calculateOffset(doc, oldId);
@@ -284,7 +284,7 @@ var convertToHierarchyTree = function(doc, root) {
           length: oldId.text.length
         };
 
-        // console.log("finishRefactoring called");
+        // console.log("commitRename called");
 
         this.proxy.once("result", "jvmfeatures:refactor", function(message) {
           _self.refactorInProgress = false;
@@ -295,7 +295,7 @@ var convertToHierarchyTree = function(doc, root) {
         this.proxy.send(command);
     };
 
-    this.cancelRefactoring = function(callback) {
+    this.onRenameCancel = function(callback) {
         this.refactorInProgress = false;
         this.$saveFileAndDo(); // notify of ending the refactor
         callback();
