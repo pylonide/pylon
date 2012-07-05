@@ -50,7 +50,7 @@ module.exports = ext.register("ext/sync/sync", {
                 this.lblSyncState = menus.$insertByIndex(barExtras, new apf.label({
                     "class"  : "c9-sync-state-info" 
                                 + (ide.local ? " available-online" : ""),
-                    "margin" : "4 2 0 0"
+                    "margin" : "3 2 0 0"
                 }), 10),
                 this.btnSyncStatus = menus.$insertByIndex(barExtras, new apf.button({
                     id      : "btnSync",
