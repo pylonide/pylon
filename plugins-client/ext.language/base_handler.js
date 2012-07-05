@@ -53,8 +53,8 @@ module.exports = {
     getIdentifierRegex: function() {
         return /[A-Za-z0-9\$\_]/;
     },
-
-    // OVERRIDABLE ACTIONS AND EVENT HANDLERS
+    
+    // PARSING AND ABSTRACT SYNTAX CALLBACKS
 
     /**
      * If the language handler implements parsing, this function should take
@@ -65,6 +65,16 @@ module.exports = {
     parse: function(doc, callback) {
         callback();
     },
+    
+    /**
+     * Finds a tree node at a certain row and col,
+     * e.g. using the findNode(pos) function of treehugger.
+     */
+    findNode: function(ast, pos, callback) {
+        callback();
+    },
+
+    // OTHER CALLBACKS
     
     /**
      * Invoked when the document has been updated (possibly after a certain interval)
