@@ -23,7 +23,7 @@ module.exports = {
         return !disabledFeatures[name];
     },
 
-    // OVERRIDABLE METHODS
+    // OVERRIDABLE ACCESORS
 
     /**
      * Returns whether this language handler should be enabled for the given file
@@ -32,6 +32,22 @@ module.exports = {
     handlesLanguage: function(language) {
         return false;
     },
+    
+    /**
+     * Returns whether the completion engine requires an AST representation of the code
+     */
+    completionRequiresParsing: function() {
+        return false;
+    },
+
+    /**
+     * Returns whether the analysis engine requires an AST representation of the code
+     */
+    analysisRequiresParsing: function() {
+        return true;
+    },
+
+    // OVERRIDABLE ACTIONS AND EVENT HANDLERS
 
     /**
      * If the language handler implements parsing, this function should take
@@ -103,13 +119,6 @@ module.exports = {
     },
     
     /**
-     * Returns whether the completion engine requires an AST representation of the code
-     */
-    completionRequiresParsing: function() {
-        return false;
-    },
-    
-    /**
      * Performs code completion for the user based on the current cursor position
      * @param doc the Document object repersenting the source
      * @param fullAst the entire AST of the current file (if exists)
@@ -119,13 +128,6 @@ module.exports = {
      */
     complete: function(doc, fullAst, cursorPos, currentNode, callback) {
         callback();
-    },
-
-    /**
-     * Returns whether the analysis engine requires an AST representation of the code
-     */
-    analysisRequiresParsing: function() {
-        return true;
     },
     
     /**
