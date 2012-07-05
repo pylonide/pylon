@@ -17,6 +17,7 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
+var outline = require("ext/jslanguage/outline");
 require("treehugger/traverse"); // add traversal functions to trees
 
 var PROPER = module.exports.PROPER = 80;
@@ -26,6 +27,8 @@ var KIND_EVENT = module.exports.KIND_EVENT = "event";
 var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
 var KIND_HIDDEN = module.exports.KIND_HIDDEN = "hidden";
 var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
+var IN_CALLBACK_DEF = 2;
+var IN_CALLBACK_BODY = 1;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -449,11 +452,11 @@ handler.analyze = function(doc, ast, callback) {
         );
     }
     
-    function scopeAnalyzer(scope, node, parentLocalVars) {
+    function scopeAnalyzer(scope, node, parentLocalVars, inCallback) {
         preDeclareHoisted(scope, node);
         var mustUseVars = parentLocalVars || [];
         node.setAnnotation("scope", scope);
-        function analyze(scope, node) {
+        function analyze(scope, node, inCallback) {
             node.traverseTopDown(
                 'VarDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
@@ -477,7 +480,7 @@ handler.analyze = function(doc, ast, callback) {
                     else {
                         scope.get(b.x.value).addUse(node[0]);
                     }
-                    analyze(scope, b.e);
+                    analyze(scope, b.e, inCallback);
                     return this;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
@@ -492,6 +495,16 @@ handler.analyze = function(doc, ast, callback) {
                     analyze(scope, b.e);
                     analyze(scope, b.stats);
                     return this;
+                },
+                'Var("this")', function(b, node) {
+                    if (inCallback === IN_CALLBACK_BODY) {
+                        markers.push({
+                            pos: this.getPos(),
+                            level: 'warning',
+                            type: 'warning',
+                            message: "Invocation of 'this' in callback function"
+                        });
+                    }
                 },
                 'Var(x)', function(b, node) {
                     node.setAnnotation("scope", scope);
@@ -517,14 +530,14 @@ handler.analyze = function(doc, ast, callback) {
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
                             mustUseVars.push(v);
                     });
-                    scopeAnalyzer(newScope, b.body);
+                    scopeAnalyzer(newScope, b.body, null, inCallback === IN_CALLBACK_DEF ? IN_CALLBACK_BODY : 0);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
                     scope.vars["_" + b.x.value] = new Variable(b.x);
-                    scopeAnalyzer(scope, b.body, mustUseVars);
+                    scopeAnalyzer(scope, b.body, mustUseVars, inCallback);
                     // Put back
                     scope.vars["_" + b.x.value] = oldVar;
                     return node;
@@ -545,6 +558,11 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
+                'Call(e, args)', function(b) {
+                    analyze(scope, b.e, inCallback);
+                    analyze(scope, b.args, outline.tryExtractEventHandler(this) && IN_CALLBACK_DEF);
+                    return this;
+                },
                 'Block(_)', function() {
                     this.setAnnotation("scope", scope);
                 },
@@ -558,7 +576,7 @@ handler.analyze = function(doc, ast, callback) {
                 }
             );
         }
-        analyze(scope, node);
+        analyze(scope, node, inCallback);
         if(!parentLocalVars) {
             for (var i = 0; i < mustUseVars.length; i++) {
                 if (mustUseVars[i].uses.length === 0) {
@@ -702,4 +720,3 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
 };
 
 });
-
