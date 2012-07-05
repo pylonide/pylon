@@ -157,7 +157,9 @@ module.exports = {
      * @param doc the Document object repersenting the source
      * @param oldId the old identifier wanted to be refactored
      */
-    onRenameBegin: function(doc) {},
+    onRenameBegin: function(doc, callback) {
+        callback();
+    },
 
     /**
      * Invoked when a refactor request is being finalized and waiting for a status
