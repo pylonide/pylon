@@ -39,7 +39,7 @@ handler.analyze = function(doc, ast, callback) {
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
-            var type = "warning"
+            var type = "warning";
             var reason = warning.reason;
             if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
                 type = "error";

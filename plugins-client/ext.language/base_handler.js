@@ -16,6 +16,9 @@ module.exports = {
     
     // UTILITIES
     
+    /**
+     * Determine whether a certain feature is enabled in the user's preferences.
+     */
     isFeatureEnabled: function(name) {
         return !disabledFeatures[name];
     },
@@ -38,14 +41,6 @@ module.exports = {
      */
     parse: function(doc, callback) {
         callback();
-    },
-    
-    /**
-     * Whether this language handler relies on continuous parsing (on an interval basis).
-     * This will result in `onParse` being invoked after every successful parse
-     */
-    requiresContinuousParsing: function() {
-        return false;
     },
     
     /**
