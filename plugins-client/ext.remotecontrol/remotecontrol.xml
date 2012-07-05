@@ -1,0 +1,44 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:window
+      id        = "winUpdate"
+      title     = "Update Available"
+      icon      = ""
+      center    = "true"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "600"
+      skin      = "bk-window2"
+      render    = "runtime"
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3>An Update to Cloud9 Local is Available!</h3>
+            <div class="alertMsg">After installing, run <code>c9 --restart</code> on your command line. Your browser will also refresh.</div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button onclick = "winUpdate.hide()" default="3" skin="btn-default-css3">Not now</a:button>
+            <a:button onclick = "require('ext/remotecontrol/remotecontrol').rebootWithUpdate()" skin="btn-default-css3" class="btn-green">Okay!</a:button>
+        </a:hbox>
+    </a:window>
+    
+    <a:window id = "winWSDeleted"
+      title   = "Workspace Missing"
+      center    = "true"
+      icon      = ""
+      buttons   = ""
+      skin      = "bk-window2"
+      kbclose   = "true"
+      resizable = "false"
+      height    = "180"
+      width     = "360"
+      draggable = "false"
+      model     = "true">
+        <a:vbox padding="10" edge="0 15 0 15">
+            <a:text height="180" class="tgDesc modal_text">
+	            <h4>Your workspace was deleted.</h4>
+                <p>Please close this tab. You can launch <em>c9</em> on the command line to recreate a new workspace.</p>
+	       </a:text>
+	    </a:vbox>
+    </a:window>
+</a:application>                                                                     

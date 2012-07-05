@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
 
-    ide = new apf.Class().$init(); 
+    ide = new apf.Class().$init();
 
     ide.createDocument = function(node, value){
         return new Document(node, value);
@@ -19,19 +19,24 @@ define(function(require, exports, module) {
     ide.start = function() {
         this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
         this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+        this.workerPrefix   = window.cloud9config.workerUrl;
         this.staticPrefix   = window.cloud9config.staticUrl;
         this.sessionId      = window.cloud9config.sessionId;
         this.workspaceId    = window.cloud9config.workspaceId;
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;
+        this.uid            = window.cloud9config.uid;
+        this.pid            = window.cloud9config.pid;
+        this.env            = window.cloud9config.env;
+        this.local          = window.cloud9config.local;
 
-        this.loggedIn       = true;
+        this.loggedIn       = parseInt(this.uid) > 0;
 
         this.onLine         = false;
         this.offlineFileSystemSupport = false;
 
         this.dispatchEvent("load");
-        
+
        var loc = location.href;
         if (
             location.protocol !== "file:"
@@ -50,7 +55,7 @@ define(function(require, exports, module) {
                     })
                 });
             };
-    
+
             //Catch all APF Routed errors
             apf.addEventListener("error", function(e){
                 apf.ajax("/api/debug", {
@@ -73,145 +78,162 @@ define(function(require, exports, module) {
 
     ide.start();
 
-    ide.addEventListener("extload", function() {
-        // fire up the socket connection:
-        var options = {
-            "remember transport": false,
-            transports: window.cloud9config.socketIoTransports,
-            reconnect: false,
-            resource: window.cloud9config.socketIoUrl,
-            "connect timeout": 500,
-            "try multiple transports": true,
-            "transport options": {
-                "xhr-polling": {
-                    timeout: 60000
-                },
-                "jsonp-polling": {
-                    timeout: 60000
+    // fire up the socket connection:
+    var options = {
+        "remember transport": false,
+        transports: window.cloud9config.socketIoTransports,
+        reconnect: false,
+        resource: window.cloud9config.socketIoUrl,
+        "connect timeout": 500,
+        "try multiple transports": true,
+        "transport options": {
+            "xhr-polling": {
+                timeout: 60000
+            },
+            "jsonp-polling": {
+                timeout: 60000
+            }
+        }
+    };
+
+    var retries = 0;
+    ide.socketConnect = function() {
+        // NOTE: This is a workaround for an init bug in socket.io
+        // @see https://github.com/LearnBoost/socket.io-client/issues/390
+        if (!ide.socket.socket.transport) {
+            // Try and connect until we succeed.
+            // NOTE: This may log a connection error to the error console but will recover gracefully and eventually connect.
+            ide.socketDisconnect();
+        } else {
+            retries = 0;
+            
+            ide.connecting = true;
+            ide.socket.json.send({
+                command: "attach",
+                sessionId: ide.sessionId,
+                workspaceId: ide.workspaceId
+            });
+        }
+    };
+
+    ide.socketDisconnect = function() {
+        //Do Nothing
+    };
+    
+    ide.reconnectIfNeeded = function(){
+        var sock = ide.socket.socket;
+        if (!sock.connected && !sock.connecting && !sock.reconnecting) { //ide.loggedIn
+            retries++;
+            if (retries < 10 || retries < 60 && retries % 10 == 0 || retries % 50 == 0) {
+                sock.disconnect();
+                sock.connect();
+                
+                if (retries == 5) {
+                    ide.dispatchEvent("socketDisconnect");
+                    ide.connected = false;
                 }
             }
-        };
-
-        ide.socketConnect = function() {
-            clearInterval(ide.$retryTimer);
-
-            // NOTE: This is a workaround for an init bug in socket.io
-            // @see https://github.com/LearnBoost/socket.io-client/issues/390
-            if (!ide.socket.socket.transport) {
-                // Try and connect until we succeed.
-                // NOTE: This may log a connection error to the error console but will recover gracefully and eventually connect.
-                ide.socketDisconnect();
-            } else {
-                ide.socket.json.send({
-                    command: "attach",
-                    sessionId: ide.sessionId,
-                    workspaceId: ide.workspaceId
-                });
+        }
+    }
+    
+    ide.socketMessage = function(message) {
+        if (typeof message == "string") {
+            try {
+                message = JSON.parse(message);
             }
-        };
-
-        ide.socketDisconnect = function() {
-            // On disconnect retry every 1 second for 5 seconds then issue `disconnected`
-            // and retry every 5 seconds indefinitely.
-            var retries = 0;
-            function retryTimer(delay) {
-                clearInterval(ide.$retryTimer);
-                ide.$retryTimer = setInterval(function() {
-                    retries += 1;
-                    if (retries === 5) {
-                        ide.dispatchEvent("socketDisconnect");
-                        retryTimer(5000);
-                    } else {
-                        var sock = ide.socket.socket;
-                        if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn) {
-                            sock.connect();
-                        }
-                    }
-                }, delay);
+            catch(e) {
+                window.console && console.error("Error parsing socket message", e, "message:", message);
+                return;
             }
-            retryTimer(1000);
-        };
+        }
 
-        ide.socketMessage = function(message) {
-            if (typeof message == "string") {
-                try {
-                    message = JSON.parse(message);
-                }
-                catch(e) {
-                    window.console && console.error("Error parsing socket message", e, "message:", message);
-                    return;
-                }
-            }
+        if (message.type == "attached") {
+            ide.connecting = false;
+            ide.connected = true;
+            ide.dispatchEvent("socketConnect"); //This is called too often!!
+        }
 
-            if (message.type == "attached") {
-                ide.dispatchEvent("socketConnect"); //This is called too often!!
-            }
-
-            if (message.type === "error") {
-                // TODO: Don't display all errors?
+        if (message.type === "error") {
+            // TODO: Don't display all errors?
+            if (ide.dispatchEvent("showerrormessage", message) !== false) {
                 util.alert(
                     "Error on server",
                     "Received following error from server:",
                     JSON.stringify(message.message)
                 );
             }
+        }
+
+        ide.dispatchEvent("socketMessage", {
+            message: message
+        });
+    };
+
+    // for unknown reasons io is sometimes undefined
+    try {
+        ide.socket = io.connect(null, options);
+        
+        var transportReadyHandler = function(){
+            setInterval(ide.reconnectIfNeeded, 100);
             
-            ide.dispatchEvent("socketMessage", {
-                message: message
-            });
-        };
-
-        // for unknown reasons io is sometimes undefined
-        try {
-            ide.socket = io.connect(null, options);
+            ide.socket.removeListener("connect_failed", transportReadyHandler);
+            ide.socket.removeListener("error", transportReadyHandler);
+            ide.socket.removeListener("connecting", transportReadyHandler);
         }
-        catch (e) {
-            util.alert(
-                "Error starting up",
-                "Error starting up the IDE", "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
-                function() {
-                    window.location.reload();
-                }
-            );
-
-            var socketIoScriptEl = Array.prototype.slice.call(
-                document.getElementsByTagName("script")).filter(function(script) {
-                    return script.src && script.src.indexOf("socket.io.js") >= 0;
-                }
-            )[0];
-
-            var status;
-            if (socketIoScriptEl) {
-                apf.ajax(socketIoScriptEl.src, {
-                    callback: function(data, state, extra) {
-                        try {
-                            status = parseInt(extra.http.status, 10);
-                        } catch(ex) {}
-                        apf.dispatchEvent("error", {
-                            message: "socket.io client lib not loaded",
-                            error: {
-                                status: status,
-                                state: state,
-                                data: data,
-                                extra: extra
-                            }
-                        });
-                    }
-                });
-            } else {
-                apf.dispatchEvent("error", {
-                    message: "socket.io client lib not loaded",
-                    error: e
-                });
-            }
-            return;
-        }
-
+        
+        ide.socket.on("connect_failed", transportReadyHandler);
+        ide.socket.on("error", transportReadyHandler);
+        ide.socket.on("connecting", transportReadyHandler);
+        
         ide.socket.on("message",    ide.socketMessage);
         ide.socket.on("connect",    ide.socketConnect);
         ide.socket.on("disconnect", ide.socketDisconnect);
-        this.inited = true;
-    });
+    }
+    catch (e) {
+        util.alert(
+            "Error starting up",
+            "Error starting up the IDE", 
+            "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
+            function() {
+                window.location.reload();
+            }
+        );
+
+        var socketIoScriptEl = Array.prototype.slice.call(
+            document.getElementsByTagName("script")).filter(function(script) {
+                return script.src && script.src.indexOf("socket.io.js") >= 0;
+            }
+        )[0];
+
+        var status;
+        if (socketIoScriptEl) {
+            apf.ajax(socketIoScriptEl.src, {
+                callback: function(data, state, extra) {
+                    try {
+                        status = parseInt(extra.http.status, 10);
+                    } catch(ex) {}
+                    
+                    apf.dispatchEvent("error", {
+                        message: "socket.io client lib not loaded",
+                        error: {
+                            status: status,
+                            state: state,
+                            data: data,
+                            extra: extra
+                        }
+                    });
+                }
+            });
+        } else {
+            apf.dispatchEvent("error", {
+                message: "socket.io client lib not loaded",
+                error: e
+            });
+        }
+        return;
+    }
+
+    this.inited = true;
 
     ide.$msgQueue = [];
     ide.addEventListener("socketConnect", function() {
@@ -241,9 +263,9 @@ define(function(require, exports, module) {
         var corrected = this.dispatchEvent("activepagemodel", {
             model: page.$model
         });
-        
-        return corrected && corrected.data 
-            ? corrected.data 
+
+        return corrected && corrected.data
+            ? corrected.data
             : page.$model.data;
     };
 

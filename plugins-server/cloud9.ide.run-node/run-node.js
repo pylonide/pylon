@@ -57,7 +57,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/node/.test(message.runner)) && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
+        if (!(/node/.test(message.runner)))
             return false;
 
         var res = true;
@@ -77,10 +77,24 @@ util.inherits(NodeRuntimePlugin, Plugin);
             case "debugnode":
                 this.pm.debug(message.pid, message.body, function(err) {});
                 break;
+            case "debugattachnode":
+                this.$attachDebugCient(message, client)
+                break;
             default:
                 res = false;
         }
         return res;
+    };
+
+    this.$attachDebugCient = function(message, client) {
+        var self = this;
+        this.workspace.getExt("state").getState(function(err, state) {
+            if (err)
+                return self.error(err, 1, message, client);
+
+            if (state.debugClient)
+                self.ide.broadcast('{"type": "node-debug-ready"}', self.name);
+        });
     };
 
     this.$run = function(file, args, env, version, message, client) {
@@ -97,7 +111,8 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 args: args,
                 env: env,
                 nodeVersion: version,
-                extra: message.extra
+                extra: message.extra,
+                encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     self.error(err, 1, message, client);
@@ -120,7 +135,8 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 env: env,
                 breakOnStart: breakOnStart,
                 nodeVersion: version,
-                extra: message.extra
+                extra: message.extra,
+                encoding: "ascii"
             }, self.channel, function(err, pid) {
                 if (err)
                     self.error(err, 1, message, client);

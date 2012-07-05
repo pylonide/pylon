@@ -2,8 +2,107 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barCompleterCont" skinset="language_skin" skin="codecomplete" width="350" visible="false">
-        <a:hbox anchors="0 0 0 0">
+    <a:hbox flex="1" visible="false">
+        <a:model id="mdlOutline">
+            <data>
+            </data>
+        </a:model>
+        <a:tree
+          id              = "treeOutline"
+          class           = "searchresults treeOutline"
+          opencloseaction = "onmouseup"
+          model           = "mdlOutline"
+          openadd         = "false"
+          startcollapsed  = "false"
+          nocollapse      = "true"
+          empty-message   = "No outline available"
+          loading-message = "Loading outline. One moment please..."
+          maxheight       = "350"
+          visible         = "false"
+          scrollbar       = "sbShared 32 7 7">
+            <a:each
+              match         = "[entries|entry]"
+            >   
+                <a:caption><?lm
+                    var re = new RegExp("({txtGoToFile.value.substr(1)})", 'i');
+                    var value = [@name];
+                    
+                    value.replace(re, <strong>$1</strong>);
+                    !![@meta] ? "<code style='color:gray;'> : [@meta]</code>" : "";
+                ?></a:caption>
+                
+                <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
+            </a:each>
+        </a:tree>
+      </a:hbox>
+
+    <a:bar id="barHierarchy" skinset="language_skin" skin="codecomplete" width="300" visible="false">
+        <a:vbox anchors="0 0 0 0">
+            <a:toolbar>
+                <a:bar height = "36">
+                    <a:hbox edge="5">
+                        <a:button
+                          icon     = "hier_supertype.png"
+                          tooltip  = "Supertypes Hierarchy"
+                          onclick  = "require('ext/language/hierarchy').refreshHierarchy(0)" />
+                        <a:button
+                          icon     = "hier_subtype.png"
+                          tooltip = "Subtypes Hierarchy"
+                          onclick  = "require('ext/language/hierarchy').refreshHierarchy(1)" />
+                        <a:textbox 
+                          id              = "tbHierarchySearch"
+                          realtime        = "true"
+                          flex            = "1"
+                          skin            = "searchbox_textbox"
+                          class           = "small_font"
+                          focusselect     = "true"
+                          initial-message = "Search Hierarchy"
+                        />
+                    </a:hbox>
+                </a:bar>
+            </a:toolbar>
+            <a:hbox flex="1">
+                <a:model id="mdlHierarchy">
+                    <data>
+                    </data>
+                </a:model>
+                <a:tree
+                  id              = "treeHierarchy"
+                  skin            = "outline-tree"
+                  opencloseaction = "onmouseup"
+                  onafterchoose   = "require('ext/language/hierarchy').jumpToAndClose(this.selected)"
+                  onkeyup         = "require('ext/language/hierarchy').escapeHierarchy(event)"
+                  model           = "mdlHierarchy"
+                  openadd         = "false"
+                  startcollapsed  = "false"
+                  empty-message   = "No Hierarchy avaialble"
+                  flex            = "1"
+                  anchors = "0 0 0 0">
+                    <a:each
+                      match         = "[entry]"
+                      filter        = "{tbHierarchySearch.value}"
+                      filter-fields = "@name"
+                    >
+                        <a:caption>
+                          <?lm [@name]{!![@meta] ? "<code style='color:gray;'> - [@meta]</code>" : ""} ?>
+                        </a:caption>
+                        <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
+                    </a:each>
+                </a:tree>
+                <a:scrollbar
+                  for      = "treeHierarchy"
+                  id       = "sbHierarchy"
+                  margin   = "2"
+                  skin     = "sbios"
+                  width    = "7"
+                  overflow2 = "auto"/>
+              </a:hbox>
+        </a:vbox>
+    </a:bar>
+    
+    <a:bar id="barCompleterCont" skinset="language_skin" skin="codecomplete" width="600" visible="false">
+        <!-- see ext.language/complete.MENU_WIDTH for widths -->
+        <a:hbox id="txtCompleterHolder" class="code_complete_text_holder" anchors="0 0 0 0" edge="5" width="290">
             <a:text id="txtCompleter" skin="codecomplete_text" flex="1" />
             <a:scrollbar
               for      = "txtCompleter"
@@ -12,7 +111,17 @@
               skin     = "sbios"
               width    = "7"
               overflow2 = "auto"/>
-          </a:hbox>
+        </a:hbox>
+        <a:hbox class="code_complete_text_holder" anchors="0 0 0 310" edge="5" minheight="100">
+            <a:text id="txtCompleterDoc" skin="codecompletedoc_text" flex="1" />
+            <a:scrollbar
+              for      = "txtCompleterDoc"
+              id       = "sbCompleterDoc"
+              margin   = "2"
+              skin     = "sbios"
+              width    = "7"
+              overflow2 = "auto"/>
+        </a:hbox>
     </a:bar>
     
 </a:application>

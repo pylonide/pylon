@@ -1,13 +1,18 @@
 var NodeRunner = require("./node-runner");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
+var assert = require("assert");
 
 module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
     var sandbox = imports.sandbox;
+    var vfs = imports.vfs;
+    var nodePath = options.nodePath || null;
     
-    NodeRunner.call(this, options.url, pm, sandbox, false, function (err) {
+    assert(options.listenHint, "Option 'listenHint' is required");
+
+    NodeRunner.call(this, options.url, options.listenHint, vfs, pm, sandbox, false, nodePath, function (err) {
         if (err) return register(err);
-        
+
         register(null, {
             "run-node": {
                 Runner: NodeRunner.Runner

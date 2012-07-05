@@ -30,6 +30,8 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
         if (i === prefixPosition)
             continue;
         var ident = identifiers[i];
+        if (ident.length === 0)
+            continue;
         var distance = Math.max(prefixPosition, i) - Math.min(prefixPosition, i);
         // Score substracted from 100000 to force descending ordering
         if (Object.prototype.hasOwnProperty.call(identDict, ident))
@@ -56,7 +58,8 @@ completer.completionRequiresParsing = function() {
     return false;
 };
     
-completer.complete = function(doc, fullAst, pos, currentNode, callback) {
+completer.complete = function(doc, fullAst, data, currentNode, callback) {
+    var pos = data.pos;
     var identDict = analyze(doc, pos);
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);

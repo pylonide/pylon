@@ -11,7 +11,7 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("assert");
-var search = require("./search");
+var search = require("./search").fileSearch;
 
 module.exports = {
     timeout: 30000,

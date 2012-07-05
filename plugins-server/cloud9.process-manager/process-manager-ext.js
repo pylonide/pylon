@@ -10,9 +10,8 @@ module.exports = function setup(options, imports, register) {
     var pm = new ProcessManager(runners, eventEmitter);
 
     register(null, {
-        "onDestruct": function(callback) {
+        "onDestroy": function() {
             pm.destroy();
-            callback();
         },
         "process-manager": {
             ps: function(callback) {

@@ -6,29 +6,40 @@
  */
 
 var Plugin = require("../cloud9.core/plugin");
+var fsnode = require("vfs-nodefs-adapter");
 var util = require("util");
 
 var name = "npm-runtime";
 var ProcessManager;
 var EventBus;
-var Fs;
+var VFS;
+var AllowShell;
+var USER;
+var ALLOWEDDIRS;
+var ALLOWEDEXECUTABLES;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
-    Fs = imports["sandbox.fs"];
-    
+    VFS = imports.vfs;
+    USER = options.user;
+    ALLOWEDDIRS = options.allowedDirs;
+    ALLOWEDEXECUTABLES = options.allowedExecs;
+    AllowShell = !!options.allowShell;
     imports.ide.register(name, NpmRuntimePlugin, register);
 };
 
 var NpmRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.pm = ProcessManager;
+    this.fs = fsnode(VFS);
     this.eventbus = EventBus;
+    this.allowShell = AllowShell;
     this.workspace = workspace;
     this.channel = workspace.workspaceId + "::npm-runtime"; // wtf this should not be needed
     this.children = {};
-
+    this.user = USER;
+    
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
@@ -41,7 +52,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            msg.type = msg.type.replace(/^run-npm-(start|data|exit)$/, "npm-module-$1");
+            msg.type = msg.type.replace(/^(?:run\-npm|shell)-(start|data|exit)$/, "npm-module-$1");
 
             if (msg.type == "npm-module-start")
                 self.processCount += 1;
@@ -57,6 +68,9 @@ util.inherits(NpmRuntimePlugin, Plugin);
         var cmd = (message.command || "").toLowerCase();
         switch(cmd) {
             case "npm-module-stdin":
+                if (!this.children[message.pid])
+                    return true;
+
                 message.line = message.line + '\n';
                 this.children[message.pid].child.stdin.write(message.line);
                 return true;
@@ -66,35 +80,51 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
     this.$run = function(file, args, env, version, message, client) {
         var self = this;
-        
+
         this.pm.spawn("run-npm", {
             file: file,
             args: args,
             env: env,
             nodeVersion: version,
             extra: message.extra,
-            cwd: message.cwd
+            cwd: message.cwd,
+            encoding: "ascii"
         }, self.channel, function(err, pid, child) {
             if (err)
                 return self.error(err, 1, message, client);
 
             self.children[pid] = child;
-            //self.child = child;
         });
     };
 
-    this.searchAndRunModuleHook = function(message, cb) {
-        /*if (this.child && this.child.pid)
-            return cb("NPM module already running.");*/
+    this.searchAndRunModuleHook = function(message, user, cb) {
+        if (!message.command || !message.argv)
+            return cb(null, false);
+
+        if (user.permissions.fs != "rw")
+            return cb("Permission denied", false);
+            
+        var server_exclude = (user.permissions.server_exclude || "").split("|");
+        for (var command in server_exclude) {
+            if (message.command == command || message.argv.join(" ").indexOf(command) > -1) {
+                return cb("Permission denied", false);
+            }
+        }
 
         if (message.command === "node")
-            return this.$run(null, [], message.env || {},  message.version, message, null);
+            return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
-        this.searchForModuleHook(message.command, function(found, filePath) {
-            if (!found)
-                return cb(null, found);
+        // first try to find a module hook
+        self.searchForModuleHook(message.command, function(found, filePath) {
+            // if not found
+            if (!found) {
+                // then run it on the server via sh
+                self.searchAndRunShell(message, cb);
+                return;
+            }
 
+            // otherwise execute the bastard!
             if (message.argv.length)
                 message.argv.shift();
 
@@ -102,15 +132,70 @@ util.inherits(NpmRuntimePlugin, Plugin);
         });
     };
 
+    this.searchAndRunShell = function(message, callback) {
+        if (!this.allowShell)
+            return callback(null, false);
+
+        var self = this;
+        var ws   = self.ide.workspaceDir;
+        var cwd  = message.cwd || ws;
+
+        var isAllowedExecutable = !this.user || this.user.runvmSsh || !ALLOWEDEXECUTABLES 
+            || ALLOWEDEXECUTABLES.indexOf(message.command) > -1;
+
+        this.pm.exec("shell", {
+            command: "which",
+            args: [message.command],
+            cwd: cwd
+        }, function(code, out, err) {
+            if (code)
+                return callback(null, false);
+            
+            if (!isAllowedExecutable) {
+                var found = false;
+                for (var i = 0, wsl = ws.length; i < ALLOWEDDIRS.length; i++) {
+                    if (out.substr(0, wsl + ALLOWEDDIRS[i].length) == ws + ALLOWEDDIRS[i]) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found)
+                    return callback("This command is only available in premium plans. "
+                        + "<a href='javascript:void(0)' onclick='require(\"ext/upgrade/upgrade\").suggestUpgrade()'>Click here to Upgrade.</a>", false);
+            }
+
+            // use resolved command
+            message.argv[0] = out.split("\n")[0];
+            
+            self.pm.spawn("shell", {
+                command: "sh",
+                cwd: cwd,
+                extra: message.extra,
+                encoding: "ascii"
+            }, self.channel, function(err, pid, child) {
+                if (err)
+                    return self.error(err, 1, message);
+                
+                // pipe the original line through to sh
+                child.child.stdin.write(message.line);
+                child.child.stdin.end();
+                    
+                self.children[pid] = child;
+            });
+        });
+    };
+
     this.searchForModuleHook = function(command, cb) {
-        var baseDir = "node_modules";
+        var baseDir = this.ide.workspaceDir + "/node_modules";
+        var fs = this.fs;
 
         function searchModules(dirs, it) {
             if (!dirs[it])
                 return cb(false);
 
             var currentDir = baseDir + "/" + dirs[it];
-            Fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
+            fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
                 if (err)
                     return searchModules(dirs, it+1);
 
@@ -133,7 +218,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             });
         }
 
-        Fs.readdir(baseDir, function(err, res) {
+        fs.readdir(baseDir, function(err, res) {
             if (err)
                 return cb(false);
 

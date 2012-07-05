@@ -65,14 +65,14 @@ var getLastAndAfterRevisions = function(data) {
     return [beforeRevision, afterRevision];
 };
 
-var loadLibs = function() {
+var loadLibs = function(prefix) {
     if (!self.dmp) {
-        importScripts("/static/ext/revisions/diff_match_patch.js");
+        importScripts(prefix + "/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
     }
 
     if (!self.difflib) {
-        importScripts("/static/ext/revisions/difflib.js");
+        importScripts(prefix + "/ext/revisions/difflib.js");
         self.difflib = difflib;
     }
 };
@@ -82,7 +82,7 @@ self.onmessage = function(e) {
     var afterRevision, beforeRevision, lastContent, patch;
     switch (e.data.type) {
         case "preloadlibs":
-            loadLibs();
+            loadLibs(e.data.prefix);
             break;
         case "closefile":
             docContentsOnRev[e.data.path] = null;

@@ -13,17 +13,17 @@ var INTERVAL = 2000; //I would like this at 60000, but save on exit is broken
 
 module.exports = {
     model : new apf.model(),
-    
+
     $checkSave : function() {
         if (this.dirty)
             this.saveToFile();
     },
-    
+
     startTimer : function(){
         var _self = this;
-        
+
         clearInterval(this.$timer);
-        
+
         var checkSave = function(){
             _self.$checkSave();
         };
@@ -32,7 +32,7 @@ module.exports = {
 
     save : function(force){
         this.dirty = true;
-        
+
         if (force) {
             this.saveToFile();
             this.startTimer();
@@ -42,15 +42,15 @@ module.exports = {
     saveToFile : function() {
         if (cloud9config.debug)
             console.log("Saving Settings...");
-            
+
         ide.dispatchEvent("settings.save", { model : this.model });
-        
+
         this.model.data.setAttribute("time", new Date().getTime());
         var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
 
         if (ide.onLine) {
             this.dirty = false;
-            
+
             ide.send({
                 command: "settings",
                 action: "set",
@@ -60,9 +60,6 @@ module.exports = {
                 type: "save settings",
                 settings: data
             });
-        }
-        else {
-            localStorage[this.sIdent] = data;
         }
     },
 
@@ -104,7 +101,7 @@ module.exports = {
     },
 
     $loadsettings : function(cb){
-        var _self = require('core/settings');
+        var _self = require("core/settings");
 
         if (cloud9config.debug) {
             cb({model : _self.model, ext : _self});
@@ -118,7 +115,7 @@ module.exports = {
             }
         }
     },
-    
+
     setDefaults : function(path, attr){
         var node = this.model.queryNode(path);
         if (!node)
@@ -128,7 +125,7 @@ module.exports = {
             if (!node.getAttributeNode(attr[i][0]))
                 apf.xmldb.setAttribute(node, attr[i][0], attr[i][1]);
         }
-        
+
         apf.xmldb.applyChanges("synchronize", node);
     },
 
@@ -139,9 +136,10 @@ module.exports = {
      * - LocalStorage (saved for use when starting in offline mode only)
      */
     init : function(){
-        var xml, _self = this;
-        var resetSettings = location.href.indexOf('reset=1') > -1;
+        var xml;
+        var resetSettings = location.href.indexOf("reset=1") > -1;
         var sIdent = this.sIdent = "cloud9.settings." + ide.workspaceId;
+        var _self = this;
 
         this.model.setProperty("create-model", false);
 
@@ -154,8 +152,7 @@ module.exports = {
 
         // Load from template
         else if (!cloud9config.settings || cloud9config.settings == "defaults")
-            xml = template
-
+            xml = template;
         // Load from parsed settings in the index file
         else if (cloud9config.settings)
             xml = cloud9config.settings;
@@ -168,41 +165,50 @@ module.exports = {
                         settings = template;
 
                     _self.load(settings);
+                    initEvents();
 
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
 
-            if (ide.onLine === true)
+            if (ide.onLine === true) {
                 ide.send({command: "settings", action: "get"});
+            }
+            else {
+                ide.addEventListener("afteronline", function() {
+                    ide.send({command: "settings", action: "get"});
+                });
+            }
             return;
         }
-        
+
         this.load(xml);
+        initEvents();
 
         /**** Events ****/
+        function initEvents() {
+            _self.startTimer();
 
-        this.startTimer();
+            apf.addEventListener("exit", function(){
+                _self.$checkSave();
+            });
 
-        apf.addEventListener("exit", function(){
-            _self.$checkSave();
-        });
+            ide.addEventListener("afteronline", function(){
+                _self.saveToFile(); //Save to file
 
-        ide.addEventListener("afteronline", function(){
-            _self.saveToFile(); //Save to file
+                localStorage[sIdent] = null;
+                delete localStorage[sIdent];
+            });
 
-            localStorage[sIdent] = null;
-            delete localStorage[sIdent];
-        });
+            ide.addEventListener("afteroffline", function(){
+                if (_self.loaded)
+                    _self.saveToFile(); //Save in local storage
+            });
 
-        ide.addEventListener("afteroffline", function(){
-            if (_self.loaded)
-                _self.saveToFile(); //Save in local storage
-        });
-        
-        this.model.addEventListener("update", function(){
-            _self.save();
-        });
+            _self.model.addEventListener("update", function(){
+                _self.save();
+            });
+        }
     }
 };
 

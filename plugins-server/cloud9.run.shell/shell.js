@@ -1,9 +1,7 @@
 "use strict";
 
-var util = require("util");
+var nodefs = require("vfs-nodefs-adapter");
 var c9util = require("../cloud9.core/util");
-var spawn = require("child_process").spawn;
-var killTree = require("./killtree").killTree;
 
 /**
  * Run shell commands
@@ -12,65 +10,53 @@ var killTree = require("./killtree").killTree;
 var exports = module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
 
-    imports.sandbox.getUnixId(function(err, unixId) {
-        if (err) return register(err);
+    pm.addRunner("shell", exports.factory(imports.vfs));
 
-        pm.addRunner("shell", exports.factory(unixId));
-
-        register(null, {
-            "run-shell": {}
-        });
+    register(null, {
+        "run-shell": {}
     });
 };
 
-exports.factory = function(uid) {
+exports.factory = function(vfs) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
+
         c9util.extend(options, args);
-        options.uid = uid;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
         options.args = args.args;
 
-        return new Runner(options, callback);
+        return new Runner(vfs, options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options, callback) {
+var Runner = exports.Runner = function(vfs, options, callback) {
+    this.vfs = vfs;
+    this.fs = nodefs(vfs);
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
     this.extra = options.extra;
+    this.encoding = options.encoding;
 
     this.runOptions = {};
     if (options.cwd)
         this.runOptions.cwd = options.cwd;
 
-    this.env = options.env || {};
-    for (var key in process.env)
-        if (!this.env.hasOwnProperty(key))
-            this.env[key] = process.env[key];
+    if (this.encoding) {
+        this.runOptions.stdoutEncoding = this.encoding;
+        this.runOptions.stderrEncoding = this.encoding;
+    }
 
-    this.runOptions.env = this.env;
-
-    this.encoding = options.encoding || "utf8";
-    if (this.encoding === "binary") {
-        this.encoding = null;
-     }
+    if (options.env)
+        this.runOptions.env = options.env;
 
     this.eventEmitter = options.eventEmitter;
     this.eventName = options.eventName;
 
-    this.child = {
-        pid: null
-    };
+    this.pid = 0;
 
-    var self = this;
-    this.__defineGetter__("pid", function(){
-        return (self.child.exitCode === null && self.child.signalCode === null)  ? self.child.pid : 0;
-    });
-    
-    callback(null, self);
+    callback(null, this);
 };
 
 (function() {
@@ -84,6 +70,8 @@ var Runner = exports.Runner = function(options, callback) {
                 return onStart(err);
 
             self.child = child;
+            self.pid = child.pid;
+
             onStart(null, child.pid);
 
             var out = "";
@@ -91,6 +79,7 @@ var Runner = exports.Runner = function(options, callback) {
 
             child.on("exit", function(code) {
                 onExit(code, out, err);
+                self.pid = 0;
             });
 
             child.stdout.on("data", function (data) {
@@ -110,6 +99,8 @@ var Runner = exports.Runner = function(options, callback) {
                 return callback(err);
 
             self.child = child;
+            self.pid = child.pid;
+
             self.attachEvents(child);
 
             callback(null, child.pid);
@@ -117,17 +108,11 @@ var Runner = exports.Runner = function(options, callback) {
     };
 
     this.createChild = function(callback) {
-        if (this.uid) {
-            this.args = ["-Hu", "#" + this.uid, this.command].concat(this.args);
-            this.command = "sudo";
-        }
-        
-        try {
-            var child = spawn(this.command, this.args, this.runOptions);
-        } catch (e) {
-            return callback(e);
-        }
-        callback(null, child);
+        this.runOptions.args = this.args;
+        //console.log(this.command, this.runOptions);
+        this.vfs.spawn(this.command, this.runOptions, function(err, meta) {
+            callback(err, meta && meta.process);
+        });
     };
 
     this.attachEvents = function(child) {
@@ -137,11 +122,6 @@ var Runner = exports.Runner = function(options, callback) {
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
 
-        if (self.encoding) {
-            child.stdout.setEncoding(self.encoding);
-            child.stderr.setEncoding(self.encoding);
-        }
-        
         function emit(msg) {
             self.eventEmitter.emit(self.eventName, msg);
         }
@@ -165,6 +145,7 @@ var Runner = exports.Runner = function(options, callback) {
                 "code": code,
                 "extra": self.extra
             });
+            self.pid = 0;
         });
 
         process.nextTick(function() {
@@ -177,14 +158,7 @@ var Runner = exports.Runner = function(options, callback) {
     };
 
     this.kill = function() {
-        var self = this;
-        killTree(this.pid);
-
-        // check after 2sec if the process is really dead
-        // If not kill it harder
-        setTimeout(function() {
-            killTree(self.pid, "SIGKILL");
-        }, 2000);
+        this.child && this.child.kill();
     };
 
     this.describe = function() {

@@ -14,17 +14,7 @@ var panels = require("ext/panels/panels");
 var markup = require("text!ext/testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("core/settings");
-
-function escapeXpathString(name){
-    if (name.indexOf('"') > -1) {
-        var out = [], parts = name.split('"');
-        parts.each(function(part) {
-            out.push(part == '' ? "'\"'" : '"' + part + '"');
-        })
-        return "concat(" + out.join(", ") + ")";
-    }
-    return '"' + name + '"';
-}
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/testpanel/testpanel", {
     name            : "Test Panel",
@@ -66,7 +56,6 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             
             if (autoRun == "none")
                 return;
-            
             if (autoRun == "selection" && _self.dgTestProject) {
                 var sel = dgTestProject.getSelection();
                 if (sel.length)
@@ -86,7 +75,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 var nodes = [], node;
                 list.forEach(function(path){
                     node = mdlTests.queryNode("//node()[@path=" 
-                        + escapeXpathString(path) + "]");
+                        + util.escapeXpathString(path) + "]");
                     if (node)
                         nodes.push(node);
                 });
@@ -137,7 +126,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                   || !ide.onLine && !ide.offlineFileSystemSupport)
                     return;
                         
-                ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
+                editors.gotoDocument({doc: ide.createDocument(node), origin: "testpanel"});
                 
                 //@todo choose a test or an assert should select that code
                 //      inside ace.
@@ -202,7 +191,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         var doc = ide.createDocument(node);
         doc.cachedValue = pattern;
                     
-        ide.dispatchEvent("openfile", {doc: doc, node: node});
+        editors.gotoDocument({doc: doc, node: node, origin: "testpanel"});
         
         ide.addEventListener("beforefilesave", function(e){
             if (e.node == node) {

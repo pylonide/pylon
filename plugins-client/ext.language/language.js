@@ -12,10 +12,12 @@ var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
+var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
+var outline = require('ext/language/outline');
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
@@ -27,7 +29,7 @@ var settings = require("ext/settings/settings");
 var isContinuousCompletionEnabled;
 
 module.exports = ext.register("ext/language/language", {
-    name    : "Javascript Outline",
+    name    : "Javascript Language Services",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, code],
@@ -43,6 +45,9 @@ module.exports = ext.register("ext/language/language", {
 
     hook : function() {
         var _self = this;
+        
+        if (!createUIWorkerClient || !isWorkerEnabled)
+            throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
 
         var deferred = lang.deferredCall(function() {
             _self.setPath();
@@ -51,7 +56,7 @@ module.exports = ext.register("ext/language/language", {
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
             var worker;
-            if (window.location.search.match(/[?&]noworker=1/)) {
+            if (!isWorkerEnabled()) {
                 worker = _self.worker = createUIWorkerClient();
             }
             else {
@@ -80,6 +85,7 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
@@ -88,17 +94,21 @@ module.exports = ext.register("ext/language/language", {
             });
         }, true);
         
-        ide.addEventListener("settings.load", function(){
+        ide.addEventListener("settings.load", function() {
             settings.setDefaults("language", [
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
-                ["unusedFunctionArgs", "true"],
-                ["continuousComplete", "false"]
+                ["unusedFunctionArgs", "false"],
+                ["continuousCompletion", _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 
         settings.addSettings("Language Support", markupSettings);
+    },
+
+    isInferAvailable : function() {
+        return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
     init : function() {
@@ -192,7 +202,7 @@ module.exports = ext.register("ext/language/language", {
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
-        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") === "true";
+        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousCompletion") != "false";
         this.setPath();
     },
 

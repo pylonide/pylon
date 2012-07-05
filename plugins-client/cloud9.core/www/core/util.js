@@ -6,7 +6,20 @@
  */
 define(function(require, exports, module) {
     
+var ide = require("core/ide");
 var markup = require("text!core/util.xml");
+
+exports.escapeXpathString = function(name){
+    if (name.indexOf('"') > -1) {
+        var out = [], parts = name.split('"');
+        parts.each(function(part) {
+            out.push(part == '' ? "'\"'" : '"' + part + '"');
+        })
+        return "concat(" + out.join(", ") + ")";
+    }
+    return '"' + name + '"';
+}
+
 
 exports.alert = function(title, header, msg, onhide) {
     if (!self.winAlert)
@@ -52,7 +65,7 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
 };
 
 exports.removeInteractive = function (amlNode) {
-    if (window.cloud9config.readonly == true)
+    if (ide.readonly == true)
         return false;
 
     if (amlNode.confirmed == undefined)
@@ -340,6 +353,9 @@ exports.isChrome = function() {
     return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 };
 
+exports.replaceStaticPrefix = function (string) {
+    return string.replace(new RegExp("{ide.staticPrefix}", "g"), window.cloud9config.staticUrl);
+};
 /*
  * JavaScript Linkify - v0.3 - 6/27/2009
  * http://benalman.com/projects/javascript-linkify/

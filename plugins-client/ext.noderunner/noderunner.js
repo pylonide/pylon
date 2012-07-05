@@ -22,6 +22,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     type    : ext.GENERAL,
     alone   : true,
     offline : false,
+    autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
 
     NODE_VERSION: "auto",
@@ -74,6 +75,9 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         switch(message.type) {
             case "node-debug-ready":
+            case "php-debug-ready":
+            case "python-debug-ready":
+            case "ruby-debug-ready":
                 ide.dispatchEvent("debugready");
                 break;
 
@@ -84,6 +88,9 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "node-exit":
+            case "php-exit":
+            case "python-exit":
+            case "ruby-exit":
                 stProcessRunning.deactivate();
                 stDebugProcessRunning.deactivate();
                 break;
@@ -171,6 +178,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     run : function(path, args, debug, nodeVersion) {
+        var runner;
+        
         // this is a manual action, so we'll tell that to the debugger
         dbg.registerManualAttach();
         if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
@@ -178,18 +187,23 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         stProcessRunning.activate()
 
-        if (nodeVersion == 'default')
-            nodeVersion = "";
-
         path = path.trim();
+
+        if (nodeVersion == 'default' || !nodeVersion) {
+            runner = this.detectRunner(path);
+            nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
+        } else {
+            runner = nodeVersion.split(" ")[0];
+            nodeVersion = nodeVersion.split(" ")[1] || 'auto';
+        }
 
         var page = ide.getActivePageModel();
         var command = {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-            "runner"  : "node",
+            "runner"  : runner,
             "args"    : args || "",
-            "version" : nodeVersion || settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION,
+            "version" : nodeVersion,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
             }
@@ -216,6 +230,19 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     destroy : function(){
+    },
+    
+    detectRunner: function(path) {
+        if (path.match(/\.(php|phtml)$/))
+            return "php";
+        
+        if (path.match(/\.py$/))
+            return "python";
+        
+        if (path.match(/\.rb$/))
+            return "ruby";
+        
+        return "node";
     }
 });
 

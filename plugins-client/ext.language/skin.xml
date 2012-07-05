@@ -3,78 +3,42 @@
     <a:bar name="codecomplete">
         <a:style><![CDATA[
             .code_complete_bar {
-                overflow: hidden;
+                overflow: visible;
                 position : relative;
-                color: #000;
-                background-color: #f5f5f5;
-                margin: 5px;
-                -webkit-box-shadow: 0 3px 7px rgba(0,0,0,.4);
-                box-shadow: 0 3px 7px rgba(0,0,0,.4);
             }
             
             .code_complete_bar.downward {
-                border: 1px solid #b7b7b7;
-                -webkit-border-bottom-right-radius: 5px;
-                border-bottom-right-radius: 5px;
-                -webkit-border-bottom-left-radius: 5px;
-                border-bottom-left-radius: 5px;
             }
 
             .code_complete_bar.upward {
-                border: 1px solid #b7b7b7;
                 margin-top: -2px;
-                -webkit-border-top-right-radius: 5px;
-                border-top-right-radius: 5px;
-                -webkit-border-top-left-radius: 5px;
-                border-top-left-radius: 5px;
-            }
-
-            /* Need to do this to get the radius working in Chrome, FF works fine without */
-            .code_complete_bar.downward div.code_complete_text {
-                -webkit-border-bottom-left-radius: 5px;
-                border-bottom-left-radius: 5px;
-            }
-
-            .code_complete_bar.upward div.code_complete_text {
-                -webkit-border-top-left-radius: 5px;
-                border-top-left-radius: 5px;
-            }
-
-            .code_complete_bar > div {
-                -webkit-border-bottom-left-radius: 5px;
-                border-bottom-left-radius: 5px;
-                position: relative;
             }
 
             .cc_complete_option {
-                padding: 1px 5px;
+                background: rgba(255, 255, 255, 0.4);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                border-top: 1px solid rgba(255, 255, 255, 0.8);
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
                 cursor: default;
+                overflow: hidden;
+                position: relative;
+                white-space: nowrap;
             }
-            
-            .cc_complete_option:active {
-                color: #000;
+            .dark .cc_complete_option {
+                background: rgba(255, 255, 255, 0.1);
+                border-top-color: rgba(255, 255, 255, 0.05);
+                border-bottom-color: rgba(0, 0, 0, 0.3);
             }
 
-            .cc_complete_option_selected {
-                background: #b9d0e4;
-                color: #333;
-                padding: 1px 5px;
-                margin: 0;
-                cursor: default;
+            .cc_complete_option.selected {
+                background-image: -webkit-linear-gradient(bottom,#337CBC 0%, #4091D8 100%);
+                background-image:    -moz-linear-gradient(bottom,#337CBC 0%, #4091D8 100%);
+                background-image:         linear-gradient(bottom,#337CBC 0%, #4091D8 100%);
+                color: lightblue;
             }
-            
-            .code_complete_bar.downward .cc_complete_option_selected:last-child, .code_complete_bar.downward .cc_complete_option:last-child {
-                -webkit-border-bottom-left-radius: 5px;
-                border-bottom-left-radius: 5px;
-                -webkit-border-bottom-right-radius: 5px;
-                border-bottom-right-radius: 5px;
-            }
-
-            .code_complete_bar.upward .cc_complete_option_selected:first-child, .code_complete_bar.upward .cc_complete_option:first-child {
-                -webkit-border-top-left-radius: 5px;
-                border-top-left-radius: 5px;
-                -webkit-border-top-right-radius: 5px;
-                border-top-right-radius: 5px;
+            .dark .cc_complete_option.selected {
+                background: none;
             }
 
             .code_complete_bar img {
@@ -85,19 +49,31 @@
                 margin-top: 0.4em;
             }
 
-            .code_complete_bar span.main {
-                position: absolute;
+            .code_complete_bar .main {
                 left: 15px;
-                width: 330px;
-                white-space: nowrap;
                 overflow: hidden;
-            }
-            
-            .code_complete_bar span.meta {
                 position: absolute;
-                color: #999;
-                right: 10px;
-                margin-left: 6px;
+                top: 0px;
+                white-space: nowrap;
+                width: inherit;
+            }
+
+            .code_complete_bar .deferred {
+                opacity: .7;
+            }
+
+            .code_complete_bar .main u {
+                font-weight: bold;
+                text-decoration: none;
+            }
+            .dark .code_complete_bar .main u,
+            .cc_complete_option.selected .main u {
+                color: white !important;
+            }
+            .code_complete_bar .meta {
+                position: absolute;
+                right: 35px;
+                opacity: .5;
             }
         ]]></a:style>
         <a:style condition="{apf.isWebkit}"><![CDATA[
@@ -119,19 +95,60 @@
     
     <a:text name="codecomplete_text">
         <a:style><![CDATA[
-            .code_complete_text .cc_complete_option_selected {
+                
+            .code_complete_text_holder {
+                background: #E8E8E8;
+                border: 1px solid #BBB;
+                border-width: 0 1px 1px 1px;
+                border-radius: 0;
+                box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+                padding: 5px;
+                overflow: hidden;
+                width: 290px;
+            }
+            .dark .code_complete_text_holder {
+                border-width: 0 2px 2px 2px;
+                box-shadow: 0 2px 7px rgba(0, 0, 0, 0.7);
+            }
+
+            .code_complete_text_holder > div {
+                padding: 0 !important;
+            }
+
+            .code_complete_bar.upward .code_complete_text_holder {
+                box-shadow: 0 -2px 7px rgba(0, 0, 0, 0.3);
+                border-width: 1px 1px 0 1px;
+                padding: 5px;
+            }
+
+            .dark .code_complete_text_holder {
+                border-color: rgba(255, 255, 255, .1);
+            }
+
+            .code_complete_text {
+                position: relative;
+                overflow: hidden;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="code_complete_text"/>
+            </a:main>
+        </a:presentation>
+    </a:text>
+    
+    <a:text name="codecompletedoc_text">
+        <a:style><![CDATA[
+            .code_complete_doc_text .cc_complete_option.selected {
                 text-shadow: none;
             }
             
-            .code_complete_text {
-                color: #333;
-                position: relative;
+            .code_complete_doc_text {
                 overflow: hidden;
-                border: 1px solid transparent;
-                border-top-color: #fff;
+                position: relative;
             }
             
-            .code_complete_text u {
+            .code_complete_doc_text u {
                 text-decoration: none;
                 color: blue;
                 text-shadow: none;
@@ -139,7 +156,7 @@
         ]]></a:style>
         <a:presentation>
             <a:main container=".">
-                <div class="code_complete_text"/>
+                <div class="code_complete_doc_text"/>
             </a:main>
         </a:presentation>
     </a:text>

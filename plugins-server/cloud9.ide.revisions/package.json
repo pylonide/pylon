@@ -8,7 +8,8 @@
     "plugin": {
         "consumes": [
             "ide",
-            "sandbox.fs"
+            "sandbox",
+            "vfs"
         ]
     }
 }

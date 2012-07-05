@@ -1,0 +1,14 @@
+{
+    "name": "ext.sync",
+    "version": "0.0.1",
+    "main": "sync-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.sync"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

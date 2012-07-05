@@ -24,6 +24,7 @@ var WARNING_LEVELS = {
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
+var currentPos;
 
 var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
@@ -35,8 +36,11 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(500);
     
-    sender.on("complete", applyEventOnce(function(pos) {
-        _self.complete(pos);
+    sender.on("outline", applyEventOnce(function(event) {
+        _self.outline(event);
+    }));
+    sender.on("complete", applyEventOnce(function(data) {
+        _self.complete(data);
     }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
@@ -59,6 +63,10 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
+};
+
+var isWorkerEnabled = exports.isWorkerEnabled = function() {
+    return !window.location || !window.location.search.match(/[?&]noworker=1/);
 };
 
 exports.createUIWorkerClient = function() {
@@ -172,6 +180,8 @@ function asyncParForEach(array, fn, callback) {
             var handler = require(path);
             this.handlers.push(handler);
         } catch (e) {
+            if (isWorkerEnabled())
+                throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {
@@ -180,8 +190,12 @@ function asyncParForEach(array, fn, callback) {
         }   
     };
 
-    this.parse = function(callback) {
+    this.parse = function(callback, allowCached) {
         var _self = this;
+        if (allowCached && this.cachedAst) {
+            callback(_self.cachedAst);
+            return;
+        }
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
@@ -192,13 +206,39 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
+                    if (e instanceof TypeError || e instanceof ReferenceError)
+                        throw e;
                     // Ignore parse errors
                     next();
                 }
+            } else {
+                next();
             }
         }, function() {
             callback(_self.cachedAst);
         });
+    };
+
+    this.outline = function(event) {
+        var _self = this;
+        this.parse(function(ast) {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.outline(_self.doc, ast, function(outline) {
+                        if (outline) {
+                            outline.ignoreFilter = event.data. ignoreFilter;
+                            return _self.sender.emit("outline", outline);
+                        }
+                        else {
+                            next();
+                        }
+                    });
+                }
+                else
+                    next();
+            }, function() {
+            });
+        }, true);
     };
 
     this.scheduleEmit = function(messageType, data) {
@@ -248,8 +288,10 @@ function asyncParForEach(array, fn, callback) {
                     extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
                 _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
                 _self.currentMarkers = markers;
-                if (_self.postponedCursorMove)
+                if (_self.postponedCursorMove) {
                     _self.onCursorMove(_self.postponedCursorMove);
+                    _self.postponedCursorMove = null;
+                }
                 callback();
             });
         });
@@ -371,6 +413,7 @@ function asyncParForEach(array, fn, callback) {
                 _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(_self.currentMarkers.concat(aggregateActions.markers)));
                 _self.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
                 _self.lastCurrentNode = currentNode;
+                _self.lastCurrentPos = currentPos;
                 _self.setLastAggregateActions(aggregateActions);
                 _self.scheduleEmit("hint", {
                     pos: pos,
@@ -383,8 +426,9 @@ function asyncParForEach(array, fn, callback) {
         
         if (this.cachedAst) {
             var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if (currentNode !== this.lastCurrentNode || pos.force) {
+            var currentPos = {line: pos.row, col: pos.column};
+            var currentNode = ast.findNode(currentPos);
+            if (currentPos != this.lastCurrentPos || currentNode !== this.lastCurrentNode || pos.force) {
                 cursorMoved();
             }
         } else {
@@ -451,6 +495,7 @@ function asyncParForEach(array, fn, callback) {
         this.$language = language;
         this.cachedAst = null;
         this.lastCurrentNode = null;
+        this.lastCurrentPos = null;
         this.setValue(code);
         var doc = this.doc;
         asyncForEach(this.handlers, function(handler, next) {
@@ -499,7 +544,8 @@ function asyncParForEach(array, fn, callback) {
     }
     
     this.complete = function(event) {
-        var pos = event.data;
+        var data = event.data;
+        var pos = data.pos;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
         var _self = this;
@@ -509,7 +555,8 @@ function asyncParForEach(array, fn, callback) {
                 _self.parse(function(hAst) {
                     if(hAst) {
                         ast = hAst;
-                        currentNode = ast.findNode({line: pos.row, col: pos.column});
+                        currentPos = {line: pos.row, col: pos.column};
+                        currentNode = ast.findNode(currentPos);
                     }
                     next();
                 });
@@ -520,7 +567,7 @@ function asyncParForEach(array, fn, callback) {
             var matches = [];
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                    handler.complete(_self.doc, ast, data, currentNode, function(completions) {
                         if (completions)
                             matches = matches.concat(completions);
                         next();
@@ -555,7 +602,10 @@ function asyncParForEach(array, fn, callback) {
                 });
                 
                 matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", matches);
+                _self.sender.emit("complete", {
+                    pos: pos,
+                    matches: matches
+                });
             });
         });
     };

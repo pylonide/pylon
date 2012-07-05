@@ -11,6 +11,9 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var settings = require("core/settings");
+var editors = require("ext/editors/editors");
+var sidebar = require("ext/sidebar/sidebar");
 var skin = require("text!ext/quickstart/skin.xml");
 var markup = require("text!ext/quickstart/quickstart.xml");
 
@@ -25,20 +28,27 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    skin    : {
+    skin     : {
         id   : "quickstart",
         data : skin,
-        "media-path" : "/static/ext/quickstart/images/"
+        "media-path" : ide.staticPrefix + "/ext/quickstart/images/"
     },
     nodes : [],
+
+    lastMinZindex: 9016,
 
     init : function(amlNode){
         jsonQuickStart = {
             identifiers: [
                 {
-                    el : winFilesViewer,
+                    el : navbar,
                     name : "qsProjectBar",
-                    pos: "right"
+                    pos: "right",
+                    before: function(){
+                        if(!require("ext/panels/panels").currentPanel)
+                            navbar.childNodes[1].dispatchEvent("mousedown");
+                        return false;
+                    }
                 },
                 {
                     el : logobar,
@@ -54,16 +64,30 @@ module.exports = ext.register("ext/quickstart/quickstart", {
                     }
                 },
                 {
-                    el : winDbgConsole,
+                    el : self["txtConsoleInput"],
                     name : "qsCLI",
-                    pos: "top"
+                    pos: "top",
+                    before: function(){
+                        require("ext/console/console").showInput();
+                        return self["txtConsoleInput"];
+                    }
                 }
             ]
         };
-
+        
+        this.animateui = settings.model.queryValue('general/@animateui');
+        settings.model.setQueryValue('general/@animateui', false);
+        
+        for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
+            var idn = jsonQuickStart.identifiers[i];
+            if(idn.before) {
+                idn.el = idn.before() || idn.el;
+            }
+        }
+        
         this.overlay = document.createElement("div");
         this.overlay.setAttribute("style",
-            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
+            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.6;background:#000;");
         document.body.appendChild(this.overlay);
     },
 
@@ -92,6 +116,8 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             _self.overlay.style.display = "block";
             _self.arrangeQSImages();
             quickStartDialog.show();
+            _self.lastMinZindex > quickStartDialog.zindex && (_self.lastMinZindex = quickStartDialog.zindex);
+            _self.overlay.style.zIndex = _self.lastMinZindex - 1;          
         })
     },
 
@@ -118,7 +144,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     arrangeQSImages : function() {
         var divToId, position, imgDiv;
         for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
-            if(jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible())
+            if((jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible()) || !jsonQuickStart.identifiers[i].el)
                 continue;
 
             divToId = require("ext/guidedtour/guidedtour").getElementPosition(jsonQuickStart.identifiers[i].el);
@@ -133,16 +159,17 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             this.setPositions(position, divToId, imgDiv);
 
             imgDiv.show();
+            this.lastMinZindex > imgDiv.zindex && (this.lastMinZindex = imgDiv.zindex);
         }
     },
 
     setPositions : function(position, posArray, div) {
         if (position == "top") {
-             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 100);
+             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 140);
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "right"){
-            div.setAttribute("left", posArray[0] + posArray[2] - 2);
+            div.setAttribute("left", posArray[0] + 10);
             div.setAttribute("top", (posArray[1] + (posArray[3]/2)) - (div.getHeight()/2));
         }
         else if (position == "bottom"){
@@ -167,6 +194,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
             imgDiv.hide();
         }
+        settings.model.setQueryValue('general/@animateui', this.animateui);
     },
 
     shutdownQSStartGT : function() {

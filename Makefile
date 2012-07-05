@@ -36,6 +36,10 @@ core: ace
 helper: 
 	node build/packed_helper.js
 
+helper_clean:
+	mkdir -p build/src
+	node build/packed_helper.js 1
+	
 # packages ext
 ext: 
 	node build/r.js -o build/app.build.js
@@ -62,7 +66,7 @@ plugins-client/lib.ace/www/worker/worker.js : $(wildcard plugins-client/ext.lang
 	ln -s `pwd`/plugins-client/ext.language /tmp/c9_worker_build/ext/language
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
-	./Makefile.dryice.js worker
+	node Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 
 # copies built ace modes
@@ -87,6 +91,8 @@ gzip:
 
 c9core: apf ace core worker mode theme
     
+package_clean: helper_clean c9core ext
+
 package: helper c9core ext
 
 test:

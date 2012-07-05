@@ -1,16 +1,22 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse=[%packed%]>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse="[%packed%]">
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
         <meta name="description" content=""/>
         <meta name="keywords" content=""/>
-
+        <script type="text/javascript">
+        //<![CDATA[
+            if (<%local%>)
+                document.title += " Local";
+        //]]>
+        </script>
         <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
         <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/nbdmccoknlfggadpfkmcpnamfnbkmkcp">
-        
+
+        [%loadedDetectionScript%]
         <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
@@ -25,15 +31,20 @@
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,
                 name: <%name%>,
+                uid: <%uid%>,
+                pid: <%pid%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
+                workerUrl: "[%workerUrl%]",
                 staticUrl: "[%staticUrl%]",
                 socketIoUrl: <%socketIoUrl%>,
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
+                local: <%local%>,
+                env: <%env%>,
                 settings: <%settingsXml%>,
-                packed: <%packed%> ? true : false,
+                packed: <%packed%>,
                 packedName: <%packedName%>
             };
 
@@ -72,14 +83,22 @@
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
                     }
-                    else {
-                        var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
+                    
+                    // if you pass `force=true` into the querystring, then
+                    // we bypass the browser check
+                    if (window.cloud9config.hosted && !window.location.search.match(/\bforce\=true\b/)) {
+                        // otherwise, ask apf
+                        if (apf.isIE) {
+                            // redirect to the notsupported page
+                            var ref = encodeURIComponent(window.location.pathname + window.location.search);
+                            window.location.href = "/site/notsupported.html?ref=" + ref;
+                        }
                     }
                     
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
-                    aceConfig.set("workerPath", "/static/ace/worker");
+                    aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
                     
@@ -92,8 +111,13 @@
                         });
                     }
                     else {
+                        apf.addEventListener("load", function() {
+                            var ide = require("core/ide");
+                            window.ide = ide;
                         loadAndBegin(ide, list);
+                        });
                     }
+
                 });
                 preloaderImgs();
             });

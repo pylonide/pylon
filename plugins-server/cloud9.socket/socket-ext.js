@@ -10,14 +10,17 @@ module.exports = function setup(options, imports, register) {
     var socket = new Socket(session, session.getKey(), imports.ide.getSocketUrl());
     socket.listen(imports.http.getServer());
     socket.on("attach", function(client, message) {
-        var uid = message.session.uid;
-        permissions.getPermissions(uid, message.workspaceId, function(err, userPermissions) {
+        var uid = message.session.uid || message.session.anonid;
+        permissions.getPermissions(uid, message.workspaceId, "cloud9.socket.socket-ext", function(err, userPermissions) {
             if (err) {
-                return client.send(JSON.stringify({
-                    "type": "error",
-                    "code": err.code || 500,
-                    "message": err.message || err
-                }));
+                client.send(JSON.stringify(err.toJSON
+                    ? err.toJSON()
+                    : {
+                          "type": "error",
+                          "code": err.code || 500,
+                          "message": err.message || err
+                      })
+                );
             }
 
             ide.addUser(uid, userPermissions);

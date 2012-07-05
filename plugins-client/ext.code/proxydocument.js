@@ -18,14 +18,14 @@ oop.inherits(ProxyDocument, Document);
     this.setDocument = function (newDocument) {
         if (this.doc == newDocument)
             return this.doc;
-            
+
         if (this.doc) {
             this.doc.removeEventListener("change", this.$onChange);
         }
-        
+
         this.doc = newDocument;
         this.doc.addEventListener("change", this.$onChange);
-        
+
         return this.doc;
     };
 
@@ -40,7 +40,7 @@ oop.inherits(ProxyDocument, Document);
     this.setNewLineMode = function (mode) {
         return this.doc.setNewLineMode(mode);
     };
-    
+
     this.getNewLineMode = function () {
         return this.doc.getNewLineMode();
     };
@@ -64,7 +64,7 @@ oop.inherits(ProxyDocument, Document);
     this.insert = function (position, text) {
         return this.doc.insert(position, text);
     };
-    
+
     this.insertNewLine = function (position) {
         return this.doc.insertNewLine(position);
     };

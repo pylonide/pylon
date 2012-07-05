@@ -46,7 +46,7 @@ exports.cssText = ".ace-crimson-editor .ace_editor {\
 }\
 \
 .ace-crimson-editor .ace_gutter {\
-  background: #e8e8e8;\
+  background: #ebebeb;\
   color: #333;\
   overflow : hidden;\
 }\
@@ -62,7 +62,6 @@ exports.cssText = ".ace-crimson-editor .ace_editor {\
 }\
 \
 .ace-crimson-editor .ace_text-layer {\
-  cursor: text;\
   color: rgb(64, 64, 64);\
 }\
 \

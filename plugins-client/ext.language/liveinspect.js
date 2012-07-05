@@ -64,16 +64,18 @@ module.exports = (function () {
             });
         });
         
-        // bind mous events to all open editors
+        // bind mouse events to all open editors
         ide.addEventListener("afteropenfile", function (e) {
-            if (e.editor && e.editor.ceEditor) {
-                var editor = e.editor.ceEditor;
+            var editor = e.doc.$page && e.doc.$page.$editor;
+
+            if (editor && editor.ceEditor) {
+                var ceEditor = editor.ceEditor;
                 
-                editor.$editor.addEventListener("mousemove", onEditorMouseMove);
+                ceEditor.$editor.addEventListener("mousemove", onEditorMouseMove);
                 
                 // when you click, or change the cursor position, then hide the window
-                editor.$editor.addEventListener("mousedown", onEditorClick);
-                editor.getSession().getSelection().addEventListener("changeCursor", onEditorClick);
+                ceEditor.$editor.addEventListener("mousedown", onEditorClick);
+                ceEditor.getSession().getSelection().addEventListener("changeCursor", onEditorClick);
             }
         });
         

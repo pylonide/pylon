@@ -49,7 +49,7 @@ exports.cssText = ".ace-tm .ace_editor {\
 }\
 \
 .ace-tm .ace_gutter {\
-  background: #e8e8e8;\
+  background: #f0f0f0;\
   color: #333;\
 }\
 \
@@ -63,7 +63,6 @@ exports.cssText = ".ace-tm .ace_editor {\
 }\
 \
 .ace-tm .ace_text-layer {\
-  cursor: text;\
 }\
 \
 .ace-tm .ace_cursor {\

@@ -15,6 +15,7 @@ var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
 var filelist = require("ext/filelist/filelist");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -24,11 +25,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     type    : ext.GENERAL,
     markup  : markup,
     offline : false,
+    autodisable : ext.ONLINE | ext.LOCAL,
 
-    dirty   : true,
-    nodes   : [],
+    eventsEnabled : true,
+    dirty         : true,
+    nodes         : [],
     
     arraySearchResults : [],
+    arrayCache : [],
+    arrayCacheLastSearch : [],
 
     hook : function(){
         var _self = this;
@@ -63,11 +68,18 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.updateFileCache();
         });
     },
+    
+    setEventsEnabled : function(enabled) {
+        this.eventsEnabled = enabled;
+    },
 
     init : function() {
         var _self = this;
         
-        txtGoToFile.addEventListener("keydown", function(e){
+        txtGoToFile.addEventListener("keydown", function(e) {
+            if (!_self.eventsEnabled)
+                return;
+            
             if (e.keyCode == 27)
                 _self.toggleDialog(-1);
             
@@ -100,7 +112,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        txtGoToFile.addEventListener("afterchange", function(e){
+        txtGoToFile.addEventListener("afterchange", function(e) {
+            if (!_self.eventsEnabled)
+                return;
             _self.filter(txtGoToFile.value);
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
@@ -109,7 +123,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        dgGoToFile.addEventListener("keydown", function(e) {
+        dgGoToFile.addEventListener("keydown", function(e) {                
             if (e.keyCode == 27) {
                 _self.toggleDialog(-1);
             }
@@ -152,6 +166,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1, true);
         });
         
+        ide.addEventListener("beforewatcherchange", function(){
+            _self.dirty = true;
+        });
+        
         this.updateDatagrid();
         
         this.nodes.push(winGoToFile);
@@ -181,36 +199,38 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.arrayCache = array;
             
             if (self.winGoToFile && _self.lastSearch) {
-                winGoToFile.addEventListener("prop.visible", function(){
-                    var search = _self.lastSearch;
-                    _self.lastSearch = null; //invalidate cache
-                    
-                    var sel = [];
-                    dgGoToFile.getSelection().forEach(function(node){
-                        var i = node.firstChild.nodeValue;
-                        sel.push(_self.arraySearchResults[i]);
-                    })
-                    
-                    var state = {
-                        sel : sel, //store previous selection
-                        caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
-                        scrollTop : dgGoToFile.$viewport.getScrollTop()
-                    };
-
-                    _self.model.load(data);
-                    _self.filter(search, state.sel.length);
-                    
-                    if (state.sel.length && state.sel.length < 100) {
-                        var list = [], sel = state.sel;
-                        for (var i = 0, l = sel.length; i < l; i++) {
-                            list.push(dgGoToFile.queryNode("//d:href[text()='" 
-                                + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                winGoToFile.addEventListener("prop.visible", function(e){
+                    if (e.value) {
+                        var search = _self.lastSearch;
+                        _self.lastSearch = null; //invalidate cache
+                        
+                        var sel = [];
+                        dgGoToFile.getSelection().forEach(function(node){
+                            var i = node.firstChild.nodeValue;
+                            sel.push(_self.arraySearchResults[i]);
+                        })
+                        
+                        var state = {
+                            sel : sel, //store previous selection
+                            caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
+                            scrollTop : dgGoToFile.$viewport.getScrollTop()
+                        };
+    
+                        _self.model.load(data);
+                        _self.filter(search, state.sel.length);
+                        
+                        if (state.sel.length && state.sel.length < 100) {
+                            var list = [], sel = state.sel;
+                            for (var i = 0, l = sel.length; i < l; i++) {
+                                list.push(dgGoToFile.queryNode("//d:href[text()='" 
+                                    + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                            }
+                            dgGoToFile.selectList(list);
+                            if (state.caret)
+                                dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
+                                    + _self.arraySearchResults.indexOf(state.caret) + "']"));
+                            dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                         }
-                        dgGoToFile.selectList(list);
-                        if (state.caret)
-                            dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
-                                + _self.arraySearchResults.indexOf(state.caret) + "']"));
-                        dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                     }
                     
                     winGoToFile.removeEventListener("prop.visible", arguments.callee);
@@ -230,7 +250,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      * Searches through the dataset
      * 
      */
-    filter : function(keyword, nosel){
+    filter : function(keyword, nosel, force){
         if (!this.model.data) {
             this.lastSearch = keyword;
             return;
@@ -247,11 +267,11 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else
                 nodes = this.arrayCache;
                 
-            var cache = []
+            var cache = [];
 
             dgGoToFile.$viewport.setScrollTop(0);
 
-            this.arraySearchResults = search(nodes, keyword, cache);
+            this.arraySearchResults = search.fileSearch(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
         }
         
@@ -330,12 +350,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         var _self = this;
         this.toggleDialog(-1, noanim, function(){
-            for (var i = 0; i < nodes.length; i++) {
-                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                    + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
-                editors.showFile(path);
-                ide.dispatchEvent("track_action", {type: "fileopen"});
-            }
+            setTimeout(function(){
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                        + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
+                    
+                    editors.gotoDocument({path: path, active : i == l - 1});
+                    
+                    ide.dispatchEvent("track_action", {type: "fileopen"});
+                }
+            }, 10);
         });
     },
     
@@ -383,9 +407,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 apf.setOpacity(winGoToFile.$ext, 1);
             }
             
-            txtGoToFile.select();
-            txtGoToFile.focus();
-            this.dirty = true; //@todo this can be optimized by only marking as dirty on certain events
+            setTimeout(function(){
+                txtGoToFile.select();
+                txtGoToFile.focus();
+            });
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {
@@ -393,28 +418,27 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 this.lastSearch = null; //invalidate cache
                 this.filter(search);
             }
+            else {
+                this.filter("");
+            }
         }
         else if (self.winGoToFile && winGoToFile.visible) {
             if (!noanim) {
                 winGoToFile.visible = false;
                 
                 //Animate
-                apf.tween.single(winGoToFile, {
-                    type     : "fade",
-                    from     : 1,
-                    to       : 0,
-                    steps    : 5,
-                    interval : 0,
-                    control  : (this.control = {}),
-                    onfinish : function(){
-                        winGoToFile.visible = true;
-                        winGoToFile.hide();
-                        
-                        if (editors.currentEditor && editors.currentEditor.ceEditor)
-                            editors.currentEditor.ceEditor.focus();
-                        
-                        callback && callback();
-                    }
+                anims.animate(winGoToFile, {
+                    opacity: "0", 
+                    timingFunction: "linear",
+                    duration : 0.025
+                }, function(){
+                    winGoToFile.visible = true;
+                    winGoToFile.hide();
+                    
+                    if (editors.currentEditor && editors.currentEditor.ceEditor)
+                        editors.currentEditor.ceEditor.focus();
+                    
+                    callback && callback();
                 });
             }
             else {
@@ -452,3 +476,4 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 });
 
 });
+

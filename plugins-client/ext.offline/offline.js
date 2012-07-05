@@ -12,6 +12,7 @@ var Offline = require("ext/offline/lib-offline");
 var Sync    = require("ext/offline/lib-sync");
 var fs      = require("ext/filesystem/filesystem");
 var WebdavWrapper = require("ext/offline/lib-webdav-wrap");
+var markup  = require("text!ext/offline/skin.xml");
 
 module.exports = ext.register("ext/offline/offline", {
     dev      : "Ajax.org",
@@ -23,6 +24,7 @@ module.exports = ext.register("ext/offline/offline", {
 
     offlineStartup : 0,
 
+    markup   : markup,
     /**
      * Test method for going offline/online
      * @param {Boolean} online If the request is to go online or not
@@ -52,10 +54,15 @@ module.exports = ext.register("ext/offline/offline", {
         var offline = this.offline = new Offline("cloud9", (window.location.pathname + "/$reconnect").replace(/\/\//g, "/"));
         var sync    = this.sync    = new Sync("cloud9");
 
-        // preload the offline image programmatically:
+        // preload the offline images programmatically:
         var img = new Image();
         img.src = ide.staticPrefix + "/ext/main/style/images/offline.png";
 
+        if (ide.local) {
+            img = new Image();
+            img.src = ide.staticPrefix + "/ext/main/style/images/local_green.png";
+        }
+        
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
 
@@ -88,6 +95,9 @@ module.exports = ext.register("ext/offline/offline", {
             ide.onLine = false;
             apf.setStyleClass(logobar.$ext, "offline");
 
+            if (ide.local)
+                offlineNotifyDialog.show();
+			
             _self.bringExtensionsOffline();
         });
 
@@ -129,6 +139,18 @@ module.exports = ext.register("ext/offline/offline", {
             apf.setStyleClass(logobar.$ext, "", ["offline"]);
 
             _self.bringExtensionsOnline();
+            
+            if (ide.local)
+                offlineNotifyDialog.hide();
+
+        });
+
+        ide.addEventListener("localOffline", function(e) {
+            apf.setStyleClass(logobar.$ext, "offline local");
+        });
+
+        ide.addEventListener("localOnline", function(e) {
+            apf.setStyleClass(logobar.$ext, "", ["offline"]);
         });
 
         /**** File System ****/
@@ -272,28 +294,6 @@ module.exports = ext.register("ext/offline/offline", {
             if (webdav.fake) throw new Error("Found fake webdav, while expecting real one!");
             webdav.rename(item.from, item.to, false, false, callback);
         });
-
-        var ident = "cloud9.filetree." + ide.workspaceId;
-        function saveModel(){
-            localStorage[ident] = fs.model.data.xml;
-        }
-
-        //@todo after being longer than 5 minutes offline reload tree when coming online
-
-        ide.addEventListener("afteroffline", function(){
-            if (!fs.model.data) {
-                if (localStorage[ident]) {
-                    fs.model.load(localStorage[ident]);
-                    fs.projectName = fs.model.queryValue("folder[@root='1']/@name");
-                }
-            }
-            else {
-                saveModel();
-            }
-        });
-
-        fs.model.addEventListener("update", saveModel);
-        fs.model.addEventListener("afterload", saveModel);
 
         //File contents
         /**

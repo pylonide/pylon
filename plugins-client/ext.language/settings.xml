@@ -7,8 +7,8 @@
         value="[language/@undeclaredVars]" skin="checkbox_grey" position="3000"/>
     <a:checkbox class="underlined" label="Mark Unused Function Arguments"
         value="[language/@unusedFunctionArgs]" skin="checkbox_grey" position="4000"/>
-    <a:checkbox class="underlined" label="Complete as you type"
-        value="[language/@continuousComplete]" skin="checkbox_grey" position="4000"/>
+    <a:checkbox class="underlined" label="Complete As You Type"
+        value="[language/@continuousCompletion]" skin="checkbox_grey" position="4000"/>
     <a:hbox edge="5 5 2 5" align="center">
         <a:label flex="1">Warning Level</a:label>
         <a:dropdown default="info" value="[{require('ext/settings/settings').model}::language/@warnLevel]" width="80" height="21">

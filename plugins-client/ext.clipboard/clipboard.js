@@ -37,7 +37,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             if (apf.activeElement && apf.activeElement.localName == "codeeditor")
                 return !(event instanceof KeyboardEvent);
             
-            return self.trFiles && apf.activeElement == trFiles;
+            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming;
         };
         
         commands.addCommand({
@@ -109,7 +109,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
 
             aceClipboardText = ace.getCopyText() || aceClipboardText;
 
-            ace.$nativeCommands.exec("cut", ace);
+            var cutCommand = ace.$nativeCommands.commands.cut;
+            ace.commands.exec(cutCommand, ace);
         }
     },
 

@@ -1429,15 +1429,15 @@ apf.Init.run("apf");
 
 
 /**
- * @term propertybinding With property binding you can define the way a 
+ * @term propertybinding With property binding you can define the way a
  * property is calculated. <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
- * This statement is usually based on a javascript 
- * expression including one or more properties on other objects. The value of 
- * the property will always be kept up to date. This means that when one of the 
- * dependent properties changes, the property is recalculated. See the picture 
- * for a graphical explanation. 
+ * This statement is usually based on a javascript
+ * expression including one or more properties on other objects. The value of
+ * the property will always be kept up to date. This means that when one of the
+ * dependent properties changes, the property is recalculated. See the picture
+ * for a graphical explanation.
  * Example:
- * Let me give you an example to make it a bit straightforward. This example 
+ * Let me give you an example to make it a bit straightforward. This example
  * sets the visibility of the slider based on the state of the checkbox.
  * <code>
  *  <a:slider visible="{myCheckbox.value}" />
@@ -1445,18 +1445,18 @@ apf.Init.run("apf");
  * </code>
  *
  * Expressions:
- * The use of { and } tell Ajax.org Platform(APF) that the visible property will 
- * be bound. By specifying myCheckbox.value APF knows that the value of 
- * myCheckbox should be retrieved for this property. Whenever the checkbox 
+ * The use of { and } tell Ajax.org Platform(APF) that the visible property will
+ * be bound. By specifying myCheckbox.value APF knows that the value of
+ * myCheckbox should be retrieved for this property. Whenever the checkbox
  * changes, the slider will show or hide.
  *
  * Bidirectional:
- * Sometimes it's necessary to make a binding from one property to another one, 
+ * Sometimes it's necessary to make a binding from one property to another one,
  * and vice versa. Think of a slider that is connected to the position property
- * of a video element. When the video plays, the value of the slider should be 
- * updated. When the slider is dragged the video should be updated. This works 
- * in the same way as above, but instead of using curly braces 
- * you use brackets: [ and ]. The next example keeps the state of a dropdown in 
+ * of a video element. When the video plays, the value of the slider should be
+ * updated. When the slider is dragged the video should be updated. This works
+ * in the same way as above, but instead of using curly braces
+ * you use brackets: [ and ]. The next example keeps the state of a dropdown in
  * sync with the state of the tab page.
  * <code>
  *  <a:tab activepage="[myDropdown.value]">
@@ -1474,14 +1474,14 @@ apf.Init.run("apf");
  * Internals:
  * Property binding in apf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
  * system. When a binding is established the element that receives the value sets
- * a listener on the property of another element. There can be any number of 
- * elements referenced in a single expression. When any of the properties that 
+ * a listener on the property of another element. There can be any number of
+ * elements referenced in a single expression. When any of the properties that
  * are listened to change, the subscriber gets notified to update the value
  * of it's property.
  */
 
 /**
- * @term baseclass A baseclass in Ajax.org Platform (apf) is a class that 
+ * @term baseclass A baseclass in Ajax.org Platform (apf) is a class that
  * adds properties, methods, attributes, bindings and actions to the class that
  * inherits from it. Javascript doesn't have most object oriented concepts like
  * classes, class inheritance, interfaces, protected members and so on. When
@@ -1491,16 +1491,16 @@ apf.Init.run("apf");
  * freedoms that javascript allows, it is possible to implement
  * {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
  * and even {@link http://en.wikipedia.org/wiki/Multiple_inheritance multiple inheritance}.
- * 
+ *
  * Usage:
  * In apf multiple inheritance is used on all elements to assign specific traits
- * to aml elements. Check the list of baseclasses on the right to familiarize 
+ * to aml elements. Check the list of baseclasses on the right to familiarize
  * yourself with the traits that are available (i.e. dragdrop, rename, multiselect,
  * databinding, alignment, etc). At the article of each element that inherits
  * from a baseclass you will find an inheritance tree on the right. This tree
  * will show you <strong>from which baseclasses that element has received traits</strong>.
  * Compared to Java and other strict OOP languages, the inheritance tree is
- * inverted. To give an example, in Java for instance, a Lamborghini inherits from 
+ * inverted. To give an example, in Java for instance, a Lamborghini inherits from
  * Car which inherits from Vehicle. In apf Audi inherits from Engine, Wheels,
  * Seats and Airco. So we can make the latest Lamborghini inherit from Airco too.
  *
@@ -1508,7 +1508,7 @@ apf.Init.run("apf");
  * The apf.Class baseclass provides all basic features a apf element needs, such
  * as event system, property binding and multiple inheritance with state defined
  * by each baseclass.
- * By setting the prototype of a function to an instance of apf.Class 
+ * By setting the prototype of a function to an instance of apf.Class
  * these  <i title="an inherited characteristic (merriam-webster)">traits</i> are
  * transferred to your class.
  *
@@ -1522,7 +1522,7 @@ apf.Init.run("apf");
  *  }
  *  myClass.prototype = new apf.Class();
  * </code>
- * There is a class tree that you can use to create your own elements. For 
+ * There is a class tree that you can use to create your own elements. For
  * instance to create a visible element that uses skinning you can inherit from
  * apf.Presentation:
  * <code>
@@ -1540,7 +1540,7 @@ apf.Init.run("apf");
  * </code>
  * Where the constant is the name of the baseclass in all caps.
  *
- * Apf supports multiple inheritance. Use the implement method to add a 
+ * Apf supports multiple inheritance. Use the implement method to add a
  * baseclass to your class that is not part of the inheritance tree:
  * <code>
  *  var myElement = function(){
@@ -1550,7 +1550,7 @@ apf.Init.run("apf");
  *  }
  *  myElement.prototype = new apf.MultiSelect();
  * </code>
- * 
+ *
  * Inheritance Tree:
  * <code>
  *  - apf.Class
@@ -1569,7 +1569,7 @@ apf.Init.run("apf");
  *                              - apf.MultiSelect
  *                                  - apf.BaseList
  * </code>
- * Generally elements inherit from AmlElement, Presentation, StandardBinding, 
+ * Generally elements inherit from AmlElement, Presentation, StandardBinding,
  * MultiselectBinding, or one of the leafs.
  *
  * The following classes are implemented using the implement method:
@@ -1604,8 +1604,8 @@ apf.Init.run("apf");
 /**
  * All elements that implemented this {@link term.baseclass baseclass} have
  * {@link term.propertybinding property binding},
- * event handling and constructor & destructor hooks. The event system is 
- * implemented following the W3C specification, similar to the 
+ * event handling and constructor & destructor hooks. The event system is
+ * implemented following the W3C specification, similar to the
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
  *
  * @constructor
@@ -1642,19 +1642,19 @@ apf.Class.prototype = new (function(){
     this.hasFeature = function(test){
         return this.$regbase & test;
     };
-    
+
     this.$initStack    = [];
     this.$bufferEvents = [];
     this.$init = function(callback, nodeFunc, struct){
         if (typeof callback == FUN || callback === true) {
             this.$bufferEvents = this.$bufferEvents.slice();
-            
+
             if (callback === true)
                 return this;
-            
+
             this.$initStack = this.$initStack.slice(); //Our own private stack
             this.$initStack.push(callback);
-            
+
             return this;
         }
 
@@ -1671,30 +1671,30 @@ apf.Class.prototype = new (function(){
         var i = 0, l = this.$initStack.length;
         for (; i < l; i++)
             this.$initStack[i].apply(this, arguments);
-        
+
         for (i = 0, l = this.$bufferEvents.length; i < l; i++)
             this.addEventListener.apply(this, this.$bufferEvents[i]);
-        
+
         delete realAddEventListener;
         delete this.$initStack;
         delete this.$bufferEvents;
 
         if (struct && (struct.htmlNode || this.nodeFunc == apf.NODE_HIDDEN)) {
             this.$pHtmlNode = struct.htmlNode;
-            
+
             
                 if (this.ownerDocument && this.ownerDocument.$domParser)
                     this.ownerDocument.$domParser.$continueParsing(this);
-                
+
                 
                 apf.queue.empty();
                 
             
         }
-        
+
         return this;
     };
-    
+
     this.implement = apf.implement;
 
     /**** Property Binding ****/
@@ -1702,9 +1702,9 @@ apf.Class.prototype = new (function(){
     this.$handlePropSet = function(prop, value){
         this[prop] = value;
     };
+
     
-    
-    
+
     /**
      * Bind a property of another compontent to a property of this element.
      *
@@ -1730,19 +1730,19 @@ apf.Class.prototype = new (function(){
         (this.$eventsStack[eventName] || (this.$eventsStack[eventName] = [])).push(eFunc = function(e){
             if (isBeingCalled) //Prevent circular refs
                 return;
-            
+
             
             isBeingCalled = true;
-            
+
             try {
                 if (fParsed.asyncs) { //if async
                     return fParsed.call(bObject, bObject.xmlRoot, function(value){
                         bObject.setProperty(bProp, value, true, false, 10);
+
                         
-                        
-                        
+
                         isBeingCalled = false;
-                    }); 
+                    });
                 }
                 else {
                     var value = fParsed.call(bObject, bObject.xmlRoot);
@@ -1751,18 +1751,18 @@ apf.Class.prototype = new (function(){
             catch(e) {
                 apf.console.warn("[331] Could not execute binding for property "
                     + bProp + "\n\n" + e.message);
-                
+
                 isBeingCalled = false;
-                
+
                 return;
             }
 
             //Can't do this when using xml nodes, doesnt seem needed anyway
             //if (bObject[bProp] != value)
-                bObject.setProperty(bProp, value, true, false, 10);//e.initial ? 0 : 
+                bObject.setProperty(bProp, value, true, false, 10);//e.initial ? 0 :
+
             
-            
-            
+
             isBeingCalled = false;
         });
 
@@ -1777,18 +1777,18 @@ apf.Class.prototype = new (function(){
                 eFunc.recip = function(){
                     if (isBeingCalled) //Prevent circular refs
                         return;
-                    
+
                     isBeingCalled = true;
-                    _self.setProperty(myProp, bObject[bProp], false, false, 10);//e.initial ? 0 :  
+                    _self.setProperty(myProp, bObject[bProp], false, false, 10);//e.initial ? 0 :
                     isBeingCalled = false;
                 });
         };
-        
+
         //eFunc({initial: true});
-        
+
         return eFunc;
     };
-    
+
     /**
      * Sets a dynamic property from a string.
      * The string used for this function is the same as used in AML to set a
@@ -1823,10 +1823,10 @@ apf.Class.prototype = new (function(){
                 
             };
         }
-        
+
         if (this.liveedit)
             (options || (options = {})).liveedit = true;
-        
+
         
 
         //Compile pValue through JSLT parser
@@ -1846,8 +1846,8 @@ apf.Class.prototype = new (function(){
             return this.setProperty(prop, fParsed.str, null, null, 10); //@todo is 10 here right?
         }
 
-        //if there's xpath: Add apf.DataBinding if not inherited. 
-        //Add compiled binding rule. Load databinding if not loaded. 
+        //if there's xpath: Add apf.DataBinding if not inherited.
+        //Add compiled binding rule. Load databinding if not loaded.
         
         var check = 1;
         if (exclNr == 2 || fParsed.xpaths.length && exclNr != 1) {
@@ -1856,7 +1856,7 @@ apf.Class.prototype = new (function(){
                 if (this.$attrExcludePropBind[prop] == 1)
                     check = 0;
             }
-                
+
             if (check)
                 this.$addAttrBind(prop, fParsed, pValue);
         }
@@ -1909,7 +1909,7 @@ apf.Class.prototype = new (function(){
                     apf.console.warn("[287] Could not create property binding: "
                         + " '"  + o[0] + "' does not exist. \n"
                         + pValue.replace(/</g, "&lt;").substr(0, 400));
-                    
+
                     var _self = this;
                     apf.nameserver.waitFor(o[0], function(){
                         _self.$setDynamicProperty(prop, pValue);
@@ -1917,7 +1917,7 @@ apf.Class.prototype = new (function(){
                     return;
                 }
                 else {
-                    //@todo this is sloppy and not efficient - shouldn't clear 
+                    //@todo this is sloppy and not efficient - shouldn't clear
                     //and reset and should check if was changed or removed when
                     //it's set
                     apf.queue.add(prop + ":" + this.$uniqueId, function(){
@@ -1936,19 +1936,19 @@ apf.Class.prototype = new (function(){
 
             var last;
             this.$funcHandlers[prop].push(last = {
-                amlNode : node, 
-                prop    : bProp, 
-                handler : node.$bindProperty(bProp, this, prop, fParsed, 
+                amlNode : node,
+                prop    : bProp,
+                handler : node.$bindProperty(bProp, this, prop, fParsed,
                     //@todo check if it breaks something. I removed
                     // "&& exclNr != 3" from the expression to enable two way
                     // binding of selections
                     fParsed.type == 4 && SEL.indexOf(prop) == -1) /*,
-                bidir   : 
+                bidir   :
                   && this.$bindProperty(prop, node, bProp, function(){
                     return _self[prop];
                   })*/
             });
-            
+
             found = true;
         }
 
@@ -1959,16 +1959,16 @@ apf.Class.prototype = new (function(){
             //@todo optimize this
             if (exclNr)
                 return this.setProperty(prop, pValue, null, null, 10); //@todo is 10 here right?
+
             
-            
-            
+
             try {
                 if (fParsed.asyncs) { //if async
                     return fParsed.call(this, this.xmlRoot, function(value){
                         _self.setProperty(prop, value, true, null, 10); //@todo is 10 here right?
-    
+
                         
-                    }); 
+                    });
                 }
                 else {
                     var value = fParsed.call(this, this.xmlRoot);
@@ -1979,14 +1979,14 @@ apf.Class.prototype = new (function(){
                     + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
                 return;
             }
-            
+
             this[prop] = !value; //@todo isnt this slow and unneccesary?
             this.setProperty(prop, value, true, null, 10); //@todo is 10 here right?
 
             
         }
     };
-    
+
     //@todo setAttribute should delete this from apf.language when not doing
     //$setDynamicProperty
     this.$clearDynamicProperty = function(prop){
@@ -1994,13 +1994,13 @@ apf.Class.prototype = new (function(){
             this.$removeAttrBind(prop);
 
         
-        
+
         if (this.$inheritProperties)
             delete this.$inheritProperties[prop];
-        
+
         if (prop == MODEL)
             this.$modelParsed = null;
-        
+
         //Remove any bounds if relevant
         var f, i, l, h = this.$funcHandlers[prop];
         if (h && typeof h != FUN) {
@@ -2050,21 +2050,21 @@ apf.Class.prototype = new (function(){
         } catch(e){
             var isChanged = true;
         }
-            
+
         //Check if property has changed
         if (isChanged) {
             if (!forceOnMe) { //Recursion protection
                 //Check if this property is bound to data
                 if (typeof value != OBJ //this.xmlRoot &&
                   && (!(s = this.$attrExcludePropBind[prop]))// || s == 2
-                  && (r = (this.$attrBindings && this.$attrBindings[prop] 
-                  || prop != VALUE && this.xmlRoot && this.$bindings[prop] 
+                  && (r = (this.$attrBindings && this.$attrBindings[prop]
+                  || prop != VALUE && this.xmlRoot && this.$bindings[prop]
                   && this.$bindings[prop][0]))) {
 
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
                         
-                        
+
                         //Set the xml value - this should probably use execProperty
                         return apf.setNodeValue(
                             this.$getDataNode(prop.toLowerCase(), this.xmlRoot, true),
@@ -2079,26 +2079,26 @@ apf.Class.prototype = new (function(){
 
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
+
             
-            
-            
+
             value = this[prop];
         }
-        
+
         //Optimized event calling
         if ((arr = this.$eventsStack[eventName]) && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
-                    prop     : prop, 
-                    value    : value, 
+                    prop     : prop,
+                    value    : value,
                     oldvalue : oldvalue
                 }))) === false) {
                     e.returnValue = false;
                 }
             }*/
             if (this.dispatchEvent(eventName, {
-                prop     : prop, 
-                value    : value, 
+                prop     : prop,
+                value    : value,
                 oldvalue : oldvalue,
                 changed  : isChanged
             }) === false) {
@@ -2145,7 +2145,7 @@ apf.Class.prototype = new (function(){
                         n = node.$inheritProperties[prop];
                         if (inheritType == 1 && !n)
                             recur(node.childNodes);
-                        
+
                         //Set inherited property
                         //@todo why are dynamic properties overwritten??
                         else if(!(n < 0)) {//Will also pass through undefined - but why??? @todo seems inefficient
@@ -2162,7 +2162,7 @@ apf.Class.prototype = new (function(){
             }
         }
         
-        
+
         return value;
     };
     var aci;
@@ -2208,7 +2208,7 @@ apf.Class.prototype = new (function(){
         }
         else {*/
             
-        
+
             //@todo rewrite this and all dependencies to match w3c
             if ((!e || !e.currentTarget) && (!options || !options.currentTarget)) {
                 if (!(options || (options = {})).currentTarget)
@@ -2223,22 +2223,22 @@ apf.Class.prototype = new (function(){
                     }
                 }
             }
-            
+
             //@todo this should be the bubble point
-            
+
             if (options && options.captureOnly) {
                 return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
             }
             else {
                 if (this["on" + eventName]) {
-                    result = this["on" + eventName].call(this, e 
+                    result = this["on" + eventName].call(this, e
                         || (e = new apf.AmlEvent(eventName, options))); //Backwards compatibility
                 }
-    
+
                 if (arr = this.$eventsStack[eventName]) {
                     for (i = 0, l = arr.length; i < l; i++) {
                         if (!arr[i]) continue;
-                        rValue = arr[i].call(this, e 
+                        rValue = arr[i].call(this, e
                             || (e = new apf.AmlEvent(eventName, options)));
                         if (typeof rValue != UNDEF)
                             result = rValue;
@@ -2250,9 +2250,9 @@ apf.Class.prototype = new (function(){
         /*var p;
         while (this.$removalQueue.length) {
             p = this.$removalQueue.shift();
-            p[0].remove(p[1]); 
+            p[0].remove(p[1]);
         }*/
-        
+
         
         if ((e && e.bubbles && !e.cancelBubble || !e && options && options.bubbles) && this != apf) {
             rValue = (this.parentNode || this.ownerElement || apf).dispatchEvent(eventName, options, e);
@@ -2262,8 +2262,8 @@ apf.Class.prototype = new (function(){
                 result = rValue;
         }
         
-        
-        if (--apf.$eventDepth == 0 && this.ownerDocument 
+
+        if (--apf.$eventDepth == 0 && this.ownerDocument
           && !this.ownerDocument.$domParser.$parseContext
           && !apf.isDestroying && apf.loaded
           
@@ -2271,11 +2271,11 @@ apf.Class.prototype = new (function(){
         ) {
             apf.queue.empty();
         }
-        
+
         this.$eventDepth--;
 
         
-        
+
         if (options) {
             try {
                 delete options.currentTarget;
@@ -2284,7 +2284,7 @@ apf.Class.prototype = new (function(){
                 options.currentTarget = null;
             }
         }
-        
+
         return e && typeof e.returnValue != UNDEF ? e.returnValue : result;
     };
 
@@ -2298,7 +2298,7 @@ apf.Class.prototype = new (function(){
     this.addEventListener = function(a, b, c){
         this.$bufferEvents.push([a,b,c]);
     };
-    
+
     var realAddEventListener = function(eventName, callback, useCapture){
         
 
@@ -2308,12 +2308,12 @@ apf.Class.prototype = new (function(){
         var s, stack = useCapture ? this.$captureStack : this.$eventsStack;
         if (!(s = stack[eventName]))
             s = stack[eventName] = [];
-        
+
         if (s.indexOf(callback) > -1)
             return;
-        
+
         s.unshift(callback);
-        
+
         var f;
         if (f = this.$eventsStack["$event." + eventName])
             f[0].call(this, callback);
@@ -2349,7 +2349,7 @@ apf.Class.prototype = new (function(){
     this.hasEventListener = function(eventName){
         return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
-    
+
     /**
      * Destructor of a Class.
      * Calls all destructor functions and removes all mem leaking references.
@@ -2361,10 +2361,10 @@ apf.Class.prototype = new (function(){
         //Remove from apf.all
         if (typeof this.$uniqueId == UNDEF && this.nodeType != 2)
             return;
-        
+
         this.$amlLoaded    = false;
         this.$amlDestroyed = true;
-        
+
         if (this.$destroy)
             this.$destroy();
 
@@ -2423,13 +2423,13 @@ apf.Class.prototype = new (function(){
         if (this.$focussable && this.focussable)
             apf.window.$removeFocus(this);
         
-        
+
         
         //Remove dynamic properties
         /*var f, i, l, h;
         for (prop in this.$funcHandlers) {
             h = this.$funcHandlers[prop];
-            
+
             //Remove any bounds if relevant
             if (h && typeof h != FUN) {
                 for (i = 0, l = h.length; i < l; i++) {
@@ -2438,7 +2438,7 @@ apf.Class.prototype = new (function(){
             }
         }*/
         
-        
+
         if (this.attributes) {
             var attr = this.attributes;
             for (var i = attr.length - 1; i >= 0; i--) {
@@ -2450,22 +2450,23 @@ apf.Class.prototype = new (function(){
         }
 
         
-        
+
         //Remove id from global js space
         try {
             if (this.id || this.name)
                 self[this.id || this.name] = null;
         }
         catch (ex) {}
-        
+
         for (var prop in this.$captureStack) this.$captureStack[prop] = null;
         for (var prop in this.$eventsStack) this.$eventsStack[prop] = null;
         for (var prop in this.$funcHandlers) this.$funcHandlers[prop] = null;
-        
-        for (var i = this.$bufferEvents.length - 1; i >= 0; i--) {
-            this.$bufferEvents = null;
+
+        if (this.$bufferEvents) {
+            for (var i = this.$bufferEvents.length - 1; i >= 0; i--)
+                this.$bufferEvents = null;
         }
-        
+
         
         apf.nameserver.remove(this.localName, this);
         
@@ -4897,6 +4898,8 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
                 var rules = sheets[j][apf.styleSheetRules];
+                if (!rules) return false;
+                
                 for (var i = 0; i < rules.length; i++) {
                     if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                         rules.item(i).style[type] = value;
@@ -4912,6 +4915,8 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
             stylesheet = (win || self).document.styleSheets[0];
         
         var rules = stylesheet[apf.styleSheetRules];
+        if (!rules) return false;
+        
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 rules.item(i).style[type] = value;
@@ -6250,7 +6255,7 @@ apf.getChildNumber = function(node, fromList){
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){
     if (typeof parentNode != "object")
-        parentNode = getElementById(parentNode);
+        parentNode = apf.xmldb.getElementById(parentNode);
 
     if (options && options.clearContents) {
         //Signal listening elements
@@ -6328,6 +6333,9 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
+        
+        if (options.filter)
+            nodes = options.filter(parentNode, nodes);
 
         if (parentNode.ownerDocument.importNode) {
             doc = parentNode.ownerDocument;
@@ -6412,6 +6420,24 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
                 undoObj);
     }
 
+    
+    if (applyChanges) {
+        var node;
+        if (xpath) {
+            var node = undoObj.xmlNode;//.selectSingleNode(newNodes.foundpath);
+            if (node.nodeType == 9) {
+                node = node.documentElement;
+                xpath = xpath.replace(/^[^\/]*\//, "");//xpath.substr(newNodes.foundpath.length);
+            }
+        }
+        else
+            node = xmlNode;
+
+        apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath,
+            options && options.forceNew],
+            undoObj || {xmlNode: xmlNode}
+        );
+    }
     
 };
 
@@ -10250,13 +10276,13 @@ apf.layout = {
  */
 apf.getWindowWidth = function(){
     return apf.isIE ? document.documentElement.offsetWidth - apf.windowHorBorder : window.innerWidth;
-}
+};
 /**
  * @private
  */
 apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
-}
+};
 
 
 
@@ -12868,6 +12894,8 @@ apf.xmldb = new (function(){
         this.applyChanges("text", tNode.parentNode, undoObj);
 
         
+        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj || {xmlNode: pNode}); //@todo apf3.0 for range support
+        
     };
 
     /**
@@ -12897,6 +12925,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("attribute", xmlNode, undoObj);
         
+        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj || {xmlNode: xmlNode});  //@todo apf3.0 for range support
+        
     };
 
     /**
@@ -12922,6 +12952,8 @@ apf.xmldb = new (function(){
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).removeAttribute(name);
         this.applyChanges("attribute", xmlNode, undoObj);
 
+        
+        this.applyRDB(["removeAttribute", xmlNode, name, xpath], undoObj || {xmlNode: xmlNode});
         
     };
 
@@ -12950,6 +12982,8 @@ apf.xmldb = new (function(){
                 oldNodeS.parentNode.removeChild(oldNodeS);
         }
 
+        
+        this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: oldNode});
         
 
         //Action Tracker Support
@@ -13003,6 +13037,8 @@ apf.xmldb = new (function(){
         this.applyChanges("add", xmlNode, undoObj);
 
         
+        this.applyRDB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj || {xmlNode: pNode});
+        
 
         return xmlNode;
     };
@@ -13034,6 +13070,8 @@ apf.xmldb = new (function(){
                 oldNode.parentNode.removeChild(oldNode);
         }
 
+        
+        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: pNode});
         
 
         //Add xmlNode to parent pNode or one selected by xpath statement
@@ -13108,6 +13146,8 @@ apf.xmldb = new (function(){
         }
 
         
+        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async
+        
 
         undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, undoObj);
@@ -13135,6 +13175,8 @@ apf.xmldb = new (function(){
         }
 
         
+        this.applyRDB(["removeNode", xmlNode, xpath], undoObj || {xmlNode: xmlNode}); //note: important that transport of rdb is async
+        
 
         //Apply Changes
         this.applyChanges("remove", xmlNode, undoObj);
@@ -13157,6 +13199,8 @@ apf.xmldb = new (function(){
      */
     this.removeNodeList =
     apf.removeNodeList  = function(xmlNodeList, undoObj){
+        
+        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
         
 
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
@@ -13350,6 +13394,52 @@ apf.xmldb = new (function(){
         }
     };
 
+    
+    /**
+     * Sends Message through transport to tell remote databound this.$listeners
+     * that data has been changed
+     * @private
+     */
+    this.applyRDB = function(args, undoObj){
+        if (apf.xmldb.disableRDB)
+            return;
+
+        var xmlNode = undoObj.localName || !undoObj.xmlNode
+            ? args[1] && args[1].length && args[1][0] || args[1]
+            : undoObj.xmlNode;
+
+        if (xmlNode.nodeType == 2)
+            xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");
+        
+        var mdlId   = apf.xmldb.getXmlDocId(xmlNode),
+            model   = apf.nameserver.get("model", mdlId);
+        if (!model && apf.isO3)
+            model = self[mdlId];
+        if (!model) {
+            if (!apf.nameserver.getAll("remote").length)
+                return;
+            
+            return;
+        }
+
+        if (!model.rdb) return;
+        var rdb = model.rdb;
+
+        // Add the messages to the undo object
+        if (undoObj.action)
+            rdb.$queueMessage(args, model, undoObj);
+        // Or send message now
+        else {
+            clearTimeout(rdb.queueTimer);
+
+            rdb.$queueMessage(args, model, rdb);
+            // use a timeout to batch consecutive calls into one RDB call
+            rdb.queueTimer = $setTimeout(function() {
+                rdb.$processQueue(rdb);
+            });
+        }
+        
+    };
     
 
     /**
@@ -15911,7 +16001,7 @@ apf.AmlElement = function(struct, tagName){
         "id": function(value){
             
             
-            if (this.name == value)
+            if (this.name == value || !value)
                 return;
     
             if (self[this.name] == this) {
@@ -18622,13 +18712,22 @@ apf.aml.setElement("include", apf.XiInclude);
     };
     
     function done(xmlNode) {
+        var addedNode = this.previousSibling || this.nextSibling;
+        
         if (this.callback) {
             this.callback({
                 xmlNode : xmlNode,
                 amlNode : this.parentNode,
-                addedNode: this.previousSibling || this.nextSibling
+                addedNode: addedNode
             })
         }
+        
+        addedNode.dispatchEvent("DOMNodeInserted", {
+            $beforeNode         : addedNode.nextSibling,
+            relatedNode         : this.parentNode,
+            $isMoveWithinParent : false,
+            bubbles             : true
+        });
         
         //@todo hack!! this should never happen. Find out why it happens
         if (this.parentNode)
@@ -20088,7 +20187,7 @@ apf.GuiElement = function(){
             
 
             
-            if ("vbox|hbox".indexOf(this.parentNode.localName) > -1) {
+            if (this.parentNode.$box) {
                 if (this.$disableCurrentLayout)
                     this.$disableCurrentLayout();
                 this.parentNode.register(this, insert);
@@ -20108,12 +20207,12 @@ apf.GuiElement = function(){
         return type == "anchoring";
         
     }
-    
+
     this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this 
-          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
+//        if (e.currentTarget == this 
+//          && (this.parentNode.$box || "table" == this.parentNode.localName)) {
             this.$setLayout();
-        }
+//        }
     }); 
 
     this.implement(
@@ -20364,20 +20463,30 @@ apf.GuiElement = function(){
         if (this.$focussable && typeof this.focussable == "undefined")
             apf.GuiElement.propHandlers.focussable.call(this, true);
         
+        
+        
+        if (setResizeEvent)
+            f2();
+        
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
     this.addEventListener("$skinchange", f);
     
     
-    var f;
-    this.addEventListener("$event.resize", f = function(c){
+    var f2, setResizeEvent;
+    this.addEventListener("$event.resize", f2 = function(c){
+        if (!this.$ext) {
+            setResizeEvent = true;
+            return;
+        }
+        
         apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
             if (o) o.dispatchEvent('resize');", true);
 
         apf.layout.queue(this.$ext);
         //apf.layout.activateRules(this.$ext);
-        this.removeEventListener("$event.resize", f);
+        this.removeEventListener("$event.resize", f2);
     });
     
 
@@ -22801,7 +22910,10 @@ apf.DataBinding = function(){
         //Integrate XMLTree with parentNode
         if (typeof options.copyAttributes == "undefined")
             options.copyAttributes = true;
-            
+        
+        if (this.filterUnique)
+            options.filter = this.filterUnique;
+        
         var newNode = apf.mergeXml(xmlNode, insertPoint, options);
         
         this.$isLoading = true; //Optimization for simpledata
@@ -26980,6 +27092,19 @@ apf.DataAction = function(){
     };
 
     
+    // @todo think about if this is only for rdb
+    this.addEventListener("xmlupdate", function(e){
+        if (apf.xmldb.disableRDB != 2)
+            return;
+
+        for (var name in this.$actionsLog) {
+            if (apf.isChildOf(this.$actionsLog[name], e.xmlNode, true)) {
+                //this.$stopAction(name, true);
+                this.$actionsLog[name].rollback.call(this, this.$actionsLog[name].xmlContext);
+            }
+        }
+    });
+    
 
     this.$stopAction = function(name, isCancelled, curLock){
         delete this.$actionsLog[name];
@@ -30442,8 +30567,120 @@ apf.BaseTab = function(){
     }
     
     this.anims = "add|remove|sync";
+
+    //Add an element
+    function animAddTab(tab, callback){
+        var t = tab.$button;
+
+        var animateWidth = (t.offsetWidth 
+            - apf.getWidthDiff(t)) < parseInt(apf.getStyle(t, "maxWidth"));
+        
+        if (animateWidth) {
+            var p = tab.parentNode.getPages()[0] == tab 
+                ? null 
+                : t.previousElementSibling;
+            var tb = p 
+                ? (p.offsetWidth - apf.getWidthDiff(p)) 
+                : parseInt(apf.getStyle(t, "maxWidth"));
+            t.style.maxWidth = "0px";
+        }
+
+        t.style.marginTop = (t.offsetHeight + 2) + "px";
+        
+        function animateToTop(){
+            t.style.marginTop = "0px";
+            
+            setTimeout(function(){
+                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style.marginTop = "";
+                
+                if (animateWidth)
+                    t.style.maxWidth = "";
+                
+                callback(tab);
+            }, 150);
+        }
+        
+        setTimeout(function(){
+            t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width";
+            t.style[apf.CSSPREFIX + "TransitionDuration"] = "100ms, 50ms";
+            t.style[apf.CSSPREFIX + "TimingFunction"] = "cubic-bezier(.10, .10, .25, .90), cubic-bezier(.10, .10, .25, .90)";
+            
+            if (animateWidth) {
+                t.style.maxWidth = tb + "px";
+                setTimeout(animateToTop, 50);
+            }
+            else animateToTop();
+        });
+    }
+    
+    //Remove an element
+    function animRemoveTab(tab, isLast, isContracted, callback, isOnly){
+        var t = tab.$button;
+        var tb = t.offsetHeight;
+        
+        var diff = t.offsetWidth;
+        
+        t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width, padding";
+        t.style[apf.CSSPREFIX + "TransitionDuration"] = (isOnly ? ".2" : ".15") + "s, .1s, .1s";
+        t.style[apf.CSSPREFIX + "TimingFunction"] = "linear, ease-out, ease-out";
+        
+        t.style.marginTop = (tb + 2) + "px";
+
+        var p = t.parentNode;
+        if (apf.isGecko) p = p.parentNode;
+        
+        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        
+        if (isLast)
+            p.style.paddingRight = "";
+        else {
+            var cur = parseInt(apf.getStyle(p, "paddingRight"));
+            p.style.paddingRight = (cur + diff - 21) + "px";
+        }
+        
+        function end(){
+            setTimeout(function(){
+                p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style.display = "none";
+                
+                callback(tab);
+            }, 150);
+        }
+        
+        if (!isLast && isContracted) {
+            t.style.minWidth = "20px"
+            t.style.maxWidth = "0px";
+            t.style.padding = 0;
+            
+            end();
+        }
+        else {
+            setTimeout(function(){
+                t.style.minWidth = "20px"
+                t.style.maxWidth = "0px";
+                t.style.padding = 0;
+                
+                end();
+            }, isOnly ? 150 : 100);
+        }
+    }
     
     this.$scaleinit = function(node, type, callback, force){
+        var _self = this;
+        
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
@@ -30469,116 +30706,82 @@ apf.BaseTab = function(){
         if (!type)
             return scalersz.call(this);
         
-        if (this.$control && this.$control.type != "remove" && this.$control.stop)
-            this.$control.stop();
-
-        var _self = this;
-        var anim  = {
-            steps    : type == "remove" ? 8 : 8,
-            control  : this.$control = {},
-            anim     : apf.tween.EASEOUT,
-            interval : 10,
-            tweens   : [],
-            oHtml    : node,
-            onfinish : function(){
-                if (!node)
-                    return;
-
-                if (type == "add")
-                    node.dispatchEvent("afteropen");
-            },
-            onstop    : function(){
-                if (!node)
-                    return;
-
-                if (type == "add")
-                    node.dispatchEvent("afteropen");
-                else if (type == "remove")
-                    node.dispatchEvent("afterclose");
-            }
-            //oneach   : function(){alert(1);}
-        };
-        
         function btnMoHandler(e){
             var pos = apf.getAbsolutePosition(this);
             if (e.clientX <= pos[0] || e.clientY <= pos[1] 
               || e.clientX >= pos[0] + this.offsetWidth 
               || e.clientY >= pos[1] + this.offsetHeight) {
                 apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
-                if (_self.$control.state == apf.tween.STOPPED) {
                     delete _self.$waitForMouseOut;
                     _self.$scaleinit(null, "sync");
-                }
-                else if (_self.$waitForMouseOut)
-                    _self.$waitForMouseOut = 2;
+//                }
+//                else if (_self.$waitForMouseOut)
+//                    _self.$waitForMouseOut = 2;
             }
         }
-        
-        this.$control.type = type;
         
         if (type == "add") {
-            var htmlNode = node.$button;
-            htmlNode.style.width = this.$minBtnWidth + "px";
-            if (pg.length) {
-                scalersz.call(this, null, node);
-                this.$buildScaleAnim(anim, pg, null, true);
-            }
+            animAddTab(node, function(){
+                node.dispatchEvent("afteropen");
+            });
         }
         else if (type == "sync") {
-            this.$buildScaleAnim(anim, pg);
+            scalersz.call(this);
         }
         else if (type == "remove") {
-            anim.onfinish = function(){
-                if (node.dispatchEvent("afterclose") !== false)
-                    callback();
+            var onfinish = function(){
+                if (node.dispatchEvent("afterclose") === false)
+                    return;
                     
-                html.style.marginLeft = 0;
-                apf.setOpacity(html, 1);
+                callback();
+
+                if (!isLast && isContracted) {
+                    var pages = _self.getPages();
+                    for (var i = 0, l = pages.length; i < l; i++) {
+                        var page = pages[i];
+                        page.$button.style.minWidth = "";
+                        page.$button.style.maxWidth = "";
+                    }
+                }
                 
                 if (_self.$waitForMouseOut == 2) {
                     apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
                     delete _self.$waitForMouseOut;
-                    _self.$scaleinit(null, "sync");
                 }
                 else if (isLast)
                     delete _self.$waitForMouseOut;
+            };
+            
+            var pages = this.getPages();
+            
+            var lNode = pages[pages.length - 1];
+            while (lNode && lNode.$button.style.top) {
+                lNode = lNode.previousSibling;
             }
-            anim.onstop = function(){
-                apf.setOpacity(html, 1);
+            if (!lNode) return;
+            
+            var isLast = lNode == node;
+            var isContracted = (node.$button.offsetWidth - apf.getWidthDiff(node.$button) 
+                != parseInt(apf.getStyle(node.$button, "maxWidth")));
+            
+            if (!isLast && isContracted) {
+                for (var i = 0, l = pages.length; i < l; i++) {
+                    var page = pages[i];
+                    page.$button.style.minWidth = 
+                    page.$button.style.maxWidth = (page.$button.offsetWidth 
+                        - (apf.isGecko ? 0 : apf.getWidthDiff(page.$button))) 
+                        + "px";
+                }
             }
             
-            var html = node.$button;
-            anim.tweens.push({
-                oHtml : html,
-                type  : "width", 
-                from  : html.offsetWidth - apf.getWidthDiff(html),
-                to    : 0
-            });
-            var over = apf.getWidthDiff(html) + (this.$btnMargin || 0);
-            if (over)
-                anim.tweens.push({
-                    oHtml : html,
-                    type  : "marginLeft", 
-                    from  : 0,
-                    to    : -1 * over
-                });
-            anim.tweens.push({
-                oHtml : html,
-                type  : "fade", 
-                from  : 1,
-                to    : 0
-            });
-            
-            var isLast = pg[pg.length - 1] == node;
-            if (isLast)
-                this.$buildScaleAnim(anim, pg, node);
-            
+            var isCur = this.$activepage == node;
+                
             //Set activetab if the current one is lost
-            if (this.nextTabInLine) {
-                this.set(this.nextTabInLine);
-                delete this.nextTabInLine;
+            if (_self.nextTabInLine) {
+                _self.set(_self.nextTabInLine);
+                delete _self.nextTabInLine;
             }
-            else if (this.$activepage == node) {
+            else if (_self.$activepage == node) {
                 var ln = node.nextSibling;
                 while (ln && (!ln.$first || !ln.visible))
                     ln = ln.nextSibling;
@@ -30586,89 +30789,50 @@ apf.BaseTab = function(){
                 while (rn && (!rn.$last || !rn.visible))
                     rn = rn.previousSibling;
                 if (ln || rn)
-                    this.set(ln || rn);
+                    _self.set(ln || rn);
             }
+            
+            if (isCur) {
+                apf.setStyleClass(node.$button, "curbtn");
+                node.$button.style.zIndex = 0;
+            }
+            
+            if (pages.length == 1)
+                (node.relPage || node).$ext.style.display = "none";
+            
+            animRemoveTab(node, isLast, isContracted, onfinish, pages.length == 1);
             
             this.$waitForMouseOut = true;
             if (!isLast)
                 apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
         }
-        
-        if (anim.tweens.length)
-            apf.tween.multi(this, anim);
     }
     
-    this.$buildScaleAnim = function(anim, pg, excl, add){
-        if (excl) {
-            pg = pg.slice();
-            pg.remove(excl);
-        }
-        if (!pg.length)
-            return;
-        
-        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons);//apf.getHtmlInnerWidth(this.$ext);
-        var l  = pg.length;
-        var bw = Math.min(cw/l, this.$maxBtnWidth);
-        var re = Math.round((bw % 1) * 10);
-        for (var wd, html, s, i = 0; i < l - 1; i++) {
-            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
-            cw -= s;
-            html = pg[i].$button, wd = apf.getWidthDiff(html);
-            anim.tweens.push({
-                oHtml : html, 
-                type  : "width", 
-                from  : html.offsetWidth - wd,
-                to    : s - wd - (this.$btnMargin || 0)
-            });
-        }
-        html = pg[l - 1].$button, wd = apf.getWidthDiff(html);
-        anim.tweens.push({
-            oHtml : html, 
-            type  : "width", 
-            from  : html.offsetWidth - wd, // - (add ? 3 : 0)
-            to    : Math.max(this.$minBtnWidth, 
-                Math.min(cw, this.$maxBtnWidth)) - (this.$btnMargin || 0) - wd
-        });
-    }
-    
-    var round = [Math.floor, Math.ceil];
+    /**
+     * Update the size of the tab container
+     */
     function scalersz(e, excl){
-        if (!this.length && !this.getPages().length || this.$waitForMouseOut 
-          || this.$control && this.$control.state == apf.tween.RUNNING) {
-            //@todo queue call here to after anim
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut)
             return;
+        
+        var p = apf.isGecko ? this.$buttons.parentNode : this.$buttons;
+        
+        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        
+        if (apf.isGecko) {
+            p.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+        }
+        else {
+            p.style.paddingRight = "";
         }
         
-        var page = this.getPage();
-
-        if (!page)
-            return;
-
-        if (this.$btnMargin == undefined)
-            this.$btnMargin = apf.getMargin(page.$button)[0];
-
-        var pg = this.getPages();
-        if (excl)
-            pg.remove(excl);
-        if (!pg.length)
-            return;
-
-        var cw = this.$buttons.offsetWidth - apf.getWidthDiff(this.$buttons) 
-            - (excl ? excl.$button.offsetWidth + this.$btnMargin: 0);//apf.getHtmlInnerWidth(this.$ext);
-        var l  = pg.length;
-        var bw = Math.min(cw/l, this.$maxBtnWidth);
-        var re = Math.round((bw % 1) * 10);
-        for (var s, i = 0; i < l - 1; i++) {
-            s = Math.max(this.$minBtnWidth, round[i < re ? 1 : 0](bw));
-            cw -= s;
-            if (!pg[i].$button) continue;
-            pg[i].$button.style.width = (s - apf.getWidthDiff(pg[i].$button) - this.$btnMargin) + "px";
-        }
-        if (!pg[l - 1].$button) return;
-        pg[l - 1].$button.style.width = (Math.max(this.$minBtnWidth, 
-            Math.min(cw, this.$maxBtnWidth)) 
-              - this.$btnMargin 
-              - apf.getWidthDiff(pg[l - 1].$button)) + "px";
+        setTimeout(function(){
+            p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+            p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+            p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+        }, 250);
     }
     
 
@@ -30763,7 +30927,7 @@ apf.BaseTab = function(){
             //page.removeNode();
             if (page.dispatchEvent("afterclose") !== false)
             	page.destroy(true, true);
-
+            
             
             //@todo this is wrong, we can also use removeChild
             //this.setScrollerState();
@@ -31150,6 +31314,9 @@ apf.BaseTab = function(){
             return;
         
         if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            if (!this.getPage(this.nextTabInLine))
+                this.nextTabInLine = null;
+            
             if (this.nextTabInLine)
                 this.set(this.nextTabInLine);
             
@@ -31357,6 +31524,23 @@ apf.BaseTab = function(){
         if (this.$hasButtons) {
             this.$buttons = this.$getLayoutNode("main", "buttons", this.$ext);
             this.$buttons.setAttribute("id", this.$uniqueId + "_buttons");
+            
+            if (apf.isGecko && !this.$gotContainer) {
+                var div = this.$ext.appendChild(document.createElement("div"));
+                div.style.backgroundImage = apf.getStyle(this.$buttons, "backgroundImage");
+                div.style.backgroundColor = apf.getStyle(this.$buttons, "backgroundColor");
+                div.style.position = "absolute";
+                div.style.left = 0;
+                div.style.top = 0;
+                div.style.right = 0;
+                div.style.overflow = "hidden";
+                div.style.height = this.$buttons.offsetHeight + "px";
+                div.appendChild(this.$buttons);
+                this.$buttons.style.width = "100%";
+                div.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+                
+                this.$gotContainer = true;
+            }
         }
 
         this.oPages = this.$getLayoutNode("main", "pages", this.$ext);
@@ -31570,11 +31754,11 @@ apf.BaseTab = function(){
  */
 apf.BaseTree = function(){
     this.$init(true);
-    
+
     
     this.$dynCssClasses = [];
     
-    
+
     this.$nodes = [];
 };
 
@@ -31602,18 +31786,18 @@ apf.BaseTree = function(){
     this.$focussable   = true; // This object can get the focus.
     this.multiselect   = false; // Initially multiselect is disabled.
     this.bufferselect  = true;
-    
+
     this.startcollapsed  = true;
     this.$animType       = apf.tween.NORMAL;
     this.$animOpenStep   = 3;
     this.$animCloseStep  = 1;
     this.$animSpeed      = 10;
-    
+
     var HAS_CHILD = 1 << 1,
         IS_CLOSED = 1 << 2,
         IS_LAST   = 1 << 3,
         IS_ROOT   = 1 << 4;
-    
+
     var treeState = this.$treeState = {};
     this.$treeState[0]                               = "";
     this.$treeState[HAS_CHILD]                       = "min";
@@ -31622,7 +31806,7 @@ apf.BaseTree = function(){
     this.$treeState[IS_LAST | HAS_CHILD]             = "minlast";
     this.$treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     this.$treeState[IS_ROOT]                         = "root";
-    
+
     /**** Properties and Attributes ****/
 
     /**
@@ -31642,25 +31826,25 @@ apf.BaseTree = function(){
     this.$booleanProperties["removecontainer"] = true;
     this.$booleanProperties["dragroot"]        = true;
     this.$booleanProperties["disableremove"]   = true;
-    
+
     this.$supportedProperties.push("openadd", "startcollapsed", "nocollapse",
         "singleopen", "prerender", "removecontainer", "animation", "dragroot",
         "disableremove");
-    
+
     this.openadd        = true;
     this.startcollapsed = 1;
     this.prerender      = true;
     this.disableremove  = false;
-    
+
     /**** Public Methods ****/
-    
+
     /**
      * Expands all items in the tree
      */
     this.expandAll    = function(){
         if (!this.xmlRoot)
             return;
-        
+
         var xpath = this.each.split('|')
                         .join('[' + this.each.replace(/\|/g, " or ") + ']|.//'),
             _self = this;
@@ -31674,30 +31858,45 @@ apf.BaseTree = function(){
             }
         })(this.xmlRoot);
     };
-    
+
     /**
      * Collapses all items in the tree
      */
     this.collapseAll   = function(){
         if (!this.xmlRoot)
             return;
-        
+
         var pNodes = this.xmlRoot.selectNodes(".//" + this.each
           .split('|').join('[' + this.each.replace(/\|/g, " or ") + ']|.//'));
-        
+
         for (var o, i = pNodes.length - 1; i >=0; i--) {
             if (o = apf.xmldb.getHtmlNode(pNodes[i], this))
                 this.slideToggle(o, 2, true);
         }
     };
-    
+
+    /**
+     * Collapse a single node in the tree
+     */
+    this.collapse = function(xmlNode) {
+        if (!this.xmlRoot)
+            return;
+
+        if (this.isCollapsed(xmlNode))
+            return;
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
+        if (!htmlNode)
+            return;
+        this.slideToggle(htmlNode, 2, true);
+    };
+
     /**
      * Selects a node and expands each parent of it.
      */
     this.expandAndSelect = function(xmlNode) {
         if (!this.xmlRoot)
             return;
-        
+
         var _self = this;
         if ((function _recur(loopNode){
             var pNode = _self.getTraverseParent(loopNode);
@@ -31706,12 +31905,12 @@ apf.BaseTree = function(){
 
             if (!pNode || _recur(pNode) === false)
                 return false;
-                
+
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
         })(xmlNode) !== false)
             this.select(xmlNode);
     };
-    
+
     /**
      * Loads a list of folders
      * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
@@ -31724,18 +31923,18 @@ apf.BaseTree = function(){
         // recursive load function
         function expand(currentSelector, allSelectors) {
             var selectorNode = root.selectSingleNode(currentSelector);
-            
+
             // if the node could not be found,
             // just tell the consumer that it has expanded
             if (!selectorNode) {
                 return hasExpanded(currentSelector);
             }
-            
+
             // first expand the item passed in
             _self.slideToggle(apf.xmldb.getHtmlNode(selectorNode, _self), 1, true, null, function () {
                 // the number of times the callback has fired, prevent it from executing forever
                 var timesRan = 0;
-                
+
                 // the callback fires, but we might be waiting for data from the server
                 var callback = function () {
                     // check whether the node is loaded
@@ -31750,30 +31949,30 @@ apf.BaseTree = function(){
                             // still failing? call 'hasExpanded' for this one and all its children
                             // cause we're ignoring everything from now;
                             // and we need the callback to be fired anyway
-                            var allAncestors = allSelectors.filter(function (s) { 
+                            var allAncestors = allSelectors.filter(function (s) {
                                 return s.indexOf(currentSelector + "/") === 0;
                             });
-                            
+
                             hasExpanded(currentSelector);
                             allAncestors.forEach(function (sel) {
                                 hasExpanded(sel);
                             });
-                                
+
                             return null;
                         }
                     }
-                    
+
                     // notify
                     hasExpanded();
-                    
+
                     // when finished, find all the other selectors that start with the current selector
                     // plus a slash to make it really really sure
                     // plus we check whether it's a child and not a grand child
-                    var childSelectors = allSelectors.filter(function (s) { 
+                    var childSelectors = allSelectors.filter(function (s) {
                         return s.indexOf(currentSelector + "/") === 0
                                 && currentSelector.split("/").length + 1 === s.split("/").length;
                     });
-                    
+
                     // then expand each of the child items
                     childSelectors.forEach(function (selector) {
                         expand(selector, allSelectors);
@@ -31799,32 +31998,32 @@ apf.BaseTree = function(){
         rootNodes.forEach(function (node) {
             expand(node, paths);
         });
-    }; 
-    
+    };
+
     /**
      * @notimplemented
      * @todo who's volunteering?
      * @private
      */
     this.selectPath = function(path){};
-    
+
     /**** Sliding functions ****/
-    
+
     /**
      * @private
      */
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
         callback = typeof callback === "function" ? callback : function () {};
-        
+
         if (this.nocollapse || userAction && this.disabled)
             return callback();
 
         if (!htmlNode)
             htmlNode = this.$selected;
-        
+
         if (!htmlNode)
             return callback();
-        
+
         var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
             id = (htmlNode = htmlNode.parentNode)
@@ -31832,7 +32031,7 @@ apf.BaseTree = function(){
 
         var container = this.$getLayoutNode("item", "container", htmlNode);
         if (!container) return callback();
-        
+
         if (apf.getStyle(container, "display") == "block") {
             if (force == 1) {
                 if (callback) callback();
@@ -31850,12 +32049,12 @@ apf.BaseTree = function(){
             this.slideOpen(container, apf.xmldb.getNode(htmlNode), immediate, callback);
         }
     };
-    
+
     this.isCollapsed = function(xmlNode){
         return (apf.getStyle(this.$getLayoutNode("item", "container",
             apf.xmldb.getHtmlNode(xmlNode, this)), "display") == "none");
     }
-    
+
     var lastOpened = {};
     /**
      * @event expand Fires when a tree leaf is expanded from collapsed view to
@@ -31869,23 +32068,23 @@ apf.BaseTree = function(){
         var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (!container)
             container = this.$findContainer(htmlNode);
-        
+
         //We don't slide open elements without children.
-        if ((!container.childNodes.length || container.firstChild.nodeType == 3 
+        if ((!container.childNodes.length || container.firstChild.nodeType == 3
           && container.firstChild.nodeValue.trim() == "")
           && !this.$getBindRule("insert", xmlNode)
           && !this.getTraverseNodes(xmlNode).length)
-            return callback && callback(); 
+            return callback && callback();
 
         if (this.singleopen) {
             var pNode = this.getTraverseParent(xmlNode),
                 p     = (pNode || this.xmlRoot).getAttribute(apf.xmldb.xmlIdTag);
-            if (lastOpened[p] && lastOpened[p][1] != xmlNode 
+            if (lastOpened[p] && lastOpened[p][1] != xmlNode
               && this.getTraverseParent(lastOpened[p][1]) == pNode)
                 this.slideToggle(lastOpened[p][0], 2);//lastOpened[p][1]);
             lastOpened[p] = [htmlNode, xmlNode];
         }
-        
+
         if (!this.nocollapse)
             container.style.display = "block";
 
@@ -31903,7 +32102,7 @@ apf.BaseTree = function(){
 
             if (this.$hasLoadStatus(xmlNode, "potential"))
                 return this.$extend(xmlNode, container, immediate, callback);
-            
+
             this.dispatchEvent("expand", {xmlNode: xmlNode});
             return callback && callback();
         }
@@ -31917,7 +32116,7 @@ apf.BaseTree = function(){
         var height = container.scrollHeight;
         container.style.overflow = "hidden";
         container.style.height = prevHeight;
-        
+
         function finishSlide() {
             if (xmlNode && _self.$hasLoadStatus(xmlNode, "potential")) {
                 $setTimeout(function(){
@@ -31942,22 +32141,22 @@ apf.BaseTree = function(){
                 _self.dispatchEvent("expand", {xmlNode: xmlNode});
             }
         }
-        
+
         if (!this.animation) {
             var diff = apf.getHeightDiff(container),
                 oInt = container;
 
             container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop = oInt.scrollHeight 
+            oInt.scrollTop = oInt.scrollHeight
                 - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
             finishSlide();
         }
         else {
             apf.tween.single(container, {
-                type    : 'scrollheight', 
-                from    : container.offsetHeight, 
-                to      : height, 
-                anim    : this.$animType, 
+                type    : 'scrollheight',
+                from    : container.offsetHeight,
+                to      : height,
+                anim    : this.$animType,
                 steps   : this.$animOpenStep,
                 interval: this.$animSpeed,
                 onfinish: function(container){
@@ -31973,28 +32172,28 @@ apf.BaseTree = function(){
      * @private
      */
     this.slideClose = function(container, xmlNode, immediate){
-        if (this.nocollapse) 
+        if (this.nocollapse)
             return;
-        
+
         if (!xmlNode)
             xmlNode = this.selected;
-        
+
         if (this.singleopen) {
             var p = (this.getTraverseParent(xmlNode) || this.xmlRoot)
                 .getAttribute(apf.xmldb.xmlIdTag);
             lastOpened[p] = null;
         }
-        
+
         if (!container) {
             var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
             container = this.$findContainer(htmlNode);
         }
-        
+
         if (container != this.$container) {
             container.style.height   = container.offsetHeight;
             container.style.overflow = "hidden";
         }
-        
+
         if (immediate) {
             if (container != this.$container)
                 container.style.height = 0;
@@ -32005,10 +32204,10 @@ apf.BaseTree = function(){
 
         var _self = this;
         apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.scrollHeight, 
-            to      : 0, 
-            anim    : this.$animType, 
+            type    : 'scrollheight',
+            from    : container.scrollHeight,
+            to      : 0,
+            anim    : this.$animType,
             steps   : this.$animCloseStep,
             interval: this.$animSpeed,
             onfinish: function(container, data){
@@ -32017,13 +32216,13 @@ apf.BaseTree = function(){
             }
         });
     };
-    
+
     /**** Databinding Support ****/
 
     this.$isStartCollapsed = function(xmlNode){
         return this.$hasBindRule("collapsed")
             ? (this.$getDataNode("collapsed", xmlNode) ? true : false)
-            : (this.$hasBindRule("expanded") 
+            : (this.$hasBindRule("expanded")
                 ? (this.$getDataNode("expanded", xmlNode) ? false : true)
                 : this.startcollapsed);
     }
@@ -32037,7 +32236,7 @@ apf.BaseTree = function(){
                 loopNode = loopNode.parentNode;
             }
         }
-        
+
         var loadChildren     = this.$getBindRule("insert", xmlNode) ? true : false,
             traverseNodes    = this.getTraverseNodes(xmlNode),
             hasTraverseNodes = traverseNodes.length ? true : false,
@@ -32052,7 +32251,7 @@ apf.BaseTree = function(){
 
         if (!startcollapsed && !this.nocollapse)
             container.setAttribute("style", "overflow:visible;height:auto;display:block;");
-        
+
         var msg, removeContainer = (!this.removecontainer || hasChildren);
 
         //TEMP on for dynamic subloading
@@ -32064,20 +32263,20 @@ apf.BaseTree = function(){
             eachLength = traverseNodes.length;
 
         if (hasChildren && !this.prerender && eachLength > 2 && startcollapsed
-          || loadChildren && (!this.$hasLoadStatus(xmlNode) 
+          || loadChildren && (!this.$hasLoadStatus(xmlNode)
           || this.$hasLoadStatus(xmlNode, "potential")))
             this.$setLoading(xmlNode, container);
         else if (!hasTraverseNodes && (msg = this.$applyBindRule("empty", xmlNode))) {
             this.$setEmptyMessage(container, msg);
         }
 
-        if ((!htmlParentNode || htmlParentNode == this.$container) 
+        if ((!htmlParentNode || htmlParentNode == this.$container)
           && xmlParentNode == this.xmlRoot && !beforeNode
           || action == "insert") {
             this.$nodes.push(htmlNode);
             if (!apf.isChildOf(htmlNode, container, true) && removeContainer)
                 this.$nodes.push(container);
-            
+
             if (action != "insert") {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
@@ -32086,11 +32285,11 @@ apf.BaseTree = function(){
         else {
             if (!htmlParentNode) {
                 htmlParentNode = apf.xmldb.getHtmlNode(xmlNode.parentNode, this);
-                htmlParentNode = htmlParentNode 
-                    ? this.$getLayoutNode("item", "container", htmlParentNode) 
+                htmlParentNode = htmlParentNode
+                    ? this.$getLayoutNode("item", "container", htmlParentNode)
                     : this.$container;
             }
-            
+
             if (htmlParentNode == this.$container) {
                 this.$setStyleClass(htmlNode,  "root");
                 this.$setStyleClass(container, "root");
@@ -32103,18 +32302,18 @@ apf.BaseTree = function(){
             }
             if (beforeNode && beforeNode.parentNode != htmlParentNode)
                 beforeNode = null;
-        
-            if (htmlParentNode.style 
-              && this.getTraverseNodes(xmlNode.parentNode).length == 1) 
+
+            if (htmlParentNode.style
+              && this.getTraverseNodes(xmlNode.parentNode).length == 1)
                 this.$removeEmptyMessage(htmlParentNode);
-        
+
             //alert("|" + htmlNode.nodeType + "-" + htmlParentNode.nodeType + "-" + beforeNode + ":" + container.nodeType);
             //Insert Node into Tree
             if (htmlParentNode.style) {
                 var isChildOfHtmlNode = !apf.isChildOf(htmlNode, container, true)
                 htmlNode = apf.insertHtmlNode(htmlNode, htmlParentNode, beforeNode);
                 if (isChildOfHtmlNode && removeContainer)
-                    var container = apf.insertHtmlNode(container, 
+                    var container = apf.insertHtmlNode(container,
                         htmlParentNode, beforeNode);
                 else
                     var container = this.$getLayoutNode("item", "container", htmlNode);
@@ -32127,17 +32326,17 @@ apf.BaseTree = function(){
 
             //Fix parent if child is added to drawn parentNode
             if (htmlParentNode.style) {
-                if (this.openadd && htmlParentNode != this.$container 
-                  && htmlParentNode.style.display != "block") { 
+                if (this.openadd && htmlParentNode != this.$container
+                  && htmlParentNode.style.display != "block") {
                     if (!this.$isStartCollapsed(xmlParentNode))
                         this.slideOpen(htmlParentNode, xmlParentNode, true);
                 }
-                
+
                 if (!this.$fillParent)
                     this.$fillParent = xmlParentNode;
-                
+
                 var next = nextNode == undefined ? this.getNextTraverse(xmlNode, true) : nextNode;
-                
+
                 var html;
                 if (next && (html = apf.xmldb.getHtmlNode(next, this))) //should use each here
                     this.$fixItem(next, html);
@@ -32153,7 +32352,7 @@ apf.BaseTree = function(){
 
         return container;
     };
-    
+
     this.$fill = function(){
         if (this.$useiframe)
             this.$pHtmlDoc = this.oDoc;
@@ -32163,16 +32362,16 @@ apf.BaseTree = function(){
             this.$nodes.length = 0;
             delete this.$fillParentHtml;
         }
-        
+
         if (this.$fillParent) {
             this.$fixItem(this.$fillParent, apf.xmldb.getHtmlNode(this.$fillParent, this));
             delete this.$fillParent;
         }
     };
-    
+
     this.$getParentNode = function(htmlNode){
-        return htmlNode 
-            ? this.$getLayoutNode("item", "container", htmlNode) 
+        return htmlNode
+            ? this.$getLayoutNode("item", "container", htmlNode)
             : this.$container;
     };
 
@@ -32184,19 +32383,19 @@ apf.BaseTree = function(){
             var prevSib;
             if (prevSib = this.getNextTraverse(xmlNode, true))
                 this.$fixItem(prevSib, this.$findHtmlNode(prevSib
-                    .getAttribute(apf.xmldb.xmlIdTag) + "|" 
+                    .getAttribute(apf.xmldb.xmlIdTag) + "|"
                     + this.$uniqueId), null, true);
 
             //if no sibling fix parent
             if (!this.emptyMessage && xmlNode.parentNode.selectNodes(this.each).length == 1)
                 this.$fixItem(xmlNode.parentNode, this.$findHtmlNode(
-                    xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag) 
-                    + "|" + this.$uniqueId), null, false, true); 
+                    xmlNode.parentNode.getAttribute(apf.xmldb.xmlIdTag)
+                    + "|" + this.$uniqueId), null, false, true);
         }
         else {
             var container   = this.$getLayoutNode("item", "container", htmlNode),
                 hasChildren = false;
-            if (noChildren) 
+            if (noChildren)
                 hasChildren = false;
             else if (this.getTraverseNodes(xmlNode).length > 0)
                 hasChildren = true;
@@ -32219,7 +32418,7 @@ apf.BaseTree = function(){
             if(this.$getLayoutNode("item", "openclose", htmlNode))
                 this.$getLayoutNode("item", "openclose", htmlNode)
                     .setAttribute("children", hasChildren);
-            
+
             if (container) {
                 if (!hasChildren)
                     container.style.display = "none";
@@ -32233,23 +32432,23 @@ apf.BaseTree = function(){
         //Lookup container
         var containerNode = this.$getLayoutNode("item", "container", htmlNode),
             pContainer    = htmlNode.parentNode;
-        
+
         //Remove htmlNodes from tree
         containerNode.parentNode.removeChild(containerNode);
         pContainer.removeChild(htmlNode);
-        
+
         //Datagrid??
         if (this.$withContainer)
             htmlNode.parentNode.removeChild(htmlNode.nextSibling);
-        
+
         //Fix Images (+, - and lines)
         if (xmlNode.parentNode != this.xmlRoot)
             this.$fixItem(xmlNode, htmlNode, true);
-        
+
         var msg;
         if (!pContainer.childNodes.length && (msg = this.$applyBindRule("empty", xmlNode)))
             this.$setEmptyMessage(pContainer, msg);
-        
+
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode, true);
         //this.$fixItem(xmlNode.parentNode, apf.xmldb.findHtmlNode(xmlNode.parentNode, this));
@@ -32257,11 +32456,11 @@ apf.BaseTree = function(){
         if(xmlNode.previousSibling) //should use each here
             this.$fixItem(xmlNode.previousSibling, apf.xmldb.findHtmlNode(xmlNode.previousSibling, this));*/
     };
-    
+
     this.$moveNode = function(xmlNode, htmlNode, oldXmlParent){
-        if (!self.apf.debug && !htmlNode) 
+        if (!apf.debug && !htmlNode)
             return;
-            
+
         var container;
         if (this.$hasLoadStatus(xmlNode.parentNode, "potential")) {
             container = this.$getLayoutNode("item", "container", htmlNode);
@@ -32270,20 +32469,27 @@ apf.BaseTree = function(){
             this.$extend(xmlNode.parentNode);
             return;
         }
-        
+
+        var nSibling = this.getNextTraverse(xmlNode),
+            beforeNode = nSibling
+                ? apf.xmldb.getHtmlNode(nSibling, this)
+                : null;
+
+        var next = htmlNode.nextSibling;
+        if (next && next.tagName != htmlNode.tagName)
+            next = next.nextSibling;
+        if (next && beforeNode == next)
+            return;
+
         var oPHtmlNode = htmlNode.parentNode,
             tParent    = this.getTraverseParent(xmlNode),
             pHtmlNode  = apf.xmldb.getHtmlNode(tParent, this),
         //if(!pHtmlNode) return;
-        
-            nSibling = this.getNextTraverse(xmlNode),
-            beforeNode = nSibling
-                ? apf.xmldb.getHtmlNode(nSibling, this)
-                : null,
+
             pContainer = pHtmlNode
                 ? this.$getLayoutNode("item", "container", pHtmlNode)
                 : this.$container;
-        
+
         container = this.$getLayoutNode("item", "container", htmlNode);
 
         if (pContainer != oPHtmlNode && this.getTraverseNodes(xmlNode.parentNode).length == 1)
@@ -32292,22 +32498,22 @@ apf.BaseTree = function(){
         pContainer.insertBefore(htmlNode, beforeNode);
         if (container)
             pContainer.insertBefore(container, beforeNode);
-        
+
         /*if (!this.startcollapsed) {
             pContainer.style.display = "block";
             pContainer.style.height = "auto";
         }*/
-        
+
         var msg;
         if (!this.getTraverseNodes(oldXmlParent).length && (msg = this.$applyBindRule("empty", oldXmlParent)))
             this.$setEmptyMessage(oPHtmlNode, msg);
-        
-//        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block") 
+
+//        if (this.openadd && pHtmlNode != this.$container && pContainer.style.display != "block")
 //            this.slideOpen(pContainer, pHtmlNode, true);
-        
+
         //Fix look (tree thing)
         this.$fixItem(xmlNode, htmlNode);
-        
+
         this.$fixItem(tParent, apf.xmldb.getHtmlNode(tParent, this));
         this.$updateNode(oldXmlParent, apf.xmldb.getHtmlNode(oldXmlParent, this));
         var next;
@@ -32315,35 +32521,35 @@ apf.BaseTree = function(){
             this.$fixItem(next, apf.xmldb.getHtmlNode(next, this));
         }
     };
-    
+
     //???
     this.$setLoading = function(xmlNode, container){
         this.$setLoadStatus(xmlNode, "potential");
-        
+
         var len = this.getTraverseNodes(xmlNode).length;
         if (!len || len > 20) {
             this.$getNewContext("loading");
             apf.insertHtmlNode(this.$getLayoutNode("loading"), container);
         }
     };
-    
+
     //???
     this.$removeLoading = function(xmlNode){
         if (!xmlNode) return;
-        
+
         if (this.$timers)
             clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
-        
-        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this); 
+
+        var htmlNode = apf.xmldb.getHtmlNode(xmlNode, this);
         if (htmlNode) {
             this.$getLayoutNode("item", "container", htmlNode).innerHTML = "";
             this.$setStyleClass(htmlNode, "", ["loading"]);
         }
     };
-    
+
     //check databinding for how this is normally implemented
     this.$extend = function(xmlNode, container, immediate, callback){
-        if (!this.$hasLoadStatus(xmlNode, "potential")) 
+        if (!this.$hasLoadStatus(xmlNode, "potential"))
             return;
 
         var rule       = this.$getBindRule("insert", xmlNode),
@@ -32354,18 +32560,18 @@ apf.BaseTree = function(){
 
         if (rule && xmlContext) {
             this.$setLoadStatus(xmlNode, "loading");
-            
+
             var _self = this;
             (this.$timers || (this.$timers = {}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = $setTimeout(function(){;
                 _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), "loading");
             }, 100);
-            
+
             if (rule.get) {
                 
-                
+
                 this.getModel().$insertFrom(rule.getAttribute("get"), {
                     xmlNode     : xmlContext,
-                    insertPoint : xmlContext, 
+                    insertPoint : xmlContext,
                     amlNode     : this,
                     callback    : function(data, state, extra){
                         if (state != apf.SUCCESS) {
@@ -32376,7 +32582,7 @@ apf.BaseTree = function(){
                         else {
                             _self.slideOpen(null, xmlNode);
                         }
-                        
+
                         if (callback)
                             callback(data, state, extra);
                     }
@@ -32391,17 +32597,17 @@ apf.BaseTree = function(){
             this.$setLoadStatus(xmlNode, "loaded");
             this.$removeLoading(xmlNode);
             xmlUpdateHandler.call(this, {
-                action  : "insert", 
-                xmlNode : xmlNode, 
+                action  : "insert",
+                xmlNode : xmlNode,
                 result  : this.$addNodes(xmlNode, container, true, null, null, null, "extend"), //checkChildren ???
                 anim    : !immediate
             });
         }
     };
-    
+
     function xmlUpdateHandler(e){
         /*
-            Display the animation if the item added is 
+            Display the animation if the item added is
             * Not in the cache
             - Being insterted using xmlUpdate
             - there is at least 1 child inserted
@@ -32411,7 +32617,7 @@ apf.BaseTree = function(){
             this.$fixItem(e.xmlNode, apf.xmldb.findHtmlNode(e.xmlNode, this), true);
 
         if (e.action != "insert") return;
-        
+
         var htmlNode = this.$findHtmlNode(e.xmlNode.getAttribute(
             apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         if (!htmlNode) return;
@@ -32433,11 +32639,11 @@ apf.BaseTree = function(){
         //if (this.$hasLoadStatus(e.xmlNode, "loading"))
             //this.$setLoadStatus(e.xmlNode, "loaded");
     }
-    
+
     this.addEventListener("xmlupdate", xmlUpdateHandler);
-    
+
     /**** Keyboard Support ****/
-    
+
     
     this.addEventListener("beforerename", function(){
         if (this.$tempsel) {
@@ -32449,14 +32655,14 @@ apf.BaseTree = function(){
         }
     });
     
-    
+
     this.scrollIntoView = function(sNode, onTop) {
         var selHtml = apf.xmldb.getHtmlNode(sNode, this), top;
         if (!selHtml)
             return;
-            
+
         top     = apf.getAbsolutePosition(selHtml, this.$container)[1];
-        
+
         if (onTop) {
             if (top <= this.$container.scrollTop)
                 this.$container.scrollTop = top;
@@ -32466,7 +32672,7 @@ apf.BaseTree = function(){
                 this.$container.scrollTop = top - this.$container.offsetHeight + selHtml.offsetHeight;
         }
     }
-    
+
     
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode,
@@ -32485,10 +32691,10 @@ apf.BaseTree = function(){
             case 13:
                 if (this.$tempsel)
                     this.$selectTemp();
-            
+
                 if (this.ctrlselect == "enter")
                     this.select(this.caret, true);
-            
+
                 this.choose(selHtml);
                 break;
             case 32:
@@ -32529,7 +32735,7 @@ apf.BaseTree = function(){
                 var lastNode = this.getLastTraverseNode();
                 while (!this.isCollapsed(lastNode))
                     lastNode = this.getLastTraverseNode(lastNode);
-                
+
                 this.$setTempSelected(lastNode, false, shiftKey, true);
                 oExt.scrollTop = oExt.scrollHeight;
                 return false;
@@ -32537,7 +32743,7 @@ apf.BaseTree = function(){
                 //LEFT
                 if (this.$tempsel)
                     this.$selectTemp();
-                if (this.caret.selectSingleNode(this.each) 
+                if (this.caret.selectSingleNode(this.each)
                   && !this.isCollapsed(this.caret))
                     this.slideToggle(this.$caret || this.$selected, 2)
                 else if ((pNode = this.getTraverseParent(this.caret))
@@ -32550,8 +32756,8 @@ apf.BaseTree = function(){
                 //RIGHT
                 if (this.$tempsel)
                     this.$selectTemp();
-            
-                if (this.$hasLoadStatus(this.caret, "potential") 
+
+                if (this.$hasLoadStatus(this.caret, "potential")
                   || this.getFirstTraverseNode(this.caret))
                     this.slideToggle(this.$caret || this.$selected, 1)
                 break;
@@ -32563,21 +32769,21 @@ apf.BaseTree = function(){
                 break;
             case 38:
                 //UP
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
 
-                node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
+                node = this.$tempsel
+                    ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 sNode = this.getNextTraverse(node, true);
                 if (sNode && sNode != node) {
                     nodes = this.getTraverseNodes(sNode);
-                    
+
                     do {
                         container = this.$getLayoutNode("item", "container",
                             this.$findHtmlNode(apf.xmldb.getID(sNode, this)));
-                        if (container && apf.getStyle(container, "display") == "block" 
+                        if (container && apf.getStyle(container, "display") == "block"
                           && nodes.length) {
                                 sNode = nodes[nodes.length-1];
                         }
@@ -32598,23 +32804,23 @@ apf.BaseTree = function(){
                    this.$setTempSelected(sNode, ctrlKey, shiftKey, true);
                 else
                     return false;
-                
+
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      //- (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
-                
+
                 return false;
             case 40:
                 //DOWN
-                if (!selXml && !this.$tempsel) 
+                if (!selXml && !this.$tempsel)
                     return;
 
-                node = this.$tempsel 
+                node = this.$tempsel
                     ? apf.xmldb.getNode(this.$tempsel)
                     : selXml;
-                
+
                 sNode = this.getFirstTraverseNode(node);
                 if (sNode) {
                     container = this.$getLayoutNode("item", "container",
@@ -32622,11 +32828,11 @@ apf.BaseTree = function(){
                     if (container && apf.getStyle(container, "display") != "block")
                         sNode = null;
                 }
-                
+
                 while (!sNode) {
                     pNode = this.getTraverseParent(node);
                     if (!pNode) break;
-                    
+
                     var i = 0;
                     nodes = this.getTraverseNodes(pNode);
                     while (nodes[i] && nodes[i] != node)
@@ -32659,7 +32865,7 @@ apf.BaseTree = function(){
                     sNode = apf.xmldb.findXmlNode(el);
                 }
                 this.select(sNode);
-                
+
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                      - (selHtml.offsetHeight);
@@ -32679,7 +32885,7 @@ apf.BaseTree = function(){
                     sNode = apf.xmldb.findXmlNode(el);
                 }
                 this.select(sNode);
-                
+
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
                     + (selHtml.offsetHeight);
@@ -32695,11 +32901,11 @@ apf.BaseTree = function(){
                 else if (key == 65 && ctrlKey) {
                     this.selectAll();
                     return false;
-                } 
+                }
                 //@todo make this work with the sorted column
                 else if (this.caption || (this.bindingRules || {})["caption"]) {
                     if (!this.xmlRoot) return;
-                    
+
                     //this should move to a onkeypress based function
                     if (!this.lookup || new Date().getTime()
                       - this.lookup.date.getTime() > 300)
@@ -32707,18 +32913,18 @@ apf.BaseTree = function(){
                             str  : "",
                             date : new Date()
                         };
-                    
+
                     this.lookup.str += String.fromCharCode(key);
-    
+
                     var nodes = this.getTraverseNodes(); //@todo start at current indicator
                     for (var v, i = 0; i < nodes.length; i++) {
                         v = this.$applyBindRule("caption", nodes[i]);
                         if (v && v.substr(0, this.lookup.str.length)
                           .toUpperCase() == this.lookup.str) {
-                            
+
                             if (!this.isSelected(nodes[i]))
                                 this.select(nodes[i]);
-                            
+
                             if (selHtml)
                                 this.$container.scrollTop = selHtml.offsetTop
                                     - (this.$container.offsetHeight
@@ -32732,9 +32938,9 @@ apf.BaseTree = function(){
         }
     }, true);
     
-    
+
     /**** Rename Support ****/
-    
+
     
     this.$getCaptionElement = function(){
         if (!this.$selected) return false;
@@ -32742,14 +32948,14 @@ apf.BaseTree = function(){
         return x.nodeType == 1 ? x : x.parentNode;
     };
     
-    
+
     /**** Selection Support ****/
     /*
         nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
-                ? this.xmlRoot.selectNodes(this.$isTreeArch 
+                ? this.xmlRoot.selectNodes(this.$isTreeArch
                     ? this.each
                     : ".//" + this.each.split('|').join('|.//'))
-                : 
+                :
     */
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r     = [],
@@ -32767,7 +32973,7 @@ apf.BaseTree = function(){
             if (nodes[i] == xmlEndNode)
                 f = false;
         }
-        
+
         if (!r.length || f) {
             r = [];
             for (f = false, i = nodes.length - 1; i >= 0; i--) {
@@ -32779,19 +32985,19 @@ apf.BaseTree = function(){
                     f = false;
             }
         }
-        
+
         return r;
     };
-    
+
     this.$findContainer = function(htmlNode){
         return this.$getLayoutNode("item", "container", htmlNode);
     };
-    
+
     this.$selectDefault = function(xmlNode){
         var firstNode = this.getFirstTraverseNode(xmlNode);
         if (!firstNode)
             return;
-        
+
         if (this.select(firstNode, null, null, null, true)) {
             return true;
         }
@@ -32803,7 +33009,7 @@ apf.BaseTree = function(){
             }
         }
     };
-    
+
     this.$setEmptyMessage = function(htmlNode, msg){
         this.$getNewContext("empty");
         var xmlEmpty = this.$getLayoutNode("empty");
@@ -32815,16 +33021,16 @@ apf.BaseTree = function(){
 
         if (caption)
             apf.setNodeValue(caption, msg || "");
-        
+
         if (htmlNode.style)
             this.slideOpen(htmlNode, null, true);
         else if (this.nocollapse)
             htmlNode.setAttribute("style", "display:inline-block;");
-        else 
-            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;"); 
-        
+        else
+            htmlNode.setAttribute("style", "overflow:visible;height:auto;display:block;");
+
     }
-    
+
     this.$removeEmptyMessage = function(htmlNode){
         var cNode = htmlNode.firstElementChild || htmlNode.firstChild;
         if (!cNode)
@@ -32839,7 +33045,7 @@ apf.BaseTree = function(){
         }
         while(cNode);
     }
-    
+
     /**** Init ****/
 
     /**
@@ -32858,18 +33064,18 @@ apf.BaseTree = function(){
             this.skin = mode + "tree";
             this.$loadSkin();
         }*/
-        
+
         //Build Main Skin
-        this.$ext = this.$getExternal(); 
+        this.$ext = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
         this.opencloseaction = this.$getOption("main", "openclose");
-        
+
         //Need fix...
         //this.$ext.style.MozUserSelect = "none";
 
         if (apf.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
-        
+
         var _self = this;
         this.$ext.onclick = function(e){
             _self.dispatchEvent("click", {htmlEvent : e || event});
@@ -32887,17 +33093,17 @@ apf.BaseTree = function(){
             _self.dispatchEvent("mousemove", {htmlEvent : e || event});
         };
     };
-    
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){
         if (this.nocollapse)
             this.startcollapsed = false;
         else if (this.startcollapsed === 1)
             this.startcollapsed = !apf.isFalse(this.$getOption("main", "startcollapsed"));
     });
-    
+
     this.addEventListener("DOMNodeRemovedFromDocument", function(){
         this.$ext.onclick = null;
-        
+
         apf.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     });
@@ -37857,6 +38063,9 @@ apf.window = function(){
 
     //IE selection handling
     apf.addListener(document, "selectstart", function(e){
+        if (!apf.isIE)
+            return;
+        
         if (!e) e = event;
 
         var amlNode   = apf.findHost(e.srcElement);
@@ -44384,6 +44593,9 @@ apf.actiontracker = function(struct, tagName){
             }, extra));
 
             
+            //Send out the RDB message, letting friends know of our change
+            UndoObj.processRsbQueue();
+            
 
             if (callback)
                 callback();
@@ -44404,6 +44616,8 @@ apf.actiontracker = function(struct, tagName){
 
             
 
+            
+            UndoObj.clearRsbQueue();
             
 
             return;
@@ -47790,10 +48004,14 @@ apf.button  = function(struct, tagName){
             value = !this.value;
         this.value = value;
 
-        if (this.value)
+        if (this.value) {
             this.$setState("Down", {});
-        else
+            this.$setStyleClass(this.$ext, this.$baseCSSname + "Checked")
+        }
+        else {
             this.$setState("Out", {});
+            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"])
+        }
     };
 
     this.$propHandlers["state"] = function(value){
@@ -48103,7 +48321,7 @@ apf.button  = function(struct, tagName){
 
     
     this.$submenu = function(hide, force){
-        if (hide) {
+        if (hide && this.submenu) {
             this.setValue(false);
             this.$setState("Out", {}, "mouseout");
             if(this.parentNode)
@@ -51538,6 +51756,43 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
+/**
+ * Displays a popup element with a message with optionally an icon at the
+ * position specified by the position attribute. After the timeout has passed
+ * the popup will dissapear automatically. When the mouse hovers over the popup
+ * it doesn't dissapear.
+ *
+ * @event click Fires when the user clicks on the representation of this event.
+ */
+apf.event = function(struct, tagName){
+    this.$init(tagName || "event", apf.NODE_HIDDEN, struct);
+};
+
+(function() {
+    this.$hasInitedWhen = false;
+
+    this.$booleanProperties["repeat"] = true;
+    this.$supportedProperties.push("when", "message", "icon", "repeat");
+
+    this.$propHandlers["when"] = function(value) {
+        if (this.$hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+            var _self = this;
+            $setTimeout(function() {
+                _self.parentNode.popup(_self.message, _self.icon, _self);
+            });
+        }
+        this.$hasInitedWhen = true;
+
+        if (this.repeat)
+            delete this.when;
+    };
+
+    this.$loadAml = function(x) {};
+}).call(apf.event.prototype = new apf.AmlElement());
+
+apf.aml.setElement("event", apf.event);
+
+
 
 
 /*
@@ -52625,12 +52880,15 @@ apf.vbox = function(struct, tagName){
         this.$ext.className = this.localName;
 
         this.$vbox = this.localName == "vbox";
-        this.$int = apf.isGecko && !(this.parentNode && this.parentNode.$box) || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
+        this.$int = apf.isGecko && !(this.parentNode 
+          && "hbox|vbox".indexOf(this.parentNode.localName) > -1) 
+          || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko && !(this.parentNode && this.parentNode.$box)) {
+        if (apf.isGecko && !(this.parentNode 
+          && "hbox|vbox".indexOf(this.parentNode.localName) > -1)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
         }
@@ -54784,6 +55042,9 @@ apf.menu = function(struct, tagName){
     this.$booleanProperties["matchhide"] = true;
     
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){
+        if (!this.$ext)
+            return;
+        
         if (value) {
             this.$ext.style.display = "block";
             if (this.opener && this.opener.localName.indexOf('item') > -1)
@@ -56129,6 +56390,40 @@ apf.model = function(struct, tagName){
     };
 
     
+    //Connect to a remote databinding
+    this.$propHandlers["remote"] = function(value, prop){
+        if (value) {
+            if (this.src && this.src.indexOf("rdb://") === 0) {
+                var _self = this;
+                apf.queue.add("rdb_load_" + this.$uniqueId, function(){
+                    _self.unshare();
+                    _self.share();
+                });
+            }
+        }
+        else
+            this.unshare();
+    };
+
+    this.share = function(xpath) {
+        this.rdb = typeof this.remote == "string"
+            ? 
+            
+            apf.nameserver.get("remote", this.remote)
+            
+            : this.remote;
+
+        
+
+        this.rdb.createSession(this.src, this, xpath);
+    };
+
+    this.unshare = function(xpath) {
+        if (!this.rdb) return;
+        this.rdb.endSession(this.src);
+        this.rdb = null;
+    };
+    
 
     /**
      * Registers a aml element to this model in order for the aml element to
@@ -56632,6 +56927,11 @@ apf.model = function(struct, tagName){
      */
     this.$loadFrom = function(instruction, options){
         
+        if (instruction.indexOf("rdb://") === 0) {
+            this.src = instruction; //@todo
+            return this.$propHandlers["remote"].call(this, this.remote);
+        }
+        
         var data = instruction.split(":");
 
         if (!options)
@@ -56849,6 +57149,9 @@ apf.model = function(struct, tagName){
             return;
         }
         
+        
+        if (this.rdb && !this.$at && UndoObj)
+            this.$at = UndoObj.at;
         
 
         
@@ -57105,6 +57408,400 @@ apf.aml.setElement("model", apf.model);
  *
  */
 
+
+/**
+ * Notification element, which shows popups when events occur. Similar
+ * to growl on the OSX platform.
+ * Example:
+ * <code>
+ *  <a:notifier position="bottom-right" margin="10 10">
+ *      <a:event 
+ *        when    = "{offline.onLine}"
+ *        message = "You are currently working offline"
+ *        icon    = "icoOffline.gif" />
+ *      <a:event 
+ *        when    = "{!offline.onLine}"
+ *        message = "You are online"
+ *        icon    = "icoOnline.gif" />
+ *      <a:event 
+ *        when    = "{offline.syncing}" 
+ *        message = "Your changes are being synced" 
+ *        icon    = "icoSyncing.gif" />
+ *      <a:event 
+ *        when    = "{!offline.syncing}"
+ *        message = "Syncing done"
+ *        icon    = "icoDone.gif" />
+ *  </a:notifier>
+ * </code>
+ * Example:
+ * Notifier with 4 notifications which appears and stays over the 3 seconds
+ * begins to the top right corner and goes to the left. First notification will
+ * be displayed when value in textbox will be bigger than 4. In next two cases 
+ * notification will be shown when notifier's position or arrange attribute will 
+ * be changed. In the last case notification will be shown when date 2008-12-24 
+ * will be selected on calendar.
+ * <code>
+ *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
+ *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
+ *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
+ *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
+ *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
+ *  </a:notifier>
+ * </code>
+ * 
+ * @define notifier
+ * @attribute   {String}   position     Vertical and horizontal element's start
+ *                                      position, it can be changed in any time,
+ *                                      default is 'top-right'
+ *     Possible values:
+ *     top-right       element is placed in top-right corner of browser window
+ *     top-left        element is placed in top-left corner of browser window
+ *     bottom-right    element is placed in bottom-right corner of browser window
+ *     bottom-left     element is placed in bottom-left corner of browser window
+ *     center-center   element is placed in the middle of browser window
+ *     right-top       element is placed in top-right corner of browser window
+ *     left-top        element is placed in top-left corner of browser window
+ *     right-bottom    element is placed in bottom-right corner of browser window
+ *     left-bottom     element is placed in bottom-left corner of browser window
+ *     center-center   element is placed in the middle of browser window
+ * @attribute   {String}   margin       It's a free space around popup element,
+ *                                      default is '10 10 10 10' pixels
+ * @attribute   {String}   columnsize   Specify element width and col width where
+ *                                      element will be displayed, default is 300 pixels
+ * @attribute   {String}   arrange      popup elements can be displayed in rows
+ *                                      or columns, default is 'vertical'
+ *     Possible values:
+ *     vertical     element will be displayed in rows
+ *     horizontal   element will be displayed in columns
+ * @attribute   {String}   timeout      After the timeout has passed the popup
+ *                                      will dissapear automatically. When the
+ *                                      mouse hovers over the popup it doesn't
+ *                                      dissapear, default is 2 seconds
+ * $attribute   {String}   onclick      It's an action executed after user click
+ *                                      on notifier cloud
+ * 
+ * @constructor
+ *
+ * @inherits apf.Presentation
+ * 
+ * @author      
+ * @version     %I%, %G% 
+ * 
+ * @allowchild event
+ */
+apf.notifier = function(struct, tagName){
+    this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    var _self = this;
+    this.timeout      = 2000;
+    this.position     = "top-right";
+    this.columnsize   = 300;
+    this.arrange      = "vertical";
+    this.margin       = "10 10 10 10";
+    this.startPadding = 0;
+    
+    this.lastPos      = null;
+    this.showing      = 0;
+    this.sign         = 1;
+
+    this.$supportedProperties.push("margin", "position", "timeout",
+        "columnsize", "arrange", "start-padding");
+
+    this.$propHandlers["position"] = function(value) {
+        this.lastPos = null;
+    };
+    
+    this.$propHandlers["margin"] = function(value) {
+        this.margin = value;
+    };
+    
+    this.$propHandlers["start-padding"] = function(value) {
+        this.startPadding = value;
+    };
+    
+    this.$propHandlers["timeout"] = function(value) {
+        this.timeout = parseInt(value) * 1000;
+    };
+    
+    function getPageScroll() {
+        return [
+            document.documentElement.scrollTop || document.body.scrollTop,
+            document.documentElement.scrollLeft || document.body.scrollLeft
+        ];
+    }
+
+    function getStartPosition(x, wh, ww, nh, nw, margin, startPadding) {
+        var scrolled = getPageScroll();
+
+        return [
+             (x[0] == "top"
+                 ? margin[0]
+                 : (x[0] == "bottom"
+                     ? wh - nh - margin[2]
+                     : wh / 2 - nh / 2)) + scrolled[0] + startPadding,
+             (x[1] == "left"
+                 ? margin[3]
+                 : (x[1] == "right"
+                     ? ww - nw - margin[1]
+                     : ww / 2 - nw / 2)) + scrolled[1]
+        ];
+    }
+
+    /**
+     * Function creates new notifie popup element
+     * 
+     * @param {String}  message  Message content displaing in popup element,
+     *                           default is [No message]
+     * @param {String}  icon     Path to icon file relative to "icon-path" which
+     *                           is set in skin declaration
+     * @param {Object}  ev       object representation of event
+     * 
+     */
+    this.popup = function(message, icon, ev) {
+        if (!this.$ext)
+            return;
+
+        this.$ext.style.width = this.columnsize + "px";
+
+        var _self = this,
+            oNoti = this.$pHtmlNode.appendChild(this.$ext.cloneNode(true)),
+            ww    = apf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            wh    = apf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight,
+        
+            removed = false,
+
+            oIcon = this.$getLayoutNode("notification", "icon", oNoti),
+            oBody = this.$getLayoutNode("notification", "body", oNoti);
+
+        this.showing++;
+
+        if (oIcon && icon) {
+            if (oIcon.nodeType == 1) {
+                oIcon.style.backgroundImage = "url("
+                + this.iconPath + icon + ")";
+            }
+            else {
+                oIcon.nodeValue = this.iconPath + icon;
+            }
+
+            this.$setStyleClass(oNoti, this.$baseCSSname + "ShowIcon");
+        }
+
+        oBody.insertAdjacentHTML("beforeend", message || "[No message]");
+        oNoti.style.display = "block";
+
+        var margin = apf.getBox(this.margin || "0"),
+            nh     = oNoti.offsetHeight,
+            nw     = oNoti.offsetWidth,
+            /* It's possible to set for example: position: top-right or right-top */
+            x      = this.position.split("-"),
+            _reset = false;
+
+        if (x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right")
+            x = [x[1], x[0]];
+        /* center-X and X-center are disabled */
+        if ((x[0] == "center" && x[1] !== "center") || (x[0] !== "center" && x[1] == "center"))
+            x = ["top", "right"];
+
+        /* start positions */
+        if (!this.lastPos) {
+            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin, this.startPadding);
+            this.sign = 1;
+            _reset = true;
+        }
+
+        if ((!_reset && x[0] == "bottom" && this.sign == 1) ||
+           (x[0] == "top" && this.sign == -1)) {
+            if (this.arrange == "vertical") {
+                this.lastPos[0] += x[1] == "center"
+                    ? 0
+                    : this.sign * (x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
+            }
+            else {
+                this.lastPos[1] += x[0] == "center"
+                    ? 0
+                    : this.sign * (x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
+            }
+        }
+
+        /* reset to next line, first for vertical, second horizontal */
+        var scrolled = getPageScroll();
+        
+        if (this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[0]) {
+            this.lastPos[1] += (x[1] == "left"
+                ? nw + margin[3]
+                : (x[1] == "right"
+                    ? - nw - margin[3]
+                    : 0));
+            this.sign *= -1;
+            this.lastPos[0] += this.sign*(x[0] == "top"
+                ? margin[0] + nh
+                : (x[0] == "bottom"
+                    ? - margin[2] - nh
+                    : 0));
+        }
+        else if (this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1]) {
+            this.lastPos[0] += (x[0] == "top"
+                ? nh + margin[0]
+                : (x[0] == "bottom"
+                    ? - nh - margin[0]
+                    : 0));
+            this.sign *= -1;
+            this.lastPos[1] += x[0] == "center"
+                ? 0
+                : this.sign * (x[1] == "left"
+                    ? margin[3] + nw
+                    : (x[1] == "right"
+                        ? - margin[1] - nw
+                        : 0));
+        }
+
+        /* Start from begining if entire screen is filled */
+        if (this.lastPos) {
+            if ((this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[1])
+              && this.arrange == "horizontal") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin, this.startPadding);
+                this.sign = 1;
+            }
+            if ((this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1])
+              && this.arrange == "vertical") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin, this.startPadding);
+                this.sign = 1;
+            }
+        }  
+
+        oNoti.style.left = this.lastPos[1] + "px";
+        oNoti.style.top  = this.lastPos[0] + "px";
+
+        if ((x[0] == "top" && this.sign == 1) || (x[0] == "bottom" && this.sign == -1)) {
+            if (this.arrange == "vertical") {
+                this.lastPos[0] += x[1] == "center"
+                    ? 0
+                    : this.sign * (x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
+            }
+            else {
+                this.lastPos[1] += x[0] == "center"
+                    ? 0
+                    : this.sign * (x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
+            }
+        };
+
+        var isMouseOver = false;
+
+        apf.tween.css(oNoti, "fade", {
+            anim     : apf.tween.NORMAL,
+            steps    : 10,
+            interval : 10,
+            onfinish : function(container) {
+                oNoti.style.filter = "";
+                $setTimeout(hideWindow, _self.timeout)
+            }
+        });
+
+        function hideWindow() {
+            if (isMouseOver)
+                return;
+
+            apf.tween.css(oNoti, "notifier_hidden", {
+                anim    : apf.tween.NORMAL,
+                steps   : 10,
+                interval: 20,
+                onfinish: function(container) {
+                    apf.setStyleClass(oNoti, "", ["notifier_hover"]);
+                    if (isMouseOver)
+                        return;
+
+                    if (oNoti.parentNode) {
+                        if (oNoti.parentNode.removeChild(oNoti) && !removed) {
+                            _self.showing--;
+                            removed = true;
+                        }
+                    }
+
+                    if (_self.showing == 0)
+                        _self.lastPos = null;
+                }
+            });
+        }
+
+        /* Events */
+        oNoti.onmouseover = function(e) {
+            e = (e || event);
+            var tEl = e.explicitOriginalTarget || e.toElement;
+            if (isMouseOver)
+                return;
+            if (tEl == oNoti || apf.isChildOf(oNoti, tEl)) {
+                apf.tween.css(oNoti, "notifier_hover", {
+                    anim    : apf.tween.NORMAL,
+                    steps   : 10,
+                    interval: 20,
+                    onfinish: function(container) {
+                        apf.setStyleClass(oNoti, "", ["notifier_shown"]);
+                    }
+                });
+                
+                isMouseOver = true;
+            }
+        };
+
+        oNoti.onmouseout = function(e) {
+            e = (e || event);
+            var tEl = e.explicitOriginalTarget || e.toElement;
+
+            if (!isMouseOver)
+                return;
+
+            if (apf.isChildOf(tEl, oNoti) ||
+               (!apf.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
+                isMouseOver = false;
+                hideWindow();
+            }
+        };
+
+        if (ev) {
+            oNoti.onclick = function() {
+                ev.dispatchEvent("click");
+            };
+        }
+    };
+
+    /**** Init ****/
+
+    this.$draw = function() {
+        //Build Main Skin
+        this.$pHtmlNode = document.body;
+        
+        this.$ext = this.$getExternal("notification");
+        this.$ext.style.display  = "none";
+        this.$ext.style.position = "absolute";
+        apf.window.zManager.set("notifier", this.$ext);
+    };
+}).call(apf.notifier.prototype = new apf.Presentation());
+
+apf.aml.setElement("notifier", apf.notifier);
+apf.aml.setElement("event", apf.event);
 
 
 
@@ -57374,6 +58071,11 @@ apf.page = function(struct, tagName){
             }
         }
     });
+    
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        if (this.fake && this.parentNode.$activepage == this)
+            this.$deactivate();
+    });
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
@@ -57421,6 +58123,9 @@ apf.page = function(struct, tagName){
 
     this.$deactivate = function(fakeOther){
         this.$active = false;
+
+        if (!this.parentNode)
+            return;
 
         if (this.parentNode.$hasButtons) {
             if (this.$position > 0)
@@ -57600,14 +58305,14 @@ apf.page = function(struct, tagName){
             var start = htmlEvent.clientX;
             var x = start - pos[0];
             var t = apf.getAbsolutePosition(this.$button)[1];
+            
+            var div = oHtml.cloneNode(true);
+            div.style.opacity = 0;
+            
             oHtml.style.left = (oHtml.offsetLeft) + "px";
             oHtml.style.top = (oHtml.offsetTop) + "px";
+            oHtml.style.width = (oHtml.offsetWidth - apf.getWidthDiff(oHtml)) + "px";
             oHtml.style.position = "absolute";
-            
-            var div = document.createElement("div");
-            div.style.width = oHtml.offsetWidth + "px";
-            div.style.marginLeft = apf.getStyle(this.$button, "marginLeft");
-            div.style.marginRight = apf.getStyle(this.$button, "marginRight");
             
             this.$button.parentNode.insertBefore(div, this.$button);
             
@@ -57706,6 +58411,7 @@ apf.page = function(struct, tagName){
                             oHtml.style.position = 
                             oHtml.style.zIndex   = 
                             oHtml.style.top      = 
+                            oHtml.style.width    =
                             oHtml.style.left     = "";
                             
                             var reorder = _self.nextSibling != aml;
@@ -57727,6 +58433,7 @@ apf.page = function(struct, tagName){
                     oHtml.style.position = 
                     oHtml.style.zIndex   = 
                     oHtml.style.top      = 
+                    oHtml.style.width    =
                     oHtml.style.left     = "";
                     
                     div.parentNode.removeChild(div);
@@ -57810,11 +58517,11 @@ apf.page = function(struct, tagName){
                 this.$propHandlers["closebtn"].call(this, true);
             
             
-            if (this.parentNode.$scale) {
-                var w = apf.getHtmlInnerWidth(this.parentNode.$buttons);
-                var l = this.parentNode.getPages().length;
-                this.$button.style.width = Math.round(Math.min(w/l, this.parentNode.$maxBtnWidth)) + "px";
-            }
+//            if (this.parentNode.$scale) {
+//                var w = apf.getHtmlInnerWidth(this.parentNode.$buttons);
+//                var l = this.parentNode.getPages().length;
+//                this.$button.style.width = Math.round(Math.min(w/l, this.parentNode.$maxBtnWidth)) + "px";
+//            }
             
 
             if (!isSkinSwitch && this.nextSibling && this.nextSibling.$button)
@@ -58887,6 +59594,514 @@ apf.aml.setElement("group", apf.$group);
 
 
 
+/**
+ * Element allowing data synchronization between multiple clients using the same
+ * application or application part. This element is designed as thecore of
+ * collaborative application logic for Ajax.org Platform. The children of this
+ * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
+ * models to this element, all changes to their data will be streamed through
+ * this element to all listening client over a choosen protocol.
+ * Example:
+ * This example shows a small application which is editable by all clients that
+ * have started it. Any change to the data is synchronized to all participants.
+ * <code>
+ *  <a:teleport>
+ *      <a:xmpp id="myXMPP"
+ *        url           = "http://ajax.org:5280/http-bind"
+ *        model         = "mdlRoster"
+ *        connection    = "bosh"
+ *  </a:teleport>
+ *
+ *  <a:remote transport="myXMPP" id="rmtPersons" />
+ *
+ *  <a:model id="mdlPersons" remote="rmtPersons">
+ *      <persons>
+ *          <person id="1">mike</person>
+ *          <person id="2">ruben</person>
+ *      </persons>
+ *  </a:model>
+ *
+ *  <a:list id="lstPersons" model="mdlPersons" width="200" height="100">
+ *      <a:bindings>
+ *          <a:each match="[person]" />
+ *          <a:caption match="[text()]" />
+ *          <a:icon value="icoUsers.gif" />
+ *      </a:bindings>
+ *  </a:list>
+ *
+ *  <a:button action="remove" target="lstPersons">Remove</a:button>
+ *  <a:button action="rename" target="lstPersons">Rename</a:button>
+ *
+ *  <a:button onclick="myXMPP.connect('testuser@ajax.org', 'testpass')">
+ *      Login
+ *  </a:button>
+ * </code>
+ * Remarks:
+ * Although locking is solved in smartbindings it is directly connected
+ * to remote databindings. When multiple people are working within the same
+ * application it's important to have a system that prevents corruption of data
+ * and data loss by either user overwriting records edited during the same period.
+ * Ajax.org Platform has built in support for optimistic and pessimistic locking
+ * in smartbindings. For more information please see {@link term.locking}.
+ *
+ * Advanced:
+ * There is a very small theoretical risk that a user initiates and finishes an
+ * action during the latency period of the rdb communication. Usually this
+ * latency is no more than 100 to 300ms which is near impossible for such action
+ * to be performed. Therefor this is deemed acceptable.
+ *
+ * Working in a multi user environment usually implies that data has a high
+ * probability of changing. This might become a problem when syncing offline
+ * changes after several hours. This should be a consideration for the
+ * application architect.
+ *
+ * Another concern for offline use is the offline messaging feature of certain
+ * collaborative protocols (i.e. xmpp). In many cases offline rdb messages should
+ * not be stored after the user has been offline for longer then a certain time.
+ * For instance 10 minutes. An accumulation of change messages would create a
+ * serious scaling problem and is not preferred. apf.offline has built in support
+ * for this type of timeout. By setting the rdb-timeout attribute it is aware
+ * of when the server has timed out. When this timeout is reached the application
+ * will reload all its data from the server and discard all offline rdb
+ * messages before reconnecting to the server.
+ *
+ * @attribute {String} transport the name of the teleport element that provides a
+ * bidirectional connection to (a pool of) other clients.
+ *
+ * @see element.auth
+ *
+ * @define remote
+ * @allowchild unique, {any}
+ * @addnode elements
+ *
+ * @define unique Element defining what is unique about a set of data elements.
+ * This enables remote databindings to point to xml data in  the same way on all
+ * clients. This way changes that happen to these elements are described
+ * non-ambiguously. The tagName can be replaced by the tagName of the
+ * {@link term.datanode data node} for which the uniqueness is specified.
+ * Example:
+ * This example shows a complex data set and a remote databinding that
+ * specifies the uniqueness of all nodes concerned.
+ * <code>
+ *  <a:model id="mdlPersons" remote="rmtPersons">
+ *      <universe>
+ *          <galaxy name="milkyway">
+ *              <planet id="ALS-3947">
+ *                  <species>3564</species>
+ *                  <species>8104</species>
+ *              </planet>
+ *              <planet id="Earth">
+ *                  <person number="802354897">Mike</person>
+ *                  <person number="836114798">Rik</person>
+ *              </planet>
+ *          </galaxy>
+ *      </universe>
+ *  </a:model>
+ *
+ *  <a:remote transport="myXMPP" id="rmtPersons" />
+ * </code>
+ * @attribute {String} transport   ID of a Teleport element that is able to serve
+ *                                 as a transport for RDB message like {@link element.xmpp xmpp}
+ */
+/**
+ * @author      Mike de Boer (mike AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0
+ *
+ * @default_private
+ * @constructor
+ *
+ * @todo Think about wrapping multiple messages in a single call
+ * @todo Make RDB support different encoding protocols (think REX)
+ */
+apf.remote = function(struct, tagName){
+    this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
+
+//    this.lookup              = {};
+//    this.select              = [];
+    this.$sessions           = {};
+    this.rdbQueue            = {};
+    this.queueTimer          = null;
+    this.pendingTerminations = {};
+    this.offlineQueue        = [];
+};
+
+apf.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
+apf.remote.SESSION_STARTED    = 0x0002; //Session is started
+apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
+
+(function(){
+    
+
+    this.logprefix = "";
+    if (!apf.isO3) {
+        this.log = function(msg){
+            apf.console.log(msg);
+        }
+    }
+
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        match : 1
+    }, this.$attrExcludePropBind);
+
+    this.$supportedProperties.push("transport");
+
+    /* @todo move this to the rdb-xmpp transport layer
+    function checkProtocol(uri) {
+        if (uri.indexOf("rdb__") === 0)
+            return "rdb:" + uri.substr(3).replace(/_/g, "/");
+        return uri;
+    } */
+
+    this.$propHandlers["transport"] = function(value) {
+        this.transport = typeof value == "object" ? value : self[this["transport"]];
+
+        
+
+        var _self = this;
+        this.transport.addEventListener("connect", function() {
+            var uri, oSession;
+            for (uri in _self.$sessions) {
+                oSession = _self.$sessions[uri];
+                if (oSession.state == apf.remote.SESSION_STARTED)
+                    continue;
+
+                this.join(uri, function(uri, iTime) {
+                    //_self.$startSession(uri, iTime);
+                });
+            }
+        });
+
+        this.transport.addEventListener("disconnect", function() {
+            var uri, oSession;
+            for (uri in _self.$sessions) {
+                oSession       = _self.$sessions[uri];
+                oSession.state = apf.remote.SESSION_TERMINATED;
+            }
+        });
+
+        this.transport.addEventListener("update", function(e){
+            _self.$update(e);
+        });
+
+        this.transport.addEventListener("join", function(e) {
+            if (!e.uri)
+                return;
+
+            var uri      = e.uri,
+                oSession = _self.$sessions[e.uri];
+            //if document isn't passed this must be a join request from a peer
+            if (!e.document) {
+                
+
+                return _self.dispatchEvent("joinrequest", e);
+            }
+
+            //Create sesssion if it doesn't exist
+            if (!oSession)
+                oSession = _self.createSession(uri, null, null, e.document, e.basetime);
+            else {
+                oSession.model.load(e.document);
+                _self.$startSession(uri, e.basetime);
+            }
+        });
+
+        this.transport.addEventListener("leave", function(e) {
+            _self.endSession(e.uri);
+        });
+    };
+
+    this.$update = function(e){
+        var sData    = e.message.args ? [e.message] : e.message;
+        var oData    = typeof sData == "string"
+                ? apf.unserialize(sData)
+                : sData;
+        var oSession = this.$sessions[e.uri];
+        var i        = 0;
+        var l        = oData.length;
+
+        for (; i < l; i++)
+            this.$receiveChange(oData[i], oSession, e.annotator);
+    };
+
+    this.clear = function(){
+        this.$sessions = {};
+    };
+
+    /**
+     * Create a new RDB session based on a URI.
+     * @param uri
+     * @param model
+     * @param xpath
+     */
+    this.createSession = function(uri, model, xpath, doc, iTime){
+        this.log && this.log(this.logprefix + "Creating session for " + uri);
+
+        if (!model)
+            model = this.dispatchEvent("modelfind", {uri: uri});
+        if (model) {
+            delete model.src;
+            //@todo if this model is in a session stop that session
+        }
+        else
+            model = new apf.model(); //apf.nameserver.register("model", id, );
+
+        model.setProperty("remote", this);
+        model.rdb = this;
+        model.src = uri;
+
+        var oSession = this.$addSession(uri, model, xpath);
+
+        //We received the document and load it
+        if (doc) {
+            model.load(doc);
+            this.$startSession(uri, iTime);
+        }
+        //We did not receive a document and will issue a join request to the server
+        else {
+            //If the transport is already connected, let
+            if (this.transport && this.transport.isConnected()) {
+                var _self = this;
+                this.transport.join(uri, function(uri, iTime) {
+                    _self.$startSession(uri, iTime);
+                });
+            }
+        }
+
+        return oSession;
+    };
+
+    /**
+     * Terminate an RDB session based on a URI.
+     * @param uri
+     */
+    this.endSession = function(uri) {
+        if (!this.$sessions || !this.$sessions[uri])
+            return;
+
+        var oSession = this.$sessions[uri];
+        if (this.transport && this.transport.isConnected() && oSession.state != apf.remote.SESSION_TERMINATED)
+            this.transport.leave(uri);
+
+        oSession.state = apf.remote.SESSION_TERMINATED;
+
+        delete this.$sessions[uri];
+    };
+
+    this.$addSession = function(uri, model, xpath){
+        delete this.$sessions[uri];
+
+        return this.$sessions[uri] = {
+            uri   : uri,
+            model : model,
+            xpath : xpath,
+            state : apf.remote.SESSION_INITED
+        };
+    };
+
+    this.$startSession = function(uri, basetime){
+        var oSession = this.$sessions[uri];
+
+        if (!oSession) {
+            
+            return false;
+        }
+
+        oSession.state = apf.remote.SESSION_STARTED;
+        if (basetime && !oSession.basetime)
+            oSession.basetime = basetime;
+
+        
+    };
+
+    this.$queueMessage = function(args, model, qHost){
+        if (!qHost.rdbQueue)
+            qHost.rdbQueue = {};
+
+        var uri      = model.src;
+        var oSession = this.$sessions[uri];
+
+        
+
+        if (!qHost.rdbQueue[uri]) {
+            qHost.rdbQueue[uri] = [];
+            qHost.rdbModel      = model;
+        }
+
+        for (var node, i = 0, l = args.length; i < l; ++i) {
+            if ((node = args[i]) && node.nodeType) {
+                //@todo some changes should not be sent to the server
+                if (args[0] == "setAttribute" && args[2] == "level"
+                  && args[1] == args[1].ownerDocument.documentElement)
+                    return false; //@todo refactor and make configurable
+
+                args[i] = this.xmlToXpath(args[i], model.data);
+            }
+            else if (node && node.dataType == apf.ARRAY) {
+                for (var j = 0; j < node.length; j++) {
+                    if (node[j] && node[j].nodeType)
+                        node[j] = this.xmlToXpath(node[j], model.data);
+                }
+            }
+        }
+
+        qHost.rdbQueue[uri].push({
+            uri       : uri,
+            args      : args,
+            currdelta : (new Date()).toISOString() - oSession.basetime
+        });
+    };
+
+    this.$processQueue = function(qHost){
+        if (qHost === this)
+            clearTimeout(this.queueTimer);
+        if (apf.xmldb.disableRDB)
+            return;
+
+        var list;
+        for (var uri in qHost.rdbQueue) {
+            if (!(list = qHost.rdbQueue[uri]).length)
+                continue;
+
+            
+
+            if (this.transport)
+                this.transport.sendUpdate(uri, JSON.stringify(list));
+
+            this.dispatchEvent("rdbsend", {
+                uri     : uri,
+                message : list
+            });
+        }
+
+        qHost.rdbQueue = {};
+    };
+
+    this.$receiveChange = function(oMessage, oSession, sAnnotator){
+        //if (apf.xmldb.disableRDB) {
+            this.log && this.log(this.logprefix + "Receiving change. disableRDB=" + apf.xmldb.disableRDB);
+            //return;
+        //}
+
+        
+
+        if (!oSession && oMessage.uri)
+            oSession = this.$sessions[oMessage.uri];
+
+        if (!oSession) {
+            
+            return;
+        }
+
+        //if (oMessage.timestamp < this.discardBefore) //@todo discardBefore
+            //return;
+
+        var model = oSession.model;
+        if (!model) {
+            
+            return;
+        }
+        if (!model.$at)
+            model.$at = apf.window.$at; //@todo find better solution to the case of a missing ActionTracker...
+
+        var oError, xmlNode, disableRDB = apf.xmldb.disableRDB;
+        apf.xmldb.disableRDB = 2; //Feedback prevention
+
+        // Correct timestamp with the session basetime
+        var time = oSession.basetime + parseInt(oMessage.currdelta, 10);
+
+        
+
+        // Undo all items until state is equal to when message was executed on original client.
+        var aUndos = []; //model.$at.getDone(time),
+        var i      = 0;
+        var l      = aUndos.length;
+        if (l) {
+            for (; i < l; ++i)
+                aUndos[i].$dontapply = true;
+            model.$at.undo(l);
+        }
+
+        //Fetch node based on their xpath
+        var q     = oMessage.args.slice();
+        var xpath = q[1];
+        xmlNode = q[1] = this.xpathToXml(xpath, model.data);
+        if (xmlNode) {
+            var action = q.shift();
+
+            if (action == "addChildNode")
+                q[3] = this.xpathToXml(q[3], model.data);
+            else if (action == "appendChild") {
+                q[1] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
+            }
+            else if (action == "moveNode") {
+                q[1] = this.xpathToXml(q[1], model.data);
+                q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
+            }
+            else if (action == "replaceNode") {
+                q[0] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[1] = xmlNode;
+            }
+            else if (action == "removeNodeList") {
+                var arr = q[0];
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = this.xpathToXml(arr[i], model.data);
+                }
+            }
+            else if (action == "setValueByXpath") {}
+
+            // pass the action to the actiontracker to execute it
+            model.$at.execute({
+                action   : action,
+                args     : q,
+                annotator: sAnnotator,
+                message  : oMessage,
+                rdb      : true
+            });
+
+            this.dispatchEvent("change", {
+                uri      : oMessage.uri,
+                model    : model,
+                xmlNode  : xmlNode,
+                message  : oMessage
+            });
+        }
+        
+
+        if (l) {
+            model.$at.redo(l);
+            for (i = 0; i < l; ++i)
+                delete aUndos[i].$dontapply;
+        }
+
+        apf.xmldb.disableRDB = disableRDB;
+
+        if (oError) {
+            apf.console.error(this.logprefix + oError.message)
+        }
+    };
+
+    this.xmlToXpath = apf.xmlToXpath;
+    this.xpathToXml = apf.xpathToXml;
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        
+
+        
+    });
+
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        for (var i = 0, l = this.$sessions.length; i < l; ++i)
+            this.endSession(this.$sessions[i].uri);
+    });
+}).call(apf.remote.prototype = new apf.AmlElement());
+
+apf.aml.setElement("remote", apf.remote);
+
+
+
 
 
 
@@ -59683,7 +60898,7 @@ apf.scrollbar = function(struct, tagName){
 
     this.$propHandlers["showonscroll"] = function(value){
         clearTimeout(this.$hideOnScrollTimer);
-        value=false
+        
         if (value) {
             this.$ext.style.display = "none";
         }
@@ -59937,7 +61152,6 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.animHideScrollbar = function(timeout, cb){
-    return
         var _self = this;
         return setTimeout(function(){
             if (_self.$hideOnScrollControl
@@ -60273,7 +61487,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                 if (apf.getStyle(pNode, "position") == "static") 
                     pNode.style.position = "relative";
                     
-                //sb.setProperty("showonscroll", true);
+                sb.setProperty("showonscroll", true);
                 sb.$ext.style.display = "block";
                 sb.setAttribute("top", top);
                 sb.setAttribute("right", right);
@@ -60339,7 +61553,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (!hasOnScroll())
                 return;
 
-            if (apf.findHost(e.toElement) != sb) {
+            var el = apf.findHost(e.toElement || e.rangeParent);
+            if (el != sb && el != sbShared.$viewport.amlNode) {
                 clearTimeout(timer);
                 hideScrollbar();
             }
@@ -62306,6 +63521,545 @@ apf.aml.setElement("spinner", apf.spinner);
  */
 
 
+/**
+ * @define vsplitbox Container that stacks two children vertically.
+ * @see element.hsplitbox
+ * @define hsplitbox Container that stacks two children horizontally.
+ * @addnode elements
+ * @constructor
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0
+ */
+apf.hsplitbox = function(struct, tagName){
+    this.$init(tagName || "hsplitbox", apf.NODE_VISIBLE, struct);
+};
+apf.vsplitbox = function(struct, tagName){
+    this.$init(tagName || "vsplitbox", apf.NODE_VISIBLE, struct);
+};
+
+(function(){
+    this.minwidth    = 0;
+    this.minheight   = 0;
+    
+    this.padding = 0;
+    this.edge = 0;
+    this.$edge = [0,0,0,0];
+    
+    /**** Properties and Attributes ****/
+
+    this.$focussable = false;
+    this.$useLateDom = true; 
+    this.$box        = true;
+    this.$layout     = true;
+    
+    /**
+     * @attribute {String}  padding      the space between each element. Defaults to 2.
+     * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
+     */
+    this.$booleanProperties["splitter"] = true;
+    this.$supportedProperties.push("padding", "edge", "splitter");
+    
+    this.$propHandlers["padding"] = function(value){
+        this.padding = parseInt(value);
+        
+        if (!this.$amlLoaded)
+            return;
+            
+        if (this.$handle)
+            this.$handle.$ext.style[this.$vbox ? "height" : "width"] = value + "px";
+        
+        var firstChild = this.getFirstChild();
+        var lastChild  = this.getSecondChild();
+        
+        if (this.$vbox) {
+            //Two flex children
+            if (this.flexChild2) {
+                if (firstChild.height) {
+                    lastChild.$ext.style.marginTop = firstChild.visible
+                        ? (this.$edge[0] + value 
+                            + apf.getHeightDiff(firstChild.$ext)) + "px"
+                        : 0;
+                }
+                else {
+                    firstChild.$ext.style.marginBottom = lastChild.visible
+                        ? (this.$edge[2] + value 
+                            + apf.getHeightDiff(lastChild.$ext)) + "px"
+                        : 0;
+                }
+            }
+            else if (this.fixedChild && this.fixedChild.visible) {
+                //One flex child (first)
+                if (this.flexChild1 == firstChild) {
+                    if (this.fixedChild.visible) {
+                        this.flexChild1.$ext.style.bottom = 
+                            (parseInt(this.fixedChild.height) + value + this.$edge[2]) + "px";
+                    }
+                }
+                    
+                //One flex child (last)
+                else if (this.flexChild1 == lastChild) {
+                    this.flexChild1.$ext.style.top = 
+                        (parseInt(this.fixedChild.height) + value + this.$edge[2]) + "px";
+                }
+            }
+        }
+        else {
+            //Two flex children
+            if (this.flexChild2) {
+                if (firstChild.width) {
+                    lastChild.$ext.style.marginLeft = 
+                        (this.$edge[3] + value 
+                            + apf.getWidthDiff(firstChild.$ext)) + "px";
+                }
+                else {
+                    firstChild.$ext.style.marginRight = 
+                        (this.$edge[1] + value 
+                            + apf.getWidthDiff(lastChild.$ext)) + "px";
+                }
+            }
+            else if (this.fixedChild && this.fixedChild.visible) {
+                //One flex child (first)
+                if (this.flexChild1 == firstChild) {
+                    this.flexChild1.$ext.style.right =   
+                        (parseInt(this.fixedChild.width) + value + this.$edge[1]) + "px";
+                }
+                    
+                //One flex child (last)
+                else if (this.flexChild1 == lastChild) {
+                    this.flexChild1.$ext.style.left = 
+                        (parseInt(this.fixedChild.width) + value + this.$edge[3]) + "px";
+                }
+            }
+        }
+    }
+    
+    this.$propHandlers["splitter"] = function(value){
+        if (value) {
+            if (this.$handle)
+                this.$handle.show();
+            else {
+                this.$handle = this.insertBefore(
+                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                    this.lastChild);
+            }
+        }
+        else {
+            this.$handle.hide();//destroy(true, true);
+        }
+    }
+    
+    this.$propHandlers["edge"]  = function(value, setSize){
+        this.$edge = apf.getBox(value);
+        
+        if (!this.$amlLoaded)
+            return;
+        
+        var fNode = this.getFirstVisibleChild();
+        if (!fNode) {
+            this.hide();
+            return false;
+        }
+        fNode.$ext.style.left = (this.$edge[3] + fNode.$margin[3]) + "px";
+        fNode.$ext.style.top = (this.$edge[0] + fNode.$margin[0]) + "px";
+        if (this.$vbox)
+            fNode.$ext.style.right = (this.$edge[1] + fNode.$margin[1]) + "px";
+        else
+            fNode.$ext.style.bottom = (this.$edge[2] + fNode.$margin[2]) + "px";
+        
+        var lNode = this.getSecondVisibleChild();
+        if (lNode && lNode.visible) {
+            lNode.$ext.style.right = (this.$edge[1] + lNode.$margin[1]) + "px";
+            lNode.$ext.style.bottom = (this.$edge[2] + lNode.$margin[2]) + "px";
+            if (this.$vbox) {
+                var isPercentage;
+                
+                lNode.$ext.style.left = (this.$edge[3] + lNode.$margin[3]) + "px";
+                if (fNode.height) {
+                    isPercentage = String(fNode.height).indexOf("%") > -1;
+                    lNode.$ext.style.top = isPercentage 
+                        ? fNode.height 
+                        : ((parseInt(fNode.height) + this.padding 
+                            + this.$edge[0] + fNode.$margin[0]) + "px");
+                    
+                    if (this.$handle) {
+                        this.$handle.$ext.style.top = isPercentage
+                            ? fNode.height 
+                            : ((parseInt(fNode.height) + this.$edge[0]) + "px");
+                        this.$handle.$ext.style.marginTop = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
+                else {
+                    isPercentage = String(lNode.height).indexOf("%") > -1;
+                    lNode.$ext.style.top = "";
+                    fNode.$ext.style.bottom = isPercentage 
+                        ? lNode.height 
+                        : ((parseInt(lNode.height) + this.padding 
+                            + this.$edge[2] + lNode.$margin[2]) + "px");
+                    
+                    if (this.$handle) {
+                        this.$handle.$ext.style.bottom = isPercentage
+                            ? lNode.height 
+                            : ((parseInt(lNode.height) + this.$edge[0]) + "px");
+                        this.$handle.$ext.style.marginBottom = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
+                
+                if (this.$handle) {
+                    this.$handle.$ext.style.left = this.$edge[3] + "px";
+                    this.$handle.$ext.style.right = this.$edge[1] + "px";
+                }
+            }
+            else {
+                lNode.$ext.style.top = this.$edge[0] + "px";
+                
+                if (fNode.width) {
+                    var isPercentage = String(fNode.width).indexOf("%") > -1;
+                    lNode.$ext.style.left = isPercentage
+                        ? fNode.width 
+                        : ((parseInt(fNode.width) + this.padding 
+                            + this.$edge[3] + fNode.$margin[3]) + "px");
+                    
+                    if (this.$handle) {
+                        this.$handle.$ext.style.left = isPercentage
+                            ? fNode.width 
+                            : ((parseInt(fNode.width) + this.$edge[3]) + "px");
+                        this.$handle.$ext.style.marginLeft = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
+                else {
+                    var isPercentage = String(lNode.width).indexOf("%") > -1;
+                    lNode.$ext.style.left = "";
+                    fNode.$ext.style.right = isPercentage
+                        ? lNode.width 
+                        : ((parseInt(lNode.width) + this.padding 
+                            + this.$edge[1] + lNode.$margin[1]) + "px");
+                    
+                    if (this.$handle) {
+                        this.$handle.$ext.style.right = isPercentage
+                            ? lNode.width 
+                            : ((parseInt(lNode.width) + this.$edge[3]) + "px");
+                        this.$handle.$ext.style.marginRight = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
+                
+                if (this.$handle) {
+                    this.$handle.$ext.style.top = this.$edge[0] + "px";
+                    this.$handle.$ext.style.bottom = this.$edge[2] + "px";
+                }
+            }
+            
+            if (this.$handle)
+                this.$handle.$ext.style.position = "absolute";
+        }
+        else {
+            if (!this.$vbox) {
+                fNode.$ext.style.right = (this.$edge[1] + fNode.$margin[1]) + "px";
+                fNode.$ext.style.width = "";
+            }
+            else {
+                fNode.$ext.style.bottom = (this.$edge[2] + fNode.$margin[2]) + "px";
+                fNode.$ext.style.height = "";
+            }
+            
+            if (this.$handle)
+                this.$handle.hide();
+        }
+        
+        if (setSize === true) {
+            var size = this.$vbox ? "height" : "width";
+            fNode.$propHandlers[size].call(fNode, fNode[size]);
+        }
+    };
+    
+    this.getFirstChild = function(startNode) {
+        var node = startNode || this.firstChild;
+        while (node && node.$splitter) {
+            node = node.nextSibling;
+        }
+        return node || false;
+    }
+    this.getSecondChild = function(){
+        var node = this.getFirstChild();
+        if (!node)
+            return false;
+        return node.nextSibling && this.getFirstChild(node.nextSibling);
+    }
+    
+    this.getFirstVisibleChild = function(startNode){
+        var node = startNode || this.firstChild;
+        while (node && (!node.visible || node.$splitter)) {
+            node = node.nextSibling;
+        }
+        if (node && node.visible)
+            return node;
+        return false;
+    }
+    
+    this.getSecondVisibleChild = function(){
+        var node = this.getFirstVisibleChild();
+        if (!node)
+            return false;
+        return node.nextSibling && this.getFirstVisibleChild(node.nextSibling);
+    }
+    
+    function visibleHandler(e){
+        if (this.parentNode.$handle) {
+            if (!e.value || this.parentNode.childNodes.length < 3)
+                this.parentNode.$handle.hide();
+            else
+                this.parentNode.$handle.show();
+        }
+        
+        if (e.value && !this.parentNode.visible)
+            this.parentNode.show();
+        
+        this.parentNode.$propHandlers.edge
+            .call(this.parentNode, this.parentNode.edge, true);
+        
+        apf.layout.forceResize(this.parentNode.$int);
+        
+        //Change margin
+        this.parentNode.$propHandlers.padding
+            .call(this.parentNode, this.parentNode.padding)
+    }
+    
+    var handlers = {
+        "width" : function(value){
+            //@todo this should check the largest and only allow that one
+            //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
+                //return;
+            
+            //@todo change fixedChild flexChild1 and flexChild2 based on this
+
+            this.$ext.style.width = !apf.isNot(value) 
+                ? (parseFloat(value) == value 
+                    ? (value - apf.getWidthDiff(this.$ext)) + "px"
+                    : value)
+                : "";
+            
+            //This can be optimized
+            if (this.$amlLoaded)
+                this.parentNode.$propHandlers["edge"].call(this.parentNode, this.parentNode.edge);
+        },
+        
+        "height" : function(value){
+            //@todo this should check the largest and only allow that one
+            //if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
+                //return;
+
+            //@todo change fixedChild flexChild1 and flexChild2 based on this
+
+            this.$ext.style.height = !apf.isNot(value) 
+                ? (parseFloat(value) == value 
+                    ? (value - apf.getHeightDiff(this.$ext)) + "px"
+                    : value)
+                : "";
+            
+            //This can be optimized
+            if (this.$amlLoaded)
+                this.parentNode.$propHandlers["edge"].call(this.parentNode, this.parentNode.edge);
+        },
+        
+        "margin" : function(value){
+            this.$margin = apf.getBox(value);
+            
+            //This can be optimized
+            if (this.$amlLoaded)
+                this.parentNode.$propHandlers["edge"].call(this.parentNode, this.parentNode.edge);
+        }
+    }
+    
+    this.register = function(amlNode, insert){
+        if (amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
+            return;
+
+        amlNode.$margin = [0, 0, 0, 0];
+        
+        amlNode.$propHandlers["left"]   = 
+        amlNode.$propHandlers["top"]    = 
+        amlNode.$propHandlers["right"]  = 
+        amlNode.$propHandlers["bottom"] = apf.K;
+
+        for (var prop in handlers) {
+            amlNode.$propHandlers[prop] = handlers[prop];
+        }
+
+        if (this.flexChild1 && this.flexChild1 == amlNode){ }
+        else if (this.$vbox) {
+            if (!amlNode.height || String(amlNode.height).indexOf("%") > -1)
+                this[!this.flexChild1 ? "flexChild1" : "flexChild2"] = amlNode;
+            else
+                this.fixedChild = amlNode;
+        }
+        else {
+            if (!amlNode.width || String(amlNode.width).indexOf("%") > -1)
+                this[!this.flexChild1 ? "flexChild1" : "flexChild2"] = amlNode;
+            else
+                this.fixedChild = amlNode;
+        }
+
+        amlNode.addEventListener("prop.visible", visibleHandler);
+        amlNode.$ext.style.position = "absolute";
+
+        if (amlNode.height)
+            handlers.height.call(amlNode, amlNode.height);
+        if (amlNode.width)
+            handlers.width.call(amlNode, amlNode.width);
+        if (amlNode.margin)
+            handlers.margin.call(amlNode, amlNode.margin);
+            
+        var isLast = this.lastChild == amlNode;
+        if (isLast || insert) {
+            this.$propHandlers["padding"].call(this, this.padding);
+            this.$propHandlers["edge"].call(this, this.edge);
+        }
+        
+        if (this.$handle && this.childNodes.length > 2)
+            this.$handle.show();
+    }
+    
+    this.unregister = function(amlNode){
+        if (!amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
+            return;
+        
+        delete amlNode.$margin;
+        
+        amlNode.$propHandlers["left"]   = 
+        amlNode.$propHandlers["top"]    = 
+        amlNode.$propHandlers["right"]  = 
+        amlNode.$propHandlers["bottom"] = null;
+        
+        for (var prop in handlers) {
+            delete amlNode.$propHandlers[prop];
+        }
+        
+        if (this.fixedChild == amlNode)
+            delete this.fixedChild;
+        else if (this.flexChild1 == amlNode)
+            delete this.flexChild1;
+        else if (this.flexChild2 == amlNode)
+            delete this.flexChild2;
+        
+        //Clear css properties and set layout
+        amlNode.removeEventListener("prop.visible", visibleHandler);
+        amlNode.$ext.style.display = amlNode.visible ? "block" : "none";
+        
+        if (amlNode.width)
+            amlNode.$ext.style.width = "";
+        if (amlNode.height)
+            amlNode.$ext.style.height = "";
+        amlNode.$ext.style.position = 
+        amlNode.$ext.style.left = 
+        amlNode.$ext.style.top = 
+        amlNode.$ext.style.right = 
+        amlNode.$ext.style.bottom = "";
+        
+        if (this.$handle)
+            this.$handle.hide();
+    }
+    
+    /**** DOM Hooks ****/
+    
+    this.addEventListener("DOMNodeRemoved", function(e){
+        if (e.$doOnlyAdmin || e.currentTarget == this)
+            return;
+
+        if (e.relatedNode == this){
+            this.unregister(e.currentTarget);
+            //e.currentTarget.$setLayout();
+        }
+    });
+
+    this.addEventListener("DOMNodeInserted", function(e){
+        if (e.currentTarget == this) {
+            if (this.visible)
+                this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
+            return;
+        }
+        
+        if (e.currentTarget.nodeType != 1 
+          || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
+            return;
+        
+//        if (this.$handle) {
+//            var _self = this;
+//            setTimeout(function(){
+//                if (_self.$handle.nextSibling != _self.lastChild)
+//                    _self.insertBefore(_self.$handle, _self.lastChild);
+//            });
+//        }
+
+        if (e.relatedNode == this && !e.$isMoveWithinParent) {
+            e.currentTarget.$setLayout(this.localName, true);
+            
+            if (e.currentTarget.$altExt) {
+                
+                return false;
+            }
+        }
+    });
+
+    this.$draw = function(){
+        var doc = this.$pHtmlNode.ownerDocument;
+        this.$ext = this.$pHtmlNode.appendChild(doc.createElement("div"));
+        if (this.getAttribute("style"))
+            this.$ext.setAttribute("style", this.getAttribute("style"));
+        this.$ext.className = this.localName;
+
+        this.$vbox = this.localName == "vsplitbox";
+        this.$int = this.$ext;
+        this.$ext.host = this;
+        
+        if (this.getAttribute("class")) 
+            apf.setStyleClass(this.$ext, this.getAttribute("class"));
+    };
+    
+    this.$loadAml = function(x){
+    };
+}).call(apf.vsplitbox.prototype = new apf.GuiElement());
+
+apf.hsplitbox.prototype = apf.vsplitbox.prototype;
+
+apf.aml.setElement("hsplitbox", apf.hsplitbox);
+apf.aml.setElement("vsplitbox", apf.vsplitbox);
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
 
 /**
  * Element displaying a skinnable rectangle which can contain other 
@@ -62369,7 +64123,10 @@ apf.splitbutton = function(struct, tagName){
             if (!self[value].$splitInited) {
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
-                    this.$ext.style.marginLeft = "-" + split.$button1.$ext.offsetWidth + "px";
+                    var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
+                        - apf.getAbsolutePosition(split.$button1.$ext)[0];
+                    
+                    this.$ext.style.marginLeft = "-" + diff + "px";
                 });
                 self[value].$splitInited = true;
             }
@@ -62559,7 +64316,7 @@ apf.splitter = function(struct, tagName){
             e.$oldParent.removeEventListener("DOMNodeRemoved", this.$siblingChange);
         }*/
         
-        this.init();
+        this.init && this.init();
     });
     
     /*this.$siblingChange = function(e){
@@ -62568,292 +64325,15 @@ apf.splitter = function(struct, tagName){
         //this.init();
     }*/
     
-    this.update = function(newPos, finalPass){
-        with (this.$info) {
-            //var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
-            var max = this.$previous 
-                ? this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize]
-                : (this.parentNode).getWidth();
-            var method = finalPass ? "setAttribute" : "setProperty";
-            if (apf.hasFlexibleBox)
-                newPos -= this.$previous ? apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1] : 0;
-
-            //Both flex
-            if (this.$previous && this.$next && (this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
-                if (!finalPass && !this.realtime) 
-                    newPos -= this.$ext[offsetSize];
-
-                //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                if (!this.$scale || this.$scale == 1)
-                    this.$previous[method]("flex", newPos);
-                if (!this.$scale || this.$scale == 2)
-                    this.$next[method]("flex", this.$totalFlex - newPos);
-            }
-            //Fixed
-            else {
-                if (this.$next && !this.$next.flex && (!this.$scale || this.$scale == 2))
-                    this.$next[method](osize, max - newPos);
-                if (this.$previous && !this.$previous.flex && (!this.$scale || this.$scale == 1))
-                    this.$previous[method](osize, newPos);
-            }
-        }
-
-        if (apf.hasSingleResizeEvent)
-            apf.layout.forceResize(this.$ext.parentNode);
-    };
-    
-    this.$setSiblings = function(){
-        this.$previous = this.previousSibling;
-        while(this.$previous && (this.$previous.nodeType != 1 
-          || this.$previous.visible === false 
-          || this.$previous.nodeFunc != apf.NODE_VISIBLE))
-            this.$previous = this.$previous.previousSibling;
-        this.$next     = this.nextSibling;
-        while(this.$next && (this.$next.nodeType != 1 
-          || this.$next.visible === false 
-          || this.$next.nodeFunc != apf.NODE_VISIBLE))
-            this.$next = this.$next.nextSibling;
-    }
-    
-    this.init = function(size, refNode, oItem){
-        //this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
-        //this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
-        
-        this.$setSiblings();
-        
-        this.$thickness = null;
-        if (this.parentNode && this.parentNode.$box) {
-            this.setProperty("type", this.parentNode.localName == "vbox" 
-                ? "horizontal" 
-                : "vertical");
-            this.$thickness = parseInt(this.parentNode.padding);
-        }
-        
-        if (!this.$previous || !this.$next)
-            return this;
-        
-        with (this.$info) {
-            var diff = apf.getDiff(this.$ext);
-            if (!this.parentNode.$box) {
-                var iSize  = Math.max(
-                    this.$previous.$ext[offsetSize], this.$next.$ext[offsetSize]);
-                this.$ext.style[size] = (iSize - diff[d1]) + "px";
-            }
-
-            var iThick = this[osize] = this.$thickness 
-                || (this.$next[oOffsetPos] - this.$previous[oOffsetPos] 
-                    - this.$previous[oOffsetSize]);
-
-            this.$ext.style[osize] = (iThick - diff[d2]) + "px";
-        }
-        
-        return this;
-    };
-    
     this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$getExternal();
 
-        var _self = this;
-        this.$ext.onmousedown = function(e){
-            if (!e)
-                e = event;
+        var template = "vbox|hbox".indexOf(this.parentNode.localName) > -1
+            ? "box" : "splitbox";
             
-            apf.dragMode = true; //prevent selection
-            
-            _self.$setSiblings();
-
-            var changedPosition, pHtml = _self.parentNode.$int, diff = 0;
-            if ("absolute|fixed|relative".indexOf(apf.getStyle(pHtml, "position")) == -1) {
-                pHtml.style.position = "relative";
-                changedPosition = true;
-            }
-
-            _self.$totalFlex = 0;
-            with (_self.$info) {
-                if (_self.$parent) {
-                    if (!_self.$previous) {
-                        var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
-                        var wd = _self.$parent.getWidth();
-                        
-                        if (_self.$scale == 2) {
-                            var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
-                            diff = (_self.parentNode.$int[offsetSize] - max);
-                            var min = max - wd - diff;
-                        }
-                    }
-                    else if (!_self.$next) {
-                        //@todo
-                    }
-                }
-                else {
-                    if (_self.$previous) {
-                        var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                        var min = _self.$scale 
-                            ? 0 
-                            : (posPrev[d1] || 0) + (parseInt(_self.$previous.minwidth) || 0);
-                    }
-                    if (_self.$next) {
-                        var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
-                        var max = posNext[d1] + _self.$next.$ext[offsetSize] 
-                            - this[offsetSize] - (parseInt(_self.$next.minwidth) || 0);
-                    }
-                }
-                
-                //Set flex to pixel sizes
-                if (_self.$previous && _self.$next) {
-                    if ((_self.$previous.flex || _self.$previous.flex === 0) 
-                      && (_self.$next.flex || _self.$next.flex === 0)) {
-                        var set = [], nodes = _self.parentNode.childNodes, padding = 0;
-                        for (var node, i = 0, l = nodes.length; i < l; i++) {
-                            if ((node = nodes[i]).visible === false 
-                              || node.nodeFunc != apf.NODE_VISIBLE || node.$splitter)
-                                continue;
-                            
-                            if (node.flex)
-                                set.push(node, node.$ext[offsetSize] 
-                                    + (apf.hasFlexibleBox && !_self.realtime && node == _self.$previous 
-                                        ? 2 * _self.parentNode.padding : 0));
-                        }
-                        for (var i = 0, l = set.length; i < l; i+=2) {
-                            set[i].setAttribute("flex", set[i+1]);
-                        }
-                    }
-                    
-                    _self.$totalFlex += _self.$next.flex + _self.$previous.flex;
-                }
-                
-                var startPos, startOffset;
-                if (apf.hasFlexibleBox) {
-                    var coords = apf.getAbsolutePosition(this);
-                    startPos = e[clientPos] - coords[d1];
-
-                    if (!_self.realtime) {
-                        if (_self.$previous.flex && !_self.$next.flex) {
-                            var mBox = apf.getBox(_self.$next.margin);
-                            mBox[x1] = _self.parentNode.padding;
-                            _self.$next.$ext.style.margin = mBox.join("px ") + "px";
-                        }
-                        else {
-                            var mBox = apf.getBox(_self.$previous.margin);
-                            mBox[x2] = _self.parentNode.padding;
-                            _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
-                        }
-                        
-                        var diff = apf.getDiff(this);
-                        this.style.left     = coords[0] + "px";
-                        this.style.top      = coords[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
-                        this.style.width    = (this.offsetWidth - diff[0]) + "px";
-                        this.style.height   = (this.offsetHeight - diff[1]) + "px";
-                        this.style.position = "absolute";
-                    }
-                }
-                else {
-                    var coords = apf.getAbsolutePosition(this.offsetParent);
-                    startOffset = apf.getAbsolutePosition(_self.$previous.$ext)[d1];
-                    startPos    = e[clientPos] - coords[d1];
-                    
-                    if (!_self.realtime) {
-                        this.style.left     = "0px";
-                        this.style.top      = "0px";
-                        this.style.position = "relative";
-                    }
-                    min = -1000; //@todo
-                }
-            }
-            
-            //e.returnValue  = false;
-            //e.cancelBubble = true;
-            //apf.stopEvent(e);
-            
-            
-            apf.plane.show(this);
-            
-
-            _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
-            
-            _self.$setStyleClass(document.body,
-                _self.type == "vertical" ? "w-resize" : "n-resize",
-                [_self.type == "vertical" ? "n-resize" : "w-resize"]);
-            
-            _self.dispatchEvent("dragstart");
-            
-            //@todo convert to proper way
-            document.onmouseup = function(e){
-                if(!e) e = event;
-                
-                with (_self.$info) {
-                    var newPos;
-                    if (e[clientPos] >= 0) {
-                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
-                            (apf.hasFlexibleBox ? startPos : startOffset)))) + diff;
-                    }
-                }
-
-                _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
-                _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
-                
-                if (changedPosition)
-                    pHtml.style.position = "";
-                
-                if (apf.hasFlexibleBox && !_self.realtime)
-                    (_self.$previous.flex && !_self.$next.flex
-                      ? _self.$next : _self.$previous).$ext.style.margin 
-                        = apf.getBox(_self.$previous.margin).join("px ") + "px";
-                
-                if (newPos)
-                    _self.update(newPos, true);
-                
-                
-                apf.plane.hide();
-                
-                
-                if (!_self.realtime) {
-                    _self.$ext.style.left     = "";
-                    _self.$ext.style.top      = "";
-                    _self.$ext.style[_self.$info.size] = "";
-                    _self.$ext.style.position = "";
-                }
-                
-                _self.dispatchEvent("dragdrop");
-                
-                document.onmouseup   = 
-                document.onmousemove = null;
-                
-                apf.dragMode = false; //return to default selection policy
-            };
-            
-            //@todo convert to proper way
-            document.onmousemove = function(e){
-                if(!e) e = event;
-        
-                with (_self.$info) {
-                    var newPos;
-                    if (e[clientPos] >= 0) {
-                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
-                            (apf.hasFlexibleBox || !_self.realtime ? startPos : startOffset)))) + diff;
-
-                        if (_self.realtime)
-                            _self.update(newPos);
-                        else {
-                            _self.$ext.style[pos] = newPos + "px";
-                        }
-                    }
-                }
-                
-                apf.stopEvent(e);
-                //e.returnValue  = false;
-                //e.cancelBubble = true;
-                
-                _self.dispatchEvent("dragmove");
-            };
-        }
-        
-        apf.queue.add("splitter" + this.$uniqueId, function(){
-            _self.init();
-        });
+        apf.extend(this, apf.splitter.templates[template]);
+        this.decorate();
     };
         
     this.$loadAml = function(x){
@@ -62861,6 +64341,476 @@ apf.splitter = function(struct, tagName){
             this.$propHandlers.realtime.call(this, this.realtime = true);
     };
 }).call(apf.splitter.prototype = new apf.Presentation());
+
+apf.splitter.templates = {
+    box : {
+        update : function(newPos, finalPass){
+            with (this.$info) {
+                //var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
+                var max = this.$previous 
+                    ? this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize]
+                    : (this.parentNode).getWidth();
+                var method = finalPass ? "setAttribute" : "setProperty";
+                if (apf.hasFlexibleBox)
+                    newPos -= this.$previous ? apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1] : 0;
+    
+                //Both flex
+                if (this.$previous && this.$next && (this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
+                    if (!finalPass && !this.realtime) 
+                        newPos -= this.$ext[offsetSize];
+    
+                    //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
+                    if (!this.$scale || this.$scale == 1)
+                        this.$previous[method]("flex", newPos);
+                    if (!this.$scale || this.$scale == 2)
+                        this.$next[method]("flex", this.$totalFlex - newPos);
+                }
+                //Fixed
+                else {
+                    if (this.$next && !this.$next.flex && (!this.$scale || this.$scale == 2))
+                        this.$next[method](osize, max - newPos);
+                    if (this.$previous && !this.$previous.flex && (!this.$scale || this.$scale == 1))
+                        this.$previous[method](osize, newPos);
+                }
+            }
+    
+            if (apf.hasSingleResizeEvent)
+                apf.layout.forceResize(this.$ext.parentNode);
+        },
+        
+        $setSiblings : function(){
+            this.$previous = this.previousSibling;
+            while(this.$previous && (this.$previous.nodeType != 1 
+              || this.$previous.visible === false 
+              || this.$previous.nodeFunc != apf.NODE_VISIBLE))
+                this.$previous = this.$previous.previousSibling;
+            this.$next     = this.nextSibling;
+            while(this.$next && (this.$next.nodeType != 1 
+              || this.$next.visible === false 
+              || this.$next.nodeFunc != apf.NODE_VISIBLE))
+                this.$next = this.$next.nextSibling;
+        },
+        
+        init : function(size, refNode, oItem){
+            //this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
+            //this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
+            
+            this.$setSiblings();
+            
+            this.$thickness = null;
+            if (this.parentNode && this.parentNode.$box) {
+                this.setProperty("type", this.parentNode.localName == "vbox" 
+                    ? "horizontal" 
+                    : "vertical");
+                this.$thickness = parseInt(this.parentNode.padding);
+            }
+            
+            if (!this.$previous || !this.$next)
+                return this;
+            
+            with (this.$info) {
+                var diff = apf.getDiff(this.$ext);
+                if (!this.parentNode.$box) {
+                    var iSize  = Math.max(
+                        this.$previous.$ext[offsetSize], this.$next.$ext[offsetSize]);
+                    this.$ext.style[size] = (iSize - diff[d1]) + "px";
+                }
+    
+                var iThick = this[osize] = this.$thickness 
+                    || (this.$next[oOffsetPos] - this.$previous[oOffsetPos] 
+                        - this.$previous[oOffsetSize]);
+    
+                this.$ext.style[osize] = (iThick - diff[d2]) + "px";
+            }
+            
+            return this;
+        },
+        
+        decorate : function(){
+            var _self = this;
+            this.$ext.onmousedown = function(e){
+                if (!e)
+                    e = event;
+                
+                if (_self.dispatchEvent("dragstart") === false)
+                    return;
+                
+                apf.dragMode = true; //prevent selection
+                
+                _self.$setSiblings();
+    
+                var changedPosition, pHtml = _self.parentNode.$int, diff = 0;
+                if ("absolute|fixed|relative".indexOf(apf.getStyle(pHtml, "position")) == -1) {
+                    pHtml.style.position = "relative";
+                    changedPosition = true;
+                }
+    
+                _self.$totalFlex = 0;
+                with (_self.$info) {
+                    if (_self.$parent) {
+                        if (!_self.$previous) {
+                            var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
+                            var wd = _self.$parent.getWidth();
+                            
+                            if (_self.$scale == 2) {
+                                var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
+                                diff = (_self.parentNode.$int[offsetSize] - max);
+                                var min = max - wd - diff;
+                            }
+                        }
+                        else if (!_self.$next) {
+                            //@todo
+                        }
+                    }
+                    else {
+                        if (_self.$previous) {
+                            var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
+                            var min = _self.$scale 
+                                ? 0 
+                                : (posPrev[d1] || 0) + (parseInt(_self.$previous.minwidth) || 0);
+                        }
+                        if (_self.$next) {
+                            var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
+                            var max = posNext[d1] + _self.$next.$ext[offsetSize] 
+                                - this[offsetSize] - (parseInt(_self.$next.minwidth) || 0);
+                        }
+                    }
+                    
+                    //Set flex to pixel sizes
+                    if (_self.$previous && _self.$next) {
+                        if ((_self.$previous.flex || _self.$previous.flex === 0) 
+                          && (_self.$next.flex || _self.$next.flex === 0)) {
+                            var set = [], nodes = _self.parentNode.childNodes, padding = 0;
+                            for (var node, i = 0, l = nodes.length; i < l; i++) {
+                                if ((node = nodes[i]).visible === false 
+                                  || node.nodeFunc != apf.NODE_VISIBLE || node.$splitter)
+                                    continue;
+                                
+                                if (node.flex)
+                                    set.push(node, node.$ext[offsetSize] 
+                                        + (apf.hasFlexibleBox && !_self.realtime && node == _self.$previous 
+                                            ? 2 * _self.parentNode.padding : 0));
+                            }
+                            for (var i = 0, l = set.length; i < l; i+=2) {
+                                set[i].setAttribute("flex", set[i+1]);
+                            }
+                        }
+                        
+                        _self.$totalFlex += _self.$next.flex + _self.$previous.flex;
+                    }
+                    
+                    var startPos, startOffset;
+                    if (apf.hasFlexibleBox) {
+                        var coords = apf.getAbsolutePosition(this);
+                        startPos = e[clientPos] - coords[d1];
+    
+                        if (!_self.realtime) {
+                            if (_self.$previous.flex && !_self.$next.flex) {
+                                var mBox = apf.getBox(_self.$next.margin);
+                                mBox[x1] = _self.parentNode.padding;
+                                _self.$next.$ext.style.margin = mBox.join("px ") + "px";
+                            }
+                            else {
+                                var mBox = apf.getBox(_self.$previous.margin);
+                                mBox[x2] = _self.parentNode.padding;
+                                _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                            }
+                            
+                            var diff = apf.getDiff(this);
+                            this.style.left     = coords[0] + "px";
+                            this.style.top      = coords[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
+                            this.style.width    = (this.offsetWidth - diff[0]) + "px";
+                            this.style.height   = (this.offsetHeight - diff[1]) + "px";
+                            this.style.position = "absolute";
+                        }
+                    }
+                    else {
+                        var coords = apf.getAbsolutePosition(this.offsetParent);
+                        startOffset = apf.getAbsolutePosition(_self.$previous.$ext)[d1];
+                        startPos    = e[clientPos] - coords[d1];
+                        
+                        if (!_self.realtime) {
+                            this.style.left     = "0px";
+                            this.style.top      = "0px";
+                            this.style.position = "relative";
+                        }
+                        min = -1000; //@todo
+                    }
+                }
+                
+                //e.returnValue  = false;
+                //e.cancelBubble = true;
+                //apf.stopEvent(e);
+                
+                
+                apf.plane.show(this);
+                
+    
+                _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
+                
+                _self.$setStyleClass(document.body,
+                    _self.type == "vertical" ? "w-resize" : "n-resize",
+                    [_self.type == "vertical" ? "n-resize" : "w-resize"]);
+                
+                //@todo convert to proper way
+                document.onmouseup = function(e){
+                    if(!e) e = event;
+                    
+                    with (_self.$info) {
+                        var newPos;
+                        if (e[clientPos] >= 0) {
+                            var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                                (apf.hasFlexibleBox ? startPos : startOffset)))) + diff;
+                        }
+                    }
+    
+                    _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
+                    _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                    
+                    if (changedPosition)
+                        pHtml.style.position = "";
+                    
+                    if (apf.hasFlexibleBox && !_self.realtime)
+                        (_self.$previous.flex && !_self.$next.flex
+                          ? _self.$next : _self.$previous).$ext.style.margin 
+                            = apf.getBox(_self.$previous.margin).join("px ") + "px";
+                    
+                    if (newPos)
+                        _self.update(newPos, true);
+                    
+                    
+                    apf.plane.hide();
+                    
+                    
+                    if (!_self.realtime) {
+                        _self.$ext.style.left     = "";
+                        _self.$ext.style.top      = "";
+                        _self.$ext.style[_self.$info.size] = "";
+                        _self.$ext.style.position = "";
+                    }
+                    
+                    _self.dispatchEvent("dragdrop");
+                    
+                    document.onmouseup   = 
+                    document.onmousemove = null;
+                    
+                    apf.dragMode = false; //return to default selection policy
+                };
+                
+                //@todo convert to proper way
+                document.onmousemove = function(e){
+                    if(!e) e = event;
+            
+                    with (_self.$info) {
+                        var newPos;
+                        if (e[clientPos] >= 0) {
+                            var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                                (apf.hasFlexibleBox || !_self.realtime ? startPos : startOffset)))) + diff;
+    
+                            if (_self.realtime)
+                                _self.update(newPos);
+                            else {
+                                _self.$ext.style[pos] = newPos + "px";
+                            }
+                        }
+                    }
+                    
+                    apf.stopEvent(e);
+                    //e.returnValue  = false;
+                    //e.cancelBubble = true;
+                    
+                    _self.dispatchEvent("dragmove");
+                };
+            }
+            
+            apf.queue.add("splitter" + this.$uniqueId, function(){
+                _self.init();
+            });
+        }
+    },
+    
+    splitbox : {
+        update : function(newPos, finalPass){
+            this[this.parentNode.$vbox ? "updateV" : "updateH"](newPos, finalPass);
+        },
+        
+        updateV : function(newPos, finalPass){
+            var method = finalPass ? "setAttribute" : "setProperty";
+            
+            var pNode = this.$parent || this.parentNode;
+            if (pNode.fixedChild) {
+                if (pNode.fixedChild == pNode.firstChild) {
+                    pNode.fixedChild[method]("height", newPos - pNode.$edge[0]);
+                }
+                else {
+                    pNode.fixedChild[method]("height", 
+                        apf.getHtmlInnerHeight(pNode.$int) - newPos 
+                        - pNode.padding - pNode.$edge[1]);
+                }
+            }
+            else if (pNode.firstChild.height) {
+                var total = apf.getHtmlInnerHeight(pNode.$int);
+                pNode.firstChild[method]("height", 
+                    ((newPos - pNode.$edge[0])/total*100) + "%");
+            }
+            else {
+                var total = apf.getHtmlInnerHeight(pNode.$int) ;
+                pNode.lastChild[method]("height", 
+                    ((total - newPos - pNode.$edge[2] - pNode.padding)/total*100) + "%");
+            }
+    
+            if (apf.hasSingleResizeEvent)
+                apf.layout.forceResize(this.$ext.parentNode);
+        },
+        
+        updateH : function(newPos, finalPass){
+            var method = finalPass ? "setAttribute" : "setProperty";
+
+            var pNode = this.$parent || this.parentNode;
+            if (pNode.fixedChild) {
+                if (pNode.fixedChild == pNode.firstChild) {
+                    pNode.fixedChild[method]("width", newPos - pNode.$edge[3]);
+                }
+                else {
+                    pNode.fixedChild[method]("width", 
+                        apf.getHtmlInnerWidth(pNode.$int) - newPos 
+                        - pNode.padding - pNode.$edge[2]);
+                }
+            }
+            else if (pNode.firstChild.width) {
+                var total = apf.getHtmlInnerWidth(pNode.$int);
+                pNode.firstChild[method]("width", 
+                    ((newPos - pNode.$edge[3])/total*100) + "%");
+            }
+            else {
+                var total = apf.getHtmlInnerWidth(pNode.$int) ;
+                pNode.lastChild[method]("width", 
+                    ((total - newPos - pNode.$edge[1] - pNode.padding)/total*100) + "%");
+            }
+    
+            if (apf.hasSingleResizeEvent)
+                apf.layout.forceResize(this.$ext.parentNode);
+        },
+        
+        $setSiblings : function(){
+            this.$previous = this.parentNode.firstChild
+            this.$next = this.parentNode.lastChild;
+        },
+        
+        decorate : function(){
+            var _self = this;
+            
+            if (this.parentNode && this.parentNode.$box) {
+                this.setProperty("type", this.parentNode.$vbox
+                    ? "horizontal" 
+                    : "vertical");
+            }
+            
+            this.$ext.onmousedown = function(e){
+                if (!e)
+                    e = event;
+
+                if (_self.dispatchEvent("dragstart") === false)
+                    return;
+
+                apf.dragMode = true; //prevent selection
+                
+                _self.$setSiblings();
+
+                var pNode = _self.$parent || _self.parentNode;
+                if (pNode.$vbox) {
+                    var min = parseInt(pNode.firstChild.minheight) + pNode.$edge[0];
+                    var max = apf.getHtmlInnerHeight(pNode.$ext) - pNode.lastChild.minheight 
+                        - pNode.$edge[2] - pNode.padding;
+                    var offset = e.layerY || e.offsetY;
+                }
+                else {
+                    var min = parseInt(pNode.firstChild.minwidth) + pNode.$edge[3];
+                    var max = apf.getHtmlInnerWidth(pNode.$ext) - pNode.lastChild.minwidth 
+                        - pNode.$edge[1] - pNode.padding;
+                    var offset = e.layerX || e.offsetX;
+                }
+                
+                function update(e, final){
+                    var newPos, coords;
+                    if (pNode.$vbox) {
+                        if (e.clientY >= 0) {
+                            coords = apf.getAbsolutePosition(_self.$parent ? _self.$parent.$ext : _self.$ext.offsetParent);
+                            newPos = Math.min(max, Math.max(min, (e.clientY - coords[1] - offset)));
+                        }
+                    }
+                    else {
+                        if (e.clientX >= 0) {
+                            coords = apf.getAbsolutePosition(_self.$parent ? _self.$parent.$ext : _self.$ext.offsetParent);
+                            newPos = Math.min(max, Math.max(min, (e.clientX - coords[0] - offset)));
+                        }
+                    }
+                    
+                    if (!newPos) return;
+                    
+                    if (_self.realtime || final)
+                        _self.update(newPos, final);
+                    else {
+                        _self.$ext.style[pNode.$vbox ? "top" : "left"] = newPos + "px";
+                    }
+                }
+    
+                
+                apf.plane.show(this);
+                
+    
+                _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
+                
+                _self.$setStyleClass(document.body,
+                    _self.type == "vertical" ? "w-resize" : "n-resize",
+                    [_self.type == "vertical" ? "n-resize" : "w-resize"]);
+                
+                //@todo convert to proper way
+                document.onmouseup = function(e){
+                    if (!e) e = event;
+                    
+                    _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
+                    _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                    
+                    update(e, true);
+                    
+                    
+                    apf.plane.hide();
+                    
+                    
+                    if (!_self.realtime) {
+                        _self.$ext.style.left     = "";
+                        _self.$ext.style.top      = "";
+                        _self.$ext.style[_self.$info.size] = "";
+                        _self.$ext.style.position = "";
+                    }
+                    
+                    _self.dispatchEvent("dragdrop");
+                    
+                    document.onmouseup   = 
+                    document.onmousemove = null;
+                    
+                    apf.dragMode = false; //return to default selection policy
+                };
+                
+                //@todo convert to proper way
+                document.onmousemove = function(e){
+                    if (!e) e = event;
+            
+                    update(e);
+                    
+                    apf.stopEvent(e);
+                    //e.returnValue  = false;
+                    //e.cancelBubble = true;
+                    
+                    _self.dispatchEvent("dragmove");
+                };
+            }
+        }
+    }
+};
 
 apf.aml.setElement("splitter", apf.splitter);
 
@@ -66089,8 +68039,8 @@ apf.webdav = function(struct, tagName){
                     return; // 401's are handled by the browser already, so no need for additional processing...
 
                 var sResponse = (extra.http.responseText || "");
-                if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
-                  && sResponse.indexOf("<?xml version=") == 0) {
+                if ((sResponse.length > 10 || sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != "")
+                  && sResponse.substr(0, 14) == "<?xml version=") {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
                             ? apf.xmlParseError(extra.http.responseXML)
@@ -67205,6 +69155,8 @@ apf.UndoData = function(settings, at){
     this.localName = "UndoData";
     this.extra     = {};
     
+    this.rdbQueue  = {};
+    
     apf.extend(this, settings);
 
     if (!this.timestamp)
@@ -67215,6 +69167,8 @@ apf.UndoData = function(settings, at){
     //Copy Constructor
     else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
+        
+        this.rdbArgs = settings.rdbArgs.slice();
         
     }
     //Constructor
@@ -67234,6 +69188,17 @@ apf.UndoData = function(settings, at){
 
     
 
+    
+    //Send RDB Message..
+    this.processRsbQueue = function(){
+        if (this.rdbModel)
+            this.rdbModel.rdb.$processQueue(this);
+    };
+
+    this.clearRsbQueue = function(){
+        this.rdbQueue =
+        this.rdbModel = null;
+    };
     
 
     /**
@@ -67256,6 +69221,8 @@ apf.UndoData = function(settings, at){
         }
 
         if (!dataInstruction) {
+            
+            this.processRsbQueue();
             
             return at.$queueNext(this);
         }
@@ -67546,7 +69513,15 @@ apf.actiontracker.actions = {
                 if (!q[i].extra)
                     q[i].extra = {};
                 
+                if (q[0].rdbModel)
+                    q[i].rdbQueue = q[0].rdbQueue;
+                
                 apf.actiontracker.actions[q[i].action](q[i], false, at);
+            }
+            
+            if (q[0].rdbModel) {
+                undoObj.rdbModel = q[0].rdbModel;
+                undoObj.rdbQueue = q[0].rdbQueue;
             }
             
         }
