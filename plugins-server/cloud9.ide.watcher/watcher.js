@@ -41,7 +41,7 @@ var WatcherPlugin = function(ide, workspace) {
     this.filenames = {};
     this.watchers = {};
     this.basePath  = ide.workspaceDir;
-}
+};
 
 util.inherits(WatcherPlugin, Plugin);
 
@@ -51,7 +51,7 @@ util.inherits(WatcherPlugin, Plugin);
         if (this.watchers[path])
             return;
         var _self = this;
-        vfs.watch(path, {persistent:false}, function (err, meta) {
+        vfs.watchFile(path, {persistent:false}, function (err, meta) {
             if (err) {
                 console.error("can't add watcher for " + path);
                 return;
@@ -64,24 +64,25 @@ util.inherits(WatcherPlugin, Plugin);
             var watcher = meta.watcher;
  
             watcher.on("change", function (currStat, prevStat) {
-                if (watcher.timeout)
-                    return;
-                watcher.timeout = setTimeout(function() {
-                    watcher.timeout = null;
-                    _self.onChange(path, currStat, prevStat);
-                }, 150);
+                _self.onChange(path, currStat, prevStat);
             });
             _self.watchers[path] = watcher;
         });
     };
 
     this.removeWatcher = function(path) {
-        delete this.filenames[path];
-        if (!this.watchers[path])
-            return;
-        this.watchers[path].close();
-        delete this.watchers[path];
-    }
+        vfs.unwatchFile(path, function (err) {
+            if (err) {
+                console.error("could not unwatch file: " + path);
+                return;
+            }
+            
+            delete this.filenames[path];
+            if (!this.watchers[path])
+                return;
+            delete this.watchers[path];
+        });
+    };
 
     this.disconnect = function() {
         for (var filename in this.filenames)
@@ -133,7 +134,7 @@ util.inherits(WatcherPlugin, Plugin);
     };
 
     this.onChange = function (path, currStat, prevStat) {
-        // console.log('Detected event', path, ignoredPaths);
+        console.log('Detected event', path, ignoredPaths);
         if (ignoredPaths[path]) {
             clearTimeout(ignoreTimers[path]);
             ignoreTimers[path] = setTimeout(function() {
@@ -144,6 +145,7 @@ util.inherits(WatcherPlugin, Plugin);
         }
 
         if (!currStat) {
+            console.log("removing");
             this.removeWatcher(path);
             this.send({
                 "type"      : "watcher",
@@ -166,6 +168,3 @@ util.inherits(WatcherPlugin, Plugin);
     }
 
 }).call(WatcherPlugin.prototype);
-
-
-
