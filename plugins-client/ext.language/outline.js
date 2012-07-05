@@ -166,7 +166,7 @@ module.exports = {
         this.$originalLine = cursor.row + 1;
         this.$originalColumn = cursor.column;
         
-        var selected = this.renderOutline(event.data.showNow);
+        // var selected = this.renderOutline(event.data.showNow);
         
         if (txtGoToFile.value.match(/^@/))
             this.showOutline();
@@ -286,7 +286,7 @@ module.exports = {
         if (lineVisibleStart <= line && lineEnd <= lineVisibleStart + linesVisible)
             return;
         var SAFETY = 1.5;
-        editor.scrollToLine(Math.round((line + lineEnd) / 2 - SAFETY), true)
+        editor.scrollToLine(Math.round((line + lineEnd) / 2 - SAFETY), true);
     },
     
     onKeyDown: function(e) {
@@ -334,27 +334,6 @@ module.exports = {
             this.renderOutline();
             this.scrollToTop(true);
             this.isDirty = false;
-        }
-    },
-    
-    getNodeAfter: function(node) {
-        if (node.childNodes[1] && treeOutline.isCollapsed(node.childNodes[1])) {
-            return node.childNodes[1];
-        } else {
-            while (!node.nextSibling && node.parentNode)
-                node = node.parentNode;
-            return node.nextSibling;
-        }
-    },
-    
-    getNodeBefore: function(node) {
-        if (node.previousSibling && node.previousSibling.attributes) {
-            node = node.previousSibling;
-            while (node.childNodes[1] && treeOutline.isCollapsed(node.childNodes[1]))
-                node = node.childNodes[1];
-            return node;
-        } else {
-            return node.parentNode == treeOutline.root ? null : node.parentNode;
         }
     },
     
