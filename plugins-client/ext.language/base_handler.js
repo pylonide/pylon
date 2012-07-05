@@ -63,7 +63,6 @@ module.exports = {
      * @param oldPath the path of the document that was active before
      */
     onDocumentOpen: function(path, doc, oldPath, callback) {
-        this.refactorInProgress = false;
         callback();
     },
     
@@ -72,7 +71,6 @@ module.exports = {
      * @param path the path of the file
      */
     onDocumentClose: function(path, callback) {
-        this.refactorInProgress = false;
         callback();
     },
     
@@ -162,9 +160,7 @@ module.exports = {
      * @param doc the Document object repersenting the source
      * @param oldId the old identifier wanted to be refactored
      */
-    onRenameBegin: function(doc) {
-      this.refactorInProgress = true;
-    },
+    onRenameBegin: function(doc) {},
 
     /**
      * Invoked when a refactor request is being finalized and waiting for a status
@@ -174,7 +170,6 @@ module.exports = {
      * @return boolean indicating whether to progress or an error message if refactoring failed
      */
     commitRename: function(doc, oldId, newName, callback) {
-        this.refactorInProgress = false;
         callback();
     },
 
@@ -182,7 +177,6 @@ module.exports = {
      * Invoked when a refactor request is cancelled
      */
     onRenameCancel: function(callback) {
-        this.refactorInProgress = false;
         callback();
     },
 

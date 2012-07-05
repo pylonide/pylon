@@ -143,6 +143,20 @@ var convertToHierarchyTree = function(doc, root) {
         this.$saveFileAndDo(doComplete);
     };
 
+    this.onDocumentOpen = function(path, doc, oldPath, callback) {
+        this.refactorInProgress = false;
+        callback();
+    };
+
+    this.onDocumentClose =function(path, callback) {
+        this.refactorInProgress = false;
+        callback();
+    };
+
+    this.onRenameBegin = function(doc) {
+      this.refactorInProgress = true;
+    },
+
     this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode /*null*/, callback) {
         
         var _self = this;
@@ -293,12 +307,14 @@ var convertToHierarchyTree = function(doc, root) {
           callback({success: message.success, body: message.body});
         });
         this.proxy.send(command);
+        this.refactorInProgress = false;
     };
 
     this.onRenameCancel = function(callback) {
         this.refactorInProgress = false;
         this.$saveFileAndDo(); // notify of ending the refactor
         callback();
+        this.refactorInProgress = false;
     };
 
     this.outline = function(doc, fullAst /*null*/, callback) {
