@@ -831,6 +831,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 });
                 break;
+
+            case "serverError":
+                throw new Error("Server error in " + message.body.fromMethod + ": " + message.body.msg);
         }
     },
 
@@ -1502,7 +1505,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ceEditor.$ext.style.right = "0";
         var page = tabEditors.getPage();
         if (!page) return;
-        
+
         page.$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });

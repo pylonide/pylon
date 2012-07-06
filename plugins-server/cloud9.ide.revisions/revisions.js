@@ -69,13 +69,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
         var self = this;
         if (message.subCommand) {
+            var _error = function(msg) {
+                this.broadcastError(message.subCommand, msg, user);
+            };
+
             switch (message.subCommand) {
                 // Directly save a revision. The revision has been precomputed
                 // on the client as is merely passed to the server in order to
                 // save it.
                 case "saveRevision":
                     if (!message.path) {
-                        return console.error("saveRevision: No path sent for the file to save");
+                        return _error("No path sent for the file to save");
                     }
 
                     this.savingQueue.push({
@@ -83,14 +87,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         revision: message.revision
                     }, function(err, revisionInfo) {
                         if (err) {
-                            return console.error(err);
+                            return _error(err.toString());
                         }
 
                         self.broadcastConfirmSave(message.path, revisionInfo.revision);
                         if (message.forceRevisionListResponse === true) {
                             self.getAllRevisions(revisionInfo.absPath, function(_err, revObj) {
                                 if (_err) {
-                                    return console.error(_err);
+                                    return _error("Error retrieving revisions for file " + revisionInfo.absPath);
                                 }
 
                                 self.broadcastRevisions.call(self, revObj, user, {
@@ -107,14 +111,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 // in order to get the current file).
                 case "getRevisionHistory":
                     if (!message.path) {
-                        return console.error("getRevisionHistory: No path sent for the file to save");
+                        return _error("No path sent for the file");
                     }
 
                     this.getRevisions(message.path, function(err, revObj) {
                         if (err) {
-                            return console.error(
-                                "There was a problem retrieving the revisions" +
-                                " for the file " + message.path + ":\n", err);
+                            return _error("There was a problem retrieving the revisions" +
+                                " for the file " + message.path + ":\n" + err);
                         }
 
                         self.broadcastRevisions.call(self, revObj, user, {
@@ -127,8 +130,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
                 case "getRealFileContents":
                     fs.readFile(message.path, "utf8", function (err, data) {
-                          if (err) {
-                              console.error(err);
+                        if (err) {
+                            return _error("There was a problem reading the contents for the file " +
+                                    message.path + ":\n" + err);
+
                           }
 
                           user.broadcast(JSON.stringify({
@@ -143,18 +148,18 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
                 case "closeFile":
                     if (!message.path) {
-                        return console.error("No path sent for the file to be closed");
+                        _error("No path sent for the file to be closed");
                     }
                     break;
 
                 case "removeRevision":
                     if (!message.path) {
-                        return console.error("No path sent for the file to be removed");
+                        return _error("No path sent for the file to be removed");
                     }
 
                     var path = this.getRevisionsPath(message.path);
                     if (message.isFolder === true) {
-                        fs.rmdir(path, {recursive: true}, function() {});
+                        fs.rmdir(path, { recursive: true }, function() {});
                     }
                     else {
                         fs.unlink(path + "." + FILE_SUFFIX);
@@ -163,7 +168,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
                 case "moveRevision":
                     if (!message.path || !message.newPath) {
-                        return console.error("Not enough paths sent for the file to be moved");
+                        return _error("Not enough paths sent for the file to be moved");
                     }
 
                     var fromPath = this.getRevisionsPath(message.path);
@@ -181,7 +186,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                             var renameFn = function() {
                                 fs.rename(fromPath, toPath, function(err) {
                                     if (err) {
-                                        console.error("There was an error moving " + fromPath + " to " + toPath);
+                                        _error("There was an error moving " + fromPath + " to " + toPath);
                                     }
                                 });
                             };
@@ -281,8 +286,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
         // Path of the final backup file inside the workspace
         var absPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
-        // Path to the directory wherein the revisions file stays
-        var parentDir = this.getRevisionsPath(Path.dirname(filePath));
 
         var self = this;
         // does the revisions file exists?
@@ -419,6 +422,20 @@ require("util").inherits(RevisionsPlugin, Plugin);
             path: path,
             ts: ts
         }));
+    };
+
+    this.broadcastError = function(fromMethod, msg, user) {
+        var receiver = user || this.ide;
+        var data = {
+            type: "revision",
+            subtype: "serverError",
+            body: {
+                fromMethod: fromMethod,
+                msg: msg
+            }
+        };
+
+        receiver.broadcast(JSON.stringify(data));
     };
 
     this.saveSingleRevision = function(path, revision, callback) {
