@@ -17,26 +17,26 @@
 
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",
-        "http-error": "~0.0.1",
-        "simple-template": "~0.0.1",
+        "http-error": "0.0.1",
+        "simple-template": "0.0.1",
 
-        "optimist": "~0.3.1",
+        "optimist": "0.3.4",
         "dryice": "0.4.2",
 
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4",
+        "amd-loader": "0.0.4",
         "async": "0.1.21",
-        "netutil": "~0.0.1",
-        "architect": ">=0.1.4",
-        "connect-architect": "~0.0.1"
+        "netutil": "0.0.1",
+        "architect": "0.1.4",
+        "connect-architect": "0.0.3"
     },
 
     "devDependencies": {
-        "nodeunit": "~0.7.4",
-        "sinon": "~1.3.4",
-        "rimraf": "~2.0.1",
-        "vfs-local": ">=0.1.x",
-        "vfs-nodefs-adapter": "~0.0.1"
+        "nodeunit": "0.7.4",
+        "sinon": "1.3.4",
+        "rimraf": "2.0.1",
+        "vfs-local": "0.1.4",
+        "vfs-nodefs-adapter": "0.0.4"
     },
 
     "mappings": {

@@ -69,6 +69,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
     this.$isTextInput      = true;
+    this.$activeFrame      = null;
 
     this.value             = "";
     this.multiline         = true;
@@ -208,9 +209,14 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc.setBreakpoints([]);
     };
 
-    this.afterOpenFile = function(doc) {
-        this.$updateMarker();
+    this.afterOpenFile = function(doc, path) {
         this.$updateBreakpoints(doc);
+        
+        // if we have a buffered frame with the correct path
+        if (this.$activeFrame && this.$activeFrame.script === path) {
+            // set the marker in this file
+            this.$updateMarker(this.$activeFrame);
+        }
     };
 
     this.$clearMarker = function () {
@@ -228,29 +234,21 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         return this.$debugger && this.$debugger.$updateMarkerPrerequisite();
     };
 
-    this.$updateMarker = function () {
+    this.$updateMarker = function (data) {
         this.$clearMarker();
-
-        var frame = this.$updateMarkerPrerequisite();
-        if (!frame) {
+        
+        if (!data) {
             return;
         }
+        
+        var row = data.line;
 
-        var script = this.xmlRoot;
-        if (script.getAttribute("scriptid") !== frame.getAttribute("scriptid")) {
-            return;
-        }
-
-        var head = this.$debugger.$mdlStack.queryNode("frame[1]");
-        var isTop = frame == head;
-        var lineOffset = parseInt(script.getAttribute("lineoffset") || "0", 10);
-        var row = parseInt(frame.getAttribute("line"), 10) - lineOffset;
         var range = new Range(row, 0, row + 1, 0);
-        this.$marker = this.$editor.getSession().addMarker(range, isTop ? "ace_step" : "ace_stack", "line");
-        var type = isTop ? "arrow" : "stack";
+        this.$marker = this.$editor.getSession().addMarker(range, "ace_step", "line");
+        var type = "arrow";
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
-        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10), false);
+        this.$editor.gotoLine(row + 1, data.column, false);
     };
 
     this.$updateBreakpoints = function(doc) {
@@ -421,8 +419,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["debugger"] = function(value, prop, inital) {
         if (this.$debugger) {
-            this.$debugger.removeEventListener("changeframe", this.$onChangeActiveFrame);
-            this.$debugger.removeEventListener("break", this.$onChangeActiveFrame);
+            this.$debugger.removeEventListener("break", this.$onBreak);
             this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
         }
 
@@ -446,19 +443,21 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         this.$updateMarker();
         var _self = this;
-        this.$onChangeActiveFrame = function(e) {
-            // if you dont have data, we aren't interested in ya
-            if (!e || !e.data) {
-                return;
-            }
-
-            _self.$updateMarker();
+        this.$onBreak = function(e) {
+            // buffer the active frame so we can keep track of the marker
+            // when navigating multiple files
+            _self.$activeFrame = e;
+            
+            _self.$updateMarker(e);
         };
         this.$onBeforeContinue = function() {
+            // clear it!
+            _self.$activeFrame = null;
+            
             _self.$clearMarker();
         };
-        this.$debugger.addEventListener("changeframe", this.$onChangeActiveFrame);
-        this.$debugger.addEventListener("break", this.$onChangeActiveFrame);
+        
+        this.$debugger.addEventListener("break", this.$onBreak);
         this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
     };
 
@@ -466,7 +465,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["model"] = function(value) {
         propModelHandler.call(this, value);
 
-        this.$updateMarker();
         this.$updateBreakpoints();
     };
 

@@ -11,20 +11,35 @@ var V8Debugger = module.exports = function(dbg, host) {
     this.$v8breakpoints = {};
 
     var _self = this;
-    dbg.addEventListener("changeRunning", function(e) {
+    
+    function onChangeRunning (e) {
         _self.dispatchEvent("changeRunning", e);
         if (dbg.isRunning()) {
             _self.setFrame(null);
         }
-    });
-    dbg.addEventListener("break", function(e) {
+    }
+    
+    function onBreak (e) {
         _self.dispatchEvent("break", e);
-    });
-    dbg.addEventListener("afterCompile", function(e) {
+    }
+    
+    function onAfterCompile (e) {
         _self.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
-    });
+    }
+    
+    // register event listeners
+    dbg.addEventListener("changeRunning", onChangeRunning);
+    dbg.addEventListener("break", onBreak);
+    dbg.addEventListener("afterCompile", onAfterCompile);
 
     this.setFrame(null);
+    
+    // on detach remove all event listeners
+    this.addEventListener("detach", function () {
+        dbg.removeEventListener("changeRunning", onChangeRunning);
+        dbg.removeEventListener("break", onBreak);
+        dbg.removeEventListener("afterCompile", onAfterCompile);
+    });
 };
 
 (function() {
