@@ -70,7 +70,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var self = this;
         if (message.subCommand) {
             var _error = function(msg) {
-                this.broadcastError(message.subCommand, msg, user);
+                self.broadcastError(message.subCommand, msg, user);
             };
 
             switch (message.subCommand) {
