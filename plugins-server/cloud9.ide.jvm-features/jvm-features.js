@@ -137,13 +137,12 @@ util.inherits(JVMFeatures, Plugin);
           function(err, port) {
             if (err)
               return _self.$error("Could not find a free port", 1, err);
-            _self.sandbox.getUnixId(function (err, unixId) {
-                var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
-                    _self.workspaceDir, unixId);
-                eclipseClient.on("output", console.log);
-                eclipseClient.on("err", console.error);
-                eclipseClient.initEclipseSession();
-            });
+
+            var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
+                _self.workspaceDir);
+            eclipseClient.on("output", console.log);
+            eclipseClient.on("err", console.error);
+            eclipseClient.initEclipseSession();
         });
         return true;
     };
