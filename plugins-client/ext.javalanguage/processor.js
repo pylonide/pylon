@@ -314,7 +314,6 @@ var convertToHierarchyTree = function(doc, root) {
         this.refactorInProgress = false;
         this.$saveFileAndDo(); // notify of ending the refactor
         callback();
-        this.refactorInProgress = false;
     };
 
     this.outline = function(doc, fullAst /*null*/, callback) {
