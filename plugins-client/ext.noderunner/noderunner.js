@@ -34,7 +34,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         dbg.addEventListener("break", function(e){
-            ide.dispatchEvent("break");
+            ide.dispatchEvent("break", e);
         });
 
         dbgNode.addEventListener("onsocketfind", function() {
@@ -182,7 +182,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         
         // this is a manual action, so we'll tell that to the debugger
         dbg.registerManualAttach();
-        if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
+        if (stProcessRunning.active || typeof path != "string")
             return false;
 
         stProcessRunning.activate()
