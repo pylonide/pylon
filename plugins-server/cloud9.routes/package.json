@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.routes",
+    "version": "0.0.1",
+
+    "main": "./routes-plugin",
+
+    "plugin": {
+        "provides": [
+            "ide-routes"
+        ],
+        "consumes": [
+            "connect",
+            "ide"
+        ]
+    }
+}

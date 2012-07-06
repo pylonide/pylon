@@ -407,8 +407,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 apf.setOpacity(winGoToFile.$ext, 1);
             }
             
-            txtGoToFile.select();
-            txtGoToFile.focus();
+            setTimeout(function(){
+                txtGoToFile.select();
+                txtGoToFile.focus();
+            });
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {

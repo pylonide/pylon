@@ -41,6 +41,16 @@ function worker(project) {
 
     var worker = copy.createDataObject();
     var workerProject = copy.createCommonJsProject(project);
+
+    // We don't get a return value from dryice, so we monkey patch error handling
+    var yeOldeError = console.error;
+    console.error = function() {
+        yeOldeError();
+        yeOldeError("@@@@ FATAL ERROR: DRYICE FAILED", arguments);
+        yeOldeError();
+        process.exit(1);
+    };
+    
     copy({
         source: [
             copy.source.commonjs({
@@ -74,6 +84,8 @@ function worker(project) {
         filter: [ /* copy.filter.uglifyjs */],
         dest: __dirname + "/plugins-client/lib.ace/www/worker/worker.js"
     });
+    
+    console.error = yeOldeError;
 }
 
 function filterTextPlugin(text) {
