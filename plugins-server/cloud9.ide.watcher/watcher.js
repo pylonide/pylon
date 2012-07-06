@@ -41,7 +41,7 @@ var WatcherPlugin = function(ide, workspace) {
     this.filenames = {};
     this.directoryWatchers = {};
     this.watchers = {};
-    this.basePath = ide.workspaceDir;
+    this.basePath  = ide.workspaceDir;
 };
 
 util.inherits(WatcherPlugin, Plugin);
@@ -80,7 +80,7 @@ util.inherits(WatcherPlugin, Plugin);
 
             var watcher = meta.watcher;
             if (!self.directoryWatchers[path]) {
-                if (watcher)
+				if (watcher)
                     watcher.close();
                 return;
             }
@@ -98,8 +98,8 @@ util.inherits(WatcherPlugin, Plugin);
         vfs.unwatchFile(path, function (err) {
             if (err) {
                 console.error("could not unwatch file: " + path);
-                return;
-            }
+            return;
+    }
 
             delete self.filenames[path];
             if (!self.watchers[path])
@@ -143,7 +143,7 @@ util.inherits(WatcherPlugin, Plugin);
         var type = message.type;
 
         path = this.basePath + (path ? "/" + path : "");
-
+        
         switch (type) {
             case "watchFile":
                 if (this.filenames[path]) {
@@ -199,46 +199,46 @@ util.inherits(WatcherPlugin, Plugin);
                 });
             }
 
-            var files = {};
-            vfs.readdir(path, {encoding: null}, function(err, meta) {
-                if (err)
-                    return console.error(err);
+                var files = {};
+                vfs.readdir(path, {encoding: null}, function(err, meta) {
+                    if (err)
+                        return console.error(err);
 
-                var stream = meta.stream;
+                    var stream = meta.stream;
 
-                stream.on("data", function(stat) {
-                    if (!stat || !stat.mime || !stat.name)
-                        return;
+                    stream.on("data", function(stat) {
+                        if (!stat || !stat.mime || !stat.name)
+                            return;
                     //if (new Date().valueOf() - stat.atime < 5000)
                         //console.log("Modified: " + path + "/" + stat.name); //
 
-                    files[stat.name] = {
-                        type : stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
-                        name : stat.name
-                    };
-                });
+                        files[stat.name] = {
+                            type : stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
+                            name : stat.name
+                        };
+                    });
 
-                var called;
-                stream.on("error", function(err) {
+                    var called;
+                    stream.on("error", function(err) {
                     if (called)
                         return;
-                    called = true;
-                    console.error(err);
-                });
+                        called = true;
+                        console.error(err);
+                    });
 
-                stream.on("end", function() {
+                    stream.on("end", function() {
                     if (called)
                         return;
-                    called = true;
-                    self.send({
-                        "type"      : "watcher",
+                        called = true;
+                        self.send({
+                            "type"      : "watcher",
                         "subtype"   : "directorychange",
-                        "path"      : path,
-                        "files"     : files,
-                        "lastmod"   : stat.mtime
+                            "path"      : path,
+                            "files"     : files,
+                            "lastmod"   : stat.mtime
+                        });
                     });
                 });
-            });
         });
     };
 
@@ -256,13 +256,13 @@ util.inherits(WatcherPlugin, Plugin);
         if (!currStat) {
             this.removeFileWatcher(path);
             this.send({
-                "type"      : "watcher",
+                    "type"      : "watcher",
                 "subtype"   : "remove",
                 "path"      : path
-            });
+                });
 
             return;
-        }
+            }
 
         this.send({
             "type"      : "watcher",
