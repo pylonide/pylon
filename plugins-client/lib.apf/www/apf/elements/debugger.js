@@ -78,6 +78,16 @@ apf.dbg = module.exports = function(struct, tagName){
             this.$debugger.setFrame(value);
             this.$ignoreFrameEvent = false;
         }
+        
+        // if we have a frame, emit a break event
+        if (value) {
+            this.dispatchEvent("break", {
+                column: Number(value.getAttribute("column")),
+                line: Number(value.getAttribute("line")),
+                script: value.getAttribute("script")
+            });
+        }
+        
         this.dispatchEvent("changeframe", {data: value});
     };
 
@@ -96,68 +106,116 @@ apf.dbg = module.exports = function(struct, tagName){
         this.autoAttachComingIn = false;
     };
 
+    /**
+     * Attach the debugger to the IDE
+     */
     this.attach = function(host, tab) {
         var _self = this;
 
         host.$attach(this, tab, function(err, dbgImpl) {
+            if (err) {
+                return console.error("Attaching console failed", err);
+            }
+            
             _self.$host = host;
             _self.$debugger = dbgImpl;
-
-            // give debugger time to initialize
-            setTimeout(function() {
-                if (!_self.$debugger)
-                    return;
-                
+            
+            // do some stuff after attaching and get the currently active frame
+            var afterAttachStep = function (callback) {
+                // load something?
                 _self.$loadSources(function() {
+                    // sync the breakpoints that we have in the IDE with the server
                     dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                        // do a backtrace
                         var backtraceModel = new apf.model();
                         backtraceModel.load("<frames></frames>");
-
+    
+                        // and if we find something
                         _self.$debugger.backtrace(backtraceModel, function() {
                             var frame = backtraceModel.queryNode("frame[1]");
-                            var allowAttach = _self.$allowAttaching(frame);
-
-                            if (!allowAttach) {
-                                _self.$debugger.continueScript();
-                            }
-                            else {
-                                _self.$mdlStack.load(backtraceModel.data);
-                                // throw out a nice break statement so others know that it fired
-                                _self.dispatchEvent("break");
-                            }
-
-                            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));
-
-                            _self.$stAttached.activate();
-                            _self.$stRunning.setProperty("active", dbgImpl.isRunning());
-
-                            dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
-                            dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
-                            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-
-                            // monitor the first incoming event to verify whether it's allowed
-                            // to attach here
-                            var firstChangeFrame = function () {
-                                if (_self.$allowAttaching(_self.$debugger.getActiveFrame())) {
-                                    _self.$onChangeFrame();
-                                    // now bind to the real changeFrame method
-                                    dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
-                                    dbgImpl.removeEventListener("changeFrame", firstChangeFrame);
-                                }
-                            };
-                            dbgImpl.addEventListener("changeFrame", firstChangeFrame);
-
-                            if (allowAttach) {
-                                _self.setProperty("activeframe", frame);
-                            }
-
-                            _self.autoAttachComingIn = false;
+                        
+                            // send some info about the current frame in the callback
+                            callback(frame, backtraceModel);
                         });
                     });
-                })
-            }, 1000);
-        })
+                });
+            };
+            
+            // register regular break and changeRunning events
+            var registerEvents = function () {
+                dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+                dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+            };
+            
+            // function called when we're doing an attach to a new process we just started
+            var newProcess = function () {
+                // the node.js debugger works that we need to wait for the
+                // first breakpoint to be hit, this probably works differently
+                // for other sources, but we'll see about that
+                var onFirstBreak = function (ev) {
+                    afterAttachStep(function (frame, stackModel) {
+                        var hasBreakpointOnThisFrame = _self.$allowAttaching(frame);
+                        if (hasBreakpointOnThisFrame) {
+                            // the line we broke on has an actual breakpoint
+                            // so let's break on it then
+                            _self.$onBreak(ev, stackModel);
+                            // and call the changeRunning as well
+                            _self.$onChangeRunning();
+                        }
+                        else {
+                            // otherwise step to the next breakpoint
+                            _self.continueScript();
+                        }
+                        
+                        // remove this listener
+                        dbgImpl.removeEventListener("break", onFirstBreak);
+                        
+                        // add the actual listeners for changeRunning & break
+                        registerEvents();
+                    });
+                };
+                
+                dbgImpl.addEventListener("break", onFirstBreak);
+            };
+            
+            // re-attach to an already running process
+            var existingProcess = function () {
+                afterAttachStep(function (frame, stackModel) {
+                    // send out a break statement for this frame
+                    if (frame) {
+                        _self.$onBreak({
+                            data: {
+                                sourceColumn: Number(frame.getAttribute("column")),
+                                sourceLine: Number(frame.getAttribute("line")),
+                                script: {
+                                    name: frame.getAttribute("script")
+                                }
+                            }
+                        }, stackModel);
+                        
+                        // make sure we register break events and such
+                        registerEvents();
+                    }
+                });
+            };
+            
+            // depending on this flag we'll call either of these functions
+            if (_self.autoAttachComingIn) {
+                existingProcess();
+            }
+            else {
+                newProcess();
+            }
+            
+            // afterCompile and detach handlers are perfectly fine here
+            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));                            
+            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+        });
 
+    };
+    
+    this.$attachFreshProcess = function () {
+        
     };
 
     this.$allowAttaching = function (frame) {
@@ -185,32 +243,41 @@ apf.dbg = module.exports = function(struct, tagName){
 
     this.$onChangeRunning = function() {
         var isRunning = this.$debugger && this.$debugger.isRunning();
-        if (this.$stRunning.active && !isRunning)
-            this.$onBreak();
-
         this.$stRunning.setProperty("active", isRunning);
-
-        //if (isRunning)
-            //this.$mdlStack.load("<frames />");
     };
 
-    this.$onBreak = function() {
+    this.$onBreak = function(e, stackModel) {
         var _self = this;
-        if (!this.$debugger || this.$debugger.isRunning())
-            return;
-
-        this.$debugger.backtrace(this.$mdlStack, function() {
-            if (_self.activeframe && !_self.$updateMarkerPrerequisite()) {
-                _self.continueScript();
-                return;
-            }
-            _self.dispatchEvent("break");
-        });
+        
+        var script = e.data.script.name;
+        if (e.currentTarget && e.currentTarget.stripPrefix) {
+            script = script.indexOf(e.currentTarget.stripPrefix) === 0 ?
+                script.substr(e.currentTarget.stripPrefix) :
+                script;
+        }
+        
+        var emit = function () {
+            _self.setProperty("activeframe", _self.$mdlStack.queryNode("frame[1]"));
+            // the active frame change will call the break itself
+        };
+        
+        // if we've got the model passed in, it's fine
+        if (stackModel) {
+            _self.$mdlStack.load(stackModel.data.xml);
+            emit();
+        }
+        // otherwise do a backtrace first
+        else {
+            _self.$debugger.backtrace(_self.$mdlStack, function () {
+                emit();
+            });
+        }
     };
 
     this.$updateMarkerPrerequisite = function () {
         return this.activeframe;
     };
+    
     this.$onAfterCompile = function(e) {
         var id = e.script.getAttribute("id");
         var oldNode = this.$mdlSources.queryNode("//file[@id='" + id + "']");
