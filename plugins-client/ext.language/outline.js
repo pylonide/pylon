@@ -17,6 +17,7 @@ var commands = require("ext/commands/commands");
 var gotofile = require("ext/gotofile/gotofile");
 var search = require("ext/gotofile/search");
 var outline;
+var COLLAPSE_AREA = 16;
 
 module.exports = {
     nodes: [],
@@ -82,8 +83,7 @@ module.exports = {
             treeOutline.addEventListener("click", function(e) {
                 _self.ignoreSelectOnce = false;
                 _self.onSelect(treeOutline.selected);
-                var COLLAPSE_AREA = 14;
-                if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + 14)
+                if (e.htmlEvent.x >= treeOutline.$container.getClientRects()[0].left + COLLAPSE_AREA)
                     gotofile.toggleDialog(-1);
             });
             txtGoToFile.addEventListener("blur", function() {

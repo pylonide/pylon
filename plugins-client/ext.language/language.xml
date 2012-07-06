@@ -14,7 +14,6 @@
           model           = "mdlOutline"
           openadd         = "false"
           startcollapsed  = "false"
-          nocollapse      = "true"
           empty-message   = "No outline available"
           loading-message = "Loading outline. One moment please..."
           maxheight       = "350"
