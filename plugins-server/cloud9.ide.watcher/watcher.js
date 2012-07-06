@@ -39,48 +39,72 @@ var WatcherPlugin = function(ide, workspace) {
     this.hooks = ["disconnect", "command"];
     this.name = name;
     this.filenames = {};
+    this.directoryWatchers = {};
     this.watchers = {};
-    this.basePath  = ide.workspaceDir;
+    this.basePath = ide.workspaceDir;
 };
 
 util.inherits(WatcherPlugin, Plugin);
 
 (function() {
 
-    this.addWatcher = function(path) {
+    this.addFileWatcher = function(path) {
         if (this.watchers[path])
             return;
-        var _self = this;
+        var self = this;
         vfs.watchFile(path, {persistent:false}, function (err, meta) {
-            if (err) {
-                console.error("can't add watcher for " + path);
-                return;
-            }
-            if (!_self.filenames[path]) {
+            if (err)
+                return console.error("can't add file watcher for " + path, err);
+
+            var watcher = meta.watcher;
+            if (!self.filenames[path])
+                return self.unwatchFile(path);
+ 
+            watcher.on("change", function (currStat, prevStat) {
+                self.onFileChange(path, currStat, prevStat);
+            });
+
+            self.watchers[path] = watcher;
+        });
+    };
+    
+    this.addDirectoryWatcher = function(path) {
+        var self = this;
+        vfs.watchDirectory(path, { persistent: false}, function (err, meta) {
+            if (err)
+                return console.error("can't add directory watcher for " + path, err);
+
+            self.directoryWatchers[path] = {
+                count    : 1
+            };
+
+            var watcher = meta.watcher;
+            if (!self.directoryWatchers[path]) {
                 if (watcher)
                     watcher.close();
                 return;
             }
-            var watcher = meta.watcher;
- 
-            watcher.on("change", function (currStat, prevStat) {
-                _self.onChange(path, currStat, prevStat);
+
+            watcher.on("change", function (event, filename) {
+                self.onDirectoryChange(path, event, filename);
             });
-            _self.watchers[path] = watcher;
+
+            self.directoryWatchers[path].watcher = watcher;
         });
     };
 
-    this.removeWatcher = function(path) {
+    this.removeFileWatcher = function(path) {
+        var self = this;
         vfs.unwatchFile(path, function (err) {
             if (err) {
                 console.error("could not unwatch file: " + path);
                 return;
             }
-            
-            delete this.filenames[path];
-            if (!this.watchers[path])
+
+            delete self.filenames[path];
+            if (!self.watchers[path])
                 return;
-            delete this.watchers[path];
+            delete self.watchers[path];
         });
     };
 
@@ -92,10 +116,23 @@ util.inherits(WatcherPlugin, Plugin);
 
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        if (filename in this.filenames && --this.filenames[filename] === 0) {
-            this.removeWatcher(filename);
-        }
+        if (filename in this.filenames && --this.filenames[filename] === 0)
+            this.removeFileWatcher(filename);
+
         return true;
+    };
+
+    this.unwatchDirectory = function(path) {
+        if (!this.directoryWatchers[path])
+            return false;
+
+        if (--this.directoryWatchers[path].count === 0)
+            this.removeDirectoryWatcher(path);
+    };
+
+    this.removeDirectoryWatcher = function(path) {
+        this.directoryWatchers[path].watcher.close();
+        delete this.directoryWatchers[path];
     };
 
     this.command = function(user, message, client) {
@@ -112,15 +149,26 @@ util.inherits(WatcherPlugin, Plugin);
                 if (this.filenames[path]) {
                     ++this.filenames[path];
                     // console.log("Already watching file " + path);
-                } else {
+                }
+                else {
                     // console.log("Watching file " + path);
-                    this.addWatcher(path)
+                    this.addFileWatcher(path);
                     this.filenames[path] = 1;
                     return;
                 }
-                return  true;
+                return true;
+            case "watchDirectory":
+                if (this.directoryWatchers[path]) {
+                    ++this.directoryWatchers[path].count;
+                }
+                else {
+                    this.addDirectoryWatcher(path);
+                }
+                return true;
             case "unwatchFile":
                 return this.unwatchFile(path);
+            case "unwatchDirectory":
+                return this.unwatchDirectory(path);
             default:
                 return false;
             }
@@ -128,13 +176,74 @@ util.inherits(WatcherPlugin, Plugin);
 
     this.dispose = function(callback) {
         for (var filename in this.filenames) {
-            this.removeWatcher(filename);
+            this.removeFileWatcher(filename);
         }
         callback();
     };
 
-    this.onChange = function (path, currStat, prevStat) {
-        console.log('Detected event', path, ignoredPaths);
+    this.onDirectoryChange = function (path, event, filename) {
+        //console.log("Directory update", path, event, filename);
+
+        var self = this;
+        vfs.stat(path, {}, function(err, stat) {
+            if (err)
+                return;
+
+            if (!stat) {
+                self.removeDirectoryWatcher(path);
+                self.send({
+                    "type"      : "watcher",
+                    "subtype"   : "remove",
+                    "path"      : path,
+                    "files"     : files
+                });
+            }
+
+            var files = {};
+            vfs.readdir(path, {encoding: null}, function(err, meta) {
+                if (err)
+                    return console.error(err);
+
+                var stream = meta.stream;
+
+                stream.on("data", function(stat) {
+                    if (!stat || !stat.mime || !stat.name)
+                        return;
+                    //if (new Date().valueOf() - stat.atime < 5000)
+                        //console.log("Modified: " + path + "/" + stat.name); //
+
+                    files[stat.name] = {
+                        type : stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
+                        name : stat.name
+                    };
+                });
+
+                var called;
+                stream.on("error", function(err) {
+                    if (called)
+                        return;
+                    called = true;
+                    console.error(err);
+                });
+
+                stream.on("end", function() {
+                    if (called)
+                        return;
+                    called = true;
+                    self.send({
+                        "type"      : "watcher",
+                        "subtype"   : "directorychange",
+                        "path"      : path,
+                        "files"     : files,
+                        "lastmod"   : stat.mtime
+                    });
+                });
+            });
+        });
+    };
+
+    this.onFileChange = function (path, currStat, prevStat) {
+        //console.log('Detected file change event', path);
         if (ignoredPaths[path]) {
             clearTimeout(ignoreTimers[path]);
             ignoreTimers[path] = setTimeout(function() {
@@ -145,26 +254,22 @@ util.inherits(WatcherPlugin, Plugin);
         }
 
         if (!currStat) {
-            console.log("removing");
-            this.removeWatcher(path);
+            this.removeFileWatcher(path);
             this.send({
                 "type"      : "watcher",
                 "subtype"   : "remove",
                 "path"      : path
-                //"files"     : files,
             });
 
             return;
         }
-         
+
         this.send({
             "type"      : "watcher",
             "subtype"   : "change",
             "path"      : path,
-            //"files"     : files,
             "lastmod"   : currStat.mtime
         });
-            //}
     }
 
 }).call(WatcherPlugin.prototype);
