@@ -658,22 +658,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
             case "recovery":
                 if (e.data.revision.nextAction === "storeAsRevision") {
-                    var c9DocContent = e.data.revision.finalContent;
-
                     // No need to send these over the wire.
                     delete e.data.revision.finalContent;
                     delete e.data.revision.realContent;
-
-                    var path, page;
-                    var pages = tabEditors.getPages();
-                    for (var i = 0; i < pages.length; i++) {
-                        page = pages[i];
-                        path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
-                        if (e.data.path === path) {
-                            page.$doc.setValue(c9DocContent);
-                            break;
-                        }
-                    }
 
                     ide.send({
                         command: "revisions",
