@@ -432,13 +432,17 @@ apf.BaseTree = function(){
         }
 
         if (!this.animation) {
-            var diff = apf.getHeightDiff(container),
-                oInt = container;
-
-            container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop = oInt.scrollHeight
-                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
-            finishSlide();
+                var diff = apf.getHeightDiff(container),
+                    oInt = container;
+    
+                // This fixes a bug that was introduced in Chrome 20
+                container.style.height = "10px";
+                oInt.scrollTop = 0;
+                // End fix
+                container.style.height = Math.max((height), 0) + "px";
+                oInt.scrollTop = oInt.scrollHeight
+                    - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+                finishSlide();
         }
         else {
             apf.tween.single(container, {
