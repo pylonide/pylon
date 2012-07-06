@@ -71,8 +71,6 @@ util.inherits(NodeRuntimePlugin, Plugin);
         if (!(/node/.test(message.runner)))
             return false;
         
-        console.log("COMMAND FROM CLIENT > ", cmd, message);
-        
         var res = true;
         switch (cmd) {
             case "run":
@@ -89,7 +87,12 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 break;
             case "debugnode":
                 this.pm.debug(message.pid, message.body, function(err) {
-                    console.log("DEBUGNODE TREW", err);
+                    if (err) {
+                        // uncommenting this helps with debugging, but we keep it
+                        // commented out for the moment, because it throws at the moment
+                        // that you stop the debugger, so we have to fix that some day
+                        // console.error("debugnode threw error", err)
+                    }
                 });
                 break;
             case "debugattachnode":
