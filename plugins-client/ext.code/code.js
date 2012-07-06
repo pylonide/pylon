@@ -456,8 +456,14 @@ module.exports = ext.register("ext/code/code", {
 
         ide.addEventListener("tab.afterswitch", function(e) {
             var editor = _self.amlEditor;
-            if (typeof editor != "undefined")
-                editor.afterOpenFile(editor.getSession());
+            if (typeof editor !== "undefined") {
+                // path without dav prefix and without trailing slashes
+                var path = (e.nextPage.name.indexOf(e.currentTarget.davPrefix) === 0 ?
+                    e.nextPage.name.substr(e.currentTarget.davPrefix.length) :
+                    e.nextPage.name).replace(/^\/+/, "")
+                
+                editor.afterOpenFile(editor.getSession(), path);
+            }
         });
 
         // Override ACE key bindings (conflict with goto definition)
