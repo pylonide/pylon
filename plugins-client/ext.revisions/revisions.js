@@ -833,7 +833,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "serverError":
-                throw new Error("Server error in " + message.body.fromMethod + ": " + message.body.msg);
+                console.error("Server error in " + message.body.fromMethod + ": " + message.body.msg);
         }
     },
 
