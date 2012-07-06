@@ -143,6 +143,20 @@ var convertToHierarchyTree = function(doc, root) {
         this.$saveFileAndDo(doComplete);
     };
 
+    this.onDocumentOpen = function(path, doc, oldPath, callback) {
+        this.refactorInProgress = false;
+        callback();
+    };
+
+    this.onDocumentClose =function(path, callback) {
+        this.refactorInProgress = false;
+        callback();
+    };
+
+    this.onRenameBegin = function(doc) {
+      this.refactorInProgress = true;
+    },
+
     this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode /*null*/, callback) {
         
         var _self = this;
@@ -269,7 +283,7 @@ var convertToHierarchyTree = function(doc, root) {
         this.$saveFileAndDo(doGetVariablePositions);
     };
 
-    this.finishRefactoring = function(doc, oldId, newName, callback) {
+    this.commitRename = function(doc, oldId, newName, callback) {
         var _self = this;
 
         var offset = calculateOffset(doc, oldId);
@@ -284,7 +298,7 @@ var convertToHierarchyTree = function(doc, root) {
           length: oldId.text.length
         };
 
-        // console.log("finishRefactoring called");
+        // console.log("commitRename called");
 
         this.proxy.once("result", "jvmfeatures:refactor", function(message) {
           _self.refactorInProgress = false;
@@ -293,12 +307,14 @@ var convertToHierarchyTree = function(doc, root) {
           callback({success: message.success, body: message.body});
         });
         this.proxy.send(command);
+        this.refactorInProgress = false;
     };
 
-    this.cancelRefactoring = function(callback) {
+    this.onRenameCancel = function(callback) {
         this.refactorInProgress = false;
         this.$saveFileAndDo(); // notify of ending the refactor
         callback();
+        this.refactorInProgress = false;
     };
 
     this.outline = function(doc, fullAst /*null*/, callback) {
