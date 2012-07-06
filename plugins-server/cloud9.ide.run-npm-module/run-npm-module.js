@@ -115,19 +115,20 @@ util.inherits(NpmRuntimePlugin, Plugin);
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
-        this.searchAndRunShell(message, function(err, found) {
-            if (err || found)
-                return cb(err, found);
+        // first try to find a module hook
+        self.searchForModuleHook(message.command, function(found, filePath) {
+            // if not found
+            if (!found) {
+                // then run it on the server via sh
+                self.searchAndRunShell(message, cb);
+                return;
+            }
 
-            self.searchForModuleHook(message.command, function(found, filePath) {
-                if (!found)
-                    return cb(null, false);
+            // otherwise execute the bastard!
+            if (message.argv.length)
+                message.argv.shift();
 
-                if (message.argv.length)
-                    message.argv.shift();
-
-                self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
-            });
+            self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
         });
     };
 
@@ -166,17 +167,20 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
             // use resolved command
             message.argv[0] = out.split("\n")[0];
-
+            
             self.pm.spawn("shell", {
                 command: "sh",
-                args: ["-c", message.argv.join(" ")],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message);
-
+                
+                // pipe the original line through to sh
+                child.child.stdin.write(message.line);
+                child.child.stdin.end();
+                    
                 self.children[pid] = child;
             });
         });

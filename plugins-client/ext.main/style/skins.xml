@@ -2843,7 +2843,7 @@
             border-radius: 6px 6px 6px 6px;
         }
         .btn-default-css3.btn-default-css3Focus .border {
-
+            display: block;
         }
         /*-----------*/
 
@@ -9454,7 +9454,12 @@
         padding      : 3px 20px 1px 20px;
     }
 ]]></a:style>
-
+<a:style condition="apf.isGecko"><![CDATA[
+    .tab_console .btncontainer .btntab {
+        float: left;
+        min-width: 70px;
+    }
+]]></a:style>
 <a:presentation>
     <a:main pages="." buttons="div[1]">
         <div class="tab_console">
@@ -12075,7 +12080,6 @@
             height:16px;
             padding-left:1px;
             margin-top:0px;
-            margin-left: 21px;
 
             font-family : Tahoma, Arial;
             font-size   : 11px;
@@ -12102,7 +12106,11 @@
             -webkit-box-shadow: 0px 0px 6px #76839A;
             box-shadow: 0px 0px 6px #76839A;
         }
-
+        
+        .filemgr-tree #txt_rename {
+            margin-left: 21px;
+        }
+        
         #txt_rename::selection {
             background: #90C3EF;
             }

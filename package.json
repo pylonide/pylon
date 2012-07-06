@@ -41,14 +41,14 @@
 
     "mappings": {
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/78975a0fc26eda9137b9caf11b63fe6f1ea7283f"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/0f03564345da764409b00e551a681337c7e1df96"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/855302855ba9e2953f74f93cd5ea56af2b6bf543"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/7fc5b36a5074668f40aad8b45f82a6fbbec04c88"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/aae84622919668b254733238a07d4673cbb863db"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/95c01e80688067ccb87b12f87c2ee8c3528d415c"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/ae07ff93310d1625c48119e98141bbe5b2c26200"],
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/cb8fd0483417ac6ffb8532b994d23dbf13ad9022"],
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/46f9d8ffdb159a2c206d41ed6ad877f471bb1e2f"],
         "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/9d0c0631f390538134a7d1f841db2c72d79f8cb4"]
       , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#e1d6748af3aca3589ce99db6f147ee06381007d4"],
         "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#08096259b10e15527304f3993460b3eb7e88b6e0"],

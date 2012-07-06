@@ -226,16 +226,15 @@ util.inherits(ShellPlugin, Plugin);
     };
 
     this["command-kill"] = function(message) {
-        var procExists = this.pm.kill(message.pid);
-
-        if (!procExists) {
-            this.sendResult(0, message.command, {
+        var self = this;
+        this.pm.kill(message.pid, function(err) {
+            self.sendResult(0, message.command, {
                 argv  : message.argv,
                 code  : -1,
-                err   : "Process does not exist or already exiting",
+                err   : err || "There was a problem exiting the process",
                 extra : message.extra
             });
-        }
+        });
     };
 
     this.getListing = function(tail, path, dirmode, callback) {

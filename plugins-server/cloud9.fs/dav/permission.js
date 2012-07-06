@@ -34,14 +34,13 @@ util.inherits(Permission, jsDAV_ServerPlugin);
     this.checkPermission = function(e, method) {
         var permissions = this.handler.server.permissions;
 
-        if (!permissions)
-            return e.next();
+        if (typeof permissions == "string") {
+            if (this.READ_METHODS[method] && permissions.indexOf("r") > -1)
+                return e.next();
 
-        if (this.READ_METHODS[method] && permissions.indexOf("r") > -1)
-            return e.next();
-
-        if (this.WRITE_METHODS[method] && permissions.indexOf("w") > -1)
-            return e.next();
+            if (this.WRITE_METHODS[method] && permissions.indexOf("w") > -1)
+                return e.next();
+        }
 
         this.handler.httpResponse.writeHead(403);
         this.handler.httpResponse.end("operation not permitted!");

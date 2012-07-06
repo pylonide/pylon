@@ -136,13 +136,13 @@ module.exports = ext.register("ext/language/language", {
             });
         }, true);
         
-        ide.addEventListener("settings.load", function(){
+        ide.addEventListener("settings.load", function() {
             settings.setDefaults("language", [
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
                 ["unusedFunctionArgs", "false"],
-                ["continuousComplete", cloud9config.hosted ? "true" : "false"] // always returns false _self.isInferAvailable() ? "true" : "false"]
+                ["continuousCompletion", _self.isInferAvailable() ? "true" : "false"]
             ]);
         });
 
@@ -150,7 +150,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     isInferAvailable : function() {
-        return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
+        return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
     init : function() {
@@ -244,7 +244,7 @@ module.exports = ext.register("ext/language/language", {
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
-        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") != "false";
+        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousCompletion") != "false";
         this.setPath();
     },
 
