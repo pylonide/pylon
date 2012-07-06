@@ -63,7 +63,6 @@ util.inherits(WatcherPlugin, Plugin);
             }
             var watcher = meta.watcher;
             watcher.on("change", function (event, filename) {
-                console.log(event, filename)
                 if (watcher.timeout)
                     return;
                 watcher.timeout = setTimeout(function() {
