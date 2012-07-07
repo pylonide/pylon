@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-tomorrow-night .ace_gutter {\
   background: #25282c;\
-  color: #333;\
+  color: #C5C8C6;\
 }\
 \
 .ace-tomorrow-night .ace_print_margin {\
@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow-night .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: #282A2E;\
 }\
 \
 .ace-tomorrow-night .ace_marker-layer .ace_selected_word {\
