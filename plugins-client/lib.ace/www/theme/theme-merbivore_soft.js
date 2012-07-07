@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-merbivore-soft .ace_gutter_active_line {\
-  background-color: #333435;\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-merbivore-soft .ace_marker-layer .ace_selected_word {\

@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-clouds-midnight .ace_gutter_active_line {\
-  background-color: rgba(215, 215, 215, 0.031);\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-clouds-midnight .ace_marker-layer .ace_selected_word {\

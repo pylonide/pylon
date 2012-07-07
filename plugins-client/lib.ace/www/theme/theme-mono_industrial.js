@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-mono-industrial .ace_gutter_active_line {\
-  background-color: rgba(12, 13, 12, 0.25);\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-mono-industrial .ace_marker-layer .ace_selected_word {\

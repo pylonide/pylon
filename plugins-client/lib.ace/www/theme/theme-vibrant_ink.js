@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-vibrant-ink .ace_gutter_active_line {\
-  background-color: #333333;\
+  background-color : #dcdcdc;\
 }\
 \
 .ace-vibrant-ink .ace_marker-layer .ace_selected_word {\
