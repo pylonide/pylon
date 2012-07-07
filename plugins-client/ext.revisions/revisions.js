@@ -833,7 +833,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "serverError":
-                console.error("Server error in " + message.body.fromMethod + ": " + message.body.msg);
+                if (console && console.error)
+                    console.error("Server error in " + message.body.fromMethod + ": " + message.body.msg);
         }
     },
 
@@ -981,7 +982,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             var contributors = "";
         if (revision.contributors && revision.contributors.length) {
             contributors = revision.contributors.map(contributorToXml).join("");
-            }
+        }
 
         xmlString += "<contributors>" + contributors + "</contributors></revision>";
         return xmlString;
