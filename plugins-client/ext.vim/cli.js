@@ -23,7 +23,7 @@ var cliCmds = exports.cliCmds = {
 
         var lines = editor.session.getLength();
         if (data.argv.length === 2) {
-            var path = ("/workspace/" + data.argv[1]).replace(/\/+/, "/");
+            var path = (ide.davPrefix + "/" + data.argv[1]).replace(/\/+/, "/");
             page.$model.data.setAttribute("path", path);
 
             save.saveas(page, function() {
@@ -46,10 +46,10 @@ var cliCmds = exports.cliCmds = {
             path = (ide.davPrefix + "/" + path).replace(/\/+/, "/");
             filesystem.exists(path, function(exists){
                 if (exists) {
-                    editors.showFile(path);
+                    editors.gotoDocument({path: path});
                 }
                 else {
-                    var node = editors.createFileNodeFromPath(path);
+                    var node = filesystem.createFileNodeFromPath(path);
                     node.setAttribute("newfile", "1");
                     node.setAttribute("changed", "1");
                     node.setAttribute("cli", "1"); // blocks Save As dialog
@@ -57,7 +57,11 @@ var cliCmds = exports.cliCmds = {
                     var doc = ide.createDocument(node);
                     doc.cachedValue = "";
 
-                    ide.dispatchEvent("openfile", {doc: doc, node: node});
+                    editors.gotoDocument({
+                        doc: doc,
+                        type: "newfile",
+                        origin: "newfile"
+                    });
                 }
             });
         }
@@ -163,8 +167,12 @@ exports.onConsoleCommand = function(e) {
             e.returnValue = false;
         }
         // something blocks focusing without timeout
-        if (success !== false)
-            setTimeout(function(){ ceEditor.focus(); });
+        if (success !== false) {
+            setTimeout(function(){ 
+                if (apf.activeElement == txtConsoleInput)
+                    ceEditor.focus();
+            });
+        }
     }
 };
 
