@@ -77,7 +77,7 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/Twitter (for general Cloud9 tweets)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/cloud9ide'); }}), c += 100);
             menus.addItemByPath("Help/Get in Touch/Facebook for Cloud9", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
 
-            if (window.cloud9config.hosted) {
+            if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
                 mnuHelp.addEventListener("prop.visible", function(e) {
                     if (e.value) {
                         var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
