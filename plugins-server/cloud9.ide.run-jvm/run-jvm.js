@@ -42,9 +42,6 @@ util.inherits(JVMRuntimePlugin, Plugin);
             msg.type = msg.type.replace(/^node-debug-(start|data|exit)$/, "node-$1");
             var type = msg.type;
 
-            if (type == "jvm-build")
-                return self.sendResult(msg.code, "jvmfeatures:build", msg.body);
-
             if (type == "node-start" || type == "node-exit")
                 self.workspace.getExt("state").publishState();
 
@@ -63,7 +60,7 @@ util.inherits(JVMRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/^(java|java-web|jpy|jrb|groovy|js-rhino)$/.test(message.runner))
+        if (!(/^(java|java-web|gae-java|jpy|jrb|groovy|js-rhino)$/.test(message.runner))
             && !(cmd.indexOf("debugjava") > -1))
           return false;
 
@@ -101,16 +98,18 @@ util.inherits(JVMRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("jvm", {
-                file: file,
-                args: args,
-                env: env,
-                jvmType: message.runner,
-                version: version,
-                extra: message.extra
-            }, self.channel, function(err, pid, child) {
-                if (err)
-                    self.error(err, 1, message, client);
+            self.$buildProject(function buildSuccess() {
+                self.pm.spawn("jvm", {
+                    file: file,
+                    args: args,
+                    env: env,
+                    jvmType: message.runner,
+                    version: version,
+                    extra: message.extra
+                }, self.channel, function(err, pid, child) {
+                    if (err)
+                        self.error(err, 1, message, client);
+                });
             });
         });
     };
@@ -124,19 +123,46 @@ util.inherits(JVMRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("jvm-debug", {
-                file: file,
-                args: args,
-                env: env,
-                breakOnStart: breakOnStart,
-                jvmType: message.runner,
-                version: version,
-                extra: message.extra
-            }, self.channel, function(err, pid, child) {
-                if (err)
-                    self.error(err, 1, message, client);
+            self.$buildProject(function buildSuccess() {
+                self.pm.spawn("jvm-debug", {
+                    file: file,
+                    args: args,
+                    env: env,
+                    breakOnStart: breakOnStart,
+                    jvmType: message.runner,
+                    version: version,
+                    extra: message.extra
+                }, self.channel, function(err, pid, child) {
+                    if (err)
+                        self.error(err, 1, message, client);
+                });
             });
         });
+    };
+
+    this.$buildProject = function(buildSuccess) {
+        var self = this;
+
+        var buildCompleteChannel = this.workspaceId + "::jvm-build-complete";
+        this.eventbus.on(buildCompleteChannel, function buildComplete(data) {
+            self.eventbus.removeListener(buildCompleteChannel, buildComplete);
+
+            if (! data.success)
+                return self.error("Build request failed !!", 1, message, client);
+
+            var problems = data.body;
+            // If no errors found, we can start
+            var numErrors = problems.filter(function (problem) {
+                return problem.type == "error"; }).length;
+            if (numErrors > 0) {
+                console.log("Found " + numErrors + " compilation errors !");
+                self.sendResult(0, "jvmfeatures:build", data);
+            } else {
+                buildSuccess();
+            }
+        });
+
+        self.eventbus.emit(this.workspaceId + "::jvm-build", {channel: buildCompleteChannel});
     };
 
     this.$kill = function(pid, message, client) {
