@@ -16,11 +16,14 @@ module.exports = {
     
     // UTILITIES
     
+    /**
+     * Determine whether a certain feature is enabled in the user's preferences.
+     */
     isFeatureEnabled: function(name) {
         return !disabledFeatures[name];
     },
 
-    // OVERRIDABLE METHODS
+    // OVERRIDABLE ACCESORS
 
     /**
      * Returns whether this language handler should be enabled for the given file
@@ -29,6 +32,29 @@ module.exports = {
     handlesLanguage: function(language) {
         return false;
     },
+    
+    /**
+     * Returns whether the completion engine requires an AST representation of the code
+     */
+    completionRequiresParsing: function() {
+        return false;
+    },
+
+    /**
+     * Returns whether the analysis engine requires an AST representation of the code
+     */
+    analysisRequiresParsing: function() {
+        return true;
+    },
+
+    /**
+     * Returns whether the analysis engine requires an AST representation of the code
+     */
+    getIdentifierRegex: function() {
+        return /[A-Za-z0-9\$\_]/;
+    },
+    
+    // PARSING AND ABSTRACT SYNTAX CALLBACKS
 
     /**
      * If the language handler implements parsing, this function should take
@@ -41,12 +67,18 @@ module.exports = {
     },
     
     /**
-     * Whether this language handler relies on continuous parsing (on an interval basis).
-     * This will result in `onParse` being invoked after every successful parse
+     * Finds a tree node at a certain row and col,
+     * e.g. using the findNode(pos) function of treehugger.
      */
     requiresContinuousParsing: function() {
         return false;
     },
+
+    findNode: function(ast, pos, callback) {
+        callback();
+    },
+
+    // OTHER CALLBACKS
     
     /**
      * Invoked when the document has been updated (possibly after a certain interval)
@@ -92,7 +124,7 @@ module.exports = {
      * @param fullAst the entire AST of the current file (if exists)
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(doc, ast, callback) {
+    outline: function(doc, fullAst, callback) {
         callback();
     },
 
@@ -108,13 +140,6 @@ module.exports = {
     },
     
     /**
-     * Returns whether the completion engine requires an AST representation of the code
-     */
-    completionRequiresParsing: function() {
-        return false;
-    },
-    
-    /**
      * Performs code completion for the user based on the current cursor position
      * @param doc the Document object repersenting the source
      * @param fullAst the entire AST of the current file (if exists)
@@ -122,15 +147,8 @@ module.exports = {
      *        and staticPrefix, the current loading URL
      * @param currentNode the AST node the cursor is currently at (if exists)
      */
-    complete: function(doc, fullAst, data, currentNode, callback) {
+    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
         callback();
-    },
-
-    /**
-     * Returns whether the analysis engine requires an AST representation of the code
-     */
-    analysisRequiresParsing: function() {
-        return true;
     },
     
     /**
@@ -160,7 +178,9 @@ module.exports = {
      * @param doc the Document object repersenting the source
      * @param oldId the old identifier wanted to be refactored
      */
-    onRenameBegin: function(doc) {},
+    onRenameBegin: function(doc, callback) {
+        callback();
+    },
 
     /**
      * Invoked when a refactor request is being finalized and waiting for a status

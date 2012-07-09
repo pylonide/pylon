@@ -25,7 +25,6 @@ var WARNING_LEVELS = {
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
-var currentPos;
 
 EventEmitter.once = function(event, fun) {
   var _self = this;
@@ -207,40 +206,40 @@ function applyEventOnce(eventHandler) {
 oop.inherits(LanguageWorker, Mirror);
 
 function asyncForEach(array, fn, callback) {
-	array = array.slice(0); // Just to be sure
-	function processOne() {
-		var item = array.pop();
-		fn(item, function(result, err) {
-			if (array.length > 0) {
-				processOne();
-			}
-			else {
-				callback(result, err);
-			}
-		});
-	}
-	if (array.length > 0) {
-		processOne();
-	}
-	else {
-		callback();
-	}
+    array = array.slice(0); // Just to be sure
+    function processOne() {
+        var item = array.pop();
+        fn(item, function(result, err) {
+            if (array.length > 0) {
+                processOne();
+            }
+            else {
+                callback(result, err);
+            }
+        });
+    }
+    if (array.length > 0) {
+        processOne();
+    }
+    else {
+        callback();
+    }
 }
 
 function asyncParForEach(array, fn, callback) {
-	var completed = 0;
-	var arLength = array.length;
-	if (arLength === 0) {
-		callback();
-	}
-	for (var i = 0; i < arLength; i++) {
-		fn(array[i], function(result, err) {
-			completed++;
-			if (completed === arLength) {
-				callback(result, err);
-			}
-		});
-	}
+    var completed = 0;
+    var arLength = array.length;
+    if (arLength === 0) {
+        callback();
+    }
+    for (var i = 0; i < arLength; i++) {
+        fn(array[i], function(result, err) {
+            completed++;
+            if (completed === arLength) {
+                callback(result, err);
+            }
+        });
+    }
 }
 
 (function() {
@@ -317,6 +316,27 @@ function asyncParForEach(array, fn, callback) {
             callback(_self.cachedAst);
         });
     };
+    
+    /**
+     * Finds the current node using the language handler.
+     * This should always be preferred over the treehugger findNode()
+     * method.
+     */
+    this.findNode = function(ast, pos, callback) {
+        if (!ast)
+            return callback();
+        var _self = this;
+        var result;
+        asyncForEach(_self.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language) && handler.findNode) {
+                handler.findNode(ast, pos, function(node) {
+                    if (node)
+                        result = node;
+                    next();
+                });
+            }
+        }, function() { callback(result); });
+    };
 
     this.outline = function(event) {
         var _self = this;
@@ -325,7 +345,7 @@ function asyncParForEach(array, fn, callback) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
                         if (outline) {
-                            outline.ignoreFilter = event.data. ignoreFilter;
+                            outline.ignoreFilter = event.data.ignoreFilter;
                             return _self.sender.emit("outline", outline);
                         }
                         else {
@@ -448,7 +468,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }
         return markers;
-    }
+    };
     
     /**
      * Request the AST node on the current position
@@ -458,24 +478,23 @@ function asyncParForEach(array, fn, callback) {
         
         if (this.cachedAst) {
             // find the current node based on the ast and the position data
-            var ast = this.cachedAst;
-            var node = ast.findNode({ line: event.data.row, col: event.data.col });
-            
-            // find a handler that can build an expression for this language
-            var handler = this.handlers.filter(function (h) { 
-                return h.handlesLanguage(_self.$language) && h.buildExpression;
+            this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
+                // find a handler that can build an expression for this language
+                var handler = _self.handlers.filter(function (h) { 
+                    return h.handlesLanguage(_self.$language) && h.buildExpression;
+                });
+                
+                // then invoke it and build an expression out of this
+                if (handler && handler.length) {
+                    var expression = handler[0].buildExpression(node);
+                    this.scheduleEmit("inspect", expression);
+                }
             });
-            
-            // then invoke it and build an expression out of this
-            if (handler && handler.length) {
-                var expression = handler[0].buildExpression(node);
-                this.scheduleEmit("inspect", expression);
-            }
         }
     };
 
     this.onCursorMove = function(event) {
-        if(this.scheduledUpdate) {
+        if (this.scheduledUpdate) {
             // Postpone the cursor move until the update propagates
             this.postponedCursorMove = event;
             return;
@@ -483,10 +502,10 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
-        // Not going to parse for this, only if already parsed successfully
+        
         var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
         
-        function cursorMoved() {
+        function cursorMoved(currentNode, currentPos) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.onCursorMovedNode(_self.doc, ast, pos, currentNode, function(response) {
@@ -530,56 +549,55 @@ function asyncParForEach(array, fn, callback) {
 
         }
         
+        var currentPos = {line: pos.row, col: pos.column};
         if (this.cachedAst) {
             var ast = this.cachedAst;
-            var currentPos = {line: pos.row, col: pos.column};
-            var currentNode = ast.findNode(currentPos);
-            if (currentPos != this.lastCurrentPos || currentNode !== this.lastCurrentNode || pos.force) {
-                cursorMoved();
-            }
+            this.findNode(ast, currentPos, function(currentNode) {
+                if (currentPos != _self.lastCurrentPos || currentNode !== _self.lastCurrentNode || pos.force) {
+                    cursorMoved(currentNode, currentPos);
+                }
+            });
         } else {
-            cursorMoved();
+            cursorMoved(null, currentPos);
         }
     };
 
-
     this.jumpToDefinition = function(event) {
         var pos = event.data;
-        // Not going to parse for this, only if already parsed successfully
         if (this.cachedAst) {
+            var _self = this;
             var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            for (var i = 0; i < this.handlers.length; i++) {
-                var handler = this.handlers[i];
-                if (handler.handlesLanguage(this.$language)) {
-                    var response = handler.jumpToDefinition(this.doc, ast, pos, currentNode);
-                    if (response)
-                        this.sender.emit("jumpToDefinition", response);
+            this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
+                for (var i = 0; i < _self.handlers.length; i++) {
+                    var handler = _self.handlers[i];
+                    if (handler.handlesLanguage(_self.$language)) {
+                        var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
+                        if (response)
+                            _self.sender.emit("jumpToDefinition", response);
+                    }
                 }
-            }
+            });
         }
     };
 
     this.sendVariablePositions = function(event) {
         var pos = event.data;
         var _self = this;
-        // Not going to parse for this, only if already parsed successfully
         var ast = this.cachedAst;
-        var currentNode = ast && ast.findNode({line: pos.row, col: pos.column});
-        asyncForEach(this.handlers, function(handler, next) {
-            if (handler.handlesLanguage(_self.$language)) {
-                handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
-                    if (response)
-                        _self.sender.emit("variableLocations", response);
-                    next();
-                });
-            }
-            else
-                next();
-        }, function() {
+        this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                        if (response)
+                            _self.sender.emit("variableLocations", response);
+                        next();
+                    });
+                }
+            }, function() {
+            });
         });
     };
-
+    
     this.onRenameBegin = function(event) {
         var _self = this;
         this.handlers.forEach(function(handler) {
@@ -710,22 +728,30 @@ function asyncParForEach(array, fn, callback) {
         var data = event.data;
         var pos = data.pos;
         // Check if anybody requires parsing for its code completion
-        var ast, currentNode;
+        var ast;
+        var currentNode;
+        var currentPos;
         var _self = this;
         
         asyncForEach(this.handlers, function(handler, next) {
             if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
                 _self.parse(function(hAst) {
-                    if(hAst) {
+                    if (hAst) {
                         ast = hAst;
-                        currentPos = {line: pos.row, col: pos.column};
-                        currentNode = ast.findNode(currentPos);
+                        currentPos = { line: pos.row, col: pos.column };
+                        _self.findNode(ast, currentPos, function(node) {
+                            currentNode = node;
+                            next();
+                        });
                     }
-                    next();
+                    else {
+                        next();
+                    }
                 });
             }
-            else
+            else {
                 next();
+            }
         }, function() {
             var matches = [];
             

@@ -20,6 +20,10 @@ handler.parse = function(code, callback) {
     callback(parser.parse(code));
 };
 
+handler.findNode = function(ast, pos, callback) {
+    callback(ast.findNode(pos));
+};
+
 /* Ready to be enabled to replace Narcissus, when mature
 
 handler.analyze = function(doc, ast) {
