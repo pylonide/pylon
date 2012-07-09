@@ -490,7 +490,7 @@ function asyncParForEach(array, fn, callback) {
     this.inspect = function (event) {
         var _self = this;
         
-        if (this.cachedAst) {
+        if (this.cachedAst || !this.isParsingSupported()) {
             // find the current node based on the ast and the position data
             this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
                 // find a handler that can build an expression for this language
@@ -580,6 +580,8 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
+        if (!ast && !this.isParsingSupported())
+            return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             for (var i = 0; i < _self.handlers.length; i++) {
                 var handler = _self.handlers[i];
@@ -596,6 +598,8 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
+        if (!ast && !this.isParsingSupported())
+            return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
