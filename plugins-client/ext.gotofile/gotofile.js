@@ -407,8 +407,19 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 apf.setOpacity(winGoToFile.$ext, 1);
             }
             
-            txtGoToFile.select();
-            txtGoToFile.focus();
+            if (!txtGoToFile.inited) {
+                setTimeout(function(){
+                    afterTbRendered();
+                });
+            }
+            else {
+                afterTbRendered();
+            }
+            
+            function afterTbRendered(){
+                txtGoToFile.focus();
+                txtGoToFile.inited = true;
+            }
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {
