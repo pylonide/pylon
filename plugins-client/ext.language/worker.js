@@ -418,7 +418,7 @@ function asyncParForEach(array, fn, callback) {
      * syntax error. 
      */
     function filterMarkersAroundError(ast, markers) {
-        if(!ast)
+        if (!ast || !ast.getAnnotation)
             return;
         var error = ast.getAnnotation("error");
         if(!error)
