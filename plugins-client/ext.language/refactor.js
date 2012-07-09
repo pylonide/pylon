@@ -56,14 +56,14 @@ module.exports = {
             if(ext.disabled) return;
 
             _self.enableVariableRefactor(event.data);
-            worker.emit("startRefactoring", {data: {}});
+            worker.emit("onRenameBegin", {data: {}});
         });
 
         worker.on("refactorResult", function(event) {
             var data = event.data;
             if (! data.success) {
                 console.log("REFACTOR ERROR & msg: ", data.body); // TODO pop up a dialog
-                _self.cancelRefactoring();
+                _self.onRenameCancel();
             } else {
                 _self.placeHolder.detach();
             }
@@ -137,7 +137,7 @@ module.exports = {
         if(this.ext.isContinuousCompletionEnabled())
             this.ext.setContinuousCompletionEnabled(false);
         p.on("cursorLeave", function() {
-            _self.finishRefactoring();
+            _self.commitRename();
         });
     },
 

@@ -15,6 +15,7 @@ define(function(require, exports, module) {
 var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
+var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 var WARNING_LEVELS = {
     error: 3,
@@ -25,16 +26,72 @@ var WARNING_LEVELS = {
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
 
+EventEmitter.once = function(event, fun) {
+  var _self = this;
+  var newCallback = function() {
+    fun && fun.apply(null, arguments);
+    _self.removeEventListener(event, newCallback);
+  };
+  this.addEventListener(event, newCallback);
+};
+
+var ServerProxy = function(sender) {
+
+  this.emitter = Object.create(EventEmitter);
+  this.emitter.emit = this.emitter._dispatchEvent;
+
+  this.send = function(data) {
+      sender.emit("serverProxy", data);
+  };
+  
+  this.once = function(messageType, messageSubtype, callback) {
+    var channel = messageType;
+    if (messageSubtype)
+       channel += (":" + messageSubtype);
+    this.emitter.once(channel, callback);
+  };
+
+  this.subscribe = function(messageType, messageSubtype, callback) {
+    var channel = messageType;
+    if (messageSubtype)
+       channel += (":" + messageSubtype);
+    this.emitter.addEventListener(channel, callback);
+  };
+  
+  this.unsubscribe = function(messageType, messageSubtype, f) {
+    var channel = messageType;
+    if (messageSubtype)
+       channel += (":" + messageSubtype);
+    this.emitter.removeEventListener(channel, f);
+  };
+
+  this.onMessage = function(msg) {
+    var channel = msg.type;
+    if (msg.subtype)
+      channel += (":" + msg.subtype);
+    // console.log("publish to: " + channel);
+    this.emitter.emit(channel, msg.body);
+  };
+};
+
 var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
     this.handlers = [];
     this.currentMarkers = [];
     this.$lastAggregateActions = {};
     this.$warningLevel = "info";
+    sender.once = EventEmitter.once;
+    this.serverProxy = new ServerProxy(sender);
     
     Mirror.call(this, sender);
     this.setTimeout(500);
-    
+
+    sender.on("hierarchy", function(event) {
+        _self.hierarchy(event);
+    });
+    sender.on("code_format", function(event) {
+        _self.codeFormat();
+    });
     sender.on("outline", applyEventOnce(function(event) {
         _self.outline(event);
     }));
@@ -62,6 +119,44 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
+    sender.on("onRenameBegin", function(event) {
+        _self.onRenameBegin(event);
+    });
+    sender.on("commitRename", function(event) {
+        _self.commitRename(event);
+    });
+    sender.on("onRenameCancel", function(event) {
+        _self.onRenameCancel(event);
+    });
+    sender.on("serverProxy", function(event) {
+        _self.serverProxy.onMessage(event.data);
+    });
+};
+
+exports.createUIWorkerClient = function() {
+    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
+    var result = new LanguageWorker(emitter);
+    result.on = function(name, f) {
+        emitter.on.call(result, name, f);
+    };
+    result.call = function(cmd, args, callback) {
+        if (callback) {
+            var id = this.callbackId++;
+            this.callbacks[id] = callback;
+            args.push(id);
+        }
+        this.send(cmd, args);
+    };
+    result.send = function(cmd, args) {
+        setTimeout(function() { result[cmd].apply(result, args); }, 0);
+    };
+    result.emit = function(event, data) {
+        emitter._dispatchEvent.call(emitter, event, data);
+    };
+    emitter.emit = function(event, data) {
+        emitter._dispatchEvent.call(result, event, { data: data });
+    };
+    return result;
 };
 
 var isWorkerEnabled = exports.isWorkerEnabled = function() {
@@ -177,6 +272,8 @@ function asyncParForEach(array, fn, callback) {
     this.register = function(path) {
         try {
             var handler = require(path);
+            handler.proxy = this.serverProxy;
+            handler.sender = this.sender;
             this.handlers.push(handler);
         } catch (e) {
             if (isWorkerEnabled())
@@ -184,9 +281,11 @@ function asyncParForEach(array, fn, callback) {
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {
+                handler.proxy = _self.serverProxy;
+                handler.sender = _self.sender;
                 _self.handlers.push(handler);
             });
-        }   
+        }
     };
 
     this.parse = function(callback, allowCached) {
@@ -261,6 +360,39 @@ function asyncParForEach(array, fn, callback) {
         }, true);
     };
 
+    this.hierarchy = function(event) {
+        var data = event.data;
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.hierarchy(_self.doc, data.pos, function(hierarchy) {
+                    if(hierarchy)
+                        return _self.sender.emit("hierarchy", hierarchy);
+                    else
+                        next();
+                });
+            }
+            else
+                next();
+        }, function() {
+        });
+    };
+
+    this.codeFormat = function() {
+        var _self = this;
+        asyncForEach(_self.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.codeFormat(_self.doc, function(newSource) {
+                    if(newSource)
+                        return _self.sender.emit("code_format", newSource);
+                });
+            }
+            else
+                next();
+        }, function() {
+        });
+    };
+
     this.scheduleEmit = function(messageType, data) {
         this.sender.emit(messageType, data);
     };
@@ -285,7 +417,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }
     }
-    
+
     this.analyze = function(callback) {
         var _self = this;
         this.parse(function(ast) {
@@ -316,32 +448,6 @@ function asyncParForEach(array, fn, callback) {
             });
         });
     };
-
-/*
-    this.analyze = function() {
-        var ast = this.parse();
-        var markers = [];
-        var handlerCount = 0;
-        for(var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
-                var result = handler.analyze(this.doc, ast);
-                if (result)
-                    markers = markers.concat(result);
-                handlerCount++;
-            }
-        }
-        var extendedMakers = markers;
-        filterMarkersAroundError(ast, markers);
-        if (this.getLastAggregateActions().markers.length > 0)
-            extendedMakers = markers.concat(this.getLastAggregateActions().markers);
-        if(handlerCount > 0)
-            this.scheduleEmit("markers", extendedMakers);
-        this.currentMarkers = markers;
-        if (this.postponedCursorMove) {
-            this.onCursorMove(this.postponedCursorMove);
-        }
-*/
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
@@ -396,7 +502,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
-        // Not going to parse for this, only if already parsed successfully
+        
         var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
         
         function cursorMoved(currentNode, currentPos) {
@@ -458,43 +564,83 @@ function asyncParForEach(array, fn, callback) {
 
     this.jumpToDefinition = function(event) {
         var pos = event.data;
-        // Not going to parse for this, only if already parsed successfully
-        if (this.cachedAst) {
-            var _self = this;
-            var ast = this.cachedAst;
-            this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-                for (var i = 0; i < _self.handlers.length; i++) {
-                    var handler = _self.handlers[i];
-                    if (handler.handlesLanguage(_self.$language)) {
-                        var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
-                        if (response)
-                            _self.sender.emit("jumpToDefinition", response);
-                    }
+        var _self = this;
+        var ast = this.cachedAst;
+        this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
+            for (var i = 0; i < _self.handlers.length; i++) {
+                var handler = _self.handlers[i];
+                if (handler.handlesLanguage(_self.$language)) {
+                    var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
+                    if (response)
+                        _self.sender.emit("jumpToDefinition", response);
                 }
-            });
-        }
+            }
+        });
     };
 
     this.sendVariablePositions = function(event) {
         var pos = event.data;
         var _self = this;
-        // Not going to parse for this, only if already parsed successfully
-        if (this.cachedAst) {
-            var ast = this.cachedAst;
-            this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-                asyncForEach(_self.handlers, function(handler, next) {
-                    if (handler.handlesLanguage(_self.$language)) {
-                        handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
-                            if (response)
-                                _self.sender.emit("variableLocations", response);
-                            next();
-                        });
-                    }
-                }, function() {
-                });
+        var ast = this.cachedAst;
+        this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                        if (response)
+                            _self.sender.emit("variableLocations", response);
+                        next();
+                    });
+                }
+            }, function() {
             });
-        }
+        });
     };
+    
+    this.onRenameBegin = function(event) {
+        var _self = this;
+        this.handlers.forEach(function(handler) {
+			if (handler.handlesLanguage(_self.$language))
+				handler.onRenameBegin(_self.doc);
+		});
+    };
+
+    this.commitRename = function(event) {
+        var _self = this;
+        var data = event.data;
+
+        var oldId = data.oldId;
+        var newName = data.newName;
+
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.commitRename(_self.doc, oldId, newName, function(response) {
+                    if (response) {
+                        _self.sender.emit("refactorResult", response);
+                    } else {
+                        next();
+                    }
+                });
+            }
+            else
+                next();
+        }, function() {
+            _self.sender.emit("refactorResult", {success: true});
+        });
+    };
+
+    this.onRenameCancel = function(event) {
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.onRenameCancel(function() {
+                    next();
+                });
+            }
+            else
+                next();
+        }, function() {
+        });
+    }
 
     this.onUpdate = function() {
         this.scheduledUpdate = false;
@@ -510,7 +656,13 @@ function asyncParForEach(array, fn, callback) {
     };
     
     // TODO: BUG open an XML file and switch between, language doesn't update soon enough
-    this.switchFile = function(path, language, code) {
+    this.switchFile = function(path, language, code, project) {
+        var _self = this;
+        if (! this.$analyzeInterval) {
+            this.$analyzeInterval = setInterval(function() {
+                _self.analyze(function(){});
+            }, 2000);
+        }
         var oldPath = this.$path;
         code = code || "";
         this.$path = path;
@@ -522,12 +674,17 @@ function asyncParForEach(array, fn, callback) {
         var doc = this.doc;
         asyncForEach(this.handlers, function(handler, next) {
             handler.path = path;
+            handler.project = project;
             handler.language = language;
             handler.onDocumentOpen(path, doc, oldPath, next);
         }, function() { });
     };
     
     this.documentClose = function(event) {
+        if (this.$analyzeInterval) {
+            clearInterval(this.$analyzeInterval);
+            this.$analyzeInterval = null;
+        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
@@ -595,6 +752,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }, function() {
             var matches = [];
+            
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.complete(_self.doc, ast, data, currentNode, function(completions) {
@@ -629,9 +787,9 @@ function asyncParForEach(array, fn, callback) {
                         return 1;
                     else
                         return 0;
-                });
-                
-                matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                });                
+                // Removed for the java completion result caching cases
+                // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
                 _self.sender.emit("complete", {
                     pos: pos,
                     matches: matches
