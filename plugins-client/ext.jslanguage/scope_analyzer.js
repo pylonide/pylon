@@ -502,7 +502,7 @@ handler.analyze = function(doc, ast, callback) {
                             pos: this.getPos(),
                             level: 'warning',
                             type: 'warning',
-                            message: "Invocation of 'this' in callback function"
+                            message: "Use of 'this' in callback function"
                         });
                     }
                 },
