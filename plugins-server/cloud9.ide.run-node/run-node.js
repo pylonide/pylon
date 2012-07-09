@@ -26,7 +26,7 @@ var NodeRuntimePlugin = function(ide, workspace) {
     this.workspaceId = workspace.workspaceId;
 
     this.channel = this.workspaceId + "::node-runtime";
-
+    
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
@@ -35,6 +35,8 @@ var NodeRuntimePlugin = function(ide, workspace) {
 util.inherits(NodeRuntimePlugin, Plugin);
 
 (function() {
+    
+    this.debugInitialized = {};
 
     this.init = function() {
         var self = this;
@@ -42,14 +44,23 @@ util.inherits(NodeRuntimePlugin, Plugin);
             msg.type = msg.type.replace(/^node-debug-(start|data|exit)$/, "node-$1");
             var type = msg.type;
 
-            if (type == "node-start" || type == "node-exit")
+            if (type == "node-start" || type == "node-exit") {
                 self.workspace.getExt("state").publishState();
+            }
 
-            if (msg.type == "node-start")
+            if (msg.type == "node-start") {
                 self.processCount += 1;
+            }
 
-            if (msg.type == "node-exit")
+            if (msg.type == "node-exit") {
+                delete self.debugInitialized[msg.pid];
+                
                 self.processCount -= 1;
+            }
+                
+            if (msg.type == "node-debug-ready") {
+                self.debugInitialized[msg.pid] = true;
+            }
 
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
@@ -60,7 +71,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
         if (!(/node/.test(message.runner))
             && !(cmd.indexOf("debugnode") > -1))
             return false;
-
+        
         var res = true;
         switch (cmd) {
             case "run":
@@ -77,11 +88,16 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 break;
             case "debugnode":
                 this.pm.debug(message.pid, message.body, function(err) {
-                    if (err) console.error(err);
+                    if (err) {
+                        // uncommenting this helps with debugging, but we keep it
+                        // commented out for the moment, because it throws at the moment
+                        // that you stop the debugger, so we have to fix that some day
+                        // console.error("debugnode threw error", err)
+                    }
                 });
                 break;
             case "debugattachnode":
-                this.$attachDebugCient(message, client)
+                this.$attachDebugCient(message, client);
                 break;
             default:
                 res = false;
@@ -94,9 +110,20 @@ util.inherits(NodeRuntimePlugin, Plugin);
         this.workspace.getExt("state").getState(function(err, state) {
             if (err)
                 return self.error(err, 1, message, client);
+                
+            if (state.debugClient) {
+                // we will only send out the debug ready information when
+                // the debugger is actually attached
+                // otherwise this will be sent from the node-debug-ready command
+                if (self.debugInitialized[state.debugClient] !== true) {
+                    return;
+                }
 
-            if (state.debugClient)
-                self.ide.broadcast('{"type": "node-debug-ready"}', self.name);
+                self.ide.broadcast(JSON.stringify({
+                    type: "node-debug-ready",
+                    pid: state.debugClient
+                }), self.name);
+            }
         });
     };
 

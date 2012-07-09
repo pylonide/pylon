@@ -120,14 +120,14 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
-    sender.on("startRefactoring", function(event) {
-        _self.startRefactoring(event);
+    sender.on("onRenameBegin", function(event) {
+        _self.onRenameBegin(event);
     });
-    sender.on("finishRefactoring", function(event) {
-        _self.finishRefactoring(event);
+    sender.on("commitRename", function(event) {
+        _self.commitRename(event);
     });
-    sender.on("cancelRefactoring", function(event) {
-        _self.cancelRefactoring(event);
+    sender.on("onRenameCancel", function(event) {
+        _self.onRenameCancel(event);
     });
     sender.on("serverProxy", function(event) {
         _self.serverProxy.onMessage(event.data);
@@ -580,15 +580,15 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    this.startRefactoring = function(event) {
+    this.onRenameBegin = function(event) {
         var _self = this;
         this.handlers.forEach(function(handler) {
 			if (handler.handlesLanguage(_self.$language))
-				handler.startRefactoring(_self.doc);
+				handler.onRenameBegin(_self.doc);
 		});
     };
 
-    this.finishRefactoring = function(event) {
+    this.commitRename = function(event) {
         var _self = this;
         var data = event.data;
 
@@ -597,7 +597,7 @@ function asyncParForEach(array, fn, callback) {
 
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
-                handler.finishRefactoring(_self.doc, oldId, newName, function(response) {
+                handler.commitRename(_self.doc, oldId, newName, function(response) {
                     if (response) {
                         _self.sender.emit("refactorResult", response);
                     } else {
@@ -612,11 +612,11 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    this.cancelRefactoring = function(event) {
+    this.onRenameCancel = function(event) {
         var _self = this;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
-                handler.cancelRefactoring(function() {
+                handler.onRenameCancel(function() {
                     next();
                 });
             }

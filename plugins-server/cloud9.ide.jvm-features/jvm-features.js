@@ -15,9 +15,11 @@ var EclipseClient = require("jvm_features").EclipseClient;
 var ECLIPSE_START_PORT = 10000;
 var name = "jvm-features";
 var Sandbox;
+var EventBus;
 
 module.exports = function setup(options, imports, register) {
     Sandbox = imports.sandbox;
+    EventBus = imports.eventbus;
     imports.ide.register(name, JVMFeatures, register);
 };
 
@@ -25,8 +27,10 @@ var JVMFeatures = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     this.sandbox = Sandbox;
+    this.eventbus = EventBus;
     this.hooks = ["connect", "disconnect", "command"];
     this.name = name;
+    this.workspaceId = workspace.workspaceId;
     // remove the project name
     this.workspaceDir  = Path.dirname(ide.workspaceDir);
     this.projectId = Path.basename(ide.workspaceDir);
@@ -35,6 +39,20 @@ var JVMFeatures = function(ide, workspace) {
 util.inherits(JVMFeatures, Plugin);
 
 (function() {
+
+    this.init = function() {
+        var self = this;
+        this.eventbus.on(this.workspaceId + "::jvm-build", function(buildCmd) {
+            if (! self.eclipseClient)
+                return console.error("Can't build ! - No eclipse client connected !");
+            self.eclipseClient.buildProject(self.projectId, function (data) {
+                self.eventbus.emit(buildCmd.channel, {
+                    success: data.success,
+                    body: data.body
+                });
+            });
+        });
+    };
 
     this.command = function(user, message, client) {
         var cmd = message.command;
@@ -137,13 +155,12 @@ util.inherits(JVMFeatures, Plugin);
           function(err, port) {
             if (err)
               return _self.$error("Could not find a free port", 1, err);
-            _self.sandbox.getUnixId(function (err, unixId) {
-                var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
-                    _self.workspaceDir, unixId);
-                eclipseClient.on("output", console.log);
-                eclipseClient.on("err", console.error);
-                eclipseClient.initEclipseSession();
-            });
+
+            var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
+                _self.workspaceDir);
+            eclipseClient.on("output", console.log);
+            eclipseClient.on("err", console.error);
+            eclipseClient.initEclipseSession();
         });
         return true;
     };
