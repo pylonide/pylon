@@ -564,20 +564,18 @@ function asyncParForEach(array, fn, callback) {
 
     this.jumpToDefinition = function(event) {
         var pos = event.data;
-        if (this.cachedAst) {
-            var _self = this;
-            var ast = this.cachedAst;
-            this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-                for (var i = 0; i < _self.handlers.length; i++) {
-                    var handler = _self.handlers[i];
-                    if (handler.handlesLanguage(_self.$language)) {
-                        var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
-                        if (response)
-                            _self.sender.emit("jumpToDefinition", response);
-                    }
+        var _self = this;
+        var ast = this.cachedAst;
+        this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
+            for (var i = 0; i < _self.handlers.length; i++) {
+                var handler = _self.handlers[i];
+                if (handler.handlesLanguage(_self.$language)) {
+                    var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
+                    if (response)
+                        _self.sender.emit("jumpToDefinition", response);
                 }
-            });
-        }
+            }
+        });
     };
 
     this.sendVariablePositions = function(event) {
