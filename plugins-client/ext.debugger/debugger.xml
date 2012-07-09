@@ -11,7 +11,7 @@
                 <a:button  tooltip="Suspend"
                   skin     = "c9-sidepanelsbutton"
                   icon     = "pause.png"
-                  onclick  = "dbg.suspend();"
+                  onclick  = "require('ext/debugger/debugger').suspend();"
                   disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
                 <a:divider skin="c9-divider" />
                 <a:button id="btnStepOver" tooltip="Step Over"
@@ -44,7 +44,7 @@
               class      = "noscrollbar"
               scrollbar  = "sbShared 20 2 2"
               disabled   = "{!stDebugProcessRunning.active || stRunning.active}"
-              selected   = "{dbg.activeframe}">
+              selected   = "{require('ext/debugger/debugger').activeframe}">
                 <a:actions />
                 <a:each match="[frame]">
                     <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />

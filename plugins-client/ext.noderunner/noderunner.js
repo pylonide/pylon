@@ -7,9 +7,6 @@
 
 define(function(require, exports, module) {
 
-require("apf/elements/debugger");
-require("apf/elements/debughost");
-
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
@@ -33,17 +30,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
-        dbg.addEventListener("break", function(e){
-            ide.dispatchEvent("break", e);
-        });
-
-        dbgNode.addEventListener("onsocketfind", function() {
-            return ide.socket;
-        });
-
-        stDebugProcessRunning.addEventListener("activate", this.$onDebugProcessActivate.bind(this));
-        stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
-
         ide.addEventListener("consolecommand.run", function(e) {
             ide.send({
                 command: "internal-isfile",
@@ -59,14 +45,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("settings.load", function(e){
             _self.NODE_VERSION = e.model.queryValue("auto/node-version/@version") || "auto";
         });
-    },
-
-    $onDebugProcessActivate : function() {
-        dbg.attach(dbgNode, 0);
-    },
-
-    $onDebugProcessDeactivate : function() {
-        dbg.detach(function(){});
     },
 
     onMessage : function(e) {
@@ -101,7 +79,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 stDebugProcessRunning.setProperty("active", !!message.debugClient);
                 stProcessRunning.setProperty("active", !!message.processRunning);
 
-                dbgNode.setProperty("strip", message.workspaceDir + "/");
+                // dbgNode.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("noderunnerready");
                 break;
 
@@ -164,7 +142,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         });
 
         // the debugger needs to know that we are going to attach, but that its not a normal state message
-        dbg.registerAutoAttach();
+        // dbg.registerAutoAttach();
         
         /**** END Moved from offline.js ****/
     },
@@ -174,14 +152,13 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     debug : function() {
-        this.$run(true);
     },
 
     run : function(path, args, debug, nodeVersion) {
         var runner;
         
         // this is a manual action, so we'll tell that to the debugger
-        dbg.registerManualAttach();
+        // dbg.registerManualAttach();
         if (stProcessRunning.active || typeof path != "string")
             return false;
 

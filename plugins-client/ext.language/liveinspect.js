@@ -22,8 +22,8 @@ module.exports = (function () {
         ext.initExtension(self);
         
         // listen to changes that affect the debugger, so we can toggle the visibility based on this
-        stRunning.addEventListener("prop.active", checkDebuggerActive);
-        stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
+        // stRunning.addEventListener("prop.active", checkDebuggerActive);
+        // stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
     };
     
     var init = function () {
@@ -257,7 +257,7 @@ module.exports = (function () {
     /**
      * onMouseMove handler that is being used to show / hide the inline quick watch
      */
-    var onEditorMouseMove = function (ev) {
+    var onEditorMouseMove = function (ev) { /*/------------------- */return
         if (activeTimeout) {
             clearTimeout(activeTimeout);
             activeTimeout = null;

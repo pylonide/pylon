@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 
-    <a:debugger id="dbg"
+   <!--  <a:debugger id="dbg"
       state-running     = "stRunning"
       state-attached    = "stAttached"
       model-sources     = "mdlDbgSources"
@@ -19,10 +19,11 @@
       type     = "chrome-ws"
       autoinit = "false"
       model-tabs      = "mdlTabs"
-      state-connected = "stDebuggerConnected" />
-      
+      state-connected = "stDebuggerConnected" /> -->
+
     <a:state id="stDebugProcessRunning" active="false" />
-    
+    <a:state id="stRunning" active="false" />
+
     <!--a:window id="winTab" 
       title     = "Choose a Tab"
       icon      = "chromium_16.png"

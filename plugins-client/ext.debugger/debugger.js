@@ -17,8 +17,11 @@ var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
+var breakpoints = require("./breakpoints");
+var sources = require("./sources");
 
 require("ext/debugger/inspector");
+var v8debugclient = require("./v8debugclient");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -36,13 +39,14 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     hook : function(){
         var _self = this;
+        breakpoints.init();
 
         commands.addCommand({
             name: "resume",
             hint: "resume the current paused process",
             bindKey: {mac: "F8", win: "F8"},
             exec: function(){
-                self.dbg && dbg.continueScript();
+                _self.continueScript();
             }
         });
         commands.addCommand({
@@ -50,7 +54,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "step into the function that is next on the execution stack",
             bindKey: {mac: "F11", win: "F11"},
             exec: function(){
-                self.dbg && dbg.stepInto();
+                _self.continueScript("in");
             }
         });
         commands.addCommand({
@@ -58,7 +62,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "step over the current expression on the execution stack",
             bindKey: {mac: "F10", win: "F10"},
             exec: function(){
-                self.dbg && dbg.stepNext();
+                _self.continueScript("next");
             }
         });
         commands.addCommand({
@@ -66,7 +70,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "step out of the current function scope",
             bindKey: {mac: "Shift-F11", win: "Shift-F11"},
             exec: function(){
-                self.dbg && dbg.stepOut();
+                _self.continueScript("out");
             }
         });
 
@@ -80,24 +84,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             return false;
         });
 
-        ide.addEventListener("settings.load", function (e) {
-            // restore the breakpoints from the IDE settings
-            var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
-            // not there yet, create element
-            if (!bpFromIde) {
-                bpFromIde = e.model.data.ownerDocument.createElement("breakpoints");
-                e.model.data.appendChild(bpFromIde);
-            }
-            // bind it to the Breakpoint model
-            mdlDbgBreakpoints.load(bpFromIde);
-        });
-
-        stDebugProcessRunning.addEventListener("activate", function() {
-            _self.activate();
-        });
-        stProcessRunning.addEventListener("deactivate", function() {
-            _self.deactivate();
-        });
+       
 
         var name = "ext/debugger/debugger"; //this.name
 
@@ -226,29 +213,29 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     init : function(amlNode){
         var _self = this;
-
-        this.paths = {};
-
-        mdlDbgSources.addEventListener("afterload", function() {
-            _self.$syncTree();
+        sources.init();       
+        
+        var modelName = "mdlDbgStack";
+        var model = apf.nameserver.register("model", modelName, new apf.model());
+        apf.setReference(modelName, model);
+        // we're subsribing to the 'running active' prop
+        // this property indicates whether the debugger is actually running (when on a break this value is false)
+        stRunning.addEventListener("prop.active", function (e) {
+            // if we are really running (so not on a break or something)
+            if (e.value) {
+                // we clear out mdlDbgStack
+                mdlDbgStack.load("<frames></frames>");
+            }
         });
-        mdlDbgSources.addEventListener("update", function(e) {
-            if (e.action !== "add") return;
 
-            // TODO: optimize this!
-            _self.$syncTree();
-        });
-        fs.model.addEventListener("update", function(e) {
-            if (e.action != "insert")
-                return;
-            // TODO: optimize this!
-            _self.$syncTree();
-        });
+        this.$mdlSources = mdlDbgSources;
+        this.$mdlBreakpoints = mdlDbgBreakpoints;
+        this.$mdlStack = mdlDbgStack;
 
         //@todo move this to noderunner...
-        dbg.addEventListener("changeframe", function(e) {
+        /* dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
-        });
+        }); */
 
         dbgBreakpoints.addEventListener("afterrender", function(){
             lstBreakpoints.addEventListener("afterselect", function(e) {
@@ -271,147 +258,10 @@ module.exports = ext.register("ext/debugger/debugger", {
             });
         });
 
-        ide.addEventListener("afterfilesave", function(e) {
-            var node = e.node;
-            var doc = e.doc;
-
-            var scriptId = node.getAttribute("scriptid");
-            if (!scriptId)
-                return;
-
-            var value = e.value || doc.getValue();
-            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
-            var NODE_POSTFIX = "\n});";
-            dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
-                //console.log("v8 updated", e);
-            });
-        });
-
-        // we're subsribing to the 'running active' prop
-        // this property indicates whether the debugger is actually running (when on a break this value is false)
-        stRunning.addEventListener("prop.active", function (e) {
-            // if we are really running (so not on a break or something)
-            if (e.value) {
-                // we clear out mdlDbgStack
-                mdlDbgStack.load("<frames></frames>");
-            }
-        });
+        stDebugProcessRunning.addEventListener("activate", this.$onDebugProcessActivate.bind(this));
+        stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
     },
-
-    showDebugFile : function(scriptId, row, column, text) {
-        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
-
-        // check prerequisites
-        if (editors.currentEditor && !editors.currentEditor.amlEditor.$updateMarkerPrerequisite()) {
-            return;
-        }
-
-        if (file) {
-            editors.jump({
-                node    : file, 
-                row     : row, 
-                column  : column, 
-                text    : text,
-                animate : false
-            });
-        }
-        else {
-            var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
-            if (!script)
-                return;
-
-            var name = script.getAttribute("scriptname");
-            var value = name.split("/").pop();
-
-            if (name.indexOf(ide.workspaceDir) === 0) {
-                var path = ide.davPrefix + name.slice(ide.workspaceDir.length);
-                // TODO this has to be refactored to support multiple tabs
-                var page = tabEditors.getPage(path);
-                if (page)
-                    var node = page.xmlRoot;
-                else {
-                    var node = apf.n("<file />")
-                        .attr("name", value)
-                        .attr("path", path)
-                        .attr("contenttype", "application/javascript")
-                        .attr("scriptid", script.getAttribute("scriptid"))
-                        .attr("scriptname", script.getAttribute("scriptname"))
-                        .attr("lineoffset", "0").node();
-                }
-                editors.jump({
-                    node    : node, 
-                    row     : row, 
-                    column  : column, 
-                    text    : text, 
-                    animate : page ? false : true
-                });
-            }
-            else {
-                var page = tabEditors.getPage(value);
-                if (page)
-                    editors.jump({
-                        node    : page.xmlRoot, 
-                        doc     : page.$doc,
-                        row     : row, 
-                        column  : column, 
-                        text    : text, 
-                        animate : false
-                    });
-                else {
-                    var node = apf.n("<file />")
-                        .attr("name", value)
-                        .attr("path", name)
-                        .attr("contenttype", "application/javascript")
-                        .attr("scriptid", script.getAttribute("scriptid"))
-                        .attr("scriptname", script.getAttribute("scriptname"))
-                        .attr("debug", "1")
-                        .attr("lineoffset", "0").node();
-
-                    dbg.loadScript(script, function(source) {
-                        var doc = ide.createDocument(node, source);
-                        editors.jump({
-                            node    : node, 
-                            row     : row, 
-                            column  : column, 
-                            text    : text, 
-                            doc     : doc
-                        });
-                    });
-                }
-            }
-        }
-    },
-
-    count : 0,
-    $syncTree : function() {
-        if (this.inSync) return;
-        this.inSync = true;
-        var dbgFiles = mdlDbgSources.data.childNodes;
-
-        var workspaceDir = ide.workspaceDir;
-        for (var i=0,l=dbgFiles.length; i<l; i++) {
-            var dbgFile = dbgFiles[i];
-            var name = dbgFile.getAttribute("scriptname");
-            if (name.indexOf(workspaceDir) !== 0)
-                continue;
-            this.paths[name] = dbgFile;
-        }
-        var treeFiles = fs.model.data.getElementsByTagName("file");
-        var tabFiles = ide.getAllPageModels();
-        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
-
-        var davPrefix = ide.davPrefix;
-        for (var i=0,l=files.length; i<l; i++) {
-            var file = files[i];
-            var path = file.getAttribute("scriptname");
-
-            var dbgFile = this.paths[path];
-            if (dbgFile)
-                apf.b(file).attr("scriptid", dbgFile.getAttribute("scriptid"));
-        }
-        this.inSync = false;
-    },
-
+    
     activate : function(){
         ext.initExtension(this);
 
@@ -470,7 +320,322 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
-    }
+    },
+    
+    registerDebugClient : function(dbgImpl) {
+        this.$debugger = dbgImpl
+    },
+    
+    $onDebugProcessActivate : function() {
+        this.attach();
+    },
+    
+    $onDebugProcessDeactivate : function() {
+        this.$debugger.detach()
+    },
+    
+    attach : function(tab) {
+        var _self = this;
+        _self.$debugger = v8debugclient;
+
+        _self.$debugger.attach(function(err, dbgImpl) {
+            if (err) {
+                return console.error("Attaching console failed", err);
+            }
+            
+            
+            // do some stuff after attaching and get the currently active frame
+            var afterAttachStep = function (callback) {
+                // load something?
+                _self.$loadSources(function() {
+                    // sync the breakpoints that we have in the IDE with the server
+                    dbgImpl.setBreakpoints(_self.$mdlBreakpoints, function() {
+                        // do a backtrace
+                        var backtraceModel = new apf.model();
+                        backtraceModel.load("<frames></frames>");
+    
+                        // and if we find something
+                        _self.$debugger.backtrace(backtraceModel, function() {
+                            var frame = backtraceModel.queryNode("frame[1]");
+                        
+                            // send some info about the current frame in the callback
+                            callback(frame, backtraceModel);
+                        });
+                    });
+                });
+            };
+            
+            // register regular break and changeRunning events
+            var registerEvents = function () {
+                dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
+                dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
+            };
+            
+            // function called when we're doing an attach to a new process we just started
+            var newProcess = function () {
+                // the node.js debugger works that we need to wait for the
+                // first breakpoint to be hit, this probably works differently
+                // for other sources, but we'll see about that
+                var onFirstBreak = function (ev) {
+                    afterAttachStep(function (frame, stackModel) {
+                        var hasBreakpointOnThisFrame = _self.$allowAttaching(frame);
+                        if (hasBreakpointOnThisFrame) {
+                            // the line we broke on has an actual breakpoint
+                            // so let's break on it then
+                            _self.$onBreak(ev, stackModel);
+                            // and call the changeRunning as well
+                            _self.$onChangeRunning();
+                        }
+                        else {
+                            // otherwise step to the next breakpoint
+                            _self.continueScript();
+                        }
+                        
+                        // remove this listener
+                        dbgImpl.removeEventListener("break", onFirstBreak);
+                        
+                        // add the actual listeners for changeRunning & break
+                        registerEvents();
+                    });
+                };
+                
+                dbgImpl.addEventListener("break", onFirstBreak);
+            };
+            
+            // re-attach to an already running process
+            var existingProcess = function () {
+                afterAttachStep(function (frame, stackModel) {
+                    // send out a break statement for this frame
+                    if (frame) {
+                        _self.$onBreak({
+                            data: {
+                                sourceColumn: Number(frame.getAttribute("column")),
+                                sourceLine: Number(frame.getAttribute("line")),
+                                script: {
+                                    name: frame.getAttribute("script")
+                                }
+                            }
+                        }, stackModel);
+                        
+                        // make sure we register break events and such
+                        registerEvents();
+                    }
+                });
+            };
+            
+            // depending on this flag we'll call either of these functions
+            if (_self.autoAttachComingIn) {
+                existingProcess();
+            }
+            else {
+                newProcess();
+            }
+            
+            // afterCompile and detach handlers are perfectly fine here
+            dbgImpl.addEventListener("afterCompile", _self.$onAfterCompile.bind(_self));                            
+            dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
+        });
+
+    },
+
+    $allowAttaching : function (frame) {
+        var _self = this;
+
+        if (this.autoAttachComingIn) return true;
+
+        if (frame) {
+            var scriptId = frame.getAttribute("scriptid");
+            var scriptName = _self.$mdlSources.queryValue("file[@scriptid='" + scriptId + "']/@scriptname");
+
+            if (scriptName) {
+                var line = frame.getAttribute("line");
+                var bp = _self.$mdlBreakpoints.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + line + "']");
+            }
+            if (!scriptName || !bp) {
+               return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    },
+
+    $onChangeRunning : function() {
+        var isRunning = this.$debugger && this.$debugger.isRunning();
+        stRunning.setProperty("active", isRunning);
+    },
+
+    $onBreak : function(e, stackModel) {
+        var _self = this;
+        
+        var script = e.data.script.name;
+        if (e.currentTarget && e.currentTarget.stripPrefix) {
+            script = script.indexOf(e.currentTarget.stripPrefix) === 0 ?
+                script.substr(e.currentTarget.stripPrefix) :
+                script;
+        }
+        
+        var emit = function () {
+            _self.activeframe = _self.$mdlStack.queryNode("frame[1]");
+            // the active frame change will call the break itself
+        };
+        
+        // if we've got the model passed in, it's fine
+        if (stackModel) {
+            _self.$mdlStack.load(stackModel.data.xml);
+            emit();
+        }
+        // otherwise do a backtrace first
+        else {
+            _self.$debugger.backtrace(_self.$mdlStack, function () {
+                emit();
+            });
+        }
+    },
+
+    $updateMarkerPrerequisite : function () {
+        return this.activeframe;
+    },
+    
+    $onAfterCompile : function(e) {       
+        var id = e.script.getAttribute("id");
+        var oldNode = this.$mdlSources.queryNode("//file[@id='" + id + "']");
+        if (oldNode)
+            this.$mdlSources.removeXml(oldNode);
+        this.$mdlSources.appendXml(e.script);
+    },
+
+    $onDetach : function() {
+        var _self = this;
+
+        if (this.$debugger) {
+            // destroy doesnt destroy the event listeners
+            // so do that by hand
+            Object.keys(_self.$debugger.$eventsStack).forEach(function (evname) {
+                _self.$debugger.$eventsStack[evname].forEach(function (fn) {
+                    _self.$debugger.removeEventListener(evname, fn);
+                });
+            });
+
+            this.$debugger.destroy();
+            this.$debugger = null;
+        }
+
+        this.$mdlSources.load("<sources />");
+        this.$mdlStack.load("<frames />");
+        this.activeframe = null;
+    },
+
+    $onChangeFrame : function() {
+        if (!this.$ignoreFrameEvent) {
+            this.activeframe = this.$debugger.getActiveFrame();
+        }
+    },
+
+    changeFrame : function(frame) {
+        this.$debugger.setFrame(frame);
+    },
+
+    detach : function(callback) {
+        var _self = this;
+
+        this.continueScript();
+        if (this.$debugger) {
+            this.$debugger.detach(function () {
+                if (typeof callback === "function")
+                    callback();
+                // always detach, so we won't get into limbo state
+                _self.$onDetach();
+            });
+        }
+        else {
+            this.$onDetach();
+        }
+    },
+
+    $loadSources : function(callback) {
+        this.$debugger.scripts(this.$mdlSources, callback);
+    },
+
+    loadScript : function(script, callback) {
+        this.$debugger.loadScript(script, callback);
+    },
+
+    loadObjects : function(item, callback) {
+        this.$debugger.loadObjects(item, callback);
+    },
+
+    loadFrame : function(frame, callback) {
+        this.$debugger.loadFrame(frame, callback);
+    },
+
+    toggleBreakpoint : function(script, row, content) {
+        var model = this.$mdlBreakpoints;
+        if (this.$debugger) {
+            this.$debugger.toggleBreakpoint(script, row, model, content);
+        }
+        else {
+            var scriptName = script.getAttribute("scriptname");
+            var bp = model.queryNode("breakpoint[@script='" + scriptName
+                + "' and @line='" + row + "']");
+            if (bp) {
+                apf.xmldb.removeNode(bp);
+            }
+            else {
+                // filename is something like blah/blah/workspace/realdir/file
+                // we are only interested in the part after workspace for display purposes
+                var tofind = "/workspace/";
+                var path = script.getAttribute("path");
+                var displayText = path;
+                if (path.indexOf(tofind) > -1) {
+                    displayText = path.substring(path.indexOf(tofind) + tofind.length);
+                }
+
+                var bp = apf.n("<breakpoint/>")
+                    .attr("script", scriptName)
+                    .attr("line", row)
+                    .attr("text", displayText + ":" + (parseInt(row, 10) + 1))
+                    .attr("lineoffset", 0)
+                    .attr("content", content)
+                    .attr("enabled", "true")
+                    .node();
+                model.appendXml(bp);
+            }
+        }
+    },
+
+    setBreakPointEnabled : function(node, value){
+        if (this.$debugger) {
+            this.$debugger.setBreakPointEnabled(node, value);
+        }
+        else {
+            node.setAttribute("enabled", value ? true : false);
+        }
+    },
+
+    continueScript : function(stepaction, stepcount, callback) {
+        ide.dispatchEvent("beforecontinue");
+
+        if (this.$debugger)
+            this.$debugger.continueScript(stepaction, stepcount || 1, callback);
+        else
+            callback && callback();
+    },
+
+    suspend : function() {
+        this.$debugger && this.$debugger.suspend();
+    },
+
+    evaluate : function(expression, frame, global, disableBreak, callback){
+        this.$debugger && this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
+    },
+
+    changeLive : function(scriptId, newSource, previewOnly, callback) {
+        this.$debugger && this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
+    },
+
 });
 
 });
+

@@ -1,48 +1,91 @@
-// #ifdef __AMLDEBUGGER || __INC_ALL
-if (apf.hasRequireJS) define("apf/elements/dbg/v8debugger",
-    ["module", "debug/Breakpoint"],
-    function(module, Breakpoint) {
+define(function(require, exports, module) {
 
-var V8Debugger = module.exports = function(dbg, host) {
+var Breakpoint = require("debug/Breakpoint");
+var V8Debugger = require("debug/V8Debugger");
+var WSV8DebuggerService = require("debug/WSV8DebuggerService");
+//var _debugger = require("ext/debugger/debugger")
+
+var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
     this.$init();
-
-    this.$debugger = dbg;
-    this.$host = host;
-    this.$v8breakpoints = {};
-
-    var _self = this;
-    
-    function onChangeRunning (e) {
-        _self.dispatchEvent("changeRunning", e);
-        if (dbg.isRunning()) {
-            _self.setFrame(null);
-        }
-    }
-    
-    function onBreak (e) {
-        _self.dispatchEvent("break", e);
-    }
-    
-    function onAfterCompile (e) {
-        _self.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
-    }
-    
-    // register event listeners
-    dbg.addEventListener("changeRunning", onChangeRunning);
-    dbg.addEventListener("break", onBreak);
-    dbg.addEventListener("afterCompile", onAfterCompile);
-
-    this.setFrame(null);
-    
-    // on detach remove all event listeners
-    this.addEventListener("detach", function () {
-        dbg.removeEventListener("changeRunning", onChangeRunning);
-        dbg.removeEventListener("break", onBreak);
-        dbg.removeEventListener("afterCompile", onAfterCompile);
-    });
 };
 
 (function() {
+    this.$startDebugging = function() {
+        var dbg = this.$debugger = dbg = new V8Debugger(0, this.$v8ds);
+        this.$v8breakpoints = {};
+
+        var _self = this;
+        
+        function onChangeRunning (e) {
+            _self.dispatchEvent("changeRunning", e);
+            if (dbg.isRunning()) {
+                _self.setFrame(null);
+            }
+        }
+        
+        function onBreak (e) {
+            _self.dispatchEvent("break", e);
+        }
+        
+        function onAfterCompile (e) {
+            _self.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
+        }
+        
+        // register event listeners
+        dbg.addEventListener("changeRunning", onChangeRunning);
+        dbg.addEventListener("break", onBreak);
+        dbg.addEventListener("afterCompile", onAfterCompile);
+
+        this.setFrame(null);
+        
+        // on detach remove all event listeners
+        this.addEventListener("detach", function () {
+            dbg.removeEventListener("changeRunning", onChangeRunning);
+            dbg.removeEventListener("break", onBreak);
+            dbg.removeEventListener("afterCompile", onAfterCompile);
+        });    
+    };
+    
+    this.$connect = function(callback) {
+        if (this.state != "connected")
+            this.$v8ds = new WSV8DebuggerService(ide.socket);
+        
+        this.state = "connected";
+        this.dispatchEvent("connect");
+        callback.call(this);
+    };
+    
+    this.attach = function(callback) {
+        var dbg = this.$debugger;
+        
+        if (dbg)
+            return callback && callback(null, this)
+
+        var _self = this;
+        this.$connect(function() {
+            _self.$v8ds.attach(0, function() {
+                _self.$startDebugging();
+                callback && callback(null, _self)
+            });
+        });
+    };
+    
+    this.detach = function(callback) {
+        if (!this.$debugger)
+            return callback();
+            
+        var dbg = this.$debugger;
+        this.$debugger = null;
+
+        var self = this;
+        this.$v8ds.detach(0, function(err) {
+            self.dispatchEvent("detach");
+            self.dispatchEvent("disconnect", {});
+            callback && callback(err);
+        });                
+    };
+    
+    
     var hasChildren = {
         "object": 8,
         "function": 4
@@ -487,20 +530,8 @@ var V8Debugger = module.exports = function(dbg, host) {
         return xml.join("");
     };
 
-    this.continueScript = function(callback) {
-        this.$debugger.continueScript(null, null, callback);
-    };
-
-    this.stepInto = function(callback) {
-        this.$debugger.continueScript("in", 1, callback);
-    };
-
-    this.stepNext = function(callback) {
-        this.$debugger.continueScript("next", 1, callback);
-    };
-
-    this.stepOut = function(callback) {
-        this.$debugger.continueScript("out", 1, callback);
+    this.continueScript = function(stepaction, stepcount, callback) {
+        this.$debugger.continueScript(stepaction, stepcount, callback);
     };
 
     this.suspend = function() {
@@ -585,7 +616,11 @@ var V8Debugger = module.exports = function(dbg, host) {
         return str.join("");
     };
     
-}).call(V8Debugger.prototype = new apf.Class());
+}).call(v8DebugClient.prototype = new apf.Class());
+
+
+module.exports = new v8DebugClient();
+//_debugger.registerDebugClient(v8DebugClient);
+
 
 });
-// #endif
