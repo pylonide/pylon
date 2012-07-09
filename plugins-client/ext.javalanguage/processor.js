@@ -120,13 +120,13 @@ var convertToHierarchyTree = function(doc, root) {
         return language === "java";
     };
 
-    this.complete = function(doc, fullAst, cursorPos, currentNode, callback) {
+    this.complete = function(doc, fullAst, data, currentNode, callback) {
         var _self = this;
         var doComplete = function(savingDone) {
           if (! savingDone)
             return callback([]);
           // The file has been saved, proceed to code complete request
-          var offset = calculateOffset(doc, cursorPos);
+          var offset = calculateOffset(doc, data.pos);
           var command = {
             command : "jvmfeatures",
             subcommand : "complete",
@@ -314,7 +314,6 @@ var convertToHierarchyTree = function(doc, root) {
         this.refactorInProgress = false;
         this.$saveFileAndDo(); // notify of ending the refactor
         callback();
-        this.refactorInProgress = false;
     };
 
     this.outline = function(doc, fullAst /*null*/, callback) {

@@ -3,6 +3,7 @@
 var util = require("util");
 var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
+var Path = require("path");
 
 var jvm = require("jvm-run");
 var JVMInstance = jvm.JVMInstance;
@@ -54,57 +55,25 @@ function srcToJavaClass(file) {
         .replace(/\.java$/, "");
 }
 
-function getJVMInstance(options, callback) {
+function getJVMInstance(options) {
     var jvmType = options.jvmType;
     var cwd = options.cwd;
     var file = options.file;
     switch (jvmType) {
         case "java":
-            var javaClass = srcToJavaClass(file);
-            return buildApp(new JVMInstance(cwd, javaClass));
-
+            return new JVMInstance(cwd, srcToJavaClass(file));
         case "java-web":
-            return buildApp(new WebJVMInstance(cwd, 'j2ee', options.port));
-
+            return new WebJVMInstance(cwd, 'j2ee', options.port);
         case "jpy":
-            return callback(null, new ScriptJVMInstance(cwd, "jython", file));
-
+            return new ScriptJVMInstance(cwd, "jython", file);
         case "jrb":
-            return callback(null, new ScriptJVMInstance(cwd, "jruby1.8.7", file));
-
+            return new ScriptJVMInstance(cwd, "jruby1.8.7", file);
         case "groovy":
-            return callback(null, new ScriptJVMInstance(cwd, "groovy", file));
-
+            return new ScriptJVMInstance(cwd, "groovy", file);
         case "js-rhino":
-            return callback("JS-Rhino not tested yet");
-
+            return "JS-Rhino not tested yet";
         default:
-            return callback("Unsupported JVM runtime environment '" + jvmType + "' !!");
-    }
-
-    function buildApp(jvmInstance) {
-        jvm.build(cwd, options.uid, "build", function(err, compilationProblems) {
-            if (err)  return callback(err);
-
-            // If no errors found, we can start
-            var numErrors = compilationProblems.filter(function (problem) {
-                return problem.type == "error"; }).length;
-            if (numErrors === 0) {
-                callback(null, jvmInstance);
-            }
-            else {
-                console.log("Found " + numErrors + " compilation errors !");
-                // send compilation errors to the user
-                options.eventEmitter.emit(options.eventName, {
-                    type: "jvm-build",
-                    code: 0,
-                    body: {
-                        success: true,
-                        body: compilationProblems
-                    }
-                });
-            }
-        });
+            return "Unsupported JVM runtime environment '" + jvmType + "' !!";
     }
 }
 
@@ -181,14 +150,34 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         options.command = "java";
         options.port = port;
 
-        getJVMInstance(options, function (err, jvmInstance) {
-            if (err) return console.error(err);
+        if (options.jvmType == "gae-java") {
+            var SDK_PATH = Path.join(__dirname, "../../node_modules/jvm-run/build-tools/appengine-java-sdk");
+            var SDK_BIN = Path.join(SDK_PATH, "bin");
+            var SDK_LIB = Path.join(SDK_PATH, "lib");
+            var JAR_FILE= Path.join(SDK_LIB, "appengine-tools-api.jar");
+
+            var runGaeArgs = ["-ea", "-cp", JAR_FILE,
+                  "com.google.appengine.tools.KickStart",
+                  "com.google.appengine.tools.development.DevAppServerMain",
+                  "-p", port, "-a", "0.0.0.0", Path.join(options.cwd, "war")];
+            self.args = options.args = self.jvmArgs.concat(runGaeArgs);
+            c9util.extend(options.env, {
+                SDK_LIB: SDK_LIB,
+                SDK_BIN: SDK_BIN,
+                JAR_FILE: JAR_FILE
+            });
+            ShellRunner.call(self, vfs, options, callback);
+        }
+        else {
+            var jvmInstance = getJVMInstance(options);
+            if (typeof jvmInstance === "string")
+                return console.error(jvmInstance);
 
             jvmInstance.runArgs(function (runArgs) {
                 self.args = options.args = self.jvmArgs.concat(runArgs).concat(self.scriptArgs);
                 ShellRunner.call(self, vfs, options, callback);
             });
-        });
+        }
     }
 };
 

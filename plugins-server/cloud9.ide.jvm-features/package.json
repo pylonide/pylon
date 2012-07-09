@@ -9,7 +9,8 @@
     "plugin": {
         "consumes": [
             "ide",
-            "sandbox"
+            "sandbox",
+            "eventbus"
         ]
     }
 }

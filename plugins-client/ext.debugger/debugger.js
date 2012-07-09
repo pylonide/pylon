@@ -320,11 +320,11 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (!script)
                 return;
 
-            if (script.getAttribute("native") === "true") {
-                return alert("Source not found !");
-            }
             var name = script.getAttribute("scriptname");
             var value = name.split("/").pop();
+
+            if (script.getAttribute("native") === "true")
+                return console.log("Source not found " + name);
 
             if (name.indexOf(ide.workspaceDir) === 0) {
                 var path = ide.davPrefix + name.slice(ide.workspaceDir.length);

@@ -11,6 +11,7 @@ var JVM = require("../cloud9.run.jvm/jvm-runner");
 var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
 var ProcessManager = require("../cloud9.process-manager/process_manager");
+var vfsLocal = require("vfs/local");
 
 module.exports = {
     
@@ -43,7 +44,10 @@ module.exports = {
                 callback(null, null);
             }
         };
-        new JVMDebug(null, pm, sandbox, JVM, false, function () {
+        var vfs = vfsLocal({
+            root: "/"
+        }); // TODO: Test with VFS
+        new JVMDebug("App URL", vfs, pm, sandbox, JVM, 5858, function () {
             next();
         });
     },
