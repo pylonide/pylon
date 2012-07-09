@@ -167,6 +167,7 @@ module.exports = {
         this.$originalColumn = cursor.column;
         
         // var selected = this.renderOutline(event.data.showNow);
+        this.renderOutline(event.data.showNow);
         
         if (txtGoToFile.value.match(/^@/))
             this.showOutline();
