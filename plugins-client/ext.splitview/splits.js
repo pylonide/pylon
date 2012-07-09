@@ -53,10 +53,6 @@ exports.init = function(splitView) {
         });
     });
     
-    ide.addEventListener("ext.quicksearch.correctpos", function(e) {
-        e.returnValue = correctQuickSearchDialog(e);
-    });
-    
     ide.addEventListener("ext.gotoline.correctpos", function(e) {
         e.returnValue = correctGotoLineDialog(e);
     });
@@ -67,15 +63,6 @@ exports.init = function(splitView) {
     
     Grids.addEventListener("resize", function(e, node) {
         var correct;
-        if (searchWindow && searchWindow.visible) {
-            correct = correctQuickSearchDialog();
-            if (!correct)
-                return;
-            if (typeof correct.top != "undefined")
-                searchWindow.$ext.style.top = correct.top + "px";
-            if (typeof correct.right != "undefined")
-                searchWindow.$ext.style.right = correct.right + "px";
-        }
         if (gotoLineWindow && gotoLineWindow.visible) {
             var ace = Editors.currentEditor.amlEditor.$editor;
             var cursor = ace.getCursorPosition();
@@ -592,7 +579,7 @@ function setSplitViewStyles(splitOrPage) {
     }
 }
 
-var searchWindow, gotoLineWindow, searchPos;
+var gotoLineWindow;
 
 function correctQuickSearchDialog(e) {
     var editor = Editors.currentEditor.amlEditor;
@@ -610,30 +597,6 @@ function correctQuickSearchDialog(e) {
         width: parent.$ext.offsetWidth,
         height: parent.$ext.offsetHeight
     };
-    var minRight = 30;
-
-    if (!searchWindow && self["winQuickSearch"]) {
-        searchWindow = self["winQuickSearch"];
-        searchPos = apf.getStyle(searchWindow.$ext, "right");
-        if (searchPos == "auto")
-            searchPos = minRight + "px";
-    }
-    if (searchWindow) {
-        // hardcoded searchbox width (350px) and added 30px margin on the right
-        var maxRight = parentDims.width - 380;
-        var right = parentDims.width - editorPos[0] - editorDims.width + 30;
-        var top =  editorPos[1];
-        var to = Math.max(top, 0);
-        return {
-            right: Math.max(Math.min(right, maxRight), minRight),
-            zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
-            from: !e || e.anim == "out" ? to - 27 : 0,
-            to: !e || e.anim == "out" ? to : (to - 30),
-            onfinish: function() {
-                searchWindow.$ext.style.zIndex = searchWindow.zindex;
-            }
-        };
-    }
 }
 
 function correctGotoLineDialog(e) {
