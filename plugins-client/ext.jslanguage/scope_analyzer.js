@@ -560,7 +560,7 @@ handler.analyze = function(doc, ast, callback) {
                 },
                 'Call(e, args)', function(b) {
                     analyze(scope, b.e, inCallback);
-                    analyze(scope, b.args, outline.tryExtractEventHandler(this) && IN_CALLBACK_DEF);
+                    analyze(scope, b.args, isCallbackCall(this) ? IN_CALLBACK_DEF : 0);
                     return this;
                 },
                 'Block(_)', function() {
@@ -599,6 +599,15 @@ handler.analyze = function(doc, ast, callback) {
     scopeAnalyzer(rootScope, ast);
     callback(markers);
 };
+
+var isCallbackCall = function(node) {
+    var result;
+    node.rewrite("Call(PropAccess(_, p), [_])", function(b) {
+        if (b.p.value === "forEach" || b.p.value === "map")
+            result = true;
+    });
+    return result || outline.tryExtractEventHandler(node);
+}
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
