@@ -38,7 +38,7 @@ var WatcherPlugin = function(ide, workspace) {
     this.name = name;
     this.fileWatchers = {};
     this.directoryWatchers = {};
-    this.basePath  = ide.workspaceDir;
+    this.basePath = ide.workspaceDir;
 };
 
 util.inherits(WatcherPlugin, Plugin);
@@ -173,6 +173,7 @@ util.inherits(WatcherPlugin, Plugin);
                     "path"    : path,
                     "files"   : files
                 });
+                return;
             }
 
             var files = {};
