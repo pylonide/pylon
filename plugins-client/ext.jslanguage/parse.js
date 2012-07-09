@@ -20,6 +20,10 @@ handler.parse = function(code, callback) {
     callback(parser.parse(code));
 };
 
+handler.isParsingSupported = function() {
+    return true;
+}; 
+
 handler.findNode = function(ast, pos, callback) {
     callback(ast.findNode(pos));
 };

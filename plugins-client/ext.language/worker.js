@@ -316,6 +316,20 @@ function asyncParForEach(array, fn, callback) {
             callback(_self.cachedAst);
         });
     };
+
+    this.isParsingSupported = function() {
+        if (this.cachedAst)
+            return true;
+        var result;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)
+                && hander.isParsingSupported && hander.isParsingSupported())
+                result = true;
+            next();
+        }, function() {}
+        );
+        return result;
+    };
     
     /**
      * Finds the current node using the language handler.
@@ -423,7 +437,7 @@ function asyncParForEach(array, fn, callback) {
         this.parse(function(ast) {
             var markers = [];
             asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language) && (ast || !handler.analysisRequiresParsing())) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !this.isParsingSupported())) {
                     handler.analyze(_self.doc, ast, function(result) {
                         if (result)
                             markers = markers.concat(result);
@@ -723,76 +737,57 @@ function asyncParForEach(array, fn, callback) {
     }
     
     this.complete = function(event) {
-        var data = event.data;
-        var pos = data.pos;
-        // Check if anybody requires parsing for its code completion
-        var ast;
-        var currentNode;
-        var currentPos;
         var _self = this;
         
-        asyncForEach(this.handlers, function(handler, next) {
-            if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
-                _self.parse(function(hAst) {
-                    if (hAst) {
-                        ast = hAst;
-                        currentPos = { line: pos.row, col: pos.column };
-                        _self.findNode(ast, currentPos, function(node) {
-                            currentNode = node;
+        this.parse(function(ast) {
+            var data = event.data;
+            var pos = data.pos;
+            var currentPos = { line: pos.row, col: pos.column };
+            _self.findNode(ast, currentPos, function(node) {
+                var currentNode = node;
+                var matches = [];
+            
+                asyncForEach(_self.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(_self.$language)) {
+                        handler.complete(_self.doc, ast, data, currentNode, function(completions) {
+                            if (completions)
+                                matches = matches.concat(completions);
                             next();
                         });
                     }
-                    else {
-                        next();
-                    }
-                });
-            }
-            else {
-                next();
-            }
-        }, function() {
-            var matches = [];
-            
-            asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language)) {
-                    handler.complete(_self.doc, ast, data, currentNode, function(completions) {
-                        if (completions)
-                            matches = matches.concat(completions);
-                        next();
-                    });
-                }
-                else
-                    next();
-            }, function() {
-                removeDuplicateMatches(matches);
-                // Sort by priority, score
-                matches.sort(function(a, b) {
-                    if (a.priority < b.priority)
-                        return 1;
-                    else if (a.priority > b.priority)
-                        return -1;
-                    else if (a.score < b.score)
-                        return 1;
-                    else if (a.score > b.score)
-                        return -1;
-                    else if (a.id && a.id === b.id) {
-                        if (a.isFunction)
-                            return -1;
-                        else if (b.isFunction)
-                            return 1;
-                    }
-                    if (a.name < b.name)
-                        return -1;
-                    else if(a.name > b.name)
-                        return 1;
                     else
-                        return 0;
-                });                
-                // Removed for the java completion result caching cases
-                // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", {
-                    pos: pos,
-                    matches: matches
+                        next();
+                }, function() {
+                    removeDuplicateMatches(matches);
+                    // Sort by priority, score
+                    matches.sort(function(a, b) {
+                        if (a.priority < b.priority)
+                            return 1;
+                        else if (a.priority > b.priority)
+                            return -1;
+                        else if (a.score < b.score)
+                            return 1;
+                        else if (a.score > b.score)
+                            return -1;
+                        else if (a.id && a.id === b.id) {
+                            if (a.isFunction)
+                                return -1;
+                            else if (b.isFunction)
+                                return 1;
+                        }
+                        if (a.name < b.name)
+                            return -1;
+                        else if(a.name > b.name)
+                            return 1;
+                        else
+                            return 0;
+                    });                
+                    // Removed for the java completion result caching cases
+                    // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                    _self.sender.emit("complete", {
+                        pos: pos,
+                        matches: matches
+                    });
                 });
             });
         });

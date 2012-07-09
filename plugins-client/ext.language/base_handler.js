@@ -34,17 +34,11 @@ module.exports = {
     },
     
     /**
-     * Returns whether the completion engine requires an AST representation of the code
+     * Determine if the language component supports parsing.
+     * Assumed to be true if at least one hander for the language reports true.
      */
-    completionRequiresParsing: function() {
+    isParsingSupported: function() {
         return false;
-    },
-
-    /**
-     * Returns whether the analysis engine requires an AST representation of the code
-     */
-    analysisRequiresParsing: function() {
-        return true;
     },
 
     /**
