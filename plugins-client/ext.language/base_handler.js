@@ -48,10 +48,11 @@ module.exports = {
     },
 
     /**
-     * Returns whether the analysis engine requires an AST representation of the code
+     * Returns a regular expression for identifiers.
+     * If not specified, /[A-Za-z0-9\$\_]/ is used.
      */
     getIdentifierRegex: function() {
-        return /[A-Za-z0-9\$\_]/;
+        return null;
     },
     
     // PARSING AND ABSTRACT SYNTAX CALLBACKS
