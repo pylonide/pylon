@@ -122,7 +122,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         ide.addEventListener("openfile", function(e) {
             if (e.type == "nofile")
                 return;
-            
+
             var path = e.doc.getNode().getAttribute("path");
             _self.sendWatchFile(path);
         });
