@@ -147,7 +147,7 @@ module.exports = {
      *        and staticPrefix, the current loading URL
      * @param currentNode the AST node the cursor is currently at (if exists)
      */
-    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
+    complete: function(doc, fullAst, data, currentNode, callback) {
         callback();
     },
     
