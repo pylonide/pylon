@@ -73,7 +73,7 @@ module.exports = {
         this.mnuItem = new apf.item({
             disabled: true,
             command : "renameVar"
-        })
+        });
 
         ext.nodes.push(
             menus.addItemByPath("Tools/~", new apf.divider(), 10000),
@@ -158,22 +158,22 @@ module.exports = {
         this.worker.emit("fetchVariablePositions", {data: curPos});
     },
 
-    finishRefactoring: function() {
+    commitRename: function() {
         // Finished refactoring in editor
         // -> continue with the worker giving the initial refactor cursor position
         var doc = editors.currentEditor.amlEditor.getDocument();
         var oPos = this.placeHolder.pos;
         var line = doc.getLine(oPos.row);
         var newIdentifier = retrieveFullIdentifier(line, oPos.column);
-        this.worker.emit("finishRefactoring", {data: { oldId: this.oldIdentifier, newName: newIdentifier.text } });
+        this.worker.emit("commitRename", {data: { oldId: this.oldIdentifier, newName: newIdentifier.text } });
     },
 
-    cancelRefactoring: function() {
+    onRenameCancel: function() {
         if (this.placeHolder) {
             this.placeHolder.detach();
             this.placeHolder.cancel();
         }
-        this.worker.emit("cancelRefactoring", {data: {}});
+        this.worker.emit("onRenameCancel", {data: {}});
     },
 
     $cleanup: function() {
@@ -195,11 +195,11 @@ module.exports = {
         switch(keyCode) {
             case 32: // Space can't be accepted as it will ruin the logic of retrieveFullIdentifier
             case 27: // Esc
-                this.cancelRefactoring();
+                this.onRenameCancel();
                 e.preventDefault();
                 break;
             case 13: // Enter
-                this.finishRefactoring();
+                this.commitRename();
                 e.preventDefault();
                 break;
             default:
