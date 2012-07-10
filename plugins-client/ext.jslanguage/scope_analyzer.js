@@ -460,9 +460,9 @@ handler.analyze = function(doc, ast, callback) {
                 },
                 'VarDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
-                    while (b.e.rewrite('Assign(_, _)'))
+                    while (b.e.isMatch('Assign(_, _)'))
                         b.e = b.e[1];
-                    if (!b.e.rewrite('Function(_, _, _)'))
+                    if (!b.e.isMatch('Function(_, _, _)'))
                         mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
