@@ -7,77 +7,80 @@
 
 "use strict";
 
-var Plugin = require("../cloud9.core/plugin");
 var fsnode = require("vfs-nodefs-adapter");
-var util = require("util");
 var assert = require("assert");
+var Connect = require("connect");
+var error = require("http-error");
 
-var name = "settings";
-
-var FS;
-var SETTINGS_PATH;
-
-var trimFilePrefix;
 var locationsToSwap = {"files" : "active", "file" : "path", "tree_selection": "path" };  
 var propertiesToSwap= ["projecttree", "tabcycle", "recentfiles"];
 
 module.exports = function setup(options, imports, register) {
     assert(options.settingsPath, "option 'settingsPath' is required");
-    SETTINGS_PATH = options.settingsPath;
+    var settingsPath = options.settingsPath;
 
     imports.sandbox.getProjectDir(function(err, projectDir) {
-        FS = fsnode(imports.vfs, projectDir);
+        var fs = fsnode(imports.vfs, projectDir);
 
         // If absolute settings path option is set we use that path and NodeJS's FS.
         // This is needed by c9local where settings file cannot be stored at `/.settings`.
         if (typeof options.absoluteSettingsPath !== "undefined") {
-            FS = require("fs");
-            FS.exists = require("path").exists;
-            SETTINGS_PATH = options.absoluteSettingsPath;        
+            fs = require("fs");
+            fs.exists = require("path").exists;
+            settingsPath = options.absoluteSettingsPath;        
         }
 
-        trimFilePrefix = options.trimFilePrefix;
-        imports.ide.register(name, SettingsPlugin, register);
+        new SettingsPlugin(fs, settingsPath, options.trimFilePrefix).registerRoutes(imports["ide-routes"]);
+        
+        register();
     });
 };
 
-var SettingsPlugin = module.exports.SettingsPlugin = function(ide, workspace) {
-    Plugin.call(this, ide, workspace);
-    this.hooks = ["command"];
-    this.name = name;
-    this.fs = FS;
-    this.settingsPath = SETTINGS_PATH;
+var SettingsPlugin = module.exports.SettingsPlugin = function(fs, settingsPath, trimFilePrefix) {
+    this.fs = fs;
+    this.settingsPath = settingsPath;
+    this.trimFilePrefix = trimFilePrefix;
 };
-
-util.inherits(SettingsPlugin, Plugin);
 
 (function() {
     this.counter = 0;
 
-    this.command = function(user, message, client) {
-        if (message.command != "settings")
-            return false;
-
-        var _self = this;
-        if (message.action == "get") {
-            this.loadSettings(user, function(err, settings) {
-                client.send(JSON.stringify({
-                    "type": "settings",
-                    "settings": err || !settings ? "defaults" : settings
-                }));
-            });
-        }
-        else if (message.action == "set") {
-            this.storeSettings(user, message.settings, function(err) {
-                if (err)
-                    _self.error(err, 500, message, client);
-            });
-        }
-        return true;
+    this.registerRoutes = function(connect) {
+        var self = this;
+        
+        connect.use("/settings", function(req, res, next) {
+            console.log("SETTINGS", req.url)
+            if (req.method !== "GET" && req.method !== "POST")
+                return next();
+                
+            if (req.method == "GET") {
+                self.loadSettings(function(err, settings) {
+                    if (err) return next(err);
+                    
+                    res.writeHead(200, {
+                        "Content-Type": "application/json"
+                    });
+                    res.end(settings);
+                });
+            }
+            else if (req.method == "POST") {
+                //console.log(req.body);
+                var settings = "";
+                req.on("data", function(data) {
+                    settings += data;
+                })
+                req.on("end", function() {
+                    self.storeSettings(settings, function(err) {
+                        res.writeHead(err ? 500 : 200);
+                        res.end(err || "");
+                    });
+                });
+            }
+        });
     };
 
-    this.loadSettings = function(user, callback) {
-        // console.log("load settings", this.settingsPath);
+    this.loadSettings = function(callback) {
+        console.log("load settings", this.settingsPath);
         var self = this;
         this.fs.exists(this.settingsPath, function(exists) {
             if (exists) {
@@ -88,13 +91,13 @@ util.inherits(SettingsPlugin, Plugin);
                     }
                     
                     // for local version, we need to pluck the paths in settings prepended with username + workspace id (short)
-                    if (trimFilePrefix !== undefined) {
+                    if (self.trimFilePrefix !== undefined) {
                         var attrSet = '="';
                         
                         for (var l in locationsToSwap) {
                             var attribute = locationsToSwap[l] + attrSet;
                             
-                            settings = settings.replace(new RegExp(attribute + "/workspace", "g"), attribute + trimFilePrefix + "/workspace");
+                            settings = settings.replace(new RegExp(attribute + "/workspace", "g"), attribute + self.trimFilePrefix + "/workspace");
                         }
                         
                         propertiesToSwap.forEach(function (el, idx, arr) {
@@ -103,7 +106,7 @@ util.inherits(SettingsPlugin, Plugin);
     
                             if (openTagPos > 0 && closeTagPos > 0) {
                                 var originalPath = settings.substring(openTagPos, closeTagPos);
-                                var newPath = originalPath.replace(new RegExp("/workspace", "g"), trimFilePrefix + "/workspace");
+                                var newPath = originalPath.replace(new RegExp("/workspace", "g"), self.trimFilePrefix + "/workspace");
 
                                 settings = settings.replace(originalPath, newPath);
                             }
@@ -119,20 +122,20 @@ util.inherits(SettingsPlugin, Plugin);
         });
     };
 
-    this.storeSettings = function(user, settings, callback) {
+    this.storeSettings = function(settings, callback) {
         var self = this;
-        // console.log("store settings", this.settingsPath);
+        console.log("store settings", this.settingsPath);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
         var tmpPath = self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
         
         // for local version, we need to rewrite the paths in settings to store as "/workspace"
-        if (trimFilePrefix !== undefined) {
+        if (self.trimFilePrefix !== undefined) {
             var attrSet = '="';
             
             for (var l in locationsToSwap) {
                 var attribute = locationsToSwap[l] + attrSet;
                 
-                settings = settings.replace(new RegExp(attribute + trimFilePrefix, "g"), attribute);
+                settings = settings.replace(new RegExp(attribute + self.trimFilePrefix, "g"), attribute);
             }
             
             propertiesToSwap.forEach(function (el, idx, arr) {
@@ -141,7 +144,7 @@ util.inherits(SettingsPlugin, Plugin);
                 
                 if (openTagPos > 0 && closeTagPos > 0) {
                     var originalPath = settings.substring(openTagPos, closeTagPos);
-                    var newPath = originalPath.replace(new RegExp(trimFilePrefix, "g"), "");
+                    var newPath = originalPath.replace(new RegExp(self.trimFilePrefix, "g"), "");
                     settings = settings.replace(originalPath, newPath);
                 }
             });

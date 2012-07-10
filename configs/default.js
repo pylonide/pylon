@@ -202,7 +202,8 @@ var config = [
     },
     "./cloud9.ide.shell",
     "./cloud9.ide.state",
-    "./cloud9.ide.watcher"
+    "./cloud9.ide.watcher",
+    "./cloud9.routes"
 ];
 
 module.exports = config;

@@ -48,19 +48,11 @@ module.exports = {
         this.model.data.setAttribute("time", new Date().getTime());
         var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
 
-        if (ide.onLine) {
-            this.dirty = false;
-
-            ide.send({
-                command: "settings",
-                action: "set",
-                settings: data
-            });
-            ide.dispatchEvent("track_action", {
-                type: "save settings",
-                settings: data
-            });
-        }
+        apf.ajax(window.location.pathname.replace(/\/$/, "") + "/api/settings", {
+            method : "POST",
+            contentType : "text/plain",
+            data : data
+        });
     },
 
     load : function(xml){
@@ -156,31 +148,6 @@ module.exports = {
         // Load from parsed settings in the index file
         else if (cloud9config.settings)
             xml = cloud9config.settings;
-
-        if (!xml) {
-            ide.addEventListener("socketMessage", function(e){
-                if (e.message.type == "settings") {
-                    var settings = e.message.settings;
-                    if (!settings || settings == "defaults")
-                        settings = template;
-
-                    _self.load(settings);
-                    initEvents();
-
-                    ide.removeEventListener("socketMessage", arguments.callee);
-                }
-            });
-
-            if (ide.onLine === true) {
-                ide.send({command: "settings", action: "get"});
-            }
-            else {
-                ide.addEventListener("afteronline", function() {
-                    ide.send({command: "settings", action: "get"});
-                });
-            }
-            return;
-        }
 
         this.load(xml);
         initEvents();
