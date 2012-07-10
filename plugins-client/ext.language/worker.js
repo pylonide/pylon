@@ -281,6 +281,8 @@ function asyncParForEach(array, fn, callback) {
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {
+                if (!handler)
+                    throw new Error("Could not load language handler " + path, e);
                 handler.proxy = _self.serverProxy;
                 handler.sender = _self.sender;
                 _self.handlers.push(handler);
