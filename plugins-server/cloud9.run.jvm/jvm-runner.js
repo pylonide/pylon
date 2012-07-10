@@ -151,15 +151,21 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         options.port = port;
 
         if (options.jvmType == "gae-java") {
-            var SDK_PATH = Path.join(__dirname, "../../node_modules/jvm-run/build-tools/appengine-java-sdk");
-            var SDK_BIN = Path.join(SDK_PATH, "bin");
-            var SDK_LIB = Path.join(SDK_PATH, "lib");
-            var JAR_FILE= Path.join(SDK_LIB, "appengine-tools-api.jar");
+            var SDK_PATH = Path.resolve(__dirname, "../../node_modules/jvm-run/build-tools/appengine-java-sdk");
+            var SDK_BIN = SDK_PATH + "/bin";
+            var SDK_LIB = SDK_PATH + "/lib";
+            var JAR_FILE= SDK_LIB + "/appengine-tools-api.jar";
 
-            var runGaeArgs = ["-ea", "-cp", JAR_FILE,
-                  "com.google.appengine.tools.KickStart",
-                  "com.google.appengine.tools.development.DevAppServerMain",
-                  "-p", port, "-a", "0.0.0.0", Path.join(options.cwd, "war")];
+            var runGaeArgs = [
+                "-XstartOnFirstThread",
+                "-javaagent:"+ SDK_LIB + "/agent/appengine-agent.jar",
+                "-Xbootclasspath/p:" + SDK_LIB + "/override/appengine-dev-jdk-overrides.jar",
+                "-cp", JAR_FILE,
+                "com.google.appengine.tools.development.DevAppServerMain",
+                "--disable_update_check",
+                "-p", port, "-a", "0.0.0.0",
+                Path.join(options.cwd, "war")
+            ];
             self.args = options.args = self.jvmArgs.concat(runGaeArgs);
             c9util.extend(options.env, {
                 SDK_LIB: SDK_LIB,
