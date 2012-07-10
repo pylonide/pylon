@@ -63,8 +63,6 @@ util.inherits(WatcherPlugin, Plugin);
                 return;
             }
 
-            console.log("Client", clientId, "watching file", path);
-
             watcher.on("change", function (currStat, prevStat) {
                 self.onFileChange(clientId, path, currStat, prevStat, client);
             });
@@ -92,8 +90,6 @@ util.inherits(WatcherPlugin, Plugin);
                 return;
             }
 
-            console.log("Client", clientId, "watching directory", path);
-
             watcher.on("change", function (event, filename) {
                 self.onDirectoryChange(clientId, path, event, filename, client);
             });
@@ -112,11 +108,8 @@ util.inherits(WatcherPlugin, Plugin);
             return;
         }
 
-        console.log("File changed", path, new Date().toString());
         if (prevStat.mtime.getTime() === currStat.mtime.getTime())
             return;
-
-        console.log("File mtime is different", path);
 
         if (!currStat) {
             this.removeFileWatcher(clientId, path);
