@@ -213,7 +213,7 @@ function asyncForEach(array, fn, callback) {
             if (array.length > 0) {
                 processOne();
             }
-            else {
+            else if (callback) {
                 callback(result, err);
             }
         });
@@ -221,7 +221,7 @@ function asyncForEach(array, fn, callback) {
     if (array.length > 0) {
         processOne();
     }
-    else {
+    else if (callback) {
         callback();
     }
 }
@@ -235,7 +235,7 @@ function asyncParForEach(array, fn, callback) {
     for (var i = 0; i < arLength; i++) {
         fn(array[i], function(result, err) {
             completed++;
-            if (completed === arLength) {
+            if (completed === arLength && callback) {
                 callback(result, err);
             }
         });
@@ -322,13 +322,11 @@ function asyncParForEach(array, fn, callback) {
             return true;
         var result;
         var _self = this;
-        asyncForEach(this.handlers, function(handler, next) {
+        this.handlers.forEach(function(handler) {
             if (handler.handlesLanguage(_self.$language)
                 && handler.isParsingSupported && handler.isParsingSupported())
                 result = true;
-            next();
-        }, function() {}
-        );
+        });
         return result;
     };
     
@@ -350,6 +348,9 @@ function asyncParForEach(array, fn, callback) {
                     next();
                 });
             }
+            else {
+                next();
+            }
         }, function() { callback(result); });
     };
 
@@ -370,7 +371,6 @@ function asyncParForEach(array, fn, callback) {
                 }
                 else
                     next();
-            }, function() {
             });
         }, true);
     };
@@ -389,7 +389,6 @@ function asyncParForEach(array, fn, callback) {
             }
             else
                 next();
-        }, function() {
         });
     };
 
@@ -404,7 +403,6 @@ function asyncParForEach(array, fn, callback) {
             }
             else
                 next();
-        }, function() {
         });
     };
 
@@ -610,7 +608,6 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 }
-            }, function() {
             });
         });
     };
@@ -657,7 +654,6 @@ function asyncParForEach(array, fn, callback) {
             }
             else
                 next();
-        }, function() {
         });
     }
 
@@ -696,7 +692,7 @@ function asyncParForEach(array, fn, callback) {
             handler.project = project;
             handler.language = language;
             handler.onDocumentOpen(path, doc, oldPath, next);
-        }, function() { });
+        });
     };
     
     this.documentClose = function(event) {
@@ -707,7 +703,7 @@ function asyncParForEach(array, fn, callback) {
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
-        }, function() { });
+        });
     };
     
     // For code completion
