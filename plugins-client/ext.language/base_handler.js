@@ -78,7 +78,7 @@ module.exports = {
     onUpdate: function(doc, callback) {
         callback();
     },
-    
+
     /**
      * Invoked when a new document has been opened
      * @param path the path of the newly opened document
@@ -94,6 +94,16 @@ module.exports = {
      * @param path the path of the file
      */
     onDocumentClose: function(path, callback) {
+        callback();
+    },
+    
+    /**
+     * Invoked when a file in the project has been added, removed, or changed.
+     * 
+     * @param path the path of the file
+     * @param eventType a string describing the type of event, if available
+     */
+    onFileUpdate: function(path, eventType, callback) {
         callback();
     },
     

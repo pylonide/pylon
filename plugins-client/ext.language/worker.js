@@ -128,6 +128,9 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("onRenameCancel", function(event) {
         _self.onRenameCancel(event);
     });
+    sender.on("onFileUpdate", function(event) {
+        _self.onFileUpdate(event);
+    });
     sender.on("serverProxy", function(event) {
         _self.serverProxy.onMessage(event.data);
     });
@@ -660,7 +663,7 @@ function asyncParForEach(array, fn, callback) {
             else
                 next();
         });
-    }
+    };
 
     this.onUpdate = function() {
         this.scheduledUpdate = false;
@@ -672,6 +675,17 @@ function asyncParForEach(array, fn, callback) {
                 next();
         }, function() {
             _self.analyze(function() {});
+        });
+    };
+
+    this.onFileUpdate = function() {
+        this.scheduledUpdate = false;
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) { 
+            if (handler.onFileUpdate)
+                handler.onFileUpdate(event.data.file, event.data.eventType, next);
+            else
+                next();
         });
     };
     
