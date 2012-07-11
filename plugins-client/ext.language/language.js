@@ -178,7 +178,10 @@ module.exports = ext.register("ext/language/language", {
         isContinuousCompletionEnabled = value;
     },
     
-    updateSettings: function() {
+    updateSettings: function(e) {
+        // check if some other setting was changed
+        if (e && e.xmlNode && e.xmlNode.tagName != "language")
+            return;
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
