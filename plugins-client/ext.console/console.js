@@ -891,7 +891,8 @@ module.exports = ext.register("ext/console/console", {
                     return false;
                 _self.evalInputCommand(inputVal);
                 input.setValue("");
-            },
+                txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight
+            }
         })
 
         if (this.logged.length) {
