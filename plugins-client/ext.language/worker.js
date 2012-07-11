@@ -321,9 +321,10 @@ function asyncParForEach(array, fn, callback) {
         if (this.cachedAst)
             return true;
         var result;
+        var _self = this;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)
-                && hander.isParsingSupported && hander.isParsingSupported())
+                && handler.isParsingSupported && handler.isParsingSupported())
                 result = true;
             next();
         }, function() {}
@@ -437,7 +438,7 @@ function asyncParForEach(array, fn, callback) {
         this.parse(function(ast) {
             var markers = [];
             asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language) && (ast || !this.isParsingSupported())) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !_self.isParsingSupported())) {
                     handler.analyze(_self.doc, ast, function(result) {
                         if (result)
                             markers = markers.concat(result);
