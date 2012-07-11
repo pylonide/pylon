@@ -108,7 +108,7 @@ util.inherits(WatcherPlugin, Plugin);
             return;
         }
 
-        if (prevStat.mtime.getTime() === currStat.mtime.getTime())
+        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime.getTime() === currStat.mtime.getTime())
             return;
 
         if (!currStat) {
