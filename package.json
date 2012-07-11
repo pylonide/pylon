@@ -12,7 +12,6 @@
 
     "pm": "sm",
     "dependencies": {
-        "socket.io": "0.9.x",
         "connect": "1.8.x",
 
         "sourcemint-loader-js": "0.x",
@@ -49,7 +48,8 @@
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/46f9d8ffdb159a2c206d41ed6ad877f471bb1e2f"],
-        "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/9d0c0631f390538134a7d1f841db2c72d79f8cb4"]
+        "socket.io":           ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
+        "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
     },
 
     "repository" : {
