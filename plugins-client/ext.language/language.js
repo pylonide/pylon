@@ -23,6 +23,7 @@ var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 var keyhandler = require("ext/language/keyhandler");
+var project = require("ext/language/project");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
@@ -87,6 +88,7 @@ module.exports = ext.register("ext/language/language", {
             refactor.hook(_self, worker);
             outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
+            project.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
