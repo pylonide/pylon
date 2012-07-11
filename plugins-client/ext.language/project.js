@@ -7,12 +7,12 @@
 
 var ide = require("core/ide");
 var filelist = require("ext/filelist/filelist");
+var filesystem = require("ext/filesystem/filesystem");
 
 define(function(require, exports, module) {
     
     var isFSReady = false;
     var isSettingsReady = false;
-    var model;
     
     module.exports.hook = function() {
         var _self = this;
@@ -37,6 +37,18 @@ define(function(require, exports, module) {
     };
 
     var initTree = module.exports.initTree = function() {
+        
+        filelist.getFileList(true, function(data, state) {
+            var files = data.split("\n");
+            files.pop(); // remove trailing empty split() element
+            var pathPrefix = ide.davPrefix.replace(/[\/]+$/, "");
+            for (var i = 0; i < 1 /*files.length*/; i++) {
+                var fullPath = pathPrefix + "/" + files[i];
+                filesystem.readFile(fullPath, function(contents, response) {
+                    console.log("the data", contents);
+                });
+            }
+        });
         
     };
 });
