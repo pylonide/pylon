@@ -7,14 +7,14 @@
 
 var ide = require("core/ide");
 var filelist = require("ext/filelist/filelist");
-var filesystem = require("ext/filesystem/filesystem");
 
 define(function(require, exports, module) {
     
     var isFSReady = false;
     var isSettingsReady = false;
     
-    module.exports.hook = function() {
+    module.exports.hook = function(oExt, worker) {
+        this.worker = worker;
         var _self = this;
 
         ide.addEventListener("init.ext/filesystem/filesystem", function(e) {
@@ -37,17 +37,22 @@ define(function(require, exports, module) {
     };
 
     var initTree = module.exports.initTree = function() {
+        var _self = this;
         
         filelist.getFileList(true, function(data, state) {
             var files = data.split("\n");
             files.pop(); // remove trailing empty split() element
             var pathPrefix = ide.davPrefix.replace(/[\/]+$/, "");
-            for (var i = 0; i < 1 /*files.length*/; i++) {
-                var fullPath = pathPrefix + "/" + files[i];
-                filesystem.readFile(fullPath, function(contents, response) {
-                    console.log("the data", contents);
-                });
+            var filtered = [];
+            for (var i = 0; i < files.length; i++) {
+                var path = files[i];
+                if (path[1] && path[0] === "." && path[1] === "/")
+                    path = path.substr(2);
+                path = pathPrefix + "/" + path;
+                // TODO: filter; determine if already "seen"
+                filtered.push({ path: path, eventType: "init"});
             }
+            _self.worker.emit("onFileUpdates", { data : { paths: filtered } });
         });
         
     };

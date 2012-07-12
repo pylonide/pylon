@@ -128,8 +128,8 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("onRenameCancel", function(event) {
         _self.onRenameCancel(event);
     });
-    sender.on("onFileUpdate", function(event) {
-        _self.onFileUpdate(event);
+    sender.on("onFileUpdates", function(event) {
+        _self.onFileUpdates(event);
     });
     sender.on("serverProxy", function(event) {
         _self.serverProxy.onMessage(event.data);
@@ -678,12 +678,12 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    this.onFileUpdate = function() {
+    this.onFileUpdates = function(event) {
         this.scheduledUpdate = false;
         var _self = this;
         asyncForEach(this.handlers, function(handler, next) { 
-            if (handler.onFileUpdate)
-                handler.onFileUpdate(event.data.file, event.data.eventType, next);
+            if (handler.onFileUpdates)
+                handler.onFileUpdates(event.data.paths, next);
             else
                 next();
         });

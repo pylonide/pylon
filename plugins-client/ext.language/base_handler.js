@@ -100,10 +100,10 @@ module.exports = {
     /**
      * Invoked when a file in the project has been added, removed, or changed.
      * 
-     * @param path the path of the file
+     * @param the affected files; a list of objects with a path and eventType property
      * @param eventType a string describing the type of event, if available
      */
-    onFileUpdate: function(path, eventType, callback) {
+    onFileUpdates: function(files, callback) {
         callback();
     },
     
