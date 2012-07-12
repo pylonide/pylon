@@ -610,6 +610,9 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 }
+                else {
+                    next();
+                }
             });
         });
     };
