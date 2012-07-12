@@ -151,10 +151,15 @@ function replaceText(editor, prefix, match) {
         if (line.substr(pos.column + postfix.length + 1, 1) === ')')
             cursorCol++;
     }
-    setTimeout(function() {
-        var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
+    var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
+    if (doc.getLine(cursorPos.row) && doc.getLine(cursorPos.row)[cursorPos.column]) {
         editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
-    }, 50);
+    }
+    else {
+        setTimeout(function() {
+            editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
+        });
+    }
 }
 
 var menus = require("ext/menus/menus");
