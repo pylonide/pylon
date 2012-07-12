@@ -6,7 +6,6 @@
 "use strict";
 
 var assert = require("assert");
-var connect = require("connect");
 var User = require("./user");
 var fs = require("fs");
 var util = require("util");
@@ -32,7 +31,7 @@ var Ide = module.exports = function(options) {
     this.workspaceDir = options.workspaceDir;
 
     options.plugins = options.plugins || [];
-    
+
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -62,13 +61,6 @@ var Ide = module.exports = function(options) {
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-    
-    var _self = this;
-    this.router = connect.router(function(app) {
-        app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
-            _self.$serveIndex(req, res, next);
-        });
-    });
 };
 
 util.inherits(Ide, EventEmitter);
@@ -87,7 +79,10 @@ util.inherits(Ide, EventEmitter);
     };
 
     this.handle = function(req, res, next) {
-        this.router(req, res, next);
+        if (req.method == "GET" && req.parsedUrl.pathname.match(/^(\/|\/index.html?)$/))
+            this.$serveIndex(req, res, next);
+        else
+            next();
     };
 
     this.$serveIndex = function(req, res, next) {
@@ -103,7 +98,7 @@ util.inherits(Ide, EventEmitter);
                 "cache-control": "no-transform",
                 "Content-Type": "text/html"
             });
-            
+
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
@@ -159,10 +154,10 @@ util.inherits(Ide, EventEmitter);
                 local: _self.options.local,
                 loadedDetectionScript: loadedDetectionScript
             };
-            
+
             var settingsPlugin = _self.workspace.getExt("settings");
             var user = _self.getUser(req);
-            
+
             if (!settingsPlugin || !user) {
                 index = template.fill(index, replacements);
                 res.end(index);
@@ -232,13 +227,13 @@ util.inherits(Ide, EventEmitter);
 
     this.getPermissions = function(req) {
         var user = this.getUser(req);
-        
+
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
             return user.getPermissions() || User.VISITOR_PERMISSIONS;
     };
-    
+
     this.hasUser = function(username) {
         return !!this.$users[username];
     };
@@ -284,7 +279,7 @@ util.inherits(Ide, EventEmitter);
 
     this.dispose = function(callback) {
         this.emit("destroy");
-        
+
         this.workspace.dispose(callback);
     };
 }).call(Ide.prototype);

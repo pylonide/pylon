@@ -43,7 +43,6 @@ function findCompletions(prefix, allIdentifiers) {
     return matches;
 }
 
-
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
 exports.findCompletions = findCompletions;
 

@@ -24,6 +24,7 @@ var WARNING_LEVELS = {
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
+var currentPos;
 
 var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
@@ -205,7 +206,7 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
-                    if (e instanceof TypeError)
+                    if (e instanceof TypeError || e instanceof ReferenceError)
                         throw e;
                     // Ignore parse errors
                     next();
@@ -287,8 +288,10 @@ function asyncParForEach(array, fn, callback) {
                     extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
                 _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
                 _self.currentMarkers = markers;
-                if (_self.postponedCursorMove)
+                if (_self.postponedCursorMove) {
                     _self.onCursorMove(_self.postponedCursorMove);
+                    _self.postponedCursorMove = null;
+                }
                 callback();
             });
         });
@@ -410,6 +413,7 @@ function asyncParForEach(array, fn, callback) {
                 _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(_self.currentMarkers.concat(aggregateActions.markers)));
                 _self.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
                 _self.lastCurrentNode = currentNode;
+                _self.lastCurrentPos = currentPos;
                 _self.setLastAggregateActions(aggregateActions);
                 _self.scheduleEmit("hint", {
                     pos: pos,
@@ -422,8 +426,9 @@ function asyncParForEach(array, fn, callback) {
         
         if (this.cachedAst) {
             var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if (currentNode !== this.lastCurrentNode || pos.force) {
+            var currentPos = {line: pos.row, col: pos.column};
+            var currentNode = ast.findNode(currentPos);
+            if (currentPos != this.lastCurrentPos || currentNode !== this.lastCurrentNode || pos.force) {
                 cursorMoved();
             }
         } else {
@@ -490,6 +495,7 @@ function asyncParForEach(array, fn, callback) {
         this.$language = language;
         this.cachedAst = null;
         this.lastCurrentNode = null;
+        this.lastCurrentPos = null;
         this.setValue(code);
         var doc = this.doc;
         asyncForEach(this.handlers, function(handler, next) {
@@ -549,7 +555,8 @@ function asyncParForEach(array, fn, callback) {
                 _self.parse(function(hAst) {
                     if(hAst) {
                         ast = hAst;
-                        currentNode = ast.findNode({line: pos.row, col: pos.column});
+                        currentPos = {line: pos.row, col: pos.column};
+                        currentNode = ast.findNode(currentPos);
                     }
                     next();
                 });
