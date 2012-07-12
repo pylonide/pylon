@@ -99,6 +99,11 @@ module.exports = ext.register("ext/console/console", {
             if (proc.extra) {
                 command_id = proc.extra.command_id;
                 original_line = proc.extra.original_line;
+                
+                if (!original_line) {
+                    continue;
+                }
+                
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
 
                 if (proc.type === "run-npm") {
