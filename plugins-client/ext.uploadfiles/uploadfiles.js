@@ -475,7 +475,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             }
         
             /** Chrome, Firefox */
-            if (apf.hasFileApi) {
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
                 function checkFileExists(exists) {
                     if (exists) {
                         if (_self.existingOverwriteAll) {
