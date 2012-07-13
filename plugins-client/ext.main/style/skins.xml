@@ -5960,6 +5960,7 @@
             padding : 2px 0 0 0;
             font-size : 12px;
             white-space : nowrap;
+            overflow : hidden;
         }
 
         .listBP .checkbox {
@@ -5999,6 +6000,30 @@
         .listBPDisabled .bpItem {
             color : #bebebe;
         }
+        
+        .listBP .bpItem:hover .btnclose {
+            width               : 14px;
+            height              : 14px;
+            position            : absolute;
+            right               : 2px;
+            top                 : 5px;
+            background-image    : url(images/close_tab_btn.png);
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+        }
+
+        .listBP .bpItem:hover .btnclose {
+            display: block;
+        }
+
+        .listBP .bpItem .btnclose:hover {
+            background-position : -14px 0;
+        }
+
+        .listBP .bpItem .btnclose::active {
+            background-position : -28px 0;
+        }
+
     ]]></a:style>
 
     <a:presentation>
@@ -6010,6 +6035,7 @@
             <div class="bpItem">
                 <span class="checkbox"> </span> 
                 <div class="content"> </div>
+                <strong class="btnclose"> </strong>
             </div>
         </a:item>
         <a:empty caption=".">
