@@ -270,7 +270,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var list  = [];
         
         if(!state)
-            return;
+            return list;
         
         if(!state.bars)
             state = state.state;
