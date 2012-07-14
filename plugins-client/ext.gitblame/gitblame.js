@@ -74,6 +74,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             requireshandling: !commands.commands.git,
             cwd: dirName // needed for nested repositories
         };
+        // @todo should we change server side plugin to not require this?
+        data.line = data.argv.join(" ");
 
         if (!this.$onMessage) {
             this.$onMessage = this.onMessage.bind(this);
