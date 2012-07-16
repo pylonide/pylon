@@ -66,6 +66,14 @@ var cliCmds = exports.cliCmds = {
             });
         }
     },
+    x: function(editor, data) {
+        var page = tabEditors.getPage();
+        if (!page)
+            return;
+        if (page.$doc.getNode().getAttribute("changed"))
+            cliCmds.w(editor, data);
+        cliCmds.q();
+    },
     wq: function(editor, data) {
         cliCmds.w(editor, data);
         cliCmds.q();
