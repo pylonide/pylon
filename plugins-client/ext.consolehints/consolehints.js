@@ -161,7 +161,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             }, 1000);
 
             txtConsoleInput.addEventListener("focus", function(e) {
-                if (txtConsoleInput.getValue().length) {
+                if (txtConsoleInput.getValue().length && hintsContent.hasChildNodes()) {
                     winHints.style.display = "block";
                     winHints.visible = true;
                 }
