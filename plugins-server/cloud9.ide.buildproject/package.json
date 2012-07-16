@@ -1,15 +1,14 @@
 {
-    "name": "cloud9.ide.run-auto",
+    "name": "cloud9.ide.buildproject",
     "version": "0.0.1",
 
-    "main": "./run-auto.js",
+    "main": "./buildproject.js",
     "private": true,
 
     "plugin": {
         "consumes": [
             "ide",
-            "sandbox",
-            "vfs"
+            "eventbus"
         ]
     }
 }

@@ -188,6 +188,8 @@ var config = [
     "./cloud9.ide.hg",
     "./cloud9.ide.npm",
     "./cloud9.ide.search",
+    "./cloud9.ide.buildproject",
+    "./cloud9.ide.run-auto",
     "./cloud9.ide.run-node",
     "./cloud9.ide.run-jvm",
     "./cloud9.ide.jvm-features",

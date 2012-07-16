@@ -438,6 +438,10 @@ apf.dbg = module.exports = function(struct, tagName){
         this.$debugger && this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
     };
 
+    this.redefine = function(target, replace, callback) {
+        this.$debugger && this.$debugger.redefine(target, replace, callback);
+    };
+
 }).call(apf.dbg.prototype = new apf.AmlElement());
 
 apf.aml.setElement("debugger", apf.dbg);
