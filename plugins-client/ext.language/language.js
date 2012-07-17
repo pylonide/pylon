@@ -10,6 +10,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
+var EditSession = require("ace/edit_session").EditSession;
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
@@ -61,8 +62,7 @@ module.exports = ext.register("ext/language/language", {
             }
             else {
                 worker = _self.worker = new WorkerClient(
-                    ["treehugger", "ext", "ace", "c9"], "worker.js",
-                    "ext/language/worker", "LanguageWorker");
+                    ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
             }
             complete.setWorker(worker);
 
@@ -105,6 +105,15 @@ module.exports = ext.register("ext/language/language", {
         });
 
         settings.addSettings("Language Support", markupSettings);
+
+        // disable ace worker
+        if (!EditSession.prototype.$startWorker_orig) {
+            EditSession.prototype.$startWorker_orig = EditSession.prototype.$startWorker;
+            EditSession.prototype.$startWorker = function() {
+                if (this.$modeId != "ace/mode/javascript")
+                    this.$startWorker_orig();
+            }
+        }
     },
 
     isInferAvailable : function() {
@@ -125,14 +134,6 @@ module.exports = ext.register("ext/language/language", {
         var oldSelection = this.editor.selection;
         this.setPath();
 
-        ceEditor.addEventListener("loadmode", function(e) {
-            if (e.name === "ace/mode/javascript") {
-                e.mode.createWorker = function() {
-                    return null;
-                };
-            }
-        });
-        
         this.updateSettings();
         
         var defaultHandler = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
@@ -178,7 +179,10 @@ module.exports = ext.register("ext/language/language", {
         isContinuousCompletionEnabled = value;
     },
     
-    updateSettings: function() {
+    updateSettings: function(e) {
+        // check if some other setting was changed
+        if (e && e.xmlNode && e.xmlNode.tagName != "language")
+            return;
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;

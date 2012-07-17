@@ -56,7 +56,12 @@
               self['view-mode-box-readonly'].hide();
               self['view-mode-box-readonly'].noshow=true;
               apf.setStyleClass(vbMain.$ext, '', ['readonly']);
-              vbMain.setAttribute('anchors', '0 0 0 0');
+              vbMain.$ext.style.position = '';
+              vbMain.$ext.style.top = '0';
+              vbMain.$ext.style.left = '0';
+              vbMain.$ext.style.right = '0';
+              vbMain.$ext.style.bottom = '0';
+              vbMain.$ext.style.height = apf.getWindowHeight() + 'px';
           ">
             Hide this!
         </a>

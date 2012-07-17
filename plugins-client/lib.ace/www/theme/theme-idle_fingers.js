@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-idle-fingers .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: #353637;\
 }\
 \
 .ace-idle-fingers .ace_marker-layer .ace_selected_word {\

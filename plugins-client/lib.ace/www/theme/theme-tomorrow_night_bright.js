@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-tomorrow-night-bright .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: #2A2A2A;\
 }\
 \
 .ace-tomorrow-night-bright .ace_marker-layer .ace_selected_word {\

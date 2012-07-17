@@ -796,7 +796,10 @@ module.exports = ext.register("ext/console/console", {
             else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
 
-            if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
+            var showInput = e.model.queryValue("auto/console/@showinput");
+            if (showInput === "")
+                _self.showInput(false, true);
+            else if (apf.isTrue(showInput))
                 _self.showInput(null, true);
         });
 
@@ -896,7 +899,8 @@ module.exports = ext.register("ext/console/console", {
                     return false;
                 _self.evalInputCommand(inputVal);
                 input.setValue("");
-            },
+                txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
+            }
         })
 
         if (this.logged.length) {
