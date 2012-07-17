@@ -81,7 +81,7 @@ function worker(project) {
             worker
         ],
         filter: [ /* copy.filter.uglifyjs */],
-        dest: __dirname + "/plugins-client/lib.ace/www/worker/worker.js"
+        dest: __dirname + "/plugins-client/lib.ace/www/worker/worker-language.js"
     });
     
     console.error = yeOldeError;
