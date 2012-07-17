@@ -121,10 +121,6 @@ util.inherits(JVMFeatures, Plugin);
                   message.type, resultSender);
                 break;
 
-            case "build":
-              this.eclipseClient.buildProject(this.projectId, resultSender);
-                break;
-
             case "navigate":
               this.eclipseClient.navigate(this.projectId, message.file, message.navType,
                   message.offset, message.length, resultSender);

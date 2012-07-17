@@ -285,6 +285,28 @@ module.exports = ext.register("ext/debugger/debugger", {
             dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
                 //console.log("v8 updated", e);
             });
+
+            ide.addEventListener("projectbuilt", function projectBuilt(e) {
+                var scriptName = node.getAttribute("scriptname");
+                if (!scriptName || scriptName === "anonymous")
+                    return;
+                if (e.errors.length > 0)
+                    return console.error("Project built with errors !");
+
+                var replaceScript;
+                if (e.srcPostfix) {
+                    replaceScript = scriptName.replace(e.srcPath, e.binPath)
+                        .replace(new RegExp("\." + (e.srcPostfix) + "$") , "." + (e.binPostfix));
+                } else {
+                    replaceScript = scriptName;
+                }
+                dbg.redefine(scriptName, replaceScript, function (e) {
+                   console.log("redefined: ", e); 
+                });
+
+                ide.removeEventListener("projectbuilt", projectBuilt);
+            });
+            ide.dispatchEvent("buildproject");
         });
 
         // we're subsribing to the 'running active' prop

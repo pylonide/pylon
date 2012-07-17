@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-mono-industrial .ace_gutter {\
   background: #1d2521;\
-  color: #333;\
+  color: #fff;\
 }\
 \
 .ace-mono-industrial .ace_print_margin {\

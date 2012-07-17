@@ -10,30 +10,9 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
-var util = require("core/util");
 var editors = require("ext/editors/editors");
-var Range = require("ace/range").Range;
 var ideConsole = require("ext/console/console");
 var markup = require("text!ext/buildproject/buildproject.xml");
-
-var calculatePosition = function(doc, offset) {
-    var row = 0, column, newLineLength = doc.getNewLineCharacter().length;;
-    while (offset > 0) {
-      offset -= doc.getLine(row++).length;
-      offset -= newLineLength; // consider the new line character(s)
-    }
-    if (offset < 0) {
-      row--;
-      offset += newLineLength; // add the new line again
-      column = doc.getLine(row).length + offset;
-    } else {
-      column = 0;
-    }
-    return {
-      row: row,
-      column: column
-    };
-};
 
 module.exports = ext.register("ext/buildproject/buildproject", {
     name     : "Build projects",
@@ -51,7 +30,7 @@ module.exports = ext.register("ext/buildproject/buildproject", {
 
     nodes    : [],
 
-    hook : function(){
+    hook : function() {
         var _self = this;
 
         this.nodes.push(
@@ -72,7 +51,7 @@ module.exports = ext.register("ext/buildproject/buildproject", {
 
         ide.addEventListener("socketMessage", function(e) {
             var message = e.message;
-            if (message.subtype == "jvmfeatures:build") {
+            if (message.subtype == "buildproject") {
                 _self.execBuild(true);
                 var msg = message.body;
                 if (! msg.success) {
@@ -81,9 +60,11 @@ module.exports = ext.register("ext/buildproject/buildproject", {
                     trDGBuild.setAttribute("empty-message", err);
                     return;
                 }
-                var problems = msg.body;
+                var problems = msg.body || [];
                 // if no problems at all, show the build succeeded message
-                if (problems.length == 0) {
+                var errors = [];
+                var warnings = [];
+                if (problems.length === 0) {
                     trDGBuild.setAttribute("empty-message", "Build succeeded");
                 } else {
                     var filterType = function(type) {
@@ -91,34 +72,37 @@ module.exports = ext.register("ext/buildproject/buildproject", {
                             return problem.type == type;
                         });
                     };
-                    var sortedProblems = filterType("error").concat(filterType("warning"));
+                    errors = filterType("error");
+                    warnings = filterType("warning");
+                    var sortedProblems = errors.concat(warnings);
                     var problemsXML = _self.problemsJsonToXml(sortedProblems);
                     _self.$model.load(apf.getXml('<problems>' + problemsXML + '</problems>'));
                 }
+                
+                var srcPath, binPath, srcPostfix, binPostfix;
+                var jpType = ["java", "gae-java", "java-web"].indexOf(ddRunnerSelector.value);
+                if (jpType > -1) {
+                    srcPath = "src";
+                    binPath = "bin";
+                    srcPostfix = "java";
+                    binPostfix = "class";
+                }
+                if (jpType > 0)
+                    binPath = "war/WEB-INF/classes";
+                ide.dispatchEvent("projectbuilt", {
+                    errors: errors,
+                    warnings: warnings,
+                    srcPath: srcPath,
+                    binPath: binPath,
+                    srcPostfix: srcPostfix,
+                    binPostfix: binPostfix
+                });
             }
         });
-        /*trBuildHbox.addEventListener("afterrender", function(){
-            trDGBuild.addEventListener("afterchoose", function(e) {
-                var path,
-                    root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                    node = trSFResult.selected,
-                    line = 0,
-                    text = "";
-                if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                    return;
-                if (node.tagName == "d:excerpt") {
-                    path = node.parentNode.getAttribute("path");
-                    line = node.getAttribute("line");
-                    text = node.parentNode.getAttribute("query");
-                }
-                else {
-                    path = node.getAttribute("path");
-                    text = node.getAttribute("query");
-                }
-                editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
-            });
-        });*/
-        //ideConsole.show();
+
+        ide.addEventListener("buildproject", function (e) {
+            _self.execBuild();
+        });
     },
 
     problemsJsonToXml: function(problems) {
@@ -176,9 +160,8 @@ module.exports = ext.register("ext/buildproject/buildproject", {
         if (! noRequest) {
             // send build request
             var command = {
-              command : "jvmfeatures",
-              subcommand : "build",
-              project: projectName
+              command : "buildproject",
+              runner: ddRunnerSelector.value
             };
             ide.send(JSON.stringify(command));
         }
@@ -195,14 +178,6 @@ module.exports = ext.register("ext/buildproject/buildproject", {
                 // open the file (if not already open) and switch focus
                 var filepath = path.replace("/" + window.cloud9config.projectName, window.cloud9config.davPrefix);
                 editors.showFile(filepath, line, 0);
-                /*
-                var editor = editors.currentEditor.ceEditor.$editor;
-                var doc = editor.getSession().getDocument();
-                var pos = calculatePosition(doc, offset);
-                var range = new Range(line, pos.column, line, pos.column + length);
-                editor.selection.setSelectionRange(range);
-                editor.centerSelection();
-                */
             }
         });
     },

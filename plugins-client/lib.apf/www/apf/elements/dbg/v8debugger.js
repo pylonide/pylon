@@ -454,6 +454,10 @@ var V8Debugger = module.exports = function(dbg, host) {
     this.changeLive = function(scriptId, newSource, previewOnly, callback) {
         this.$debugger.changelive(scriptId, newSource, previewOnly, callback);
     };
+
+    this.redefine = function(target, replace, callback) {
+        this.$debugger.redefine(target, replace, callback);
+    };
     
     this.evaluate = function(expression, frame, global, disableBreak, callback){
         this.$debugger.evaluate(expression, frame, global, disableBreak, function(body, refs, error){

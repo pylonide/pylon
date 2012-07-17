@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-kr-theme .ace_gutter {\
   background: #1c1917;\
-  color: #333;\
+  color: #FCFFE0;\
 }\
 \
 .ace-kr-theme .ace_print_margin {\

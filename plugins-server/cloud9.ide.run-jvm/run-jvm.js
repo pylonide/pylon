@@ -19,14 +19,12 @@ module.exports = function setup(options, imports, register) {
 };
 
 var JVMRuntimePlugin = function(ide, workspace) {
-    this.ide = ide;
+    Plugin.call(this, ide, workspace);
+
     this.pm = ProcessManager;
     this.eventbus = EventBus;
-    this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
-
     this.channel = this.workspaceId + "::" + name;
-
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
@@ -147,22 +145,21 @@ util.inherits(JVMRuntimePlugin, Plugin);
         this.eventbus.on(buildCompleteChannel, function buildComplete(data) {
             self.eventbus.removeListener(buildCompleteChannel, buildComplete);
 
-            if (! data.success)
-                return self.error("Build request failed !!", 1, message, client);
-
             var problems = data.body;
             // If no errors found, we can start
             var numErrors = problems.filter(function (problem) {
                 return problem.type == "error"; }).length;
             if (numErrors > 0) {
                 console.log("Found " + numErrors + " compilation errors !");
-                self.sendResult(0, "jvmfeatures:build", data);
+                self.sendResult(0, "buildproject", data);
             } else {
                 buildSuccess();
             }
         });
 
-        self.eventbus.emit(this.workspaceId + "::jvm-build", {channel: buildCompleteChannel});
+        self.eventbus.emit(this.workspaceId + "::jvm-build", {
+            channel: buildCompleteChannel
+        });
     };
 
     this.$kill = function(pid, message, client) {
