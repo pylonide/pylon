@@ -7,6 +7,7 @@
 
 var ide = require("core/ide");
 var filelist = require("ext/filelist/filelist");
+var filesystem = require("ext/filesystem/filesystem");
 
 define(function(require, exports, module) {
     
@@ -33,6 +34,13 @@ define(function(require, exports, module) {
         
         ide.addEventListener("beforewatcherchange", function(){
             _self.dirty = true;
+        });
+        
+        worker.on("requestFileUpdate", function(event) {
+            // TODO: throttle read file requests?
+            filesystem.readFile(event.data.path, function(contents, response) {
+                worker.emit("onRequestedFileUpdate", { path: event.data.path, contents: contents });
+            });
         });
     };
 

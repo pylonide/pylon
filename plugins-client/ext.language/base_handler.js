@@ -98,12 +98,20 @@ module.exports = {
     },
     
     /**
-     * Invoked when a file in the project has been added, removed, or changed.
+     * Invoked when files in the project have been added, removed, or changed.
      * 
-     * @param the affected files; a list of objects with a path and eventType property
-     * @param eventType a string describing the type of event, if available
+     * @param files the affected files; a list of objects with a path and eventType property
+     * @param callback a callback that expects a list of files to retrieve and submit to onRequestedFileUpdate()
      */
     onFileUpdates: function(files, callback) {
+        callback();
+    },
+    
+    /**
+     * Invoked when a requested file has been loaded for analysis,
+     * using worker.requestFileUpdate() or onFileUpdates().
+     */
+    onRequestedFileUpdate: function(path, contents, callback) {
         callback();
     },
     

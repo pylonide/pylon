@@ -5,6 +5,7 @@
     "if": "if (^^) {\n    \n}",
     "while": "while (^^) {\n    \n}",
     "switch": "switch (^^) {\n    default:\n}",
+    "try": "try {\n    ^^\n} catch (e) {\n    throw e; // TODO\n}",
     "fora": "for (var i = 0; i < ^^.length; i++) {\n    \n}",
     "log": "console.log(^^);",
     "setTimeout": "setTimeout(function() {\n    ^^\n}, 0);"

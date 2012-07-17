@@ -131,6 +131,9 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("onFileUpdates", function(event) {
         _self.onFileUpdates(event);
     });
+    sender.on("onRequestedFileUpdate", function(event) {
+        _self.onRequestedFileUpdate(event);
+    });
     sender.on("serverProxy", function(event) {
         _self.serverProxy.onMessage(event.data);
     });
@@ -679,14 +682,32 @@ function asyncParForEach(array, fn, callback) {
     };
 
     this.onFileUpdates = function(event) {
-        this.scheduledUpdate = false;
         var _self = this;
         asyncForEach(this.handlers, function(handler, next) { 
             if (handler.onFileUpdates)
-                handler.onFileUpdates(event.data.paths, next);
+                handler.onFileUpdates(event.data.paths, function(toUpdate) {
+                    if (!toUpdate)
+                        next();
+                    for (var i = 0; i < toUpdate.length; i++)
+                        _self.requestFileUpdate(toUpdate[i]);
+                    next();
+                });
             else
                 next();
         });
+    };
+    
+    this.onRequestedFileUpdate = function(event) {
+        asyncForEach(this.handlers, function(handler, next) { 
+            if (handler.onRequestedFileUpdate)
+                handler.onRequestedFileUpdate(event.data.path, event.data.contents, next);
+            else
+                next();
+        });
+    };
+    
+    this.requestFileUpdate = function(path) {
+        this.sender.emit("requestFileUpdate", { path: path });
     };
     
     // TODO: BUG open an XML file and switch between, language doesn't update soon enough
