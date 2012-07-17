@@ -34,29 +34,45 @@ On MacOSX, you can do
 
 7- Build the plugin
 
-a- Build the plugin jar
+a- On OSX, apply the patch from the osx branch, e.g. by doing
+
+    $ sm edit jvm_features
+    $ git checkout osx
+    $ git rebase master
+
+b- Build the plugin jar
 
     $ cd cloud9/node_modules/jvm_features
     $ java -jar $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar -application org.eclipse.ant.core.antRunner
 
 Ref: [Eclipse plugin headless build](http://eclipse.dzone.com/articles/headless-build-beginners-part)
 
-b- Move the jar to eclipse
+c- Copy the jar to Eclipse
 
     $ rm -f $ECLIPSE_PATH/plugins/CodeCompletePlugin*
     $ cp CodeCompletePlugin* $ECLIPSE_PATH/plugins/
 
-c- Test it with:
+d- Test it with:
 
     $ java -cp $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar org.eclipse.equinox.launcher.Main -application CodeCompletePlugin.Cloud9Eclipse -consoleLog
 
-8- Clear your browser cache and start The IDE
+8- Create a new workspace and project
+
+a- Launch the installed Eclipse instance, create a workspace in ~/jvm_workspace.
+
+b- Go to File>New>Project...>Java Project. Create a new project with the name Test. Exit Eclipse.
+
+c- Delete the project's .settings directory, if it exists:
+
+     $ rm -rf ~/jvm_workspace/.settings
+
+9- Clear your browser cache and start The IDE
 
 (Note that the worker files should be automatically built)
 
-    $ bin/cloud9.sh -w ~/jvm_workspace/${projectName}
+    $ bin/cloud9.sh -w ~/jvm_workspace/Test
 
-9- For C9 infra running and environment variable passing through sudo
+10- For C9 infra running and environment variable passing through sudo
 
 Edit /etc/sudoers and add the line
 
