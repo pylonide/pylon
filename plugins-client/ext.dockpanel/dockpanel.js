@@ -438,6 +438,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         if(!options)
             options = {};
         
+        var notificationType = options.type || "";
+        
         if (apf.isGecko)
             notificationEl.textContent = countInner;
         else
@@ -458,17 +460,18 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             if (count > 0) {
                 caption += " (" + count + ")";
                 apf.setStyleClass(btnPage.$button, "un-read-message");
-                if(options.type == "chat") {
+                if(notificationType == "chat") {
                     btnObj.notificationOpt = options
-                    this.notificationMsgs[options.name] = count;
-                    this.updateBarNotifications();
+                    options.name && (this.notificationMsgs[options.name] = count);
+                    this.updateDocTitleNotifications();
                 }
             }
             else {
                 apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
-                if(options.type == "chat" && btnObj.notificationOpt) {
-                    delete this.notificationMsgs[btnObj.notificationOpt.name];
-                    this.updateBarNotifications();
+                if(notificationType == "chat" && btnObj.notificationOpt) {
+                    if(btnObj.notificationOpt && btnObj.notificationOpt.name)
+                        delete this.notificationMsgs[btnObj.notificationOpt.name];
+                    this.updateDocTitleNotifications();
                 }
             }
             btnPage.setAttribute("caption", caption);
@@ -476,21 +479,23 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         else {
             btnPage.setAttribute("caption", caption);
             apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
-            if(options.type == "chat" && btnObj.notificationOpt) {
-                delete this.notificationMsgs[btnObj.notificationOpt.name];
-                this.updateBarNotifications();
+            if(notificationType == "chat" && btnObj.notificationOpt) {
+                if(btnObj.notificationOpt && btnObj.notificationOpt.name)
+                    delete this.notificationMsgs[btnObj.notificationOpt.name];
+                this.updateDocTitleNotifications();
             }
         }
         
         return true;
     },
     
-    updateBarNotifications: function(){
+    updateDocTitleNotifications: function(){
         var _self    = this,
             countMsg = 0;
             
         for(var i in this.notificationMsgs) {
-            countMsg += this.notificationMsgs[i];
+            if(this.notificationMsgs.hasOwnProperty(i))
+                countMsg += this.notificationMsgs[i];
         }
         
         if(countMsg > 0) {
