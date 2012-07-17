@@ -20,7 +20,7 @@ The debug is now ready for cloud9 debug connections
 
 5- Download eclipse hellios sr2 - j2ee version - for your platform, and extract it somewhere:
 
-   http://archive.eclipse.org/eclipse/downloads/drops/R-3.6.2-201102101200/
+   http://www.eclipse.org/downloads/packages/eclipse-ide-java-developers/heliossr2
 
 6- Set C9_PATH and ECLIPSE_PATH environment variables to the location of your cloud9 folder and the location of your eclipse installation folder respectively.
 
