@@ -462,16 +462,19 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 apf.setStyleClass(btnPage.$button, "un-read-message");
                 if(notificationType == "chat") {
                     btnObj.notificationOpt = options
-                    options.name && (this.notificationMsgs[options.name] = count);
-                    this.updateDocTitleNotifications();
+                    if (options.name) {
+                        this.notificationMsgs[options.name] = count;
+                        this.updateDocTitleNotifications();
+                    }
                 }
             }
             else {
                 apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
                 if(notificationType == "chat" && btnObj.notificationOpt) {
-                    if(btnObj.notificationOpt && btnObj.notificationOpt.name)
+                    if (btnObj.notificationOpt && btnObj.notificationOpt.name) {
                         delete this.notificationMsgs[btnObj.notificationOpt.name];
-                    this.updateDocTitleNotifications();
+                        this.updateDocTitleNotifications();
+                    }
                 }
             }
             btnPage.setAttribute("caption", caption);
@@ -480,9 +483,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             btnPage.setAttribute("caption", caption);
             apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
             if(notificationType == "chat" && btnObj.notificationOpt) {
-                if(btnObj.notificationOpt && btnObj.notificationOpt.name)
+                if (btnObj.notificationOpt && btnObj.notificationOpt.name) {
                     delete this.notificationMsgs[btnObj.notificationOpt.name];
-                this.updateDocTitleNotifications();
+                    this.updateDocTitleNotifications();
+                }
             }
         }
         
