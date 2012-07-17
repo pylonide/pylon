@@ -58,7 +58,7 @@ var config = [
         debug: false,
         fsUrl: fsUrl,
         hosted: false,
-        socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
+        socketIoTransports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
