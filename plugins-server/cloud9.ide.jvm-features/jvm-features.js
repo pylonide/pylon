@@ -150,22 +150,22 @@ util.inherits(JVMFeatures, Plugin);
         netutil.findFreePort(ECLIPSE_START_PORT, 64000, "localhost",
           function(err, port) {
             if (err)
-              return _self.$error("Could not find a free port", 1, err);
+                return _self.$error("Could not find a free port", 1, err);
 
             var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
                 _self.workspaceDir);
             eclipseClient.on("output", console.log);
             eclipseClient.on("err", console.error);
-            eclipseClient.initEclipseSession();
+            eclipseClient.initSession();
         });
         return true;
     };
 
     this.disconnect = function(user, client) {
         if (this.eclipseClient) {
-          this.eclipseClient.disconnect();
-          this.eclipseClient = null;
-          console.log("Eclipse session disposed");
+            this.eclipseClient.disconnect();
+            this.eclipseClient = null;
+            console.log("Eclipse session disposed");
         }
         return true;
     };
