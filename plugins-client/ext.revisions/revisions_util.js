@@ -141,7 +141,7 @@ exports.pageIsCode = function(page) {
 };
 
 exports.stripWSFromPath = function(path) {
-    var docPath = path.replace(ide.davPrefix, "");
+    var docPath = (path || "").replace(ide.davPrefix, "");
     docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
     return docPath;
 };
