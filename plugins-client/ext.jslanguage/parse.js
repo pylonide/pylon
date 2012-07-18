@@ -28,6 +28,10 @@ handler.findNode = function(ast, pos, callback) {
     callback(ast.findNode(pos));
 };
 
+handler.getPos = function(node, callback) {
+    callback(node.getPos());
+};
+
 /* Ready to be enabled to replace Narcissus, when mature
 
 handler.analyze = function(doc, ast) {

@@ -68,6 +68,16 @@ module.exports = {
     findNode: function(ast, pos, callback) {
         callback();
     },
+    
+    /**
+     * Returns the  a tree node at a certain row and col,
+     * e.g. using the node.getPos() function of treehugger.
+     * @returns an object with properties sl, the start line, sc, the start
+     *          column, el, the end line, and ec, the end column.
+     */
+    getPos: function(node, callback) {
+        callback();
+    },
 
     // OTHER CALLBACKS
     
