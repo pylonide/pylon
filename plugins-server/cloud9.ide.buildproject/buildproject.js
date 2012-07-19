@@ -35,7 +35,7 @@ util.inherits(ProjectBuilderPlugin, Plugin);
 
         var _self = this;
         // JVM projects - The jvm-features plugin will handle its building
-        if (!(/^(java|java-web|gae-java)$/.test(message.runner))) {
+        if (/^(java|java-web|gae-java)$/.test(message.runner)) {
 
             var buildCompleteChannel = this.workspaceId + "::jvm-build-complete";
 
@@ -44,7 +44,6 @@ util.inherits(ProjectBuilderPlugin, Plugin);
 
                 _self.sendResult(0, "buildproject", data);
             });
-
             _self.eventbus.emit(this.workspaceId + "::jvm-build", {
                 channel: buildCompleteChannel
             });

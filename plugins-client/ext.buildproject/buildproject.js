@@ -161,9 +161,11 @@ module.exports = ext.register("ext/buildproject/buildproject", {
             // send build request
             var command = {
               command : "buildproject",
-              runner: ddRunnerSelector.value
+              // TODO: ddRunnerSelector.value
+              // Sometimes ddRunnerSelector isn't defined
+              runner: "java"
             };
-            ide.send(JSON.stringify(command));
+            ide.send(command);
         }
     },
 
