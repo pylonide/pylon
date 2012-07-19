@@ -213,7 +213,7 @@
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionBackout" onclick="winThisIsBeta.hide()" skin="btn-default-css3" class="btn-green">Close</a:button>
+            <a:button id="btnQuestionBackout" onclick="winThisIsBeta.hide();btnSync.setValue(false);" skin="btn-default-css3" class="btn-green">Close</a:button>
           <!--
             <a:button id="btnQuestionBackout" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winThisIsBeta.hide()" skin="btn-default-css3" class="btn-green">Not right now</a:button>
             <a:button id="btnQuestionSyncOn" onclick="require('ext/sync/sync').setSync(); winThisIsBeta.hide()" skin="btn-default-css3" default="3" class="btn-red">I understand and want to sync</a:button>
