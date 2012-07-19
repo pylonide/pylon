@@ -187,7 +187,7 @@
 
     <a:window
       id        = "winThisIsBeta"
-      title     = "Syncing is Experimental"
+      title     = "Coming Soon"
       icon      = ""
       center    = "true"
       kbclose   = "false"
@@ -197,6 +197,8 @@
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <div class="alertMsg">
+                <p>Currently, syncing projects between your local machine and c9.io is not yet supported. We will launch this feature soon.</p>
+              <!--
                 <p>Currently, syncing projects between your local machine and c9.io is <strong>experimental</strong>. There is a potential for losing data in rare circumstances. Your projects on c9.io are always backed up and secure. It is <strong>not</strong> recommended for critical work just yet.</p>
                 <p>Syncing also has the following limitations:
                     <ul>
@@ -205,13 +207,17 @@
                         <li>There's a syncing limit of 1,000 files; this will increase to 100,000 soon</li>
                     </ul>
                 </p>
-                <p>Syncing is best used on a high-speed internet connection. <strong>Your project files have the potential to be deleted--make sure to back them up!</strong></p>
+                <p>Syncing is best used on a high-speed internet connection. <strong>Your project files have the potential to be deleted - make sure to back them up!</strong></p>
+                -->
             </div>
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnQuestionBackout" onclick="winThisIsBeta.hide()" skin="btn-default-css3" class="btn-green">Close</a:button>
+          <!--
             <a:button id="btnQuestionBackout" onclick="require('ext/sync/sync').btnSyncStatus.setValue(false); winThisIsBeta.hide()" skin="btn-default-css3" class="btn-green">Not right now</a:button>
             <a:button id="btnQuestionSyncOn" onclick="require('ext/sync/sync').setSync(); winThisIsBeta.hide()" skin="btn-default-css3" default="3" class="btn-red">I understand and want to sync</a:button>
+            -->
         </a:hbox>
     </a:window>
     
