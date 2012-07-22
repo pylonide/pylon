@@ -96,7 +96,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 return;
 
             var node = model.queryNode('//node()[@path="'
-                + e.page.id.replace(/"/g, "&quot;") + '"]');
+                + (e.page.id || "").replace(/"/g, "&quot;") + '"]');
 
             if (!node || !node.parentNode || node.beingRemoved)
                 return;
