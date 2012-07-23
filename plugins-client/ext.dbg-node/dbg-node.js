@@ -5,32 +5,17 @@ var V8Debugger = require("debug/V8Debugger");
 var WSV8DebuggerService = require("debug/WSV8DebuggerService");
 //var _debugger = require("ext/debugger/debugger")
 
-var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
-    this.$init();
+var v8DebugClient = exports.v8DebugClient = function() {
 };
 
 (function() {
     this.$startDebugging = function() {
         var dbg = this.$debugger = dbg = new V8Debugger(0, this.$v8ds);
         this.$v8breakpoints = {};
-
-        var _self = this;
         
-        function onChangeRunning (e) {
-            _self.dispatchEvent("changeRunning", e);
-            if (dbg.isRunning()) {
-                _self.setFrame(null);
-            }
-        }
-        
-        function onBreak (e) {
-            _self.dispatchEvent("break", e);
-        }
-        
-        function onAfterCompile (e) {
-            _self.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
-        }
-        
+        var onChangeRunning = this.onChangeRunning.bind(this);
+        var onBreak = this.onBreak.bind(this);
+        var onAfterCompile = this.onAfterCompile.bind(this);
         // register event listeners
         dbg.addEventListener("changeRunning", onChangeRunning);
         dbg.addEventListener("break", onBreak);
@@ -39,22 +24,30 @@ var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
         this.setFrame(null);
         
         // on detach remove all event listeners
-        this.addEventListener("detach", function () {
+        this.removeListeners = function () {
             dbg.removeEventListener("changeRunning", onChangeRunning);
             dbg.removeEventListener("break", onBreak);
             dbg.removeEventListener("afterCompile", onAfterCompile);
-        });    
+        };
     };
     
-    this.$connect = function(callback) {
-        if (this.state != "connected")
-            this.$v8ds = new WSV8DebuggerService(ide.socket);
+    this.onChangeRunning = function(e) {
+        ide.dispatchEvent("changeRunning", e);
+        if (this.$debugger.isRunning()) {
+            this.setFrame(null);
+        }
+    };
         
-        this.state = "connected";
-        this.dispatchEvent("connect");
-        callback.call(this);
+    this.onBreak = function(e) {
+        ide.dispatchEvent("break", e);
+        _self.activeFrame = _self.$mdlStack.queryNode("frame[1]");
+            ide.dispatchEvent("break", _self.activeFrame);
     };
-    
+        
+    this.onAfterCompile = function(e) {
+        ide.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
+    };
+
     this.attach = function(callback) {
         var dbg = this.$debugger;
         
@@ -62,11 +55,12 @@ var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
             return callback && callback(null, this)
 
         var _self = this;
-        this.$connect(function() {
-            _self.$v8ds.attach(0, function() {
-                _self.$startDebugging();
-                callback && callback(null, _self)
-            });
+        if (!this.$v8ds)
+            this.$v8ds = new WSV8DebuggerService(ide.socket);
+
+        this.$v8ds.attach(0, function() {
+            _self.$startDebugging();
+            callback && callback(null, _self)
         });
     };
     
@@ -77,11 +71,11 @@ var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
         var dbg = this.$debugger;
         this.$debugger = null;
 
-        var self = this;
+        var _self = this;
+        this.removeListeners();
         this.$v8ds.detach(0, function(err) {
-            self.dispatchEvent("detach");
-            self.dispatchEvent("disconnect", {});
             callback && callback(err);
+            _self.$v8ds = null;
         });                
     };
     
@@ -336,11 +330,11 @@ var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
 
     this.setFrame = function(frame) {
         this.$activeFrame = frame;
-        this.dispatchEvent("changeFrame", {data: frame});
+        ide.dispatchEvent("dbg.changeFrame", {data: frame});
     };
 
 
-    this.getActiveFrame = function() {
+    this.getactiveFrame = function() {
         return this.$activeFrame;
     };
 
@@ -353,7 +347,7 @@ var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
         // so read all the breakpoints, then call the debugger to actually set them
         var allBreakpoints = model.queryNodes("breakpoint");
         allBreakpoints.forEach(function(bp) {
-            var script = bp.getAttribute("script");
+            var script = ide.workspaceDir + "/" + bp.getAttribute("scriptPath");
             var line = bp.getAttribute("line");
             var col = bp.getAttribute("column");
             
@@ -616,11 +610,24 @@ var v8DebugClient = exports.v8DebugClient = function(dbg, host) {
         return str.join("");
     };
     
-}).call(v8DebugClient.prototype = new apf.Class());
+}).call(v8DebugClient.prototype);
 
+var _self = exports;
+ide.addEventListener("dbg.ready", function(e) {
+    if (e.type = "node-debug-ready") {
+        if (!_self)
+            1
+    }
+});
 
-module.exports = new v8DebugClient();
-//_debugger.registerDebugClient(v8DebugClient);
+ide.addEventListener("dbg.exit", function(e) {
+    
+});
 
+ide.addEventListener("noderunnerready", function(e) {
+    if (e["node-debug"] && !_self.pid) {
+        
+    }
+})
 
 });

@@ -3499,7 +3499,6 @@
           -webkit-user-select: none;
           -o-user-select: none;
           user-select: none;
-          z-index : 10001 !important;
         }
  
          /* These nocorner classes apply to Search Results tab in the console*/
@@ -3629,34 +3628,37 @@
             background-position: -462px -60px;
         }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
-          background-image: url("icons/debugger/brkp_obj.png");
-          background-position: 4px center;
-       }
+        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+            background-image: url("icons/debugger/brkp_obj.png");
+            background-position: 4px center;
+        }
         .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
-          background-image: url("icons/debugger/brkp_obj_dark.png");
+            background-image: url("icons/debugger/brkp_obj_dark.png");
+        }
+        .ace_gutter-layer .ace_breakpoint.disabled {
+            opacity: 0.65;
         }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.arrow {
-          background-image: url("icons/debugger/brkp_obj_current_line.png");
-          background-position: 4px center;
-       }
+        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.arrow {
+            background-image: url("icons/debugger/brkp_obj_current_line.png");
+            background-position: 4px center;
+        }
         .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
-          background-image: url("icons/debugger/brkp_obj_current_line_dark.png");
+            background-image: url("icons/debugger/brkp_obj_current_line_dark.png");
         }
 
-       .ace_gutter-layer .ace_gutter-cell.arrow {
-          background-image: url("icons/debugger/current_line.png");
-          background-position: 4px center;
-       }
+        .ace_gutter-layer .ace_gutter-cell.arrow {
+            background-image: url("icons/debugger/current_line.png");
+            background-position: 4px center;
+        }
         .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_arrow {
-          background-image: url("icons/debugger/current_line_dark.png");
+            background-image: url("icons/debugger/current_line_dark.png");
         }
 
-       .ace_gutter-layer .ace_gutter-cell.stack {
-          background-image: url("icons/debugger/stack_co.png");
-          background-position: 4px center;
-       }
+        .ace_gutter-layer .ace_gutter-cell.stack {
+            background-image: url("icons/debugger/stack_co.png");
+            background-position: 4px center;
+        }
 
         /* 
          * Themes

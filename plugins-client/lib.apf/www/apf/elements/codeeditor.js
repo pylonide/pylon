@@ -69,7 +69,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
     this.$isTextInput      = true;
-    this.$activeFrame      = null;
 
     this.value             = "";
     this.multiline         = true;
@@ -200,82 +199,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setShowPrintMargin(_self.showprintmargin);
 
-        // remove existing markers
-        _self.$clearMarker();
-
         _self.$editor.setSession(doc);
 
         // clear breakpoints
-        doc.setBreakpoints([]);
+        // doc.setBreakpoints([]);
     };
 
     this.afterOpenFile = function(doc, path) {
-        this.$updateBreakpoints(doc);
-        
-        // if we have a buffered frame with the correct path
-        if (this.$activeFrame && this.$activeFrame.script === path) {
-            // set the marker in this file
-            this.$updateMarker(this.$activeFrame);
-        }
-    };
-
-    this.$clearMarker = function () {
-        if (this.$marker) {
-            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
-            this.$editor.getSession().removeMarker(this.$marker);
-            this.$marker = null;
-        }
-    };
-
-    /**
-     * Indicates whether we are going to set a marker
-     */
-    this.$updateMarkerPrerequisite = function () {
-        return this.$debugger && this.$debugger.$updateMarkerPrerequisite();
-    };
-
-    this.$updateMarker = function (data) {
-        this.$clearMarker();
-        
-        if (!data) {
-            return;
-        }
-        
-        var row = data.line;
-
-        var range = new Range(row, 0, row + 1, 0);
-        this.$marker = this.$editor.getSession().addMarker(range, "ace_step", "line");
-        var type = "arrow";
-        this.$lastRow = [row, type];
-        this.$editor.renderer.addGutterDecoration(row, type);
-        this.$editor.gotoLine(row + 1, data.column, false);
-    };
-
-    this.$updateBreakpoints = function(doc) {
-        doc = doc || this.$editor.getSession();
-
-        var rows = [];
-        if (this.xmlRoot && this.$breakpoints) {
-            var path = this.xmlRoot.getAttribute("path");
-            var scriptName = ide.workspaceDir + path.slice(ide.davPrefix.length);
-
-            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']");
-
-            for (var i=0; i<breakpoints.length; i++) {
-                rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
-            }
-        }
-        doc.setBreakpoints(rows);
-    };
-
-    this.$toggleBreakpoint = function(row, session) {
-        var bp = session.getBreakpoints();
-        bp[row] = !bp[row];
-        session.setBreakpoints(bp);
-        var script = this.xmlRoot;
-        script.setAttribute("scriptname",
-            ide.workspaceDir + script.getAttribute("path").slice(ide.davPrefix.length));
-        this.$debugger.toggleBreakpoint(script, row, session.getLine(row));
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -395,77 +325,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.setBehavioursEnabled(value);
     };
 
-    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
-        this.$debuggerBreakpoints = false;
-
-        if (this.$breakpoints)
-            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
-
-        this.$breakpoints = value;
-
-        if (!this.$breakpoints) {
-            this.$updateBreakpoints();
-            return;
-        }
-
-        var _self = this;
-        _self.$updateBreakpoints();
-        this.$onBreakpoint = function() {
-            _self.$updateBreakpoints();
-        };
-        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
-        this.$updateBreakpoints();
-    };
-
-    this.$propHandlers["debugger"] = function(value, prop, inital) {
-        if (this.$debugger) {
-            this.$debugger.removeEventListener("break", this.$onBreak);
-            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
-        }
-
-        if (typeof value === "string") {
-            //#ifdef __WITH_NAMESERVER
-            this.$debugger = apf.nameserver.get("debugger", value);
-            //#endif
-        } else {
-            this.$debugger = value;
-        }
-
-        if (!this.$breakpoints || this.$debuggerBreakpoints) {
-            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
-            this.$debuggerBreakpoints = true;
-        }
-
-        if (!this.$debugger) {
-            this.$updateMarker();
-            return;
-        }
-
-        this.$updateMarker();
-        var _self = this;
-        this.$onBreak = function(e) {
-            // buffer the active frame so we can keep track of the marker
-            // when navigating multiple files
-            _self.$activeFrame = e;
-            
-            _self.$updateMarker(e);
-        };
-        this.$onBeforeContinue = function() {
-            // clear it!
-            _self.$activeFrame = null;
-            
-            _self.$clearMarker();
-        };
-        
-        this.$debugger.addEventListener("break", this.$onBreak);
-        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
-    };
-
     var propModelHandler = this.$propHandlers["model"];
     this.$propHandlers["model"] = function(value) {
         propModelHandler.call(this, value);
-
-        this.$updateBreakpoints();
     };
 
     this.addEventListener("xmlupdate", function(e){
@@ -622,17 +484,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
 
         ed.addEventListener("guttermousedown", function(e) {
-            if (_self.$debugger && ed.isFocused()) {
-                if (e.clientX - ed.container.getBoundingClientRect().left > 20)
-                    return;
-
-                var row = e.getDocumentPosition().row;
-                _self.$toggleBreakpoint(row, ed.getSession());
-                e.stop();
-            }
-            else {
-                _self.dispatchEvent("guttermousedown", e);
-            }
+            _self.dispatchEvent("guttermousedown", e);
         });
 
         ed.addEventListener("gutterdblclick", function(e) {

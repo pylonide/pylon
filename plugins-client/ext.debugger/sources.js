@@ -12,10 +12,9 @@ require("apf/elements/codeeditor");
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var dock   = require("ext/dockpanel/dockpanel");
-var commands = require("ext/commands/commands");
+var dock = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
-var noderunner = require("ext/noderunner/noderunner");
+var commands = require("ext/commands/commands");
 
 
 module.exports = {
@@ -25,38 +24,27 @@ module.exports = {
         var model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
         mdlDbgSources.load("<sources/>");
-        
-        
-        mdlDbgSources.addEventListener("afterload", function() {
-            _self.$syncTree();
-        });
-        mdlDbgSources.addEventListener("update", function(e) {
-            if (e.action !== "add") return;
-
-            // TODO: optimize this!
-            _self.$syncTree();
-        });
-        fs.model.addEventListener("update", function(e) {
-            if (e.action != "insert")
-                return;
-            // TODO: optimize this!
-            _self.$syncTree();
-        });
 
         ide.addEventListener("afterfilesave", function(e) {
             var node = e.node;
             var doc = e.doc;
 
-            var scriptId = node.getAttribute("scriptid");
+            var path = node.getAttribute("path");
+            var scriptId = _self.getScriptIdFromPath(path);
             if (!scriptId)
                 return;
 
             var value = e.value || doc.getValue();
+            // TODO move to dbg-node ?
             var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
             var NODE_POSTFIX = "\n});";
-            dbg.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
+            dbg.main.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
                 //console.log("v8 updated", e);
             });
+        });
+        
+        ide.addEventListener("dbg.changeFrame", function(e) {
+            e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
         });
         
         this.paths = {};
@@ -103,11 +91,6 @@ module.exports = {
     
     showDebugFile: function(scriptId, row, column, text) {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
-
-        // check prerequisites
-        if (editors.currentEditor && !editors.currentEditor.amlEditor.$updateMarkerPrerequisite()) {
-            return;
-        }
 
         if (file) {
             editors.jump({
@@ -170,7 +153,7 @@ module.exports = {
                         .attr("debug", "1")
                         .attr("lineoffset", "0").node();
 
-                    dbg.loadScript(script, function(source) {
+                    dbg.main.loadScript(script, function(source) {
                         var doc = ide.createDocument(node, source);
                         editors.jump({
                             node    : node, 
@@ -184,7 +167,40 @@ module.exports = {
             }
         }
     },
+    
+    
+    $clearMarker: function () {
+        if (this.$marker) {
+            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
+            this.$editor.getSession().removeMarker(this.$marker);
+            this.$marker = null;
+        }
+    },
+
+    $updateMarker: function (data) {
+        this.$clearMarker();
+        
+        if (!data) {
+            return;
+        }
+        
+        var row = data.line;
+
+        var range = new Range(row, 0, row + 1, 0);
+        this.$marker = this.$editor.getSession().addMarker(range, "ace_step", "line");
+        var type = "arrow";
+        this.$lastRow = [row, type];
+        this.$editor.renderer.addGutterDecoration(row, type);
+        this.$editor.gotoLine(row + 1, data.column, false);
+    }
 
 }
 
 });
+
+
+
+
+
+
+  

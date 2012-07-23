@@ -6,10 +6,11 @@
  */
 
 define(function(require, exports, module) {
+var _debugger = require("ext/debugger/debugger");
 
 exports.evaluate = function(expression, callback){
     var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
-    dbg.evaluate(expression, frame, null, null, callback || exports.showObject);
+    _debugger.evaluate(expression, frame, null, null, callback || exports.showObject);
 };
 
 exports.checkChange = function(xmlNode) {
@@ -127,7 +128,7 @@ exports.consoleTextHandler = function(e) {
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 
-                dbg.$debugger.$debugger.lookup(refs, false, function(body) {
+                dbg.main.$debugger.$debugger.lookup(refs, false, function(body) {
                     var out = [className || value, "{"];
                     for (var item, t = 0, i = 0; i < l; i++) {
                         item = body[refs[i]];
@@ -157,9 +158,7 @@ exports.consoleTextHandler = function(e) {
 
 exports.showObject = function(xmlNode, ref, expression) {
     if (ref && ref.dataType == apf.ARRAY) {
-        require(["ext/debugger/debugger"], function(dbg) {
-            dbg.showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
-        });
+        dbg.sources.showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
     }
     else {
         require(["ext/quickwatch/quickwatch"], function(quickwatch) {

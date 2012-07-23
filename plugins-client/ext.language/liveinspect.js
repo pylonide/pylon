@@ -22,8 +22,7 @@ module.exports = (function () {
         ext.initExtension(self);
         
         // listen to changes that affect the debugger, so we can toggle the visibility based on this
-        // stRunning.addEventListener("prop.active", checkDebuggerActive);
-        // stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
+        ide.addEventListener("debugger.stateChange", checkDebuggerActive);
     };
     
     var init = function () {
@@ -215,8 +214,8 @@ module.exports = (function () {
     /**
      * Check whether the debugger is attached & on a breakpoint
      */
-    var checkDebuggerActive = function () {
-        if (!stRunning.active && stDebugProcessRunning.active) {
+    var checkDebuggerActive = function (dbg) {
+        if (dbg.state == 'stopped') {
             // debugger running
         }
         else if (self.winLiveInspect) {
@@ -257,13 +256,13 @@ module.exports = (function () {
     /**
      * onMouseMove handler that is being used to show / hide the inline quick watch
      */
-    var onEditorMouseMove = function (ev) { /*/------------------- */return
+    var onEditorMouseMove = function (ev) {
         if (activeTimeout) {
             clearTimeout(activeTimeout);
             activeTimeout = null;
         }
         
-        if (!stRunning.active && stDebugProcessRunning.active) {
+        if (dbg.state == 'stopped') {
             activeTimeout = setTimeout(function () {
                 if (!isCurrentFrame())
                     return;

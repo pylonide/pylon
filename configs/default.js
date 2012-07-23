@@ -97,6 +97,8 @@ var config = [
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
+            "ext/dbg-node/dbg-node", 
+            // "ext/breakpoints/breakpoints",
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
             "ext/consolehints/consolehints",
