@@ -32,35 +32,67 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
     
     this.onChangeRunning = function(e) {
-        ide.dispatchEvent("changeRunning", e);
-        if (this.$debugger.isRunning()) {
+        if (!this.$debugger) {
+            this.state = null;
+        } else {
+            this.state = this.$debugger.isRunning() ? "running" : "stopped";
+        }
+    console.trace()
+    console.log(this.state)
+        ide.dispatchEvent("dbg.changeState", this);
+        
+        if (this.state != "stopped") {
             this.setFrame(null);
         }
     };
         
     this.onBreak = function(e) {
-        ide.dispatchEvent("break", e);
-        _self.activeFrame = _self.$mdlStack.queryNode("frame[1]");
+        var _self = this;
+        this.backtrace(function() {
             ide.dispatchEvent("break", _self.activeFrame);
+        });
     };
         
     this.onAfterCompile = function(e) {
-        ide.dispatchEvent("afterCompile", {script: apf.getXml(_self.$getScriptXml(e.data.script))});
+        ide.dispatchEvent("afterCompile", {script: apf.getXml(this.$getScriptXml(e.data.script))});
     };
 
     this.attach = function(callback) {
-        var dbg = this.$debugger;
-        
+        var _self = this;
+        callback = callback || function(err, dbgImpl) {
+            ide.dispatchEvent("dbg.attached", dbgImpl);
+            _self.onChangeRunning();
+            _self.syncAfterAttach();
+        }
+
+        var dbg = this.$debugger;            
         if (dbg)
             return callback && callback(null, this)
-
-        var _self = this;
+    
         if (!this.$v8ds)
             this.$v8ds = new WSV8DebuggerService(ide.socket);
-
+        
         this.$v8ds.attach(0, function() {
             _self.$startDebugging();
             callback && callback(null, _self)
+        });
+    };
+    
+    this.syncAfterAttach = function () {
+        var _self = this;
+        _self.scripts(mdlDbgSources, function() {
+            // sync the breakpoints that we have in the IDE with the server
+            _self.setBreakpoints(mdlDbgBreakpoints, function() {
+                // and if we find something
+                _self.backtrace(function() {
+                    var frame = mdlDbgStack.queryNode("frame[1]");                
+                    
+                    //if (frame)
+                    // _self.continueScript();
+                    ide.dispatchEvent("break", _self.activeFrame);
+                    _self.onChangeRunning();                    
+                });
+            });
         });
     };
     
@@ -70,13 +102,14 @@ var v8DebugClient = exports.v8DebugClient = function() {
             
         var dbg = this.$debugger;
         this.$debugger = null;
+        this.onChangeRunning();
 
         var _self = this;
         this.removeListeners();
         this.$v8ds.detach(0, function(err) {
             callback && callback(err);
             _self.$v8ds = null;
-        });                
+        });
     };
     
     
@@ -228,8 +261,9 @@ var v8DebugClient = exports.v8DebugClient = function() {
         xml.push("</frame>");
     };
 
-    this.backtrace = function(model, callback) {
+    this.backtrace = function(callback) {
         var _self = this;
+        var model = mdlDbgStack;
         this.$debugger.backtrace(null, null, null, true, function(body, refs) {
             function ref(id) {
                 for (var i=0; i<refs.length; i++) {
@@ -612,21 +646,28 @@ var v8DebugClient = exports.v8DebugClient = function() {
     
 }).call(v8DebugClient.prototype);
 
-var _self = exports;
+
 ide.addEventListener("dbg.ready", function(e) {
     if (e.type = "node-debug-ready") {
-        if (!_self)
-            1
+        if (!exports.dbgImpl) {
+            exports.dbgImpl = new v8DebugClient();
+            exports.dbgImpl.attach();
+        }
     }
 });
 
 ide.addEventListener("dbg.exit", function(e) {
-    
+    ide.dispatchEvent("beforecontinue");
+    if (exports.dbgImpl) {
+        exports.dbgImpl.detach();
+        exports.dbgImpl = null;
+    }
 });
 
-ide.addEventListener("noderunnerready", function(e) {
-    if (e["node-debug"] && !_self.pid) {
-        
+ide.addEventListener("dbg.state", function(e) {
+    if (e["node-debug"] && !exports.dbgImpl) {
+        exports.dbgImpl = new v8DebugClient();
+        exports.dbgImpl.attach();
     }
 })
 

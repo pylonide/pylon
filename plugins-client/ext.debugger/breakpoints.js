@@ -226,6 +226,34 @@ module.exports = {
         node.setAttribute("enabled", value ? true : false);
     },
     
+    $syncTree: function() {
+        if (this.inSync) return;
+        this.inSync = true;
+        var dbgFiles = mdlDbgSources.data.childNodes;
+
+        var workspaceDir = ide.workspaceDir;
+        for (var i=0,l=dbgFiles.length; i<l; i++) {
+            var dbgFile = dbgFiles[i];
+            var name = dbgFile.getAttribute("scriptname");
+            if (name.indexOf(workspaceDir) !== 0)
+                continue;
+            this.paths[name] = dbgFile;
+        }
+        var treeFiles = fs.model.data.getElementsByTagName("file");
+        var tabFiles = ide.getAllPageModels();
+        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
+
+        var davPrefix = ide.davPrefix;
+        for (var i=0,l=files.length; i<l; i++) {
+            var file = files[i];
+            var path = file.getAttribute("scriptname");
+
+            var dbgFile = this.paths[path];
+            if (dbgFile)
+                apf.b(file).attr("scriptid", dbgFile.getAttribute("scriptid"));
+        }
+        this.inSync = false;
+    },
 }
 
 });

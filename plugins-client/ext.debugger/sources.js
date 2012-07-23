@@ -44,55 +44,34 @@ module.exports = {
         });
         
         ide.addEventListener("dbg.changeFrame", function(e) {
-            e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
+            e.data && _self.showDebugFrame(e.data);
         });
         
         this.paths = {};
     },
     
-    getScriptIdFromPath: function() {
-    
+    getScriptIdFromPath: function(path) {
+        
     },
     
     getPathFromScriptId: function() {
     
     },
     
-    
-    
-    $syncTree: function() {
-        if (this.inSync) return;
-        this.inSync = true;
-        var dbgFiles = mdlDbgSources.data.childNodes;
-
-        var workspaceDir = ide.workspaceDir;
-        for (var i=0,l=dbgFiles.length; i<l; i++) {
-            var dbgFile = dbgFiles[i];
-            var name = dbgFile.getAttribute("scriptname");
-            if (name.indexOf(workspaceDir) !== 0)
-                continue;
-            this.paths[name] = dbgFile;
-        }
-        var treeFiles = fs.model.data.getElementsByTagName("file");
-        var tabFiles = ide.getAllPageModels();
-        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
-
-        var davPrefix = ide.davPrefix;
-        for (var i=0,l=files.length; i<l; i++) {
-            var file = files[i];
-            var path = file.getAttribute("scriptname");
-
-            var dbgFile = this.paths[path];
-            if (dbgFile)
-                apf.b(file).attr("scriptid", dbgFile.getAttribute("scriptid"));
-        }
-        this.inSync = false;
-    },
-    
-    showDebugFile: function(scriptId, row, column, text) {
-        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
-
-        if (file) {
+    showDebugFrame:  function(frame) {
+        var row = parseInt(frame.getAttribute("line")) - 1;
+        var column = parseInt(frame.getAttribute("column"));
+        var text = frame.getAttribute("name");
+        
+        var path = frame.getAttribute("script");
+        
+        if (path.substring(0, ide.workspaceDir.length) == ide.workspaceDir) {
+            path = ide.davPrefix + path.substr(ide.workspaceDir.length);
+            // windows paths come here independantly from vfs
+            path = path.replace(/\\/g, "/"); 
+            
+            var file = fs.model.queryNode("//file[@path='" + path + "']") 
+                || fs.createFileNodeFromPath(path);
             editors.jump({
                 node    : file, 
                 row     : row, 
@@ -100,9 +79,57 @@ module.exports = {
                 text    : text,
                 animate : false
             });
+        } else {
+            var scriptId = frame.getAttribute("scriptid");
+            var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
+            if (!script)
+                return;
+            var name = script.getAttribute("scriptname");
+            name = name.replace(/\\/g, "/"); // windows
+            var value = name.split("/").pop();
+            var page = tabEditors.getPage(value);
+            
+            if (page) {
+                editors.jump({
+                    node    : page.xmlRoot,
+                    page    : page,
+                    row     : row, 
+                    column  : column, 
+                    text    : text, 
+                    animate : false
+                });
+            } else {
+                var node = apf.n("<file />")
+                    .attr("name", value)
+                    .attr("path", name)
+                    .attr("contenttype", "application/javascript")
+                    .attr("scriptid", script.getAttribute("scriptid"))
+                    .attr("scriptname", script.getAttribute("scriptname"))
+                    .attr("debug", "1")
+                    .attr("lineoffset", "0").node();
+
+                dbg.main.loadScript(script, function(source) {
+                    var doc = ide.createDocument(node, source);
+                    editors.jump({
+                        node    : node, 
+                        row     : row, 
+                        column  : column, 
+                        text    : text, 
+                        doc     : doc
+                    });
+                });
+            }
+        }
+    },
+    
+    showDebugFile: function(scriptId, row, column, text) {
+        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
+
+        if (file) {
+            
         }
         else {
-            var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
+           
             if (!script)
                 return;
 
@@ -133,37 +160,7 @@ module.exports = {
                 });
             }
             else {
-                var page = tabEditors.getPage(value);
-                if (page)
-                    editors.jump({
-                        node    : page.xmlRoot, 
-                        doc     : page.$doc,
-                        row     : row, 
-                        column  : column, 
-                        text    : text, 
-                        animate : false
-                    });
-                else {
-                    var node = apf.n("<file />")
-                        .attr("name", value)
-                        .attr("path", name)
-                        .attr("contenttype", "application/javascript")
-                        .attr("scriptid", script.getAttribute("scriptid"))
-                        .attr("scriptname", script.getAttribute("scriptname"))
-                        .attr("debug", "1")
-                        .attr("lineoffset", "0").node();
-
-                    dbg.main.loadScript(script, function(source) {
-                        var doc = ide.createDocument(node, source);
-                        editors.jump({
-                            node    : node, 
-                            row     : row, 
-                            column  : column, 
-                            text    : text, 
-                            doc     : doc
-                        });
-                    });
-                }
+                
             }
         }
     },

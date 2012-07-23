@@ -30,13 +30,13 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (ide.connected) {
             this.queryServerState();
             ide.addEventListener("socketDisconnect", function() {
-                ide.dispatchEvent("noderunner.stopDebugging")
-                console.log("socketDisconnect")
+                ide.dispatchEvent("dbg.exit");
+                console.log("socketDisconnect");
             });
         } else {           
             ide.addEventListener("socketConnect", function() {
                 self.queryServerState();
-                console.log("socketConnect")
+                console.log("socketConnect");
             });
         }
         
@@ -87,7 +87,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 stProcessRunning.setProperty("active", !!message.processRunning);
 
                 dbg.setProperty("strip", message.workspaceDir + "/");
-                ide.dispatchEvent("noderunnerready", message);
+                ide.dispatchEvent("dbg.state", message);
                 break;
 
             case "error":
@@ -142,9 +142,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     run : function(path, args, debug, nodeVersion) {
         var runner;
-        
-        // this is a manual action, so we'll tell that to the debugger
-        _debugger.registerManualAttach();
         if (stProcessRunning.active || typeof path != "string")
             return false;
         // TODO there should be a way to set satate to waiting
