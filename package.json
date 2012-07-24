@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "asyncjs": "~0.0.2",
-        "libxml": "0.0.3"   
+        "libxml": "0.0.6"   
     },
     "mappings": {
         "node-o3-xml":    ["npm", "https://github.com/ajaxorg/node-o3-xml/tarball/b8eb2bdeaf8c6da3c85874e6af84754ee7eaa429"],
