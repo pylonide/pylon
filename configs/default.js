@@ -20,7 +20,7 @@ var fsUrl = "/workspace";
 var vfsUrl = "/vfs";
 
 var port = argv.p || process.env.PORT || 3131;
-var host = argv.l || "localhost";
+var host = argv.l || process.env.IP || "localhost";
 
 var config = [
     {
@@ -58,7 +58,7 @@ var config = [
         debug: false,
         fsUrl: fsUrl,
         hosted: false,
-        socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
+        socketIoTransports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
