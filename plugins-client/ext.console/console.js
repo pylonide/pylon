@@ -1128,7 +1128,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hideInput(true);
                 txtConsoleInput.removeEventListener("blur", arguments.callee);
             });
-            txtConsoleInput.focus()
+            txtConsoleInput.focus();
         }
         else {
             settings.model.setQueryValue("auto/console/@showinput", true);
@@ -1256,8 +1256,10 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
+            if (_self.onFinishTimer)
+                clearTimeout(_self.onFinishTimer);
             
-            setTimeout(function(){
+            _self.onFinishTimer = setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
                 }
