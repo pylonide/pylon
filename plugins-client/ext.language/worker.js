@@ -326,7 +326,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         this.handlers.forEach(function(handler) {
             if (handler.handlesLanguage(_self.$language)
-                handler.isParsingSupported())
+                && handler.isParsingSupported())
                 result = true;
         });
         return result;
