@@ -581,7 +581,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
-        if (!ast && !this.isParsingSupported())
+        if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             for (var i = 0; i < _self.handlers.length; i++) {
@@ -599,7 +599,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
-        if (!ast && !this.isParsingSupported())
+        if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             asyncForEach(_self.handlers, function(handler, next) {
