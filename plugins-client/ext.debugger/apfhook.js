@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 window.adbg = {
     exec : function(method, args, callback, options) {
         if (method == "loadScript") {
-            var dbg = args[0];
+            var dbg = args[0].main;
             var script = args[1];
             dbg.loadScript(script, function(source) {
                 if (options && options.callback) {
@@ -23,7 +23,7 @@ window.adbg = {
             });
         }
         else if (method == "loadObjects") {
-            var dbg = args[0];
+            var dbg = args[0].main;
             var item = args[1];
 
             dbg.loadObjects(item, function(xml) {
@@ -35,7 +35,7 @@ window.adbg = {
             });
         }
         else if (method == "loadFrame") {
-            var dbg = args[0];
+            var dbg = args[0].main;
             var frame = args[1];
 
             dbg.loadFrame(frame, function(xml) {

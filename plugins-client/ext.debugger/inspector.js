@@ -6,11 +6,10 @@
  */
 
 define(function(require, exports, module) {
-var _debugger = require("ext/debugger/debugger");
 
 exports.evaluate = function(expression, callback){
     var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
-    _debugger.evaluate(expression, frame, null, null, callback || exports.showObject);
+    dbg.main.evaluate(expression, frame, null, null, callback || exports.showObject);
 };
 
 exports.checkChange = function(xmlNode) {

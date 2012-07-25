@@ -49,22 +49,35 @@ module.exports = {
         
         this.paths = {};
     },
-    
+
     getScriptIdFromPath: function(path) {
-        
+        if (path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
+            path = ide.workspaceDir + path.substr(ide.davPrefix.length);
+        }
+        var file = mdlDbgSources.queryNode("//file[@scriptname='" + path + "']");
+        if (!file) {
+            path = path.replace(/\//g, "\\")
+            file = mdlDbgSources.queryNode("//file[@scriptname='" + path + "']");
+        }
+        if (file)
+            return file.getAttribute("scriptid");
     },
-    
-    getPathFromScriptId: function() {
-    
+
+    getPathFromScriptId: function(scriptId) {
+        var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
+        if (!script)
+            return;
+        var path = ide.davPrefix + script.getAttribute("scriptname");
+        path = path.replace(/\\/g, "/"); // windows
+        return path;
     },
     
     showDebugFrame:  function(frame) {
-        var row = parseInt(frame.getAttribute("line")) - 1;
+        var row = parseInt(frame.getAttribute("line")) + 1;
         var column = parseInt(frame.getAttribute("column"));
         var text = frame.getAttribute("name");
-        
         var path = frame.getAttribute("script");
-        
+
         if (path.substring(0, ide.workspaceDir.length) == ide.workspaceDir) {
             path = ide.davPrefix + path.substr(ide.workspaceDir.length);
             // windows paths come here independantly from vfs
@@ -84,10 +97,10 @@ module.exports = {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
                 return;
-            var name = script.getAttribute("scriptname");
-            name = name.replace(/\\/g, "/"); // windows
-            var value = name.split("/").pop();
-            var page = tabEditors.getPage(value);
+            var path = ide.davPrefix + script.getAttribute("scriptname");
+            path = path.replace(/\\/g, "/"); // windows
+            
+            var page = tabEditors.getPage(path);
             
             if (page) {
                 editors.jump({
@@ -100,8 +113,8 @@ module.exports = {
                 });
             } else {
                 var node = apf.n("<file />")
-                    .attr("name", value)
-                    .attr("path", name)
+                    .attr("name", path.split("/").pop())
+                    .attr("path", path)
                     .attr("contenttype", "application/javascript")
                     .attr("scriptid", script.getAttribute("scriptid"))
                     .attr("scriptname", script.getAttribute("scriptname"))
