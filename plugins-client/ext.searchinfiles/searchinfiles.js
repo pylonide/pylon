@@ -518,22 +518,16 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     launchFileFromSearch : function(editor) {
         var session = editor.getSession();
         var currRow = editor.getCursorPosition().row;
-        var path = null;
-        
-        if (editor.getSession().getLine(currRow).length == 0) // no text in this row
-            return;
-        
-        var clickedLine = session.getLine(currRow).trim().split(":"); // number:text
-        
+
+        var clickedLine = session.getLine(currRow).split(":"); // number:text
         if (clickedLine.length < 2) // some other part of the editor
             return;
-        
+
         // "string" type is the parent filename
-        while (currRow > 0 && session.getTokenAt(currRow, 0).type.indexOf("string") < 0) {
-          currRow--;
-        }
-        
-        path = editor.getSession().getLine(currRow);
+        while (currRow > 0 && session.getTokenAt(currRow, 0).type.indexOf("string") < 0)
+            currRow--;
+
+        var path = editor.getSession().getLine(currRow);
         
         if (path.charAt(path.length - 1) == ":")
             path = path.substring(0, path.length-1);
@@ -542,13 +536,18 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if(path[0] === '/')
             path = path.substring(1);
         
-        if (path !== undefined && path.length > 0)
-            editors.gotoDocument({
-                path: ide.davPrefix + "/" + path,
-                row: clickedLine[0],
-                col: 0,
-                text: clickedLine[1]
-            });
+        if (!path)
+            return;
+        var row = parsInt(clickedLine[0]);
+        var range = editor.getSelectionRange();
+        var col = range.start.column - clickedLine[0].length - 1;
+        var endCol = range.end.column - clickedLine[0].length - 1;
+        editors.gotoDocument({
+            path: ide.davPrefix + "/" + path,
+            row: clickedLine[0],
+            col: col,
+            endCol: endCol
+        });
     },
 
     appendLines : function(doc, content) {
