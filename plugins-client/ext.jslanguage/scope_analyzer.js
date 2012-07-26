@@ -37,7 +37,6 @@ var GLOBALS = {
     "false"                  : true,
     "undefined"              : true,
     "null"                   : true,
-    "this"                   : true,
     "arguments"              : true,
     self                     : true,
     "Infinity"               : true,
@@ -175,14 +174,11 @@ var GLOBALS = {
     Document                 : true,
     Element                  : true,
     Event                    : true,
-    "instanceof"             : true,
     KeyboardEvent            : true,
     MooTools                 : true,
-    "typeof"                 : true,
     Window                   : true,
     Ajax                     : true,
     Field                    : true,
-    "try"                    : true,
     Scriptaculous            : true,
     // require.js
     define                   : true,
@@ -229,6 +225,33 @@ var GLOBALS = {
     unescape                 : true
 };
 
+var KEYWORDS = [
+    "break",
+    "const",
+    "continue",
+    "delete",
+    "do",
+    "while",
+    "export",
+    "for",
+    "in",
+    "function",
+    "if",
+    "else",
+    "import",
+    "instanceof",
+    "new",
+    "return",
+    "switch",
+    "this",
+    "throw",
+    "try",
+    "catch",
+    "typeof",
+    "void",
+    "with"
+];
+
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
@@ -241,7 +264,7 @@ var Variable = module.exports.Variable = function Variable(declaration) {
         this.declarations.push(declaration);
     this.uses = [];
     this.values = [];
-}
+};
 
 Variable.prototype.addUse = function(node) {
     this.uses.push(node);
@@ -308,7 +331,7 @@ Scope.prototype.isDeclared = function(name) {
 /**
  * Get possible values of a variable
  * @param name name of variable
- * @return Variable instance 
+ * @return Variable instance
  */
 Scope.prototype.get = function(name, kind) {
     var vars = this.getVars(kind);
@@ -338,14 +361,14 @@ Scope.prototype.getNamesByKind = function(kind) {
     return results;
 };
 
-var GLOBALS_ARRAY = Object.keys(GLOBALS);
+var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
 handler.complete = function(doc, fullAst, data, currentNode, callback) {
     var pos = data.pos;
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
 
-    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    var matches = completeUtil.findCompletions(identifier, SCOPE_ARRAY);
     callback(matches.map(function(m) {
         return {
           name        : m,
@@ -541,7 +564,7 @@ var isCallbackCall = function(node) {
             result = true;
     });
     return result || outline.tryExtractEventHandler(node);
-}
+};
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
@@ -552,13 +575,13 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     function highlightVariable(v) {
         if (!v)
             return;
-        v.declarations.forEach(function(decl) {    
-            if(decl.getPos())    
+        v.declarations.forEach(function(decl) {
+            if(decl.getPos())
                 markers.push({
                     pos: decl.getPos(),
                     type: 'occurrence_main'
                 });
-        });    
+        });
         v.uses.forEach(function(node) {
             markers.push({
                 pos: node.getPos(),
@@ -609,7 +632,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     var v;
-    var mainNode;    
+    var mainNode;
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
