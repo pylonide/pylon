@@ -26,6 +26,7 @@ var SHOW_DOC_DELAY = 2000;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
+var CONCORDE_DELAY = 70;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 9;
@@ -104,6 +105,13 @@ function isJavaScript() {
  * is deleted.
  */
 function replaceText(editor, prefix, match) {
+    // Replace text asynchronously in case Concorde didn't update the editor yet
+    setTimeout(function() {
+        asyncReplaceText(editor, prefix, match);
+    }, CONCORDE_DELAY);
+}
+
+function asyncReplaceText(editor, prefix, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
@@ -151,10 +159,8 @@ function replaceText(editor, prefix, match) {
         if (line.substr(pos.column + postfix.length + 1, 1) === ')')
             cursorCol++;
     }
-    setTimeout(function() {
-        var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
-        editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
-    }, 50);
+    var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
+    editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
 }
 
 var menus = require("ext/menus/menus");
