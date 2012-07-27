@@ -147,13 +147,9 @@ module.exports = ext.register("ext/autosave/autosave", {
     onDocChange: function(e, doc) {
         var page = doc.$page;
         if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
-            var self = this;
-            setTimeout(function() {
-                self.setSaveButtonCaption();
-            });
-
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
+                self.setSaveButtonCaption();
                 stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
@@ -174,7 +170,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
-
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
                 if (btnSave.currentState !== SAVING) {
@@ -280,7 +275,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
-
+            
         this.save(tabEditors.getPage());
     },
 
@@ -288,7 +283,7 @@ module.exports = ext.register("ext/autosave/autosave", {
      * Revisions#save([page])
      * - page(Object): Page that contains the document to be saved. In case it is
      * not provided, the current one will be used
-     *
+     * 
      * Prompts a save of the desired document.
      **/
     save: function(page, forceSave) {
@@ -305,10 +300,8 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        var _self = this;
         Save.quicksave(page, function() {
             stripws.enable();
-            _self.setSaveButtonCaption(page);
         }, true);
     },
 
