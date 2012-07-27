@@ -12,7 +12,6 @@
     },
     include: [
         "node_modules/ace/build/src/ace",
-        "node_modules/ace/build/src/ace",
         "node_modules/ace/build/src/theme-chrome",
         "node_modules/ace/build/src/theme-clouds",
         "node_modules/ace/build/src/theme-clouds_midnight",
