@@ -1,47 +1,18 @@
 #!/bin/bash -e
-node ./node_modules/ace/lib/ace/anchor_test.js
-node ./node_modules/ace/lib/ace/background_tokenizer_test.js
-node ./node_modules/ace/lib/ace/commands/command_manager_test.js
-node ./node_modules/ace/lib/ace/document_test.js
-node ./node_modules/ace/lib/ace/edit_session_test.js
-node ./node_modules/ace/lib/ace/editor_change_document_test.js
-node ./node_modules/ace/lib/ace/editor_highlight_selected_word_test.js
-node ./node_modules/ace/lib/ace/editor_navigation_test.js
-node ./node_modules/ace/lib/ace/editor_text_edit_test.js
-node ./node_modules/ace/lib/ace/ext/static_highlight_test.js
-node ./node_modules/ace/lib/ace/layer/text_test.js
-node ./node_modules/ace/lib/ace/lib/event_emitter_test.js
-node ./node_modules/ace/lib/ace/mode/coffee/parser_test.js
-node ./node_modules/ace/lib/ace/mode/coffee_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/coldfusion_test.js
-node ./node_modules/ace/lib/ace/mode/css_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/css_test.js
-node ./node_modules/ace/lib/ace/mode/css_worker_test.js
-node ./node_modules/ace/lib/ace/mode/folding/cstyle_test.js
-node ./node_modules/ace/lib/ace/mode/folding/html_test.js
-node ./node_modules/ace/lib/ace/mode/folding/pythonic_test.js
-node ./node_modules/ace/lib/ace/mode/folding/xml_test.js
-node ./node_modules/ace/lib/ace/mode/html_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/html_test.js
-node ./node_modules/ace/lib/ace/mode/javascript_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/javascript_test.js
-node ./node_modules/ace/lib/ace/mode/javascript_worker_test.js
-node ./node_modules/ace/lib/ace/mode/json_worker_test.js
-node ./node_modules/ace/lib/ace/mode/liquid_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/python_test.js
-node ./node_modules/ace/lib/ace/mode/ruby_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/text_test.js
-node ./node_modules/ace/lib/ace/mode/xml_highlight_rules_test.js
-node ./node_modules/ace/lib/ace/mode/xml_test.js
-node ./node_modules/ace/lib/ace/placeholder_test.js
-node ./node_modules/ace/lib/ace/range_list_test.js
-node ./node_modules/ace/lib/ace/range_test.js
-node ./node_modules/ace/lib/ace/search_test.js
-node ./node_modules/ace/lib/ace/selection_test.js
-node ./node_modules/ace/lib/ace/token_iterator_test.js
-node ./node_modules/ace/lib/ace/virtual_renderer_test.js
-node ./node_modules/apf/test/lm_test.js
-node ./node_modules/jsDAV/node_modules/jsftp/lib/ftpParser_test.js
-node ./plugins-client/ext.jslanguage/narcissus_jshint_test.js
-node ./plugins-client/ext.jslanguage/parse_test.js
-node ./plugins-client/ext.jslanguage/scope_analyzer_test.js
+
+npm install amd-loader
+BLACKLIST=`cat test/blacklist.txt`
+for F in `find . -name '*_test.js' | grep -v backup-`; do
+  BLACKLISTED=
+  echo $F
+  for G in $BLACKLIST; do
+    if [ "$F" == "$G" ]; then
+      BLACKLISTED=1
+    fi
+  done
+  if ! [ $BLACKLISTED ]; then
+    echo -------------------------------
+    echo $F
+    node $F
+  fi
+done
