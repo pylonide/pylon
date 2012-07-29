@@ -76,7 +76,7 @@ module.exports = {
         });
         
         ide.addEventListener("dbg.changeFrame", function(e) {
-            apf.xmldb.setAttribute(dbg, "state", e.activeFrame || false);
+            apf.xmldb.setAttribute(dbg, "activeframe", e.activeFrame || false);
         });
     }
 }

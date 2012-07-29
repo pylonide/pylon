@@ -35,7 +35,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             });
         } else {           
             ide.addEventListener("socketConnect", function() {
-                self.queryServerState();
+                _self.queryServerState();
                 console.log("socketConnect");
             });
         }

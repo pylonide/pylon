@@ -21,7 +21,6 @@ var sources = require("./sources");
 var apfhook = require("./apfhook");
 
 require("ext/debugger/inspector");
-var v8debugclient = require("ext/dbg-node/dbg-node");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -153,19 +152,10 @@ module.exports = ext.register("ext/debugger/debugger", {
             ext.initExtension(_self);
             return pgDebugNav;
         });
-
-        dock.register(name, "dbgCallStack", {
-            menu : "Debugger/Call Stack",
-            primary : {
-                backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
-                defaultState: { x: -8, y: -47 },
-                activeState: { x: -8, y: -47 }
-            }
-        }, function(type) {
-            ext.initExtension(_self);
-            return dbgCallStack;
-        });
-
+      
+        breakpoints.hook();
+        sources.hook();        
+       
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
             primary : {
@@ -201,7 +191,8 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
         
         
-        breakpoints.hook();
+
+
         ide.addEventListener("dbg.attached", function(dbgImpl) {
             if (!_self.inited)
                 ext.initExtension(_self);
@@ -214,19 +205,6 @@ module.exports = ext.register("ext/debugger/debugger", {
         var _self = this;
         sources.init();
         breakpoints.init();
-
-        var modelName = "mdlDbgStack";
-        var model = apf.nameserver.register("model", modelName, new apf.model());
-        apf.setReference(modelName, model);
-        // we're subsribing to the 'running active' prop
-        // this property indicates whether the debugger is actually running (when on a break this value is false)
-        ide.addEventListener("dbg.changeState", function (e) {
-            // if we are really running (so not on a break or something)
-            if (e.state != "stopped") {
-                // we clear out mdlDbgStack
-                mdlDbgStack.load("<frames></frames>");
-            }
-        });
 
         this.$mdlSources = mdlDbgSources;
         this.$mdlBreakpoints = mdlDbgBreakpoints;
@@ -301,46 +279,8 @@ module.exports = ext.register("ext/debugger/debugger", {
         mdlDbgSources.appendXml(e.script);
     },
 
-    $onDetach : function() {
-        var _self = this;
-
-        if (this.$debugger) {
-            // destroy doesnt destroy the event listeners
-            // so do that by hand
-            Object.keys(_self.$debugger.$eventsStack).forEach(function (evname) {
-                _self.$debugger.$eventsStack[evname].forEach(function (fn) {
-                    _self.$debugger.removeEventListener(evname, fn);
-                });
-            });
-
-            this.$debugger.destroy();
-            this.$debugger = null;
-        }
-
-        this.$mdlSources.load("<sources />");
-        this.$mdlStack.load("<frames />");
-        this.activeFrame = null;
-    },
-
     setFrame : function(frame) {
         this.$debugger.setFrame(frame);
-    },
-
-    detach : function(callback) {
-        var _self = this;
-
-        this.continueScript();
-        if (this.$debugger) {
-            this.$debugger.detach(function () {
-                if (typeof callback === "function")
-                    callback();
-                // always detach, so we won't get into limbo state
-                _self.$onDetach();
-            });
-        }
-        else {
-            this.$onDetach();
-        }
     },
 
     $loadSources : function(callback) {

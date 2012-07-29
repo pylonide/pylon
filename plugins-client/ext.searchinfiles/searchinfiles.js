@@ -519,13 +519,16 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var session = editor.getSession();
         var currRow = editor.getCursorPosition().row;
 
-        var clickedLine = session.getLine(currRow).split(":"); // number:text
+        var clickedLine = session.getLine(currRow).split(": "); // number:text
         if (clickedLine.length < 2) // some other part of the editor
             return;
 
         // "string" type is the parent filename
-        while (currRow > 0 && session.getTokenAt(currRow, 0).type.indexOf("string") < 0)
-            currRow--;
+        while (currRow --> 0) {
+            var token = session.getTokenAt(currRow, 0);
+            if (token && token.type.indexOf("string") < 0)
+                break;
+        }
 
         var path = editor.getSession().getLine(currRow);
         
@@ -538,15 +541,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         if (!path)
             return;
-        var row = parsInt(clickedLine[0]);
+        var row = parseInt(clickedLine[0]);
         var range = editor.getSelectionRange();
-        var col = range.start.column - clickedLine[0].length - 1;
-        var endCol = range.end.column - clickedLine[0].length - 1;
+        var offset = clickedLine[0].length + 2;
         editors.gotoDocument({
             path: ide.davPrefix + "/" + path,
-            row: clickedLine[0],
-            col: col,
-            endCol: endCol
+            row: row,
+            column: range.start.column - offset,
+            endColumn: range.end.column - offset
         });
     },
 

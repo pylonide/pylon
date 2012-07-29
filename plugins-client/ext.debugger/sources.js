@@ -14,31 +14,42 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
-var commands = require("ext/commands/commands");
-
+var Range = require("ace/range").Range
 
 module.exports = {
+    hook: function() {
+        var name =  "ext/debugger/debugger";
+        dock.register(name, "dbgCallStack", {
+            menu : "Debugger/Call Stack",
+            primary : {
+                backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
+                defaultState: { x: -8, y: -47 },
+                activeState: { x: -8, y: -47 }
+            }
+        }, function(type) {
+            ext.initExtension(dbg.main);
+            return dbgCallStack;
+        });
+    },
+    
     init: function() {
         var _self = this;
         var modelName = "mdlDbgSources"
         var model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
         mdlDbgSources.load("<sources/>");
+        
 
         ide.addEventListener("afterfilesave", function(e) {
-            var node = e.node;
-            var doc = e.doc;
-
-            var path = node.getAttribute("path");
+            if (!dbg.state)
+                return;
+            var path = e.node.getAttribute("path");
             var scriptId = _self.getScriptIdFromPath(path);
             if (!scriptId)
                 return;
 
-            var value = e.value || doc.getValue();
-            // TODO move to dbg-node ?
-            var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
-            var NODE_POSTFIX = "\n});";
-            dbg.main.changeLive(scriptId, NODE_PREFIX + value + NODE_POSTFIX, false, function(e) {
+            var value = e.value || e.doc.getValue();
+            dbg.main.changeLive(scriptId, value, false, function(e) {
                 //console.log("v8 updated", e);
             });
         });
@@ -48,6 +59,31 @@ module.exports = {
         });
         
         this.paths = {};
+        
+        // stack view
+        modelName = "mdlDbgStack";
+        model = apf.nameserver.register("model", modelName, new apf.model());
+        apf.setReference(modelName, model);
+        dbgCallStack.addEventListener("afterrender", function(){
+            dgStack.addEventListener("afterselect", function(e) {
+                e.selected && _self.showDebugFrame(e.selected);
+            });
+        });
+        
+        ide.addEventListener("dbg.changeState", function (e) {
+            if (e.state != "stopped") {
+                mdlDbgStack.load("<frames></frames>");
+                
+            }
+        });
+        ide.addEventListener("tab.afterswitch", function(e) {
+            var page = e.nextPage;
+            if (!page || !page.$editor || !page.$editor.ceEditor)
+                return;
+            var ace = page.$editor.ceEditor.$editor
+            if (!ace.$breakpointListener)
+                _self.$updateMarker()
+        });
     },
 
     getScriptIdFromPath: function(path) {
@@ -136,46 +172,7 @@ module.exports = {
     },
     
     showDebugFile: function(scriptId, row, column, text) {
-        var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
-
-        if (file) {
-            
-        }
-        else {
-           
-            if (!script)
-                return;
-
-            var name = script.getAttribute("scriptname");
-            var value = name.split("/").pop();
-
-            if (name.indexOf(ide.workspaceDir) === 0) {
-                var path = ide.davPrefix + name.slice(ide.workspaceDir.length);
-                // TODO this has to be refactored to support multiple tabs
-                var page = tabEditors.getPage(path);
-                if (page)
-                    var node = page.xmlRoot;
-                else {
-                    var node = apf.n("<file />")
-                        .attr("name", value)
-                        .attr("path", path)
-                        .attr("contenttype", "application/javascript")
-                        .attr("scriptid", script.getAttribute("scriptid"))
-                        .attr("scriptname", script.getAttribute("scriptname"))
-                        .attr("lineoffset", "0").node();
-                }
-                editors.jump({
-                    node    : node, 
-                    row     : row, 
-                    column  : column, 
-                    text    : text, 
-                    animate : page ? false : true
-                });
-            }
-            else {
-                
-            }
-        }
+        
     },
     
     
@@ -202,6 +199,19 @@ module.exports = {
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
         this.$editor.gotoLine(row + 1, data.column, false);
+        
+        
+        ceEditor.$editor.session.addMarker(
+            new Range(3,0,4,0),
+            "ace_step","line"    
+        )
+        ceEditor.$editor.session.addMarker(
+            new Range(3,0,4,0),
+            "ace_stack","line"    
+        )
+        ceEditor.$editor.renderer.addGutterDecoration(3, "stack")
+        ceEditor.$editor.renderer.addGutterDecoration(3, "step")
+        ceEditor.$editor.renderer.addGutterDecoration(4, "step")
     }
 
 }

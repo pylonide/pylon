@@ -45,7 +45,7 @@ module.exports = {
                 activeState: { x: -8, y: -88 }
             }
         }, function(type) {
-            // ext.initExtension(_self);
+            ext.initExtension(dbg.main);
             return dbgBreakpoints;
         });
         
@@ -75,6 +75,28 @@ module.exports = {
                 _self.initSession(ace.session);
 
             _self.updateSession(ace.session, page.$doc.getNode());
+        });
+    },
+
+    init: function() {
+        var _self = this;
+        dbgBreakpoints.addEventListener("afterrender", function() {
+            lstBreakpoints.addEventListener("afterselect", function(e) {
+                if (e.selected) {
+                    _self.gotoBreakpoint(e.selected)
+                }
+            });
+            
+            lstBreakpoints.addEventListener("aftercheck", function(e) {
+                _self.setBreakPointEnabled(e.xmlNode, 
+                    apf.isTrue(e.xmlNode.getAttribute("enabled")));
+            });
+        });
+
+        dbgBreakpoints.addEventListener("dbInteractive", function(){
+            lstScripts.addEventListener("afterselect", function(e) {
+                e.selected && _self.gotoBreakpoint(e.selected);
+            });
         });
     },
     
@@ -131,10 +153,10 @@ module.exports = {
                 var rem = this.$breakpoints.splice(firstRow + 1, -len);
 				
                 if(!this.$breakpoints[firstRow]){
-					for each(var oldBP in rem)
-						if (oldBP){
-							this.$breakpoints[firstRow] = oldBP
-							break
+					for (var i in rem)
+						if (rem[i]) {
+							this.$breakpoints[firstRow] = rem[i];
+							break;
 						}
 				}
 			}
@@ -157,28 +179,6 @@ module.exports = {
             }
         }
         session.setBreakpoints(rows);
-    },
-    
-    init: function() {
-        var _self = this;
-        dbgBreakpoints.addEventListener("afterrender", function() {
-            lstBreakpoints.addEventListener("afterselect", function(e) {
-                if (e.selected) {
-                    _self.gotoBreakpoint(e.selected)
-                }
-            });
-            
-            lstBreakpoints.addEventListener("aftercheck", function(e) {
-                _self.setBreakPointEnabled(e.xmlNode, 
-                    apf.isTrue(e.xmlNode.getAttribute("enabled")));
-            });
-        });
-
-        dbgBreakpoints.addEventListener("dbInteractive", function(){
-            lstScripts.addEventListener("afterselect", function(e) {
-                e.selected && _self.gotoBreakpoint(e.selected);
-            });
-        });
     },
     
     gotoBreakpoint: function(bp) {

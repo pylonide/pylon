@@ -567,6 +567,9 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
   
     this.changeLive = function(scriptId, newSource, previewOnly, callback) {
+        var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
+        var NODE_POSTFIX = "\n});";
+        newSource = NODE_PREFIX + newSource + NODE_POSTFIX;
         this.$debugger.changelive(scriptId, newSource, previewOnly, callback);
     };
     

@@ -1037,34 +1037,33 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(options) {
         var _self   = this;
-        var tabs    = tabEditors;            
+        var tabs    = tabEditors;
         var row     = options.row;
         var column  = options.column || 0;
         var text    = options.text;
         var node    = options.node;
-        var path    = node && node.getAttribute("path");
-        var page    = path && options.page;
-        var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+        var path    = options.path || (node && node.getAttribute("path"));
+        var page    = options.page || (path && tabs.getPage(path));
+        var hasData = !!( page && page.$doc);
         
-
         function select() {
             var ace = _self.currentEditor.amlEditor.$editor;
             row -= 1;
             var endRow = typeof options.endRow == "number" ? options.endRow - 1 : row;
-            var endCol = options.endCol;
+            var endColumn = options.endColumn;
             
             ace.session.unfold({row: row, column: column || 0});
-            if (typeof endCol == "number")
-                ace.session.unfold({row: endRow, column: endCol});
+            if (typeof endColumn == "number")
+                ace.session.unfold({row: endRow, column: endColumn});
 
             ace.$blockScrolling += 1;
             ace.selection.clearSelection();
             ace.moveCursorTo(row, column || 0);
-            if (typeof endCol == "number")
-                selectTo.selection.selectTo(endRow, endCol)
+            if (typeof endColumn == "number")
+                ace.selection.selectTo(endRow, endColumn)
             ace.$blockScrolling -= 1;
             var range = ace.selection.getRange();
-            var initialScroll = this.scrollTop;
+            var initialScroll = ace.renderer.scrollTop;
             ace.renderer.scrollSelectionIntoView(range.start, range.end, 0.5);
             if (options.animate !== false)
                 ace.renderer.animateScrolling(initialScroll);
@@ -1091,17 +1090,20 @@ module.exports = ext.register("ext/editors/editors", {
         
         
         if (hasData) {
-            tabs.set(path);
+            tabs.set(page);
             jumpTo();
         } else {
             options.origin = "jump";
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 
+            var extraOptions = this.openEditor(options.doc, options.init, options.active, options.forceOpen);
+            
             if (row) {
                 if (!path)
                     path = options.node.getAttribute("path");
 
+                ide.removeEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
                 _self.currentEditor.$pendingJumpTo = function(e) {
                     var node = e.doc.getNode();
                     if (node.getAttribute("path") == path)
@@ -1110,7 +1112,6 @@ module.exports = ext.register("ext/editors/editors", {
                 ide.addEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
             }
 
-            var extraOptions = this.openEditor(options.doc, options.init, options.active, options.forceOpen);
             ide.dispatchEvent("openfile", apf.extend(options, extraOptions));
         }
     },

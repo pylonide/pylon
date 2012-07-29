@@ -3639,19 +3639,19 @@
             opacity: 0.65;
         }
 
-        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.arrow {
+        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.step {
             background-image: url("icons/debugger/brkp_obj_current_line.png");
             background-position: 4px center;
         }
-        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.step {
             background-image: url("icons/debugger/brkp_obj_current_line_dark.png");
         }
 
-        .ace_gutter-layer .ace_gutter-cell.arrow {
+        .ace_gutter-layer .ace_gutter-cell.step {
             background-image: url("icons/debugger/current_line.png");
             background-position: 4px center;
         }
-        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.step {
             background-image: url("icons/debugger/current_line_dark.png");
         }
 

@@ -50,7 +50,7 @@
               class      = "noscrollbar"
               scrollbar  = "sbShared 20 2 2"
               disabled   = "{dbg.state != 'stopped'}"
-              selected   = "{dbg.activeFrame}">
+              selected   = "{dbg.activeframe}">
                 <a:actions />
                 <a:each match="[frame]">
                     <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
@@ -128,12 +128,12 @@
               options    = "size|move"
               prerender  = "false"
               caching    = "false"
-              model      = "[{dbg.activeFrame}::vars]"
+              model      = "[{dbg.activeframe}::vars]"
               disabled   = "{dbg.state != 'stopped'}"
               loading-message = "Calculating...">
                 <a:actions />
                 <a:each match="[item|globals]" sort="[@name]">
-                    <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dbg.activeFrame})}"/>
+                    <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dbg.activeframe})}"/>
                     <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
                     <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
                     <a:column caption="Value" value="[@value]" width="60%" />
