@@ -22,7 +22,7 @@ module.exports = (function () {
         ext.initExtension(self);
         
         // listen to changes that affect the debugger, so we can toggle the visibility based on this
-        ide.addEventListener("debugger.stateChange", checkDebuggerActive);
+        ide.addEventListener("dbg.changeState", checkDebuggerActive);
     };
     
     var init = function () {
@@ -47,7 +47,7 @@ module.exports = (function () {
             }
         });
         
-        ide.addEventListener("language.worker", function(e){
+        ide.addEventListener("language.worker", function(e) {
             // listen to the worker's response
             e.worker.on("inspect", function(event) {
                 if (!event || !event.data) {
@@ -228,27 +228,21 @@ module.exports = (function () {
      * debugger is in.
      */
     var isCurrentFrame = function(){
-        var frame, page = tabEditors.getPage();
-        
-        if (self.dgStack)
-            frame = dgStack.selected;
-        else
-            frame = mdlDbgStack.queryNode("frame[@index=0]");
-        
+        var frame = self.dbg.activeframe;
         if (!frame)
             return false;
         
-        var scriptName = frame.getAttribute("script");
-        
+        var page = tabEditors.getPage();
+        var path = frame.getAttribute("scriptPath");
+
         // I have to do a fairly weak filename compare. 
         // An improvement is to store the full path in the stack model.
-        if (page.getModel().queryValue("@path")
-            .substr(ide.davPrefix.length + 1) != scriptName)
+        if (page.getModel().queryValue("@path") != path)
             return false;
         
-        var line = frame.getAttribute("line");
-        var column = frame.getAttribute("column");
-        //@todo check if we are still in the current function
+        // @todo check if we are still in the current function
+        // var line = frame.getAttribute("line");
+        // var column = frame.getAttribute("column");
         
         return true;
     }
@@ -274,7 +268,7 @@ module.exports = (function () {
                 winLiveInspect.hide();
                 windowHtml.style.left = ev.clientX + "px";
                 windowHtml.style.top = (ev.clientY + 8) + "px";
-            }, 750);
+            }, 250);
         }
     };
     

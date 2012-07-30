@@ -283,8 +283,8 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.$debugger.setFrame(frame);
     },
 
-    $loadSources : function(callback) {
-        this.$debugger && this.$debugger.scripts(this.$mdlSources, callback);
+    loadScripts : function(callback) {
+        this.$debugger && this.$debugger.loadScripts(this.$mdlSources, callback);
     },
 
     loadScript : function(script, callback) {

@@ -7,8 +7,6 @@
 
 define(function(require, exports, module) {
 
-require("apf/elements/codeeditor");
-
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
@@ -56,6 +54,7 @@ module.exports = {
         
         ide.addEventListener("dbg.changeFrame", function(e) {
             e.data && _self.showDebugFrame(e.data);
+            updateMarker(e.data);
         });
         
         this.paths = {};
@@ -67,58 +66,72 @@ module.exports = {
         dbgCallStack.addEventListener("afterrender", function(){
             dgStack.addEventListener("afterselect", function(e) {
                 e.selected && _self.showDebugFrame(e.selected);
+                updateMarker(e.selected);
             });
         });
+        
+        function addMarker(session, type, row) {
+            var marker = session.addMarker(new Range(row, 0, row + 1, 0), "ace_" + type, "line");
+            session.addGutterDecoration(row, type);
+            session["$" + type + "Marker"] = {lineMarker: marker, row: row};
+        }
+        
+        function removeMarker(session, type) {
+            var markerName = "$" + type + "Marker";
+            session.removeMarker(session[markerName].lineMarker);
+            session.removeGutterDecoration(session[markerName].row, type);
+            session[markerName] = null;
+        }
+        
+        function updateMarker(frame) {
+            var ceEditor = editors.currentEditor && editors.currentEditor.ceEditor;
+            var session = ceEditor && ceEditor.$editor.session;
+            if (!session)
+                return;
+
+            session.$stackMarker && removeMarker(session, "stack");
+            session.$stepMarker && removeMarker(session, "step");
+            
+            frame = frame || dbg.activeframe;
+            if (frame) {
+                var path = ceEditor.xmlRoot.getAttribute("path");
+                var framePath = frame.getAttribute("scriptPath");
+                var row = parseInt(frame.getAttribute("line"));
+                if (frame.hasAttribute("istop")) {
+                    if (path == framePath)
+                        addMarker(session, "step", row);
+                } else {
+                    if (path == framePath)
+                        addMarker(session, "stack", row);
+                    if (dbg.topframe) {
+                        framePath = dbg.topframe.getAttribute("scriptPath");
+                        row = parseInt(dbg.topframe.getAttribute("line"));
+                        if (path == framePath)
+                            addMarker(session, "step", row);
+                    }
+                }
+            }
+        }
         
         ide.addEventListener("dbg.changeState", function (e) {
             if (e.state != "stopped") {
                 mdlDbgStack.load("<frames></frames>");
-                
             }
         });
         ide.addEventListener("tab.afterswitch", function(e) {
-            var page = e.nextPage;
-            if (!page || !page.$editor || !page.$editor.ceEditor)
+            if (!dbg.activeframe)
                 return;
-            var ace = page.$editor.ceEditor.$editor
-            if (!ace.$breakpointListener)
-                _self.$updateMarker()
+            updateMarker();
         });
-    },
-
-    getScriptIdFromPath: function(path) {
-        if (path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
-            path = ide.workspaceDir + path.substr(ide.davPrefix.length);
-        }
-        var file = mdlDbgSources.queryNode("//file[@scriptname='" + path + "']");
-        if (!file) {
-            path = path.replace(/\//g, "\\")
-            file = mdlDbgSources.queryNode("//file[@scriptname='" + path + "']");
-        }
-        if (file)
-            return file.getAttribute("scriptid");
-    },
-
-    getPathFromScriptId: function(scriptId) {
-        var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
-        if (!script)
-            return;
-        var path = ide.davPrefix + script.getAttribute("scriptname");
-        path = path.replace(/\\/g, "/"); // windows
-        return path;
     },
     
     showDebugFrame:  function(frame) {
         var row = parseInt(frame.getAttribute("line")) + 1;
         var column = parseInt(frame.getAttribute("column"));
         var text = frame.getAttribute("name");
-        var path = frame.getAttribute("script");
+        var path = frame.getAttribute("scriptPath");
 
-        if (path.substring(0, ide.workspaceDir.length) == ide.workspaceDir) {
-            path = ide.davPrefix + path.substr(ide.workspaceDir.length);
-            // windows paths come here independantly from vfs
-            path = path.replace(/\\/g, "/"); 
-            
+        if (path.substring(0, ide.davPrefix.length) == ide.davPrefix) {            
             var file = fs.model.queryNode("//file[@path='" + path + "']") 
                 || fs.createFileNodeFromPath(path);
             editors.jump({
@@ -133,8 +146,6 @@ module.exports = {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             if (!script)
                 return;
-            var path = ide.davPrefix + script.getAttribute("scriptname");
-            path = path.replace(/\\/g, "/"); // windows
             
             var page = tabEditors.getPage(path);
             
@@ -172,48 +183,8 @@ module.exports = {
     },
     
     showDebugFile: function(scriptId, row, column, text) {
-        
-    },
-    
-    
-    $clearMarker: function () {
-        if (this.$marker) {
-            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
-            this.$editor.getSession().removeMarker(this.$marker);
-            this.$marker = null;
-        }
-    },
-
-    $updateMarker: function (data) {
-        this.$clearMarker();
-        
-        if (!data) {
-            return;
-        }
-        
-        var row = data.line;
-
-        var range = new Range(row, 0, row + 1, 0);
-        this.$marker = this.$editor.getSession().addMarker(range, "ace_step", "line");
-        var type = "arrow";
-        this.$lastRow = [row, type];
-        this.$editor.renderer.addGutterDecoration(row, type);
-        this.$editor.gotoLine(row + 1, data.column, false);
-        
-        
-        ceEditor.$editor.session.addMarker(
-            new Range(3,0,4,0),
-            "ace_step","line"    
-        )
-        ceEditor.$editor.session.addMarker(
-            new Range(3,0,4,0),
-            "ace_stack","line"    
-        )
-        ceEditor.$editor.renderer.addGutterDecoration(3, "stack")
-        ceEditor.$editor.renderer.addGutterDecoration(3, "step")
-        ceEditor.$editor.renderer.addGutterDecoration(4, "step")
+        console.log(scriptId, row, column, text)
     }
-
 }
 
 });

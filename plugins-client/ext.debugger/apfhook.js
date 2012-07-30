@@ -70,13 +70,14 @@ module.exports = {
         ide.addEventListener("dbg.changeState", function(e) {
             state = e.state;
             clearTimeout(timeout);
-            var timeout = setTimeout(function(){
+            //var timeout = setTimeout(function(){
                 apf.xmldb.setAttribute(dbg, "state", state || false);
-            }, 80)
+            //}, 80)
         });
         
         ide.addEventListener("dbg.changeFrame", function(e) {
-            apf.xmldb.setAttribute(dbg, "activeframe", e.activeFrame || false);
+            apf.xmldb.setAttribute(dbg, "activeframe", e.data || false);
+            dbg.topframe = e.data || null;
         });
     }
 }
