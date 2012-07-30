@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var CoreUtil = require("core/util");
 
 var Save = require("ext/save/save");
 var Util = require("ext/revisions/revisions_util");
@@ -133,7 +134,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             };
         }
 
-        if (!this.isNewPage(page)) {
+        if (!CoreUtil.isNewPage(page)) {
             this.setSaveButtonCaption();
         }
 
@@ -151,7 +152,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
     onDocChange: function(e, doc) {
         var page = doc.$page;
-        if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
+        if (page && this.isAutoSaveEnabled && !CoreUtil.isNewPage(page)) {
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
                 self.setSaveButtonCaption();
@@ -159,10 +160,6 @@ module.exports = ext.register("ext/autosave/autosave", {
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
-    },
-
-    isNewPage: function(page) {
-        return parseInt(page.$model.data.getAttribute("newfile"), 10) === 1;
     },
 
     setSaveButtonCaption: function(page) {

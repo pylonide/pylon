@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 //Core dependencies
 var ide = require("core/ide");
 var ext = require("core/ext");
+var CoreUtil = require("core/util");
 
 // APF dependencies
 var editors = require("ext/editors/editors");
@@ -261,7 +262,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $switchToPageModel: function(page) {
-        if (!page || !Util.pageIsCode(page)) {
+        if (!Util.pageIsCode(page)) {
             return;
         }
 
@@ -278,7 +279,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && window.lstRevisions && !this.isNewPage(page)) {
+        if (page.$showRevisions === true && window.lstRevisions && !CoreUtil.isNewPage(page)) {
             var selection = lstRevisions.selection;
             var node = model.data.firstChild;
             if (selection && selection.length === 0 && page.$selectedRevision) {
@@ -348,10 +349,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         var doc = data.doc;
-        var page = doc.$page;
+        var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
-        if (!this.isNewPage(page)) {
+        if (!CoreUtil.isNewPage(page)) {
             ide.send({
                 command: "revisions",
                 subCommand: "getRevisionHistory",
@@ -707,7 +708,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     populateModel: function(revObj, model) {
         var page = tabEditors.getPage();
-        if (this.isNewPage(page) || !Util.pageIsCode(page)) {
+        if (CoreUtil.isNewPage(page) || !Util.pageIsCode(page)) {
             return;
         }
 
@@ -1183,10 +1184,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.populateModel(revObj, this.model);
-    },
-
-    isNewPage: function(page) {
-        return parseInt(page.$model.data.getAttribute("newfile"), 10) === 1;
     },
 
     show: function() {
