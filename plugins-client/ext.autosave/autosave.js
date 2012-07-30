@@ -31,9 +31,15 @@ module.exports = ext.register("ext/autosave/autosave", {
     docChangeTimeout: null,
     docChangeListeners: {},
 
+    /** related to: Autosave#onExternalChange
+     * Autosave#Autosave -> Array
+     * Holds the list of filepaths that have ben changed in the server from an
+     * external source.
+     **/
+    changedPaths: [],
+
     hook: function() {
         var self = this;
-
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
@@ -70,7 +76,6 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-        ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
@@ -82,13 +87,13 @@ module.exports = ext.register("ext/autosave/autosave", {
     onBeforeSaveWarning: function(e) {
         var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
         if (!isNewFile && this.isAutoSaveEnabled) {
-            this.save();
+            this.save(e.doc.$page);
             return false;
         }
     },
 
-    /** related to: Revisions#showQuestionWindow
-     * Revisions#onExternalChange(e) -> Boolean
+    /** related to: Autosave#showQuestionWindow
+     * Autosave#onExternalChange(e) -> Boolean
      * - e(Object): Event object
      *
      * This is the listener to the file watcher event. It is fired when a file is
@@ -173,16 +178,16 @@ module.exports = ext.register("ext/autosave/autosave", {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
                 if (btnSave.currentState !== SAVING) {
-                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                    apf.setStyleClass(saveStatus, "saving", ["saved"]);
                     btnSave.currentState = SAVING;
                     btnSave.setCaption("Saving");
                 }
             }
             else if (!hasChanged) {
                 if (btnSave.currentState !== SAVED) {
-                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                    apf.setStyleClass(saveStatus, "saved", ["saving"]);
                     btnSave.currentState = SAVED;
                     btnSave.setCaption("Changes saved");
                 }
@@ -275,15 +280,16 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
-            
+
         this.save(tabEditors.getPage());
     },
 
+
     /**
-     * Revisions#save([page])
+     * Autosave#save([page])
      * - page(Object): Page that contains the document to be saved. In case it is
      * not provided, the current one will be used
-     * 
+     *
      * Prompts a save of the desired document.
      **/
     save: function(page, forceSave) {
@@ -300,8 +306,10 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
+        var _self = this;
         Save.quicksave(page, function() {
             stripws.enable();
+            _self.setSaveButtonCaption(page);
         }, true);
     },
 
@@ -315,17 +323,11 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (this.$onCloseFileFn)
             ide.removeEventListener("closefile", this.$onCloseFileFn);
 
-        if (this.$onFileSaveFn)
-            ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
-
         if (this.$onSwitchFileFn)
             ide.removeEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         if (this.$onAfterSwitchFn)
             ide.removeEventListener("tab.afterswitch", this.$onAfterSwitchFn);
-
-        if (this.$afterSelectFn)
-            lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
 
         if (this.$onExternalChange)
             ide.removeEventListener("beforewatcherchange", this.$onExternalChange);
@@ -344,17 +346,11 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (this.$onCloseFileFn)
             ide.addEventListener("closefile", this.$onCloseFileFn);
 
-        if (this.$onFileSaveFn)
-            ide.addEventListener("afterfilesave", this.$onFileSaveFn);
-
         if (this.$onSwitchFileFn)
             ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
 
         if (this.$onAfterSwitchFn)
             ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
-
-        if (this.$afterSelectFn)
-            lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
 
         if (this.$onExternalChange)
             ide.addEventListener("beforewatcherchange", this.$onExternalChange);
@@ -432,4 +428,3 @@ module.exports = ext.register("ext/autosave/autosave", {
     }
 });
 });
-
