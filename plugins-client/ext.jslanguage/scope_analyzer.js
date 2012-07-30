@@ -573,6 +573,22 @@ handler.analyze = function(doc, ast, callback) {
                         level: 'warning',
                         message: "Applying 'new' to require()."
                     });
+                },
+                'Op("instanceof", PrefixOp("!", _), _)', function() {
+                    markers.push({
+                        pos: this.getPos(),
+                        type: 'warning',
+                        level: 'warning',
+                        message: "Should be !(... instanceof ...)."
+                    });
+                },
+                'Op("in", PrefixOp("!", _), _)', function() {
+                    markers.push({
+                        pos: this.getPos(),
+                        type: 'warning',
+                        level: 'warning',
+                        message: "Should be !(... in ...)."
+                    });
                 }
             );
         }
