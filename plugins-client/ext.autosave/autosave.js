@@ -32,13 +32,6 @@ module.exports = ext.register("ext/autosave/autosave", {
     docChangeTimeout: null,
     docChangeListeners: {},
 
-    /** related to: Autosave#onExternalChange
-     * Autosave#Autosave -> Array
-     * Holds the list of filepaths that have ben changed in the server from an
-     * external source.
-     **/
-    changedPaths: [],
-
     hook: function() {
         var self = this;
         settings.addSettings("General", markupSettings);
@@ -72,12 +65,10 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
-        this.$onExternalChange = this.onExternalChange.bind(this);
         this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
 
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
 
@@ -91,27 +82,6 @@ module.exports = ext.register("ext/autosave/autosave", {
             this.save(e.doc.$page);
             return false;
         }
-    },
-
-    /** related to: Autosave#showQuestionWindow
-     * Autosave#onExternalChange(e) -> Boolean
-     * - e(Object): Event object
-     *
-     * This is the listener to the file watcher event. It is fired when a file is
-     * modified by an external application, and it starts the chain of messaging
-     * events, starting with asking the server to send over the contents of the
-     * modified file as it is after the external changes.
-     **/
-    onExternalChange: function(e) {
-        // We want to prevent autosave to keep saving while we are resolving
-        // this query.
-        this.prevAutoSaveValue = this.isAutoSaveEnabled;
-        settings.model.setQueryValue("general/@autosaveenabled", false);
-
-        var path = Util.stripWSFromPath(e.path);
-        this.changedPaths.push(path);
-
-        return false;
     },
 
     onOpenFile: function(data) {
@@ -326,9 +296,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (this.$onAfterSwitchFn)
             ide.removeEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
-        if (this.$onExternalChange)
-            ide.removeEventListener("beforewatcherchange", this.$onExternalChange);
-
         if (this.$onBeforeSaveWarning)
             ide.removeEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
@@ -348,9 +315,6 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         if (this.$onAfterSwitchFn)
             ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
-
-        if (this.$onExternalChange)
-            ide.addEventListener("beforewatcherchange", this.$onExternalChange);
 
         if (this.$onBeforeSaveWarning)
             ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);

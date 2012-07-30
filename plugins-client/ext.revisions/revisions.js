@@ -66,6 +66,12 @@ module.exports = ext.register("ext/revisions/revisions", {
      */
     revisionQueue: {},
 
+    /** related to: Revisions#onExternalChange
+     * Holds the list of filepaths that have ben changed in the server from an
+     * external source.
+     **/
+    changedPaths: [],
+
     /** related to: Revisions#show
      * Revisions#toggle() -> Void
      *
@@ -332,6 +338,17 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
+        // We want to prevent autosave to keep saving while we are resolving
+        // this query.
+        this.prevAutoSaveValue = this.isAutoSaveEnabled;
+        settings.model.setQueryValue("general/@autosaveenabled", false);
+
+        var path = Util.stripWSFromPath(e.path);
+        this.changedPaths.push(path);
+
+        // Force initialization of extension (so that UI is available)
+        ext.initExtension(this);
+
         if (winQuestionRev.visible === true || this.isCollab())
             return;
 
