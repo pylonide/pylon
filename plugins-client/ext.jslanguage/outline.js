@@ -179,7 +179,7 @@ function extractOutline(doc, node) {
                 return false;
             results.push({
                 icon: 'event',
-                name: eventHandler.s[0].value + fargsToString(eventHandler.fargs),
+                name: eventHandler.s[0].value,
                 pos: this.getPos(),
                 displayPos: fixStringPos(doc, eventHandler.s),
                 items: extractOutline(doc, eventHandler.body)
@@ -257,6 +257,6 @@ var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(no
         };
     });
     return result;
-}
+};
 
 });
