@@ -127,7 +127,7 @@ exports.consoleTextHandler = function(e) {
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 
-                dbg.main.$debugger.$debugger.lookup(refs, false, function(body) {
+                dbg.main.lookup(refs, false, function(body) {
                     var out = [className || value, "{"];
                     for (var item, t = 0, i = 0; i < l; i++) {
                         item = body[refs[i]];

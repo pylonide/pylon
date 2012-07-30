@@ -42,7 +42,7 @@ module.exports = {
             if (!dbg.state)
                 return;
             var path = e.node.getAttribute("path");
-            var scriptId = _self.getScriptIdFromPath(path);
+            var scriptId = dbg.main.getScriptIdFromPath(path);
             if (!scriptId)
                 return;
 

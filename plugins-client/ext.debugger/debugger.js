@@ -74,6 +74,26 @@ module.exports = ext.register("ext/debugger/debugger", {
                 _self.continueScript("out");
             }
         });
+        commands.addCommand({
+            name: "evalInteractive",
+            bindKey: {mac: "Ctrl-Return", win: "Command-Return"},
+            exec: function(editor){
+                // todo execute selection in interactive window
+            },
+            isAvailable: function(editor, event) {
+                if (dbg.state != "stopped")
+                    return false;
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
+                    return false;
+                return true;
+            },
+            findEditor: function(editor) {
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
+                return editor;
+            }
+        });
 
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.send({
@@ -196,7 +216,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         ide.addEventListener("dbg.attached", function(dbgImpl) {
             if (!_self.inited)
                 ext.initExtension(_self);
-            _self.$debugger = dbgImpl;
+            _self.$dbgImpl = dbgImpl;
         })
         ide.addEventListener("afterCompile", this.$onAfterCompile.bind(this)); 
     },
@@ -280,42 +300,50 @@ module.exports = ext.register("ext/debugger/debugger", {
     },
 
     setFrame : function(frame) {
-        this.$debugger.setFrame(frame);
+        this.$dbgImpl.setFrame(frame);
     },
 
     loadScripts : function(callback) {
-        this.$debugger && this.$debugger.loadScripts(this.$mdlSources, callback);
+        this.$dbgImpl && this.$dbgImpl.loadScripts(this.$mdlSources, callback);
     },
 
     loadScript : function(script, callback) {
-        this.$debugger && this.$debugger.loadScript(script, callback);
+        this.$dbgImpl && this.$dbgImpl.loadScript(script, callback);
     },
 
     loadObjects : function(item, callback) {
-        this.$debugger && this.$debugger.loadObjects(item, callback);
+        this.$dbgImpl && this.$dbgImpl.loadObjects(item, callback);
     },
 
     loadFrame : function(frame, callback) {
-        this.$debugger && this.$debugger.loadFrame(frame, callback);
+        this.$dbgImpl && this.$dbgImpl.loadFrame(frame, callback);
     },
 
     continueScript : function(stepaction, stepcount, callback) {
         ide.dispatchEvent("beforecontinue");
 
-        this.$debugger && this.$debugger.continueScript(stepaction, stepcount || 1, callback);
+        this.$dbgImpl && this.$dbgImpl.continueScript(stepaction, stepcount || 1, callback);
     },
 
     suspend : function() {
-        this.$debugger && this.$debugger.suspend();
+        this.$dbgImpl && this.$dbgImpl.suspend();
     },
 
     evaluate : function(expression, frame, global, disableBreak, callback){
-        this.$debugger && this.$debugger.evaluate(expression, frame, global, disableBreak, callback);
+        this.$dbgImpl && this.$dbgImpl.evaluate(expression, frame, global, disableBreak, callback);
     },
 
     changeLive : function(scriptId, newSource, previewOnly, callback) {
-        this.$debugger && this.$debugger.changeLive(scriptId, newSource, previewOnly, callback);
+        this.$dbgImpl && this.$dbgImpl.changeLive(scriptId, newSource, previewOnly, callback);
     },
+    
+    getScriptIdFromPath: function(path) {
+        return this.$dbgImpl && this.$dbgImpl.getScriptIdFromPath(path);
+    },
+    
+    lookup: function(handles, includeSource, callback) {
+        this.$dbgImpl && this.$dbgImpl.lookup(handles, includeSource, callback);
+    }
 
 });
 

@@ -409,6 +409,10 @@ var v8DebugClient = exports.v8DebugClient = function() {
     this.suspend = function() {
         this.$v8dbg.suspend();
     };
+        
+    this.lookup = function(handles, includeSource, callback) {
+        this.v8dbg.lookup(handles, includeSource, callback);
+    };
   
     this.changeLive = function(scriptId, newSource, previewOnly, callback) {
         var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
