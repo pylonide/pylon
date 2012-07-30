@@ -30,7 +30,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     eventsEnabled : true,
     dirty         : true,
     nodes         : [],
-    
     arraySearchResults : [],
     arrayCache : [],
     arrayCacheLastSearch : [],
@@ -75,7 +74,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
     init : function() {
         var _self = this;
-        
+
         txtGoToFile.addEventListener("keydown", function(e) {
             if (!_self.eventsEnabled)
                 return;
@@ -115,6 +114,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         txtGoToFile.addEventListener("afterchange", function(e) {
             if (!_self.eventsEnabled)
                 return;
+            
             _self.filter(txtGoToFile.value);
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
@@ -170,7 +170,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.dirty = true;
         });
         
-        this.updateDatagrid();
+        this.updateDatagrid(true);
         
         this.nodes.push(winGoToFile);
     },
@@ -303,15 +303,24 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             dgGoToFile.select(selNode);
     },
     
-    updateDatagrid : function(){
+    updateDatagrid : function(init){
         var vp = dgGoToFile.$viewport;
         
+        if(!this.arraySearchResults)
+            return;
+        
         if (!this.arraySearchResults.length) {
-            dgGoToFile.clear("empty");
+            if (init || !txtGoToFile.value) {
+                dgGoToFile.clear("loading")
+                this.filter("");
+            }
+            else
+                dgGoToFile.clear("empty");
         }
         else {
             dgGoToFile.$removeClearMessage();
-            dgGoToFile.load(this.model.data);
+            if (!init)
+                dgGoToFile.load(this.model.data);
             
             vp.length = this.arraySearchResults.length;
             var limit = Math.ceil(vp.getHeight() / vp.$getItemHeight() + 2);
@@ -321,8 +330,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 vp.resize(Math.min(vp.length, 11));
             vp.change(0, vp.limit, true);
             
-            if (!dgGoToFile.selected)
-                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+            setTimeout(function(){
+                if (!dgGoToFile.selected) {
+                    dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                    txtGoToFile.focus();
+                }
+            });
         }
         
         if (!vp.length) {
