@@ -221,12 +221,14 @@ function asyncParForEach(array, fn, callback) {
 
     this.outline = function(event) {
         var _self = this;
+        var foundHandler = false;
         this.parse(function(ast) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
                         if (outline) {
-                            outline.ignoreFilter = event.data. ignoreFilter;
+                            foundHandler = true;
+                            outline.ignoreFilter = event.data.ignoreFilter;
                             return _self.sender.emit("outline", outline);
                         }
                         else {
@@ -239,6 +241,8 @@ function asyncParForEach(array, fn, callback) {
             }, function() {
             });
         }, true);
+        if (!foundHandler)
+            this.sender.emit("outline", { body: [] });
     };
 
     this.scheduleEmit = function(messageType, data) {

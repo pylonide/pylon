@@ -83,7 +83,7 @@ exports.removeInteractive = function (amlNode) {
             var type = file.getAttribute("type");
             require("core/util").question(
                 "Confirm Remove",
-                "You are about to remove the " + type + " " + name,
+                "You are about to remove the " + (type || "item") + " " + name,
                 "Do you want continue? (This change cannot be undone)",
                 function () { // Yes
                     amlNode.confirmed = true;

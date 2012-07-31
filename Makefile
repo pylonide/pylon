@@ -96,5 +96,4 @@ package_clean: helper_clean c9core ext
 package: helper c9core ext
 
 test:
-	$(MAKE) -C test
-	cp node_modules/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker
+	test/run-tests.sh	
