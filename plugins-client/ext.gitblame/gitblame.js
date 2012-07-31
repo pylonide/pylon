@@ -61,7 +61,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
         var lastSlash = path.lastIndexOf("/");
         var fileName = path.substr(lastSlash + 1);
-        var dirName = path.substring(ide.davPrefix.length + 1, lastSlash)
+        var dirName = path.substring(ide.davPrefix.length + 1, lastSlash);
         if (dirName == "/")
             dirName = ide.workspaceDir;
         else
@@ -120,7 +120,6 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         if (type != "-data" || !message.data) {
             return;
         }
-                console.log("formulateOutput-+",this.blamejs)
         var path = message.extra.path;
         var blamejs = this.blamejs[path];
 
@@ -162,10 +161,10 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             return;
         }
         var _self = this;
-        function addBlameGutter() { 
+        function addBlameGutter() {
             if (_self.waiting) {
-                textHash = _self.waiting.textHash
-                path = _self.waiting.path
+                textHash = _self.waiting.textHash;
+                path = _self.waiting.path;
                 _self.waiting = null;
             }
             // todo support showing blame for background tabs
@@ -176,7 +175,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             if (path != currentPath)
                 return;
 
-            var ace = editors.currentEditor.amlEditor.$editor
+            var ace = editors.currentEditor.amlEditor.$editor;
             if (!ace.blameGutter)
                 new _self.BlameGutter(ace);
 
@@ -193,7 +192,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         if (!this.BlameGutter) {
             this.waiting = {textHash: textHash, path: path};
             require(["ext/gitblame/blame_gutter"], function(module) {
-                this.BlameGutter = module.BlameGutter;
+                _self.BlameGutter = module.BlameGutter;
                 addBlameGutter();
             });
         } else {
