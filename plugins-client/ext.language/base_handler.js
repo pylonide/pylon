@@ -211,7 +211,7 @@ module.exports = {
     },
 
     /**
-     * Invoked when jumping to a defintiion
+     * Invoked when jumping to a definition
      * @return the position of the definition of the currently selected node
      */
     jumpToDefinition: function(doc, fullAst, pos, currentNode, callback) {
