@@ -9,6 +9,7 @@ var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword
 var debuggerPlugin = require("ext/debugger/debugger"); 
 var editors = require("ext/editors/editors");
+var Range = require("ace/range").Range;
 
 module.exports = (function () {
     
@@ -16,10 +17,11 @@ module.exports = (function () {
     var windowHtml = null;
     var datagridHtml = null;
     var currentExpression = null;
-    
+    var marker = null;
+    var isOpen = false;
+
     var hook = function () {
-        var self = this;
-        ext.initExtension(self);
+        ext.initExtension(this);
         
         // listen to changes that affect the debugger, so we can toggle the visibility based on this
         ide.addEventListener("dbg.changeState", checkDebuggerActive);
@@ -51,14 +53,12 @@ module.exports = (function () {
             // listen to the worker's response
             e.worker.on("inspect", function(event) {
                 if (!event || !event.data) {
-                    winLiveInspect.hide();
-                    return;
+                    return hide();
                 }
                 
                 // create an expression that the debugger understands
-                var expression = event.data;
-                if (expression) {
-                    liveWatch(expression);
+                if (event.data.value) {
+                    liveWatch(event.data);
                 }
             });
         });
@@ -103,7 +103,7 @@ module.exports = (function () {
             var height = rows[0].offsetHeight * rows.length;
             
             // add border of the container
-            height += (windowHtml.offsetHeight - windowHtml.scrollHeight);
+            height += (windowHtml.scrollHeight - windowHtml.offsetHeight);
             
             // find header
             var header = datagridHtml.querySelector(".headings");
@@ -219,7 +219,7 @@ module.exports = (function () {
             // debugger running
         }
         else if (self.winLiveInspect) {
-            winLiveInspect.hide();
+            hide();
         }
     };
     
@@ -265,7 +265,7 @@ module.exports = (function () {
                 ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
                 
                 // hide it, and set left / top so it gets positioned right when showing again
-                winLiveInspect.hide();
+                hide();
                 windowHtml.style.left = ev.clientX + "px";
                 windowHtml.style.top = (ev.clientY + 8) + "px";
             }, 250);
@@ -309,9 +309,7 @@ module.exports = (function () {
         if (winLiveInspect.visible) {
             // if we are visible, then give the user 400 ms to get back into the window
             // otherwise hide it
-            activeTimeout = setTimeout(function () {
-                winLiveInspect.hide();
-            }, 750);
+            activeTimeout = setTimeout(hide, 750);
         }
         else {
             // if not visible? then just clear the timeout
@@ -324,13 +322,15 @@ module.exports = (function () {
      * When clicking in the editor window, hide live inspect
      */
     var onEditorClick = function (ev) {
-        winLiveInspect.hide();
+        hide(ev.editor);
     };
     
     /**
      * Execute live watching
      */
-    var liveWatch = function (expr) {
+    var liveWatch = function (data) {
+        addMarker(data.pos);
+        var expr = data.value;
         // already visible, and same expression?
         if (winLiveInspect.visible && expr === currentExpression) {
             return;
@@ -370,6 +370,27 @@ module.exports = (function () {
             // resize the window
             resizeWindow();
         });
+    };
+    
+    var hide = function () {
+        isOpen = false;
+        winLiveInspect.hide();
+        if (marker) {
+            marker.session.removeMarker(marker.id);
+            marker = null;
+        }
+    };
+    
+    var addMarker = function (pos) {
+        if (marker) {
+            marker.session.removeMarker(marker.id);
+        }
+        var session = ceEditor.$editor.session;
+        var range = new Range(pos.sl, pos.sc, pos.el, pos.ec);
+        marker = {
+            session: session,
+            id: session.addMarker(range, "ace_bracket", "text", true)
+        };
     };
     
     var getNumericProperties = function (obj) {
