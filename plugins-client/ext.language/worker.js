@@ -239,10 +239,10 @@ function asyncParForEach(array, fn, callback) {
                 else
                     next();
             }, function() {
+                if (!foundHandler)
+                    _self.sender.emit("outline", { body: [] });
             });
         }, true);
-        if (!foundHandler)
-            this.sender.emit("outline", { body: [] });
     };
 
     this.scheduleEmit = function(messageType, data) {
