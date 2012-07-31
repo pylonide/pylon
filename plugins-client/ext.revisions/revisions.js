@@ -30,7 +30,6 @@ var skin = require("text!ext/revisions/skin.xml");
 var Util = require("ext/revisions/revisions_util");
 var cssString = require("text!ext/revisions/style.css");
 
-// Other plugins
 var beautify = require("ext/beautify/beautify");
 var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
@@ -130,39 +129,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             );
         });
 
-        // Remove the revision file if the file is removed.
-        ide.addEventListener("removefile", function(data) {
-            ide.send({
-                command: "revisions",
-                subCommand: "removeRevision",
-                isFolder: data.isFolder,
-                path: Util.stripWSFromPath(data.path)
-            });
-        });
-
-        // Rename/move the revision file if the file is renamed/moved
-        ide.addEventListener("updatefile", function(data) {
-            if (!data || !data.path || !data.newPath)
-                return;
-
-            var path = Util.stripWSFromPath(data.path);
-            var newPath = Util.stripWSFromPath(data.newPath);
-
-            // Remove reference by path to old path in `rawRevisions` and
-            // create reference with the new path.
-            if (self.rawRevisions[path]) {
-                self.rawRevisions[newPath] = self.rawRevisions[path];
-                delete self.rawRevisions[path];
-            }
-
-            ide.send({
-                command: "revisions",
-                subCommand: "moveRevision",
-                path: path,
-                newPath: newPath
-            });
-        });
-
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
@@ -177,7 +143,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
 
-        this.defaultUser = { email: null };
+        // Remove the revision file if the file is removed.
+        ide.addEventListener("removefile", this.onFileRemove);
+
+        // Rename/move the revision file if the file is renamed/moved
+        ide.addEventListener("updatefile", this.onFileUpdate);
 
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
@@ -195,6 +165,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
+        this.defaultUser = { email: null };
+        this.offlineQueue = [];
+
         // Contains the revisions that have been saved during Cloud9 being offline.
         // Its items are not revision objects, but hold their own format (for
         // example, they have a generated timestamp of the moment of saving).
@@ -204,11 +177,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
             catch(e) {
                 console.error("Error loading revisions from local storage", e);
-                this.offlineQueue = [];
             }
-        }
-        else {
-            this.offlineQueue = [];
         }
 
         this.$initWorker();
@@ -376,6 +345,37 @@ module.exports = ext.register("ext/revisions/revisions", {
                 path: Util.getDocPath(page)
             });
         }
+    },
+
+    onFileUpdate: function(data) {
+        if (!data || !data.path || !data.newPath)
+            return;
+
+        var path = Util.stripWSFromPath(data.path);
+        var newPath = Util.stripWSFromPath(data.newPath);
+
+        // Remove reference by path to old path in `rawRevisions` and
+        // create reference with the new path.
+        if (self.rawRevisions[path]) {
+            self.rawRevisions[newPath] = self.rawRevisions[path];
+            delete self.rawRevisions[path];
+        }
+
+        ide.send({
+            command: "revisions",
+            subCommand: "moveRevision",
+            path: path,
+            newPath: newPath
+        });
+    },
+
+    onFileRemove: function(data) {
+        ide.send({
+            command: "revisions",
+            subCommand: "removeRevision",
+            isFolder: data.isFolder,
+            path: Util.stripWSFromPath(data.path)
+        });
     },
 
     onSwitchFile: function(e) {
@@ -1104,9 +1104,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revObj.previewCache) {
             revObj.previewCache = {};
         }
-        if (!revObj.previewCache[id]) {
+
             revObj.previewCache[id] = [newSession, ranges];
-        }
     },
 
     /**
