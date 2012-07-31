@@ -24,7 +24,7 @@
                       icon="console_close_btn.png"
                       class="dim22-22"
                       margin="1 0 0 1"
-                      onclick="require('ext/console/console').hide()"/>
+                      onclick="require('ext/console/console').hide();this.blur();"/>
                 </a:hbox>
                 <a:page id="pgConsole" caption="Console" name="console">
                     <a:text id="txtConsole"
