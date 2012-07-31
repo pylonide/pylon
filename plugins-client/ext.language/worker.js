@@ -325,8 +325,8 @@ function asyncParForEach(array, fn, callback) {
         var result;
         var _self = this;
         this.handlers.forEach(function(handler) {
-            if (handler.handlesLanguage(_self.$language)
-                && handler.isParsingSupported())
+            if (handler.handlesLanguage(_self.$language) &&
+                handler.isParsingSupported())
                 result = true;
         });
         return result;
@@ -488,7 +488,7 @@ function asyncParForEach(array, fn, callback) {
     /**
      * Request the AST node on the current position
      */
-    this.inspect = function (event) {
+    this.inspect = function(event) {
         var _self = this;
         
         if (this.cachedAst || !this.isParsingSupported()) {
@@ -584,15 +584,20 @@ function asyncParForEach(array, fn, callback) {
         if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-            for (var i = 0; i < _self.handlers.length; i++) {
-                var handler = _self.handlers[i];
+            asyncForEach(this.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
-                    if (response)
-                        _self.sender.emit("jumpToDefinition", response);
+                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
+                        if (result)
+                            _self.sender.emit("jumpToDefinition", result);
+                        next();
+                    });
+                }
+                else {
+                    next();
                 }
             }
         });
+        }
     };
 
     this.sendVariablePositions = function(event) {
