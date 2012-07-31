@@ -180,8 +180,8 @@ module.exports = ext.register("ext/offline/offline", {
             });
 
             // Finally set the objects we need to make the calls on
-            fs.webdav = fakeWebdav;
-            davProject = fakeWebdav; //intended global
+            // fs.webdav = fakeWebdav;
+            davProject = fs.webdav; //intended global
         });
 
         /**
