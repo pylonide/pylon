@@ -208,7 +208,7 @@ module.exports = {
      */
     codeFormat: function(doc, callback) {
         callback();
-    }
+    },
 
     /**
      * Invoked when jumping to a defintiion

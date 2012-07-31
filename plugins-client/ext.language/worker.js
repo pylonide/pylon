@@ -358,11 +358,13 @@ function asyncParForEach(array, fn, callback) {
 
     this.outline = function(event) {
         var _self = this;
+        var foundHandler = false;
         this.parse(function(ast) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
                         if (outline) {
+                            foundHandler = true;
                             outline.ignoreFilter = event.data.ignoreFilter;
                             return _self.sender.emit("outline", outline);
                         }
@@ -373,6 +375,9 @@ function asyncParForEach(array, fn, callback) {
                 }
                 else
                     next();
+            }, function() {
+                if (!foundHandler)
+                    _self.sender.emit("outline", { body: [] });
             });
         }, true);
     };
@@ -595,9 +600,8 @@ function asyncParForEach(array, fn, callback) {
                 else {
                     next();
                 }
-            }
+            });
         });
-        }
     };
 
     this.sendVariablePositions = function(event) {

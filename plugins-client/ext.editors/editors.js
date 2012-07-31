@@ -747,7 +747,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
-        menus.addItemByPath("View/Font Size/", null, 199),
+        menus.addItemByPath("View/Font Size/", null, 290001),
         
         menus.addItemByPath("View/Font Size/Increase Font Size", new apf.item({
             command : "largerfont"
@@ -830,7 +830,7 @@ module.exports = ext.register("ext/editors/editors", {
 
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){
-                    var parent_path = apf.getDirname(path).replace(/\/$/, "");
+                    var parent_path = (apf.getDirname(path) || "").replace(/\/$/, "");
                     var expandEventListener = function(e) {
                         if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
                             // if the file has been loaded from the tree
