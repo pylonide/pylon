@@ -214,7 +214,7 @@ module.exports = {
             return;
         if (txtGoToFile.value.match(/^@/)) {
             this.lastOutlineText = txtGoToFile.value;
--           txtGoToFile.setValue(this.lastGoToFileText);
+            txtGoToFile.setValue(this.lastGoToFileText);
         }
         gotofile.filter(txtGoToFile.value, false, true);
         dgGoToFile.show();
