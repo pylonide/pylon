@@ -32,7 +32,7 @@ module.exports = {
 
     init: function() {
         var _self = this;
-        var modelName = "mdlDbgSources"
+        var modelName = "mdlDbgSources";
         var model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
         mdlDbgSources.load("<sources/>");

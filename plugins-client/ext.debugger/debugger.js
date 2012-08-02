@@ -159,7 +159,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                     flex : 3,
                     buttons : [
                         { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
-                        { caption: "Variables", ext : [name, "dbgVariable"], hidden: true},
+                        { caption: "Variables", ext : [name, "dbgVariable"], hidden: true}
                     ]
                 },
                 {
@@ -222,19 +222,16 @@ module.exports = ext.register("ext/debugger/debugger", {
             return dbgVariable;
         });
         
-        
-
 
         ide.addEventListener("dbg.attached", function(dbgImpl) {
             if (!_self.inited)
                 ext.initExtension(_self);
             _self.$dbgImpl = dbgImpl;
-        })
+        });
         ide.addEventListener("afterCompile", this.$onAfterCompile.bind(this)); 
     },
 
-    init : function(amlNode){
-        var _self = this;
+    init : function(amlNode) {        
         sources.init();
         breakpoints.init();
 

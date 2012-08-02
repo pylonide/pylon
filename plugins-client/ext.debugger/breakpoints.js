@@ -10,19 +10,33 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var dock   = require("ext/dockpanel/dockpanel");
+var dock = require("ext/dockpanel/dockpanel");
 var commands = require("ext/commands/commands");
+var sources = require("ext/debugger/sources");
 
 
 module.exports = {
     hook: function() {
         var _self = this;
         // register model
-        var modelName = "mdlDbgBreakpoints"
+        var modelName = "mdlDbgBreakpoints";
         this.model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, this.model);
         mdlDbgBreakpoints.load("<breakpoints/>");
-        
+
+        var updateTimeout = null;
+        mdlDbgBreakpoints.addEventListener("update", function(e) {
+            if (_self.$updating)
+                return;
+            console.log(e)
+            if (updateTimeout)
+                clearTimeout(updateTimeout)
+            updateTimeout = setTimeout(function() {
+                updateTimeout = null;
+                _self.$syncOpenFiles();
+            }, 200);
+        });
+
         ide.addEventListener("settings.load", function (e) {
             // restore the breakpoints from the IDE settings
             var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
@@ -33,6 +47,7 @@ module.exports = {
             }
             // bind it to the Breakpoint model
             mdlDbgBreakpoints.load(bpFromIde);
+            _self.$syncOpenFiles();
         });
 
         // register dock panel
@@ -48,47 +63,47 @@ module.exports = {
             ext.initExtension(dbg.main);
             return dbgBreakpoints;
         });
-        
-        // ide.addEventListener("afteropenfile", evHandler);
-        ide.addEventListener("afterfilesave", function(e) {
-            var page = e.nextPage;
-            if (!page || !page.$editor || !page.$editor.ceEditor)
-                return;
-            var ace = page.$editor.ceEditor.$editor
-            if (!ace.$breakpointListener)
-                _self.initEditor(ace);
-            
-            if (!ace.session.$breakpointListener)
-                _self.initSession(ace.session);
 
-            _self.updateSession(ace.session, page.$doc.getNode());
+        ide.addEventListener("afterfilesave", function(e) {
+            var doc = e.doc;
+            if (!doc || !doc.acesession)
+                return;
+            if (doc.acesession.$breakpoints.length)
+                _self.updateBreakpointModel(doc.acesession);
         });
+
         ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage;
             if (!page || !page.$editor || !page.$editor.ceEditor)
                 return;
-            var ace = page.$editor.ceEditor.$editor
+            var ace = page.$editor.ceEditor.$editor;
             if (!ace.$breakpointListener)
                 _self.initEditor(ace);
-            
+
             if (!ace.session.$breakpointListener)
                 _self.initSession(ace.session);
 
-            _self.updateSession(ace.session, page.$doc.getNode());
+            _self.updateSession(ace.session);
         });
     },
 
     init: function() {
         var _self = this;
         dbgBreakpoints.addEventListener("afterrender", function() {
-            lstBreakpoints.addEventListener("afterselect", function(e) {
-                if (e.selected) {
-                    _self.gotoBreakpoint(e.selected)
+            lstBreakpoints.$ext.addEventListener("click", function(e) {
+                var selected = lstBreakpoints.selected;
+                if (!selected || e.target == e.currentTarget)
+                    return;
+                var className = e.target.className;
+                if (className.indexOf("btnclose") != -1) {
+                    apf.xmldb.removeNode(selected);
+                } else if (className.indexOf("checkbox") == -1) {
+                    _self.gotoBreakpoint(selected);
                 }
             });
-            
+
             lstBreakpoints.addEventListener("aftercheck", function(e) {
-                _self.setBreakPointEnabled(e.xmlNode, 
+                _self.setBreakPointEnabled(e.xmlNode,
                     apf.isTrue(e.xmlNode.getAttribute("enabled")));
             });
         });
@@ -99,15 +114,16 @@ module.exports = {
             });
         });
     },
-    
+
     initEditor: function(editor) {
         var _self = this;
+
         var el = document.createElement("div");
         editor.renderer.$gutter.appendChild(el);
         el.style.cssText = "position:absolute;top:0;bottom:0;left:0;width:18px;cursor:pointer"
-        
+
         editor.on("guttermousedown", editor.$breakpointListener = function(e) {
-            if (!editor.isFocused())
+            if (e.getButton()) // !editor.isFocused()
                 return;
             var gutterRegion = editor.renderer.$gutterLayer.getRegion(e);
             if (gutterRegion != "markers")
@@ -116,144 +132,154 @@ module.exports = {
 
             var session = editor.session;
             var bp = session.getBreakpoints()[row];
-            if (!bp)
-                bp = " ace_breakpoint ";
-            else if(bp.indexOf("disabled") == -1)
-                bp = " ace_breakpoint disabled ";
-            else
-                bp = null;
+            var i = bp ? bp.indexOf("disabled") == -1 ? 1 : 2 : 0;
+            if (e.getShiftKey())
+                i = (i + 1) %3;
+            bp = [" ace_breakpoint ", " ace_breakpoint disabled ", null][i];
 
             session.setBreakpoint(row, bp);
-            
-            session.getBreakpoints();
-            session.c9doc.getNode();
+            _self.updateBreakpointModel(session);
         });
     },
     initSession: function(session) {
         session.$breakpointListener = function(e) {
-        	var delta = e.data;
-			var range = delta.range;
-			var len, firstRow, f1;
-            
+            if (!this.c9doc.isInited || !this.$breakpoints.length)
+                return;
+            var delta = e.data;
+            var range = delta.range;
             if (range.end.row == range.start.row)
                 return;
-			
-            len = range.end.row - range.start.row;
-			if (delta.action == "insertText") {
-				firstRow = range.start.column == 0 ? range.start.row: range.start.row + 1;
-			} else {
-				firstRow = range.start.row;
-			}
 
-			if (len > 0) {
-				args = Array(len);
-				args.unshift(firstRow, 0)
-				this.$breakpoints.splice.apply(this.$breakpoints, args);
-            } else if (len < 0) {
-                var rem = this.$breakpoints.splice(firstRow + 1, -len);
-				
-                if(!this.$breakpoints[firstRow]){
-					for (var i in rem)
-						if (rem[i]) {
-							this.$breakpoints[firstRow] = rem[i];
-							break;
-						}
-				}
-			}
+            var len, firstRow;
+            len = range.end.row - range.start.row;
+            if (delta.action == "insertText") {
+                firstRow = range.start.column ? range.start.row + 1 : range.start.row;
+            } else {
+                firstRow = range.start.row;
+            }
+
+            if (delta.action[0] == "i") {
+                var args = Array(len);
+                args.unshift(firstRow, 0);
+                this.$breakpoints.splice.apply(this.$breakpoints, args);
+            } else {
+                var rem = this.$breakpoints.splice(firstRow + 1, len);
+
+                if (!this.$breakpoints[firstRow]) {
+                    for (var i = rem.length; i--; ) {
+                        if (rem[i]) {
+                            this.$breakpoints[firstRow] = rem[i];
+                            break;
+                        }
+                    }
+                }
+            }
         }.bind(session);
         session.on("change", session.$breakpointListener);
     },
-    updateSession: function(session, node) {
+    updateSession: function(session) {
         var rows = [];
-        if (node) {
-            var path = node.getAttribute("path");
-            var scriptPath = path.slice(ide.davPrefix.length);
-            var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@scriptPath='" + scriptPath + "']");
+        var path = session.c9doc.getNode().getAttribute("path");
+        var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path='" + path + "']");
 
-            for (var i=0; i< breakpoints.length; i++) {
-                var bp = breakpoints[i]
-                var line = parseInt(bp.getAttribute("line"), 10);
-                var offset = parseInt(bp.getAttribute("lineoffset"), 10);
-                var enabled = apf.isTrue(bp.getAttribute("enabled"));
-                rows[line] = " ace_breakpoint " + enabled ? "" : "disabled ";
-            }
+        for (var i=0; i< breakpoints.length; i++) {
+            var bp = breakpoints[i];
+            var line = parseInt(bp.getAttribute("line"), 10);
+            var offset = parseInt(bp.getAttribute("lineoffset"), 10);
+            var enabled = apf.isTrue(bp.getAttribute("enabled"));
+            rows[line + offset] = " ace_breakpoint " + (enabled ? "" : "disabled ");
         }
         session.setBreakpoints(rows);
     },
-    
+
     gotoBreakpoint: function(bp) {
-        var line = parseInt(bp.getAttribute("line"), 10);
+        var row = parseInt(bp.getAttribute("line"), 10);
         var column = parseInt(bp.getAttribute("column"), 10);
-        if (isNaN(line)) line = null;
+        if (isNaN(row)) row = null;
         if (isNaN(column)) column = null;
-        var scriptPath = bp.getAttribute("scriptPath");
-        
-        
-        
+        var path = bp.getAttribute("path");
+
+        sources.show({
+            path: path,
+            row: row,
+            column: column
+        });
     },
-    
-    toggleBreakpoint : function(script, row, content) {
-        var scriptName = script.getAttribute("scriptname");
-        var bp = model.queryNode("breakpoint[@script='" + scriptName
+
+    removeBreakpoint: function(path, row) {
+        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path
             + "' and @line='" + row + "']");
-
-        if (bp) {
-            apf.xmldb.removeNode(bp);
-        }
-        else {
-            // filename is something like blah/blah/workspace/realdir/file
-            // we are only interested in the part after workspace for display purposes
-            var tofind = "/workspace/";
-            var path = script.getAttribute("path");
-            var displayText = path;
-            if (path.indexOf(tofind) > -1) {
-                displayText = path.substring(path.indexOf(tofind) + tofind.length);
-            }
-
-            var bp = apf.n("<breakpoint/>")
-                .attr("script", scriptName)
-                .attr("line", row)
-                .attr("text", displayText + ":" + (parseInt(row, 10) + 1))
-                .attr("lineoffset", 0)
-                .attr("content", content)
-                .attr("enabled", "true")
-                .node();
-            model.appendXml(bp);
-        }
+        bp && apf.xmldb.removeNode(bp);
     },
 
-    setBreakPointEnabled : function(node, value){
+    addBreakpoint: function(path, row, content) {
+        var displayText = path;
+        var tofind = ide.davPrefix;
+        if (path.indexOf(tofind) > -1) {
+            displayText = path.substring(path.indexOf(tofind) + tofind.length);
+        }
+
+        var bp = apf.n("<breakpoint/>")
+            .attr("path", path)
+            .attr("line", row)
+            .attr("text", displayText + ":" + (row + 1))
+            .attr("lineoffset", 0)
+            .attr("content", content)
+            .attr("enabled", "true")
+            .node();
+        mdlDbgBreakpoints.appendXml(bp);
+    },
+
+    removeBreakpoint: function(path, row) {
+        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path
+            + "' and @line='" + row + "']");
+        bp && apf.xmldb.removeNode(bp);
+    },
+
+    updateBreakpointModel: function(session) {
+        this.$updating = true;
+        var path = session.c9doc.getNode().getAttribute("path");
+        var breakpoints = session.$breakpoints;
+        var displayText = path;
+        var tofind = ide.davPrefix;
+        if (path.indexOf(tofind) == 0)
+            displayText = path.substring(tofind.length + 1);
+
+        var bpList = mdlDbgBreakpoints.queryNodes("breakpoint[@path='" + path + "']");
+        for (var i = bpList.length; i--; ) {
+            apf.xmldb.removeNode(bpList[i]);
+        }
+        // iterate over sparse array
+        breakpoints.forEach(function(breakpoint, row) {
+            if (!breakpoint)
+                return;
+            var bp = apf.n("<breakpoint/>")
+                .attr("path", path)
+                .attr("line", row)
+                .attr("text", displayText + ":" + (+row + 1))
+                .attr("lineoffset", 0)
+                .attr("content", session.getLine(row))
+                .attr("enabled", breakpoint.indexOf("disabled") == -1)
+                .node();
+            mdlDbgBreakpoints.appendXml(bp);
+        });
+
+        this.$updating = false;
+    },
+
+    setBreakPointEnabled : function(node, value) {
         node.setAttribute("enabled", value ? true : false);
     },
-    
-    $syncTree: function() {
-        if (this.inSync) return;
-        this.inSync = true;
-        var dbgFiles = mdlDbgSources.data.childNodes;
 
-        var workspaceDir = ide.workspaceDir;
-        for (var i=0,l=dbgFiles.length; i<l; i++) {
-            var dbgFile = dbgFiles[i];
-            var name = dbgFile.getAttribute("scriptname");
-            if (name.indexOf(workspaceDir) !== 0)
-                continue;
-            this.paths[name] = dbgFile;
+    $syncOpenFiles: function() {
+        // var tabFiles = ide.getAllPageModels();
+        var page = tabEditors.$activepage;
+        if (page && page.$editor && page.$editor.ceEditor) {
+            var session = page.$editor.ceEditor.$editor.session;
+            if (session.c9doc)
+                this.updateSession(session);
         }
-        var treeFiles = fs.model.data.getElementsByTagName("file");
-        var tabFiles = ide.getAllPageModels();
-        var files = tabFiles.concat(Array.prototype.slice.call(treeFiles, 0));
-
-        var davPrefix = ide.davPrefix;
-        for (var i=0,l=files.length; i<l; i++) {
-            var file = files[i];
-            var path = file.getAttribute("scriptname");
-
-            var dbgFile = this.paths[path];
-            if (dbgFile)
-                apf.b(file).attr("scriptid", dbgFile.getAttribute("scriptid"));
-        }
-        this.inSync = false;
-    },
-}
+    }
+};
 
 });
