@@ -50,9 +50,9 @@
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/46f9d8ffdb159a2c206d41ed6ad877f471bb1e2f"],
         "socket.io":           ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
         "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
-      , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#bebaf1f1ccfc1fac574595e9d6b9cc79ffe395ce"],
-        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#3af9c9cced6a4a3fc057d06b6d11095f8eca33fb"],
-        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#807409afa0b6b84f7d6fcdb38c68a4b3cccdc297"]
+      , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#0e8f88d880be5c1194108879f610dc6d2f688f9c"],
+        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#caaea501fdd48cab19ed65991960c931bec6bc66s"],
+        "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#420fb3c8fc100f5a376e87f3e101f571e9b75a17"]
 
     },
 
