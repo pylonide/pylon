@@ -34,7 +34,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     arrayCache : [],
     arrayCacheLastSearch : [],
 
-    isGeneric : window.cloud9config.workspaceId && window.cloud9config.workspaceId == "generic",
+    isGeneric : window.cloud9config.local && window.cloud9config.workspaceId && window.cloud9config.workspaceId == "generic",
     
     hook : function(){
         var _self = this;

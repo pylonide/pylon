@@ -47,9 +47,9 @@
       model     = "true">
         <a:vbox padding="10" edge="15 20 25 20">
             <h4>Generic workspaces can't use gotofile!</h4>
-            <p>Due to the size of your filesystem, we can't launch gotofile. We'll issue a fix for this shortly.</p>
+            <p>Due to the size of your filesystem, we can't launch gotofile. In the future, we will provide an update to resolve this limitation.</p>
             <p>Smaller workspaces and folders can continue to use gotofile.</p>
-      </a:vbox>
+       </a:vbox>
         <a:hbox edge="6 10 10" pack="end" padding="8">
             <a:button onclick = "winBlockGotoFile.close();" skin="btn-default-css3" class="btn-green">Got it</a:button>
         </a:hbox>
