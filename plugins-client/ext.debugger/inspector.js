@@ -157,7 +157,7 @@ exports.consoleTextHandler = function(e) {
 
 exports.showObject = function(xmlNode, ref, expression) {
     if (ref && ref.dataType == apf.ARRAY) {
-        dbg.sources.showDebugFile(ref[0], ref[1] + 1, 0, ref[4]);
+        dbg.sources.showDebugFile(ref[0], ref[1], 0, ref[4]);
     }
     else {
         require(["ext/quickwatch/quickwatch"], function(quickwatch) {

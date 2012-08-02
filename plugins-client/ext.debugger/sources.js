@@ -29,14 +29,14 @@ module.exports = {
             return dbgCallStack;
         });
     },
-    
+
     init: function() {
         var _self = this;
         var modelName = "mdlDbgSources"
         var model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
         mdlDbgSources.load("<sources/>");
-        
+
 
         ide.addEventListener("afterfilesave", function(e) {
             if (!dbg.state)
@@ -51,14 +51,14 @@ module.exports = {
                 //console.log("v8 updated", e);
             });
         });
-        
+
         ide.addEventListener("dbg.changeFrame", function(e) {
             e.data && _self.showDebugFrame(e.data);
             updateMarker(e.data);
         });
-        
+
         this.paths = {};
-        
+
         // stack view
         modelName = "mdlDbgStack";
         model = apf.nameserver.register("model", modelName, new apf.model());
@@ -69,20 +69,20 @@ module.exports = {
                 updateMarker(e.selected);
             });
         });
-        
+
         function addMarker(session, type, row) {
             var marker = session.addMarker(new Range(row, 0, row + 1, 0), "ace_" + type, "line");
             session.addGutterDecoration(row, type);
             session["$" + type + "Marker"] = {lineMarker: marker, row: row};
         }
-        
+
         function removeMarker(session, type) {
             var markerName = "$" + type + "Marker";
             session.removeMarker(session[markerName].lineMarker);
             session.removeGutterDecoration(session[markerName].row, type);
             session[markerName] = null;
         }
-        
+
         function updateMarker(frame) {
             var ceEditor = editors.currentEditor && editors.currentEditor.ceEditor;
             var session = ceEditor && ceEditor.$editor.session;
@@ -91,7 +91,7 @@ module.exports = {
 
             session.$stackMarker && removeMarker(session, "stack");
             session.$stepMarker && removeMarker(session, "step");
-            
+
             frame = frame || dbg.activeframe;
             if (frame) {
                 var path = ceEditor.xmlRoot.getAttribute("path");
@@ -112,7 +112,7 @@ module.exports = {
                 }
             }
         }
-        
+
         ide.addEventListener("dbg.changeState", function (e) {
             if (e.state != "stopped") {
                 mdlDbgStack.load("<frames></frames>");
@@ -124,38 +124,59 @@ module.exports = {
             updateMarker();
         });
     },
-    
-    showDebugFrame:  function(frame) {
-        var row = parseInt(frame.getAttribute("line")) + 1;
-        var column = parseInt(frame.getAttribute("column"));
-        var text = frame.getAttribute("name");
-        var path = frame.getAttribute("scriptPath");
 
-        if (path.substring(0, ide.davPrefix.length) == ide.davPrefix) {            
-            var file = fs.model.queryNode("//file[@path='" + path + "']") 
+    showDebugFrame:  function(frame) {
+        this.show({
+            row: parseInt(frame.getAttribute("line")),
+            column: parseInt(frame.getAttribute("column")),
+            text: frame.getAttribute("name"),
+            path: frame.getAttribute("scriptPath")
+        })
+    },
+
+    showDebugFile: function(scriptId, row, column, text) {
+        this.show({scriptId: scriptId, row: row, column: column, text: text})
+    },
+
+    /**
+     *  show file
+     *    options {path or scriptId, row, column}
+     */
+    show: function(options) {
+        var row = options.row + 1;
+        var column = options.column;
+        var text = options.text || "" ;
+        var path = options.path;
+        var scriptId = options.scriptId;
+
+        if (!path) {
+            var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
+            path = script && script.getAttribute("path");
+        } else {
+            var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+            scriptId = script && script.getAttribute("scriptid");
+        }
+
+        if (path && path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
+            var file = fs.model.queryNode("//file[@path='" + path + "']")
                 || fs.createFileNodeFromPath(path);
             editors.jump({
-                node    : file, 
-                row     : row, 
-                column  : column, 
+                node    : file,
+                row     : row,
+                column  : column,
                 text    : text,
                 animate : false
             });
-        } else {
-            var scriptId = frame.getAttribute("scriptid");
-            var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
-            if (!script)
-                return;
-            
+        } else if (scriptId) {
             var page = tabEditors.getPage(path);
-            
+
             if (page) {
                 editors.jump({
                     node    : page.xmlRoot,
                     page    : page,
-                    row     : row, 
-                    column  : column, 
-                    text    : text, 
+                    row     : row,
+                    column  : column,
+                    text    : text,
                     animate : false
                 });
             } else {
@@ -163,27 +184,22 @@ module.exports = {
                     .attr("name", path.split("/").pop())
                     .attr("path", path)
                     .attr("contenttype", "application/javascript")
-                    .attr("scriptid", script.getAttribute("scriptid"))
-                    .attr("scriptname", script.getAttribute("scriptname"))
+                    .attr("scriptid", scriptId)
                     .attr("debug", "1")
                     .attr("lineoffset", "0").node();
 
                 dbg.main.loadScript(script, function(source) {
                     var doc = ide.createDocument(node, source);
                     editors.jump({
-                        node    : node, 
-                        row     : row, 
-                        column  : column, 
-                        text    : text, 
+                        node    : node,
+                        row     : row,
+                        column  : column,
+                        text    : text,
                         doc     : doc
                     });
                 });
             }
         }
-    },
-    
-    showDebugFile: function(scriptId, row, column, text) {
-        console.log(scriptId, row, column, text)
     }
 }
 
@@ -194,4 +210,4 @@ module.exports = {
 
 
 
-  
+

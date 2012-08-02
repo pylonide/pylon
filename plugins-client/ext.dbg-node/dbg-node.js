@@ -156,6 +156,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         return [
             "<file scriptid='", script.id,
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
+            "' path='", apf.escapeXML(this.getPathFromScriptName(script.name)),
             "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
             "' lineoffset='", script.lineOffset,
             "' debug='true' />"
@@ -411,7 +412,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
         
     this.lookup = function(handles, includeSource, callback) {
-        this.v8dbg.lookup(handles, includeSource, callback);
+        this.$v8dbg.lookup(handles, includeSource, callback);
     };
   
     this.changeLive = function(scriptId, newSource, previewOnly, callback) {
