@@ -12,7 +12,7 @@ require("apf/elements/codeeditor");
 var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var dock   = require("ext/dockpanel/dockpanel");
+var dock = require("ext/dockpanel/dockpanel");
 var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/debugger/debugger.xml");
@@ -76,15 +76,27 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
         commands.addCommand({
             name: "evalInteractive",
-            bindKey: {mac: "Ctrl-Return", win: "Command-Return"},
-            exec: function(editor){
-                // todo execute selection in interactive window
+            bindKey: {mac: "Command-Return", win: "Ctrl-Return"},
+            hint:  "execute selection in interactive window",
+            exec: function(editor) {
+                var menu = dock.getButtons("ext/debugger/debugger", "dbInteractive")[0];
+                dock.layout.showMenu(menu.uniqueId);
+                dbInteractive.parentNode.set(dbInteractive);
+                
+                txtCode.focus();
+                var range = editor.getSelectionRange();
+                var val = range.isEmpty()
+                    ? editor.session.getLine(range.start.row)
+                    : editor.session.getTextRange(range);
+
+                txtCode.$editor.setValue(val.trim());
+                require("ext/debugger" + "/inspector").consoleTextHandler({keyCode:13,ctrlKey:true});
             },
             isAvailable: function(editor, event) {
                 if (dbg.state != "stopped")
                     return false;
                 if (event instanceof KeyboardEvent &&
-                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
+                 (!apf.activeElement || apf.activeElement != ceEditor))
                     return false;
                 return true;
             },
@@ -292,8 +304,8 @@ module.exports = ext.register("ext/debugger/debugger", {
     },
     
     $onAfterCompile : function(e) {       
-        var id = e.script.getAttribute("id");
-        var oldNode = mdlDbgSources.queryNode("//file[@id='" + id + "']");
+        var id = e.script.getAttribute("scriptid");
+        var oldNode = mdlDbgSources.queryNode("//file[@scriptid='" + id + "']");
         if (oldNode)
             mdlDbgSources.removeXml(oldNode);
         mdlDbgSources.appendXml(e.script);

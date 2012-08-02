@@ -118,7 +118,7 @@ module.exports = (function () {
             }
             
             // update height
-            winLiveInspect.setAttribute("height", height);
+            winLiveInspect.$ext.style.height = height + "px";
         }
     };
         
@@ -258,6 +258,7 @@ module.exports = (function () {
         
         if (dbg.state == 'stopped') {
             activeTimeout = setTimeout(function () {
+                activeTimeout = null;
                 if (!isCurrentFrame())
                     return;
                 
@@ -265,10 +266,12 @@ module.exports = (function () {
                 ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
                 
                 // hide it, and set left / top so it gets positioned right when showing again
-                hide();
+                if (!marker || !marker.range.contains(pos.row, pos.column)) {
+                    hide();
+                }
                 windowHtml.style.left = ev.clientX + "px";
                 windowHtml.style.top = (ev.clientY + 8) + "px";
-            }, 250);
+            }, 450);
         }
     };
     
@@ -277,7 +280,7 @@ module.exports = (function () {
      */
     var onDocumentMouseMove = function (ev) {
         if (!activeTimeout) {
-            return;   
+            return;
         }
         
         // see whether we hover over the editor or the quickwatch window
@@ -309,7 +312,9 @@ module.exports = (function () {
         if (winLiveInspect.visible) {
             // if we are visible, then give the user 400 ms to get back into the window
             // otherwise hide it
-            activeTimeout = setTimeout(hide, 750);
+            if (activeTimeout)
+                clearTimeout(activeTimeout);
+            activeTimeout = setTimeout(hide, 400);
         }
         else {
             // if not visible? then just clear the timeout
@@ -329,7 +334,7 @@ module.exports = (function () {
      * Execute live watching
      */
     var liveWatch = function (data) {
-        addMarker(data.pos);
+        addMarker(data);
         var expr = data.value;
         // already visible, and same expression?
         if (winLiveInspect.visible && expr === currentExpression) {
@@ -348,7 +353,7 @@ module.exports = (function () {
         if (mnuCtxEditor && mnuCtxEditor.visible) {
             return;
         }
-        
+
         // evaluate the expression in the debugger, and receive model as callback
         inspector.evaluate(expr, function (model) {
             // bind it to the datagrid
@@ -373,23 +378,35 @@ module.exports = (function () {
     };
     
     var hide = function () {
-        isOpen = false;
-        winLiveInspect.hide();
+        if (winLiveInspect.visible) {
+            winLiveInspect.hide();
+        }
         if (marker) {
             marker.session.removeMarker(marker.id);
             marker = null;
         }
+        if (activeTimeout) {
+            activeTimeout = clearTimeout(activeTimeout);
+        }
     };
     
-    var addMarker = function (pos) {
+    var addMarker = function (data) {
+        var pos = data.pos;
         if (marker) {
             marker.session.removeMarker(marker.id);
         }
+        
         var session = ceEditor.$editor.session;
+        if (pos.el != pos.sl && data.value.indexOf("\n") == -1) {
+            pos.el = pos.sl;
+            pos.ec = session.getLine(pos.sl).length;
+        }
+
         var range = new Range(pos.sl, pos.sc, pos.el, pos.ec);
         marker = {
             session: session,
-            id: session.addMarker(range, "ace_bracket", "text", true)
+            id: session.addMarker(range, "ace_bracket", "text", true),
+            range: range
         };
     };
     
