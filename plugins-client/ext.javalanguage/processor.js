@@ -32,7 +32,9 @@ var calculateOffset = function(doc, cursorPos) {
 };
 
 var calculatePosition = function(doc, offset) {
-    var row = 0, column, newLineLength = doc.getNewLineCharacter().length;;
+    var newLineLength = doc.getNewLineCharacter().length;
+    var row = 0;
+    var column = 0;
     while (offset > 0) {
       offset -= doc.getLine(row++).length;
       offset -= newLineLength; // consider the new line character(s)
@@ -41,8 +43,6 @@ var calculatePosition = function(doc, offset) {
       row--;
       offset += newLineLength; // add the new line again
       column = doc.getLine(row).length + offset;
-    } else {
-      column = 0;
     }
     return {
       row: row,
@@ -377,11 +377,7 @@ var convertToHierarchyTree = function(doc, root) {
         this.$saveFileAndDo(doGetHierarchy);
     };
 
-    this.analysisRequiresParsing = function() {
-        return false;
-    };
-
-     this.analyze = function(doc, fullAst /* null */, callback) {
+    this.analyze = function(doc, fullAst /* null */, callback) {
         var _self = this;
         var command = {
           command : "jvmfeatures",
