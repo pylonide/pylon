@@ -95,6 +95,9 @@ util.inherits(SearchPlugin, Plugin);
 
         var self = this;
         self.options = message;
+        
+        console.log("\nEXECUTING", args.command, args.join(" "), message.path);
+        
         this.pm.spawn("shell", {
             command: args.command,
             args: args,
@@ -241,7 +244,7 @@ util.inherits(SearchPlugin, Plugin);
         });
 
         excludeDirectories.forEach(function(pattern){
-            args.push("!", "-regex", ".*\\/" + pattern + "\\/.*");
+            args.push("!", "-regex", "'.*\\/" + pattern + "\\/.*'");
         });
 
         if (platform !== "darwin")
