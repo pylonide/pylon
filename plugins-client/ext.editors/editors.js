@@ -747,7 +747,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
-        menus.addItemByPath("View/Font Size/", null, 199),
+        menus.addItemByPath("View/Font Size/", null, 290001),
         
         menus.addItemByPath("View/Font Size/Increase Font Size", new apf.item({
             command : "largerfont"

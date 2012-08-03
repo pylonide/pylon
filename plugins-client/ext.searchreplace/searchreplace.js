@@ -265,10 +265,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (increment && !this.$matchCountTimer) {
             var iter = parseInt(oIter.innerHTML);
             var total = parseInt(oTotal.innerHTML.substr(3))
-            if (!isNaN(iter) && !isNaN(total)) {
-				iter += increment;
+            if (!isNaN(iter) && !isNaN(total) && total) {
+                iter += increment;
                 oIter.innerHTML = iter > total ? 1 : iter < 0 ? total : iter;
-			}
+            }
             return;
         }
 

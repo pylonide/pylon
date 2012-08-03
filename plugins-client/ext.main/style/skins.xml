@@ -3474,8 +3474,7 @@
     <a:style><![CDATA[
         .ace_editor {
           position: relative;
-            overflow: hidden;
-          font-family: Monaco, Menlo, Consolas, monospace;
+          overflow: hidden;
           color: black;
             -moz-user-select: -moz-none;
             -khtml-user-select: none;
@@ -11194,15 +11193,8 @@
             padding : 0;
         }
 
-        .tb_consoleInitial .sbtb_middle INPUT {
-            color : #a3a3a3;
+        .tb_console.tb_textboxInitial .input {
             font-size : 10px;
-        }
-
-        .tb_consoleFocus .sbtb_middle input,
-        .tb_consoleOver .sbtb_middle input,
-        .tb_console .sbtb_middle:hover input {
-            color           : #202020;
         }
 
         .tb_consoleDisabled .sbtb_middle {
