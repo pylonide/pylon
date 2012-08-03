@@ -96,8 +96,6 @@ util.inherits(SearchPlugin, Plugin);
         var self = this;
         self.options = message;
         
-        console.log("\nEXECUTING", args.command, args.join(" "), message.path);
-        
         this.pm.spawn("shell", {
             command: args.command,
             args: args,
