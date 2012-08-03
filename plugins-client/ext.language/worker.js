@@ -23,8 +23,6 @@ var WARNING_LEVELS = {
     info: 1
 };
 
-function K() {}
-
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
 
@@ -632,7 +630,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         this.handlers.forEach(function(handler) {
 			if (handler.handlesLanguage(_self.$language))
-				handler.onRenameBegin(_self.doc, K);
+				handler.onRenameBegin(_self.doc, function() {});
 		});
     };
 
