@@ -363,8 +363,7 @@ Scope.prototype.getNamesByKind = function(kind) {
 
 var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
-handler.complete = function(doc, fullAst, data, currentNode, callback) {
-    var pos = data.pos;
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
 

@@ -767,7 +767,8 @@ function asyncParForEach(array, fn, callback) {
             
                 asyncForEach(_self.handlers, function(handler, next) {
                     if (handler.handlesLanguage(_self.$language)) {
-                        handler.complete(_self.doc, ast, data, currentNode, function(completions) {
+                        handler.staticPrefix = data.staticPrefix;
+                        handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
                             if (completions)
                                 matches = matches.concat(completions);
                             next();
