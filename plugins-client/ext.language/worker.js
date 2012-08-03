@@ -23,6 +23,8 @@ var WARNING_LEVELS = {
     info: 1
 };
 
+function K() {}
+
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
 
@@ -630,7 +632,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         this.handlers.forEach(function(handler) {
 			if (handler.handlesLanguage(_self.$language))
-				handler.onRenameBegin(_self.doc);
+				handler.onRenameBegin(_self.doc, K);
 		});
     };
 
@@ -640,11 +642,13 @@ function asyncParForEach(array, fn, callback) {
 
         var oldId = data.oldId;
         var newName = data.newName;
+        var commited = false;
 
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
                 handler.commitRename(_self.doc, oldId, newName, function(response) {
                     if (response) {
+                        commited = true;
                         _self.sender.emit("refactorResult", response);
                     } else {
                         next();
@@ -654,7 +658,8 @@ function asyncParForEach(array, fn, callback) {
             else
                 next();
         }, function() {
-            _self.sender.emit("refactorResult", {success: true});
+            if (! commited)
+                _self.sender.emit("refactorResult", {success: true});
         });
     };
 

@@ -28,13 +28,13 @@ var retrieveFullIdentifier = function(text, pos) {
         buf.push(text[i]);
     }
     i++;
-    var text = buf.reverse().join("");
-    if (text.length == 0)
-        return null;
-    return {
-        sc: i,
-        text: text
-    };
+    text = buf.reverse().join("");
+    if (text.length)
+        return {
+            sc: i,
+            text: text
+        };
+    return null;
 };
 
 module.exports = {
@@ -118,15 +118,18 @@ module.exports = {
         var cursor = ace.getCursorPosition();
 
         var mainPos = data.pos;
-
-        var p = this.placeHolder = new PlaceHolder(ace.session, data.length, mainPos, data.others, "language_rename_main", "language_rename_other");
+        // Exclude the main position from others
+        var others = data.others.filter(function (o) {
+            return !(o.row === mainPos.row && o.column === mainPos.column);
+        });
+        var p = this.placeHolder = new PlaceHolder(ace.session, data.length, mainPos, others, "language_rename_main", "language_rename_other");
         if(cursor.row !== mainPos.row || cursor.column < mainPos.column || cursor.column > mainPos.column + data.length) {
             // Cursor is not "inside" the main identifier, move it there
             ace.moveCursorTo(mainPos.row, mainPos.column);
         }
         p.showOtherMarkers();
         if(this.ext.isContinuousCompletionEnabled())
-            this.ext.setContinuousCompletion(false);
+            this.ext.setContinuousCompletionEnabled(false);
         
         // Monkey patch
         if(!oldCommandKey) {
