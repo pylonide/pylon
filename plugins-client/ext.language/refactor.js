@@ -80,12 +80,12 @@ module.exports = {
             menus.addItemByPath("Tools/Rename Variable", this.mnuItem, 20000)
         );
         
-        commands.addCommand({
+        var command = commands.addCommand({
             name: "renameVar",
             hint: "Rename variable",
             bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
-            isAvailable : function(editor){
-                return editor && editor.amlEditor;
+            isAvailable : function(editor) {
+                return editor && editor.amlEditor && _self.enableVariableRename;
             },
             exec: function(editor) {
                 if(ext.disabled) return;
@@ -104,8 +104,7 @@ module.exports = {
                 enableVariableRename = true;
             }
         }
-
-        this.mnuItem.setAttribute('disabled', !enableVariableRename);
+        this.enableVariableRename = enableVariableRename;
     },
     
     enableVariableRefactor: function(data) {
