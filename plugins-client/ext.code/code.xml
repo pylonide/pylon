@@ -29,7 +29,7 @@
 
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
-      readonly          = "{(!stServerConnected.active and !require('core/ide').local) || [@loading] || require('core/ide') || (location.host and dbg.state and [@scriptid])}"
+      readonly          = "{(!stServerConnected.active and !require('core/ide').local) || [@loading] || (location.host and dbg.state and [@debug])}"
     />
 
     <a:menu id="mnuCtxEditor">

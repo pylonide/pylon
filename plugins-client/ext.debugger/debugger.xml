@@ -95,6 +95,7 @@
                   disabled          = "{!dbg.state}"
                   onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime          = "true"
+                  syntax            = "javascript"
                   border            = "0" 
                   model             = "{require('core/settings').model}" 
                   value             = "[auto/console/input]"

@@ -185,25 +185,24 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
 
     this.getScriptIdFromPath = function(path) {
-        if (path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
-            path = ide.workspaceDir + path.substr(ide.davPrefix.length);
-        }
-        var file = mdlDbgSources.queryNode("//file[@scriptname='" + path + "']");
-        if (!file) {
-            path = path.replace(/\//g, "\\")
-            file = mdlDbgSources.queryNode("//file[@scriptname='" + path + "']");
-        }
-        if (file)
-            return file.getAttribute("scriptid");
+        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        if (!script)
+            return;
+        return script.getAttribute("scriptid");
+    };
+    
+    this.getScriptnameFromPath = function(path) {
+        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        if (!script)
+            return;
+        return script.getAttribute("scriptname");
     };
 
     this.getPathFromScriptId = function(scriptId) {
         var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
         if (!script)
             return;
-        var path = ide.davPrefix + script.getAttribute("scriptname");
-        path = path.replace(/\\/g, "/"); // windows
-        return path;
+        return script.getAttribute("path");
     };
     
     this.getPathFromScriptName = function(scriptName) {
@@ -311,18 +310,18 @@ var v8DebugClient = exports.v8DebugClient = function() {
             if (xmlFrames.length && _self.$isSameFrameset(xmlFrames, frames)) {
                 for (i = 0, l = frames.length; i < l; i++)
                     _self.$updateFrame(xmlFrames[i], frames[i]);
-                _self.setFrame(xmlFrames[0]);
-            }
-            else {
+            } else {
                 var xml = [];
                 if (frames) {
                     for (i = 0, l = frames.length; i < l; i++)
                         _self.$buildFrame(frames[i], ref, xml);
                 }
                 model.load("<frames>" + xml.join("") + "</frames>");
-                model.data.firstChild.setAttribute("istop", true);
-                _self.setFrame(model.data.firstChild);
             }
+            
+            var topFrame = model.data.firstChild;
+            topFrame && topFrame.setAttribute("istop", true);
+            _self.setFrame(topFrame);
             callback();
         });
     };
@@ -337,7 +336,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
 
     this.loadScript = function(script, callback) {
-        var id    = script.getAttribute("scriptid");
+        var id = script.getAttribute("scriptid");
         var _self = this;
         this.$v8dbg.scripts(4, [id], true, function(scripts) {
             if (!scripts.length)
@@ -419,7 +418,11 @@ var v8DebugClient = exports.v8DebugClient = function() {
         var NODE_PREFIX = "(function (exports, require, module, __filename, __dirname) { ";
         var NODE_POSTFIX = "\n});";
         newSource = NODE_PREFIX + newSource + NODE_POSTFIX;
-        this.$v8dbg.changelive(scriptId, newSource, previewOnly, callback);
+        var _self = this;
+        this.$v8dbg.changelive(scriptId, newSource, previewOnly, function(e) {
+            callback(e);
+            _self.backtrace(function(){});
+        });
     };
     
     this.evaluate = function(expression, frame, global, disableBreak, callback){
@@ -505,20 +508,21 @@ var v8DebugClient = exports.v8DebugClient = function() {
         // so read all the breakpoints, then call the debugger to actually set them
         var allBreakpoints = model.queryNodes("breakpoint");
         allBreakpoints.forEach(function(bp) {
-            var script = ide.workspaceDir + "/" + bp.getAttribute("scriptPath");
+            var path = bp.getAttribute("path");
             var line = bp.getAttribute("line");
             var col = bp.getAttribute("column");
             
+            var scriptname = _self.getScriptnameFromPath(path);
+            
             // construct a nice 'Breakpoint' object
-            var v8bp = new Breakpoint(script, line, col);
+            var v8bp = new Breakpoint(scriptname, line, col);
             // attach it to the debugger
             v8bp.attach(_self.$v8dbg, function () {
                 _self.$bindV8BreakpointToModel(bp, v8bp);
-                
                 handleAdded();
             });
         });
-        
+
         // keep track of all breakpoints and check if they're really added
         var counter = 0;
         function handleAdded() {
@@ -645,26 +649,6 @@ var v8DebugClient = exports.v8DebugClient = function() {
         var id = node.getAttribute("script") + "|" + node.getAttribute("line");
         
         this.$v8breakpoints[id] = v8breakpoint;
-    };
-    
-    this.$getBreakpointXml = function(breakpoint, lineOffset, scriptId) {
-        var xml = [];
-        xml.push(
-            "<breakpoint",
-            " id='", breakpoint.$id,
-            "' text='", this.$strip(apf.escapeXML(breakpoint.source)), ":", (parseInt(breakpoint.line, 10) + 1),
-            "' script='", apf.escapeXML(breakpoint.source),
-            scriptId ? "' scriptid='" + scriptId : "",
-            "' lineoffset='", lineOffset || 0,
-            "' line='", breakpoint.line,
-            "' content='", apf.escapeXML(breakpoint.content || ""),
-            "' condition='", apf.escapeXML(breakpoint.condition || ""),
-            "' ignorecount='", breakpoint.ignoreCount || 0,
-            "' enabled='", breakpoint.enabled,
-            "' />"
-        );
-
-        return xml.join("");
     };
 
 }).call(v8DebugClient.prototype);

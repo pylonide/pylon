@@ -120,7 +120,7 @@ module.exports = {
 
         var el = document.createElement("div");
         editor.renderer.$gutter.appendChild(el);
-        el.style.cssText = "position:absolute;top:0;bottom:0;left:0;width:18px;cursor:pointer"
+        el.style.cssText = "position:absolute;top:0;bottom:0;left:0;width:18px;cursor:pointer";
 
         editor.on("guttermousedown", editor.$breakpointListener = function(e) {
             if (e.getButton()) // !editor.isFocused()
@@ -138,7 +138,7 @@ module.exports = {
             bp = [" ace_breakpoint ", " ace_breakpoint disabled ", null][i];
 
             session.setBreakpoint(row, bp);
-            _self.updateBreakpointModel(session);
+            _self.addBreakpointToModel(session, row);
         });
     },
     initSession: function(session) {
@@ -207,33 +207,36 @@ module.exports = {
     },
 
     removeBreakpoint: function(path, row) {
+        this.$updating = true;
         var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path
             + "' and @line='" + row + "']");
         bp && apf.xmldb.removeNode(bp);
+        this.$updating = false;
     },
 
-    addBreakpoint: function(path, row, content) {
+    addBreakpointToModel: function(session, row) {
+        this.$updating = true;
+        var path = session.c9doc.getNode().getAttribute("path");
         var displayText = path;
         var tofind = ide.davPrefix;
-        if (path.indexOf(tofind) > -1) {
+        if (path.indexOf(tofind) > -1)
             displayText = path.substring(path.indexOf(tofind) + tofind.length);
-        }
 
+        var className = session.$breakpoints[row];
+        if (!className)
+            return this.removeBreakpoint(path, row);
+        
+        var content = session.getLine(row);
         var bp = apf.n("<breakpoint/>")
             .attr("path", path)
             .attr("line", row)
             .attr("text", displayText + ":" + (row + 1))
             .attr("lineoffset", 0)
             .attr("content", content)
-            .attr("enabled", "true")
+            .attr("enabled", className.indexOf("disabled") == -1)
             .node();
         mdlDbgBreakpoints.appendXml(bp);
-    },
-
-    removeBreakpoint: function(path, row) {
-        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path
-            + "' and @line='" + row + "']");
-        bp && apf.xmldb.removeNode(bp);
+        this.$updating = false;
     },
 
     updateBreakpointModel: function(session) {
@@ -249,7 +252,7 @@ module.exports = {
         for (var i = bpList.length; i--; ) {
             apf.xmldb.removeNode(bpList[i]);
         }
-        // iterate over sparse array
+
         breakpoints.forEach(function(breakpoint, row) {
             if (!breakpoint)
                 return;

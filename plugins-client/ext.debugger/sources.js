@@ -92,7 +92,6 @@ module.exports = {
             session.$stackMarker && removeMarker(session, "stack");
             session.$stepMarker && removeMarker(session, "step");
 
-            frame = frame || dbg.activeframe;
             if (frame) {
                 var path = ceEditor.xmlRoot.getAttribute("path");
                 var framePath = frame.getAttribute("scriptPath");
@@ -116,12 +115,11 @@ module.exports = {
         ide.addEventListener("dbg.changeState", function (e) {
             if (e.state != "stopped") {
                 mdlDbgStack.load("<frames></frames>");
+               // updateMarker();
             }
         });
         ide.addEventListener("tab.afterswitch", function(e) {
-            if (!dbg.activeframe)
-                return;
-            updateMarker();
+            updateMarker(dbg.activeframe);
         });
     },
 

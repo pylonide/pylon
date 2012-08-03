@@ -499,19 +499,19 @@ function asyncParForEach(array, fn, callback) {
         if (this.cachedAst || !this.isParsingSupported()) {
             // find the current node based on the ast and the position data
             this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
-            // find a handler that can build an expression for this language
+                // find a handler that can build an expression for this language
                 var handler = _self.handlers.filter(function (h) {
-                return h.handlesLanguage(_self.$language) && h.buildExpression;
-            });
+                    return h.handlesLanguage(_self.$language) && h.buildExpression;
+                });
             
-            // then invoke it and build an expression out of this
-            if (handler && handler.length) {
-                var expression = {
-                    value: handler[0].buildExpression(node),
-                    pos: node.getPos()
-                };
-                this.scheduleEmit("inspect", expression);
-            }
+                // then invoke it and build an expression out of this
+                if (handler && handler.length) {
+                    var expression = {
+                        value: handler[0].buildExpression(node),
+                        pos: node.getPos()
+                    };
+                    _self.scheduleEmit("inspect", expression);
+                }
             });
         }
     };
