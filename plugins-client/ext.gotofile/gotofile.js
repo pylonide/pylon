@@ -34,19 +34,24 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     arrayCache : [],
     arrayCacheLastSearch : [],
 
+    isGeneric : window.cloud9config.local && window.cloud9config.workspaceId && window.cloud9config.workspaceId == "generic",
+    
     hook : function(){
         var _self = this;
 
         var mnuItem = new apf.item({
-        	command : "gotofile"
-	    });
+            command : "gotofile"
+        });
         
         commands.addCommand({
             name: "gotofile",
             hint: "search for a filename and jump to it",
             bindKey: {mac: "Command-E", win: "Ctrl-E"},
             exec: function () {
-                _self.toggleDialog(1);
+                if (!_self.isGeneric)
+                    _self.toggleDialog(1);
+                else
+                    winBlockGotoFile.show()
             }
         });
 
@@ -64,7 +69,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         ide.addEventListener("extload", function(){
-            _self.updateFileCache();
+            if (!_self.isGeneric) {
+                _self.updateFileCache();
+            }
         });
     },
     
@@ -377,7 +384,11 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
     
     gotofile : function(){
-        this.toggleDialog();
+        if (!this.isGeneric)
+            this.toggleDialog();
+        else
+            winBlockGotoFile.show();
+    
         return false;
     },
     
@@ -498,4 +509,3 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 });
 
 });
-
