@@ -423,7 +423,7 @@ function asyncParForEach(array, fn, callback) {
      * If the program contains a syntax error, the parser will try its best to still produce
      * an AST, although it will contain some problems. To avoid that those problems result in
      * invalid warning, let's filter out warnings that appear within a line or too after the
-     * syntax error. 
+     * syntax error.
      */
     function filterMarkersAroundError(ast, markers) {
         if (!ast || !ast.getAnnotation)
@@ -502,7 +502,7 @@ function asyncParForEach(array, fn, callback) {
             // find the current node based on the ast and the position data
             this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
                 // find a handler that can build an expression for this language
-                var handler = _self.handlers.filter(function (h) { 
+                var handler = _self.handlers.filter(function (h) {
                     return h.handlesLanguage(_self.$language) && h.buildExpression;
                 });
                 
@@ -658,7 +658,7 @@ function asyncParForEach(array, fn, callback) {
             else
                 next();
         }, function() {
-            if (! commited)
+            if (!commited)
                 _self.sender.emit("refactorResult", {success: true});
         });
     };
@@ -674,12 +674,12 @@ function asyncParForEach(array, fn, callback) {
             else
                 next();
         });
-    }
+    };
 
     this.onUpdate = function() {
         this.scheduledUpdate = false;
         var _self = this;
-        asyncForEach(this.handlers, function(handler, next) { 
+        asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language))
                 handler.onUpdate(_self.doc, next);
             else

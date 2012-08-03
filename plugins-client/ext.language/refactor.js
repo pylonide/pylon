@@ -29,12 +29,12 @@ var retrieveFullIdentifier = function(text, pos) {
     }
     i++;
     text = buf.reverse().join("");
-    if (text.length)
-        return {
-            sc: i,
-            text: text
-        };
-    return null;
+    if (text.length === 0)
+        return null;
+    return {
+        sc: i,
+        text: text
+    };
 };
 
 module.exports = {
