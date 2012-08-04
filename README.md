@@ -36,7 +36,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS `>= 0.6.15` (node 0.8.x will *not work* at the moment!)
+  * NodeJS `>= 0.6.16` (node 0.8.x will *not work* at the moment!)
   * NPM `>= 1.1.16`
 
 Install:
