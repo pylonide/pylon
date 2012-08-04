@@ -50,8 +50,8 @@
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/46f9d8ffdb159a2c206d41ed6ad877f471bb1e2f"],
         "socket.io":           ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
         "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
-      , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#0e8f88d880be5c1194108879f610dc6d2f688f9c"],
-        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#caaea501fdd48cab19ed65991960c931bec6bc66s"],
+      , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#de6a5645d11f72e4a348b135a0a4dd8fe2c379d1"],
+        "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#2350b4feeaaf209f388f8a2dae59fa4854b1df50"],
         "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#420fb3c8fc100f5a376e87f3e101f571e9b75a17"]
 
     },
