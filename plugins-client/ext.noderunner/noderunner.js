@@ -25,7 +25,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     NODE_VERSION: "auto",
 
-    init : function(){
+    init : function() {
         var _self = this;
         if (ide.connected) {
             this.queryServerState();
@@ -86,7 +86,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 this.nodePid = message.processRunning || 0;
                 stProcessRunning.setProperty("active", !!message.processRunning);
 
-                dbg.setProperty("strip", message.workspaceDir + "/");
                 ide.dispatchEvent("dbg.state", message);
                 break;
 

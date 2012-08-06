@@ -24,8 +24,14 @@ module.exports = {
         apf.setReference(modelName, this.model);
         mdlDbgBreakpoints.load("<breakpoints/>");
 
-        var updateTimeout = null;
+        var updateTimeout, remoteUpdateTimeout;
         mdlDbgBreakpoints.addEventListener("update", function(e) {
+            if (dbg.state && !remoteUpdateTimeout)
+                setTimeout(function() {
+                    remoteUpdateTimeout = null;
+                    dbg.main.updateBreakpoints();
+                }, 200);
+
             if (_self.$updating)
                 return;
             console.log(e)
@@ -221,10 +227,11 @@ module.exports = {
         var tofind = ide.davPrefix;
         if (path.indexOf(tofind) > -1)
             displayText = path.substring(path.indexOf(tofind) + tofind.length);
-
+        
+        this.removeBreakpoint(path, row);
         var className = session.$breakpoints[row];
         if (!className)
-            return this.removeBreakpoint(path, row);
+            return;
         
         var content = session.getLine(row);
         var bp = apf.n("<breakpoint/>")

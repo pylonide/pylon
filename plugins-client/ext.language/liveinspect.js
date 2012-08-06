@@ -260,9 +260,12 @@ module.exports = (function () {
             activeTimeout = setTimeout(function () {
                 activeTimeout = null;
                 if (!isCurrentFrame())
-                    return;
+                    return hide();
                 
                 var pos = ev.getDocumentPosition();
+                if (pos.column == ev.editor.session.getLine(pos.row).length)
+                    return hide();
+
                 ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
                 
                 // hide it, and set left / top so it gets positioned right when showing again

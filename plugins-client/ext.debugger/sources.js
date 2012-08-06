@@ -42,10 +42,11 @@ module.exports = {
             if (!dbg.state)
                 return;
             var path = e.node.getAttribute("path");
-            var scriptId = dbg.main.getScriptIdFromPath(path);
-            if (!scriptId)
+            var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+            if (!script)
                 return;
 
+            var scriptId = script.getAttribute("scriptid");
             var value = e.value || e.doc.getValue();
             dbg.main.changeLive(scriptId, value, false, function(e) {
                 //console.log("v8 updated", e);

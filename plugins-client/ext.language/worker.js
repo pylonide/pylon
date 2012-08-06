@@ -505,10 +505,10 @@ function asyncParForEach(array, fn, callback) {
                 });
             
                 // then invoke it and build an expression out of this
-                if (handler && handler.length) {
+                if (node && handler && handler.length) {
                     var expression = {
-                        value: handler[0].buildExpression(node),
-                        pos: node.getPos()
+                        pos: node.getPos(),
+                        value: handler[0].buildExpression(node)
                     };
                     _self.scheduleEmit("inspect", expression);
                 }

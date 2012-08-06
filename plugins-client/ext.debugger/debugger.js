@@ -223,10 +223,10 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
         
 
-        ide.addEventListener("dbg.attached", function(dbgImpl) {
+        ide.addEventListener("dbg.attached", function(e) {
             if (!_self.inited)
                 ext.initExtension(_self);
-            _self.$dbgImpl = dbgImpl;
+            _self.$dbgImpl = e.dbgImpl;
         });
         ide.addEventListener("afterCompile", this.$onAfterCompile.bind(this)); 
     },
@@ -234,10 +234,6 @@ module.exports = ext.register("ext/debugger/debugger", {
     init : function(amlNode) {        
         sources.init();
         breakpoints.init();
-
-        this.$mdlSources = mdlDbgSources;
-        this.$mdlBreakpoints = mdlDbgBreakpoints;
-        this.$mdlStack = mdlDbgStack;
     },
     
     activate : function(){
@@ -313,7 +309,7 @@ module.exports = ext.register("ext/debugger/debugger", {
     },
 
     loadScripts : function(callback) {
-        this.$dbgImpl && this.$dbgImpl.loadScripts(this.$mdlSources, callback);
+        this.$dbgImpl && this.$dbgImpl.loadScripts(callback);
     },
 
     loadScript : function(script, callback) {
@@ -345,13 +341,13 @@ module.exports = ext.register("ext/debugger/debugger", {
     changeLive : function(scriptId, newSource, previewOnly, callback) {
         this.$dbgImpl && this.$dbgImpl.changeLive(scriptId, newSource, previewOnly, callback);
     },
-    
-    getScriptIdFromPath: function(path) {
-        return this.$dbgImpl && this.$dbgImpl.getScriptIdFromPath(path);
-    },
-    
+
     lookup: function(handles, includeSource, callback) {
         this.$dbgImpl && this.$dbgImpl.lookup(handles, includeSource, callback);
+    },
+
+    updateBreakpoints: function() {
+        this.$dbgImpl && this.$dbgImpl.updateBreakpoints();
     }
 
 });
