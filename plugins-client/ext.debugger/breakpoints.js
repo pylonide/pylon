@@ -27,10 +27,10 @@ module.exports = {
         var updateTimeout, remoteUpdateTimeout;
         mdlDbgBreakpoints.addEventListener("update", function(e) {
             if (dbg.state && !remoteUpdateTimeout)
-                setTimeout(function() {
+                remoteUpdateTimeout = setTimeout(function() {
                     remoteUpdateTimeout = null;
                     dbg.main.updateBreakpoints();
-                }, 200);
+                }, 100);
 
             if (_self.$updating)
                 return;

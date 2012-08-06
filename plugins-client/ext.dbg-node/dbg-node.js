@@ -529,11 +529,12 @@ var v8DebugClient = exports.v8DebugClient = function() {
             bp.$location = bp.scriptname + "|" + bp.line + ":" + bp.column;
 
             var oldBp = createdBreakpoints[bp.$location];
-            delete createdBreakpoints[bp.$location];
-            // todo looks like enabled and condition doesn't seem to do anything. v8debug bug?
+
+            // enabled doesn't work with v8debug so we just skip those
             if (!bp.enabled)
                 return;
 
+            delete createdBreakpoints[bp.$location];
             if (oldBp && isEqual(oldBp, bp)) {
                 _self.$v8breakpoints[bp.$location] = oldBp;
             } else {
