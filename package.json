@@ -42,14 +42,14 @@
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/445767a5982d44b35b9e9061025d6f0d2fd4dad2"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/855302855ba9e2953f74f93cd5ea56af2b6bf543"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/df9a04c034b79088377b527208e003b564143508"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/85cbf72e387e293ae087337efc0cf220a4d016f1"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/01597eacd22ad660977d43c44b4001107117b8ea"],
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/46f9d8ffdb159a2c206d41ed6ad877f471bb1e2f"],
-        "socket.io":           ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
-        "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
+        "socket.io":    ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
+        "socket.io-client": ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
     },
 
     "repository" : {
