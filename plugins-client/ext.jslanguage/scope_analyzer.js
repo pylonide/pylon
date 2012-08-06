@@ -37,7 +37,6 @@ var GLOBALS = {
     "false"                  : true,
     "undefined"              : true,
     "null"                   : true,
-    "this"                   : true,
     "arguments"              : true,
     self                     : true,
     "Infinity"               : true,
@@ -49,7 +48,7 @@ var GLOBALS = {
     "else"                   : true,
     // Browser
     ArrayBuffer              : true,
-    ArrayBufferView          : true,
+    Attr                     : true,
     Audio                    : true,
     addEventListener         : true,
     applicationCache         : true,
@@ -162,8 +161,6 @@ var GLOBALS = {
     alert                    : true,
     confirm                  : true,
     console                  : true,
-    Debug                    : true,
-    opera                    : true,
     prompt                   : true,
     // Frameworks
     jQuery                   : true,
@@ -174,81 +171,14 @@ var GLOBALS = {
     dojox                    : true,
     dijit                    : true,
     apf                      : true,
-    // mootools
-    Assets                   : true,
-    Browser                  : true,
-    Chain                    : true,
-    Class                    : true,
-    Color                    : true,
-    Cookie                   : true,
-    Core                     : true,
     Document                 : true,
-    DomReady                 : true,
-    DOMReady                 : true,
-    Drag                     : true,
     Element                  : true,
-    Elements                 : true,
     Event                    : true,
-    Events                   : true,
-    Fx                       : true,
-    Group                    : true,
-    Hash                     : true,
-    HtmlTable                : true,
-    Iframe                   : true,
-    IframeShim               : true,
-    InputValidator           : true,
-    instanceOf               : true,
-    Keyboard                 : true,
-    Locale                   : true,
-    Mask                     : true,
+    KeyboardEvent            : true,
     MooTools                 : true,
-    Native                   : true,
-    Options                  : true,
-    OverText                 : true,
-    Request                  : true,
-    Scroller                 : true,
-    Slick                    : true,
-    Slider                   : true,
-    Sortables                : true,
-    Spinner                  : true,
-    Swiff                    : true,
-    Tips                     : true,
-    Type                     : true,
-    typeOf                   : true,
-    URI                      : true,
     Window                   : true,
-    // prototype.js
-    '$A'                     : true,
-    '$F'                     : true,
-    '$H'                     : true,
-    '$R'                     : true,
-    '$break'                 : true,
-    '$continue'              : true,
-    '$w'                     : true,
-    Abstract                 : true,
     Ajax                     : true,
-    Enumerable               : true,
     Field                    : true,
-    Form                     : true,
-    Insertion                : true,
-    ObjectRange              : true,
-    PeriodicalExecuter       : true,
-    Position                 : true,
-    Prototype                : true,
-    Selector                 : true,
-    Template                 : true,
-    Toggle                   : true,
-    Try                      : true,
-    Autocompleter            : true,
-    Builder                  : true,
-    Control                  : true,
-    Draggable                : true,
-    Draggables               : true,
-    Droppables               : true,
-    Effect                   : true,
-    Sortable                 : true,
-    SortableObserver         : true,
-    Sound                    : true,
     Scriptaculous            : true,
     // require.js
     define                   : true,
@@ -295,6 +225,33 @@ var GLOBALS = {
     unescape                 : true
 };
 
+var KEYWORDS = [
+    "break",
+    "const",
+    "continue",
+    "delete",
+    "do",
+    "while",
+    "export",
+    "for",
+    "in",
+    "function",
+    "if",
+    "else",
+    "import",
+    "instanceof",
+    "new",
+    "return",
+    "switch",
+    "this",
+    "throw",
+    "try",
+    "catch",
+    "typeof",
+    "void",
+    "with"
+];
+
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
@@ -307,7 +264,7 @@ var Variable = module.exports.Variable = function Variable(declaration) {
         this.declarations.push(declaration);
     this.uses = [];
     this.values = [];
-}
+};
 
 Variable.prototype.addUse = function(node) {
     this.uses.push(node);
@@ -374,7 +331,7 @@ Scope.prototype.isDeclared = function(name) {
 /**
  * Get possible values of a variable
  * @param name name of variable
- * @return Variable instance 
+ * @return Variable instance
  */
 Scope.prototype.get = function(name, kind) {
     var vars = this.getVars(kind);
@@ -404,14 +361,13 @@ Scope.prototype.getNamesByKind = function(kind) {
     return results;
 };
 
-var GLOBALS_ARRAY = Object.keys(GLOBALS);
+var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
-handler.complete = function(doc, fullAst, data, currentNode, callback) {
-    var pos = data.pos;
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
 
-    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    var matches = completeUtil.findCompletions(identifier, SCOPE_ARRAY);
     callback(matches.map(function(m) {
         return {
           name        : m,
@@ -463,9 +419,9 @@ handler.analyze = function(doc, ast, callback) {
                 },
                 'VarDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
-                    while (b.e.rewrite('Assign(_, _)'))
+                    while (b.e.isMatch('Assign(_, _)'))
                         b.e = b.e[1];
-                    if (!b.e.rewrite('Function(_, _, _)'))
+                    if (!b.e.isMatch('Function(_, _, _)'))
                         mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
@@ -530,7 +486,8 @@ handler.analyze = function(doc, ast, callback) {
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
                             mustUseVars.push(v);
                     });
-                    scopeAnalyzer(newScope, b.body, null, inCallback === IN_CALLBACK_DEF ? IN_CALLBACK_BODY : 0);
+                    var inBody = inCallback === IN_CALLBACK_DEF || isCallback(node);
+                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
@@ -573,22 +530,6 @@ handler.analyze = function(doc, ast, callback) {
                         level: 'warning',
                         message: "Applying 'new' to require()."
                     });
-                },
-                'Op("instanceof", PrefixOp("!", _), _)', function() {
-                    markers.push({
-                        pos: this.getPos(),
-                        type: 'warning',
-                        level: 'warning',
-                        message: "Should be !(... instanceof ...)."
-                    });
-                },
-                'Op("in", PrefixOp("!", _), _)', function() {
-                    markers.push({
-                        pos: this.getPos(),
-                        type: 'warning',
-                        level: 'warning',
-                        message: "Should be !(... in ...)."
-                    });
                 }
             );
         }
@@ -618,12 +559,30 @@ handler.analyze = function(doc, ast, callback) {
 
 var isCallbackCall = function(node) {
     var result;
-    node.rewrite("Call(PropAccess(_, p), [_])", function(b) {
-        if (b.p.value === "forEach" || b.p.value === "map")
+    node.rewrite(
+        'Call(PropAccess(_, p), args)', function(b) {
+            if (b.args.length === 1 && (b.p.value === "forEach" || b.p.value === "map" ||
+                b.p.value == "filter"))
+                result = true;
+        },
+        'Call(Var("require"), [_])', function(b) {
             result = true;
-    });
+        }
+    );
     return result || outline.tryExtractEventHandler(node);
-}
+};
+
+var isCallback = function(node) {
+    var result;
+    node.rewrite(
+        'Function("", [Farg(farg)])', function(b) {
+            var name = b.farg.value;
+            if (name === 'err' || name === 'error' || name === 'exc')
+                result = true;
+        }
+    );
+    return result;
+};
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
@@ -634,13 +593,13 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     function highlightVariable(v) {
         if (!v)
             return;
-        v.declarations.forEach(function(decl) {    
-            if(decl.getPos())    
+        v.declarations.forEach(function(decl) {
+            if(decl.getPos())
                 markers.push({
                     pos: decl.getPos(),
                     type: 'occurrence_main'
                 });
-        });    
+        });
         v.uses.forEach(function(node) {
             markers.push({
                 pos: node.getPos(),
@@ -691,7 +650,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     var v;
-    var mainNode;    
+    var mainNode;
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
