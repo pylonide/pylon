@@ -36,7 +36,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS `>= 0.6.15` (node 0.8.x will *not work* at the moment!)
+  * NodeJS `>= 0.6.16` (node 0.8.x will *not work* at the moment!)
   * NPM `>= 1.1.16`
 
 Install:
@@ -55,12 +55,7 @@ Install:
     cd cloud9
     sm install
     
-**// Super important for Linux users!**
 
-If you are having issues with installing the o3/libxml dependency, be sure to check this issue for possible solutions:
-https://github.com/ajaxorg/node-libxml/issues/3
-
-**// end super important notice**
 
 The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
 and run `bin/cloud9.sh` to start:
