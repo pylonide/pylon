@@ -8,7 +8,7 @@ var SPLIT_REGEX = /[^a-zA-Z_0-9\$]+/;
 var completer = module.exports = Object.create(baseLanguageHandler);
     
 completer.handlesLanguage = function(language) {
-    return true;
+    return language !== "java";
 };
 
 // For the current document, gives scores to identifiers not on frequency, but on distance from the current prefix

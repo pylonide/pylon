@@ -11,7 +11,7 @@ var globalWordFiles = {}; // word => [path]
 var completer = module.exports = Object.create(baseLanguageHandler);
 
 completer.handlesLanguage = function(language) {
-    return true;
+    return language !== "java";
 };
 
 function frequencyAnalyzer(path, text, identDict, fileDict) {

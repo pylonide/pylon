@@ -800,7 +800,7 @@ function asyncParForEach(array, fn, callback) {
                             return 1;
                         else
                             return 0;
-                    });                
+                    });
                     // Removed for the java completion result caching cases
                     // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
                     _self.sender.emit("complete", {
