@@ -773,8 +773,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         this.findTabs(bar.$dockData.uniqueId, true)
             .each(function(tab){
-                if (!tab.activepage)
-                    tab.set(tab.getPage(0));
+                if (!tab.activepage) {
+                    var page = tab.getPage(0);
+                    tab.set(page);
+                    page.$active = true;
+                }
+                else {
+                    tab.getPage(tab.activepage).$active = true;
+                }
             });
         
         if (false && showAnimation && this.$cbAnimate())
