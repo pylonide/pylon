@@ -57,7 +57,8 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("afteroffline", function(){
             stServerConnected.deactivate();
             ide.onLine = false;
-            ide.readonly = true;
+            // Next line commented because it was causing the IDE to be always in read-only mode
+            // ide.readonly = true;
             apf.setStyleClass(logobar.$ext, "offline");
 
             if (ide.local)
