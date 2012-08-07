@@ -134,7 +134,7 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensi
         if (index === -1) {
             if (node.items)
                 results = treeSearch(node.items, keyword, caseInsensitive, results, head);
-            continue
+            continue;
         }
         var result = {
             items: node.items ? treeSearch(node.items, keyword, caseInsensitive) : []

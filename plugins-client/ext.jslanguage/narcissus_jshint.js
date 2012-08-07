@@ -16,10 +16,6 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-handler.analysisRequiresParsing = function() {
-    return false;
-};
-
 handler.analyze = function(doc, ast, callback) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");

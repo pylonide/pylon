@@ -34,24 +34,19 @@ module.exports = {
     },
     
     /**
-     * Returns whether the completion engine requires an AST representation of the code
+     * Determine if the language component supports parsing.
+     * Assumed to be true if at least one hander for the language reports true.
      */
-    completionRequiresParsing: function() {
+    isParsingSupported: function() {
         return false;
     },
 
     /**
-     * Returns whether the analysis engine requires an AST representation of the code
-     */
-    analysisRequiresParsing: function() {
-        return true;
-    },
-
-    /**
-     * Returns whether the analysis engine requires an AST representation of the code
+     * Returns a regular expression for identifiers.
+     * If not specified, /[A-Za-z0-9\$\_]/ is used.
      */
     getIdentifierRegex: function() {
-        return /[A-Za-z0-9\$\_]/;
+        return null;
     },
     
     // PARSING AND ABSTRACT SYNTAX CALLBACKS
@@ -75,6 +70,16 @@ module.exports = {
     },
 
     findNode: function(ast, pos, callback) {
+        callback();
+    },
+    
+    /**
+     * Returns the  a tree node at a certain row and col,
+     * e.g. using the node.getPos() function of treehugger.
+     * @returns an object with properties sl, the start line, sc, the start
+     *          column, el, the end line, and ec, the end column.
+     */
+    getPos: function(node, callback) {
         callback();
     },
 
@@ -143,11 +148,10 @@ module.exports = {
      * Performs code completion for the user based on the current cursor position
      * @param doc the Document object repersenting the source
      * @param fullAst the entire AST of the current file (if exists)
-     * @param data contains pos, the current cursor position (object with keys 'row' and 'column')
-     *        and staticPrefix, the current loading URL
+     * @param pos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at (if exists)
      */
-    complete: function(doc, fullAst, data, currentNode, callback) {
+    complete: function(doc, fullAst, pos, currentNode, callback) {
         callback();
     },
     
@@ -206,6 +210,14 @@ module.exports = {
      * @return a string value representing the new source code after formatting or null if not supported
      */
     codeFormat: function(doc, callback) {
+        callback();
+    },
+
+    /**
+     * Invoked when jumping to a definition
+     * @return the position of the definition of the currently selected node
+     */
+    jumpToDefinition: function(doc, fullAst, pos, currentNode, callback) {
         callback();
     }
 };

@@ -213,7 +213,7 @@ function asyncForEach(array, fn, callback) {
             if (array.length > 0) {
                 processOne();
             }
-            else {
+            else if (callback) {
                 callback(result, err);
             }
         });
@@ -221,7 +221,7 @@ function asyncForEach(array, fn, callback) {
     if (array.length > 0) {
         processOne();
     }
-    else {
+    else if (callback) {
         callback();
     }
 }
@@ -235,7 +235,7 @@ function asyncParForEach(array, fn, callback) {
     for (var i = 0; i < arLength; i++) {
         fn(array[i], function(result, err) {
             completed++;
-            if (completed === arLength) {
+            if (completed === arLength && callback) {
                 callback(result, err);
             }
         });
@@ -281,6 +281,8 @@ function asyncParForEach(array, fn, callback) {
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             var _self = this;
             require([path], function(handler) {
+                if (!handler)
+                    throw new Error("Could not load language handler " + path, e);
                 handler.proxy = _self.serverProxy;
                 handler.sender = _self.sender;
                 _self.handlers.push(handler);
@@ -316,6 +318,19 @@ function asyncParForEach(array, fn, callback) {
             callback(_self.cachedAst);
         });
     };
+
+    this.isParsingSupported = function() {
+        if (this.cachedAst)
+            return true;
+        var result;
+        var _self = this;
+        this.handlers.forEach(function(handler) {
+            if (handler.handlesLanguage(_self.$language) &&
+                handler.isParsingSupported())
+                result = true;
+        });
+        return result;
+    };
     
     /**
      * Finds the current node using the language handler.
@@ -334,6 +349,9 @@ function asyncParForEach(array, fn, callback) {
                         result = node;
                     next();
                 });
+            }
+            else {
+                next();
             }
         }, function() { callback(result); });
     };
@@ -378,7 +396,6 @@ function asyncParForEach(array, fn, callback) {
             }
             else
                 next();
-        }, function() {
         });
     };
 
@@ -393,7 +410,6 @@ function asyncParForEach(array, fn, callback) {
             }
             else
                 next();
-        }, function() {
         });
     };
 
@@ -405,10 +421,10 @@ function asyncParForEach(array, fn, callback) {
      * If the program contains a syntax error, the parser will try its best to still produce
      * an AST, although it will contain some problems. To avoid that those problems result in
      * invalid warning, let's filter out warnings that appear within a line or too after the
-     * syntax error. 
+     * syntax error.
      */
     function filterMarkersAroundError(ast, markers) {
-        if(!ast)
+        if (!ast || !ast.getAnnotation)
             return;
         var error = ast.getAnnotation("error");
         if(!error)
@@ -427,7 +443,7 @@ function asyncParForEach(array, fn, callback) {
         this.parse(function(ast) {
             var markers = [];
             asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language) && (ast || !handler.analysisRequiresParsing())) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !_self.isParsingSupported())) {
                     handler.analyze(_self.doc, ast, function(result) {
                         if (result)
                             markers = markers.concat(result);
@@ -477,14 +493,14 @@ function asyncParForEach(array, fn, callback) {
     /**
      * Request the AST node on the current position
      */
-    this.inspect = function (event) {
+    this.inspect = function(event) {
         var _self = this;
         
-        if (this.cachedAst) {
+        if (this.cachedAst || !this.isParsingSupported()) {
             // find the current node based on the ast and the position data
             this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
                 // find a handler that can build an expression for this language
-                var handler = _self.handlers.filter(function (h) { 
+                var handler = _self.handlers.filter(function (h) {
                     return h.handlesLanguage(_self.$language) && h.buildExpression;
                 });
                 
@@ -570,15 +586,21 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
+        if (!ast && this.isParsingSupported())
+            return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-            for (var i = 0; i < _self.handlers.length; i++) {
-                var handler = _self.handlers[i];
+            asyncForEach(this.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    var response = handler.jumpToDefinition(_self.doc, ast, pos, currentNode);
-                    if (response)
-                        _self.sender.emit("jumpToDefinition", response);
+                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
+                        if (result)
+                            _self.sender.emit("jumpToDefinition", result);
+                        next();
+                    });
                 }
-            }
+                else {
+                    next();
+                }
+            });
         });
     };
 
@@ -586,6 +608,8 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
+        if (!ast && this.isParsingSupported())
+            return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
@@ -595,7 +619,9 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 }
-            }, function() {
+                else {
+                    next();
+                }
             });
         });
     };
@@ -604,7 +630,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         this.handlers.forEach(function(handler) {
 			if (handler.handlesLanguage(_self.$language))
-				handler.onRenameBegin(_self.doc);
+				handler.onRenameBegin(_self.doc, function() {});
 		});
     };
 
@@ -614,11 +640,13 @@ function asyncParForEach(array, fn, callback) {
 
         var oldId = data.oldId;
         var newName = data.newName;
+        var commited = false;
 
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
                 handler.commitRename(_self.doc, oldId, newName, function(response) {
                     if (response) {
+                        commited = true;
                         _self.sender.emit("refactorResult", response);
                     } else {
                         next();
@@ -628,7 +656,8 @@ function asyncParForEach(array, fn, callback) {
             else
                 next();
         }, function() {
-            _self.sender.emit("refactorResult", {success: true});
+            if (!commited)
+                _self.sender.emit("refactorResult", {success: true});
         });
     };
 
@@ -642,14 +671,13 @@ function asyncParForEach(array, fn, callback) {
             }
             else
                 next();
-        }, function() {
         });
-    }
+    };
 
     this.onUpdate = function() {
         this.scheduledUpdate = false;
         var _self = this;
-        asyncForEach(this.handlers, function(handler, next) { 
+        asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language))
                 handler.onUpdate(_self.doc, next);
             else
@@ -681,7 +709,7 @@ function asyncParForEach(array, fn, callback) {
             handler.project = project;
             handler.language = language;
             handler.onDocumentOpen(path, doc, oldPath, next);
-        }, function() { });
+        });
     };
     
     this.documentClose = function(event) {
@@ -692,7 +720,7 @@ function asyncParForEach(array, fn, callback) {
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
-        }, function() { });
+        });
     };
     
     // For code completion
@@ -727,76 +755,58 @@ function asyncParForEach(array, fn, callback) {
     }
     
     this.complete = function(event) {
-        var data = event.data;
-        var pos = data.pos;
-        // Check if anybody requires parsing for its code completion
-        var ast;
-        var currentNode;
-        var currentPos;
         var _self = this;
         
-        asyncForEach(this.handlers, function(handler, next) {
-            if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
-                _self.parse(function(hAst) {
-                    if (hAst) {
-                        ast = hAst;
-                        currentPos = { line: pos.row, col: pos.column };
-                        _self.findNode(ast, currentPos, function(node) {
-                            currentNode = node;
+        this.parse(function(ast) {
+            var data = event.data;
+            var pos = data.pos;
+            var currentPos = { line: pos.row, col: pos.column };
+            _self.findNode(ast, currentPos, function(node) {
+                var currentNode = node;
+                var matches = [];
+            
+                asyncForEach(_self.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(_self.$language)) {
+                        handler.staticPrefix = data.staticPrefix;
+                        handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
+                            if (completions)
+                                matches = matches.concat(completions);
                             next();
                         });
                     }
-                    else {
-                        next();
-                    }
-                });
-            }
-            else {
-                next();
-            }
-        }, function() {
-            var matches = [];
-            
-            asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language)) {
-                    handler.complete(_self.doc, ast, data, currentNode, function(completions) {
-                        if (completions)
-                            matches = matches.concat(completions);
-                        next();
-                    });
-                }
-                else
-                    next();
-            }, function() {
-                removeDuplicateMatches(matches);
-                // Sort by priority, score
-                matches.sort(function(a, b) {
-                    if (a.priority < b.priority)
-                        return 1;
-                    else if (a.priority > b.priority)
-                        return -1;
-                    else if (a.score < b.score)
-                        return 1;
-                    else if (a.score > b.score)
-                        return -1;
-                    else if (a.id && a.id === b.id) {
-                        if (a.isFunction)
-                            return -1;
-                        else if (b.isFunction)
-                            return 1;
-                    }
-                    if (a.name < b.name)
-                        return -1;
-                    else if(a.name > b.name)
-                        return 1;
                     else
-                        return 0;
-                });                
-                // Removed for the java completion result caching cases
-                // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", {
-                    pos: pos,
-                    matches: matches
+                        next();
+                }, function() {
+                    removeDuplicateMatches(matches);
+                    // Sort by priority, score
+                    matches.sort(function(a, b) {
+                        if (a.priority < b.priority)
+                            return 1;
+                        else if (a.priority > b.priority)
+                            return -1;
+                        else if (a.score < b.score)
+                            return 1;
+                        else if (a.score > b.score)
+                            return -1;
+                        else if (a.id && a.id === b.id) {
+                            if (a.isFunction)
+                                return -1;
+                            else if (b.isFunction)
+                                return 1;
+                        }
+                        if (a.name < b.name)
+                            return -1;
+                        else if(a.name > b.name)
+                            return 1;
+                        else
+                            return 0;
+                    });                
+                    // Removed for the java completion result caching cases
+                    // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                    _self.sender.emit("complete", {
+                        pos: pos,
+                        matches: matches
+                    });
                 });
             });
         });
