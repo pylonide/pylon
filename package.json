@@ -15,7 +15,7 @@
         "connect": "1.8.x",
 
         "sourcemint-loader-js": "0.x",
-        "sourcemint-platform-nodejs": "0.x",
+        "sourcemint-platform-nodejs": "0.4.2",
         "http-error": "0.0.1",
         "simple-template": "0.0.1",
 
@@ -62,6 +62,7 @@
     }],
 
     "scripts": {
+        "test": "node ./scripts/test",
         "start": "sh ./bin/cloud9.sh",
         "build-debug": "node ./scripts/build-debug",
         "build-packed": "node ./scripts/build-packed"
