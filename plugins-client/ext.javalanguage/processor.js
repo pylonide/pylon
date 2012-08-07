@@ -117,7 +117,7 @@ this.$saveFileAndDo = function(callback) {
 };
 
 this.handlesLanguage = function(language) {
-        return language === "java";
+    return language === "java";
 };
 
 this.complete = function(doc, fullAst, pos, currentNode, callback) {
@@ -130,7 +130,6 @@ this.complete = function(doc, fullAst, pos, currentNode, callback) {
         var command = {
             command : "jvmfeatures",
             subcommand : "complete",
-            project: _self.project,
             file : getFilePath(_self.path),
             offset: offset
         };
@@ -173,7 +172,6 @@ this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode 
     var command = {
         command : "jvmfeatures",
         subcommand : "get_locations",
-        project: _self.project,
         file : getFilePath(_self.path),
         offset: offset,
         length: length
@@ -242,7 +240,6 @@ this.getVariablePositions = function(doc, fullAst /*null*/, pos, currentNode /*n
     var command = {
         command : "jvmfeatures",
         subcommand : "get_locations",
-        project: _self.project,
         file : getFilePath(_self.path),
         offset: offset,
         length: identifier.text.length
@@ -289,7 +286,6 @@ this.commitRename = function(doc, oldId, newName, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "refactor",
-        project: _self.project,
         file : getFilePath(_self.path),
         offset: offset,
         newname: newName,
@@ -319,7 +315,6 @@ this.outline = function(doc, fullAst /*null*/, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "outline",
-        project: _self.project,
         file : getFilePath(_self.path)
     };
 
@@ -345,7 +340,6 @@ this.hierarchy = function(doc, cursorPos, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "hierarchy",
-        project: _self.project,
         file : getFilePath(_self.path),
         offset: offset
     };
@@ -380,8 +374,7 @@ this.analyze = function(doc, fullAst /* null */, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "analyze_file",
-        project: _self.project,
-        file : getFilePath(_self.path)
+        file : getFilePath(this.path)
     };
 
     // console.log("analyze_file called");
@@ -420,7 +413,6 @@ this.codeFormat = function(doc, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "code_format",
-        project: _self.project,
         file : getFilePath(_self.path)
     };
 

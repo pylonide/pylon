@@ -257,7 +257,7 @@ module.exports = ext.register("ext/language/language", {
         if(!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), window.cloud9config.projectName]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue()]);
     },
     
     onEditorClick: function(event) {
