@@ -30,7 +30,7 @@
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{(!stServerConnected.active and !require('core/ide').local) || [@loading] || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
+      readonly          = "{[@loading] || require('core/ide') || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
     <a:menu id="mnuCtxEditor">
