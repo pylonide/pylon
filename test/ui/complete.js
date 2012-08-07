@@ -67,12 +67,14 @@ function main(callback) {
 					});
 				});
 			}
-			steps["load-helloworld-test"] = function() {
+			steps["load-helloworld-test"] = function() {				
 				if (messages[0] !== "WORKING") {
 					return error("HelloWorld module test not working!");
 				}
 				page.evaluate(function () {
-					sourcemint.sandbox("static/bundles/test/helloworld.js", function(sandbox) {
+					var uri = "static/bundles/test/helloworld.js";
+					console.log("Running test: " + uri);
+					sourcemint.sandbox(uri, function(sandbox) {
 						sandbox.main(function(err) {
 							if (err) {
 								console.log(":error:" + ((typeof err === "object" && err.stack)?err.stack:err));
