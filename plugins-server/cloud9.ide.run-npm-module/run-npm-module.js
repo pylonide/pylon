@@ -104,12 +104,9 @@ util.inherits(NpmRuntimePlugin, Plugin);
         if (user.permissions.fs != "rw")
             return cb("Permission denied", false);
             
-        var server_exclude = (user.permissions.server_exclude || "").split("|");
+        // server_exclude is usually empty, resulting in an array with one element: an empty one, let's filter those:
+        var server_exclude = (user.permissions.server_exclude || "").split("|").filter(function(cmd) { return !!cmd });
         server_exclude.forEach(function(command) {
-            // server_exclude is usually empty, resulting in an array with one element: an empty one, let's skip that one:
-            if(!command)
-                return;
-                
             if (message.command == command || message.argv.join(" ").indexOf(command) > -1) {
                 return cb("Permission denied", false);
             }
