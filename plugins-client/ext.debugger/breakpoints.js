@@ -195,7 +195,8 @@ module.exports = {
             var enabled = apf.isTrue(bp.getAttribute("enabled"));
             rows[line + offset] = " ace_breakpoint " + (enabled ? "" : "disabled ");
         }
-        session.setBreakpoints(rows);
+        session.$breakpoints = rows;
+        session._emit("changeBreakpoint", {});
     },
 
     gotoBreakpoint: function(bp) {

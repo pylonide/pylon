@@ -228,7 +228,6 @@ module.exports = ext.register("ext/debugger/debugger", {
                 ext.initExtension(_self);
             _self.$dbgImpl = e.dbgImpl;
         });
-        ide.addEventListener("afterCompile", this.$onAfterCompile.bind(this)); 
     },
 
     init : function(amlNode) {        
@@ -294,14 +293,6 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.$layoutItem.destroy(true, true);
 
         this.nodes = [];
-    },
-    
-    $onAfterCompile : function(e) {       
-        var id = e.script.getAttribute("scriptid");
-        var oldNode = mdlDbgSources.queryNode("//file[@scriptid='" + id + "']");
-        if (oldNode)
-            mdlDbgSources.removeXml(oldNode);
-        mdlDbgSources.appendXml(e.script);
     },
 
     setFrame : function(frame) {

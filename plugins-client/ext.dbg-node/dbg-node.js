@@ -38,30 +38,6 @@ var v8DebugClient = exports.v8DebugClient = function() {
         };
     };
 
-    this.onChangeRunning = function(e) {
-        if (!this.$v8dbg) {
-            this.state = null;
-        } else {
-            this.state = this.$v8dbg.isRunning() ? "running" : "stopped";
-        }
-
-        ide.dispatchEvent("dbg.changeState", {state: this.state});
-
-        if (this.state != "stopped")
-            this.setFrame(null);
-    };
-
-    this.onBreak = function(e) {
-        var _self = this;
-        this.backtrace(function() {
-            ide.dispatchEvent("break", _self.activeFrame);
-        });
-    };
-
-    this.onAfterCompile = function(e) {
-        ide.dispatchEvent("afterCompile", {script: apf.getXml(this.$getScriptXml(e.data.script))});
-    };
-
     this.attach = function(callback) {
         var _self = this;
         callback = callback || function(err, dbgImpl) {
@@ -91,7 +67,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
                 _self.updateBreakpoints(function() {
                     // todo handle debug-brk
                 });
-                ide.dispatchEvent("break", _self.activeFrame);
+                ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
                 _self.onChangeRunning();
             });
         });
@@ -113,7 +89,48 @@ var v8DebugClient = exports.v8DebugClient = function() {
         });
     };
 
+    this.setFrame = function(frame) {
+        this.activeFrame = frame;
+        ide.dispatchEvent("dbg.changeFrame", {data: frame});
+    };
 
+    this.onChangeRunning = function(e) {
+        if (!this.$v8dbg) {
+            this.state = null;
+        } else {
+            this.state = this.$v8dbg.isRunning() ? "running" : "stopped";
+        }
+
+        ide.dispatchEvent("dbg.changeState", {state: this.state});
+
+        if (this.state != "stopped")
+            this.setFrame(null);
+    };
+
+    this.onBreak = function(e) {
+        var _self = this;
+        this.backtrace(function() {
+            ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
+        });
+    };
+    
+    this.onException = function(e) {
+        var _self = this;
+        this.backtrace(function() {
+            ide.dispatchEvent("dbg.exception", {frame: activeFrame, exception: e.exception});
+        });
+    };
+
+    this.onAfterCompile = function(e) {
+        var script = apf.getXml(this.$getScriptXml(e.data.script));
+        var id = script.getAttribute("scriptid");
+        var oldNode = mdlDbgSources.queryNode("//file[@scriptid='" + id + "']");
+        if (oldNode)
+            mdlDbgSources.removeXml(oldNode);
+        mdlDbgSources.appendXml(e.script);
+    };
+
+    // apf xml helpers    
     var hasChildren = {
         "object": 8,
         "function": 4
@@ -132,22 +149,6 @@ var v8DebugClient = exports.v8DebugClient = function() {
         return str.indexOf(this.stripPrefix) === 0
             ? str.slice(this.stripPrefix.length)
             : str;
-    };
-
-    this.loadScripts = function(callback) {
-        var model = mdlDbgSources;
-        var _self = this;
-        this.$v8dbg.scripts(4, null, false, function(scripts) {
-            var xml = [];
-            for (var i = 0, l = scripts.length; i < l; i++) {
-                var script = scripts[i];
-                if (script.name && script.name.indexOf("chrome-extension://") === 0)
-                    continue;
-                xml.push(_self.$getScriptXml(script));
-            }
-            model.load("<sources>" + xml.join("") + "</sources>");
-            callback();
-        });
     };
 
     this.$getScriptXml = function(script) {
@@ -208,6 +209,56 @@ var v8DebugClient = exports.v8DebugClient = function() {
             scriptName = ide.davPrefix + scriptName.substr(ide.workspaceDir.length);
         // windows paths come here independantly from vfs
         return scriptName.replace(/\\/g, "/");
+    };
+    
+    this.$valueString = function(value) {
+        switch (value.type) {
+            case "undefined":
+            case "null":
+                return value.type;
+
+            case "boolean":
+            case "number":
+            case "string":
+                return value.value + "";
+
+            case "object":
+                return "[" + value.className + "]";
+
+            case "function":
+                return "function " + value.inferredName + "()";
+
+            default:
+                return value.type;
+        }
+    };
+
+    this.$frameToString = function(frame) {
+        var str     = [];
+        var args    = frame.arguments;
+        var argsStr = [];
+
+        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
+        for (var i = 0, l = args.length; i < l; i++) {
+            var arg = args[i];
+            if (!arg.name)
+                continue;
+            argsStr.push(arg.name);
+        }
+        str.push(argsStr.join(", "), ")");
+        return str.join("");
+    };
+
+    this.$serializeVariable = function(item, name) {
+        var str = [
+            "<item name='", apf.escapeXML(name || item.name),
+            "' value='", apf.escapeXML(this.$valueString(item.value)),
+            "' type='", item.value.type,
+            "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
+            hasChildren[item.value.type] ? "' children='true" : "",
+            "' />"
+        ];
+        return str.join("");
     };
 
     /**
@@ -289,6 +340,23 @@ var v8DebugClient = exports.v8DebugClient = function() {
         xml.push("</frame>");
     };
 
+    // called from other plugins
+    this.loadScripts = function(callback) {
+        var model = mdlDbgSources;
+        var _self = this;
+        this.$v8dbg.scripts(4, null, false, function(scripts) {
+            var xml = [];
+            for (var i = 0, l = scripts.length; i < l; i++) {
+                var script = scripts[i];
+                if (script.name && script.name.indexOf("chrome-extension://") === 0)
+                    continue;
+                xml.push(_self.$getScriptXml(script));
+            }
+            model.load("<sources>" + xml.join("") + "</sources>");
+            callback();
+        });
+    };
+    
     this.backtrace = function(callback) {
         var _self = this;
         var model = mdlDbgStack;
@@ -322,15 +390,6 @@ var v8DebugClient = exports.v8DebugClient = function() {
             _self.setFrame(topFrame);
             callback();
         });
-    };
-
-    this.setFrame = function(frame) {
-        this.$activeFrame = frame;
-        ide.dispatchEvent("dbg.changeFrame", {data: frame});
-    };
-
-    this.getactiveFrame = function() {
-        return this.$activeFrame;
     };
 
     this.loadScript = function(script, callback) {
@@ -424,7 +483,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         });
     };
 
-    this.evaluate = function(expression, frame, global, disableBreak, callback){
+    this.evaluate = function(expression, frame, global, disableBreak, callback) {
         this.$v8dbg.evaluate(expression, frame, global, disableBreak, function(body, refs, error){
             var str = [];
             var name = expression.trim();
@@ -448,59 +507,6 @@ var v8DebugClient = exports.v8DebugClient = function() {
         });
     };
 
-    this.$valueString = function(value) {
-        switch (value.type) {
-            case "undefined":
-            case "null":
-                return value.type;
-
-            case "boolean":
-            case "number":
-            case "string":
-                return value.value + "";
-
-            case "object":
-                return "[" + value.className + "]";
-
-            case "function":
-                return "function " + value.inferredName + "()";
-
-            default:
-                return value.type;
-        }
-    };
-
-    this.$frameToString = function(frame) {
-        var str     = [];
-        var args    = frame.arguments;
-        var argsStr = [];
-
-        str.push(frame.func.name || frame.func.inferredName || "anonymous", "(");
-        for (var i = 0, l = args.length; i < l; i++) {
-            var arg = args[i];
-            if (!arg.name)
-                continue;
-            argsStr.push(arg.name);
-        }
-        str.push(argsStr.join(", "), ")");
-        return str.join("");
-    };
-
-    this.$serializeVariable = function(item, name) {
-        var str = [
-            "<item name='", apf.escapeXML(name || item.name),
-            "' value='", apf.escapeXML(this.$valueString(item.value)),
-            "' type='", item.value.type,
-            "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
-            hasChildren[item.value.type] ? "' children='true" : "",
-            "' />"
-        ];
-        return str.join("");
-    };
-
-    /**
-     * Initialization function that sets the breakpoints right after attaching to the debugger
-     */
     this.updateBreakpoints = function(callback) {
         var _self = this;
 
