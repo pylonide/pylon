@@ -48,7 +48,7 @@ util.inherits(Plugin, events.EventEmitter);
         var child = this.activePs = Spawn(cmd, args || [], {
             cwd: cwd || this.server.workspaceDir
         });
-
+        
         var out   = "";
         var err   = "";
         var _self = this;
