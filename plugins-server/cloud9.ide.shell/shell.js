@@ -75,7 +75,6 @@ util.inherits(ShellPlugin, Plugin);
 
         if (message.runner && message.runner !== "shell")
             return false;
-        console.log("Got command", user, message);
 
         this["command-" + message.command.toLowerCase()](message);
 

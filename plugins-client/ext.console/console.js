@@ -284,7 +284,7 @@ module.exports = ext.register("ext/console/console", {
 
         var showConsole = true;
         var cmd = argv[0];
-        
+
         if (!predefinedCmds)
             predefinedCmds = require("ext/console/output");
         var defCmd = predefinedCmds.getPredefinedOutput(argv);
@@ -306,8 +306,6 @@ module.exports = ext.register("ext/console/console", {
                     command_id : this.command_id_tracer
                 }
             };
-            
-            console.log("Data", data);
 
             if (cmd.trim() === "npm")
                 data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
