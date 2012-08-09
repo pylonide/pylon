@@ -462,7 +462,7 @@ module.exports = ext.register("ext/console/console", {
 
     onMessage: function(e) {
         if (!e.message.type)
-                return;
+            return;
 
         var message = e.message;
         //console.log(message.type, message);
@@ -552,6 +552,8 @@ module.exports = ext.register("ext/console/console", {
                 this.markProcessAsCompleted(message.pid, true);
                 return;
             case "npm-module-start":
+                if (!extra.original_line || !this.inited)
+                    return;
                 var stdin_prompt = extra.original_line.split(" ")[0];
                 this.pageIdToPidMap[extra.page_id] = {
                     pid: message.pid,
@@ -561,8 +563,12 @@ module.exports = ext.register("ext/console/console", {
                 txtConsolePrompt.show();
                 break;
             case "npm-module-data":
+                if (!extra.original_line || !this.inited)
+                    return;
                 break;
             case "npm-module-exit":
+                if (!extra.original_line || !this.inited)
+                    return;
                 this.pageIdToPidMap[extra.page_id] = null;
                 if (tabConsole.getPage().$uniqueId === extra.page_id) {
                     txtConsolePrompt.hide();
@@ -1128,7 +1134,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hideInput(true);
                 txtConsoleInput.removeEventListener("blur", arguments.callee);
             });
-            txtConsoleInput.focus()
+            txtConsoleInput.focus();
         }
         else {
             settings.model.setQueryValue("auto/console/@showinput", true);
@@ -1256,8 +1262,10 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
+            if (_self.onFinishTimer)
+                clearTimeout(_self.onFinishTimer);
             
-            setTimeout(function(){
+            _self.onFinishTimer = setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
                 }

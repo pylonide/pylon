@@ -664,13 +664,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                 // In that case, we understand that there is some problem and
                 // request the entire revision history to the server.
                 if (!this.revisionQueue[ts]) {
-                    ide.send({
-                        command: "revisions",
-                        subCommand: "getRevisionHistory",
+                    return this.getRevisionHistory({
                         path: message.path,
                         id: ts
                     });
-                    return;
                 }
 
                 var revision = this.revisionQueue[ts].revision;
@@ -748,6 +745,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 data.group[message.id] = this.getRevision(message.id);
                 this.worker.postMessage(data);
+                this.waitingForRevisionHistory = false;
                 break;
 
             case "getRealFileContents":
@@ -935,13 +933,20 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         // We haven't cached the original content. Let's load it from the server.
-        ide.send({
-            command: "revisions",
-            subCommand: "getRevisionHistory",
+        this.getRevisionHistory({
             nextAction: nextAction,
             path: path,
             id: id
         });
+    },
+
+    getRevisionHistory: function(options) {
+        this.waitingForRevisionHistory = true;
+
+        options.command = "revisions";
+        options.subCommand = "getRevisionHistory";
+
+        ide.send(options);
     },
 
     /**
@@ -1307,13 +1312,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var model = page.$mdlRevisions;
-        if (lstRevisions && model && (lstRevisions.getModel() !== model)) {
-            lstRevisions.setModel(model);
-        }
-
         if (model) {
-            if (!model.data || model.data.childNodes.length === 0) {
-                this.populateModel(this.rawRevisions[Util.getDocPath()], model);
+            if (lstRevisions && (lstRevisions.getModel() !== model)) {
+                lstRevisions.setModel(model);
+            }
+
+            // If there is no revision object for the current doc, we should
+            // retrieve if it is not being retrieved right now. After retrieval,
+            // `populateModel` will take care of setting model.data.
+            var currentDocRevision = this.rawRevisions[Util.getDocPath()];
+            if (!currentDocRevision && !this.waitingForRevisionHistory) {
+                this.getRevisionHistory({ path: Util.getDocPath() });
             }
             else {
                 this.$restoreSelection(page, model);

@@ -379,30 +379,4 @@ module.exports = ext.register("ext/offline/offline", {
     }
 });
 
-/*
-
-//#ifdef __WITH_AUTH
-var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
-if (!auth)
-    return;
-
-//First let's log in to the services that need it before syncing changes
-if (auth.needsLogin && auth.loggedIn) { // && !auth.loggedIn
-    auth.authRequired({
-        object : this,
-        retry  : callback
-    });
-}
-
-        //#ifdef __WITH_AUTH
-//if (apf.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
-//    apf.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
-//#endif
-
-var _self = this;
-apf.addEventListener("exit", function(){
-    return _self.dispatchEvent("losechanges");
-});
-*/
-
 });
