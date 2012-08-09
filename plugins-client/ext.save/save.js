@@ -338,16 +338,8 @@ module.exports = ext.register("ext/save/save", {
         var value = doc.getValue();
 
         fs.saveFile(path, value, function(data, state, extra){
-
-            ide.dispatchEvent("track_action", {
-                type: "save as filetype",
-                fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
-                success: state != apf.SUCCESS ? "false" : "true"
-            });
-            apf.xmldb.removeAttribute(node, "saving");
-
             if (state != apf.SUCCESS) {
-                return util.alert(
+                util.alert(
                     "Could not save document",
                     "An error occurred while saving this document",
                     "Please see if your internet connection is available and try again. "
@@ -355,8 +347,6 @@ module.exports = ext.register("ext/save/save", {
                             ? "The connection timed out."
                             : "The error reported was " + extra.message));
             }
-
-            page.$at.dispatchEvent("afterchange");
 
             ide.dispatchEvent("afterfilesave", {
                 node: node,
@@ -366,6 +356,13 @@ module.exports = ext.register("ext/save/save", {
                 silentsave: silentsave
             });
 
+            ide.dispatchEvent("track_action", {
+                type: "save as filetype",
+                fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
+                success: state != apf.SUCCESS ? "false" : "true"
+            });
+
+            apf.xmldb.removeAttribute(node, "saving");
             apf.xmldb.removeAttribute(node, "new");
             apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
 
@@ -375,8 +372,9 @@ module.exports = ext.register("ext/save/save", {
             }
         });
 
-        var at = page.$at;
+        var at = page.$at
         at.undo_ptr = at.$undostack[at.$undostack.length-1];
+        page.$at.dispatchEvent("afterchange");
         return false;
     },
 
