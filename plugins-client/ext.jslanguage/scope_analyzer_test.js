@@ -75,7 +75,7 @@ module.exports = {
         emitter.on("markers", function(markers) {
             assert.equal(markers.length, 1);
             assert.equal(markers[0].message, 'Using undeclared variable as iterator variable.');
-            next();se
+            next();
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
