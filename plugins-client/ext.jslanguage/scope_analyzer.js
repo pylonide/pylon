@@ -575,8 +575,10 @@ var isCallbackCall = function(node) {
 var isCallback = function(node) {
     var result;
     node.rewrite(
-        'Function("", [Farg(farg)])', function(b) {
-            var name = b.farg.value;
+        'Function("", fargs, _)', function(b) {
+            if (b.fargs.length === 0 || b.fargs[0].cons !== 'FArg')
+                return;
+            var name = b.fargs[0][0].value;
             if (name === 'err' || name === 'error' || name === 'exc')
                 result = true;
         }
