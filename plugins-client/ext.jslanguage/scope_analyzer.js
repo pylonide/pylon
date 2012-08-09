@@ -562,7 +562,7 @@ var isCallbackCall = function(node) {
     var result;
     node.rewrite(
         'Call(PropAccess(_, p), args)', function(b) {
-            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p) !== -1)
+            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p.value) !== -1)
                 result = true;
         },
         'Call(Var("require"), [_])', function(b) {
