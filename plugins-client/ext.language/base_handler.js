@@ -12,6 +12,8 @@ define(function(require, exports, module) {
 
 module.exports = {
     
+    language: null,
+    project: null,
     path: null,
     
     // UTILITIES
