@@ -340,7 +340,15 @@ var v8DebugClient = exports.v8DebugClient = function() {
         xml.push("</frame>");
     };
 
-    // called from other plugins
+    // used from other plugins
+    /**
+     * state of the debugged process
+     *    null:  process doesn't exist 
+     *   'stopped':  paused on breakpoint
+     *   'running':  
+     */
+    this.state = null;
+
     this.loadScripts = function(callback) {
         var model = mdlDbgSources;
         var _self = this;
