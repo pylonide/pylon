@@ -98,7 +98,8 @@ function extractOutline(doc, node) {
             });
             return this;
         },
-        'VarDeclInit(x, Function(name, fargs, body))', function(b) {
+        'VarDeclInit(x, Function(name, fargs, body))', 'ConstDeclInit(x, Function(name, fargs, body))',
+        function(b) {
             results.push({
                 icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
@@ -130,7 +131,7 @@ function extractOutline(doc, node) {
             return this;
         },
         */
-        'VarDeclInit(x, e)', function(b) {
+        'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
             var items = extractOutline(doc, b.e);
             if (items.length === 0)
                 return this;
