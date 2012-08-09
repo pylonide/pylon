@@ -20,6 +20,7 @@ var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
 require("treehugger/traverse"); // add traversal functions to trees
 
+var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
@@ -486,7 +487,8 @@ handler.analyze = function(doc, ast, callback) {
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
                             mustUseVars.push(v);
                     });
-                    scopeAnalyzer(newScope, b.body, null, inCallback === IN_CALLBACK_DEF ? IN_CALLBACK_BODY : 0);
+                    var inBody = inCallback === IN_CALLBACK_DEF || isCallback(node);
+                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
@@ -558,11 +560,30 @@ handler.analyze = function(doc, ast, callback) {
 
 var isCallbackCall = function(node) {
     var result;
-    node.rewrite("Call(PropAccess(_, p), [_])", function(b) {
-        if (b.p.value === "forEach" || b.p.value === "map")
+    node.rewrite(
+        'Call(PropAccess(_, p), args)', function(b) {
+            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p.value) !== -1)
+                result = true;
+        },
+        'Call(Var("require"), [_])', function(b) {
             result = true;
-    });
+        }
+    );
     return result || outline.tryExtractEventHandler(node);
+};
+
+var isCallback = function(node) {
+    var result;
+    node.rewrite(
+        'Function("", fargs, _)', function(b) {
+            if (b.fargs.length === 0 || b.fargs[0].cons !== 'FArg')
+                return;
+            var name = b.fargs[0][0].value;
+            if (name === 'err' || name === 'error' || name === 'exc')
+                result = true;
+        }
+    );
+    return result;
 };
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
