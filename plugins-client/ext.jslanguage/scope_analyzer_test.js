@@ -75,12 +75,24 @@ module.exports = {
         emitter.on("markers", function(markers) {
             assert.equal(markers.length, 1);
             assert.equal(markers[0].message, 'Using undeclared variable as iterator variable.');
-            next();
+            next();se
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "for(p in {}) { }");
+    },
+    "test bad this call" : function(next) {
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var accept = function(){}; accept('evt', function(){this});");
     }
 };
 

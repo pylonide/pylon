@@ -32,7 +32,9 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var snippets = snippetCache[this.language];
     
     if (snippets === undefined) {
-        var text = this.fetchText(this.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
+        var text;
+        if (this.language)
+            text = this.fetchText(this.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
         snippets = text ? JSON.parse(text) : {};
         // Cache
         snippetCache[this.language] = snippets;
