@@ -387,13 +387,13 @@ handler.analyze = function(doc, ast, callback) {
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
             // var bla;
-            'VarDecl(x)', function(b, node) {
+            'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, e)', function(b, node) {
+            'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
             },
@@ -414,10 +414,10 @@ handler.analyze = function(doc, ast, callback) {
         node.setAnnotation("scope", scope);
         function analyze(scope, node, inCallback) {
             node.traverseTopDown(
-                'VarDecl(x)', function(b) {
+                'VarDecl(x)', 'ConstDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
-                'VarDeclInit(x, e)', function(b) {
+                'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
                     while (b.e.isMatch('Assign(_, _)'))
                         b.e = b.e[1];
@@ -599,11 +599,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
-        'VarDeclInit(x, _)', function(b) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'VarDecl(x)', function(b) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
@@ -633,11 +633,11 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
     var v;
     var mainNode;
     currentNode.rewrite(
-        'VarDeclInit(x, _)', function(b, node) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
-        'VarDecl(x)', function(b, node) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
