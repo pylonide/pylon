@@ -127,7 +127,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         var oldNode = mdlDbgSources.queryNode("//file[@scriptid='" + id + "']");
         if (oldNode)
             mdlDbgSources.removeXml(oldNode);
-        mdlDbgSources.appendXml(e.script);
+        mdlDbgSources.appendXml(script);
     };
 
     // apf xml helpers    
