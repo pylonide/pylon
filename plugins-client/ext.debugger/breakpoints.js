@@ -34,7 +34,6 @@ module.exports = {
 
             if (_self.$updating)
                 return;
-            console.log(e)
             if (updateTimeout)
                 clearTimeout(updateTimeout)
             updateTimeout = setTimeout(function() {

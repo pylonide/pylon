@@ -565,12 +565,12 @@ var v8DebugClient = exports.v8DebugClient = function() {
                 callback && callback();
         }
 
-        function addBp(bp) {console.log("add", bp)
+        function addBp(bp) {
             counter++;
             _self.$v8dbg.setbreakpoint("script", bp.scriptname, bp.line, bp.column, bp.enabled, bp.condition, bp.ignoreCount, bpCallback);
         }
 
-        function removeBp(bp) {console.log("remove", bp)
+        function removeBp(bp) {
             bp.id && _self.$v8dbg.clearbreakpoint(bp.id, function(){});
         }
         function isEqual(bp1, bp2) {

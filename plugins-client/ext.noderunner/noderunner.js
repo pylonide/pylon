@@ -31,12 +31,10 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             this.queryServerState();
             ide.addEventListener("socketDisconnect", function() {
                 ide.dispatchEvent("dbg.exit");
-                console.log("socketDisconnect");
             });
         } else {           
             ide.addEventListener("socketConnect", function() {
                 _self.queryServerState();
-                console.log("socketConnect");
             });
         }
         
