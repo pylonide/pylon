@@ -710,8 +710,8 @@ function asyncParForEach(array, fn, callback) {
     };
     
     this.$initHandler = function(handler, oldPath, callback) {
-        if (!this.path) // switchFile not called yet
-            callback();
+        if (!this.$path) // switchFile not called yet
+            return callback();
         handler.path = this.$path;
         handler.project = this.project;
         handler.language = this.$language;
