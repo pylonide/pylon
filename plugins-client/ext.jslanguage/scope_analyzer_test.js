@@ -28,6 +28,19 @@ module.exports = {
         assert.equal(worker.handlers.length, 2);
         worker.switchFile("test.js", "javascript", "var hello = false;");
     },
+    "test unused const" : function(next) {
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        assert.equal(worker.handlers.length, 2);
+        worker.switchFile("test.js", "javascript", "const hello = false;");
+    },
     "test unused variable scoped" : function(next) {
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
