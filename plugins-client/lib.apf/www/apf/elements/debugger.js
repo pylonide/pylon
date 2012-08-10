@@ -166,16 +166,12 @@ apf.dbg = module.exports = function(struct, tagName){
                             // otherwise step to the next breakpoint
                             _self.continueScript();
                         }
-                        
-                        // remove this listener
-                        dbgImpl.removeEventListener("break", onFirstBreak);
-                        
+
                         // add the actual listeners for changeRunning & break
                         registerEvents();
                     });
                 };
-                
-                dbgImpl.addEventListener("break", onFirstBreak);
+                onFirstBreak();
             };
             
             // re-attach to an already running process

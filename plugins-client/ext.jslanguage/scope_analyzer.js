@@ -17,8 +17,10 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
+var outline = require("ext/jslanguage/outline");
 require("treehugger/traverse"); // add traversal functions to trees
 
+var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
@@ -26,6 +28,8 @@ var KIND_EVENT = module.exports.KIND_EVENT = "event";
 var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
 var KIND_HIDDEN = module.exports.KIND_HIDDEN = "hidden";
 var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
+var IN_CALLBACK_DEF = 2;
+var IN_CALLBACK_BODY = 1;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -34,7 +38,6 @@ var GLOBALS = {
     "false"                  : true,
     "undefined"              : true,
     "null"                   : true,
-    "this"                   : true,
     "arguments"              : true,
     self                     : true,
     "Infinity"               : true,
@@ -46,7 +49,7 @@ var GLOBALS = {
     "else"                   : true,
     // Browser
     ArrayBuffer              : true,
-    ArrayBufferView          : true,
+    Attr                     : true,
     Audio                    : true,
     addEventListener         : true,
     applicationCache         : true,
@@ -159,8 +162,6 @@ var GLOBALS = {
     alert                    : true,
     confirm                  : true,
     console                  : true,
-    Debug                    : true,
-    opera                    : true,
     prompt                   : true,
     // Frameworks
     jQuery                   : true,
@@ -171,81 +172,14 @@ var GLOBALS = {
     dojox                    : true,
     dijit                    : true,
     apf                      : true,
-    // mootools
-    Assets                   : true,
-    Browser                  : true,
-    Chain                    : true,
-    Class                    : true,
-    Color                    : true,
-    Cookie                   : true,
-    Core                     : true,
     Document                 : true,
-    DomReady                 : true,
-    DOMReady                 : true,
-    Drag                     : true,
     Element                  : true,
-    Elements                 : true,
     Event                    : true,
-    Events                   : true,
-    Fx                       : true,
-    Group                    : true,
-    Hash                     : true,
-    HtmlTable                : true,
-    Iframe                   : true,
-    IframeShim               : true,
-    InputValidator           : true,
-    instanceOf               : true,
-    Keyboard                 : true,
-    Locale                   : true,
-    Mask                     : true,
+    KeyboardEvent            : true,
     MooTools                 : true,
-    Native                   : true,
-    Options                  : true,
-    OverText                 : true,
-    Request                  : true,
-    Scroller                 : true,
-    Slick                    : true,
-    Slider                   : true,
-    Sortables                : true,
-    Spinner                  : true,
-    Swiff                    : true,
-    Tips                     : true,
-    Type                     : true,
-    typeOf                   : true,
-    URI                      : true,
     Window                   : true,
-    // prototype.js
-    '$A'                     : true,
-    '$F'                     : true,
-    '$H'                     : true,
-    '$R'                     : true,
-    '$break'                 : true,
-    '$continue'              : true,
-    '$w'                     : true,
-    Abstract                 : true,
     Ajax                     : true,
-    Enumerable               : true,
     Field                    : true,
-    Form                     : true,
-    Insertion                : true,
-    ObjectRange              : true,
-    PeriodicalExecuter       : true,
-    Position                 : true,
-    Prototype                : true,
-    Selector                 : true,
-    Template                 : true,
-    Toggle                   : true,
-    Try                      : true,
-    Autocompleter            : true,
-    Builder                  : true,
-    Control                  : true,
-    Draggable                : true,
-    Draggables               : true,
-    Droppables               : true,
-    Effect                   : true,
-    Sortable                 : true,
-    SortableObserver         : true,
-    Sound                    : true,
     Scriptaculous            : true,
     // require.js
     define                   : true,
@@ -292,6 +226,33 @@ var GLOBALS = {
     unescape                 : true
 };
 
+var KEYWORDS = [
+    "break",
+    "const",
+    "continue",
+    "delete",
+    "do",
+    "while",
+    "export",
+    "for",
+    "in",
+    "function",
+    "if",
+    "else",
+    "import",
+    "instanceof",
+    "new",
+    "return",
+    "switch",
+    "this",
+    "throw",
+    "try",
+    "catch",
+    "typeof",
+    "void",
+    "with"
+];
+
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
@@ -304,7 +265,7 @@ var Variable = module.exports.Variable = function Variable(declaration) {
         this.declarations.push(declaration);
     this.uses = [];
     this.values = [];
-}
+};
 
 Variable.prototype.addUse = function(node) {
     this.uses.push(node);
@@ -371,7 +332,7 @@ Scope.prototype.isDeclared = function(name) {
 /**
  * Get possible values of a variable
  * @param name name of variable
- * @return Variable instance 
+ * @return Variable instance
  */
 Scope.prototype.get = function(name, kind) {
     var vars = this.getVars(kind);
@@ -401,14 +362,13 @@ Scope.prototype.getNamesByKind = function(kind) {
     return results;
 };
 
-var GLOBALS_ARRAY = Object.keys(GLOBALS);
+var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
-handler.complete = function(doc, fullAst, data, currentNode, callback) {
-    var pos = data.pos;
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
 
-    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    var matches = completeUtil.findCompletions(identifier, SCOPE_ARRAY);
     callback(matches.map(function(m) {
         return {
           name        : m,
@@ -428,13 +388,13 @@ handler.analyze = function(doc, ast, callback) {
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
             // var bla;
-            'VarDecl(x)', function(b, node) {
+            'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, e)', function(b, node) {
+            'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
             },
@@ -449,20 +409,20 @@ handler.analyze = function(doc, ast, callback) {
         );
     }
     
-    function scopeAnalyzer(scope, node, parentLocalVars) {
+    function scopeAnalyzer(scope, node, parentLocalVars, inCallback) {
         preDeclareHoisted(scope, node);
         var mustUseVars = parentLocalVars || [];
         node.setAnnotation("scope", scope);
-        function analyze(scope, node) {
+        function analyze(scope, node, inCallback) {
             node.traverseTopDown(
-                'VarDecl(x)', function(b) {
+                'VarDecl(x)', 'ConstDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
-                'VarDeclInit(x, e)', function(b) {
+                'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
-                    while (b.e.rewrite('Assign(_, _)'))
+                    while (b.e.isMatch('Assign(_, _)'))
                         b.e = b.e[1];
-                    if (!b.e.rewrite('Function(_, _, _)'))
+                    if (!b.e.isMatch('Function(_, _, _)'))
                         mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
@@ -477,7 +437,7 @@ handler.analyze = function(doc, ast, callback) {
                     else {
                         scope.get(b.x.value).addUse(node[0]);
                     }
-                    analyze(scope, b.e);
+                    analyze(scope, b.e, inCallback);
                     return this;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
@@ -492,6 +452,16 @@ handler.analyze = function(doc, ast, callback) {
                     analyze(scope, b.e);
                     analyze(scope, b.stats);
                     return this;
+                },
+                'Var("this")', function(b, node) {
+                    if (inCallback === IN_CALLBACK_BODY) {
+                        markers.push({
+                            pos: this.getPos(),
+                            level: 'warning',
+                            type: 'warning',
+                            message: "Use of 'this' in callback function"
+                        });
+                    }
                 },
                 'Var(x)', function(b, node) {
                     node.setAnnotation("scope", scope);
@@ -517,14 +487,15 @@ handler.analyze = function(doc, ast, callback) {
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
                             mustUseVars.push(v);
                     });
-                    scopeAnalyzer(newScope, b.body);
+                    var inBody = inCallback === IN_CALLBACK_DEF || isCallback(node);
+                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
                     scope.vars["_" + b.x.value] = new Variable(b.x);
-                    scopeAnalyzer(scope, b.body, mustUseVars);
+                    scopeAnalyzer(scope, b.body, mustUseVars, inCallback);
                     // Put back
                     scope.vars["_" + b.x.value] = oldVar;
                     return node;
@@ -545,12 +516,25 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
+                'Call(e, args)', function(b) {
+                    analyze(scope, b.e, inCallback);
+                    analyze(scope, b.args, isCallbackCall(this) ? IN_CALLBACK_DEF : 0);
+                    return this;
+                },
                 'Block(_)', function() {
                     this.setAnnotation("scope", scope);
+                },
+                'New(Var("require"), _)', function() {
+                    markers.push({
+                        pos: this[0].getPos(),
+                        type: 'warning',
+                        level: 'warning',
+                        message: "Applying 'new' to require()."
+                    });
                 }
             );
         }
-        analyze(scope, node);
+        analyze(scope, node, inCallback);
         if(!parentLocalVars) {
             for (var i = 0; i < mustUseVars.length; i++) {
                 if (mustUseVars[i].uses.length === 0) {
@@ -574,6 +558,34 @@ handler.analyze = function(doc, ast, callback) {
     callback(markers);
 };
 
+var isCallbackCall = function(node) {
+    var result;
+    node.rewrite(
+        'Call(PropAccess(_, p), args)', function(b) {
+            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p.value) !== -1)
+                result = true;
+        },
+        'Call(Var("require"), [_])', function(b) {
+            result = true;
+        }
+    );
+    return result || outline.tryExtractEventHandler(node);
+};
+
+var isCallback = function(node) {
+    var result;
+    node.rewrite(
+        'Function("", fargs, _)', function(b) {
+            if (b.fargs.length === 0 || b.fargs[0].cons !== 'FArg')
+                return;
+            var name = b.fargs[0][0].value;
+            if (name === 'err' || name === 'error' || name === 'exc')
+                result = true;
+        }
+    );
+    return result;
+};
+
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
@@ -583,13 +595,13 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     function highlightVariable(v) {
         if (!v)
             return;
-        v.declarations.forEach(function(decl) {    
-            if(decl.getPos())    
+        v.declarations.forEach(function(decl) {
+            if(decl.getPos())
                 markers.push({
                     pos: decl.getPos(),
                     type: 'occurrence_main'
                 });
-        });    
+        });
         v.uses.forEach(function(node) {
             markers.push({
                 pos: node.getPos(),
@@ -608,11 +620,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
-        'VarDeclInit(x, _)', function(b) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'VarDecl(x)', function(b) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
@@ -640,13 +652,13 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     var v;
-    var mainNode;    
+    var mainNode;
     currentNode.rewrite(
-        'VarDeclInit(x, _)', function(b, node) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
-        'VarDecl(x)', function(b, node) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
@@ -694,4 +706,3 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
 };
 
 });
-

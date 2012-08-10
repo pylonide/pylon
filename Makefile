@@ -45,9 +45,9 @@ ext:
 	node build/r.js -o build/app.build.js
 
 # calls dryice on worker & packages it
-worker: plugins-client/lib.ace/www/worker/worker.js
+worker: plugins-client/lib.ace/www/worker/worker-language.js
 
-plugins-client/lib.ace/www/worker/worker.js : $(wildcard plugins-client/ext.language/*) \
+plugins-client/lib.ace/www/worker/worker-language.js : $(wildcard plugins-client/ext.language/*) \
         $(wildcard plugins-client/ext.language/*/*) \
         $(wildcard plugins-client/ext.codecomplete/*) \
         $(wildcard plugins-client/ext.codecomplete/*/*) \
@@ -96,5 +96,4 @@ package_clean: helper_clean c9core ext
 package: helper c9core ext
 
 test:
-	$(MAKE) -C test
-	cp node_modules/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker
+	test/run-tests.sh	

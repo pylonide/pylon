@@ -773,8 +773,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         
         this.findTabs(bar.$dockData.uniqueId, true)
             .each(function(tab){
-                if (!tab.activepage)
-                    tab.set(tab.getPage(0));
+                if (!tab.activepage) {
+                    var page = tab.getPage(0);
+                    tab.set(page);
+                    page.$active = true;
+                }
+                else {
+                    tab.getPage(tab.activepage).$active = true;
+                }
             });
         
         if (false && showAnimation && this.$cbAnimate())
@@ -1683,7 +1689,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             skin      : options.skin ? options.skin : "dockwindowblack",
             resizable : options.resizable === false ? false : "left bottom",
             dock      : 1,
-            minwidth  : 150,
+            minwidth  : options.minWidth ? options.minWidth : 150,
             minheight : options.minHeight ? options.minHeight : (options.height || 150),
             onhide    : function(e){
                 if (this.firstChild && this.firstChild.getPage())
@@ -2183,6 +2189,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     if (options && (tmp = options.primary)) {
                         var icoState = !this.value ? tmp.activeState : tmp.defaultState;
                         var span = button.$ext.getElementsByTagName("span");
+
+                        if(!this.value)
+                            this.$dockpage.$active = false;
+                        
                         span[2].style.backgroundPosition = 
                             icoState.x + 'px ' 
                             + icoState.y + 'px';
@@ -2215,6 +2225,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 if (options && (tmp = options.primary)) {
                     var icoState = _btn.value ? tmp.activeState : tmp.defaultState;
                     var span = _btn.$ext.getElementsByTagName("span");
+                    
+                    if(!_btn.value)
+                        _btn.$dockpage.$active = false;
                     
                     _btn.setAttribute("tooltip", options.menu.split("/").pop());
                     
@@ -2263,6 +2276,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 if (options && (tmp = options.primary)) {
                     var icoState = button.value ? tmp.activeState : tmp.defaultState;
                     var span = button.$ext.getElementsByTagName("span");
+                    
+                    if(!button.value)
+                        button.$dockpage.$active = false;
+                    
                     span[2].style.backgroundPosition = 
                         icoState.x + 'px ' 
                         + icoState.y + 'px';
