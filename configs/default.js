@@ -45,6 +45,7 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
+    "./../plugins-client/lib.smith.io",
     // server plugins
     {
         packagePath: "./cloud9.sandbox",
@@ -57,8 +58,12 @@ var config = [
         packagePath: "./cloud9.core",
         debug: false,
         fsUrl: fsUrl,
+        smithIo: {
+            host: host,
+            port: port,
+            prefix: "/smith.io/server"
+        },
         hosted: false,
-        socketIoTransports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
@@ -146,12 +151,18 @@ var config = [
         packagePath: "./cloud9.fs",
         urlPrefix: fsUrl
     },
+    {
+        packagePath: "smith.io/server-plugin",
+        clientRoute: "/static/smith.io/client.js",
+        messageRoute: "/smith.io/server"        
+    },
     "./cloud9.socket",
     {
         packagePath: "connect-architect/connect.session",
         key: "cloud9.sid." + port,
         secret: "v1234"
-    }, {
+    },
+    {
         packagePath: "connect-architect/connect.session.file",
         sessionsPath: __dirname + "/../.sessions"
     },

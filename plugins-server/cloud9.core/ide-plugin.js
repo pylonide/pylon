@@ -20,8 +20,6 @@ module.exports = function setup(options, imports, register) {
     var staticPrefix = imports.static.getStaticPrefix();
     var workerPrefix = imports.static.getWorkerPrefix() || "/static";
 
-    var socketUrl = options.socketUrl || "/socket.io";
-
     var ide;
     var serverPlugins = {};
 
@@ -50,8 +48,7 @@ module.exports = function setup(options, imports, register) {
             settingsPath: settingsPath,
             davPrefix: baseUrl + "/workspace",
             projectName: options.projectName || "",
-            socketIoUrl: socketUrl.replace(/^\//, ""),
-            socketIoTransports: options.socketIoTransports,
+            smithIo: options.smithIo,
             baseUrl: baseUrl,
             debug: (options.debug === true) ? true : false,
             workerUrl: workerPrefix,
@@ -114,7 +111,7 @@ module.exports = function setup(options, imports, register) {
                     return ide;
                 },
                 getSocketUrl: function() {
-                    return socketUrl;
+                    console.error(new Error("ide.getSocketUrl() is DEPRECATED").stack);
                 },
                 getBaseUrl: function() {
                     return baseUrl;

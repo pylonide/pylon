@@ -4,13 +4,6 @@
 ./node_modules/sinon/test/sinon/util/fake_server_test.js
 ./node_modules/sinon/test/sinon/util/fake_server_with_clock_test.js
 ./node_modules/sinon/test/sinon/util/fake_xml_http_request_test.js
-./node_modules/socket.io/node_modules/redis/tests/re_sub_test.js
-./node_modules/socket.io/node_modules/redis/tests/reconnect_test.js
-./node_modules/socket.io/node_modules/redis/tests/sub_quit_test.js
-./node_modules/socket.io-client/node_modules/socket.io/node_modules/redis/eval_test.js
-./node_modules/socket.io-client/node_modules/socket.io/node_modules/redis/simple_test.js
-./node_modules/socket.io-client/node_modules/socket.io/node_modules/redis/tests/reconnect_test.js
-./node_modules/socket.io-client/node_modules/socket.io/node_modules/redis/tests/sub_quit_test.js
 ./node_modules/treehugger/lib/treehugger/js/parse_test.js
 ./node_modules/treehugger/lib/treehugger/js/uglifyparser_test.js
 ./node_modules/sinon/test/sinon_test.js
