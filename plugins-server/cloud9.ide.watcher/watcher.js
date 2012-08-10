@@ -58,12 +58,15 @@ util.inherits(WatcherPlugin, Plugin);
 
             var watcher = meta.watcher;
             if (!self.clients[clientId].fileWatchers[path]) {
-                if (watcher)
+                if (watcher) {
+                    console.log("close1", path);
                     watcher.close();
+                }
                 return;
             }
 
             watcher.on("change", function (currStat, prevStat) {
+                console.log("changeFile", path, currStat, prevStat);
                 self.onFileChange(clientId, path, currStat, prevStat, client);
             });
 
@@ -85,12 +88,15 @@ util.inherits(WatcherPlugin, Plugin);
 
             var watcher = meta.watcher;
             if (!self.clients[clientId].directoryWatchers[path]) {
-                if (watcher)
+                if (watcher) {
+                    console.log("close2", path);
                     watcher.close();
+                }
                 return;
             }
 
             watcher.on("change", function (event, filename) {
+                console.log("changeDir", filename);
                 self.onDirectoryChange(clientId, path, event, filename, client);
             });
 
@@ -108,10 +114,13 @@ util.inherits(WatcherPlugin, Plugin);
             return;
         }
 
-        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime.getTime() === currStat.mtime.getTime())
+        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime.getTime() === currStat.mtime.getTime()) {
+            console.log("prevStat");
             return;
+        }
 
         if (!currStat) {
+            console.log("!curStat");
             this.removeFileWatcher(clientId, path);
             client.send(JSON.stringify({
                 "type"    : "watcher",
@@ -189,6 +198,7 @@ util.inherits(WatcherPlugin, Plugin);
 
     this.removeFileWatcher = function(clientId, path) {
         if (this.clients[clientId].fileWatchers[path]) {
+            console.log("close", this.clients[clientId].fileWatchers[path]);
             this.clients[clientId].fileWatchers[path].watcher.close();
             delete this.clients[clientId].fileWatchers[path];
         }
