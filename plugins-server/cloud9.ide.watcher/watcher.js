@@ -215,9 +215,11 @@ util.inherits(WatcherPlugin, Plugin);
     };
 
     this.removeDirectoryWatcher = function(clientId, path) {
-        if (this.clients[clientId].directoryWatchers[path]) {
-            this.clients[clientId].directoryWatchers[path].watcher.close();
-            delete this.clients[clientId].directoryWatchers[path];
+        var watchers = this.clients[clientId].directoryWatchers;
+        if (watchers[path]) {
+            if (watchers.watcher)
+                watchers.watcher.close();
+            delete watchers[path];
         }
     };
 
