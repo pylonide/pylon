@@ -197,10 +197,12 @@ util.inherits(WatcherPlugin, Plugin);
     };
 
     this.removeFileWatcher = function(clientId, path) {
-        if (this.clients[clientId].fileWatchers[path]) {
+        var watchers = this.clients[clientId].fileWatchers;
+        if (watchers[path]) {
             console.log("close", this.clients[clientId].fileWatchers[path]);
-            this.clients[clientId].fileWatchers[path].watcher.close();
-            delete this.clients[clientId].fileWatchers[path];
+            if (watchers[path].watcher)
+                watchers[path].watcher.close();
+            delete watchers[path];
         }
     };
 
