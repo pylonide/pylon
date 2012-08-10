@@ -61,16 +61,13 @@ util.inherits(WatcherPlugin, Plugin);
     
     this.addVFSFileWatcher = function(clientId, path, client, watcher) {
         if (!this.clients[clientId].fileWatchers[path]) {
-            if (watcher) {
-                console.log("close1", path);
+            if (watcher)
                 watcher.close();
-            }
             return;
         }
 
         var self = this;
         watcher.on("change", function (currStat, prevStat) {
-            console.log("changeFile", path, currStat, prevStat, currStat.mtime);
             self.onFileChange(clientId, path, currStat, prevStat, client);
             if (currStat === "rename") {
                 // File was either moved or recreated; let's assume the latter and reinit
@@ -96,15 +93,12 @@ util.inherits(WatcherPlugin, Plugin);
 
             var watcher = meta.watcher;
             if (!self.clients[clientId].directoryWatchers[path]) {
-                if (watcher) {
-                    console.log("close2", path);
+                if (watcher)
                     watcher.close();
-                }
                 return;
             }
 
             watcher.on("change", function (event, filename) {
-                console.log("changeDir", filename);
                 self.onDirectoryChange(clientId, path, event, filename, client);
             });
 
@@ -122,13 +116,10 @@ util.inherits(WatcherPlugin, Plugin);
             return;
         }
 
-        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime.getTime() === currStat.mtime.getTime()) {
-            console.log("prevStat");
+        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime.getTime() === currStat.mtime.getTime())
             return;
-        }
 
         if (!currStat) {
-            console.log("!curStat");
             this.removeFileWatcher(clientId, path);
             client.send(JSON.stringify({
                 "type"    : "watcher",
@@ -207,7 +198,6 @@ util.inherits(WatcherPlugin, Plugin);
     this.removeFileWatcher = function(clientId, path) {
         var watchers = this.clients[clientId].fileWatchers;
         if (watchers[path]) {
-            console.log("close", this.clients[clientId].fileWatchers[path]);
             if (watchers[path].watcher)
                 watchers[path].watcher.close();
             delete watchers[path];
