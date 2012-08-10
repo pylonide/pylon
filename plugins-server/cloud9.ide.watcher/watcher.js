@@ -55,23 +55,26 @@ util.inherits(WatcherPlugin, Plugin);
         vfs.watch(path, {file: true, persistent: false}, function (err, meta) {
             if (err)
                 return console.error("can't add file watcher for " + path, err);
-
-            var watcher = meta.watcher;
-            if (!self.clients[clientId].fileWatchers[path]) {
-                if (watcher) {
-                    console.log("close1", path);
-                    watcher.close();
-                }
-                return;
-            }
-
-            watcher.on("change", function (currStat, prevStat) {
-                console.log("changeFile", path, currStat, prevStat);
-                self.onFileChange(clientId, path, currStat, prevStat, client);
-            });
-
-            self.clients[clientId].fileWatchers[path].watcher = watcher;
+            self.addVFSFileWatcher(clientId, path, client, meta.watcher);
         });
+    };
+    
+    this.addVFSFileWatcher = function(clientId, path, client, watcher) {
+        if (!this.clients[clientId].fileWatchers[path]) {
+            if (watcher) {
+                console.log("close1", path);
+                watcher.close();
+            }
+            return;
+        }
+
+        var self = this;
+        watcher.on("change", function (currStat, prevStat) {
+            console.log("changeFile", path, currStat, prevStat);
+            self.onFileChange(clientId, path, currStat, prevStat, client);
+        });
+
+        this.clients[clientId].fileWatchers[path].watcher = watcher;
     };
 
     this.addDirectoryWatcher = function(clientId, path, client) {
