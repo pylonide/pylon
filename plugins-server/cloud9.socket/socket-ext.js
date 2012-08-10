@@ -12,12 +12,6 @@ module.exports = function setup(options, imports, register) {
 
     TRANSPORT.on("connect", function(connection) {
 
-        console.log("Connected:", connection.id);
-
-        connection.once("disconnect", function(reason) {
-            console.log("Disconnected:", connection.id, reason);
-        });
-
         connection.on("message", function(message) {
 
             if (message.command === "attach" && typeof message.workspaceId !== "undefined") {
@@ -47,14 +41,6 @@ module.exports = function setup(options, imports, register) {
                     });
                 });            
             }
-        });
-
-        connection.on("away", function() {
-            console.log("Away:", connection.id);
-        });
-
-        connection.on("back", function() {
-            console.log("Back:", connection.id);
         });
     });
 
