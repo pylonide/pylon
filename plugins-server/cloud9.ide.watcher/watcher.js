@@ -70,8 +70,13 @@ util.inherits(WatcherPlugin, Plugin);
 
         var self = this;
         watcher.on("change", function (currStat, prevStat) {
-            console.log("changeFile", path, currStat, prevStat);
+            console.log("changeFile", path, currStat, prevStat, currStat.mtime);
             self.onFileChange(clientId, path, currStat, prevStat, client);
+            if (currStat === "rename") {
+                // File was either moved or recreated; let's assume the latter and reinit
+                self.removeFileWatcher(clientId, path);
+                self.addFileWatcher(clientId, path, client);
+            }
         });
 
         this.clients[clientId].fileWatchers[path].watcher = watcher;
