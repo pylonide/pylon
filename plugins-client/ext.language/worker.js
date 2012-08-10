@@ -275,6 +275,7 @@ function asyncParForEach(array, fn, callback) {
             handler.proxy = this.serverProxy;
             handler.sender = this.sender;
             this.handlers.push(handler);
+            this.$initHandler(handler, null, function() {});
         } catch (e) {
             if (isWorkerEnabled())
                 throw new Error("Could not load language handler " + path, e);
@@ -693,7 +694,7 @@ function asyncParForEach(array, fn, callback) {
     // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code, project) {
         var _self = this;
-        if (! this.$analyzeInterval) {
+        if (!this.$analyzeInterval) {
             this.$analyzeInterval = setInterval(function() {
                 _self.analyze(function(){});
             }, 2000);
@@ -706,13 +707,18 @@ function asyncParForEach(array, fn, callback) {
         this.lastCurrentNode = null;
         this.lastCurrentPos = null;
         this.setValue(code);
-        var doc = this.doc;
         asyncForEach(this.handlers, function(handler, next) {
-            handler.path = path;
-            handler.project = project;
-            handler.language = language;
-            handler.onDocumentOpen(path, doc, oldPath, next);
+            _self.$initHandler(handler, oldPath, next);
         });
+    };
+    
+    this.$initHandler = function(handler, oldPath, callback) {
+        if (!this.$path) // switchFile not called yet
+            return callback();
+        handler.path = this.$path;
+        handler.project = this.project;
+        handler.language = this.$language;
+        handler.onDocumentOpen(this.$path, this.doc, oldPath, callback);
     };
     
     this.documentClose = function(event) {

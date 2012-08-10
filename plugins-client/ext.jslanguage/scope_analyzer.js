@@ -20,6 +20,7 @@ var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
 require("treehugger/traverse"); // add traversal functions to trees
 
+var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
@@ -387,13 +388,13 @@ handler.analyze = function(doc, ast, callback) {
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
             // var bla;
-            'VarDecl(x)', function(b, node) {
+            'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, e)', function(b, node) {
+            'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
             },
@@ -414,10 +415,10 @@ handler.analyze = function(doc, ast, callback) {
         node.setAnnotation("scope", scope);
         function analyze(scope, node, inCallback) {
             node.traverseTopDown(
-                'VarDecl(x)', function(b) {
+                'VarDecl(x)', 'ConstDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
-                'VarDeclInit(x, e)', function(b) {
+                'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
                     while (b.e.isMatch('Assign(_, _)'))
                         b.e = b.e[1];
@@ -486,7 +487,8 @@ handler.analyze = function(doc, ast, callback) {
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
                             mustUseVars.push(v);
                     });
-                    scopeAnalyzer(newScope, b.body, null, inCallback === IN_CALLBACK_DEF ? IN_CALLBACK_BODY : 0);
+                    var inBody = inCallback === IN_CALLBACK_DEF || isCallback(node);
+                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
@@ -558,11 +560,30 @@ handler.analyze = function(doc, ast, callback) {
 
 var isCallbackCall = function(node) {
     var result;
-    node.rewrite("Call(PropAccess(_, p), [_])", function(b) {
-        if (b.p.value === "forEach" || b.p.value === "map")
+    node.rewrite(
+        'Call(PropAccess(_, p), args)', function(b) {
+            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p.value) !== -1)
+                result = true;
+        },
+        'Call(Var("require"), [_])', function(b) {
             result = true;
-    });
+        }
+    );
     return result || outline.tryExtractEventHandler(node);
+};
+
+var isCallback = function(node) {
+    var result;
+    node.rewrite(
+        'Function("", fargs, _)', function(b) {
+            if (b.fargs.length === 0 || b.fargs[0].cons !== 'FArg')
+                return;
+            var name = b.fargs[0][0].value;
+            if (name === 'err' || name === 'error' || name === 'exc')
+                result = true;
+        }
+    );
+    return result;
 };
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
@@ -599,11 +620,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
-        'VarDeclInit(x, _)', function(b) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'VarDecl(x)', function(b) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
@@ -633,11 +654,11 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
     var v;
     var mainNode;
     currentNode.rewrite(
-        'VarDeclInit(x, _)', function(b, node) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
-        'VarDecl(x)', function(b, node) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
