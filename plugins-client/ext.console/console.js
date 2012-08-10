@@ -77,6 +77,11 @@ module.exports = ext.register("ext/console/console", {
             if (message.body.extra.sentatinit)
                 this.recreateLogStreamBlocks(message.body.out);
         },
+        
+        kill: function(message, outputElDetails) {
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
+            this.markProcessAsCompleted(message.body.pid, true, message.body.err);
+        },
 
         __default__: function(message, outputElDetails) {
             var res = message.body;
@@ -362,7 +367,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    markProcessAsCompleted: function(id, idIsPid) {
+    markProcessAsCompleted: function(id, idIsPid, msg) {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
@@ -377,7 +382,7 @@ module.exports = ext.register("ext/console/console", {
 
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
-                logger.logNodeStream("Process successfully quit", null,
+                logger.logNodeStream(msg || "Process successfully quit", null,
                     this.getLogStreamOutObject(id), ide);
             }
 
