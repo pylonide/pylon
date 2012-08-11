@@ -206,40 +206,22 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     disableEventListeners: function() {
-        if (this.$onMessageFn)
-            ide.removeEventListener("socketMessage", this.$onMessageFn);
-
         if (this.$onOpenFileFn)
             ide.removeEventListener("afteropenfile", this.$onOpenFileFn);
 
         if (this.$onCloseFileFn)
             ide.removeEventListener("closefile", this.$onCloseFileFn);
 
-        if (this.$onSwitchFileFn)
-            ide.removeEventListener("tab.beforeswitch", this.$onSwitchFileFn);
-
-        if (this.$onAfterSwitchFn)
-            ide.removeEventListener("tab.afterswitch", this.$onAfterSwitchFn);
-
         if (this.$onBeforeSaveWarning)
             ide.removeEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
 
     enableEventListeners: function() {
-        if (this.$onMessageFn)
-            ide.addEventListener("socketMessage", this.$onMessageFn);
-
         if (this.$onOpenFileFn)
             ide.addEventListener("afteropenfile", this.$onOpenFileFn);
 
         if (this.$onCloseFileFn)
             ide.addEventListener("closefile", this.$onCloseFileFn);
-
-        if (this.$onSwitchFileFn)
-            ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
-
-        if (this.$onAfterSwitchFn)
-            ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
 
         if (this.$onBeforeSaveWarning)
             ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);

@@ -129,12 +129,16 @@ module.exports = ext.register("ext/revisions/revisions", {
             );
         });
 
+
+        // Declaration of event listeners
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
         this.$onAfterOnline = this.onAfterOnline.bind(this);
         this.$onRevisionSaved = this.onRevisionSaved.bind(this);
+        this.$onExternalChange = this.onExternalChange.bind(this);
+        this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
 
         ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
@@ -142,6 +146,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("closefile", this.$onCloseFileFn);
         ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
+        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
+        ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
 
         // Remove the revision file if the file is removed.
         ide.addEventListener("removefile", this.onFileRemove);
@@ -1109,8 +1115,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revObj.previewCache) {
             revObj.previewCache = {};
         }
-
-            revObj.previewCache[id] = [newSession, ranges];
+        revObj.previewCache[id] = [newSession, ranges];
     },
 
     /**
@@ -1420,28 +1425,12 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (this.$onExternalChange)
             ide.addEventListener("beforewatcherchange", this.$onExternalChange);
-
-        if (this.$onBeforeSaveWarning)
-            ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
 
     enable: function() {
         this.nodes.each(function(item) {
             item.enable();
         });
-
-        tabEditors.getPages().forEach(function(page) {
-            var listener = this.docChangeListeners[page.name];
-            if (listener) {
-                page.$doc.removeEventListener("change", listener);
-                if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener("change", listener);
-                }
-
-                (page.$doc.acedoc || page.$doc).addEventListener("change", listener);
-            }
-        }, this);
-
         this.enableEventListeners();
     },
 
@@ -1452,13 +1441,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
 
         tabEditors.getPages().forEach(function(page) {
-            var listener = this.docChangeListeners[page.name];
-            if (listener) {
-                page.$doc.removeEventListener("change", listener);
-                if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener("change", listener);
-                }
-            }
             if (page.$mdlRevisions) {
                 delete page.$mdlRevisions;
             }
@@ -1480,13 +1462,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.disableEventListeners();
 
         tabEditors.getPages().forEach(function(page) {
-            var listener = this.docChangeListeners[page.name];
-            if (listener) {
-                page.$doc.removeEventListener("change", listener);
-                if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener("change", listener);
-                }
-            }
             if (page.$mdlRevisions) {
                 delete page.$mdlRevisions;
             }
