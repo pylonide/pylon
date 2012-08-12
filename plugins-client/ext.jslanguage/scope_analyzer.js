@@ -18,6 +18,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
+var jshint = require("ace/worker/jshint").JSHINT;
 require("treehugger/traverse"); // add traversal functions to trees
 
 var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
