@@ -338,10 +338,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             vp.change(0, vp.limit, true);
             
             setTimeout(function(){
-                if (!dgGoToFile.selected) {
-                    dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
-                    txtGoToFile.focus();
-                }
+                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                txtGoToFile.focus();
             });
         }
         
