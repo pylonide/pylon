@@ -39,6 +39,8 @@ handler.analyze = function(doc, ast, callback) {
             var reason = warning.reason;
             if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
                 type = "error";
+            if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
+                type = "error";
             if (reason.indexOf("Missing semicolon") !== -1)
                 type = "info";
             if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
