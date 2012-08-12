@@ -69,8 +69,14 @@ handler.analyzeSync = function(doc, ast) {
     return markers;
 };
 
+/**
+ * Gets an object like { foo: true } for JSHint global comments
+ * like / * global foo: true * /
+ */
 handler.getGlobals = function() {
     var array = lint.data().globals;
+    if (!array) // no data (yet?)
+        return {};
     var obj = {};
     for (var i = 0; i < array.length; i++) {
         obj[array[i]] = true;
