@@ -438,7 +438,7 @@ handler.analyze = function(doc, ast, callback) {
                         scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e, inCallback);
-                    return this;
+                    return node;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
                     if(!scope.isDeclared(b.x.value)) {
@@ -451,7 +451,7 @@ handler.analyze = function(doc, ast, callback) {
                     }
                     analyze(scope, b.e);
                     analyze(scope, b.stats);
-                    return this;
+                    return node;
                 },
                 'Var("this")', function(b, node) {
                     if (inCallback === IN_CALLBACK_BODY) {
@@ -516,13 +516,13 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
-                'Call(e, args)', function(b) {
+                'Call(e, args)', function(b, node) {
                     analyze(scope, b.e, inCallback);
                     analyze(scope, b.args, isCallbackCall(this) ? IN_CALLBACK_DEF : 0);
-                    return this;
+                    return node;
                 },
-                'Block(_)', function() {
-                    this.setAnnotation("scope", scope);
+                'Block(_)', function(b, node) {
+                    node.setAnnotation("scope", scope);
                 },
                 'New(Var("require"), _)', function() {
                     markers.push({
@@ -610,8 +610,8 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         });
     }
     currentNode.rewrite(
-        'Var(x)', function(b) {
-            var scope = this.getAnnotation("scope");
+        'Var(x)', function(b, node) {
+            var scope = node.getAnnotation("scope");
             if (!scope)
                 return;
             var v = scope.get(b.x.value);
@@ -632,11 +632,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'Function(x, _, _)', function(b) {
+        'Function(x, _, _)', function(b, node) {
             // Only for named functions
-            if(!b.x.value || !this.getAnnotation("scope"))
+            if(!b.x.value || !node.getAnnotation("scope"))
                 return;
-            highlightVariable(this.getAnnotation("scope").get(b.x.value));
+            highlightVariable(node.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         }
     );
