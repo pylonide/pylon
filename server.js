@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
+var fs = require('path');
 var path = require('path');
+
+// forward compatibility with node v0.8, path.exists*() has been deprecated
+// and prints a warning message
+path.existsSync = fs.existsSync || path.existsSync;
+path.exists = fs.exists || path.exists;
+
 var architect = require("architect");
 var spawn = require("child_process").spawn;
 

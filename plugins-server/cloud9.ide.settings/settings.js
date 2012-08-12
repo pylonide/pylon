@@ -32,7 +32,7 @@ module.exports = function setup(options, imports, register) {
         // This is needed by c9local where settings file cannot be stored at `/.settings`.
         if (typeof options.absoluteSettingsPath !== "undefined") {
             FS = require("fs");
-            FS.exists = require("path").exists;
+            FS.exists = FS.exists || require("path").exists;
             SETTINGS_PATH = options.absoluteSettingsPath;        
         }
 
