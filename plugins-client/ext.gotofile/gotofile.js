@@ -431,16 +431,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             if (!txtGoToFile.inited) {
                 setTimeout(function(){
-                    afterTbRendered();
+                    txtGoToFile.inited = true;
+                    txtGoToFile.focus();
                 });
             }
             else {
-                afterTbRendered();
-            }
-            
-            function afterTbRendered(){
                 txtGoToFile.focus();
-                txtGoToFile.inited = true;
             }
             
             // If we had a filter and new content, lets refilter
