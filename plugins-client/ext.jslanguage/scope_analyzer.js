@@ -427,7 +427,9 @@ handler.analyze = function(doc, ast, callback) {
                         mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
-                    if(!scope.isDeclared(b.x.value) && !jshintGlobals[b.x.value]) {
+                    if (!scope.isDeclared(b.x.value) && !jshintGlobals[b.x.value]) {
+                        if (!handler.isFeatureEnabled("undeclaredVars"))
+                            return node;
                         markers.push({
                             pos: node[0].getPos(),
                             level: 'warning',
@@ -442,7 +444,8 @@ handler.analyze = function(doc, ast, callback) {
                     return node;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
-                    if(!scope.isDeclared(b.x.value) && !jshintGlobals[b.x.value]) {
+                    if (handler.isFeatureEnabled("undeclaredVars") &&
+                        !scope.isDeclared(b.x.value) && !jshintGlobals[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
