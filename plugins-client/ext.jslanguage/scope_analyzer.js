@@ -18,7 +18,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
-var jshint = require("ace/worker/jshint").JSHINT;
+var jshint = require("ext/jslanguage/jshint");
 require("treehugger/traverse"); // add traversal functions to trees
 
 var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
@@ -468,7 +468,8 @@ handler.analyze = function(doc, ast, callback) {
                     node.setAnnotation("scope", scope);
                     if(scope.isDeclared(b.x.value)) {
                         scope.get(b.x.value).addUse(node);
-                    } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
+                    } else if(handler.isFeatureEnabled("undeclaredVars") &&
+                        !GLOBALS[b.x.value] && !jshintGlobals[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -554,9 +555,17 @@ handler.analyze = function(doc, ast, callback) {
             }
         }
     }
+    
+    var jshintMarkers = [];
+    var jshintGlobals = {};
+    if (handler.isFeatureEnabled("jshint")) {
+        jshintMarkers = jshint.analyzeSync(doc, ast);
+        jshintGlobals = jshint.getGlobals();
+    }
+    
     var rootScope = new Scope();
     scopeAnalyzer(rootScope, ast);
-    callback(markers);
+    callback(markers.concat(jshintMarkers));
 };
 
 var isCallbackCall = function(node) {

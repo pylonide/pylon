@@ -17,6 +17,10 @@ handler.handlesLanguage = function(language) {
 };
 
 handler.analyze = function(doc, ast, callback) {
+    callback(handler.analyzeSync(doc, ast));
+};
+
+handler.analyzeSync = function(doc, ast) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
@@ -61,7 +65,17 @@ handler.analyze = function(doc, ast, callback) {
             });
         });
     }
-    callback(markers);
+    console.log("hinted", markers.length, lint.data().globals);
+    return markers;
+};
+
+handler.getGlobals = function() {
+    var array = lint.data().globals;
+    var obj = {};
+    for (var i = 0; i < array.length; i++) {
+        obj[array[i]] = true;
+    }
+    return obj;
 };
     
 });
