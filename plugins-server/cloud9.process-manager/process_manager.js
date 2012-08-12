@@ -153,13 +153,13 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         callback();
     };
 
-    this.kill = function(pid) {
+    this.kill = function(pid, callback) {
         var child = this.processes[pid];
         if (!child || !child.pid)
-            return false;
+            return callback("Process does not exist");
 
-        child.kill();
-        return true;
+        child.kill("SIGTERM");
+        callback();
     };
 
 }).call(ProcessManager.prototype);
