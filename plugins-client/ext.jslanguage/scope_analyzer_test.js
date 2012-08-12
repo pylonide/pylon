@@ -3,6 +3,8 @@ if (typeof process !== "undefined") {
     require("../../test/setup_paths");
 }
 
+/*global disabledFeatures:true*/
+
 define(function(require, exports, module) {
 
 var assert = require("assert");
