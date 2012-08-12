@@ -65,7 +65,9 @@ var v8DebugClient = exports.v8DebugClient = function() {
         _self.loadScripts(function() {
             _self.backtrace(function() {
                 _self.updateBreakpoints(function() {
-                    // todo handle debug-brk
+                    _self.$v8dbg.listbreakpoints(function(e){
+                        _self.$handleDebugBreak(e.breakpoints);
+                    });
                 });
                 ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
                 _self.onChangeRunning();
@@ -113,7 +115,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
             ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
         });
     };
-    
+
     this.onException = function(e) {
         var _self = this;
         this.backtrace(function() {
@@ -130,7 +132,26 @@ var v8DebugClient = exports.v8DebugClient = function() {
         mdlDbgSources.appendXml(script);
     };
 
-    // apf xml helpers    
+    this.$handleDebugBreak = function(remoteBreakpoints) {
+        var frame = this.activeFrame;
+        if (!frame || !this.$v8dbg)
+            return;
+        var bp = remoteBreakpoints[0];
+        if (bp.number != 1)
+            return;
+
+        var uibp = mdlDbgBreakpoints.queryNode("//breakpoint[@line='" +
+            frame.getAttribute("line") +"' and @path='" +
+            frame.getAttribute("scriptPath") + "']");
+
+        if (uibp && uibp.getAttribute("enabled") == "true")
+            return;
+
+        this.$v8dbg.clearbreakpoint(1, function(){});
+        this.continueScript();
+    };
+
+    // apf xml helpers
     var hasChildren = {
         "object": 8,
         "function": 4
@@ -210,7 +231,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         // windows paths come here independantly from vfs
         return scriptName.replace(/\\/g, "/");
     };
-    
+
     this.$valueString = function(value) {
         switch (value.type) {
             case "undefined":
@@ -343,9 +364,9 @@ var v8DebugClient = exports.v8DebugClient = function() {
     // used from other plugins
     /**
      * state of the debugged process
-     *    null:  process doesn't exist 
+     *    null:  process doesn't exist
      *   'stopped':  paused on breakpoint
-     *   'running':  
+     *   'running':
      */
     this.state = null;
 
@@ -364,7 +385,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
             callback();
         });
     };
-    
+
     this.backtrace = function(callback) {
         var _self = this;
         var model = mdlDbgStack;
