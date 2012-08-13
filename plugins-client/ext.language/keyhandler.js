@@ -110,6 +110,8 @@ function inCompletableCodeContext(line, column, id) {
             i++;
         }
         else if(line[i] === "/" && line[i+1] === "*" && !inMode) {
+            if (line.substr(i + 1, 6) === "global")
+                return;
             inMode = '/*';
             i++;
         }
