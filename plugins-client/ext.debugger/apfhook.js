@@ -5,6 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
+/*global ide dbg */
+ 
 define(function(require, exports, module) {
 
 window.adbg = {
@@ -64,15 +66,9 @@ module.exports = {
         dbg.main = _debugger;
         dbg.breakpoints = _debugger.breakpoints;
         dbg.sources = _debugger.sources;
-        
-        // apf doesn't like if this is called too fast
-        var timeout, state = false;
+
         ide.addEventListener("dbg.changeState", function(e) {
-            state = e.state;
-            clearTimeout(timeout);
-            //var timeout = setTimeout(function(){
-                apf.xmldb.setAttribute(dbg, "state", state || false);
-            //}, 80)
+            apf.xmldb.setAttribute(dbg, "state", e.state || false);
         });
         
         ide.addEventListener("dbg.changeFrame", function(e) {

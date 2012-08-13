@@ -5,12 +5,13 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack */
+
 define(function(require, exports, module) {
 
 var V8Debugger = require("debug/V8Debugger");
 var WSV8DebuggerService = require("debug/WSV8DebuggerService");
 var ide = require("core/ide");
-//var _debugger = require("ext/debugger/debugger");
 
 var v8DebugClient = exports.v8DebugClient = function() {
 };
@@ -22,10 +23,12 @@ var v8DebugClient = exports.v8DebugClient = function() {
 
         var onChangeRunning = this.onChangeRunning.bind(this);
         var onBreak = this.onBreak.bind(this);
+        var onException = this.onException.bind(this);
         var onAfterCompile = this.onAfterCompile.bind(this);
         // register event listeners
         v8dbg.addEventListener("changeRunning", onChangeRunning);
         v8dbg.addEventListener("break", onBreak);
+        v8dbg.addEventListener("exception", onException);
         v8dbg.addEventListener("afterCompile", onAfterCompile);
 
         this.setFrame(null);
@@ -34,34 +37,29 @@ var v8DebugClient = exports.v8DebugClient = function() {
         this.removeListeners = function () {
             v8dbg.removeEventListener("changeRunning", onChangeRunning);
             v8dbg.removeEventListener("break", onBreak);
+            v8dbg.removeEventListener("exception", onException);
             v8dbg.removeEventListener("afterCompile", onAfterCompile);
         };
     };
 
-    this.attach = function(callback) {
+    this.attach = function() {
         var _self = this;
-        callback = callback || function(err, dbgImpl) {
+        var onAttach = function(err, dbgImpl) {
             ide.dispatchEvent("dbg.attached", {dbgImpl: dbgImpl});
             _self.onChangeRunning();
             _self.syncAfterAttach();
         };
 
-        var dbg = this.$v8dbg;
-        if (dbg)
-            return callback && callback(null, this);
-
-        if (!this.$v8ds)
-            this.$v8ds = new WSV8DebuggerService(ide.socket);
+        this.$v8ds = new WSV8DebuggerService(ide.socket);
 
         this.$v8ds.attach(0, function() {
             _self.$startDebugging();
-            callback && callback(null, _self);
+            onAttach(null, _self);
         });
     };
 
     this.syncAfterAttach = function () {
         var _self = this;
-        var isFirstBreak, breakpointsAdded, framesAdded;
         _self.loadScripts(function() {
             _self.backtrace(function() {
                 _self.updateBreakpoints(function() {
@@ -119,7 +117,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
     this.onException = function(e) {
         var _self = this;
         this.backtrace(function() {
-            ide.dispatchEvent("dbg.exception", {frame: activeFrame, exception: e.exception});
+            ide.dispatchEvent("dbg.exception", {frame: _self.activeFrame, exception: e.exception});
         });
     };
 
