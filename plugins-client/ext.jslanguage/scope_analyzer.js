@@ -21,7 +21,8 @@ var outline = require("ext/jslanguage/outline");
 var jshint = require("ext/jslanguage/jshint");
 require("treehugger/traverse"); // add traversal functions to trees
 
-var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
+var CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
+var CALLBACK_FUNCTIONS = ["require", "setTimeout", "setInterval"];
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
@@ -521,9 +522,12 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
+                'Call(PropAccess(e, "bind"), [_])', function(b) {
+                    analyze(scope, b.e, 0);
+                    return this;
+                },
                 'Call(e, args)', function(b, node) {
-                    analyze(scope, b.e, inCallback);
-                    analyze(scope, b.args, isCallbackCall(this) ? IN_CALLBACK_DEF : 0);
+                    analyze(scope, b.args, inCallback || (isCallbackCall(node) ? IN_CALLBACK_DEF : 0));
                     return node;
                 },
                 'Block(_)', function(b, node) {
@@ -575,14 +579,15 @@ var isCallbackCall = function(node) {
     var result;
     node.rewrite(
         'Call(PropAccess(_, p), args)', function(b) {
-            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p.value) !== -1)
+            if (b.args.length === 1 && CALLBACK_METHODS.indexOf(b.p.value) !== -1)
                 result = true;
         },
-        'Call(Var("require"), [_])', function(b) {
-            result = true;
+        'Call(Var(f), _)', function(b) {
+            if (CALLBACK_FUNCTIONS.indexOf(b.f.value) !== -1)
+                result = true;
         }
     );
-    return result || outline.tryExtractEventHandler(node);
+    return result || outline.tryExtractEventHandler(node, true);
 };
 
 var isCallback = function(node) {
