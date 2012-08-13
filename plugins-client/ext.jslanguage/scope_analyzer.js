@@ -518,7 +518,7 @@ handler.analyze = function(doc, ast, callback) {
                 },
                 'Call(e, args)', function(b) {
                     analyze(scope, b.e, inCallback);
-                    analyze(scope, b.args, isCallbackCall(this) ? IN_CALLBACK_DEF : 0);
+                    analyze(scope, b.args, inCallback || (isCallbackCall(this) ? IN_CALLBACK_DEF : 0));
                     return this;
                 },
                 'Block(_)', function() {
