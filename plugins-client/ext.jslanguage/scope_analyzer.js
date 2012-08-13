@@ -18,6 +18,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
+var jshint = require("ext/jslanguage/jshint");
 require("treehugger/traverse"); // add traversal functions to trees
 
 var CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
@@ -389,13 +390,13 @@ handler.analyze = function(doc, ast, callback) {
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
             // var bla;
-            'VarDecl(x)', function(b, node) {
+            'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, e)', function(b, node) {
+            'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 scope.declare(b.x.value, b.x, PROPER);
             },
@@ -416,10 +417,10 @@ handler.analyze = function(doc, ast, callback) {
         node.setAnnotation("scope", scope);
         function analyze(scope, node, inCallback) {
             node.traverseTopDown(
-                'VarDecl(x)', function(b) {
+                'VarDecl(x)', 'ConstDecl(x)', function(b) {
                     mustUseVars.push(scope.get(b.x.value));
                 },
-                'VarDeclInit(x, e)', function(b) {
+                'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
                     // Allow unused function declarations
                     while (b.e.isMatch('Assign(_, _)'))
                         b.e = b.e[1];
@@ -427,7 +428,9 @@ handler.analyze = function(doc, ast, callback) {
                         mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
-                    if(!scope.isDeclared(b.x.value)) {
+                    if (!scope.isDeclared(b.x.value)) {
+                        if (!handler.isFeatureEnabled("undeclaredVars") || jshintGlobals[b.x.value])
+                            return node;
                         markers.push({
                             pos: node[0].getPos(),
                             level: 'warning',
@@ -439,10 +442,11 @@ handler.analyze = function(doc, ast, callback) {
                         scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e, inCallback);
-                    return this;
+                    return node;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
-                    if(!scope.isDeclared(b.x.value)) {
+                    if (handler.isFeatureEnabled("undeclaredVars") &&
+                        !scope.isDeclared(b.x.value) && !jshintGlobals[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -452,7 +456,7 @@ handler.analyze = function(doc, ast, callback) {
                     }
                     analyze(scope, b.e);
                     analyze(scope, b.stats);
-                    return this;
+                    return node;
                 },
                 'Var("this")', function(b, node) {
                     if (inCallback === IN_CALLBACK_BODY) {
@@ -468,7 +472,8 @@ handler.analyze = function(doc, ast, callback) {
                     node.setAnnotation("scope", scope);
                     if(scope.isDeclared(b.x.value)) {
                         scope.get(b.x.value).addUse(node);
-                    } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
+                    } else if(handler.isFeatureEnabled("undeclaredVars") &&
+                        !GLOBALS[b.x.value] && !jshintGlobals[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -521,13 +526,12 @@ handler.analyze = function(doc, ast, callback) {
                     analyze(scope, b.e, 0);
                     return this;
                 },
-                'Call(e, args)', function(b) {
-                    analyze(scope, b.e, inCallback);
-                    analyze(scope, b.args, inCallback || (isCallbackCall(this) ? IN_CALLBACK_DEF : 0));
-                    return this;
+                'Call(e, args)', function(b, node) {
+                    analyze(scope, b.args, inCallback || (isCallbackCall(node) ? IN_CALLBACK_DEF : 0));
+                    return node;
                 },
-                'Block(_)', function() {
-                    this.setAnnotation("scope", scope);
+                'Block(_)', function(b, node) {
+                    node.setAnnotation("scope", scope);
                 },
                 'New(Var("require"), _)', function() {
                     markers.push({
@@ -558,9 +562,17 @@ handler.analyze = function(doc, ast, callback) {
             }
         }
     }
+    
+    var jshintMarkers = [];
+    var jshintGlobals = {};
+    if (handler.isFeatureEnabled("jshint")) {
+        jshintMarkers = jshint.analyzeSync(doc, ast);
+        jshintGlobals = jshint.getGlobals();
+    }
+    
     var rootScope = new Scope();
     scopeAnalyzer(rootScope, ast);
-    callback(markers);
+    callback(markers.concat(jshintMarkers));
 };
 
 var isCallbackCall = function(node) {
@@ -619,8 +631,8 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         });
     }
     currentNode.rewrite(
-        'Var(x)', function(b) {
-            var scope = this.getAnnotation("scope");
+        'Var(x)', function(b, node) {
+            var scope = node.getAnnotation("scope");
             if (!scope)
                 return;
             var v = scope.get(b.x.value);
@@ -629,11 +641,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
-        'VarDeclInit(x, _)', function(b) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'VarDecl(x)', function(b) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b) {
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
@@ -641,11 +653,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'Function(x, _, _)', function(b) {
+        'Function(x, _, _)', function(b, node) {
             // Only for named functions
-            if(!b.x.value || !this.getAnnotation("scope"))
+            if(!b.x.value || !node.getAnnotation("scope"))
                 return;
-            highlightVariable(this.getAnnotation("scope").get(b.x.value));
+            highlightVariable(node.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         }
     );
@@ -663,11 +675,11 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
     var v;
     var mainNode;
     currentNode.rewrite(
-        'VarDeclInit(x, _)', function(b, node) {
+        'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
-        'VarDecl(x)', function(b, node) {
+        'VarDecl(x)', 'ConstDecl(x)', function(b, node) {
             v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },

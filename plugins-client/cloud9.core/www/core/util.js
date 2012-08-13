@@ -11,15 +11,19 @@ var markup = require("text!core/util.xml");
 
 exports.escapeXpathString = function(name){
     if (name.indexOf('"') > -1) {
-        var out = [], parts = name.split('"');
+        var out = [];
+        var parts = name.split('"');
         parts.each(function(part) {
             out.push(part == '' ? "'\"'" : '"' + part + '"');
-        })
+        });
         return "concat(" + out.join(", ") + ")";
     }
     return '"' + name + '"';
-}
+};
 
+exports.isNewPage = function(page) {
+    return parseInt(page.$model.data.getAttribute("newfile"), 10) === 1;
+};
 
 exports.alert = function(title, header, msg, onhide) {
     if (!self.winAlert)
@@ -114,8 +118,9 @@ exports.removeInteractive = function (amlNode) {
         }
         confirm(files.shift());
         return false;
-    } else
+    } else {
         return true;
+    }
 };
 
 var SupportedIcons = {
@@ -149,7 +154,7 @@ var SupportedIcons = {
 
 var contentTypes = {
     "c9search": "text/x-c9search",
-    
+
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
@@ -213,7 +218,7 @@ var contentTypes = {
 
     "sh": "application/x-sh",
     "bash": "application/x-sh",
-    
+
     "xq": "text/x-xquery"
 };
 

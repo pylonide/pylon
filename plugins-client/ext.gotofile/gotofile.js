@@ -338,10 +338,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             vp.change(0, vp.limit, true);
             
             setTimeout(function(){
-                if (!dgGoToFile.selected) {
-                    dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
-                    txtGoToFile.focus();
-                }
+                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                txtGoToFile.focus();
             });
         }
         
@@ -433,16 +431,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             if (!txtGoToFile.inited) {
                 setTimeout(function(){
-                    afterTbRendered();
+                    txtGoToFile.inited = true;
+                    txtGoToFile.focus();
                 });
             }
             else {
-                afterTbRendered();
-            }
-            
-            function afterTbRendered(){
                 txtGoToFile.focus();
-                txtGoToFile.inited = true;
             }
             
             // If we had a filter and new content, lets refilter
