@@ -137,7 +137,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$onAfterOnline = this.onAfterOnline.bind(this);
         this.$onRevisionSaved = this.onRevisionSaved.bind(this);
         this.$onExternalChange = this.onExternalChange.bind(this);
-        this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
 
         ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
@@ -146,7 +145,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
-        ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
 
         // Remove the revision file if the file is removed.
         ide.addEventListener("removefile", this.onFileRemove);
@@ -1376,9 +1374,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (this.$onExternalChange)
             ide.removeEventListener("beforewatcherchange", this.$onExternalChange);
-
-        if (this.$onBeforeSaveWarning)
-            ide.removeEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
 
     enableEventListeners: function() {
