@@ -29,6 +29,8 @@ var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
 var isContinuousCompletionEnabled;
 
+/*global tabEditors:true cloud9config:true */
+
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Language Services",
     dev     : "Ajax.org",
@@ -112,7 +114,7 @@ module.exports = ext.register("ext/language/language", {
             EditSession.prototype.$startWorker = function() {
                 if (this.$modeId != "ace/mode/javascript")
                     this.$startWorker_orig();
-            }
+            };
         }
     },
 
