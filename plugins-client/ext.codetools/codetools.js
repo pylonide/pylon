@@ -18,13 +18,18 @@ module.exports = ext.register("ext/codetools/codetools", {
 
     nodes : [],
 
-    init : function(){
+    init: function () {},
 
-    },
-
-    register : function(plugin){
-        if (!ceEditor.$codeToolsAttached)
-            this.attachEditorEvents(ceEditor);
+    register: function(plugin) {
+        var _self = this;
+        function checkCE() {
+            if (!ceEditor) {
+                return setTimeout(checkCE, 50);
+            }
+            if (!ceEditor.$codeToolsAttached)
+                _self.attachEditorEvents(ceEditor);
+        }
+        checkCE();
     },
 
     attachEditorEvents: function(amlEditor) {
