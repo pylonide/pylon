@@ -65,7 +65,6 @@ handler.analyzeSync = function(doc, ast) {
             });
         });
     }
-    console.log("hinted", markers.length, lint.data().globals);
     return markers;
 };
 
