@@ -95,5 +95,5 @@ package_clean: helper_clean c9core ext
 
 package: helper c9core ext
 
-test:
+test check:
 	test/run-tests.sh	
