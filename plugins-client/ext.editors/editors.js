@@ -623,7 +623,8 @@ module.exports = ext.register("ext/editors/editors", {
             toHandler.enable();
         }
 
-        var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
+        var prefixRegex = new RegExp("^" + ide.davPrefix);
+        var path = page.$model.data.getAttribute("path").replace(prefixRegex, "");
         /*if (window.history.pushState) {
             var p = location.pathname.split("/");
             window.history.pushState(path, path, "/" + (p[1] || "name") + "/" + (p[2] || "project") + path);
@@ -633,7 +634,8 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
 
-        settings.save();
+        if (page.$model.data.getAttribute("ignore") !== "1")
+            settings.model.setQueryValue("auto/files/@active", path);
 
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
@@ -922,12 +924,6 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (pages.length) {
-                var active = tabEditors.activepage;
-                var page   = tabEditors.getPage();
-                
-                if (page && page.$model.data.getAttribute("ignore") !== "1")
-                    e.model.setQueryValue("auto/files/@active", active);
-
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
                     if (!pages[i] || !pages[i].$model || pages[i].$model.data.getAttribute("ignore") == "1")
