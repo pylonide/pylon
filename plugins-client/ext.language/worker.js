@@ -307,7 +307,7 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 } catch(e) {
-                    if (e instanceof TypeError || e instanceof ReferenceError)
+                    if (e instanceof TypeError || e instanceof ReferenceError || typeof e === 'AssertionError')
                         throw e;
                     // Ignore parse errors
                     next();

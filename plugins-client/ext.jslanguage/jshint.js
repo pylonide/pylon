@@ -17,6 +17,10 @@ handler.handlesLanguage = function(language) {
 };
 
 handler.analyze = function(doc, ast, callback) {
+    callback(handler.analyzeSync(doc, ast));
+};
+
+handler.analyzeSync = function(doc, ast) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
@@ -39,6 +43,8 @@ handler.analyze = function(doc, ast, callback) {
             var reason = warning.reason;
             if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
                 type = "error";
+            if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
+                type = "error";
             if (reason.indexOf("Missing semicolon") !== -1)
                 type = "info";
             if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
@@ -59,7 +65,22 @@ handler.analyze = function(doc, ast, callback) {
             });
         });
     }
-    callback(markers);
+    return markers;
+};
+
+/**
+ * Gets an object like { foo: true } for JSHint global comments
+ * like / * global foo: true * /
+ */
+handler.getGlobals = function() {
+    var array = lint.data().globals;
+    if (!array) // no data (yet?)
+        return {};
+    var obj = {};
+    for (var i = 0; i < array.length; i++) {
+        obj[array[i]] = true;
+    }
+    return obj;
 };
     
 });
