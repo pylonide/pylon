@@ -516,6 +516,10 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
+                'Call(PropAccess(e, "bind"), [_])', function(b) {
+                    analyze(scope, b.e, 0);
+                    return this;
+                },
                 'Call(e, args)', function(b) {
                     analyze(scope, b.e, inCallback);
                     analyze(scope, b.args, inCallback || (isCallbackCall(this) ? IN_CALLBACK_DEF : 0));
