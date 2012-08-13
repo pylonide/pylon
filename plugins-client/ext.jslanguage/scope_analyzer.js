@@ -585,9 +585,6 @@ var isCallbackCall = function(node) {
         'Call(Var(f), _)', function(b) {
             if (CALLBACK_FUNCTIONS.indexOf(b.f.value) !== -1)
                 result = true;
-        },
-        'Call(Var("setTimeout"), [_])', function(b) {
-            result = true;
         }
     );
     return result || outline.tryExtractEventHandler(node, true);
