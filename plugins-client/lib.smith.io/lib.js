@@ -30,7 +30,7 @@ module.exports = function setup(options, imports, register) {
     }]);
 
     imports.static.addStatics([{
-        path: PATH.dirname(require.resolve("msgpack-js")),
+        path: PATH.dirname(require.resolve("browser-msgpack-js")),
         mount: "/msgpack-js/lib",
         rjs: {
             "msgpack-js": "/msgpack-js/lib/msgpack",

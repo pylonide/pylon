@@ -53,7 +53,7 @@
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
 		"treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/8026fea03e87a5a773e87ae9d78e29fab912d52e"],
-        "msgpack-js":   ["npm", "https://github.com/creationix/msgpack-js-browser/tarball/e6dc213cb602d5a8fb402520d7841d2664cd10e9"],
+        "browser-msgpack-js":   ["npm", "https://github.com/creationix/msgpack-js-browser/tarball/e6dc213cb602d5a8fb402520d7841d2664cd10e9"],
         "extendables":  ["url", "https://raw.github.com/Gozala/extendables/v0.2.0/extendables.js"]
     },
 
