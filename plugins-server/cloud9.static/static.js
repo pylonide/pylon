@@ -4,11 +4,11 @@ var connect = require("connect");
 module.exports = function startup(options, imports, register) {
 
     var rjs = {};
-    var prefix = options.bindPrefix || options.prefix || "/static";
+    var prefix = options.prefix || "/static";
     var workerPrefix = options.workerPrefix || "/static";
     
     var staticServer = connect.createServer();
-    imports.connect.useMain(prefix, staticServer);
+    imports.connect.useMain(options.bindPrefix || prefix, staticServer);
 
     register(null, {
         "static": {
