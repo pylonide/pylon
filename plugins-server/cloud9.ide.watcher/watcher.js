@@ -199,7 +199,7 @@ util.inherits(WatcherPlugin, Plugin);
         var watchers = this.clients[clientId].fileWatchers;
         if (watchers[path]) {
             if (watchers[path].watcher)
-                watchers[path].watcher.close();
+                watchers[path].watcher.close ? watchers[path].watcher.close() : watchers[path].watcher.stop();
             delete watchers[path];
         }
     };
@@ -207,8 +207,8 @@ util.inherits(WatcherPlugin, Plugin);
     this.removeDirectoryWatcher = function(clientId, path) {
         var watchers = this.clients[clientId].directoryWatchers;
         if (watchers[path]) {
-            if (watchers.watcher)
-                watchers.watcher.close();
+            if (watchers[path].watcher)
+                watchers[path].watcher.close ? watchers[path].watcher.close() : watchers[path].watcher.stop();
             delete watchers[path];
         }
     };
