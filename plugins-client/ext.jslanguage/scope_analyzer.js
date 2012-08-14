@@ -429,14 +429,14 @@ handler.analyze = function(doc, ast, callback) {
                 },
                 'Assign(Var(x), e)', function(b, node) {
                     if (!scope.isDeclared(b.x.value)) {
-                        if (!handler.isFeatureEnabled("undeclaredVars") || jshintGlobals[b.x.value])
-                            return node;
-                        markers.push({
-                            pos: node[0].getPos(),
-                            level: 'warning',
-                            type: 'warning',
-                            message: "Assigning to undeclared variable."
-                        });
+                        if (handler.isFeatureEnabled("undeclaredVars") && !jshintGlobals[b.x.value]) {
+                            markers.push({
+                                pos: node[0].getPos(),
+                                level: 'warning',
+                                type: 'warning',
+                                message: "Assigning to undeclared variable."
+                            });
+                        }
                     }
                     else {
                         scope.get(b.x.value).addUse(node[0]);
@@ -454,8 +454,8 @@ handler.analyze = function(doc, ast, callback) {
                             message: "Using undeclared variable as iterator variable."
                         });
                     }
-                    analyze(scope, b.e);
-                    analyze(scope, b.stats);
+                    analyze(scope, b.e, inCallback);
+                    analyze(scope, b.stats, inCallback);
                     return node;
                 },
                 'Var("this")', function(b, node) {
@@ -522,11 +522,13 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
-                'Call(PropAccess(e, "bind"), [_])', function(b) {
-                    analyze(scope, b.e, 0);
+                'Call(PropAccess(e1, "bind"), e2)', function(b) {
+                    analyze(scope, b.e1, 0);
+                    analyze(scope, b.e2, inCallback);
                     return this;
                 },
                 'Call(e, args)', function(b, node) {
+                    analyze(scope, b.e, inCallback);
                     analyze(scope, b.args, inCallback || (isCallbackCall(node) ? IN_CALLBACK_DEF : 0));
                     return node;
                 },
