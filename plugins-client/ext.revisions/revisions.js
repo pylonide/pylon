@@ -151,10 +151,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
 
         // Remove the revision file if the file is removed.
-        ide.addEventListener("removefile", this.onFileRemove);
+        ide.addEventListener("removefile", this.onFileRemove.bind(this));
 
         // Rename/move the revision file if the file is renamed/moved
-        ide.addEventListener("updatefile", this.onFileUpdate);
+        ide.addEventListener("updatefile", this.onFileUpdate.bind(this));
 
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
@@ -363,9 +363,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // Remove reference by path to old path in `rawRevisions` and
         // create reference with the new path.
-        if (self.rawRevisions[path]) {
-            self.rawRevisions[newPath] = self.rawRevisions[path];
-            delete self.rawRevisions[path];
+        if (this.rawRevisions[path]) {
+            this.rawRevisions[newPath] = this.rawRevisions[path];
+            delete this.rawRevisions[path];
         }
 
         ide.send({
