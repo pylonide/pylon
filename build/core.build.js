@@ -9,7 +9,7 @@
         "debug": "node_modules/v8debug/lib/v8debug",  
         "ext/main": "plugins-client/ext.main",
         "apf-packaged": "plugins-client/lib.apf/www/apf-packaged",
-        "events": "empty:",
+        "events": "empty:", // NOTE: Do not set path here as `r.js` seems to pull in an empty module. Maybe because of the `events` name?
         "engine.io": "node_modules/engine.io-client/dist/engine.io",
         "smith.io": "node_modules/smith.io/server-plugin/www/client",
         "smith": "node_modules/smith/smith",
