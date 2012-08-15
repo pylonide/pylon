@@ -11,6 +11,12 @@
 		"apf" : "empty:",
 		"treehugger" : "empty:",
 		"debug": "empty:",
+		"events": "empty:",
+		"engine.io": "empty:",
+		"smith.io": "empty:",
+		"smith": "empty:",
+		"msgpack-js": "empty:",
+		"raw.github.com/Gozala/extendables/v0.2.0/extendables": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
 		"ace/worker": "%a",
 		"%m"

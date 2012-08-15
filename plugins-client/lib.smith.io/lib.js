@@ -1,6 +1,5 @@
 
 const PATH = require("path");
-const MAPPINGS = require("mappings").for(PATH.join(__dirname, "../.."));
 
 module.exports = function setup(options, imports, register) {
 
@@ -38,13 +37,13 @@ module.exports = function setup(options, imports, register) {
     }]);
 
     imports.static.addStatics([{
-        path: MAPPINGS.resolve("extendables"),
+        path: PATH.join(__dirname, "www"),
         mount: "/raw.github.com/Gozala/extendables/v0.2.0/extendables.js",
         rjs: {
             "extendables": "/"
         },
         router: function(req, res) {
-            req.url = "/response-body";
+            req.url = "/extendables.js";
             res.setHeader("Content-Type", "application/javascript");
         }
     }]);

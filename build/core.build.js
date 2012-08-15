@@ -8,7 +8,13 @@
         "treehugger" : "node_modules/treehugger/lib/treehugger",
         "debug": "node_modules/v8debug/lib/v8debug",  
         "ext/main": "plugins-client/ext.main",
-        "apf-packaged": "plugins-client/lib.apf/www/apf-packaged"
+        "apf-packaged": "plugins-client/lib.apf/www/apf-packaged",
+        "events": "empty:",
+        "engine.io": "node_modules/engine.io-client/dist/engine.io",
+        "smith.io": "node_modules/smith.io/server-plugin/www/client",
+        "smith": "node_modules/smith/smith",
+        "msgpack-js": "node_modules/browser-msgpack-js/msgpack",
+        "raw.github.com/Gozala/extendables/v0.2.0/extendables": "plugins-client/lib.smith.io/www/extendables"
     },
     include: [
         "node_modules/ace/build/src/ace",
@@ -37,9 +43,10 @@
         "node_modules/ace/build/src/theme-twilight",
         "node_modules/ace/build/src/theme-vibrant_ink",
         "apf-packaged/apf_release",
-        "core/document", 
-        "core/ext", 
-        "core/ide", 
+        "core/document",
+        "core/ext",
+        "raw.github.com/Gozala/extendables/v0.2.0/extendables",
+        "core/ide",
         "core/settings", 
         "core/util", 
         "ext/main/main", 
