@@ -75,7 +75,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
          
         copied = nodes.slice(0);
         amlNode.$dragDrop(selected, copied, candrop && candrop[1], action, 
-            null, null, null, true)
+            null, null, null, this.copied);
         
         //amlNode.copy(nodes, selected, undefined, !this.copied);
     }
