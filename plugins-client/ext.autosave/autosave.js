@@ -1,4 +1,5 @@
-/**
+/*global btnSave:true, tabEditors:true, saveStatus:true*/
+/*
  * Autosave Module for the Cloud9 IDE
  *
  * @author Sergi Mansilla <sergi@c9.io>
@@ -9,10 +10,9 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var CoreUtil = require("core/util");
+var Util = require("core/util");
 
 var Save = require("ext/save/save");
-var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/autosave/settings.xml");
 var stripws = require("ext/stripws/stripws");
@@ -104,7 +104,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             };
         }
 
-        if (!CoreUtil.isNewPage(page)) {
+        if (!Util.isNewPage(page)) {
             this.setSaveButtonCaption();
         }
 
@@ -122,7 +122,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
     onDocChange: function(e, doc) {
         var page = doc.$page;
-        if (page && this.isAutoSaveEnabled && !CoreUtil.isNewPage(page)) {
+        if (page && this.isAutoSaveEnabled && !Util.isNewPage(page)) {
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
                 self.setSaveButtonCaption();
