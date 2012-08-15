@@ -1,3 +1,7 @@
+/*global winQuestionRev:true, winQuestionRevMsg:true, ceEditor:true, revisionsPanel: true
+mnuContextTabs:true, mnuCtxEditor: true, tabEditors:true, mnuCtxEditorCut: true, pgRevisions:true 
+lstRevisions: true, revisionsInfo: true*/
+
 /**
  * Revisions Module for the Cloud9 IDE!
  *
@@ -240,7 +244,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $switchToPageModel: function(page) {
-        if (!Util.pageIsCode(page)) {
+        if (!CoreUtil.pageIsCode(page)) {
             return;
         }
 
@@ -315,7 +319,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
         settings.model.setQueryValue("general/@autosaveenabled", false);
 
-        var path = Util.stripWSFromPath(e.path);
+        var path = CoreUtil.stripWSFromPath(e.path);
         this.changedPaths.push(path);
 
         // Force initialization of extension (so that UI is available)
@@ -345,7 +349,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.send({
                 command: "revisions",
                 subCommand: "getRevisionHistory",
-                path: Util.getDocPath(page)
+                path: CoreUtil.getDocPath(page)
             });
         }
     },
@@ -354,8 +358,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!data || !data.path || !data.newPath)
             return;
 
-        var path = Util.stripWSFromPath(data.path);
-        var newPath = Util.stripWSFromPath(data.newPath);
+        var path = CoreUtil.stripWSFromPath(data.path);
+        var newPath = CoreUtil.stripWSFromPath(data.newPath);
 
         // Remove reference by path to old path in `rawRevisions` and
         // create reference with the new path.
@@ -377,7 +381,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             command: "revisions",
             subCommand: "removeRevision",
             isFolder: data.isFolder,
-            path: Util.stripWSFromPath(data.path)
+            path: CoreUtil.stripWSFromPath(data.path)
         });
     },
 
@@ -386,7 +390,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterSwitch: function(e) {
-        if (!Util.pageIsCode(e.nextPage)) {
+        if (!CoreUtil.pageIsCode(e.nextPage)) {
             return;
         }
 
@@ -405,7 +409,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     onCloseFile: function(e) {
         var self = this;
         setTimeout(function() {
-            var path = Util.getDocPath(e.page);
+            var path = CoreUtil.getDocPath(e.page);
             if (self.rawRevisions[path]) {
                 delete self.rawRevisions[path];
             }
@@ -464,7 +468,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
 
-        var revObj = this.$getRevisionObject(Util.getDocPath());
+        var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
         var id = parseInt(node.getAttribute("id"), 10);
         var cache = revObj.previewCache;
         if (cache[id]) {
@@ -573,7 +577,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Reload page if it has been changed. Once reloaded, the page is saved
         // with the new content.
         var reloadAndSave = function(_page) {
-            var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            var path = CoreUtil.stripWSFromPath(_page.$model.data.getAttribute("path"));
             var index = self.changedPaths.indexOf(path);
             if (self.changedPaths.indexOf(path) > -1) {
                 ide.addEventListener("afterreload", function onDocReload(e) {
@@ -593,7 +597,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         };
 
         var dontReloadAndStore = function(_page) {
-            var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            var path = CoreUtil.stripWSFromPath(_page.$model.data.getAttribute("path"));
             var index = self.changedPaths.indexOf(path);
             if (index > -1) {
                 ide.send({
@@ -702,7 +706,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 this.generateCompactRevisions(revObj);
                 if (!message.nextAction || !message.id) {
-                    if (page && Util.getDocPath(page) === message.path &&
+                    if (page && CoreUtil.getDocPath(page) === message.path &&
                         page.$showRevisions === true) {
                         this.populateModel(revObj, this.model);
                     }
@@ -741,7 +745,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             case "getRealFileContents":
                 var pages = tabEditors.getPages();
                 pages.forEach(function(page) {
-                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                    var path = CoreUtil.stripWSFromPath(page.$model.data.getAttribute("path"));
                     if (message.path === path) {
                         var data = {
                             inDialog: true,
@@ -766,7 +770,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     toggleListView: function(model) {
-        var revObj = this.$getRevisionObject(Util.getDocPath());
+        var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
         revObj.useCompactList = !revObj.useCompactList;
 
         // We don't want to mix up compact/detailed preview caches
@@ -789,7 +793,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     populateModel: function(revObj, model) {
         var page = tabEditors.getPage();
-        if (CoreUtil.isNewPage(page) || !Util.pageIsCode(page)) {
+        if (CoreUtil.isNewPage(page) || !CoreUtil.pageIsCode(page)) {
             return;
         }
 
@@ -870,7 +874,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     getRevision: function(id, content) {
         id = parseInt(id, 10);
 
-        var revObj = this.$getRevisionObject(Util.getDocPath());
+        var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
         var tstamps = Util.keysToSortedArray(revObj.allRevisions);
         var revision = tstamps.indexOf(id);
 
@@ -908,7 +912,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.$setRevisionNodeAttribute(id, "loading", "true");
         }
 
-        var path = Util.getDocPath();
+        var path = CoreUtil.getDocPath();
         var revObj = this.rawRevisions[path];
         if (revObj) {
             return this.onMessage({
@@ -1055,7 +1059,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     previewRevision: function(id, value, ranges, newSession) {
         var editor = ceEditor.$editor;
         var session = editor.getSession();
-        var revObj = this.$getRevisionObject(Util.getDocPath());
+        var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
 
         if (session.previewRevision !== true && !revObj.realSession) {
             revObj.realSession = session;
@@ -1112,7 +1116,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (typeof ceEditor === "undefined")
             return;
 
-        var revObj = this.$getRevisionObject(Util.getDocPath());
+        var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
         if (revObj.realSession) {
             ceEditor.$editor.setSession(revObj.realSession);
         }
@@ -1131,11 +1135,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     saveRevision: function(doc, silentsave, restoring) {
         var page = doc.$page;
-        if (!Util.pageIsCode(page)) {
+        if (!CoreUtil.pageIsCode(page)) {
             return;
         }
 
-        var docPath = Util.getDocPath(page);
+        var docPath = CoreUtil.getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
         if (contributors.length === 0 && this.defaultUser.email) {
             contributors.push(this.defaultUser.email);
@@ -1195,7 +1199,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     addUserToDocChangeList: function(user, doc) {
         if (user && doc) {
-            var path = Util.getDocPath(doc.$page);
+            var path = CoreUtil.getDocPath(doc.$page);
             var stack = this.rawRevisions[path];
             if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
                 stack.usersChanged.push(user.user.email);
@@ -1257,7 +1261,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $setRevisionListClass: function() {
-        var revObj = this.rawRevisions[Util.getDocPath()];
+        var revObj = this.rawRevisions[CoreUtil.getDocPath()];
         if (!revObj) {
             return;
         }
@@ -1274,7 +1278,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     show: function() {
         var page = tabEditors.getPage();
-        if (!Util.pageIsCode(page)) {
+        if (!CoreUtil.pageIsCode(page)) {
             return;
         }
 
@@ -1309,9 +1313,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             // If there is no revision object for the current doc, we should
             // retrieve if it is not being retrieved right now. After retrieval,
             // `populateModel` will take care of setting model.data.
-            var currentDocRevision = this.rawRevisions[Util.getDocPath()];
+            var currentDocRevision = this.rawRevisions[CoreUtil.getDocPath()];
             if (!currentDocRevision && !this.waitingForRevisionHistory) {
-                this.getRevisionHistory({ path: Util.getDocPath() });
+                this.getRevisionHistory({ path: CoreUtil.getDocPath() });
             }
             else {
                 this.$restoreSelection(page, model);
