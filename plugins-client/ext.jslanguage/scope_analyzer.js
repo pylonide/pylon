@@ -18,9 +18,11 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
+var jshint = require("ext/jslanguage/jshint");
 require("treehugger/traverse"); // add traversal functions to trees
 
-var ECMA_CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
+var CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
+var CALLBACK_FUNCTIONS = ["require", "setTimeout", "setInterval"];
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
@@ -426,22 +428,25 @@ handler.analyze = function(doc, ast, callback) {
                         mustUseVars.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
-                    if(!scope.isDeclared(b.x.value)) {
-                        markers.push({
-                            pos: node[0].getPos(),
-                            level: 'warning',
-                            type: 'warning',
-                            message: "Assigning to undeclared variable."
-                        });
+                    if (!scope.isDeclared(b.x.value)) {
+                        if (handler.isFeatureEnabled("undeclaredVars") && !jshintGlobals[b.x.value]) {
+                            markers.push({
+                                pos: node[0].getPos(),
+                                level: 'warning',
+                                type: 'warning',
+                                message: "Assigning to undeclared variable."
+                            });
+                        }
                     }
                     else {
                         scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e, inCallback);
-                    return this;
+                    return node;
                 },
                 'ForIn(Var(x), e, stats)', function(b) {
-                    if(!scope.isDeclared(b.x.value)) {
+                    if (handler.isFeatureEnabled("undeclaredVars") &&
+                        !scope.isDeclared(b.x.value) && !jshintGlobals[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -449,9 +454,9 @@ handler.analyze = function(doc, ast, callback) {
                             message: "Using undeclared variable as iterator variable."
                         });
                     }
-                    analyze(scope, b.e);
-                    analyze(scope, b.stats);
-                    return this;
+                    analyze(scope, b.e, inCallback);
+                    analyze(scope, b.stats, inCallback);
+                    return node;
                 },
                 'Var("this")', function(b, node) {
                     if (inCallback === IN_CALLBACK_BODY) {
@@ -467,7 +472,8 @@ handler.analyze = function(doc, ast, callback) {
                     node.setAnnotation("scope", scope);
                     if(scope.isDeclared(b.x.value)) {
                         scope.get(b.x.value).addUse(node);
-                    } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
+                    } else if(handler.isFeatureEnabled("undeclaredVars") &&
+                        !GLOBALS[b.x.value] && !jshintGlobals[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -516,13 +522,18 @@ handler.analyze = function(doc, ast, callback) {
                         message: "Missing radix argument."
                     });
                 },
-                'Call(e, args)', function(b) {
-                    analyze(scope, b.e, inCallback);
-                    analyze(scope, b.args, isCallbackCall(this) ? IN_CALLBACK_DEF : 0);
+                'Call(PropAccess(e1, "bind"), e2)', function(b) {
+                    analyze(scope, b.e1, 0);
+                    analyze(scope, b.e2, inCallback);
                     return this;
                 },
-                'Block(_)', function() {
-                    this.setAnnotation("scope", scope);
+                'Call(e, args)', function(b, node) {
+                    analyze(scope, b.e, inCallback);
+                    analyze(scope, b.args, inCallback || (isCallbackCall(node) ? IN_CALLBACK_DEF : 0));
+                    return node;
+                },
+                'Block(_)', function(b, node) {
+                    node.setAnnotation("scope", scope);
                 },
                 'New(Var("require"), _)', function() {
                     markers.push({
@@ -553,23 +564,32 @@ handler.analyze = function(doc, ast, callback) {
             }
         }
     }
+    
+    var jshintMarkers = [];
+    var jshintGlobals = {};
+    if (handler.isFeatureEnabled("jshint")) {
+        jshintMarkers = jshint.analyzeSync(doc, ast);
+        jshintGlobals = jshint.getGlobals();
+    }
+    
     var rootScope = new Scope();
     scopeAnalyzer(rootScope, ast);
-    callback(markers);
+    callback(markers.concat(jshintMarkers));
 };
 
 var isCallbackCall = function(node) {
     var result;
     node.rewrite(
         'Call(PropAccess(_, p), args)', function(b) {
-            if (b.args.length === 1 && ECMA_CALLBACK_METHODS.indexOf(b.p.value) !== -1)
+            if (b.args.length === 1 && CALLBACK_METHODS.indexOf(b.p.value) !== -1)
                 result = true;
         },
-        'Call(Var("require"), [_])', function(b) {
-            result = true;
+        'Call(Var(f), _)', function(b) {
+            if (CALLBACK_FUNCTIONS.indexOf(b.f.value) !== -1)
+                result = true;
         }
     );
-    return result || outline.tryExtractEventHandler(node);
+    return result || outline.tryExtractEventHandler(node, true);
 };
 
 var isCallback = function(node) {
@@ -610,8 +630,8 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         });
     }
     currentNode.rewrite(
-        'Var(x)', function(b) {
-            var scope = this.getAnnotation("scope");
+        'Var(x)', function(b, node) {
+            var scope = node.getAnnotation("scope");
             if (!scope)
                 return;
             var v = scope.get(b.x.value);
@@ -632,11 +652,11 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
             highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
-        'Function(x, _, _)', function(b) {
+        'Function(x, _, _)', function(b, node) {
             // Only for named functions
-            if(!b.x.value || !this.getAnnotation("scope"))
+            if(!b.x.value || !node.getAnnotation("scope"))
                 return;
-            highlightVariable(this.getAnnotation("scope").get(b.x.value));
+            highlightVariable(node.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         }
     );

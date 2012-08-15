@@ -66,7 +66,7 @@ function worker(project) {
                     'ext/codecomplete/open_files_local_completer',
                     'ext/jslanguage/parse',
                     'ext/jslanguage/scope_analyzer',
-                    'ext/jslanguage/narcissus_jshint',
+                    'ext/jslanguage/jshint',
                     'ext/jslanguage/debugger',
                     'ext/jslanguage/outline'
                 ]

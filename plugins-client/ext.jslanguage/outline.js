@@ -183,7 +183,7 @@ function extractOutline(doc, node) {
                 name: eventHandler.s[0].value,
                 pos: this.getPos(),
                 displayPos: fixStringPos(doc, eventHandler.s),
-                items: extractOutline(doc, eventHandler.body)
+                items: eventHandler.body && extractOutline(doc, eventHandler.body)
             });
             return this;
         },
@@ -226,7 +226,7 @@ function extractOutline(doc, node) {
     return results;
 }
 
-var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(node) {
+var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(node, ignoreBind) {
     var result;
     node.rewrite('Call(e, args)', function(b) {
         var name = expressionToName(b.e);
@@ -235,11 +235,11 @@ var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(no
         // Require handler at first or second position
         var s;
         var fun;
-        if (b.args[0] && b.args[0].cons === 'String' && b.args[1] && b.args[1].cons === 'Function') {
+        if (b.args[0] && b.args[0].cons === 'String' && isCallbackArg(b.args[1], ignoreBind)) {
             s = b.args[0];
             fun = b.args[1];
         }
-        else if (b.args[1] && b.args[1].cons === 'String' && b.args[2] && b.args[2].cons === 'Function') {
+        else if (b.args[1] && b.args[1].cons === 'String' && isCallbackArg(b.args[2], ignoreBind)) {
             s = b.args[1];
             fun = b.args[2];
         }
@@ -257,6 +257,17 @@ var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(no
             body: fun[2]
         };
     });
+    return result;
+};
+
+var isCallbackArg = function(node, ignoreBind) {
+    if (!node)
+        return false;
+    var result;
+    node.rewrite(
+        'Function(_, _, _)', function() { result = true; },
+        'Call(PropAccess(_, "bind"), [_])', function() { result = !ignoreBind; }
+    );
     return result;
 };
 
