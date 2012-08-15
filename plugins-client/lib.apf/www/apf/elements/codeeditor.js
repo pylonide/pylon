@@ -39,12 +39,10 @@
 define(function(require, exports, module) {
 "use strict";
 
-var ide = require("core/ide");
 var Editor = require("ace/editor").Editor;
 var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
-var Range = require("ace/range").Range;
 var MultiSelect = require("ace/multi_select").MultiSelect;
 var ProxyDocument = require("ext/code/proxydocument");
 var Document = require("ace/document").Document;
@@ -96,7 +94,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
+        "overwrite", "tabsize", "softtabs", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
         "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
         "gutterline");
@@ -200,9 +198,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         _self.$editor.setShowPrintMargin(_self.showprintmargin);
 
         _self.$editor.setSession(doc);
-
-        // clear breakpoints
-        // doc.setBreakpoints([]);
     };
 
     this.afterOpenFile = function(doc, path) {
@@ -689,7 +684,6 @@ apf.codebox = function(struct, tagName) {
             }
             
             var longestLine = this.$getLongestLine();
-            var firstRow = 0;
             var lastRow = this.session.getLength();
 
             this.scrollTop = 0;            

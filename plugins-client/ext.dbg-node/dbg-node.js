@@ -5,13 +5,12 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack */
+/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack ide */
 
 define(function(require, exports, module) {
 
-var V8Debugger = require("debug/V8Debugger");
-var WSV8DebuggerService = require("debug/WSV8DebuggerService");
-var ide = require("core/ide");
+var V8Debugger = require("v8debug/V8Debugger");
+var WSV8DebuggerService = require("v8debug/WSV8DebuggerService");
 
 var v8DebugClient = exports.v8DebugClient = function() {
 };
@@ -621,7 +620,6 @@ ide.addEventListener("dbg.ready", function(e) {
 });
 
 ide.addEventListener("dbg.exit", function(e) {
-    ide.dispatchEvent("beforecontinue");
     if (exports.dbgImpl) {
         exports.dbgImpl.detach();
         exports.dbgImpl = null;

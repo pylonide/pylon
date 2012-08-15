@@ -12,7 +12,9 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
-var Range = require("ace/range").Range
+var Range = require("ace/range").Range;
+
+/*global dbg dbgCallStack dgStack mdlDbgSources mdlDbgStack tabEditors*/
 
 module.exports = {
     hook: function() {
@@ -134,7 +136,7 @@ module.exports = {
     },
 
     showDebugFile: function(scriptId, row, column, text) {
-        this.show({scriptId: scriptId, row: row, column: column, text: text})
+        this.show({scriptId: scriptId, row: row, column: column, text: text});
     },
 
     /**

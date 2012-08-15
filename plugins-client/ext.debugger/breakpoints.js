@@ -9,9 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
-var commands = require("ext/commands/commands");
 var sources = require("ext/debugger/sources");
 
 /*global dbgBreakpoints:true mdlDbgBreakpoints:true dbg:true lstBreakpoints:true lstScripts:true tabEditors:true*/
@@ -40,7 +38,7 @@ module.exports = {
             updateTimeout = setTimeout(function() {
                 updateTimeout = null;
                 _self.$syncOpenFiles();
-            }, 200);
+            }, 100);
         });
 
         ide.addEventListener("settings.load", function (e) {

@@ -11,7 +11,6 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
