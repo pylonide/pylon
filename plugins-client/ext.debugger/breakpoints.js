@@ -1,5 +1,5 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * Breakpoints for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -14,6 +14,7 @@ var dock = require("ext/dockpanel/dockpanel");
 var commands = require("ext/commands/commands");
 var sources = require("ext/debugger/sources");
 
+/*global dbgBreakpoints:true mdlDbgBreakpoints:true dbg:true lstBreakpoints:true lstScripts:true tabEditors:true*/
 
 module.exports = {
     hook: function() {
@@ -35,7 +36,7 @@ module.exports = {
             if (_self.$updating)
                 return;
             if (updateTimeout)
-                clearTimeout(updateTimeout)
+                clearTimeout(updateTimeout);
             updateTimeout = setTimeout(function() {
                 updateTimeout = null;
                 _self.$syncOpenFiles();
@@ -214,8 +215,8 @@ module.exports = {
 
     removeBreakpoint: function(path, row) {
         this.$updating = true;
-        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path
-            + "' and @line='" + row + "']");
+        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path +
+            "' and @line='" + row + "']");
         bp && apf.xmldb.removeNode(bp);
         this.$updating = false;
     },
