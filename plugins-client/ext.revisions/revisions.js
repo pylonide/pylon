@@ -29,6 +29,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 
 // Revision dependencies
 var markup = require("text!ext/revisions/revisions.xml");
+markup = markup.replace("{ide.staticPrefix}", ide.staticPrefix);
 var skin = require("text!ext/revisions/skin.xml");
 var Util = require("ext/revisions/revisions_util");
 var cssString = require("text!ext/revisions/style.css");
