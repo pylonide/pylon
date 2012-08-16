@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var dock = require("ext/dockpanel/dockpanel");
 var sources = require("ext/debugger/sources");
+var BREAKPOINT_DELAY = 100;
 
 /*global dbgBreakpoints:true mdlDbgBreakpoints:true dbg:true lstBreakpoints:true lstScripts:true tabEditors:true*/
 
@@ -29,7 +30,7 @@ module.exports = {
                 remoteUpdateTimeout = setTimeout(function() {
                     remoteUpdateTimeout = null;
                     dbg.main.updateBreakpoints();
-                }, 100);
+                }, BREAKPOINT_DELAY);
 
             if (_self.$updating)
                 return;
@@ -38,7 +39,7 @@ module.exports = {
             updateTimeout = setTimeout(function() {
                 updateTimeout = null;
                 _self.$syncOpenFiles();
-            }, 100);
+            }, BREAKPOINT_DELAY);
         });
 
         ide.addEventListener("settings.load", function (e) {
