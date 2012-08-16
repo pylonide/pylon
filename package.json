@@ -30,7 +30,6 @@
         "connect-architect": "0.0.3",
 
         "smith.io": "0.0.7",
-        "smith": "0.1.7",
         "events": "0.5.0",
         "engine.io-client": "0.2.0"
     },
@@ -53,7 +52,8 @@
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/61841e99eda6ea9a8b801fd145b9a0af286ad324"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
 		"treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/8026fea03e87a5a773e87ae9d78e29fab912d52e"],
-        "browser-msgpack-js":   ["npm", "https://github.com/creationix/msgpack-js-browser/tarball/e6dc213cb602d5a8fb402520d7841d2664cd10e9"]
+        "browser-msgpack-js":   ["npm", "https://github.com/creationix/msgpack-js-browser/tarball/e6dc213cb602d5a8fb402520d7841d2664cd10e9"],
+        "smith":        ["npm", "https://github.com/c9/smith/tarball/0080a7cd8308401473941aa97a02043c0467467e"]
     },
 
     "repository" : {
