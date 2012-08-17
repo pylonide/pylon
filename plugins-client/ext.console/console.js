@@ -26,6 +26,10 @@ var anims = require("ext/anims/anims");
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
+/*global txtConsolePrompt tabEditors txtConsole btnCollapseConsole
+         txtConsoleInput txtOutput consoleRow  tabConsole winDbgConsole cliBox
+*/
+
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Cloud9 IDE, Inc.",
@@ -79,8 +83,8 @@ module.exports = ext.register("ext/console/console", {
         },
         
         kill: function(message, outputElDetails) {
-            logger.logNodeStream(message.body, null, outputElDetails, ide);
-            this.markProcessAsCompleted(message.body.pid, true, message.body.err);
+            logger.logNodeStream(message.body, null, outputElDetails || message.body.err, ide);
+            // this.markProcessAsCompleted(message.body.pid, true, message.body.err);
         },
 
         __default__: function(message, outputElDetails) {
@@ -296,7 +300,7 @@ module.exports = ext.register("ext/console/console", {
         if (defCmd !== "") {
             this.markProcessAsCompleted(this.command_id_tracer);
             logger.logNodeStream(defCmd, null,
-                this.getLogStreamOutObject(this.command_id_tracer), ide);
+            this.getLogStreamOutObject(this.command_id_tracer), ide);
             this.command_id_tracer++;
         }
         else {
@@ -371,6 +375,7 @@ module.exports = ext.register("ext/console/console", {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
+        txtConsolePrompt.hide();
 
         if (spinnerElement) {
             logger.killBufferInterval(id);
@@ -380,11 +385,8 @@ module.exports = ext.register("ext/console/console", {
             if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
-            if (pNode.className.indexOf("quitting") !== -1) {
+            if (pNode.className.indexOf("quitting") !== -1)
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
-                logger.logNodeStream(msg || "Process successfully quit", null,
-                    this.getLogStreamOutObject(id), ide);
-            }
 
             setTimeout(function() {
                 spinnerElement = document.getElementById("spinner" + id);
@@ -912,7 +914,7 @@ module.exports = ext.register("ext/console/console", {
                 input.setValue("");
                 txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
             }
-        })
+        });
 
         if (this.logged.length) {
             this.logged.forEach(function(text){
@@ -1029,8 +1031,9 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         apf.setStyleClass(pNode, "quitting_proc");
-        logger.logNodeStream("Quitting this process...", null,
-            this.getLogStreamOutObject(command_id), ide);
+        logger.logNodeStream("Process terminated", null,
+        this.getLogStreamOutObject(command_id), ide);
+        this.markProcessAsCompleted(pid, true);
 
         ide.send({
             command: "kill",
