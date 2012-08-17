@@ -56,8 +56,15 @@ module.exports = {
         });
 
         ide.addEventListener("dbg.changeFrame", function(e) {
-            e.data && _self.showDebugFrame(e.data);
             updateMarker(e.data);
+        });
+
+        ide.addEventListener("dbg.break", function(e) {
+            _self.showDebugFrame(e.frame);
+        });
+        ide.addEventListener("dbg.exception", function(e) {
+            _self.showDebugFrame(e.frame);
+            // todo show ui for e.exception
         });
 
         this.paths = {};
