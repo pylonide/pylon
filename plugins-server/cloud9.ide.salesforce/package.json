@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.ide.salesforce",
+    "version": "0.0.1",
+
+    "main": "./salesforce.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-shell",
+            "eventbus"
+        ]
+    }
+}

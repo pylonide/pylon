@@ -1,0 +1,88 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winSalesForce"
+      title     = "SalesForce"
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "close"
+      modal     = "false"
+      skin      = "bk-window"
+      width     = "750"
+      height    = "450"
+      kbclose   = "true"
+      draggable = "true">
+        <a:vbox id="innerSalesForce" anchors="0 0 0 0" edge="0 0 11 0">
+            <a:tab flex="1" skin="extensions_tab">
+                <!-- TODO Change to "Organizations" when you can add multiple -->
+                <a:page caption="Organization">
+                    <a:vbox anchors="10 10 10 10">
+                        <a:hbox edge="0 0 5 0" padding="5">
+                            <a:label textAlign="right" width="100">Project Name:</a:label>
+                            <!-- value="[{require('core/settings').model}::sfdc/organizations/@projectname]" onkeyup="require('ext/salesforce/salesforce').updateName(this.value)" -->
+                            <a:textbox id="sfdcProjectName" flex="1" realtime="true" />
+                        </a:hbox>
+                        <a:hbox edge="0 0 5 0" padding="5">
+                            <a:label width="100">User Name:</a:label>
+                            <a:textbox id="sfdcUserName" flex="1" realtime="true" />
+                        </a:hbox>
+                        <a:hbox align="center" edge="0 0 5 0" padding="5">
+                            <a:label width="100">Password:</a:label>
+                            <a:textbox id="sfdcPassword" flex="1" realtime="true" />
+                        </a:hbox>
+                        <a:hbox align="center" edge="0 0 5 0" padding="5">
+                            <a:label width="100">Security Token:</a:label>
+                            <a:textbox id="sfdcSecurityToken" flex="1" realtime="true" />
+                        </a:hbox>
+                        <a:hbox align="center" edge="0 0 5 0" padding="5">
+                            <a:label width="100">Consumer Key:</a:label>
+                            <a:textbox id="sfdcConsumerKey" flex="1" realtime="true" />
+                        </a:hbox>
+                        <a:hbox align="center" edge="0 0 5 0" padding="5">
+                            <a:label width="100">Consumer Secret:</a:label>
+                            <a:textbox id="sfdcConsumerSecret" flex="1" realtime="true" />
+                        </a:hbox>
+                        <a:divider />
+                        <!-- Weird, the b tag ignores white space around it? -->
+                        <a:hbox edge="5 0 5 0">These fields are <b style="padding: 0 5px 0 5px"> read only </b > and are retrieved from the server when authenticated.</a:hbox>
+                        <a:hbox edge="0 0 5 0" padding="5">
+                            <a:label width="100">Instance URL:</a:label>
+                            <a:textbox id="sfdcInstanceUrl" flex="1" readonly="true"/>
+                        </a:hbox>
+                        <!-- Probably don't want to show the token in a prod ext but for semo purposed it is fine -->
+                        <a:hbox edge="0 0 5 0" padding="5">
+                            <a:label width="100">Token:</a:label>
+                            <a:textbox id="sfdcToken" flex="1" readonly="true" />
+                        </a:hbox>
+                        <a:divider />
+                        <a:hbox align="center" edge="5 0 5 0" padding="5">
+                            <a:button width="80"
+                              default = "1"
+                              caption = "Save"
+                              onclick = "require('ext/salesforce/salesforce').saveOrganization()"
+                            />
+                            <a:button width="100"
+                              default = "1"
+                              caption = "Query Classes"
+                              onclick = "require('ext/salesforce/salesforce').queryClasses()"
+                            />
+                        </a:hbox>
+                        <a:vbox id="sfdcStatus">
+                        
+                        </a:vbox>
+                        <!-- a -->
+                    </a:vbox>
+                </a:page>
+            </a:tab>
+            <a:hbox edge="11 10 0 0" pack="end" visible="true">
+                <a:button
+                   class   = "btn-green"
+                   caption = "Done"
+                   margin = "0 0 0 10"
+                   skin = "btn-default-css3"
+                   onclick = "winSalesForce.close()"
+                />
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>
