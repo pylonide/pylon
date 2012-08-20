@@ -173,7 +173,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         return [
             "<file scriptid='", script.id,
             "' scriptname='", apf.escapeXML(script.name || "anonymous"),
-            "' path='", apf.escapeXML(this.getPathFromScriptName(script.name)),
+            "' path='", apf.escapeXML(this.getLocalScriptPath(script)),
             "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
             "' lineoffset='", script.lineOffset,
             "' debug='true' />"
@@ -222,7 +222,8 @@ var v8DebugClient = exports.v8DebugClient = function() {
         return script.getAttribute("path");
     };
 
-    this.getPathFromScriptName = function(scriptName) {
+    this.getLocalScriptPath = function(script) {
+        var scriptName = script.name || ("-anonymous-" + script.id);
         if (scriptName.substring(0, ide.workspaceDir.length) == ide.workspaceDir)
             scriptName = ide.davPrefix + scriptName.substr(ide.workspaceDir.length);
         // windows paths come here independantly from vfs
@@ -323,7 +324,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
             "' ref='", frame.ref,
             "' line='", frame.line,
             "' script='", this.$strip(script.name),
-            "' scriptPath='", this.getPathFromScriptName(script.name),
+            "' scriptPath='", this.getLocalScriptPath(script),
             "' scriptid='", frame.func.scriptId, //script.id,
             "'>"
         );
