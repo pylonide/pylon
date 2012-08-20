@@ -171,16 +171,13 @@ util.inherits(NpmRuntimePlugin, Plugin);
             
             self.pm.spawn("shell", {
                 command: "sh",
+                args: ["-c", message.line],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message);
-                
-                // pipe the original line through to sh
-                child.child.stdin.write(message.line);
-                child.child.stdin.end();
                     
                 self.children[pid] = child;
             });
