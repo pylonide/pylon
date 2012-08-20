@@ -112,7 +112,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             }
         });
 
-        if (message.command === "node")
+        if (message.command === "node" && message.argv.length > 1)
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
@@ -169,18 +169,25 @@ util.inherits(NpmRuntimePlugin, Plugin);
             // use resolved command
             message.argv[0] = out.split("\n")[0];
             
+            var shellAliases =
+                "function python { if [ $# == 0 ]; then `which python` -i; else `which python` \"$@\"; fi; };" +
+                "function irb { `which irb` --readline \"$@\"; };" +
+                "function node {" +
+                "  if [ $# == 0 ]; then" +
+                "    if node -v | grep v0.6 > /dev/null; then echo Interactive mode not supported with Node 0.6;" +
+                "    else `which node` -i; fi" +
+                "  else `which node` \"$@\"; fi;" +
+                "};";
+
             self.pm.spawn("shell", {
                 command: "sh",
+                args: ["-c", shellAliases + message.line],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message);
-                
-                // pipe the original line through to sh
-                child.child.stdin.write(message.line);
-                child.child.stdin.end();
                     
                 self.children[pid] = child;
             });
