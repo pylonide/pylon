@@ -130,9 +130,10 @@ util.inherits(RubyRuntimePlugin, Plugin);
     };
 
     this.$kill = function(pid, message, client) {
+        var self = this;
         this.pm.kill(pid, function(err) {
             if (err)
-                return this.error(err, 1, message, client);
+                return self.error(err, 1, message, client);
         });
     };
 
