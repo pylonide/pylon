@@ -172,7 +172,12 @@ util.inherits(NpmRuntimePlugin, Plugin);
             var shellAliases =
                 "function python { if [ $# == 0 ]; then `which python` -i; else `which python` \"$@\"; fi; };" +
                 "function irb { `which irb` --readline \"$@\"; };" +
-                "function node { if [ $# == 0 ] && node -v | grep -v v0.6 > /dev/null; then `which node` -i; else `which node` \"$@\"; fi; };";
+                "function node {" +
+                "  if [ $# == 0 ]; then" +
+                "    if node -v | grep v0.6 > /dev/null; then echo Interactive mode not supported with Node 0.6;" +
+                "    else `which node` -i; fi" +
+                "  else `which node` \"$@\"; fi;" +
+                "};";
 
             self.pm.spawn("shell", {
                 command: "sh",
