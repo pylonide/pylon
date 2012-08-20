@@ -154,6 +154,10 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     };
 
     this.kill = function(pid, callback) {
+        if (typeof callback !== "function") {
+            callback = function () {};
+        }
+        
         var child = this.processes[pid];
         if (!child)
             return callback("Process does not exist");
