@@ -209,6 +209,8 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
 
     this.getScriptnameFromPath = function(path) {
+        if (!path)
+            return;
         var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
         if (script)
             return script.getAttribute("scriptname");
@@ -546,7 +548,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         // read all the breakpoints, then call the debugger to actually set them
         var uiBreakpoints = mdlDbgBreakpoints.queryNodes("breakpoint").map(function(bp) {
             return {
-                path: bp.getAttribute("path"),
+                path: bp.getAttribute("path") || "",
                 line: parseInt(bp.getAttribute("line"), 10),
                 column: parseInt(bp.getAttribute("column"), 10) || 0,
                 enabled: bp.getAttribute("enabled") == "true",

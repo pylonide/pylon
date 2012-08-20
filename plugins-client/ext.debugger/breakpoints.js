@@ -52,8 +52,25 @@ module.exports = {
             }
             // bind it to the Breakpoint model
             mdlDbgBreakpoints.load(bpFromIde);
+            convertBreakpoints(mdlDbgBreakpoints);
             _self.$syncOpenFiles();
         });
+        
+        // converts Breakpoints to the new format, needed only for the transition period
+        function convertBreakpoints(model) {
+            var brokenNodes = model.queryNodes("//breakpoint[not(@path)]");
+            brokenNodes.forEach(function(bp) {
+                var script = bp.getAttribute("script");
+                if (!script)
+                    return apf.xmldb.removeNode(bp);
+
+                if (script.slice(0, ide.workspaceDir.length) == ide.workspaceDir)
+                    script = ide.davPrefix + script.slice(ide.workspaceDir.length);
+
+                bp.removeAttribute("script");
+                bp.setAttribute("path", script);
+            });
+        }
 
         // register dock panel
         var name =  "ext/debugger/debugger";
