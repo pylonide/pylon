@@ -169,9 +169,14 @@ util.inherits(NpmRuntimePlugin, Plugin);
             // use resolved command
             message.argv[0] = out.split("\n")[0];
             
+            var shellAliases =
+                "function python { if [ $# == 0 ]; then `which python` -i; else `which python` \"$@\"; fi; };" +
+                "function irb { `which irb` --readline \"$@\"; };" +
+                "function node { if [ $# == 0 ] && node -v | grep -v v0.6 > /dev/null; then `which node` -i; else `which node` \"$@\"; fi; };";
+
             self.pm.spawn("shell", {
                 command: "sh",
-                args: ["-c", message.line],
+                args: ["-c", shellAliases + message.line],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
