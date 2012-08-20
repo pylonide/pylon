@@ -371,7 +371,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    markProcessAsCompleted: function(id, idIsPid, msg) {
+    markProcessAsCompleted: function(id, idIsPid) {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
