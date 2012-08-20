@@ -112,7 +112,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             }
         });
 
-        if (message.command === "node")
+        if (message.command === "node" && message.argv.length > 1)
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
