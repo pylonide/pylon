@@ -210,9 +210,15 @@ var v8DebugClient = exports.v8DebugClient = function() {
 
     this.getScriptnameFromPath = function(path) {
         var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
-        if (!script)
-            return;
-        return script.getAttribute("scriptname");
+        if (script)
+            return script.getAttribute("scriptname");
+        // if script isn't added yet reconstruct it's name from ide.workspaceDir
+        if (path.substring(0, ide.davPrefix.length) != ide.davPrefix)
+            return path;
+        path = path.substr(ide.davPrefix.length);
+        if (ide.workspaceDir.slice(1, 3) == ":\\")
+            path = path.replace(/\//g, "\\");
+        return ide.workspaceDir + path;
     };
 
     this.getPathFromScriptId = function(scriptId) {

@@ -67,8 +67,6 @@ module.exports = {
             // todo show ui for e.exception
         });
 
-        this.paths = {};
-
         // stack view
         modelName = "mdlDbgStack";
         model = apf.nameserver.register("model", modelName, new apf.model());
@@ -133,7 +131,7 @@ module.exports = {
         });
     },
 
-    showDebugFrame:  function(frame) {
+    showDebugFrame: function(frame) {
         this.show({
             row: parseInt(frame.getAttribute("line")),
             column: parseInt(frame.getAttribute("column")),
