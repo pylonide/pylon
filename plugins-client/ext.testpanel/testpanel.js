@@ -51,7 +51,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         ide.addEventListener("afterfilesave", function(e) {
             var autoRun = settings.model.queryValue("auto/testpanel/@autorun");
             
-            if (dbg.state)
+            if (stRunning.active)
                 return;
             
             if (autoRun == "none")

@@ -9,7 +9,6 @@ var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword
 var debuggerPlugin = require("ext/debugger/debugger"); 
 var editors = require("ext/editors/editors");
-var Range = require("ace/range").Range;
 
 module.exports = (function () {
     
@@ -17,14 +16,14 @@ module.exports = (function () {
     var windowHtml = null;
     var datagridHtml = null;
     var currentExpression = null;
-    var marker = null;
-    var isOpen = false;
-
+    
     var hook = function () {
-        ext.initExtension(this);
+        var self = this;
+        ext.initExtension(self);
         
         // listen to changes that affect the debugger, so we can toggle the visibility based on this
-        ide.addEventListener("dbg.changeState", checkDebuggerActive);
+        stRunning.addEventListener("prop.active", checkDebuggerActive);
+        stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
     };
     
     var init = function () {
@@ -49,16 +48,18 @@ module.exports = (function () {
             }
         });
         
-        ide.addEventListener("language.worker", function(e) {
+        ide.addEventListener("language.worker", function(e){
             // listen to the worker's response
             e.worker.on("inspect", function(event) {
                 if (!event || !event.data) {
-                    return hide();
+                    winLiveInspect.hide();
+                    return;
                 }
                 
                 // create an expression that the debugger understands
-                if (event.data.value) {
-                    liveWatch(event.data);
+                var expression = event.data;
+                if (expression) {
+                    liveWatch(expression);
                 }
             });
         });
@@ -103,7 +104,7 @@ module.exports = (function () {
             var height = rows[0].offsetHeight * rows.length;
             
             // add border of the container
-            height += (windowHtml.scrollHeight - windowHtml.offsetHeight);
+            height += (windowHtml.offsetHeight - windowHtml.scrollHeight);
             
             // find header
             var header = datagridHtml.querySelector(".headings");
@@ -118,7 +119,7 @@ module.exports = (function () {
             }
             
             // update height
-            winLiveInspect.$ext.style.height = height + "px";
+            winLiveInspect.setAttribute("height", height);
         }
     };
         
@@ -214,12 +215,12 @@ module.exports = (function () {
     /**
      * Check whether the debugger is attached & on a breakpoint
      */
-    var checkDebuggerActive = function (dbg) {
-        if (dbg.state == 'stopped') {
+    var checkDebuggerActive = function () {
+        if (!stRunning.active && stDebugProcessRunning.active) {
             // debugger running
         }
         else if (self.winLiveInspect) {
-            hide();
+            winLiveInspect.hide();
         }
     };
     
@@ -228,21 +229,27 @@ module.exports = (function () {
      * debugger is in.
      */
     var isCurrentFrame = function(){
-        var frame = self.dbg.activeframe;
+        var frame, page = tabEditors.getPage();
+        
+        if (self.dgStack)
+            frame = dgStack.selected;
+        else
+            frame = mdlDbgStack.queryNode("frame[@index=0]");
+        
         if (!frame)
             return false;
         
-        var page = tabEditors.getPage();
-        var path = frame.getAttribute("scriptPath");
-
+        var scriptName = frame.getAttribute("script");
+        
         // I have to do a fairly weak filename compare. 
         // An improvement is to store the full path in the stack model.
-        if (page.getModel().queryValue("@path") != path)
+        if (page.getModel().queryValue("@path")
+            .substr(ide.davPrefix.length + 1) != scriptName)
             return false;
         
-        // @todo check if we are still in the current function
-        // var line = frame.getAttribute("line");
-        // var column = frame.getAttribute("column");
+        var line = frame.getAttribute("line");
+        var column = frame.getAttribute("column");
+        //@todo check if we are still in the current function
         
         return true;
     }
@@ -256,25 +263,19 @@ module.exports = (function () {
             activeTimeout = null;
         }
         
-        if (dbg.state == 'stopped') {
+        if (!stRunning.active && stDebugProcessRunning.active) {
             activeTimeout = setTimeout(function () {
-                activeTimeout = null;
                 if (!isCurrentFrame())
-                    return hide();
+                    return;
                 
                 var pos = ev.getDocumentPosition();
-                if (pos.column == ev.editor.session.getLine(pos.row).length)
-                    return hide();
-
                 ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
                 
                 // hide it, and set left / top so it gets positioned right when showing again
-                if (!marker || !marker.range.contains(pos.row, pos.column)) {
-                    hide();
-                }
+                winLiveInspect.hide();
                 windowHtml.style.left = ev.clientX + "px";
                 windowHtml.style.top = (ev.clientY + 8) + "px";
-            }, 450);
+            }, 750);
         }
     };
     
@@ -283,7 +284,7 @@ module.exports = (function () {
      */
     var onDocumentMouseMove = function (ev) {
         if (!activeTimeout) {
-            return;
+            return;   
         }
         
         // see whether we hover over the editor or the quickwatch window
@@ -315,9 +316,9 @@ module.exports = (function () {
         if (winLiveInspect.visible) {
             // if we are visible, then give the user 400 ms to get back into the window
             // otherwise hide it
-            if (activeTimeout)
-                clearTimeout(activeTimeout);
-            activeTimeout = setTimeout(hide, 400);
+            activeTimeout = setTimeout(function () {
+                winLiveInspect.hide();
+            }, 750);
         }
         else {
             // if not visible? then just clear the timeout
@@ -330,15 +331,13 @@ module.exports = (function () {
      * When clicking in the editor window, hide live inspect
      */
     var onEditorClick = function (ev) {
-        hide(ev.editor);
+        winLiveInspect.hide();
     };
     
     /**
      * Execute live watching
      */
-    var liveWatch = function (data) {
-        addMarker(data);
-        var expr = data.value;
+    var liveWatch = function (expr) {
         // already visible, and same expression?
         if (winLiveInspect.visible && expr === currentExpression) {
             return;
@@ -356,7 +355,7 @@ module.exports = (function () {
         if (mnuCtxEditor && mnuCtxEditor.visible) {
             return;
         }
-
+        
         // evaluate the expression in the debugger, and receive model as callback
         inspector.evaluate(expr, function (model) {
             // bind it to the datagrid
@@ -378,39 +377,6 @@ module.exports = (function () {
             // resize the window
             resizeWindow();
         });
-    };
-    
-    var hide = function () {
-        if (winLiveInspect.visible) {
-            winLiveInspect.hide();
-        }
-        if (marker) {
-            marker.session.removeMarker(marker.id);
-            marker = null;
-        }
-        if (activeTimeout) {
-            activeTimeout = clearTimeout(activeTimeout);
-        }
-    };
-    
-    var addMarker = function (data) {
-        var pos = data.pos;
-        if (marker) {
-            marker.session.removeMarker(marker.id);
-        }
-        
-        var session = ceEditor.$editor.session;
-        if (pos.el != pos.sl && data.value.indexOf("\n") == -1) {
-            pos.el = pos.sl;
-            pos.ec = session.getLine(pos.sl).length;
-        }
-
-        var range = new Range(pos.sl, pos.sc, pos.el, pos.ec);
-        marker = {
-            session: session,
-            id: session.addMarker(range, "ace_bracket", "text", true),
-            range: range
-        };
     };
     
     var getNumericProperties = function (obj) {

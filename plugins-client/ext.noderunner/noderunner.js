@@ -7,12 +7,14 @@
 
 define(function(require, exports, module) {
 
+require("apf/elements/debugger");
+require("apf/elements/debughost");
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var markup = require("text!ext/noderunner/noderunner.xml");
 var c9console = require("ext/console/console");
-var _debugger = require("ext/debugger/debugger");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",
@@ -25,20 +27,22 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     NODE_VERSION: "auto",
 
-    init : function() {
+    init : function(){
         var _self = this;
-        if (ide.connected) {
-            this.queryServerState();
-            ide.addEventListener("socketDisconnect", function() {
-                ide.dispatchEvent("dbg.exit");
-            });
-        } else {           
-            ide.addEventListener("socketConnect", function() {
-                _self.queryServerState();
-            });
-        }
-        
+        ide.addEventListener("socketConnect", this.onConnect.bind(this));
+        ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
+        dbg.addEventListener("break", function(e){
+            ide.dispatchEvent("break", e);
+        });
+
+        dbgNode.addEventListener("onsocketfind", function() {
+            return ide.socket;
+        });
+
+        stDebugProcessRunning.addEventListener("activate", this.$onDebugProcessActivate.bind(this));
+        stDebugProcessRunning.addEventListener("deactivate", this.$onDebugProcessDeactivate.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
             ide.send({
@@ -57,51 +61,70 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         });
     },
 
+    $onDebugProcessActivate : function() {
+        dbg.attach(dbgNode, 0);
+    },
+
+    $onDebugProcessDeactivate : function() {
+        dbg.detach(function(){});
+    },
+
     onMessage : function(e) {
         var message = e.message;
-        //if (message.type != "shell-data")
-           // console.log("MSG", message)
+        //console.log("MSG", message)
 
         switch(message.type) {
             case "node-debug-ready":
             case "php-debug-ready":
             case "python-debug-ready":
             case "ruby-debug-ready":
-                ide.dispatchEvent("dbg.ready", message);
+                ide.dispatchEvent("debugready");
                 break;
+
+            case "chrome-debug-ready":
+                winTab.show();
+                dbgChrome.loadTabs();
+                ide.dispatchEvent("debugready");
+                break;
+
             case "node-exit":
             case "php-exit":
             case "python-exit":
             case "ruby-exit":
-                ide.dispatchEvent("dbg.exit", message);
-                if (message.pid == this.nodePid) {
-                    stProcessRunning.deactivate();
-                    this.nodePid = 0;
-                }
+                stProcessRunning.deactivate();
+                stDebugProcessRunning.deactivate();
                 break;
 
             case "state":
                 this.nodePid = message.processRunning || 0;
+
+                stDebugProcessRunning.setProperty("active", !!message.debugClient);
                 stProcessRunning.setProperty("active", !!message.processRunning);
 
-                ide.dispatchEvent("dbg.state", message);
+                dbgNode.setProperty("strip", message.workspaceDir + "/");
+                ide.dispatchEvent("noderunnerready");
                 break;
 
             case "error":
                 // child process already running
                 if (message.code == 1) {
+                    stDebugProcessRunning.setProperty("active", false);
                     stProcessRunning.setProperty("active", true);
+                    break;
                 }
                 // debug process already running
                 else if (message.code == 5) {
+                    stDebugProcessRunning.setProperty("active", true);
                     stProcessRunning.setProperty("active", true);
+                    break;
                 }
+
                 /*
                     6:
                     401: Authorization Required
                 */
                 // Command error
-                else if (message.code === 9) {
+                if (message.code === 9) {
                     c9console.log("<div class='item console_log' style='font-weight:bold;color:yellow'>"
                         + message.message + "</div>");
                 }
@@ -122,26 +145,46 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     });
                 }
 
-                this.queryServerState();
+                ide.send({"command": "state", "action": "publish"});
                 break;
         }
     },
 
-    queryServerState : function() {
+    onConnect : function() {
+        ide.send({"command": "state"});
+            
+        /**** START Moved from offline.js ****/
+        
         // load the state, which is quite a weird name actually, but it contains
         // info about the debugger. The response is handled by 'noderunner.js'
         // who publishes info for the UI of the debugging controls based on this.
-        ide.send({command: "state", action: "publish" });
+        ide.send({
+            command: "state",
+            action: "publish"
+        });
+
+        // the debugger needs to know that we are going to attach, but that its not a normal state message
+        dbg.registerAutoAttach();
+        
+        /**** END Moved from offline.js ****/
+    },
+
+    onDisconnect : function() {
+        stDebugProcessRunning.deactivate();
     },
 
     debug : function() {
+        this.$run(true);
     },
 
     run : function(path, args, debug, nodeVersion) {
         var runner;
+        
+        // this is a manual action, so we'll tell that to the debugger
+        dbg.registerManualAttach();
         if (stProcessRunning.active || typeof path != "string")
             return false;
-        // TODO there should be a way to set satate to waiting
+
         stProcessRunning.activate()
 
         path = path.trim();

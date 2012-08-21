@@ -29,7 +29,8 @@
 
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
-      readonly          = "{(!stServerConnected.active and !require('core/ide').local) || [@loading] || (location.host and dbg.state and [@debug])}"
+      debugger          = "{this.syntax == 'javascript' ? dbg : null}"
+      readonly          = "{(!stServerConnected.active and !require('core/ide').local) || [@loading] || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
     <a:menu id="mnuCtxEditor">
@@ -41,11 +42,11 @@
         <a:item command="paste">Paste</a:item>
         <a:divider />
         <a:item
-          visible="{dbg.state == 'stopped'}"
+          visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);
           ">Quick Watch</a:item>
-        <a:divider visible="{dbg.state == 'stopped'}" />
+        <a:divider visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}" />
         <a:item command="selectall">Select All</a:item>
     </a:menu>
 
