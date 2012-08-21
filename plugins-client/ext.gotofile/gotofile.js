@@ -47,11 +47,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             name: "gotofile",
             hint: "search for a filename and jump to it",
             bindKey: {mac: "Command-E", win: "Ctrl-E"},
-            exec: function () {
+            exec: function () {  
                 if (!_self.isGeneric)
                     _self.toggleDialog(1);
-                else
-                    winBlockGotoFile.show()
+                else {
+                    ext.initExtension(_self);
+                    winGoToFile.visible = true;
+                    winGoToFile.hide();
+                    winBlockGotoFile.show();
+                }
             }
         });
 
