@@ -246,7 +246,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (!bar.extended)
                 dock.showBar(bar);
         });*/
-        ide.addEventListener("dbg.break", function(){
+        ide.addEventListener("break", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel() || hasBreaked)
                 return;
 

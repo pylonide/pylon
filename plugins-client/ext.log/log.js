@@ -108,7 +108,7 @@ module.exports = ext.register("ext/log/log", {
             xmlNode.setAttribute(k, attrs[k]);	
         });	
         	
-        xmlNode.appendChild(xmlNode.parentNode.createCDATASection(request ? JSON.stringify(request).replace("]]>", "]] >") : ""));
+        xmlNode.appendChild(xmlNode.parentNode.createCDATASection(request ? JSON.stringify(request) : ""));
         
         return apf.xmldb.appendChild(this.model.data, xmlNode);
     },
