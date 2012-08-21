@@ -83,8 +83,7 @@ module.exports = ext.register("ext/console/console", {
         },
         
         kill: function(message, outputElDetails) {
-            logger.logNodeStream(message.body, null, outputElDetails || message.body.err, ide);
-            // this.markProcessAsCompleted(message.body.pid, true, message.body.err);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         __default__: function(message, outputElDetails) {
