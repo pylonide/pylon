@@ -50,16 +50,8 @@ function analyze(doc, pos) {
     var analysisCache = wordDistanceAnalyzer(doc, pos, identifier);
     return analysisCache;
 }
-
-/**
- * Returns whether the completion engine requires an AST representation of the code
- */
-completer.completionRequiresParsing = function() {
-    return false;
-};
     
-completer.complete = function(doc, fullAst, data, currentNode, callback) {
-    var pos = data.pos;
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var identDict = analyze(doc, pos);
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);

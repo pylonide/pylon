@@ -23,8 +23,7 @@ completer.fetchText = function(staticPrefix, path) {
         return false;
 };
 
-completer.complete = function(doc, fullAst, data, currentNode, callback) {
-    var pos = data.pos;
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     if(line[pos.column - identifier.length - 1] === '.') // No snippet completion after "."
@@ -33,7 +32,9 @@ completer.complete = function(doc, fullAst, data, currentNode, callback) {
     var snippets = snippetCache[this.language];
     
     if (snippets === undefined) {
-        var text = this.fetchText(data.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
+        var text;
+        if (this.language)
+            text = this.fetchText(this.staticPrefix, 'ext/codecomplete/snippets/' + this.language + '.json');
         snippets = text ? JSON.parse(text) : {};
         // Cache
         snippetCache[this.language] = snippets;
@@ -46,6 +47,7 @@ completer.complete = function(doc, fullAst, data, currentNode, callback) {
         return {
           name        : m,
           replaceText : snippets[m],
+          doc         : "<pre>" + snippets[m].replace("\^\^", "&#9251;") + "</pre>",
           icon        : null,
           meta        : "snippet",
           priority    : 2

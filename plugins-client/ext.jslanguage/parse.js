@@ -20,6 +20,18 @@ handler.parse = function(code, callback) {
     callback(parser.parse(code));
 };
 
+handler.isParsingSupported = function() {
+    return true;
+}; 
+
+handler.findNode = function(ast, pos, callback) {
+    callback(ast.findNode(pos));
+};
+
+handler.getPos = function(node, callback) {
+    callback(node.getPos());
+};
+
 /* Ready to be enabled to replace Narcissus, when mature
 
 handler.analyze = function(doc, ast) {

@@ -231,6 +231,35 @@ module.exports = ext.register("ext/save/save", {
                 delete winSaveAs.page;
             }
         });
+        
+        trSaveAs.addEventListener("beforerename", this.$beforerename = function(e){
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+
+            if (trSaveAs.$model.data.firstChild == trSaveAs.selected)
+                return false;
+
+            // check for a path with the same name, which is not allowed to rename to:
+            var path = e.args[0].getAttribute("path"),
+                newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]).toLowerCase();
+
+            var exists, nodes = trSaveAs.getModel().queryNodes(".//node()");
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var pathLwr = nodes[i].getAttribute("path").toLowerCase();
+                if (nodes[i] != e.args[0] && pathLwr === newpath) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (exists) {
+                util.alert("Error", "Unable to Rename",
+                    "That name is already taken. Please choose a different name.");
+                trSaveAs.getActionTracker().undo();
+                return false;
+            }
+
+            fs.beforeRename(e.args[0], e.args[1]);
+        });
     },
 
     reverttosaved : function(){
@@ -338,8 +367,16 @@ module.exports = ext.register("ext/save/save", {
         var value = doc.getValue();
 
         fs.saveFile(path, value, function(data, state, extra){
+
+            ide.dispatchEvent("track_action", {
+                type: "save as filetype",
+                fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
+                success: state != apf.SUCCESS ? "false" : "true"
+            });
+            apf.xmldb.removeAttribute(node, "saving");
+
             if (state != apf.SUCCESS) {
-                util.alert(
+                return util.alert(
                     "Could not save document",
                     "An error occurred while saving this document",
                     "Please see if your internet connection is available and try again. "
@@ -347,6 +384,8 @@ module.exports = ext.register("ext/save/save", {
                             ? "The connection timed out."
                             : "The error reported was " + extra.message));
             }
+
+            page.$at.dispatchEvent("afterchange");
 
             ide.dispatchEvent("afterfilesave", {
                 node: node,
@@ -356,13 +395,6 @@ module.exports = ext.register("ext/save/save", {
                 silentsave: silentsave
             });
 
-            ide.dispatchEvent("track_action", {
-                type: "save as filetype",
-                fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
-                success: state != apf.SUCCESS ? "false" : "true"
-            });
-
-            apf.xmldb.removeAttribute(node, "saving");
             apf.xmldb.removeAttribute(node, "new");
             apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
 
@@ -372,9 +404,8 @@ module.exports = ext.register("ext/save/save", {
             }
         });
 
-        var at = page.$at
+        var at = page.$at;
         at.undo_ptr = at.$undostack[at.$undostack.length-1];
-        page.$at.dispatchEvent("afterchange");
         return false;
     },
 
@@ -582,7 +613,25 @@ module.exports = ext.register("ext/save/save", {
             trSaveAs.addEventListener("afterload", expand);
         }
     },
+    
+    renameFile : function(node) {
+        var path = node.getAttribute("path");
+        var oldpath = node.getAttribute("oldpath");
+        davProject.rename(oldpath, path, true, false, function(data, state, extra) {
+            if (state !== apf.SUCCESS) {
+                // TODO: revert the rename!!
+                return;
+            }
 
+            ide.dispatchEvent("afterupdatefile", {
+                path: oldpath,
+                newPath: path,
+                xmlNode: node,
+                isFolder: node.getAttribute("type") === "folder"
+            });
+        });
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

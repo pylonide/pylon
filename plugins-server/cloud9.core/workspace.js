@@ -90,8 +90,12 @@ var Workspace = module.exports = function(ide) {
             "type": "error",
             "sid": sid,
             "code": code,
-            "message": description
+            "message": (typeof description === "object" && description.message) ? description.message : description
         };
+
+        if (typeof description === "object" && description.stack) {
+            console.error(description.stack);
+        }
 
         this.sendError(error, client || null);
     };

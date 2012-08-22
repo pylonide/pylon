@@ -6,7 +6,7 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("ace/test/assertions");
-//var handler = require('ext/jslanguage/narcissus_jshint');
+//var handler = require('ext/jslanguage/jshint');
 var LanguageWorker = require('ext/language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
@@ -20,7 +20,7 @@ module.exports = {
             next();
         });
         var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/narcissus_jshint");
+        worker.register("ext/jslanguage/jshint");
         assert.equal(worker.handlers.length, 1);
         worker.switchFile("test.js", "javascript", "hello();");
     },
@@ -35,7 +35,7 @@ module.exports = {
             next();
         });
         var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/narcissus_jshint");
+        worker.register("ext/jslanguage/jshint");
         worker.switchFile("test.js", "javascript", "console.log(1);\nhello()");
     },
     
@@ -48,7 +48,7 @@ module.exports = {
             next();
         });
         var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/narcissus_jshint");
+        worker.register("ext/jslanguage/jshint");
         worker.switchFile("no-errors.js", "javascript", "var foo = function() {};\nfoo && foo();");
     },
     
@@ -61,8 +61,21 @@ module.exports = {
             next();
         });
         var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/narcissus_jshint");
+        worker.register("ext/jslanguage/jshint");
         worker.switchFile("no-errors.js", "javascript", "const foo = 1;");
+    },
+    
+    "test JSHint globals" : function(next) {
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            console.log(markers);
+            assert.equal(markers.length, 0);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/jshint");
+        worker.switchFile("no-errors.js", "javascript", "/*global foo:true*/ foo;");
     }
 };
 
