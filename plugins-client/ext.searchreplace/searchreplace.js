@@ -697,7 +697,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var txt = this.$editor.getCopyText();
         this.$editor.$search.set({preserveCase: chkPreserveCase.checked})
         var strReplace = this.$editor.$search.replace(txt, strReplace);
-        if (!strReplace)
+        if (typeof strReplace != "string")
             return this.findNext(backwards);
 
         this.$editor.insert(strReplace);
