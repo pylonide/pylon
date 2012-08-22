@@ -118,6 +118,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         function handleFileSelect(e){
             var files = e.target.files;
             _self.startUpload(files);
+            e.target.value = "";
         };
         
         ide.addEventListener("init.ext/tree/tree", function(){
