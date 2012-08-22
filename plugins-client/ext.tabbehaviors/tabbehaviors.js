@@ -96,6 +96,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         });
         
+        commands.addCommand({
+            name: "duplicate",
+            isAvailable : function(){
+                return ide.onLine && tabEditors.length > 0;
+            },
+            exec: function (editor, args) { 
+                _self.duplicate();
+            }
+        });
+        
         this.nodes.push(
             this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 175),
             
@@ -153,7 +163,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         menus.addItemByPath("Reveal in File Tree", new apf.item({
             command : "revealtab"
         }), 100, mnuContext);
-        menus.addItemByPath("~", new apf.divider(), 200, mnuContext);
+        menus.addItemByPath("~", new apf.divider(), 150, mnuContext);
+        menus.addItemByPath("Duplicate", new apf.item({
+            command : "duplicate"
+        }), 200, mnuContext);
+        menus.addItemByPath("~", new apf.divider(), 250, mnuContext);
         menus.addItemByPath("Close Tab", new apf.item({
             command : "closetab"
         }), 300, mnuContext);
@@ -621,6 +635,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         tabEditors.set(pages[nr]);
         return false;
+    },
+
+    duplicate: function(){        
+        var page = tabEditors.getPage();
+        if (!page)
+            return false;
+        var docNode = page.$doc.getNode();
+        if(!docNode)
+            return false;
     },
 
     /**
