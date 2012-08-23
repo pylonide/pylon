@@ -11,15 +11,14 @@
 		"apf" : "empty:",
 		"treehugger" : "empty:",
 		"debug": "empty:",
+		"v8debug": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
 		"ace/worker": "%a",
 		"%m"
 	},
     
-	include: ["%b/src/core.packed", 
-	"apf/elements/codeeditor", 
-	"apf/elements/debugger", 
-	"apf/elements/debughost",
+	include: ["%b/src/core.packed",
+	"apf/elements/codeeditor",
 	"ext/commands/commands",
 	"ext/uploadfiles/uploadfiles",
 	"%s"], 
