@@ -10,7 +10,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/, /Expected an assignment or function call/];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -33,7 +33,8 @@ handler.analyzeSync = function(doc, ast) {
             devel: true,
             browser: true,
             node: true,
-            esnext: true
+            esnext: true,
+            expr: true
         });
         
         lint.errors.forEach(function(warning) {
