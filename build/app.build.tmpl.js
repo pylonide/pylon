@@ -10,7 +10,6 @@
 		"ext/commands" : "%d/ext.commands",
 		"apf" : "empty:",
 		"treehugger" : "empty:",
-		"debug": "empty:",
 		"v8debug": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
 		"ace/worker": "%a",
