@@ -159,7 +159,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
             "runner"  : runner,
-            "args"    : args || "",
+            "args"    : args || [],
             "version" : nodeVersion,
             "env"     : {
                 "C9_SELECTED_FILE": page ? page.getAttribute("path").slice(ide.davPrefix.length) : ""
