@@ -22,12 +22,14 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.getServerExclude = function(user) {
-        if (!user || !user.permissions) {
+        // We assume `user` has been passed. Otherwise it is fine to throw.
+        if (!user.permissions) {
             console.error("Error: Couldn't retrieve permissions for user ", user);
             console.trace();
         }
         
-        return util.arrayToMap(user.permissions ? user.permissions.server_exclude.split("|") : []);
+        var serverExclude = (user.permissions && user.permissions.server_exclude) || "";
+        return util.arrayToMap(serverExclude.split("|"));
     };
 
     this.execHook = function(hook, user /* varargs */) {
