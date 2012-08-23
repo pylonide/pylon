@@ -6,7 +6,7 @@
         "text" : "build/text", // plugin for pulling in text! files
         "core" : "plugins-client/cloud9.core/www/core",
         "treehugger" : "node_modules/treehugger/lib/treehugger",
-        "debug": "node_modules/v8debug/lib/v8debug",  
+        "debug": "node_modules/v8debug/lib/v8debug",
         "ext/main": "plugins-client/ext.main",
         "apf-packaged": "plugins-client/lib.apf/www/apf-packaged"
     },
