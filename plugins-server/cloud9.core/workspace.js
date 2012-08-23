@@ -22,7 +22,11 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.getServerExclude = function(user) {
-        return util.arrayToMap(user.getPermissions().server_exclude.split("|"));
+	var permissions;
+	if (user)
+	    permissions = user.getPermissions();
+
+        return util.arrayToMap(permissions ? permissions.server_exclude.split("|") : []);
     };
 
     this.execHook = function(hook, user /* varargs */) {
