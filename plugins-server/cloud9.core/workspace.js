@@ -22,16 +22,12 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.getServerExclude = function(user) {
-        var permissions;
-        if (user)
-            permissions = user.getPermissions();
-
-        if (!user || !permissions) {
+        if (!user || !user.permissions) {
             console.error("Error: Couldn't retrieve permissions for user ", user);
             console.trace();
         }
         
-        return util.arrayToMap(permissions ? permissions.server_exclude.split("|") : []);
+        return util.arrayToMap(user.permissions ? user.permissions.server_exclude.split("|") : []);
     };
 
     this.execHook = function(hook, user /* varargs */) {
