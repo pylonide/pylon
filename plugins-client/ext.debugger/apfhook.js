@@ -5,9 +5,10 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
-/*global ide dbg */
+/*global dbg */
  
 define(function(require, exports, module) {
+var ide = require("core/ide");
 
 window.adbg = {
     exec : function(method, args, callback, options) {
