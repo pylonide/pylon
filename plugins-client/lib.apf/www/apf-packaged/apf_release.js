@@ -32095,6 +32095,9 @@ apf.BaseTree = function(){
         }
 
         if (immediate || container.scrollHeight > 1000) {
+            var _scrollTop = container.scrollHeight
+                                - container.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            container.scrollTop = _scrollTop == 0 ? 100 : 0;
             if (!this.nocollapse && container != this.$container) {
                 container.style.height = "auto";
                 container.style.overflow = "visible";
@@ -32151,8 +32154,9 @@ apf.BaseTree = function(){
                 oInt.scrollTop = 0;
                 // End fix
                 container.style.height = Math.max((height), 0) + "px";
-                oInt.scrollTop = oInt.scrollHeight
-                    - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+                _scrollTop = oInt.scrollHeight
+                                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+                oInt.scrollTop = _scrollTop == 0 ? 100 : 0;
                 finishSlide();
         }
         else {

@@ -17,15 +17,14 @@
 		"smith": "empty:",
 		"msgpack-js": "empty:",
 		"raw.github.com/Gozala/extendables/v0.2.0/extendables": "empty:",
+		"v8debug": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
 		"ace/worker": "%a",
 		"%m"
 	},
     
-	include: ["%b/src/core.packed", 
-	"apf/elements/codeeditor", 
-	"apf/elements/debugger", 
-	"apf/elements/debughost",
+	include: ["%b/src/core.packed",
+	"apf/elements/codeeditor",
 	"ext/commands/commands",
 	"ext/uploadfiles/uploadfiles",
 	"%s"], 

@@ -220,7 +220,6 @@
                     cursor: pointer;
                 }
 
-
                 @-webkit-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
                 @-moz-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
                 @keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
