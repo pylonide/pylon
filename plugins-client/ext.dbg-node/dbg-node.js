@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 
 var V8Debugger = require("v8debug/V8Debugger");
 var WSV8DebuggerService = require("v8debug/WSV8DebuggerService");
+var ide = require("core/ide");
 
 var v8DebugClient = exports.v8DebugClient = function() {
 };
