@@ -74,16 +74,12 @@ var loadLibs = function(prefix) {
 };
 
 function diffLineMode(text1, text2) {
-  var a = self.dmp.diff_linesToChars_(text1, text2);
+    var dmp = self.dmp;
+    var a = dmp.diff_linesToChars_(text1, text2);
+    var diffs = dmp.diff_main(a.chars1, a.chars2, false);
 
-  var lineText1 = a.chars1;
-  var lineText2 = a.chars2;
-  var lineArray = a.lineArray;
-
-  var diffs = self.dmp.diff_main(lineText1, lineText2, false);
-
-  self.dmp.diff_charsToLines_(diffs, lineArray);
-  return diffs;
+    dmp.diff_charsToLines_(diffs, a.lineArray);
+    return diffs;
 }
 
 self.onmessage = function(e) {
@@ -103,14 +99,18 @@ self.onmessage = function(e) {
             var ranges = [];
             var extraCounter = 0;
 
-            var processLine = function(lines, type) {
+            // Takes an array of lines, processes them by adding the proper sign
+            // at the beginning of each one for the diff, and pushes the metadata
+            // of the lines into the ranges, which will be used to mark the lines.
+            var process = function(lines, type) {
                 var counterBefore = extraCounter;
                 str += lines.map(function(line) {
-                    extraCounter = extraCounter + 1;
-                    return "\n" + startChar[type.toString()] + line;
+                    extraCounter = extraCounter + 1; // Keep a count for current line
+                    return "\n" + startChar[type] + line;
                 }).join("");
 
-                if (type === 0)
+                // If this range of lines is unchanged, we don't need metadata.
+                if (type === "0")
                     return;
 
                 ranges.push([counterBefore + 1, 0, extraCounter + 1, 0, type]);
@@ -119,13 +119,12 @@ self.onmessage = function(e) {
             var results = getLastAndAfterRevisions(e.data);
             beforeRevision = results[0];
             afterRevision = results[1];
+
             var ops = diffLineMode(beforeRevision, afterRevision);
             ops.forEach(function(op) {
-                var lines = op[1].split(rNL);
-                if (lines[lines.length - 1] === "")
-                    lines.pop();
-
-                processLine(lines, op[0]);
+                // Get rid of a newline at the end of the block and split.
+                var lines = op[1].replace(/\n$/, "").split(rNL);
+                process(lines, op[0].toString());
             });
 
             packet.type = "preview";
