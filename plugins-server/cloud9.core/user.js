@@ -100,7 +100,7 @@ User.VISITOR_PERMISSIONS = {
     this.disconnectClients = function() {
         console.log("disconnecting all connected clients");
         for (var i = this.clients.length - 1; i >= 0; --i)
-            this.clients[i].disconnect();
+            this.clients[i].close();
     };
 
     this.onClientMessage = function(message, client) {
