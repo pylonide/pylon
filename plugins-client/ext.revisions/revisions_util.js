@@ -1,5 +1,6 @@
-/*global winQuestionRev:true, winQuestionRevHeader:false, winQuestionRevMsg:true, 
-btnQuestionRevYesAll:true, btnQuestionRevNoAll: true, tabEditors:true */
+/*global winQuestionRev winQuestionRevHeader winQuestionRevMsg btnQuestionRevYesAll
+ * btnQuestionRevNoAll tabEditors
+ */
 define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
@@ -62,6 +63,12 @@ Array.prototype.__reduce = function(func, initial) {
     return value;
 };
 
+var lineType = {
+    "0": "equal",
+    "1": "insert",
+    "-1": "delete"
+};
+
 /**
  * addCodeMarker(editor, type, range)
  * - session(Object): Editor session where we should put the markers
@@ -101,7 +108,7 @@ exports.addCodeMarker = function(session, doc, type, range) {
         if (range.isEmpty())
             return;
 
-        markerId = session.addMarker(range, "revision_hl_" + type, "background");
+        markerId = session.addMarker(range, "revision_hl_" + lineType[type.toString()], "background");
         /*
          * Uncomment the following to get strikethrough on deleted text.
          *
