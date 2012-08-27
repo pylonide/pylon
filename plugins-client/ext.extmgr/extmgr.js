@@ -168,7 +168,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
     updateEnableBtnState : function() {
         if (tabExtMgr.activepage === 0) {
-            if (dgExtUser.selected.getAttribute("enabled") === "1")
+            if (dgExtUser.selected && dgExtUser.selected.getAttribute("enabled") === "1")
                 btnUserExtEnable.setAttribute("caption", "Disable");
             else
                 btnUserExtEnable.setAttribute("caption", "Enable");
