@@ -16,7 +16,10 @@ var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
 
 /*global dgExt dgExtUser tbModuleName tabExtMgr btnUserExtEnable
-  btnDefaultExtEnable winExt*/
+  btnDefaultExtEnable winExt btnAdd*/
+
+var LOAD_TIMEOUT_REMOTE = 30 * 1000;
+var LOAD_TIMEOUT_LOCAL = 5 * 1000;
 
 module.exports = ext.register("ext/extmgr/extmgr", {
     name   : "Extension Manager",
@@ -90,23 +93,44 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }
     },
 
-    loadExtension : function(path) {
-        if (path || tbModuleName.validate()) {
-            if (!path) {
-                path = tbModuleName.value;
-                tbModuleName.clear();
-            }
-            require([path], function() {
-                var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
-                if (extNode)
-                    apf.xmldb.setAttribute(extNode, "userext", "1");
-                settings.save();
-            });
-        } else {
-            util.alert("Error", "Validation Error",
+    addExtension : function() {
+        var _self = this;
+        if (tbModuleName.validate()) {
+            var timer = setTimeout(function() {
+                _self.$reportBadInput();
+                tbModuleName.enable();
+                btnAdd.enable();
+            }, tbModuleName.value.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
+            tbModuleName.disable();
+            btnAdd.disable();
+            this.loadExtension(tbModuleName.value, timer);
+        }
+        else {
+            this.$reportBadInput();
+        }
+    },
+    
+    $reportBadInput: function() {
+        util.alert("Error", "Validation Error",
                 "There was a problem validating your input: '" + 
                 tbModuleName.value + "'");
+    },
+    
+    loadExtension : function(path, timer) {
+        if (!path) {
+            tbModuleName.clear();
         }
+        require([path], function() {
+            var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
+            if (extNode)
+                apf.xmldb.setAttribute(extNode, "userext", "1");
+            settings.save();
+            if (timer) {
+                clearTimeout(timer);
+                tbModuleName.enable();
+                btnAdd.enable();
+            }
+        });
     },
 
     removeExtension : function() {
