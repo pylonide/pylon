@@ -28,6 +28,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     type   : ext.GENERAL, 
     markup : markup,
     desp   : [panels],
+    requireFailed : false,
     
     nodes : [],
     
@@ -96,8 +97,12 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     addExtension : function() {
         var _self = this;
         var path = tbModuleName.value;
-        if (tbModuleName.validate()) {
+        if (this.requireFailed) {
+            util.alert("Error", "Error", "Please reload Cloud9 to add another extension.");
+        }
+        else if (tbModuleName.validate()) {
             var timer = setTimeout(function() {
+                _self.requireFailed = true;
                 _self.$reportBadInput(path);
                 tbModuleName.enable();
                 btnAdd.enable();
@@ -116,7 +121,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 tbModuleName.value + "'.";
         if (!path.match("://") && !path.match("/"))
             message += "\nFor local extensions, specify a path like ext/extension/extensionmain.";
-        util.alert("Error", "Validation Error", message);
+        util.alert("Error", "Validation Error", message + "\nPlease reload Cloud9 to add another extension.");
     },
     
     loadExtension : function(path, timer) {
