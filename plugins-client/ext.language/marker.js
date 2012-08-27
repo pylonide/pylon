@@ -59,6 +59,9 @@ module.exports = {
     addMarkers: function(event, editor) {
         var _self = this;
         var annos = event.data;
+        if(!editor)
+            return;
+        
         var mySession = editor.session;
         if (!mySession.markerAnchors) mySession.markerAnchors = [];
         this.removeMarkers(editor.session);
