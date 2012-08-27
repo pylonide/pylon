@@ -2,6 +2,8 @@ var assert = require("assert");
 var utils = require("connect").utils;
 var error = require("http-error");
 var IdeServer = require("./ide");
+var parseUrl = require("url").parse;
+var middleware = require("./middleware");
 
 module.exports = function setup(options, imports, register) {
 
@@ -17,7 +19,7 @@ module.exports = function setup(options, imports, register) {
     var baseUrl = options.baseUrl || "";
     var staticPrefix = imports.static.getStaticPrefix();
     var workerPrefix = imports.static.getWorkerPrefix() || "/static";
-    
+
     var socketUrl = options.socketUrl || "/socket.io";
 
     var ide;
@@ -70,30 +72,37 @@ module.exports = function setup(options, imports, register) {
             local: options.local
         });
 
+        var server = connect.getModule()();
+        connect.useAuth(baseUrl, server);
+
+        server.use(function(req, res, next) {
+            req.parsedUrl = parseUrl(req.url);
+
+            if (!(req.session.uid || req.session.anonid))
+                return next(new error.Unauthorized());
+            // NOTE: This gets called multiple times!
+
+            var pause = utils.pause(req);
+
+            initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
+                if (err) {
+                    next(err);
+                    pause.resume();
+                    return;
+                }
+
+                next();
+                pause.resume();
+            });
+        });
+
         hub.on("ready", function() {
             ide.init(serverPlugins);
-    
-            connect.useAuth(baseUrl, function(req, res, next) {
-                if (!(req.session.uid || req.session.anonid))
-                    return next(new error.Unauthorized());
-                // NOTE: This gets called multiple times!
-    
-                var pause = utils.pause(req);
-    
-                initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
-                    if (err) {
-                        next(err);
-                        pause.resume();
-                        return;
-                    }
-                    ide.handle(req, res, next);
-                    pause.resume();
-                });
-            });
-    
+            server.use(ide.handle.bind(ide));
+            server.use(middleware.errorHandler());
             log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
         });
-        
+
         register(null, {
             ide: {
                 register: function(name, plugin, callback) {
@@ -107,8 +116,16 @@ module.exports = function setup(options, imports, register) {
                 getSocketUrl: function() {
                     return socketUrl;
                 },
+                getBaseUrl: function() {
+                    return baseUrl;
+                },
                 getWorkspaceId: function() {
                     return ide.options.workspaceId.toString();
+                },
+                use: function(route, handle) {
+                    var last = server.stack.pop();
+                    server.use(route, handle);
+                    server.stack.push(last);
                 },
                 canShutdown: ide.canShutdown.bind(ide),
                 initUserAndProceed: initUserAndProceed,

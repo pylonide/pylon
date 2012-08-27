@@ -28,6 +28,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     
     loaded : false,
     
+    initDocTitle     : document.title,
+    notificationMsgs : {},
+    
     /**
      * Standard Extension functionality
      */
@@ -270,7 +273,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var list  = [];
         
         if(!state)
-            return;
+            return list;
         
         if(!state.bars)
             state = state.state;
@@ -428,9 +431,15 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     /**
      * Updates the notification element to visually reflect notCount
      */
-    updateNotificationElement: function(btnObj, count){
+    updateNotificationElement: function(btnObj, count, options){
         var countInner = count === 0 ? "" : count;
         var notificationEl = btnObj.$ext.getElementsByClassName("dock_notification")[0];
+        
+        if(!options)
+            options = {};
+        
+        var notificationType = options.type || "";
+        
         if (apf.isGecko)
             notificationEl.textContent = countInner;
         else
@@ -446,23 +455,74 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             btnPage.initCaption = btnPage.getAttribute("caption");
             
         var caption = btnPage.initCaption;
-        
+
         if(!btnPage.$active) {
             if (count > 0) {
                 caption += " (" + count + ")";
                 apf.setStyleClass(btnPage.$button, "un-read-message");
+                if(notificationType == "chat") {
+                    btnObj.notificationOpt = options
+                    if (options.name) {
+                        this.notificationMsgs[options.name] = count;
+                        this.updateDocTitleNotifications();
+                    }
+                }
             }
             else {
                 apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+                if(notificationType == "chat" && btnObj.notificationOpt) {
+                    if (btnObj.notificationOpt && btnObj.notificationOpt.name) {
+                        delete this.notificationMsgs[btnObj.notificationOpt.name];
+                        this.updateDocTitleNotifications();
+                    }
+                }
             }
             btnPage.setAttribute("caption", caption);
         }
         else {
             btnPage.setAttribute("caption", caption);
             apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+            if(notificationType == "chat" && btnObj.notificationOpt) {
+                if (btnObj.notificationOpt && btnObj.notificationOpt.name) {
+                    delete this.notificationMsgs[btnObj.notificationOpt.name];
+                    this.updateDocTitleNotifications();
+                }
+            }
         }
         
         return true;
+    },
+    
+    updateDocTitleNotifications: function(){
+        var _self    = this,
+            countMsg = 0;
+            
+        for(var i in this.notificationMsgs) {
+            if(this.notificationMsgs.hasOwnProperty(i))
+                countMsg += this.notificationMsgs[i];
+        }
+        
+        if(countMsg > 0) {
+            if(this.barNotificationTimer)
+                clearInterval(this.barNotificationTimer);
+            
+            this.barNotificationCount = 0;
+            this.barNotificationTimer = setInterval(function(){
+                if(_self.barNotificationCount%2)
+                    document.title = "(" + countMsg + ") message" + (countMsg > 1 ? "s" : "") + " | " + _self.initDocTitle;
+                else
+                    document.title = _self.initDocTitle;
+                
+                _self.barNotificationCount++;
+            }, 1000);
+        }
+        else {
+            if(this.barNotificationTimer) {
+                clearInterval(this.barNotificationTimer);
+                this.barNotificationCount = 0;
+                document.title = _self.initDocTitle;
+            }
+        }
     }
 });
 

@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-cobalt .ace_gutter {\
   background: #011e3a;\
-  color: #333;\
+  color: #fff;\
 }\
 \
 .ace-cobalt .ace_print_margin {\
@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-cobalt .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color : rgba(0, 0, 0, 0.35);\
 }\
 \
 .ace-cobalt .ace_marker-layer .ace_selected_word {\

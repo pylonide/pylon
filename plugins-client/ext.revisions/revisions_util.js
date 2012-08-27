@@ -1,10 +1,9 @@
+/*global winQuestionRev:true, winQuestionRevHeader:false, winQuestionRevMsg:true, 
+btnQuestionRevYesAll:true, btnQuestionRevNoAll: true, tabEditors:true */
 define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require("ace/anchor").Anchor;
-var ide = require("core/ide");
-var util = require("core/util");
-var searchinfiles = require("ext/searchinfiles/searchinfiles");
 
 var TIMELAPSE = 10 * 60 * 1000;
 exports.compactRevisions = function(timestamps) {
@@ -124,38 +123,6 @@ exports.addCodeMarker = function(session, doc, type, range) {
 
     updateFloat();
     anchor.on("change", updateFloat);
-};
-
-exports.pageHasChanged = function(page) {
-    if (!page) {
-        throw new Error("Page object parameter missing");
-    }
-    return page.changed === 1;
-};
-
-exports.pageIsCode = function(page) {
-    if (!page) {
-        throw new Error("Page object parameter missing");
-    }
-    return page.type === "ext/code/code" && page.$doc.getNode().getAttribute("customtype") !== util.getContentType(searchinfiles.searchContentType);
-};
-
-exports.stripWSFromPath = function(path) {
-    var docPath = path.replace(ide.davPrefix, "");
-    docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
-    return docPath;
-};
-
-exports.getDocPath = function(page) {
-    if (!page && tabEditors) {
-        page = tabEditors.getPage();
-    }
-
-    // Can we rely on `name`?
-    // What follows is a hacky way to get a path that we can use on
-    // the server. I am sure that these workspace string manipulation
-    // functions are somewhere...to be fixed.
-    return exports.stripWSFromPath(page.name);
 };
 
 exports.question = function(title, header, msg, onyesall, onnoall) {

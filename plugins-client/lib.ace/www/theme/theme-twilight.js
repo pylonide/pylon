@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-twilight .ace_gutter {\
   background: #232323;\
-  color: #333;\
+  color: #F8F8F8;\
 }\
 \
 .ace-twilight .ace_print_margin {\
@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-twilight .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: rgba(255, 255, 255, 0.031);\
 }\
 \
 .ace-twilight .ace_marker-layer .ace_selected_word {\

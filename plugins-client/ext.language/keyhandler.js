@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
 var completionUtil = require("ext/codecomplete/complete_util");
+var editors = require("ext/editors/editors");
 var language;
 
 function hook(ext) {
@@ -43,11 +44,11 @@ function onCommandKey(e) {
 }
 
 function typeAlongComplete(e) {
-    if(e.metaKey || e.altKey || e.ctrlKey)
+    if (e.metaKey || e.altKey || e.ctrlKey)
         return false;
-    if(editors.currentEditor.amlEditor.syntax !== "javascript")
+    if (!isJavaScript())
         return false;
-    if(e.keyCode === 8) { // Backspace
+    if (e.keyCode === 8) { // Backspace
         var complete = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
@@ -59,17 +60,21 @@ function typeAlongComplete(e) {
 }
 
 function inputTriggerComplete(text, pasted) {
-    if (editors.currentEditor.amlEditor.syntax !== "javascript")
+    if (!isJavaScript())
         return false;
     if (!pasted && text === "." && language.isInferAvailable())
         handleChar(text);
 }
 
 function typeAlongCompleteTextInput(text, pasted) {
-    if(editors.currentEditor.amlEditor.syntax !== "javascript")
+    if (!isJavaScript())
         return false;
     if(!pasted)
         handleChar(text);
+}
+
+function isJavaScript() {
+    return editors.currentEditor.amlEditor.syntax === "javascript";
 }
 
 function handleChar(ch) {
@@ -105,6 +110,8 @@ function inCompletableCodeContext(line, column, id) {
             i++;
         }
         else if(line[i] === "/" && line[i+1] === "*" && !inMode) {
+            if (line.substr(i + 2, 6) === "global")
+                continue;
             inMode = '/*';
             i++;
         }

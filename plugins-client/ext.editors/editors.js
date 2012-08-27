@@ -52,7 +52,6 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }), 40000);
 
-        var _self = this;
         oExtension.fileExtensions.each(function(mime){
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
@@ -235,7 +234,6 @@ module.exports = ext.register("ext/editors/editors", {
      * out of zen mode
      */
     setTabResizeValues : function(ext, preview, animate, mouse, dir) {
-        var ph;
         var _self = this;
 
         if (this.animating && (!animate || this.animating[0] == preview))
@@ -623,7 +621,8 @@ module.exports = ext.register("ext/editors/editors", {
             toHandler.enable();
         }
 
-        var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
+        var prefixRegex = new RegExp("^" + ide.davPrefix);
+        var path = page.$model.data.getAttribute("path").replace(prefixRegex, "");
         /*if (window.history.pushState) {
             var p = location.pathname.split("/");
             window.history.pushState(path, path, "/" + (p[1] || "name") + "/" + (p[2] || "project") + path);
@@ -633,7 +632,8 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
 
-        settings.save();
+        if (page.$model.data.getAttribute("ignore") !== "1")
+            settings.model.setQueryValue("auto/files/@active", path);
 
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
@@ -746,6 +746,16 @@ module.exports = ext.register("ext/editors/editors", {
                 settings.model.setQueryValue("editors/code/@fontsize", --currSize < 1 ? 1 : currSize);
             }
         });
+
+        menus.addItemByPath("View/Font Size/", null, 290001),
+        
+        menus.addItemByPath("View/Font Size/Increase Font Size", new apf.item({
+            command : "largerfont"
+        }), 1);
+        
+        menus.addItemByPath("View/Font Size/Decrease Font Size", new apf.item({
+            command : "smallerfont"
+        }), 2);
         
         menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
@@ -816,11 +826,11 @@ module.exports = ext.register("ext/editors/editors", {
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.showTabs = apf.isTrue(showTab);
             if (!_self.showTabs)
-                _self.toggleTabs(_self.showTabs ? 1 : -1, true, true);;
+                _self.toggleTabs(_self.showTabs ? 1 : -1, true, true);
 
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){
-                    var parent_path = apf.getDirname(path).replace(/\/$/, "");
+                    var parent_path = (apf.getDirname(path) || "").replace(/\/$/, "");
                     var expandEventListener = function(e) {
                         if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
                             // if the file has been loaded from the tree
@@ -912,12 +922,6 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (pages.length) {
-                var active = tabEditors.activepage;
-                var page   = tabEditors.getPage();
-                
-                if (page && page.$model.data.getAttribute("ignore") !== "1")
-                    e.model.setQueryValue("auto/files/@active", active);
-
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
                     if (!pages[i] || !pages[i].$model || pages[i].$model.data.getAttribute("ignore") == "1")
@@ -1028,62 +1032,84 @@ module.exports = ext.register("ext/editors/editors", {
 
 
     jump : function(options) {
+        var _self   = this;
+        var tabs    = tabEditors;
         var row     = options.row;
         var column  = options.column || 0;
         var text    = options.text;
-        var page    = options.page;
+        var node    = options.node;
+        var path    = options.path || (node && node.getAttribute("path"));
+        var page    = options.page || (path && tabs.getPage(path));
+        var hasData = !!( page && page.$doc);
         
-        var hasData;
-        if (!options.doc) {
-            var node    = options.node;
-            var path    = node.getAttribute("path");
-            var tabs    = tabEditors;
+        function select() {
+            var ace = _self.currentEditor.amlEditor.$editor;
+            row -= 1;
+            var endRow = typeof options.endRow == "number" ? options.endRow - 1 : row;
+            var endColumn = options.endColumn;
             
-            hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+            ace.session.unfold({row: row, column: column || 0});
+            if (typeof endColumn == "number")
+                ace.session.unfold({row: endRow, column: endColumn});
+
+            ace.$blockScrolling += 1;
+            ace.selection.clearSelection();
+            ace.moveCursorTo(row, column || 0);
+            if (typeof endColumn == "number")
+                ace.selection.selectTo(endRow, endColumn)
+            ace.$blockScrolling -= 1;
+            var range = ace.selection.getRange();
+            var initialScroll = ace.renderer.scrollTop;
+            ace.renderer.scrollSelectionIntoView(range.start, range.end, 0.5);
+            if (options.animate !== false)
+                ace.renderer.animateScrolling(initialScroll);
         }
         
-        var _self   = this;
-
-        if (row !== undefined) {
-            var jumpTo = function(){
-                var f;
+        function focus() {
+            var ace = _self.currentEditor.amlEditor.$editor;
+            if (!ace.$isFocused) {
                 setTimeout(f = function() {
-                    // TODO move this to the editor
-                    var editor = _self.currentEditor.amlEditor;
-                    editor.$editor.gotoLine(row, column, options.animate !== false);
-                    if (text)
-                        editor.$editor.session.highlight(text);
-
-                    editor.focus();
+                    ace.focus();
                     ide.dispatchEvent("aftereditorfocus");
-                }, 1); 
-            };
-
-            if (hasData) {
-                tabs.set(path);
-                jumpTo();
+                }, 1);
             }
-            else
-                ide.addEventListener("afteropenfile", function(e) {
-                    var node = e.doc.getNode();
-
-                    if (node.getAttribute("path") == path) {
-                        ide.removeEventListener("afteropenfile", arguments.callee);
-                        jumpTo();
-                    }
-                });
         }
-
-        if (!hasData) {
+        
+        function jumpTo() {
+            row && select();
+            focus();
+            if (_self.currentEditor.$pendingJumpTo) {
+                ide.removeEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
+                _self.currentEditor.$pendingJumpTo = null
+            }
+        };
+        
+        
+        if (hasData) {
+            tabs.set(page);
+            jumpTo();
+        } else {
             options.origin = "jump";
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 
             var extraOptions = this.openEditor(options.doc, options.init, options.active, options.forceOpen);
+            
+            if (row) {
+                if (!path)
+                    path = options.node.getAttribute("path");
+
+                ide.removeEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
+                _self.currentEditor.$pendingJumpTo = function(e) {
+                    var node = e.doc.getNode();
+                    if (node.getAttribute("path") == path)
+                        jumpTo();
+                }
+                ide.addEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
+            }
+
             ide.dispatchEvent("openfile", apf.extend(options, extraOptions));
         }
-        else
-            tabs.set(path);
     },
 
     enable : function(){

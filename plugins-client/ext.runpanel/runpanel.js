@@ -205,7 +205,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         function setActiveFile(page){
             if (page && page.$model && page.$doc.getNode().getAttribute("ignore") !== "1") {
-                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                var prefixRegex = new RegExp("^" + ide.davPrefix);
+                var path = page.$model.data.getAttribute("path").replace(prefixRegex, "");
                 _self.model.setQueryValue("config[@curfile]/@path", path);
                 _self.model.setQueryValue("config[@curfile]/@name",
                     path.split("/").pop() + " (active file)");
@@ -245,7 +246,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if (!bar.extended)
                 dock.showBar(bar);
         });*/
-        ide.addEventListener("break", function(){
+        ide.addEventListener("dbg.break", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel() || hasBreaked)
                 return;
 

@@ -20,7 +20,7 @@ var fsUrl = "/workspace";
 var vfsUrl = "/vfs";
 
 var port = argv.p || process.env.PORT || 3131;
-var host = argv.l || "localhost";
+var host = argv.l || process.env.IP || "localhost";
 
 var config = [
     {
@@ -58,7 +58,7 @@ var config = [
         debug: false,
         fsUrl: fsUrl,
         hosted: false,
-        socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
+        socketIoTransports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
@@ -97,6 +97,7 @@ var config = [
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
+            "ext/dbg-node/dbg-node", 
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
             "ext/consolehints/consolehints",
@@ -128,6 +129,7 @@ var config = [
             "ext/colorpicker/colorpicker",
             "ext/gitblame/gitblame",
             //"ext/githistory/githistory",
+            "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
             "ext/language/liveinspect"
@@ -197,8 +199,7 @@ var config = [
     "./cloud9.ide.revisions",
     {
         packagePath: "./cloud9.ide.settings",
-        settingsPath: ".settings",
-        absoluteSettingsPath: path.join(projectDir, ".settings"),
+        settingsPath: ".settings"
     },
     "./cloud9.ide.shell",
     "./cloud9.ide.state",

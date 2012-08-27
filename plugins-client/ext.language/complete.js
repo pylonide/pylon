@@ -10,7 +10,7 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
-var completionUtil = require("ext/codecomplete/complete_util");
+var editors = require("ext/editors/editors");
 
 var lang = require("ace/lib/lang");
 var language;
@@ -26,6 +26,7 @@ var SHOW_DOC_DELAY = 2000;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
+var CONCORDE_DELAY = 70;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 9;
@@ -34,8 +35,8 @@ var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
-    if(keyhandler.preceededByIdentifier(line, pos.column) ||
-       line[pos.column - 1] === '.' ||
+    if (keyhandler.preceededByIdentifier(line, pos.column) ||
+       (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(ID_REGEX))) ||
        keyhandler.isRequireJSCall(line, pos.column)) {
         module.exports.invoke(true);
     }
@@ -45,9 +46,10 @@ var deferredInvoke = lang.deferredCall(function() {
     isInvokeScheduled = false;
 });
 var isInvokeScheduled = false;
+var ignoreMouseOnce = false;
 
 var drawDocInvoke = lang.deferredCall(function() {
-    if (isPopupVisible()) {
+    if (isPopupVisible() && complete.matches[complete.selectedIdx].doc) {
         isDocShown = true;
         txtCompleterDoc.parentNode.show();
     }
@@ -92,6 +94,10 @@ function retrieveFollowingIdentifier(text, pos) {
     return buf;
 }
 
+function isJavaScript() {
+    return editors.currentEditor.amlEditor.syntax === "javascript";
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
  * indicates the cursor position after the replacement.
@@ -99,12 +105,19 @@ function retrieveFollowingIdentifier(text, pos) {
  * is deleted.
  */
 function replaceText(editor, prefix, match) {
+    // Replace text asynchronously in case Concorde didn't update the editor yet
+    setTimeout(function() {
+        asyncReplaceText(editor, prefix, match);
+    }, CONCORDE_DELAY);
+}
+
+function asyncReplaceText(editor, prefix, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
-    if (match.replaceText === "require(^^)") {
+    if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
@@ -137,9 +150,17 @@ function replaceText(editor, prefix, match) {
     
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    setTimeout(function() {
-        editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
-    }, 50);
+    
+    var cursorCol = pos.column + colOffset - prefix.length;
+    
+    if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
+        if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
+            cursorCol++;
+        if (line.substr(pos.column + postfix.length + 1, 1) === ')')
+            cursorCol++;
+    }
+    var cursorPos = { row: pos.row + rowOffset, column: cursorCol };
+    editor.selection.setSelectionRange({ start: cursorPos, end: cursorPos });
 }
 
 var menus = require("ext/menus/menus");
@@ -217,6 +238,8 @@ module.exports = {
         var innerCompletionBoxHeight = Math.min(10 * this.lineHeight, innerBoxLength * (this.lineHeight));
         txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
+        ignoreMouseOnce = !isPopupVisible();
+        
         apf.popup.show("completionBox", {
             x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
             y        : _self.cursorConfig.lineHeight,
@@ -284,6 +307,10 @@ module.exports = {
             html += '</span>';
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
+                if (ignoreMouseOnce) {
+                    ignoreMouseOnce = false;
+                    return;
+                }
                 _self.matchEls[_self.selectedIdx].className = CLASS_UNSELECTED;
                 _self.selectedIdx = idx;
                 _self.matchEls[_self.selectedIdx].className = CLASS_SELECTED;
@@ -339,11 +366,6 @@ module.exports = {
     onKeyPress : function(e, hashKey, keyCode) {
         var _self = this;
         
-        if(keyCode === 9 && !e.shiftKey) // Tab
-            keyCode = 40; // Up
-        else if(keyCode === 9 && e.shiftKey) // Shift-Tab
-            keyCode = 38; // Down
-        
         if(e.metaKey || e.ctrlKey || e.altKey) {
             this.closeCompletionBox();
             return;
@@ -372,6 +394,7 @@ module.exports = {
                 e.preventDefault();
                 break;
             case 13: // Enter
+            case 9: // Tab
                 var editor = editors.currentEditor.amlEditor.$editor;
                 replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();

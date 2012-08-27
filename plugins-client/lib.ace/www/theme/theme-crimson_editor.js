@@ -172,6 +172,10 @@ exports.cssText = ".ace-crimson-editor .ace_editor {\
   background: rgb(232, 242, 254);\
 }\
 \
+.ace-crimson-editor .ace_gutter_active_line {\
+    background-color : #dcdcdc;\
+}\
+\
 .ace-crimson-editor .ace_meta.ace_tag {\
   color:rgb(28, 2, 255);\
 }\

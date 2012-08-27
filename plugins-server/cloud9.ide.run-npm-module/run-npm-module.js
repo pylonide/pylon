@@ -100,34 +100,43 @@ util.inherits(NpmRuntimePlugin, Plugin);
     this.searchAndRunModuleHook = function(message, user, cb) {
         if (!message.command || !message.argv)
             return cb(null, false);
-
-        if (user.permissions.fs != "rw")
-            return cb("Permission denied", false);
             
-        var server_exclude = (user.permissions.server_exclude || "").split("|");
-        for (var command in server_exclude) {
+        if (!user || !user.permissions) {
+            console.error("Error: Couldn't retrieve permissions for user ", user);
+            console.trace();
+        }
+
+        if (user.permissions && user.permissions.fs != "rw") {
+            return cb("Permission denied", false);
+        }
+            
+        // server_exclude is usually empty, resulting in an array with one element: an empty one, let's filter those:
+        var server_excludeString = (user.permissions && user.permissions.server_exclude) || "";
+        var server_exclude = server_excludeString.split("|").filter(function(cmd) { return !!cmd; });
+        server_exclude.forEach(function(command) {
             if (message.command == command || message.argv.join(" ").indexOf(command) > -1) {
                 return cb("Permission denied", false);
             }
-        }
+        });
 
-        if (message.command === "node")
+        if (message.command === "node" && message.argv.length > 1)
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
-        this.searchAndRunShell(message, function(err, found) {
-            if (err || found)
-                return cb(err, found);
+        // first try to find a module hook
+        self.searchForModuleHook(message.command, function(found, filePath) {
+            // if not found
+            if (!found) {
+                // then run it on the server via sh
+                self.searchAndRunShell(message, cb);
+                return;
+            }
 
-            self.searchForModuleHook(message.command, function(found, filePath) {
-                if (!found)
-                    return cb(null, false);
+            // otherwise execute the bastard!
+            if (message.argv.length)
+                message.argv.shift();
 
-                if (message.argv.length)
-                    message.argv.shift();
-
-                self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
-            });
+            self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
         });
     };
 
@@ -166,17 +175,27 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
             // use resolved command
             message.argv[0] = out.split("\n")[0];
+            
+            var shellAliases =
+                "function python { if [ $# == 0 ]; then `which python` -i; else `which python` \"$@\"; fi; };" +
+                "function irb { `which irb` --readline \"$@\"; };" +
+                "function node {" +
+                "  if [ $# == 0 ]; then" +
+                "    if node -v | grep v0.6 > /dev/null; then echo Interactive mode not supported with Node 0.6;" +
+                "    else `which node` -i; fi" +
+                "  else `which node` \"$@\"; fi;" +
+                "};";
 
             self.pm.spawn("shell", {
                 command: "sh",
-                args: ["-c", message.argv.join(" ")],
+                args: ["-c", shellAliases + message.line],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message);
-
+                    
                 self.children[pid] = child;
             });
         });
@@ -223,9 +242,10 @@ util.inherits(NpmRuntimePlugin, Plugin);
     };
 
     this.$kill = function(pid, message, client) {
+        var self = this;
         this.pm.kill(pid, function(err) {
             if (err)
-                return this.error(err, 1, message, client);
+                return self.error(err, 1, message, client);
         });
     };
 

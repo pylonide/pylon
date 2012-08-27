@@ -30,24 +30,32 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     eventsEnabled : true,
     dirty         : true,
     nodes         : [],
-    
     arraySearchResults : [],
     arrayCache : [],
     arrayCacheLastSearch : [],
 
+    isGeneric : window.cloud9config.local && window.cloud9config.workspaceId && window.cloud9config.workspaceId == "generic",
+    
     hook : function(){
         var _self = this;
 
         var mnuItem = new apf.item({
-        	command : "gotofile"
-	    });
+            command : "gotofile"
+        });
         
         commands.addCommand({
             name: "gotofile",
             hint: "search for a filename and jump to it",
             bindKey: {mac: "Command-E", win: "Ctrl-E"},
-            exec: function () {
-                _self.toggleDialog(1);
+            exec: function () {  
+                if (!_self.isGeneric)
+                    _self.toggleDialog(1);
+                else {
+                    ext.initExtension(_self);
+                    winGoToFile.visible = true;
+                    winGoToFile.hide();
+                    winBlockGotoFile.show();
+                }
             }
         });
 
@@ -65,7 +73,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         ide.addEventListener("extload", function(){
-            _self.updateFileCache();
+            if (!_self.isGeneric) {
+                _self.updateFileCache();
+            }
         });
     },
     
@@ -75,7 +85,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
     init : function() {
         var _self = this;
-        
+
         txtGoToFile.addEventListener("keydown", function(e) {
             if (!_self.eventsEnabled)
                 return;
@@ -115,6 +125,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         txtGoToFile.addEventListener("afterchange", function(e) {
             if (!_self.eventsEnabled)
                 return;
+            
             _self.filter(txtGoToFile.value);
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
@@ -170,7 +181,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.dirty = true;
         });
         
-        this.updateDatagrid();
+        this.updateDatagrid(true);
         
         this.nodes.push(winGoToFile);
     },
@@ -303,15 +314,24 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             dgGoToFile.select(selNode);
     },
     
-    updateDatagrid : function(){
+    updateDatagrid : function(init){
         var vp = dgGoToFile.$viewport;
         
+        if(!this.arraySearchResults)
+            return;
+        
         if (!this.arraySearchResults.length) {
-            dgGoToFile.clear("empty");
+            if (init || !txtGoToFile.value) {
+                dgGoToFile.clear("loading")
+                this.filter("");
+            }
+            else
+                dgGoToFile.clear("empty");
         }
         else {
             dgGoToFile.$removeClearMessage();
-            dgGoToFile.load(this.model.data);
+            if (!init)
+                dgGoToFile.load(this.model.data);
             
             vp.length = this.arraySearchResults.length;
             var limit = Math.ceil(vp.getHeight() / vp.$getItemHeight() + 2);
@@ -321,8 +341,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 vp.resize(Math.min(vp.length, 11));
             vp.change(0, vp.limit, true);
             
-            if (!dgGoToFile.selected)
+            setTimeout(function(){
                 dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                txtGoToFile.focus();
+            });
         }
         
         if (!vp.length) {
@@ -364,7 +386,11 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
     
     gotofile : function(){
-        this.toggleDialog();
+        if (!this.isGeneric)
+            this.toggleDialog();
+        else
+            winBlockGotoFile.show();
+    
         return false;
     },
     
@@ -407,8 +433,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 apf.setOpacity(winGoToFile.$ext, 1);
             }
             
-            txtGoToFile.select();
-            txtGoToFile.focus();
+            if (!txtGoToFile.inited) {
+                setTimeout(function(){
+                    txtGoToFile.inited = true;
+                    txtGoToFile.focus();
+                });
+            }
+            else {
+                txtGoToFile.focus();
+            }
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {
@@ -474,4 +507,3 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 });
 
 });
-

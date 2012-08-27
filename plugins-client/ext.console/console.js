@@ -26,6 +26,10 @@ var anims = require("ext/anims/anims");
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
+/*global txtConsolePrompt tabEditors txtConsole btnCollapseConsole
+         txtConsoleInput txtOutput consoleRow  tabConsole winDbgConsole cliBox
+*/
+
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Cloud9 IDE, Inc.",
@@ -77,6 +81,11 @@ module.exports = ext.register("ext/console/console", {
             if (message.body.extra.sentatinit)
                 this.recreateLogStreamBlocks(message.body.out);
         },
+        
+        kill: function(message, outputElDetails) {
+            logger.logNodeStream(message.body, null, outputElDetails || message.body.err, ide);
+            // this.markProcessAsCompleted(message.body.pid, true, message.body.err);
+        },
 
         __default__: function(message, outputElDetails) {
             var res = message.body;
@@ -99,6 +108,11 @@ module.exports = ext.register("ext/console/console", {
             if (proc.extra) {
                 command_id = proc.extra.command_id;
                 original_line = proc.extra.original_line;
+                
+                if (!original_line) {
+                    continue;
+                }
+                
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
 
                 if (proc.type === "run-npm") {
@@ -114,7 +128,7 @@ module.exports = ext.register("ext/console/console", {
             this.pidToTracerMap[spi] = command_id;
 
             var containerEl = document.getElementById("console_section" + command_id);
-            if (!containerEl) {
+            if (containerEl) {
                 containerEl.setAttribute("rel", command_id);
                 apf.setStyleClass(containerEl, "has_pid");
             }
@@ -286,7 +300,7 @@ module.exports = ext.register("ext/console/console", {
         if (defCmd !== "") {
             this.markProcessAsCompleted(this.command_id_tracer);
             logger.logNodeStream(defCmd, null,
-                this.getLogStreamOutObject(this.command_id_tracer), ide);
+            this.getLogStreamOutObject(this.command_id_tracer), ide);
             this.command_id_tracer++;
         }
         else {
@@ -362,6 +376,9 @@ module.exports = ext.register("ext/console/console", {
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
 
+        if (txtConsolePrompt) // fix for c9local packed
+            txtConsolePrompt.hide();
+
         if (spinnerElement) {
             logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
@@ -370,11 +387,8 @@ module.exports = ext.register("ext/console/console", {
             if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
-            if (pNode.className.indexOf("quitting") !== -1) {
+            if (pNode.className.indexOf("quitting") !== -1)
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
-                logger.logNodeStream("Process successfully quit", null,
-                    this.getLogStreamOutObject(id), ide);
-            }
 
             setTimeout(function() {
                 spinnerElement = document.getElementById("spinner" + id);
@@ -457,7 +471,7 @@ module.exports = ext.register("ext/console/console", {
 
     onMessage: function(e) {
         if (!e.message.type)
-                return;
+            return;
 
         var message = e.message;
         //console.log(message.type, message);
@@ -547,6 +561,8 @@ module.exports = ext.register("ext/console/console", {
                 this.markProcessAsCompleted(message.pid, true);
                 return;
             case "npm-module-start":
+                if (!extra.original_line || !this.inited)
+                    return;
                 var stdin_prompt = extra.original_line.split(" ")[0];
                 this.pageIdToPidMap[extra.page_id] = {
                     pid: message.pid,
@@ -556,8 +572,12 @@ module.exports = ext.register("ext/console/console", {
                 txtConsolePrompt.show();
                 break;
             case "npm-module-data":
+                if (!extra.original_line || !this.inited)
+                    return;
                 break;
             case "npm-module-exit":
+                if (!extra.original_line || !this.inited)
+                    return;
                 this.pageIdToPidMap[extra.page_id] = null;
                 if (tabConsole.getPage().$uniqueId === extra.page_id) {
                     txtConsolePrompt.hide();
@@ -791,7 +811,10 @@ module.exports = ext.register("ext/console/console", {
             else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
 
-            if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
+            var showInput = e.model.queryValue("auto/console/@showinput");
+            if (showInput === "")
+                _self.showInput(false, true);
+            else if (apf.isTrue(showInput))
                 _self.showInput(null, true);
         });
 
@@ -891,8 +914,9 @@ module.exports = ext.register("ext/console/console", {
                     return false;
                 _self.evalInputCommand(inputVal);
                 input.setValue("");
-            },
-        })
+                txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
+            }
+        });
 
         if (this.logged.length) {
             this.logged.forEach(function(text){
@@ -1009,8 +1033,9 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         apf.setStyleClass(pNode, "quitting_proc");
-        logger.logNodeStream("Quitting this process...", null,
-            this.getLogStreamOutObject(command_id), ide);
+        logger.logNodeStream("Process terminated", null,
+        this.getLogStreamOutObject(command_id), ide);
+        this.markProcessAsCompleted(pid, true);
 
         ide.send({
             command: "kill",
@@ -1119,7 +1144,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hideInput(true);
                 txtConsoleInput.removeEventListener("blur", arguments.callee);
             });
-            txtConsoleInput.focus()
+            txtConsoleInput.focus();
         }
         else {
             settings.model.setQueryValue("auto/console/@showinput", true);
@@ -1247,8 +1272,10 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
+            if (_self.onFinishTimer)
+                clearTimeout(_self.onFinishTimer);
             
-            setTimeout(function(){
+            _self.onFinishTimer = setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
                 }

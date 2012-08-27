@@ -32095,6 +32095,9 @@ apf.BaseTree = function(){
         }
 
         if (immediate || container.scrollHeight > 1000) {
+            var _scrollTop = container.scrollHeight
+                                - container.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            container.scrollTop = _scrollTop == 0 ? 100 : 0;
             if (!this.nocollapse && container != this.$container) {
                 container.style.height = "auto";
                 container.style.overflow = "visible";
@@ -32143,13 +32146,18 @@ apf.BaseTree = function(){
         }
 
         if (!this.animation) {
-            var diff = apf.getHeightDiff(container),
-                oInt = container;
-
-            container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop = oInt.scrollHeight
-                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
-            finishSlide();
+                var diff = apf.getHeightDiff(container),
+                    oInt = container;
+    
+                // This fixes a bug that was introduced in Chrome 20
+                container.style.height = "10px";
+                oInt.scrollTop = 0;
+                // End fix
+                container.style.height = Math.max((height), 0) + "px";
+                _scrollTop = oInt.scrollHeight
+                    - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+                oInt.scrollTop = _scrollTop == 0 ? 100 : 0;
+                finishSlide();
         }
         else {
             apf.tween.single(container, {
@@ -57518,7 +57526,7 @@ apf.notifier = function(struct, tagName){
     };
     
     this.$propHandlers["start-padding"] = function(value) {
-        this.startPadding = value;
+        this.startPadding = parseInt(value);
     };
     
     this.$propHandlers["timeout"] = function(value) {

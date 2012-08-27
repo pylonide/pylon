@@ -183,13 +183,19 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
     },
 
-    createFile: function(filename, newFile) {
+    createFile: function(filename, newFile, tree) {
         var node;
-
+        
+        if (!tree) {
+            tree = apf.document.activeElement;
+            if (!tree || tree.localName != "tree")
+                tree = trFiles;
+        }
+        
         if (!newFile) {
-            node = trFiles.selected;
+            node = tree.selected;
             if (!node)
-                node = trFiles.xmlRoot.selectSingleNode("folder");
+                node = tree.xmlRoot.selectSingleNode("folder");
             if (node.getAttribute("type") != "folder" && node.tagName != "folder")
                 node = node.parentNode;
         }
@@ -204,7 +210,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var prefix = filename ? filename : "Untitled";
 
             if(!newFile)
-                trFiles.focus();
+                tree.focus();
 
             var _self = this,
                 path  = node.getAttribute("path");
@@ -227,13 +233,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         function done(){
                             if (both == 2) {
                                 file = apf.xmldb.appendChild(node, file);
-                                trFiles.select(file);
-                                trFiles.startRename();
-                                trFiles.slideOpen(null, node, true);
+                                tree.select(file);
+                                tree.startRename();
+                                tree.slideOpen(null, node, true);
                             }
                         }
 
-                        trFiles.slideOpen(null, node, true, function(){
+                        tree.slideOpen(null, node, true, function(){
                             both++;
                             done();
                         });

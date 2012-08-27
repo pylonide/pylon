@@ -6,7 +6,7 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("ace/test/assertions");
-//var handler = require('ext/jslanguage/narcissus_jshint');
+//var handler = require('ext/jslanguage/jshint');
 var LanguageWorker = require('ext/language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 

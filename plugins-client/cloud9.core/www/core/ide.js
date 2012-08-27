@@ -126,6 +126,7 @@ define(function(require, exports, module) {
             retries++;
             if (retries < 10 || retries < 60 && retries % 10 == 0 || retries % 50 == 0) {
                 sock.disconnect();
+                sock.remainingTransports = null;
                 sock.connect();
                 
                 if (retries == 5) {

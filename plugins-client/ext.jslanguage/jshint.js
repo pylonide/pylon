@@ -10,17 +10,17 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/, /Expected an assignment or function call/];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-handler.analysisRequiresParsing = function() {
-    return false;
+handler.analyze = function(doc, ast, callback) {
+    callback(handler.analyzeSync(doc, ast));
 };
 
-handler.analyze = function(doc, ast, callback) {
+handler.analyzeSync = function(doc, ast) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
@@ -32,15 +32,19 @@ handler.analyze = function(doc, ast, callback) {
             passfail: false,
             devel: true,
             browser: true,
-            node: true
+            node: true,
+            esnext: true,
+            expr: true
         });
         
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
-            var type = "warning"
+            var type = "warning";
             var reason = warning.reason;
             if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+                type = "error";
+            if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
                 type = "error";
             if (reason.indexOf("Missing semicolon") !== -1)
                 type = "info";
@@ -62,7 +66,22 @@ handler.analyze = function(doc, ast, callback) {
             });
         });
     }
-    callback(markers);
+    return markers;
+};
+
+/**
+ * Gets an object like { foo: true } for JSHint global comments
+ * like / * global foo: true * /
+ */
+handler.getGlobals = function() {
+    var array = lint.data().globals;
+    if (!array) // no data (yet?)
+        return {};
+    var obj = {};
+    for (var i = 0; i < array.length; i++) {
+        obj[array[i]] = true;
+    }
+    return obj;
 };
     
 });
