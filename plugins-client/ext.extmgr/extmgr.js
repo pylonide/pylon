@@ -95,25 +95,28 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
     addExtension : function() {
         var _self = this;
+        var path = tbModuleName.value;
         if (tbModuleName.validate()) {
             var timer = setTimeout(function() {
-                _self.$reportBadInput();
+                _self.$reportBadInput(path);
                 tbModuleName.enable();
                 btnAdd.enable();
-            }, tbModuleName.value.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
+            }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
             tbModuleName.disable();
             btnAdd.disable();
-            this.loadExtension(tbModuleName.value, timer);
+            this.loadExtension(path, timer);
         }
         else {
-            this.$reportBadInput();
+            this.$reportBadInput(path);
         }
     },
     
-    $reportBadInput: function() {
-        util.alert("Error", "Validation Error",
-                "There was a problem validating your input: '" + 
-                tbModuleName.value + "'");
+    $reportBadInput: function(path) {
+        var message = "There was a problem validating your input: '" + 
+                tbModuleName.value + "'.";
+        if (!path.match("://") && !path.match("/"))
+            message += "\nFor local extensions, specify a path like ext/extension/extensionmain.";
+        util.alert("Error", "Validation Error", message);
     },
     
     loadExtension : function(path, timer) {
