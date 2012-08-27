@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
- define(function(require, exports, module) {
+define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -14,6 +14,9 @@ var util = require("core/util");
 var markup = require("text!ext/extmgr/extmgr.xml");
 var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
+
+/*global dgExt dgExtUser tbModuleName tabExtMgr btnUserExtEnable
+  btnDefaultExtEnable winExt*/
 
 module.exports = ext.register("ext/extmgr/extmgr", {
     name   : "Extension Manager",
@@ -83,7 +86,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var nodes = ext.model.queryNodes("plugin");
         for (var i = 0; i < nodes.length; i++) {
             apf.xmldb.setAttribute(nodes[i], "total", 
-                parseInt(nodes[i].getAttribute("hook")) + parseInt(nodes[i].getAttribute("init") || 0));
+                parseInt(nodes[i].getAttribute("hook"), 10) + parseInt(nodes[i].getAttribute("init") || 0, 10));
         }
     },
 
@@ -183,5 +186,4 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     }
 });
 
-    }
-);
+});
