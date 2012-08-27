@@ -120,6 +120,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         if (!path) {
             tbModuleName.clear();
         }
+        if (path.substr(-3) === ".js")
+            path = path.substr(0, path.length - 3);
         require([path], function() {
             var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
             if (extNode)
