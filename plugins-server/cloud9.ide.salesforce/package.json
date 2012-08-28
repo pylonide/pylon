@@ -10,7 +10,8 @@
             "ide",
             "process-manager",
             "run-shell",
-            "eventbus"
+            "eventbus",
+            "vfs"
         ]
     }
 }

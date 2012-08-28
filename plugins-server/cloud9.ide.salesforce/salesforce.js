@@ -2,19 +2,31 @@
 
 var util = require("util");
 var https = require("https");
-
+var Path = require("path");
 
 var Plugin = require("../cloud9.core/plugin");
 //var c9util = require("../cloud9.core/util");
+
+var fsnode = require("vfs-nodefs-adapter");
+var fs;
 
 var name = "salesforce";
 //var ProcessManager;
 //var EventBus;
 
 module.exports = function setup(options, imports, register) {
+    //imports.ide.getProjectDir(function(err, projectDir) {
+     //   if (err) return register(err);
+
+        fs = fsnode(imports.vfs, './');
+        imports.ide.register(name, SalesForce, register);
+    //});
+    
+    
     //ProcessManager = imports["process-manager"];
     //EventBus = imports.eventbus;
-    imports.ide.register(name, SalesForce, register);
+    //console.log(imports);
+    //imports.ide.register(name, SalesForce, register);
 };
 
 var SalesForce = function(ide, workspace) {
@@ -71,13 +83,34 @@ util.inherits(SalesForce, Plugin);
                 instance_url : message.instance
             };
             
-            this.query('ApexClass', ['Id', 'Name'], null, options, function(records) {
+            //this.query('ApexClass', ['Id', 'Name'], null, options, function(records) {
+                var folder = this.ide.workspaceDir + "/ApexClasses";
+                console.log(folder);
+
+                fs.exists(Path.dirname(folder), function(exists) {
+                    console.log("Exists", exists, Path.dirname(folder));
+                });
+                fs.exists(folder, function(exists) {
+                    console.log('ApexClasses exists = ', exists, folder);
+                    if (exists) {
+                        return;
+                    }
+                    fs.mkdirP(folder, function(err) {
+                        console.log(err);
+                        if (!err) {
+                            console.log('success');
+                            //renameFn();
+                        }
+                    });
+                });
+                /*
                 self.ide.broadcast(JSON.stringify({
                     type : self.name,
                     subType : 'queryResults',
                     records : records
                 }), self.name);
-            });   
+                */
+            //});   
         }
 
         // Only send back to originator of message

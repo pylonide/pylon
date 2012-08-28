@@ -1,0 +1,67 @@
+
+*** These modified files were found in JOE when it aborted on Fri Aug 17 23:46:28 2012
+*** JOE was aborted because the terminal closed
+
+*** File '.git/COMMIT_EDITMSG'
+Initial check in of the salesforce plugin. Still a lot of cleanup and work to do
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: Ubuntu <ubuntu@ip-10-60-10-79.ec2.internal>
+#
+# On branch salesforce
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	new file:   plugins-client/ext.salesforce/SfdcOrganization.js
+#	new file:   plugins-client/ext.salesforce/salesforce.html
+#	new file:   plugins-client/ext.salesforce/salesforce.js
+#	new file:   plugins-client/ext.salesforce/salesforce.xml
+#	new file:   plugins-client/ext.salesforce/salesforce.xml.h7qlsx9z.tmp
+#	new file:   plugins-server/cloud9.ide.salesforce/package.json
+#	new file:   plugins-server/cloud9.ide.salesforce/salesforce.js
+#
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   configs/default.js
+#
+
+*** File '(Unnamed)'
+9193
+sole.redistogo.com
+9002
+sole.redistogo.com
+9002
+tetra.redistogo.com
+9642
+d500c1a9bf9c38447c1b186aeb189c12
+f265f8948532b1b05baa7b931ba026a6
+monitor.cloud9beta.com
+
+*** File '(Unnamed)'
+redisdb
+redis
+infraredisip
+6379
+searchredisip
+6376
+456874568wsxfhgsdtr134ras3445w34435
+674235wygsdfvsdgwq2452132145
+184.73.248.91
+panic
+
+*** File '(Unnamed)'
+/etc/init.d/c9
+/etc/hosts
+/etc/network/if-up.d/privateip
+/etc/network/if-up.d/privateip
+/etc/network/if-up.d/privateip
+.git/COMMIT_EDITMSG
+.git/COMMIT_EDITMSG
+.git/COMMIT_EDITMSG
+.git/COMMIT_EDITMSG
+.git/COMMIT_EDITMSG
+.git/COMMIT_EDITMSG
