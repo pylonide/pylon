@@ -132,12 +132,14 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         if (!path.match("://") && path.substr(-3) === ".js")
             path = path.substr(0, path.length - 3);
         path = path.replace(/(\.github.com)\/([^\/]+)\/?$/, "$1/$2/$2.js");
-        require([path], function() {
-            var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
+        require([path], function(loaded) {
+            var extNode = ext.model.queryNode("plugin[@path='" + loaded.path + "']");
             if (extNode)
                 apf.xmldb.setAttribute(extNode, "userext", "1");
             else
                 _self.$reportBadInput(path, "Extension was loaded but not registered.");
+            // Set actual loaded-from path, not reported path
+            apf.xmldb.setAttribute(extNode, "path", path);
             settings.save();
             if (timer) {
                 clearTimeout(timer);
