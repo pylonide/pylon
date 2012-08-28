@@ -105,6 +105,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 _self.requireFailed = true;
                 _self.$reportBadInput(path);
                 tbModuleName.enable();
+                tbModuleName.clear();
                 btnAdd.enable();
             }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
             tbModuleName.disable();
@@ -125,19 +126,20 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
     
     loadExtension : function(path, timer) {
-        if (!path) {
-            tbModuleName.clear();
-        }
-        if (path.substr(-3) === ".js")
+        var _self = this;
+        if (!path.match("://") && path.substr(-3) === ".js")
             path = path.substr(0, path.length - 3);
         require([path], function() {
             var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
             if (extNode)
                 apf.xmldb.setAttribute(extNode, "userext", "1");
+            else
+                _self.$reportBadInput(path);
             settings.save();
             if (timer) {
                 clearTimeout(timer);
                 tbModuleName.enable();
+                tbModuleName.clear();
                 btnAdd.enable();
             }
         });
