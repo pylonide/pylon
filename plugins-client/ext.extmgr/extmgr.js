@@ -117,11 +117,13 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }
     },
     
-    $reportBadInput: function(path) {
+    $reportBadInput: function(path, extraMessage) {
         var message = "There was a problem validating your input: '" + 
                 tbModuleName.value + "'.";
         if (!path.match("://") && !path.match("/"))
             message += "\nFor local extensions, specify a path like ext/extension/extensionmain.";
+        if (extraMessage)
+            message += "\n" + extraMessage;
         util.alert("Error", "Validation Error", message + "\nPlease reload Cloud9 to add another extension.");
     },
     
@@ -135,7 +137,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             if (extNode)
                 apf.xmldb.setAttribute(extNode, "userext", "1");
             else
-                _self.$reportBadInput(path);
+                _self.$reportBadInput(path, "Extension was loaded but not registered.");
             settings.save();
             if (timer) {
                 clearTimeout(timer);
