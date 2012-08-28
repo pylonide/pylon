@@ -73,13 +73,15 @@ util.inherits(StatePlugin, Plugin);
             var state = {
                 "type": "state"
             };
-
+            
+            // TODO could we just send all ps?
             for (var pid in ps) {
                 var processType = ps[pid].type;
-                if (processType == "node" || processType == "apache" || processType == "php" || processType == "python" || processType == "ruby")
+                if (processType == "node" || processType == "apache" || processType == "php" ||
+                        processType == "python" || processType == "ruby" || processType == "node-debug") {
+                    state[processType] = parseInt(pid);
                     state.processRunning = pid;
-                else if (processType == "node-debug") {
-                    state.processRunning = pid;
+                 if (processType.substr(-5) == "debug")
                     state.debugClient = pid;
                 }
             }

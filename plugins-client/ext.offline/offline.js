@@ -57,7 +57,6 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("afteroffline", function(){
             stServerConnected.deactivate();
             ide.onLine = false;
-            ide.readonly = true;
             apf.setStyleClass(logobar.$ext, "offline");
 
             if (ide.local)
@@ -74,7 +73,6 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("beforeonline", function () {
             stServerConnected.activate();
             ide.onLine = true;
-            ide.readonly = window.cloud9config.readonly;
         });
 
         ide.addEventListener("afteronline", function(e){

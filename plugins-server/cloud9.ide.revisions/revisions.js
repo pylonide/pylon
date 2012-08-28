@@ -195,7 +195,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                                 renameFn();
                             }
                             else {
-                                fs.mkdirP(Path.dirname(toPath), "0755", function(err) {
+                                fs.mkdirP(Path.dirname(toPath), function(err) {
                                     if (!err) {
                                         renameFn();
                                     }
@@ -500,7 +500,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }
 
         function create(data) {
-            fs.mkdirP(Path.dirname(absPath), "0755", function(err) {
+            fs.mkdirP(Path.dirname(absPath), function(err) {
                 if (!err)
                     write(null, data);
             })

@@ -1,0 +1,14 @@
+{
+    "name": "ext.template",
+    "version": "0.0.1",
+    "main": "extension_template.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.template"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

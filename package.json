@@ -34,26 +34,25 @@
         "nodeunit": "0.7.4",
         "sinon": "1.3.4",
         "rimraf": "2.0.1",
-        "vfs-local": "0.1.4",
+        "vfs-local": "0.1.6",
         "vfs-nodefs-adapter": "0.0.4"
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/445767a5982d44b35b9e9061025d6f0d2fd4dad2"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/855302855ba9e2953f74f93cd5ea56af2b6bf543"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/97e40eb58050f7ee9dee435f9e2cf7fc0956a108"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/ca9053b1a9a499d587063f04cc02acf091d44b28"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/df9a04c034b79088377b527208e003b564143508"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/53818b85736cbe12f63a7cd46e4cbc4214d1c64c"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/f82622f632316734e34bc2c14e601e3c493a9270"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/01597eacd22ad660977d43c44b4001107117b8ea"],
-        "vfs":          ["npm", "https://github.com/c9/vfs/tarball/be43f8b32f9b1c69923dd85ec9be7eb6836bbb29"],
+        "vfs":          ["npm", "https://github.com/c9/vfs/tarball/61841e99eda6ea9a8b801fd145b9a0af286ad324"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/46f9d8ffdb159a2c206d41ed6ad877f471bb1e2f"],
-        "socket.io":           ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
-        "socket.io-client":    ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/8026fea03e87a5a773e87ae9d78e29fab912d52e"],
+        "socket.io":    ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
+        "socket.io-client": ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
       , "jvm_features": ["npm", "git@github.com:ajaxorg/jvm_features.git#de6a5645d11f72e4a348b135a0a4dd8fe2c379d1"],
         "jvm-run":      ["npm", "git@github.com:ajaxorg/javarunvm.git#2350b4feeaaf209f388f8a2dae59fa4854b1df50"],
         "javadebug":    ["npm", "git@github.com:ajaxorg/lib-javadebug.git#420fb3c8fc100f5a376e87f3e101f571e9b75a17"]
-
     },
 
     "repository" : {

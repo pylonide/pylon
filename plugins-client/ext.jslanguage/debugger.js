@@ -35,11 +35,11 @@ define(function(require, exports, module) {
         
         d.rewrite(
             // var someVar = ...
-            'VarDeclInit(x, _)', function(b) {
+            'VarDeclInit(x, _)', 'ConstDeclInit(x, _)', function(b) {
                 result = b.x.value;
             },
             // var someVar;
-            'VarDecl(x)', function(b) {
+            'VarDecl(x)', 'ConstDecl(x)', function(b) {
                 result = b.x.value;
             },
             // e.x

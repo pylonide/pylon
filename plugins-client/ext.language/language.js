@@ -32,6 +32,8 @@ var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
 var isContinuousCompletionEnabled;
 
+/*global tabEditors:true cloud9config:true */
+
 module.exports = ext.register("ext/language/language", {
     name    : "Multiple Language Features",
     dev     : "Ajax.org",
@@ -154,7 +156,7 @@ module.exports = ext.register("ext/language/language", {
             EditSession.prototype.$startWorker = function() {
                 if (this.$modeId != "ace/mode/javascript")
                     this.$startWorker_orig();
-            }
+            };
         }
     },
 
@@ -254,7 +256,7 @@ module.exports = ext.register("ext/language/language", {
 
     setPath: function() {
         // Currently no code editor active
-        if(!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
+        if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue()]);

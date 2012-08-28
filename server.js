@@ -3,6 +3,7 @@
 var path = require('path');
 var architect = require("architect");
 var spawn = require("child_process").spawn;
+var fs = require("fs");
 
 // TODO: Need better args parser.
 
@@ -22,22 +23,26 @@ for (var p = 2; p < process.argv.length; p++) {
    if (process.argv[p] === "-d") {
        debug = true;
        
-       if(!path.existsSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js")) {
-       		console.log("Building apfdebug for first run...");
-       		
-            var buildDebug = spawn("npm", ["run-script", "build-debug"]);
-
-            buildDebug.stderr.setEncoding("utf8");
-            buildDebug.stderr.on('data', function (data) {
+       // apf debug doesn't exist, or it's older than three days--rebuild it
+       if(!path.existsSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js") ||
+          (path.existsSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js")) &&
+          ((new Date() - fs.statSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js").mtime.valueOf()) / 86400000) >= 3) {
+           console.log("Building apfdebug for first run...");
+           
+           var buildDebug = spawn("npm", ["run-script", "build-debug"]);
+           
+           buildDebug.stderr.setEncoding("utf8");
+           buildDebug.stderr.on('data', function (data) {
               console.error(data);
-            });
-            buildDebug.on('exit', function (code) {
+           });
+           
+           buildDebug.on('exit', function (code) {
               if (code !== 0) {
                 console.error('build-debug process exited with code ' + code);
                 process.exit(code);
               }
               boot();
-            });
+           });
        }
        else
            boot();
@@ -53,11 +58,11 @@ for (var p = 2; p < process.argv.length; p++) {
        configName = "packed";
 
        if(!path.existsSync("plugins-client/lib.packed/www/" + packedName) && !path.existsSync("plugins-client/lib.packed/www/" + packedName + ".gz")) {
-       		console.log("Building packed file for first run...Please wait...");
-		   	  console.log("   |\\      _,,,---,,_\n"+
-		   				"   /,`.-'`'    -.  ;-;;,_\n" +
-		  				"   |,4-  ) )-,_..;\\ (  `'-'\n" +
-		 				"   '---''(_/--'  `-'\\_)  Felix Lee");
+           console.log("Building packed file for first run...Please wait...");
+           console.log("   |\\      _,,,---,,_\n" +
+                       "   /,`.-'`'    -.  ;-;;,_\n" +
+                       "   |,4-  ) )-,_..;\\ (  `'-'\n" +
+                       "   '---''(_/--'  `-'\\_)  Felix Lee");
 
             var buildPackage = spawn("npm", ["run-script", "build-packed"]);
             

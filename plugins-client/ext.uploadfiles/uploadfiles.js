@@ -118,6 +118,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         function handleFileSelect(e){
             var files = e.target.files;
             _self.startUpload(files);
+            e.target.value = "";
         };
         
         ide.addEventListener("init.ext/tree/tree", function(){
@@ -553,6 +554,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     }
                     
                     function uploadNext(targetFolder) {
+                        if (_self.cancelAllUploads)
+                            return _self.uploadCanceled();
+                        
                         if (targetFolder)
                             file.targetFolder = targetFolder;
                         
@@ -692,7 +696,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     cancelAll: function() {
         this.cancelAllUploads = true;
-        this.worker.postMessage({cmd: 'cancelall'});
+        if (this.worker) // worker might not be initialized yet when canceling before first upload
+            this.worker.postMessage({cmd: 'cancelall'});
         this.uploadFiles = [];
         this.uploadQueue = [];
         

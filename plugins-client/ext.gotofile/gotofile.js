@@ -47,11 +47,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             name: "gotofile",
             hint: "search for a filename and jump to it",
             bindKey: {mac: "Command-E", win: "Ctrl-E"},
-            exec: function () {
+            exec: function () {  
                 if (!_self.isGeneric)
                     _self.toggleDialog(1);
-                else
-                    winBlockGotoFile.show()
+                else {
+                    ext.initExtension(_self);
+                    winGoToFile.visible = true;
+                    winGoToFile.hide();
+                    winBlockGotoFile.show();
+                }
             }
         });
 
@@ -338,10 +342,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             vp.change(0, vp.limit, true);
             
             setTimeout(function(){
-                if (!dgGoToFile.selected) {
-                    dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
-                    txtGoToFile.focus();
-                }
+                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                txtGoToFile.focus();
             });
         }
         
@@ -433,16 +435,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             if (!txtGoToFile.inited) {
                 setTimeout(function(){
-                    afterTbRendered();
+                    txtGoToFile.inited = true;
+                    txtGoToFile.focus();
                 });
             }
             else {
-                afterTbRendered();
-            }
-            
-            function afterTbRendered(){
                 txtGoToFile.focus();
-                txtGoToFile.inited = true;
             }
             
             // If we had a filter and new content, lets refilter

@@ -1,4 +1,9 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:script><![CDATA[
+        function filesort(value, args, xmlNode) {
+            return (xmlNode.tagName == "folder" ? 0 : 1) + value.toLowerCase();
+        }
+    ]]></a:script>
     <a:window
       id        = "winCloseConfirm"
       title     = "Save this file?"
@@ -87,10 +92,11 @@
                       flex          = "1"
                       scrollbar     = "sbShared 2 2 2"
                       model         = "{require('ext/filesystem/filesystem').model}"
-                      contextmenu   = "mnuCtxTree"
+                      contextmenu   = "mnuCtxSaveTree"
+                      canrename     = "true"
                       onafterselect = "chooseSaveAsFolder(this.selected)"
                       onafterchoose = "chooseSaveAsFolder(this.selected)">
-                        <a:each match="[folder|file]">
+                        <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                            <a:insert
                              match = "[folder]"
                              get   = "{location.host &amp;&amp; davProject.readdir([@path])}" />
@@ -105,7 +111,7 @@
                         </a:each>
                         <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
                         <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                        <a:rename set="{alert('boe'); davProject.rename([@name], [@path])}"/>
+                        <a:rename match="[file|folder[not(@root)]]" set="{require('ext/save/save').renameFile(%[.])}" />
                         <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
                         <a:move set="{davProject.move([@path], [../@path])}"/>
                         <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
@@ -157,4 +163,15 @@
             </a:hbox>
         </a:vbox>
     </a:window>
+    <a:menu id="mnuCtxSaveTree" disabled="{{!stServerConnected.active}}" render="runtime">
+        <a:item match="[file|folder[not(@root)]]" onclick="trSaveAs.startRename()">Rename</a:item>
+        <a:item match="[file|folder[not(@root)]]" onclick="trSaveAs.remove()">Delete</a:item>
+        <a:divider />
+        <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" onclick="
+            require('ext/filesystem/filesystem').createFile('Untitled', null, trSaveAs);
+        ">New File</a:item>
+        <a:item match="[file|folder|project]" onclick="
+            require('ext/filesystem/filesystem').createFolder('New Folder', trSaveAs);
+        ">New Folder</a:item>
+    </a:menu>
 </a:application>

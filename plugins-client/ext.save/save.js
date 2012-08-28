@@ -231,6 +231,35 @@ module.exports = ext.register("ext/save/save", {
                 delete winSaveAs.page;
             }
         });
+        
+        trSaveAs.addEventListener("beforerename", this.$beforerename = function(e){
+            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+
+            if (trSaveAs.$model.data.firstChild == trSaveAs.selected)
+                return false;
+
+            // check for a path with the same name, which is not allowed to rename to:
+            var path = e.args[0].getAttribute("path"),
+                newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]).toLowerCase();
+
+            var exists, nodes = trSaveAs.getModel().queryNodes(".//node()");
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var pathLwr = nodes[i].getAttribute("path").toLowerCase();
+                if (nodes[i] != e.args[0] && pathLwr === newpath) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (exists) {
+                util.alert("Error", "Unable to Rename",
+                    "That name is already taken. Please choose a different name.");
+                trSaveAs.getActionTracker().undo();
+                return false;
+            }
+
+            fs.beforeRename(e.args[0], e.args[1]);
+        });
     },
 
     reverttosaved : function(){
@@ -584,7 +613,25 @@ module.exports = ext.register("ext/save/save", {
             trSaveAs.addEventListener("afterload", expand);
         }
     },
+    
+    renameFile : function(node) {
+        var path = node.getAttribute("path");
+        var oldpath = node.getAttribute("oldpath");
+        davProject.rename(oldpath, path, true, false, function(data, state, extra) {
+            if (state !== apf.SUCCESS) {
+                // TODO: revert the rename!!
+                return;
+            }
 
+            ide.dispatchEvent("afterupdatefile", {
+                path: oldpath,
+                newPath: path,
+                xmlNode: node,
+                isFolder: node.getAttribute("type") === "folder"
+            });
+        });
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

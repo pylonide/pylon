@@ -228,16 +228,20 @@ util.inherits(ShellPlugin, Plugin);
     this["command-kill"] = function(message) {
         var self = this;
         this.pm.kill(message.pid, function(err) {
+            if (!err)
+                return;
             self.sendResult(0, message.command, {
                 argv  : message.argv,
                 code  : -1,
                 err   : err || "There was a problem exiting the process",
-                extra : message.extra
+                extra : message.extra,
+                pid   : message.pid
             });
         });
     };
 
     this.getListing = function(tail, path, dirmode, callback) {
+        var self = this;
         var matches = [];
         tail = (tail || "")
             .trim()
@@ -257,7 +261,7 @@ util.inherits(ShellPlugin, Plugin);
             var nodes = [];
 
             stream.on("data", function(stat) {
-                var isDir = this._isDir(stat);
+                var isDir = self._isDir(stat);
 
                 if (stat.name.indexOf(tail) === 0 && (!dirmode || isDir))
                     matches.push(stat.name + (isDir ? "/" : ""));

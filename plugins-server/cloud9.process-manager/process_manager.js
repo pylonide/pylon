@@ -129,7 +129,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
             var child = this.processes[pid];
 
             // process has exited
-            if (!child.pid) {
+            if (!child.pid || child.killed) {
                 delete this.processes[pid];
             }
             else {
@@ -153,13 +153,18 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         callback();
     };
 
-    this.kill = function(pid) {
+    this.kill = function(pid, callback) {
+        if (typeof callback !== "function") {
+            callback = function () {};
+        }
+        
         var child = this.processes[pid];
-        if (!child || !child.pid)
-            return false;
+        if (!child)
+            return callback("Process does not exist");
 
-        child.kill();
-        return true;
+        child.killed = true;
+        child.kill("SIGKILL");
+        callback();
     };
 
 }).call(ProcessManager.prototype);

@@ -9,6 +9,7 @@
       visible   = "false"
       skinset   = "inlinedg" 
       skin      = "bar-liveinspect"
+      resizable = "true"
       >
       <a:vbox anchors="0 0 0 0"           >
           <a:datagrid id="dgLiveInspect"

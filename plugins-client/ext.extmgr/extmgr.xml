@@ -114,7 +114,7 @@
                   caption  = "Disable"
                   disabled = "{!dgExt.selected}"
                   onclick  = "
-                    if (dgExtUser.selected.getAttribute('enabled') == 1)
+                    if (dgExt.selected.getAttribute('enabled') == 1)
                         require('ext/extmgr/extmgr').disableExt(dgExt.value);
                     else
                         require('ext/extmgr/extmgr').enableExt(dgExt.value);
