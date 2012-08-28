@@ -47,6 +47,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         return {
           name        : m,
           replaceText : snippets[m],
+          doc         : "<pre>" + snippets[m].replace("\^\^", "&#9251;") + "</pre>",
           icon        : null,
           meta        : "snippet",
           priority    : 2

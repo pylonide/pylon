@@ -436,24 +436,6 @@ module.exports = ext.register("ext/code/code", {
 
         settings.addSettings("Code Editor", markupSettings);
 
-        ide.addEventListener("afteropenfile", function(e) {
-            if (_self.setState)
-                _self.setState(e.doc, e.doc.state);
-
-            if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
-                // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
-                  && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
-                  && e.node.hasAttribute("path")) {
-                    var path = e.node.getAttribute("path").slice(ide.davPrefix.length + 1);
-                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + path.replace(/"/g, "&quot;") + '"]');
-                    if (nodes.length)
-                        e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
-                }
-                e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
-            }
-        });
-
         ide.addEventListener("tab.afterswitch", function(e) {
             var editor = _self.amlEditor;
             if (typeof editor !== "undefined") {

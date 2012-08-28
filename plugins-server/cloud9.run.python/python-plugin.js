@@ -23,7 +23,6 @@ module.exports = function setup(options, imports, register) {
 
     this.createChild = function(callback) {
         this.args = this.pythonArgs.concat(this.file, this.scriptArgs);
-        console.log(this.args)
         ShellRunner.prototype.createChild.call(this, callback);
     };
 

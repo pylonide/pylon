@@ -49,6 +49,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     self.root = options.root;
     self.file = options.file;
     options.env = options.env || {};
+    self.scriptArgs = options.args || [];
     self.pythonArgs = [];
 
     // first we need to get an open port

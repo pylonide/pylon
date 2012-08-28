@@ -157,8 +157,8 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         });
     };
 
-    this.kill = function() {
-        this.child && this.child.kill();
+    this.kill = function(signal) {
+        this.child && this.child.kill(signal);
     };
 
     this.describe = function() {

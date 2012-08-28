@@ -152,7 +152,6 @@ var BlameGutter = function(editor, blameData) {
                 break;
 
             html.push("<div class='ace_gutter-cell",
-                this.$decorations[i] || "",
                 "' style='height:", lineHeight, "px;'>", (i+1));
 
             if (foldWidgets) {

@@ -10,4 +10,6 @@
             <a:item value="end-expand">End braces on own line</a:item>
         </a:dropdown>
     </a:hbox>
+    <a:checkbox class="underlined" label="Space Before Conditionals" value="[beautify/jsbeautify/@space_before_conditional]" skin="checkbox_grey" position="5000"/>
+    <a:checkbox class="underlined" label="Unescape Strings" value="[beautify/jsbeautify/@unescape_strings]" skin="checkbox_grey" position="6000"/>
 </a:application>
