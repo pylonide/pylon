@@ -406,6 +406,7 @@ module.exports = ext.register("ext/code/code", {
                 ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
+                ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
                 ["behaviors", ""],
                 ["softtabs", "true"],
