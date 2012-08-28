@@ -119,7 +119,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     
     $reportBadInput: function(path, extraMessage) {
         var message = "There was a problem validating your input: '" + 
-                tbModuleName.value + "'.";
+            tbModuleName.value + "'.";
         if (!path.match("://") && !path.match("/"))
             message += "\nFor local extensions, specify a path like ext/extension/extensionmain.";
         if (extraMessage)
@@ -137,10 +137,15 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         // path = path.replace(/(https?:..raw.github.com)\/([^\/]+)\/([^\/]+)\/gh-pages/, "http://$2.github.com/$3");
         require([path], function(loaded) {
             var extNode = ext.model.queryNode("plugin[@path='" + loaded.path + "']");
-            if (extNode)
-                apf.xmldb.setAttribute(extNode, "userext", "1");
-            else
-                _self.$reportBadInput(path, "Extension was loaded but not registered.");
+            if (!extNode) {
+                _self.requireFailed = true;
+                _self.$reportBadInput(path, "Extension was loaded but not registered successfully.");
+                clearTimeout(timer);
+                tbModuleName.enable();
+                btnAdd.enable();
+                return;
+            }
+            apf.xmldb.setAttribute(extNode, "userext", "1");
             // Set actual loaded-from path, not reported path
             apf.xmldb.setAttribute(extNode, "path", path);
             settings.save();
