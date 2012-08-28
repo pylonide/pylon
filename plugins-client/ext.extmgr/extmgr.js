@@ -49,7 +49,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
                 for (var n = 0; n < nodes.length; n++)
-                    _self.loadExtension(nodes[n].getAttribute("path"));
+                    _self.loadExtension(nodes[n].getAttribute("realPath") || nodes[n].getAttribute("path"));
                 
                 _self.loadedSettings = true;
             });
@@ -146,8 +146,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 return;
             }
             apf.xmldb.setAttribute(extNode, "userext", "1");
-            // Set actual loaded-from path, not reported path
-            apf.xmldb.setAttribute(extNode, "path", path);
+            apf.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();
             if (timer) {
                 clearTimeout(timer);
@@ -159,11 +158,13 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
 
     removeExtension : function() {
-        var extPath = dgExtUser.selected.getAttribute("path");
-        var extension = require(extPath);
+        var path = dgExtUser.selected.getAttribute("path");
+        var realPath = dgExtUser.selected.getAttribute("realPath") || path;
 
-        if (ext.unregister(extension, false, extPath)) {
-            var extNode = ext.model.queryNode("plugin[@path='" + extPath + "']");
+        var extension = require(realPath);
+
+        if (ext.unregister(extension)) {
+            var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
             ext.model.removeXml(extNode);
             settings.save();
         }
