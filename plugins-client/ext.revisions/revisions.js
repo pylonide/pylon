@@ -1232,7 +1232,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (user) {
             color = user.getAttribute("color");
         }
-        // This cannot possibly do anything
     },
 
     /**
@@ -1315,9 +1314,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             // If there is no revision object for the current doc, we should
             // retrieve if it is not being retrieved right now. After retrieval,
             // `populateModel` will take care of setting model.data.
-            var currentDocRevision = this.rawRevisions[CoreUtil.getDocPath()];
+            var docPath = CoreUtil.getDocPath();
+            var currentDocRevision = this.rawRevisions[docPath];
             if (!currentDocRevision && !this.waitingForRevisionHistory) {
-                this.getRevisionHistory({ path: CoreUtil.getDocPath() });
+                this.getRevisionHistory({ path: docPath });
             }
             else {
                 this.populateModel(currentDocRevision, model);
@@ -1330,8 +1330,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.model.setQueryValue("general/@revisionsvisible", false);
         ceEditor.$ext.style.right = "0";
         var page = tabEditors.getPage();
-        if (!page) return;
-
+        if (!page) {
+            return;
+        }
+        
         page.$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
