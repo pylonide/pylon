@@ -37,7 +37,7 @@
                           eachvalue  = "[@path]"
                           empty-message = "No user extensions">
                             <a:column width="20%" value="[@name]" caption="Name" />
-                            <a:column width="30%" value="[@path]" caption="Path" />
+                            <a:column width="30%" value="{[@realPath] || [@path]}" caption="Path" />
                             <a:column width="8%" value="[@type]" caption="Type" /> 
                             <a:column width="8%" value="[@dev]" caption="Developer" /> 
                             <a:column width="8%" value="[@hook]ms" caption="Hook" align="right" data-type="number" /> 
