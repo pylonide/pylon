@@ -20,7 +20,7 @@ function matchSorter(matches) {
     });
 }
 
-completer.fetchText = function(path) {
+completer.fetchText = function(staticPrefix, path) {
     return require('fs').readFileSync(__dirname + "/../" + path.replace("ext/", "ext."), 'ascii');
 };
 
@@ -29,7 +29,7 @@ module.exports = {
     "test javascript found completions" : function() {
         var doc = new Document("while(true) {\n    fn\n}");
         completer.language = 'javascript';
-        completer.complete(doc, null, {"pos": {row: 1, column: 6}}, null, function(matches) {
+        completer.complete(doc, null, {row: 1, column: 6}, null, function(matches) {
             matchSorter(matches);
             assert.equal(matches.length, 1);
             assert.equal(matches[0].name, "fn");
