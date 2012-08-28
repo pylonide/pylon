@@ -35,7 +35,7 @@ module.exports = {
             "/blah/code/me.jpg" //included but no prio
         ], "code", []);
 
-        assert.ok(xml == "<d:multistatus  xmlns:d='DAV:'><d:response><d:href>/etc/code</d:href><d:href>/etc/code.xml</d:href><d:href>/etc/code_test.xml</d:href><d:href>/blah/code/others.png</d:href><d:href>/blah/code/me.jpg</d:href></d:response></d:multistatus>");
+        assert.deepEqual(xml, ["/etc/code", "/etc/code.xml", "/etc/code_test.xml", "/blah/code/others.png", "/blah/code/me.jpg"]);
         
         next();
     }
@@ -44,5 +44,5 @@ module.exports = {
 });
 
 if (typeof module !== "undefined" && module === require.main) {
-    require("../../../support/asyncjs").test.testcase(module.exports).exec()
+    require("asyncjs").test.testcase(module.exports).exec()
 }
