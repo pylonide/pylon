@@ -129,6 +129,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var _self = this;
         if (!path.match("://") && path.substr(-3) === ".js")
             path = path.substr(0, path.length - 3);
+        path = path.replace(/(\.github.com)\/([^\/]+)\/?$/, "$1/$2/$2.js");
         require([path], function() {
             var extNode = ext.model.queryNode("plugin[@path='" + path + "']");
             if (extNode)
