@@ -178,6 +178,22 @@ define(function(require, exports, module) {
             return page.$model.data;
         });
     };
+    
+    /**
+     * Execute an action whenever the socket is ready
+     */
+    ide.onSocketReady = function(action) {
+        // if we're already connected, then do an action
+        if (ide.connected === true) {
+            action();
+        }
+        else {
+            // otherwise execute when we're done
+            ide.addEventListener("socketConnect", function () {
+                action();
+            });
+        }
+    };
 
     module.exports = ide;
 });

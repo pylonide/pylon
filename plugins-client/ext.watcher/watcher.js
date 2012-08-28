@@ -225,34 +225,42 @@ module.exports = ext.register("ext/watcher/watcher", {
     },
 
     sendWatchFile : function(path) {
-        ide.send({
-            "command"     : "watcher",
-            "type"        : "watchFile",
-            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+        ide.onSocketReady(function () {
+            ide.send({
+                "command"     : "watcher",
+                "type"        : "watchFile",
+                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+            });
         });
     },
     
     sendWatchDirectory : function(path) {
-        ide.send({
-            "command"     : "watcher",
-            "type"        : "watchDirectory",
-            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+        ide.onSocketReady(function () {
+            ide.send({
+                "command"     : "watcher",
+                "type"        : "watchDirectory",
+                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+            });
         });
     },
     
     sendUnwatchDirectory : function(path) {
-        ide.send({
-            "command"     : "watcher",
-            "type"        : "unwatchDirectory",
-            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+        ide.onSocketReady(function () {
+            ide.send({
+                "command"     : "watcher",
+                "type"        : "unwatchDirectory",
+                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+            });
         });
     },
 
     sendUnwatchFile : function(path) {
-        ide.send({
-            "command"     : "watcher",
-            "type"        : "unwatchFile",
-            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+        ide.onSocketReady(function () {
+            ide.send({
+                "command"     : "watcher",
+                "type"        : "unwatchFile",
+                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
+            });
         });
     },
 
@@ -260,6 +268,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         this.disabled = false;
 
         var _self = this;
+        
         var pages = tabEditors.getPages();
         pages.forEach(function(page) {
             if (page.$model) {
@@ -267,8 +276,8 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
         });
 
-        for (var path in this.expandedPaths) {
-            this.sendWatchDirectory(path);
+        for (var path in _self.expandedPaths) {
+            _self.sendWatchDirectory(path);
         }
     },
 

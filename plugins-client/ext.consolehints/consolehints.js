@@ -153,12 +153,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     
             // Asynchronously retrieve commands that other plugins may have
             // registered, hence the (relatively) long timeout.
-            setTimeout(function() {
-                ide.send({
-                    command: "commandhints",
-                    cwd: c9console.getCwd()
-                });
-            }, 1000);
+            ide.onSocketReady(function () {
+                setTimeout(function() {
+                    ide.send({
+                        command: "commandhints",
+                        cwd: c9console.getCwd()
+                    });
+                }, 1000);
+            });
 
             txtConsoleInput.addEventListener("focus", function(e) {
                 if (txtConsoleInput.getValue().length && hintsContent.hasChildNodes()) {
