@@ -17,6 +17,7 @@ var editors = require("ext/editors/editors");
 var settings = require("core/settings");
 var clientSettings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/tabbehaviors/settings.xml");
+var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -637,13 +638,50 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         return false;
     },
 
-    duplicate: function(){        
+    duplicate: function(){                
         var page = tabEditors.getPage();
-        if (!page)
-            return false;
+        if (!page) return false;
+        
         var docNode = page.$doc.getNode();
-        if(!docNode)
-            return false;
+        if (!docNode) return false;
+        
+        var filename = docNode.getAttribute("name"),
+            filetype = filename.split(".").pop().toLowerCase(),
+            prefix   = filename.replace("." + filetype, ""),
+            path     = docNode.getAttribute("path").replace(filename, "").replace(/\/$/, ""),
+            newPath  = path + "/" + filename;
+            
+        if (!path) {
+            path = ide.davPrefix;
+            docNode.setAttribute("path", path);
+        }
+        
+        var index = 0;
+        var test = function(exists) {
+            if (exists) {
+                filename = prefix + "." + (index++) + "." + filetype;
+                newPath  = path + "/" + filename;
+                fs.exists(newPath, test);
+            }
+            else {
+                var dNode = apf.getXml("<file />");
+                newPath = path + "/" + filename;
+                
+                dNode.setAttribute("name", filename);
+                dNode.setAttribute("path", newPath);
+                dNode.setAttribute("changed", "1");
+                dNode.setAttribute("newfile", "1");
+                page.$doc.setNode(dNode);
+                page.$model.load(dNode);
+                page.setAttribute("id", newPath);
+                tabEditors.set(tabEditors.getPage());
+                
+                apf.xmldb.removeAttribute(docNode, "saving");
+                apf.xmldb.removeAttribute(docNode, "changed");
+            }
+        };
+        
+        fs.exists(newPath, test);
     },
 
     /**
