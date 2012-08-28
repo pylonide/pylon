@@ -119,7 +119,7 @@ module.exports = ext = {
         return oExtension;
     },
 
-    unregister : function(oExtension, silent){
+    unregister : function(oExtension, silent, pathLoaded) {
         //Check exts that depend on oExtension
         var using = oExtension.using;
         if (using) {
@@ -167,7 +167,7 @@ module.exports = ext = {
 
         this.extHandlers[oExtension.type].unregister(oExtension);
 
-        this.model.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
+        this.model.setQueryValue("plugin[@path='" + (pathLoaded || oExtension.path) + "']/@enabled", 0);
 
         if (oExtension.inited) {
             oExtension.destroy();

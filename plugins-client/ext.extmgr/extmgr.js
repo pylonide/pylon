@@ -154,8 +154,9 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var extPath = dgExtUser.selected.getAttribute("path");
         var extension = require(extPath);
 
-        if (ext.unregister(extension)) {
-            ext.model.removeXml(ext.model.queryNode("plugin[@path='" + extPath + "']"));
+        if (ext.unregister(extension, false, extPath)) {
+            var extNode = ext.model.queryNode("plugin[@path='" + extPath + "']");
+            ext.model.removeXml(extNode);
             settings.save();
         }
     },
