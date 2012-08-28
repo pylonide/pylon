@@ -582,15 +582,23 @@ module.exports = ext.register("ext/revisions/revisions", {
             var index = self.changedPaths.indexOf(path);
             if (self.changedPaths.indexOf(path) > -1) {
                 ide.addEventListener("afterreload", function onDocReload(e) {
-                    if (e.doc === _page.$doc) {
-                        // doc.setValue is redundant here, but it ensures that
-                        // the proper value will be saved.
-                        e.doc.setValue(e.data);
-                        setTimeout(function() {
-                            self.save(_page, true);
-                        });
-                        ide.removeEventListener("afterreload", onDocReload);
+                    if (e.doc !== _page.$doc)
+                        return;
+
+                    // doc.setValue is redundant here, but it ensures that
+                    // the proper value will be saved.
+                    e.doc.setValue(e.data);
+
+                    // Force-save the current page
+                    var node = e.doc.getNode();
+                    if (!node.getAttribute("newfile") && !node.getAttribute("debug")) {
+                        require("ext/save/save")
+                            .quicksave(_page, function() {
+                                stripws.enable();
+                            }, true);
                     }
+
+                    ide.removeEventListener("afterreload", onDocReload);
                 });
                 ide.dispatchEvent("reload", { doc : _page.$doc });
             }
@@ -691,11 +699,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                     var revisionString = this.getXmlStringFromRevision(revision);
                     var page = tabEditors.getPage(ide.davPrefix + "/" + message.path);
                     if (page) {
-                            var model = page.$mdlRevisions;
-                            if (model && model.data && model.data.childNodes.length) {
+                        var model = page.$mdlRevisions;
+                        if (model && model.data && model.data.childNodes.length) {
                             var revisionNode = apf.getXml(revisionString);
                             apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
-                            }
+                        }
                     }
                 }
                 break;
