@@ -394,7 +394,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!CoreUtil.pageIsCode(e.nextPage)) {
             return;
         }
-
+        
         if (e.nextPage.$showRevisions === true) {
             this.show();
         }
@@ -778,6 +778,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         revObj.previewCache = {};
         this.$setRevisionListClass();
 
+        model = model || tabEditors.getPage().$mdlRevisions;
         // Select first child upon change of list view
         setTimeout(function() {
             var node = model.data.firstChild;
@@ -1319,6 +1320,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.getRevisionHistory({ path: CoreUtil.getDocPath() });
             }
             else {
+                this.populateModel(currentDocRevision, model);
                 this.$restoreSelection(page, model);
             }
         }
