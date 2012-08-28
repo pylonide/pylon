@@ -188,7 +188,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
             self.pm.spawn("shell", {
                 command: "sh",
-                args: ["-c", shellAliases + message.line],
+                args: ["-c", shellAliases + "\n" + message.line],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"
