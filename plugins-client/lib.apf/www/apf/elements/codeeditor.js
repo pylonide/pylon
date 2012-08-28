@@ -510,6 +510,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.gutterline = ed.getHighlightGutterLine();//true;
         this.animatedscroll = ed.getAnimatedScroll();//true
         this.showindentguides = ed.getDisplayIndentGuides();//true
+        this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
+        this.highlightselectedword = ed.getHighlightSelectedWord();
+        this.behaviors = !ed.getBehavioursEnabled();
             
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
@@ -533,12 +536,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.wrapmode = doc.getUseWrapMode(); //false
         if (this.gutter === undefined)
             this.gutter = ed.renderer.getShowGutter();
-        if (this.highlightselectedword === undefined)
-            this.highlightselectedword = ed.getHighlightSelectedWord();
-        if (this.autohidehorscrollbar)
-            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
-        if (this.behaviors === undefined)
-            this.behaviors = !ed.getBehavioursEnabled();
         if (this.folding === undefined)
             this.folding = true;
         if (this.newlinemode == undefined)
