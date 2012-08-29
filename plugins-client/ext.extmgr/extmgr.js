@@ -96,7 +96,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
     addExtension : function() {
         var _self = this;
-        var path = tbModuleName.value;
+        var path = tbModuleName.value = this.canonicalizePath(tbModuleName.value);
         if (this.requireFailed) {
             util.alert("Error", "Error", "Please reload Cloud9 to add another extension.");
         }
@@ -117,6 +117,16 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }
     },
     
+    canonicalizePath: function(path) {
+        if (!path.match("://") && path.substr(-3) === ".js")
+            path = path.substr(0, path.length - 3);
+        path = path.replace(/(\.github.com)\/([^\/]+)\/?$/, "$1/$2/$2.js");
+        path = path.replace(/(github.com\/[^\/]+\/[^\/]+)\/blob\//, "$1/raw/");
+        // If GitHub hosted these using https, this would be useful:
+        // path = path.replace(/(https?:..raw.github.com)\/([^\/]+)\/([^\/]+)\/gh-pages/, "http://$2.github.com/$3");
+        return path;
+    },
+
     $reportBadInput: function(path, extraMessage) {
         var message = "There was a problem validating your input: '" + 
             tbModuleName.value + "'.";
@@ -129,12 +139,6 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     
     loadExtension : function(path, timer) {
         var _self = this;
-        if (!path.match("://") && path.substr(-3) === ".js")
-            path = path.substr(0, path.length - 3);
-        path = path.replace(/(\.github.com)\/([^\/]+)\/?$/, "$1/$2/$2.js");
-        path = path.replace(/(github.com\/[^\/]+\/[^\/]+)\/blob\//, "$1/raw/");
-        // If GitHub hosted these using https, this would be useful:
-        // path = path.replace(/(https?:..raw.github.com)\/([^\/]+)\/([^\/]+)\/gh-pages/, "http://$2.github.com/$3");
         require([path], function(loaded) {
             var extNode = ext.model.queryNode("plugin[@path='" + loaded.path + "']");
             if (!extNode) {
