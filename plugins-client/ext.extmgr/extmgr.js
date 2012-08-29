@@ -96,7 +96,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
     addExtension : function() {
         var _self = this;
-        var path = tbModuleName.value = this.canonicalizePath(tbModuleName.value);
+        var path = this.canonicalizePath(tbModuleName.value);
+        tbModuleName.setValue(path);
         if (this.requireFailed) {
             util.alert("Error", "Error", "Please reload Cloud9 to add another extension.");
         }
