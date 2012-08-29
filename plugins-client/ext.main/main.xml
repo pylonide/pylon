@@ -86,12 +86,14 @@
                         </a:hsplitbox>
                         <a:hsplitbox id="hboxMain" splitter="true">
                             <a:bar id="colLeft" width="1" minwidth="105" visible="false" />
-                            <a:vsplitbox id="colMiddle" padding="3" />
+                            <a:hsplitbox>
+                                <a:vsplitbox id="colMiddle" padding="3" />
+                                <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" pack="end"/>
+                            </a:hsplitbox>
                         </a:hsplitbox>
                     </a:vsplitbox>
                 </a:vsplitbox>
             </a:vsplitbox>
-            <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" pack="end"/>
         </a:hsplitbox>
     </a:vsplitbox>
 </a:application>
