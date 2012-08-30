@@ -389,7 +389,7 @@ exports.pageIsCode = function(page) {
 };
 
 exports.stripWSFromPath = function(path) {
-    var docPath = (path || "").replace(ide.davPrefix, "");
+    var docPath = (path || "").replace(window.cloud9config.davPrefix.replace(/\/+$/, ""), "");
     docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
     return docPath;
 };

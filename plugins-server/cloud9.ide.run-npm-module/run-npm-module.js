@@ -100,12 +100,19 @@ util.inherits(NpmRuntimePlugin, Plugin);
     this.searchAndRunModuleHook = function(message, user, cb) {
         if (!message.command || !message.argv)
             return cb(null, false);
+            
+        if (!user || !user.permissions) {
+            console.error("Error: Couldn't retrieve permissions for user ", user);
+            console.trace();
+        }
 
-        if (user.permissions.fs != "rw")
+        if (user.permissions && user.permissions.fs != "rw") {
             return cb("Permission denied", false);
+        }
             
         // server_exclude is usually empty, resulting in an array with one element: an empty one, let's filter those:
-        var server_exclude = (user.permissions.server_exclude || "").split("|").filter(function(cmd) { return !!cmd });
+        var server_excludeString = (user.permissions && user.permissions.server_exclude) || "";
+        var server_exclude = server_excludeString.split("|").filter(function(cmd) { return !!cmd; });
         server_exclude.forEach(function(command) {
             if (message.command == command || message.argv.join(" ").indexOf(command) > -1) {
                 return cb("Permission denied", false);
@@ -181,7 +188,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
             self.pm.spawn("shell", {
                 command: "sh",
-                args: ["-c", shellAliases + message.line],
+                args: ["-c", shellAliases + "\n" + message.line],
                 cwd: cwd,
                 extra: message.extra,
                 encoding: "ascii"

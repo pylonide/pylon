@@ -32155,7 +32155,7 @@ apf.BaseTree = function(){
                 // End fix
                 container.style.height = Math.max((height), 0) + "px";
                 _scrollTop = oInt.scrollHeight
-                                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+                    - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
                 oInt.scrollTop = _scrollTop == 0 ? 100 : 0;
                 finishSlide();
         }

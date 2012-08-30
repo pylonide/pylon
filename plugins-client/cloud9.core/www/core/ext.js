@@ -119,7 +119,7 @@ module.exports = ext = {
         return oExtension;
     },
 
-    unregister : function(oExtension, silent){
+    unregister : function(oExtension, silent) {
         //Check exts that depend on oExtension
         var using = oExtension.using;
         if (using) {

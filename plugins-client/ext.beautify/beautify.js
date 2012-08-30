@@ -37,22 +37,31 @@ module.exports = ext.register("ext/beautify/beautify", {
         if (!editor)
             editor = editors.currentEditor;
 
-        var sel = editor.getSelection();
-        var doc = editor.getDocument();
+        if (editor.ceEditor)
+            editor = editor.ceEditor.$editor;
+
+        var sel = editor.selection;
+        var session = editor.session;
         var range = sel.getRange();
-        var value = doc.getTextRange(range);
 
         // Load up current settings data
-        var preserveEmpty = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@preserveempty"));
-        var keepIndentation = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
-        var jsLintHappy = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
-        var braces = settings.model.queryValue("beautify/jsbeautify/@braces") || "end-expand";
-        var indentSize = settings.model.queryValue("editors/code/@tabsize");
-        var indentTab = apf.isTrue(settings.model.queryValue("editors/code/@softtabs")) ? " " : "\t";
+        var options = {};
+        options.space_before_conditional = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@space_before_conditional"));
+        options.keep_array_indentation = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
+        options.preserve_newlines = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@preserveempty"));
+        options.unescape_strings = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@unescape_strings"));
+        options.jslint_happy = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
+        options.brace_style = settings.model.queryValue("beautify/jsbeautify/@braces");
 
-        if (indentTab == "\t") indentSize = 1;
+        if (session.getUseSoftTabs()) {
+            options.indent_char = " ";
+            options.indent_size = session.getTabSize();
+        } else {
+            options.indent_char = "\t";
+            options.indent_size = 1;
+        }
 
-        var line = doc.getLine(range.start.row);
+        var line = session.getLine(range.start.row);
         var indent = line.match(/^\s*/)[0];
         var trim = false;
 
@@ -61,26 +70,43 @@ module.exports = ext.register("ext/beautify/beautify", {
         else
             trim = true;
 
+
+        var value = session.getTextRange(range);
+        var syntax = session.syntax;
+        var type = null;
+
+        if (syntax == "javascript") {
+            type = "js";
+        } else if (syntax == "css") {
+            type = "css";
+        } if (/^\s*<!?\w/.test(value)) {
+            type = "html";
+        } else if (syntax == "xml") {
+            type = "html";
+        } else if (syntax == "html") {
+            if (/[^<]+?{[\s\-\w]+:[^}]+;/.test(value))
+                type = "css";
+            else if (/<\w+[ \/>]/.test(value))
+                type = "html";
+            else
+                type = "js";
+        }
+
         try {
-            value = jsbeautify.js_beautify(value, {
-                indent_size: indentSize,
-                indent_char: indentTab,
-                preserve_newlines: preserveEmpty,
-                keep_array_indentation: keepIndentation,
-                brace_style: braces,
-                jslint_happy: jsLintHappy
-            });
-            value = value.replace(/^/gm, indent);
-            if (trim) value = value.trim();
+            value = jsbeautify[type + "_beautify"](value, options);
+            if (trim)
+                value = value.replace(/^/gm, indent).trim();
+            if (range.end.column == 0)
+                value += "\n" + indent;
         }
         catch (e) {
-            util.alert("Error", 
-                "This code could not be beautified", 
-                "Please correct any JavaScript errors and try again");
+            util.alert("Error",
+                "This code could not be beautified",
+                '"' + syntax + "\" is not supported yet");
             return;
         }
 
-        var end = doc.replace(range, value);
+        var end = session.replace(range, value);
         sel.setSelectionRange(Range.fromPoints(range.start, end));
     },
 
@@ -90,7 +116,7 @@ module.exports = ext.register("ext/beautify/beautify", {
         var _self = this;
 
         this.nodes.push(
-            menus.addItemByPath("Tools/Beautify Selection", 
+            menus.addItemByPath("Tools/Beautify Selection",
               this.mnuItem = new apf.item({
                   disabled : "true",
                   command  : "beautify"
@@ -105,7 +131,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             isAvailable : function(editor){
                 if (editor && editor.ceEditor) {
                     var range = editor.ceEditor.$editor.getSelectionRange();
-                    return range.start.row != range.end.row 
+                    return range.start.row != range.end.row
                       || range.start.column != range.end.column;
                 }
                 return false;
@@ -123,8 +149,8 @@ module.exports = ext.register("ext/beautify/beautify", {
                 ["keeparrayindentation", "false"],
                 ["jslinthappy", "false"],
                 ["braces", "end-expand"],
-                ["softtabs", "true"],
-                ["tabsize", "4"]
+                ["space_before_conditional", "true"],
+                ["unescape_strings", "true"]
             ]);
         });
 

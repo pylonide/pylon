@@ -83,8 +83,7 @@ module.exports = ext.register("ext/console/console", {
         },
         
         kill: function(message, outputElDetails) {
-            logger.logNodeStream(message.body, null, outputElDetails || message.body.err, ide);
-            // this.markProcessAsCompleted(message.body.pid, true, message.body.err);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         __default__: function(message, outputElDetails) {
@@ -375,7 +374,9 @@ module.exports = ext.register("ext/console/console", {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
-        txtConsolePrompt.hide();
+
+        if (txtConsolePrompt) // fix for c9local packed
+            txtConsolePrompt.hide();
 
         if (spinnerElement) {
             logger.killBufferInterval(id);
