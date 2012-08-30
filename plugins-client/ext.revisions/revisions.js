@@ -394,7 +394,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!CoreUtil.pageIsCode(e.nextPage)) {
             return;
         }
-        
+
         if (e.nextPage.$showRevisions === true) {
             this.show();
         }
@@ -436,13 +436,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onRevisionSaved: function(data) {
-        var savedTS = parseInt(data.ts, 10);
-        var matches = this.offlineQueue.filter(function(rev) {
-            return rev && (parseInt(rev.applyOn, 10) === savedTS);
-        });
+        if (typeof data.ts !== "number")
+            throw new Error("Expected number, but got " + typeof data.ts);
 
-        if (matches.length) {
-            this.$makeNewRevision(matches[0]);
+        var queue = this.offlineQueue;
+        for (var i = 0, l = queue.length; i < l; i++) {
+            var rev = queue[i];
+            if (rev && rev.applyOn === data.ts) {
+                this.$makeNewRevision(rev);
+                break;
+            }
         }
     },
 
@@ -1341,7 +1344,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!page) {
             return;
         }
-        
+
         page.$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
