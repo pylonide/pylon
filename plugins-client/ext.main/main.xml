@@ -40,7 +40,7 @@
             <a:button skin="button-colorless" class="dark green" onclick="
                 ide.addEventListener('login', function() { location.reload(); });
                 winLogin.show();
-            " margin="0 10" width="115">Sign in to edit*</a:button>
+            " margin="0 10" width="115">Sign in to edit</a:button>
         </a:hbox>
     </a:hbox>
     <a:hbox id="view-mode-box-readonly" visible="false" height="35" class="view-mode-box" align="center" edge="0 10">
