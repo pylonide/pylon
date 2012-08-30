@@ -332,8 +332,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
         else {
             dgGoToFile.$removeClearMessage();
-            if (!init)
-                dgGoToFile.load(this.model.data);
+            dgGoToFile.load(this.model.data);
             
             vp.length = this.arraySearchResults.length;
             var limit = Math.ceil(vp.getHeight() / vp.$getItemHeight() + 2);
