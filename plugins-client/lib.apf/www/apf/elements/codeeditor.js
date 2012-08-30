@@ -76,9 +76,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["gutterline"]               = true;
     this.$booleanProperties["caching"]                  = true;
     this.$booleanProperties["readonly"]                 = true;
-    this.$booleanProperties["activeline"]               = true;
     this.$booleanProperties["showinvisibles"]           = true;
     this.$booleanProperties["showprintmargin"]          = true;
+    this.$booleanProperties["showindentguides"]         = true;
     this.$booleanProperties["overwrite"]                = true;
     this.$booleanProperties["softtabs"]                 = true;
     this.$booleanProperties["gutter"]                   = true;
@@ -94,7 +94,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "scrollspeed",
+        "overwrite", "tabsize", "softtabs", "scrollspeed", "showindentguides",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
         "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
         "gutterline");
@@ -251,6 +251,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
+    };
+    
+    this.$propHandlers["showindentguides"] = function(value, prop, initial) {
+        this.$editor.setDisplayIndentGuides(value);
     };
 
     this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
@@ -438,9 +442,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     //@todo
-    this.addEventListener("keydown", function(e){
-
-    }, true);
+    // this.addEventListener("keydown", function(e){}, true);
 
     /**** Init ****/
 
@@ -500,14 +502,18 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.softtabs = doc.getUseSoftTabs(); //true
         if (this.scrollspeed === undefined)
             this.scrollspeed = ed.getScrollSpeed();
-        if (this.animatedscroll === undefined)
-            this.animatedscroll = ed.getAnimatedScroll();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
-        if (this.activeline === undefined)
-            this.activeline = ed.getHighlightActiveLine();//true;
-        if (this.gutterline === undefined)
-            this.gutterline = ed.getHighlightGutterLine();//true;
+        
+        //@todo this is a workaround for a bug in handling boolean properties in apf.$setDynamicProperty
+        this.activeline = ed.getHighlightActiveLine();//true;
+        this.gutterline = ed.getHighlightGutterLine();//true;
+        this.animatedscroll = ed.getAnimatedScroll();//true
+        this.showindentguides = ed.getDisplayIndentGuides();//true
+        this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
+        this.highlightselectedword = ed.getHighlightSelectedWord();
+        this.behaviors = !ed.getBehavioursEnabled();
+            
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
         if (this.showinvisibles === undefined)
@@ -530,12 +536,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.wrapmode = doc.getUseWrapMode(); //false
         if (this.gutter === undefined)
             this.gutter = ed.renderer.getShowGutter();
-        if (this.highlightselectedword === undefined)
-            this.highlightselectedword = ed.getHighlightSelectedWord();
-        if (this.autohidehorscrollbar)
-            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
-        if (this.behaviors === undefined)
-            this.behaviors = !ed.getBehavioursEnabled();
         if (this.folding === undefined)
             this.folding = true;
         if (this.newlinemode == undefined)
