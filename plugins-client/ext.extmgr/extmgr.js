@@ -49,7 +49,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
                 for (var n = 0; n < nodes.length; n++)
-                    _self.loadExtension(nodes[n].getAttribute("realPath") || nodes[n].getAttribute("path"));
+                    _self.loadExtension(nodes[n].getAttribute("realPath") || nodes[n].getAttribute("path"), nodes[n]);
                 
                 _self.loadedSettings = true;
             });
@@ -102,16 +102,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             util.alert("Error", "Error", "Please reload Cloud9 to add another extension.");
         }
         else if (tbModuleName.validate()) {
-            var timer = setTimeout(function() {
-                _self.requireFailed = true;
-                _self.$reportBadInput(path);
-                tbModuleName.enable();
-                tbModuleName.clear();
-                btnAdd.enable();
-            }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
-            tbModuleName.disable();
-            btnAdd.disable();
-            this.loadExtension(path, timer);
+            this.$disableInput();
+            this.loadExtension(path);
         }
         else {
             this.$reportBadInput(path);
@@ -131,16 +123,38 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
 
     $reportBadInput: function(path, extraMessage) {
-        var message = "There was a problem validating your input: '" + 
-            tbModuleName.value + "'.";
+        var message = "Could not load extension '" + path + "'.";
+
         if (!path.match("://") && !path.match("/"))
             message += "\nFor local extensions, specify a path like ext/extension/extensionmain.";
         if (extraMessage)
             message += "\n" + extraMessage;
-        util.alert("Error", "Validation Error", message + "\nPlease reload Cloud9 to add another extension.");
+        util.alert("Error", "Validation Error", message);
     },
     
-    loadExtension : function(path, timer) {
+    loadExtension : function(path, extNode) {
+        var timer = setTimeout(function() {
+            if (extNode) {
+                path = extNode.getAttribute("path");
+                util.question("Extension Manager", "Extension '" + path + "' failed to load.",
+                    "Would you like to remove it?",
+                    function() {
+                        winQuestion.hide();
+                        ext.model.removeXml(extNode);
+                        settings.save();
+                        _self.$reportBadInput(path, "Please reload Cloud9.");
+                    },
+                    null,
+                    function() {
+                        winQuestion.hide();
+                        _self.$reportBadInput(path, "Please reload Cloud9.");
+                    })
+                return;
+            }
+            _self.requireFailed = true;
+            _self.$reportBadInput(path, "Please reload Cloud9 to add another extension.");
+            _self.$enableInput();
+        }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
         var _self = this;
         require([path], function(loaded) {
             var extNode = ext.model.queryNode("plugin[@path='" + loaded.path + "']");
@@ -155,13 +169,22 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             apf.xmldb.setAttribute(extNode, "userext", "1");
             apf.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();
-            if (timer) {
-                clearTimeout(timer);
-                tbModuleName.enable();
-                tbModuleName.clear();
-                btnAdd.enable();
-            }
+            _self.$enableInput();
+            clearTimeout(timer);
         });
+    },
+    
+    $disableInput : function() {
+        tbModuleName.disable();
+        btnAdd.disable();
+    },
+    
+    $enableInput : function() {
+        if (typeof tbModuleName === "undefined")
+            return;
+        tbModuleName.enable();
+        tbModuleName.clear();
+        btnAdd.enable();
     },
 
     removeExtension : function() {
