@@ -62,7 +62,10 @@ module.exports = ext.register("ext/autosave/autosave", {
             width : "250px",
             hideonclick : true
         });
-
+        
+        if(require("core/ide").readonly)
+            btnSave.hide();
+        
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
