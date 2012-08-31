@@ -593,7 +593,7 @@ var isCallbackCall = function(node) {
 };
 
 var isCallback = function(node) {
-    if (!node.parent || !node.parent.isMatch('Call(_, _)'))
+    if (!node.parent || !node.parent.parent || !node.parent.parent.isMatch('Call(_, _)'))
         return false;
     var result;
     node.rewrite(
