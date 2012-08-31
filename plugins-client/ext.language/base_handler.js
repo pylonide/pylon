@@ -55,7 +55,7 @@ module.exports = {
 
     /**
      * If the language handler implements parsing, this function should take
-     * the source code and turn it into an AST (in treehugger format)
+     * the source code and turn it into an AST
      * @param doc the Document object repersenting the source
      * @return treehugger AST or null if not implemented
      */

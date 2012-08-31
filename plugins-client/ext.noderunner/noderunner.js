@@ -14,6 +14,8 @@ var markup = require("text!ext/noderunner/noderunner.xml");
 var c9console = require("ext/console/console");
 var _debugger = require("ext/debugger/debugger");
 
+/*global stProcessRunning*/
+
 module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",
     dev     : "Ajax.org",
@@ -32,7 +34,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             ide.addEventListener("socketDisconnect", function() {
                 ide.dispatchEvent("dbg.exit");
             });
-        } else {           
+        } else {
             ide.addEventListener("socketConnect", function() {
                 _self.queryServerState();
             });
@@ -142,7 +144,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || typeof path != "string")
             return false;
         // TODO there should be a way to set satate to waiting
-        stProcessRunning.activate()
+        stProcessRunning.activate();
 
         path = path.trim();
 
@@ -191,7 +193,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
-            return "php";
+            return "apache";
         
         if (path.match(/\.py$/))
             return "python";
