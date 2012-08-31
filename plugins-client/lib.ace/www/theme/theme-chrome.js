@@ -175,6 +175,10 @@ color:#FD971F;\
   background: rgba(0, 0, 0, 0.07);\
 }\
 \
+.ace-chrome .ace_gutter_active_line {\
+    background-color : #dcdcdc;\
+}\
+\
 .ace-chrome .ace_marker-layer .ace_selected_word {\
   background: rgb(250, 250, 255);\
   border: 1px solid rgb(200, 200, 250);\
@@ -196,7 +200,12 @@ color:#FD971F;\
 \
 .ace-chrome .ace_entity.ace_other.ace_attribute-name{\
   color: #994409;\
-}";
+}\
+\
+.ace-chrome .ace_indent-guide {\
+  background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
+}\
+";
 
 var dom = require("../lib/dom");
 dom.importCssString(exports.cssText, exports.cssClass);

@@ -57,7 +57,7 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
 }\
 \
 .ace-dreamweaver .ace_fold {\
-    background-color: #00F;\
+    background-color: #757AD8;\
 }\
 \
 .ace-dreamweaver .ace_text-layer {\
@@ -219,6 +219,10 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
 \
 .ace-dreamweaver .ace_string.ace_regex {\
   color: rgb(255, 0, 0)\
+}\
+\
+.ace-dreamweaver .ace_indent-guide {\
+  background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }";
 
 var dom = require("../lib/dom");
