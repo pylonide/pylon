@@ -4,6 +4,8 @@ var util = require("util");
 var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
+var DIRECT_OPEN_FILES = /\.(php|.?html?)$/;
+
 /**
  * Run apache scripts with restricted user rights
  */
@@ -71,8 +73,9 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             }
 
             if (msg.type === "apache-start") {
+                var suffix = DIRECT_OPEN_FILES.test(self.file) ? "/" + self.file : "";
                 var info = [
-                    "Tip: you can access long running processes, like a server, at '" + url + "'."
+                    "Tip: you can access long running processes, like a server, at '" + url + suffix + "'."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
