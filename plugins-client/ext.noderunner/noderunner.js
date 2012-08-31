@@ -14,6 +14,8 @@ var markup = require("text!ext/noderunner/noderunner.xml");
 var c9console = require("ext/console/console");
 var _debugger = require("ext/debugger/debugger");
 
+/*global stProcessRunning*/
+
 module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",
     dev     : "Ajax.org",
@@ -191,7 +193,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
-            return "php";
+            return "apache";
         
         if (path.match(/\.py$/))
             return "python";
