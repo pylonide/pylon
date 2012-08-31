@@ -62,14 +62,6 @@ module.exports = {
     parse: function(doc, callback) {
         callback();
     },
-    
-    /**
-     * Finds a tree node at a certain row and col,
-     * e.g. using the findNode(pos) function of treehugger.
-     */
-    requiresContinuousParsing: function() {
-        return false;
-    },
 
     findNode: function(ast, pos, callback) {
         callback();
@@ -152,6 +144,7 @@ module.exports = {
      * @param fullAst the entire AST of the current file (if exists)
      * @param pos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at (if exists)
+     * @return an array of completion matches
      */
     complete: function(doc, fullAst, pos, currentNode, callback) {
         callback();

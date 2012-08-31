@@ -163,6 +163,9 @@ module.exports = {
             scriptId = script && script.getAttribute("scriptid");
         }
 
+        if (script.getAttribute("native") === "true")
+            return console.log("Source not found " + name);
+
         if (path && path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
             var file = fs.model.queryNode("//file[@path='" + path + "']")
                 || fs.createFileNodeFromPath(path);

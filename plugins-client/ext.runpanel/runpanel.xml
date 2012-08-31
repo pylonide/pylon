@@ -94,7 +94,7 @@
                         <!--a:divider span="2" skin="c9-divider-hor" /-->
                         <a:model id="mdlRunnerSelector">
                             <data>
-                                <element caption="Auto" value="auto" />
+                                <element caption="Default" value="default" />
                                 <element caption="Node.js (Auto)" value="node auto" />
                                 <element caption="Node.js 0.6.x" value="node 0.6.x" />
                                 <element caption="Node.js 0.4.x" value="node 0.4.x" />

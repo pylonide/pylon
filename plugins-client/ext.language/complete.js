@@ -116,6 +116,10 @@ function isJavaScript() {
     return editors.currentEditor.amlEditor.syntax === "javascript";
 }
 
+function isJava() {
+    return editors.currentEditor.amlEditor.syntax === "java";
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
  * indicates the cursor position after the replacement.
@@ -477,8 +481,14 @@ module.exports = {
     },
 
     deferredInvoke: function() {
-        if (this.cachedMatches)
-            this.filterAndShow(this.cachedMatches);
+        if (this.matches && isJava()) {
+            var editor = editors.currentEditor.amlEditor.$editor;
+            var pos = editor.getCursorPosition();
+            return this.onComplete({data: {
+                pos: pos,
+                matches: this.matches
+            }});
+        }
         if (isInvokeScheduled)
             return;
         isInvokeScheduled = true;
@@ -523,12 +533,14 @@ module.exports = {
         var matches = event.data.matches;
         
         // Remove out-of-date matches
+        // (ignore case for best java completions results)
+        var loweredIdentifier = identifier.toLowerCase();
         for (var i = 0; i < matches.length; i++) {
-            if(matches[i].name.indexOf(identifier) !== 0) {
+            if(matches[i].name.toLowerCase().indexOf(loweredIdentifier) !== 0) {
                 matches.splice(i, 1);
                 i--;
             }
-        }        
+        }
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0]);

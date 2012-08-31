@@ -107,7 +107,7 @@ function setup (JvmRunner) {
 
         this._flushSendQueue = function() {
             for (var i = 0; i < this.msgQueue.length; i++) {
-                // console.log("\nSEND", this.msgQueue[i])
+                console.log("\nSEND", this.msgQueue[i])
                 try {
                     this.javaDebugProxy.send(this.msgQueue[i]);
                 } catch(e) {
@@ -131,7 +131,7 @@ function setup (JvmRunner) {
 
             this.javaDebugProxy = new JavaDebugProxy(this.vfs, JAVA_DEBUG_PORT, debugOptions);
             this.javaDebugProxy.on("message", function(body) {
-                // console.log("\nRECV", body);
+                console.log("\nRECV", body);
                 send({
                     "type": "node-debug",
                     "pid": self.pid,
@@ -141,7 +141,7 @@ function setup (JvmRunner) {
             });
 
             this.javaDebugProxy.on("connection", function() {
-                // console.log("java debug proxy connected");
+                console.log("java debug proxy connected");
                 send({
                     "type": "node-debug-ready",
                     "pid": self.pid,
@@ -151,14 +151,13 @@ function setup (JvmRunner) {
             });
 
             this.javaDebugProxy.on("end", function(err) {
-                // console.log("javaDebugProxy terminated");
+                console.log("javaDebugProxy terminated");
                 if (err) {
                     // TODO send the error message back to the client
                     // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);
                     console.error(err);
                 }
-                if (self.javaDebugProxy === this)
-                    delete self.javaDebugProxy;
+                delete self.javaDebugProxy;
             });
 
             this.javaDebugProxy.connect();

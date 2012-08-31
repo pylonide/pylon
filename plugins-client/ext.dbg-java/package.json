@@ -1,0 +1,14 @@
+{
+    "name": "ext.dbg-java",
+    "version": "0.0.1",
+    "main": "dbg-java-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.dbg-java"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
