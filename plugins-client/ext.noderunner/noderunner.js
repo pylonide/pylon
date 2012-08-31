@@ -146,10 +146,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         path = path.trim();
 
-        if (typeof ddRunnerSelector !== "undefined" && ddRunnerSelector.value !== "auto") {
-            runner = ddRunnerSelector.value;
-        }
-        else if (nodeVersion == 'default' || !nodeVersion) {
+        if (nodeVersion == 'default' || !nodeVersion) {
             runner = this.detectRunner(path);
             nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
         } else {
