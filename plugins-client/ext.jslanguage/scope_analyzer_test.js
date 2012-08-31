@@ -148,7 +148,6 @@ module.exports = {
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
         emitter.on("markers", function(markers) {
-            console.log(markers);
             assert.equal(markers.length, 1);
             next();
         });
