@@ -176,6 +176,10 @@ module.exports = ext = {
 
         return true;
     },
+    
+    getExtension : function(extension) {
+        return this.extLut[extension];
+    },
 
     initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
