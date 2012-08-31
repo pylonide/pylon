@@ -34,7 +34,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             ide.addEventListener("socketDisconnect", function() {
                 ide.dispatchEvent("dbg.exit");
             });
-        } else {           
+        } else {
             ide.addEventListener("socketConnect", function() {
                 _self.queryServerState();
             });
@@ -144,7 +144,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || typeof path != "string")
             return false;
         // TODO there should be a way to set satate to waiting
-        stProcessRunning.activate()
+        stProcessRunning.activate();
 
         path = path.trim();
 

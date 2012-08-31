@@ -75,7 +75,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             if (msg.type === "apache-start") {
                 var suffix = DIRECT_OPEN_FILES.test(self.file) ? "/" + self.file : "";
                 var info = [
-                    "Tip: you can access long running processes, like a server, at '" + url + suffix + "'."
+                    "Tip: you can access the running page at '" + url + suffix + "'."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
