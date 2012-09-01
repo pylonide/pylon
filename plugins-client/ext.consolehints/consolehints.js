@@ -161,7 +161,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             }, 1000);
 
             txtConsoleInput.addEventListener("focus", function(e) {
-                if (txtConsoleInput.getValue().length && hintsContent.hasChildNodes()) {
+                if (txtConsoleInput.getValue() == hintsContent.text && hintsContent.hasChildNodes()) {
                     winHints.style.display = "block";
                     winHints.visible = true;
                 }
@@ -170,11 +170,13 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 _self.hide();
             });
 
-            txtConsoleInput.ace.session.on("change", function(e) {
+            txtConsoleInput.ace.container.addEventListener("input", function(e) {
                 var getCmdMatches = function(filtered) {
+                    hintsContent.text = txtConsoleInput.getValue()
                     if (filtered.length && filtered[0] !== "[PATH]")
-                        _self.show(txtConsoleInput, "", filtered, txtConsoleInput.getValue().length - 1);
+                        _self.show(txtConsoleInput, "", filtered, hintsContent.text.length - 1);
                     else {
+                        hintsContent.innerHTML = "";
                         _self.hide();
                     }
                 };
@@ -190,7 +192,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     _self.getCmdCompletion(cliValue, getCmdMatches);
                 else
                     _self.hide();
-            });
+            }, false);
     
             // Below we are overwriting the Console default key events in function of
             // whether the hints are being displayed or not.
