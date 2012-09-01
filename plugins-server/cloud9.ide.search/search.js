@@ -178,10 +178,10 @@ util.inherits(SearchPlugin, Plugin);
 
 
     this.assembleFileListCommand = function(options) {
-        var cmd = "";
+        var cmd;
         
         if (useAg) {
-            cmd = [agCmd, "--nocolor", "-l", "--search-binary", "."];
+            cmd = ["--nocolor", "-l", "--search-binary", "."];
 
             if (options.maxdepth)
                 cmd.push("--depth", options.maxdepth);
@@ -190,15 +190,9 @@ util.inherits(SearchPlugin, Plugin);
             
         }
 
-        /*excludeExtensions.forEach(function(pattern){
-            args.push("!", "-regex", ".*\\/" + pattern + "$");
-        });
+        cmd.command = useAg ? agCmd : ackCmd;
 
-        excludeDirectories.forEach(function(pattern){
-            args.push("!", "-regex", "'.*\\/" + pattern + "\\/.*'");
-        });*/
-
-        return { command: cmd.join(" ") };
+        return cmd;
     };
 
 }).call(SearchPlugin.prototype);
