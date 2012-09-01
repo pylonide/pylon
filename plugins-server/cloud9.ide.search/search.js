@@ -10,8 +10,10 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
+var os = require("os");
+var path = require("path"); // changed to fs in node 0.8
 
-var ackCmd, perlCmd;
+var agCmd, ackCmd, platform, arch, useAg;
 var name = "search";
 
 var ProcessManager;
@@ -19,9 +21,12 @@ var EventBus;
 
 
 module.exports = function setup(options, imports, register) {
-    ackCmd = options.ackCmd || "./ack";
-    perlCmd = options.perlCmd || "perl";
-    
+    ackCmd = options.ackCmd || "perl " + path.join(__dirname, "ack");
+    platform = options.platform || os.platform();
+    arch = options.arch || os.arch();
+    agCmd = options.agCmd || path.join([platform, arch].join("_"), "/ag");
+    useAg = path.existsSync(path.join(__dirname, agCmd));
+
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
     imports.ide.register(name, SearchPlugin, register);
@@ -173,31 +178,27 @@ util.inherits(SearchPlugin, Plugin);
 
 
     this.assembleFileListCommand = function(options) {
-        var args = ["-f", "."];
+        var cmd = "";
+        
+        if (useAg) {
+            cmd = [agCmd, "--nocolor", "-l", "--search-binary", "."];
 
-        if (platform === "darwin")
-            args.unshift("-E");
+            if (options.maxdepth)
+                cmd.push("--depth", options.maxdepth);
+        }
+        else {
+            
+        }
 
-        //Hidden Files
-        if (options.showHiddenFiles)
-            args.push("-a");
-
-        if (options.maxdepth)
-            args.push("-maxdepth", options.maxdepth);
-
-        excludeExtensions.forEach(function(pattern){
+        /*excludeExtensions.forEach(function(pattern){
             args.push("!", "-regex", ".*\\/" + pattern + "$");
         });
 
         excludeDirectories.forEach(function(pattern){
             args.push("!", "-regex", "'.*\\/" + pattern + "\\/.*'");
-        });
+        });*/
 
-        if (platform !== "darwin")
-            args.push("-regextype", "posix-extended", "-print");
-
-        args.command = ackCmd;
-        return args;
+        return { command: cmd.join(" ") };
     };
 
 }).call(SearchPlugin.prototype);
