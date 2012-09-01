@@ -24,8 +24,8 @@ module.exports = function setup(options, imports, register) {
     ackCmd = options.ackCmd || "perl " + path.join(__dirname, "ack");
     platform = options.platform || os.platform();
     arch = options.arch || os.arch();
-    agCmd = options.agCmd || path.join([platform, arch].join("_"), "/ag");
-    useAg = path.existsSync(path.join(__dirname, agCmd));
+    agCmd = options.agCmd || path.join(__dirname, [platform, arch].join("_"), "/ag");
+    useAg = path.existsSync(agCmd);
 
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
@@ -49,6 +49,7 @@ util.inherits(SearchPlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on("search::filelist", function(msg) {
+            console.log(msg)
             if (msg.type == "shell-start")
                 self.processCount += 1;
             else if (msg.type == "shell-exit")
@@ -99,7 +100,7 @@ util.inherits(SearchPlugin, Plugin);
 
         var self = this;
         self.options = message;
-        
+        console.log(args, message.path)
         this.pm.spawn("shell", {
             command: args.command,
             args: args,
@@ -108,7 +109,7 @@ util.inherits(SearchPlugin, Plugin);
             encoding: "utf8"
         }, "search::" + type, function(err, pid) {
             if (err)
-                self.error(err, 1, "Could not spawn grep process for " + type, client);
+                self.error(err, 1, "Could not spawn " + args.command + " process for " + type, client);
         });
 
         return true;
@@ -178,21 +179,21 @@ util.inherits(SearchPlugin, Plugin);
 
 
     this.assembleFileListCommand = function(options) {
-        var cmd;
+        var args;
         
         if (useAg) {
-            cmd = ["--nocolor", "-l", "--search-binary", "."];
+            args =[" ", "--nocolor", "-l", "-f", "--search-binary", options.path];
 
-            if (options.maxdepth)
-                cmd.push("--depth", options.maxdepth);
+            //if (options.maxdepth)
+            //    agCmd += "--depth " + options.maxdepth;
         }
         else {
             
         }
 
-        cmd.command = useAg ? agCmd : ackCmd;
+        args.command = useAg ? agCmd : ackCmd;
 
-        return cmd;
+        return args;
     };
 
 }).call(SearchPlugin.prototype);
