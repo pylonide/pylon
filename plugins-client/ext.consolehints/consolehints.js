@@ -128,7 +128,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             e.ext.hideInput = function(){
                 _self.hide();
                 hideInput.apply(c9console, arguments);
-            }
+            };
         });
     },
 
@@ -201,7 +201,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 "tab": "onTabKey",
                 "down": "selectDown",
                 "esc": "hide",
-                "return": "onEnterKey",
+                "return": "onEnterKey"
             };
             
             txtConsoleInput.ace.keyBinding.addKeyboardHandler({
@@ -209,7 +209,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     if (hashId == -1 || !redefinedKeys[keyString] || winHints.style.display === "none")
                         return;                    
                     
-                    if (_self[redefinedKeys[keyString]]() != false)
+                    if (_self[redefinedKeys[keyString]].call(_self) != false)
                         return {command: "null"};                    
                 }
             });
@@ -363,7 +363,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 break;
             }
         }
-
+        if (! handled)
+            this.hide();
         return handled;
     },
     selectUp: function() {
