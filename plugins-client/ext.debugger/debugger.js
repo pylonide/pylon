@@ -36,6 +36,7 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     nodesAll: [],
     nodes : [],
+    handlers : [],
 
     hook : function(){
         var _self = this;
@@ -187,7 +188,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
       
         breakpoints.hook();
-        sources.hook();        
+        sources.hook();
        
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
@@ -222,16 +223,42 @@ module.exports = ext.register("ext/debugger/debugger", {
 
             return dbgVariable;
         });
-        
 
         ide.addEventListener("dbg.attached", function(e) {
             if (!_self.inited)
                 ext.initExtension(_self);
             _self.$dbgImpl = e.dbgImpl;
         });
+
+        ide.addEventListener("dbg.ready", function(e) {
+            var runner = /(\w+)-debug-ready/.exec(e.type);
+            if (runner) {
+                var dbgImpls = this.handlers.filter(function (handler) {
+                    return handler.handlesRunner(runner[1]);
+                });
+                if (dbgImpls.length) {
+                    var dbgImpl = new dbgImpls[0]();
+                    dbgImpl.attach();
+                } else {
+                    console.log("Appropriate debug handler not found !!");
+                }
+            }
+        });
+
+        ide.addEventListener("dbg.exit", function(e) {
+            _self.$dbgImpl && _self.$dbgImpl.detach();
+        });
+
+        ide.addEventListener("dbg.state", function(e) {
+            for (var attr in e)
+            if (e["node-debug"] && !_self.$dbgImpl) {
+                exports.dbgImpl = new v8DebugClient();
+                exports.dbgImpl.attach();
+            }
+        });
     },
 
-    init : function(amlNode) {        
+    init : function(amlNode) {
         sources.init();
         breakpoints.init();
     },
@@ -296,8 +323,12 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.nodes = [];
     },
 
+    registerDebugHandler : function (handler) {
+        this.handlers.push(handler);
+    },
+
     setFrame : function(frame) {
-        this.$dbgImpl.setFrame(frame);
+        this.$dbgImpl && this.$dbgImpl.setFrame(frame);
     },
 
     loadScripts : function(callback) {
