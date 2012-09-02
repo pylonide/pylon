@@ -228,32 +228,48 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (!_self.inited)
                 ext.initExtension(_self);
             _self.$dbgImpl = e.dbgImpl;
+            _self.$attaching = false;
         });
 
+        function getDebugHandler(runner) {
+            return _self.handlers.filter(function (handler) {
+                return handler.handlesRunner(runner);
+            })[0];
+        }
+
         ide.addEventListener("dbg.ready", function(e) {
-            var runner = /(\w+)-debug-ready/.exec(e.type);
-            if (runner) {
-                var dbgImpls = this.handlers.filter(function (handler) {
-                    return handler.handlesRunner(runner[1]);
-                });
-                if (dbgImpls.length) {
-                    var dbgImpl = new dbgImpls[0]();
-                    dbgImpl.attach();
-                } else {
-                    console.log("Appropriate debug handler not found !!");
-                }
+            if (_self.$dbgImpl || _self.$attaching)
+                return;
+            var runnerMatch = /(\w+)-debug-ready/.exec(e.type);
+            var debugHandler;
+            if (runnerMatch && (debugHandler = getDebugHandler(runnerMatch[1]))) {
+                var dbgImpl = new debugHandler();
+                _self.$attaching = true;
+                dbgImpl.attach();
+            } else {
+                console.log("Appropriate debug handler not found !!");
             }
         });
 
         ide.addEventListener("dbg.exit", function(e) {
-            _self.$dbgImpl && _self.$dbgImpl.detach();
+            if (_self.$dbgImpl) {
+                _self.$dbgImpl.detach();
+                _self.$dbgImpl = null;
+                _self.$attaching = false;
+            }
         });
 
         ide.addEventListener("dbg.state", function(e) {
-            for (var attr in e)
-            if (e["node-debug"] && !_self.$dbgImpl) {
-                exports.dbgImpl = new v8DebugClient();
-                exports.dbgImpl.attach();
+            if (_self.$dbgImpl || _self.attaching)
+                return;
+            var runnerRE = /(\w+)-debug/;
+            var runnerMatch;
+            for (var attr in e) {
+                if ((runnerMatch = runnerRE.exec(attr)) && (debugHandler = getDebugHandler(runnerMatch[1]))) {
+                    var dbgImpl = new debugHandler();
+                    _self.$attaching = true;
+                    dbgImpl.attach();
+                }
             }
         });
     },

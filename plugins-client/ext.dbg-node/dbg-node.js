@@ -14,7 +14,7 @@ var WSV8DebuggerService = require("v8debug/WSV8DebuggerService");
 var ide = require("core/ide");
 var oop = require("ace/lib/oop");
 var DebugHandler = require("ext/debugger/debug_handler");
-var debugger = require("ext/debugger/debugger");
+var extDebugger = require("ext/debugger/debugger");
 
 var v8DebugClient = module.exports = function() {
 };
@@ -614,6 +614,6 @@ v8DebugClient.handlesRunner = function (runner) {
     return runner === "node";
 };
 
-debugger.registerDebugHandler(v8DebugClient);
+extDebugger.registerDebugHandler(v8DebugClient);
 
 });
