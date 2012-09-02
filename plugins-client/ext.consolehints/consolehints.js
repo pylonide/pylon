@@ -21,6 +21,9 @@ var commands = require("ext/commands/commands");
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 
+/*global apf txtConsolePrompt txtConsoleInput
+*/
+
 var filterCommands = function(commands, word) {
     if (!word)
         return commands.sort();
@@ -172,7 +175,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
             txtConsoleInput.ace.container.addEventListener("input", function(e) {
                 var getCmdMatches = function(filtered) {
-                    hintsContent.text = txtConsoleInput.getValue()
+                    hintsContent.text = txtConsoleInput.getValue();
                     if (filtered.length && filtered[0] !== "[PATH]")
                         _self.show(txtConsoleInput, "", filtered, hintsContent.text.length - 1);
                     else {
@@ -207,10 +210,10 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             txtConsoleInput.ace.keyBinding.addKeyboardHandler({
                 handleKeyboard: function(data, hashId, keyString) {
                     if (hashId == -1 || !redefinedKeys[keyString] || winHints.style.display === "none")
-                        return;                    
+                        return;
                     
-                    if (_self[redefinedKeys[keyString]].call(_self) != false)
-                        return {command: "null"};                    
+                    if (_self[redefinedKeys[keyString]].call(_self) !== false)
+                        return {command: "null"};
                 }
             });
         };
