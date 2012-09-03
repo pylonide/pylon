@@ -91,7 +91,7 @@ var DebugHandler = module.exports = function() {
     };
 
     /**
-     * Evaluate an exressiom string in a specific frame
+     * Evaluate an expression string in a specific frame
      * @param expression string
      * @param frame the stack frame object
      * @param global boolean
@@ -101,7 +101,7 @@ var DebugHandler = module.exports = function() {
     };
 
     /**
-     * Evaluate an exressiom string in a specific frame
+     * Change a live running script
      * @param scriptId the scriptid attribute of the target script
      * @param newSource string of the new script source code
      * @param previewOnly boolean
