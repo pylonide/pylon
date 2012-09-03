@@ -21,7 +21,8 @@ var apfhook = require("./apfhook");
 
 require("ext/debugger/inspector");
 
-/*global dbInteractive:true txtCode:true dbg:true ceEditor:true dbgVariable:true pgDebugNav:true tabDebug:true*/
+/*global dbInteractive:true txtCode:true dbg:true ceEditor:true
+  dbgVariable:true pgDebugNav:true tabDebug:true dgVars*/
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -246,7 +247,8 @@ module.exports = ext.register("ext/debugger/debugger", {
                 var dbgImpl = new debugHandler();
                 _self.$attaching = true;
                 dbgImpl.attach();
-            } else {
+            }
+            else {
                 console.log("Appropriate debug handler not found !!");
             }
         });
@@ -339,7 +341,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.nodes = [];
     },
 
-    registerDebugHandler : function (handler) {
+    registerDebugHandler : function(handler) {
         this.handlers.push(handler);
     },
 

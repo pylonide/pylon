@@ -397,7 +397,8 @@ oop.inherits(v8DebugClient, DebugHandler);
                 return {};
             }
 
-            var i, l;
+            var i;
+            var l;
             var frames    = body.frames;
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isSameFrameset(xmlFrames, frames)) {
@@ -421,7 +422,6 @@ oop.inherits(v8DebugClient, DebugHandler);
 
     this.loadScript = function(script, callback) {
         var id = script.getAttribute("scriptid");
-        var _self = this;
         this.$v8dbg.scripts(4, [id], true, function(scripts) {
             if (!scripts.length)
                 return;
@@ -610,7 +610,7 @@ oop.inherits(v8DebugClient, DebugHandler);
 
 }).call(v8DebugClient.prototype);
 
-v8DebugClient.handlesRunner = function (runner) {
+v8DebugClient.handlesRunner = function(runner) {
     return runner === "node";
 };
 

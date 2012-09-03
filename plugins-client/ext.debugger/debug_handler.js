@@ -1,3 +1,4 @@
+var ide = require("core/ide");
 
 define(function(require, exports, module) {
 
