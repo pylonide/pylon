@@ -265,9 +265,10 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (_self.$dbgImpl || _self.attaching)
                 return;
             var runnerRE = /(\w+)-debug/;
-            var runnerMatch;
+            var runnerMatch = runnerRE.exec(attr);
+            var debugHandler;
             for (var attr in e) {
-                if ((runnerMatch = runnerRE.exec(attr)) && (debugHandler = getDebugHandler(runnerMatch[1]))) {
+                if (runnerMatch && (debugHandler = getDebugHandler(runnerMatch[1]))) {
                     var dbgImpl = new debugHandler();
                     _self.$attaching = true;
                     dbgImpl.attach();
