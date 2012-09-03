@@ -106,7 +106,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         winSearchInFiles.addEventListener("prop.visible", function(e) {
             if (e.value) {
-                if (self.trFiles)
+                if (trFiles)
                     trFiles.addEventListener("afterselect", _self.setSearchSelection);
                 _self.setSearchSelection();
             }
@@ -115,7 +115,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 if (editor)
                     editor.focus();
         
-                if (self.trFiles)
+                if (trFiles)
                     trFiles.removeEventListener("afterselect", 
                         _self.setSearchSelection);
             }
@@ -172,7 +172,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     setSearchSelection: function(e){
         var selectedNode;
         
-        if (self.trFiles) {
+        if (trFiles) {
             // If originating from an event
             if (e && e.selected)
                 selectedNode = e.selected;
@@ -208,7 +208,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     getSelectedTreeNode: function() {
-        var node = self["trFiles"] ? trFiles.selected : fs.model.queryNode("folder[1]");
+        var node = trFiles ? trFiles.selected : fs.model.queryNode("folder[1]");
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder[1]");
         while (node.tagName != "folder")
@@ -368,7 +368,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (grpSFScope.value == "projects") {
             path = ide.davPrefix;
         }
-        else if (!self.trFiles) {
+        else if (!trFiles) {
             path = settings.model.queryValue("auto/tree_selection/@path");
             if (!path)
                 return;
