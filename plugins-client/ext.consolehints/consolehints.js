@@ -21,6 +21,9 @@ var commands = require("ext/commands/commands");
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 
+/*global apf txtConsolePrompt txtConsoleInput
+*/
+
 var filterCommands = function(commands, word) {
     if (!word)
         return commands.sort();
@@ -128,7 +131,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             e.ext.hideInput = function(){
                 _self.hide();
                 hideInput.apply(c9console, arguments);
-            }
+            };
         });
     },
 
@@ -163,7 +166,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             });
 
             txtConsoleInput.addEventListener("focus", function(e) {
-                if (txtConsoleInput.getValue().length && hintsContent.hasChildNodes()) {
+                if (txtConsoleInput.getValue() == hintsContent.text && hintsContent.hasChildNodes()) {
                     winHints.style.display = "block";
                     winHints.visible = true;
                 }
@@ -172,11 +175,13 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 _self.hide();
             });
 
-            txtConsoleInput.ace.session.on("change", function(e) {
+            txtConsoleInput.ace.container.addEventListener("input", function(e) {
                 var getCmdMatches = function(filtered) {
+                    hintsContent.text = txtConsoleInput.getValue();
                     if (filtered.length && filtered[0] !== "[PATH]")
-                        _self.show(txtConsoleInput, "", filtered, txtConsoleInput.getValue().length - 1);
+                        _self.show(txtConsoleInput, "", filtered, hintsContent.text.length - 1);
                     else {
+                        hintsContent.innerHTML = "";
                         _self.hide();
                     }
                 };
@@ -192,7 +197,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     _self.getCmdCompletion(cliValue, getCmdMatches);
                 else
                     _self.hide();
-            });
+            }, false);
     
             // Below we are overwriting the Console default key events in function of
             // whether the hints are being displayed or not.
@@ -201,16 +206,16 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 "tab": "onTabKey",
                 "down": "selectDown",
                 "esc": "hide",
-                "return": "onEnterKey",
+                "return": "onEnterKey"
             };
             
             txtConsoleInput.ace.keyBinding.addKeyboardHandler({
                 handleKeyboard: function(data, hashId, keyString) {
                     if (hashId == -1 || !redefinedKeys[keyString] || winHints.style.display === "none")
-                        return;                    
+                        return;
                     
-                    if (_self[redefinedKeys[keyString]]() != false)
-                        return {command: "null"};                    
+                    if (_self[redefinedKeys[keyString]].call(_self) !== false)
+                        return {command: "null"};
                 }
             });
         };
@@ -363,7 +368,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 break;
             }
         }
-
+        if (! handled)
+            this.hide();
         return handled;
     },
     selectUp: function() {

@@ -35,7 +35,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     expanded: false,
     nodes : [],
     prefsItems: [],
-    horScrollAutoHide : "false",
+    horScrollAutoHide : true,
     edgeDistance : 3,
     offsetWidth : 0,
 
@@ -48,7 +48,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
             var codeSettings = e.model.queryNode("//editors/code");
             if (codeSettings && codeSettings.hasAttribute("autohidehorscrollbar")) {
-                _self.horScrollAutoHide = codeSettings.getAttribute("autohidehorscrollbar");
+                _self.horScrollAutoHide = apf.isTrue(codeSettings.getAttribute("autohidehorscrollbar"));
             }
             
             if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
@@ -81,8 +81,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         var _self = this;
         ide.addEventListener("init.ext/code/code", this.$preinit = function(){
-            _self.markupInsertionPoint = ceEditor.parentNode;
-            
             ext.initExtension(_self);
         });
     },
@@ -127,82 +125,76 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     return;
                 }
                 
-                editor = editor.ceEditor;
+                editor = editor.ceEditor.$editor;
                 barIdeStatus.show();
             
-                _self.setSelectionLength(editor);
-                _self.setCursorPosition(editor);
+                _self.updateStatus(editor);
     
-                var session = editor.$editor.session;
-                if (!session.$hasSBEvents) {
-                    session.selection.addEventListener("changeSelection", 
-                        _self.$changeEventSelection = function(e) {
-                            if (_self._timerselection)
-                                return;
-        
-                            _self._timerselection = setTimeout(function() {
-                                _self.setSelectionLength(editor);
-                                _self._timerselection = null;
-                            }, 50);
-                        });
-                    
-                    session.selection.addEventListener("changeCursor",
-                        _self.$changeEventCursor = function(e) {
-                            if (_self._timercursor)
-                                return;
-        
-                            _self._timercursor = setTimeout(function() {
-                                _self.setCursorPosition(editor);
-                                _self._timercursor = null;
-                            }, 50);
-                        });
-                    session.$hasSBEvents = true;
+                if (!editor.$hasSBEvents) {
+                    _self.$onChangeStatus = function(e) {
+                        if (_self._timerstatus)
+                            return;
+    
+                        _self._timerselection = setTimeout(function() {
+                            _self.updateStatus(editor);
+                            _self._timerselection = null;
+                        }, 80);
+                    };
+                    editor.addEventListener("changeSelection", _self.$onChangeStatus);                    
+                    editor.addEventListener("changeStatus", _self.$onChangeStatus);
+                    editor.$hasSBEvents = true;
                 }
             });
-            
-            tabEditors.addEventListener("resize", function() {
-                _self.setPosition();
-            });
         });
-        
+
         this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
         barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
         barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
+        ceEditor.$ext.parentNode.appendChild(barIdeStatus.$ext)
 
         ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
             if (e.changed) {
-                _self.horScrollAutoHide = e.value ? "true" : "false";
-                apf.layout.forceResize(tabEditors.parentNode.$ext);
-            }
-        });
-
-        //@todo que??
-        ide.addEventListener("track_action", function(e) {
-            if (e.type === "vim" && window["lblInsertActive"]) {
-                if (e.action === "disable")
-                    lblInsertActive.hide();
-                else if (e.mode === "insert")
-                    lblInsertActive.show();
+                _self.horScrollAutoHide = !!e.value;
+                _self.setPosition();
             }
         });
     },
 
-    setSelectionLength : function(editor) {
-        var range = editor.$editor.getSelectionRange();
-        if (range.start.row != range.end.row || range.start.column != range.end.column) {
-            var doc = editor.getDocument();
-            var value = doc.getTextRange(range);
-            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-            lblSelectionLength.show();
-        } else {
-            lblSelectionLength.setAttribute("caption", "");
-            lblSelectionLength.hide();
+    updateStatus : function(ace) {
+        if (!ace.selection.isEmpty()) {
+            var range = ace.getSelectionRange();
+            if (this.$showRange) {
+                this.$lblSelectionLength = "(" +
+                    (range.end.row - range.start.row) + ":" +
+                    (range.end.column - range.start.column) + ")";
+            } else {
+                var value = ace.session.getTextRange(range);
+                this.$lblSelectionLength = "(" + value.length + " Bytes)";
+            }
+            lblSelectionLength.$ext.textContent = this.$lblSelectionLength;
+        } else if (this.$lblSelectionLength) {            
+            lblSelectionLength.$ext.textContent = this.$lblSelectionLength = "";
         }
+
+        var cursor = ace.selection.lead;
+        lblRowCol.setAttribute("caption", (cursor.row + 1) + ":" + (cursor.column + 1));
+        
+        if (ace.renderer.$horizScroll != this.$horizScroll) {
+            this.$horizScroll = ace.renderer.$horizScroll;
+            this.setPosition();
+        }
+    
+        var status = "";
+        if (ace.$vimModeHandler)
+            status = ace.$vimModeHandler.getStatusText();
+        else if (ace.commands.recording)
+            status = "REC";
+        lblEditorStatus.$ext.textContent = status;
     },
     
-    setCursorPosition : function(editor){
-        var cursor = editor.$editor.getSelection().getCursor();
-        lblRowCol.setAttribute("caption", (cursor.row + 1) + ":" + (cursor.column + 1));
+    toggleSelectionLength: function(){
+        this.$showRange = !this.$showRange;
+        this.updateStatus(ceEditor.$editor);
     },
 
     toggleStatusBar: function(){
@@ -239,24 +231,20 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     setPosition : function() {
-        if (self.ceEditor && ceEditor.$editor) {
-            var _self = this;
-            var cw = ceEditor.$editor.renderer.scroller.clientWidth;
-            var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
-            var bottom = this.edgeDistance;
-            if (cw < sw || this.horScrollAutoHide === "false")
-                bottom += this.sbWidth;
+        var _self = this;
+        var bottom = this.edgeDistance;
+        if (this.$horizScroll || !this.horScrollAutoHide)
+            bottom += this.sbWidth;
 
-            if (this.$barMoveTimer)
-                clearTimeout(this.$barMoveTimer);
+        if (this.$barMoveTimer)
+            clearTimeout(this.$barMoveTimer);
                 
-            this.$barMoveTimer = setTimeout(function() {
-                if (typeof barIdeStatus !== "undefined") {
-                    barIdeStatus.setAttribute("bottom", bottom);
-                    barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance + _self.offsetWidth);
-                }
-            }, 50);
-        }
+        this.$barMoveTimer = setTimeout(function() {
+            if (typeof barIdeStatus !== "undefined") {
+                barIdeStatus.setAttribute("bottom", bottom);
+                barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance + _self.offsetWidth);
+            }
+        }, 50);
     },
 
     enable : function(){

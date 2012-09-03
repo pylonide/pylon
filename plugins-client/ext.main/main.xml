@@ -40,7 +40,7 @@
             <a:button skin="button-colorless" class="dark green" onclick="
                 ide.addEventListener('login', function() { location.reload(); });
                 winLogin.show();
-            " margin="0 10" width="115">Sign in to edit*</a:button>
+            " margin="0 10" width="115">Sign in to edit</a:button>
         </a:hbox>
     </a:hbox>
     <a:hbox id="view-mode-box-readonly" visible="false" height="35" class="view-mode-box" align="center" edge="0 10">
@@ -86,12 +86,14 @@
                         </a:hsplitbox>
                         <a:hsplitbox id="hboxMain" splitter="true">
                             <a:bar id="colLeft" width="1" minwidth="105" visible="false" />
-                            <a:vsplitbox id="colMiddle" padding="3" />
+                            <a:hsplitbox>
+                                <a:vsplitbox id="colMiddle" padding="3" />
+                                <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" pack="end"/>
+                            </a:hsplitbox>
                         </a:hsplitbox>
                     </a:vsplitbox>
                 </a:vsplitbox>
             </a:vsplitbox>
-            <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" pack="end"/>
         </a:hsplitbox>
     </a:vsplitbox>
 </a:application>

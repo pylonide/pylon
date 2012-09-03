@@ -81,6 +81,8 @@ module.exports = ext.register("ext/beautify/beautify", {
             type = "css";
         } if (/^\s*<!?\w/.test(value)) {
             type = "html";
+        } else if (syntax == "xml") {
+            type = "html";
         } else if (syntax == "html") {
             if (/[^<]+?{[\s\-\w]+:[^}]+;/.test(value))
                 type = "css";

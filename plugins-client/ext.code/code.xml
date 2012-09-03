@@ -11,6 +11,7 @@
       gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"
       showinvisibles    = "[{require('core/settings').model}::editors/code/@showinvisibles]"
       showprintmargin   = "[{require('core/settings').model}::editors/code/@showprintmargin]"
+      showindentguides  = "[{require('core/settings').model}::editors/code/@showindentguides]"
       printmargincolumn = "[{require('core/settings').model}::editors/code/@printmargincolumn]"
       softtabs          = "[{require('core/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('core/settings').model}::editors/code/@tabsize]"
@@ -29,7 +30,11 @@
 
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
-      readonly          = "{(!stServerConnected.active and !require('core/ide').local) || [@loading] || (location.host and dbg.state and [@debug])}"
+      readonly          = "{
+            (!stServerConnected.active and !require('core/ide').local) 
+            || [@loading] 
+            || (location.host and window.dbg and dbg.state and [@debug])
+        }"
     />
 
     <a:menu id="mnuCtxEditor">
