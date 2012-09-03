@@ -4,9 +4,6 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
-/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack ide */
-
 define(function(require, exports, module) {
 
 var V8Debugger = require("v8debug/V8Debugger");
@@ -15,6 +12,8 @@ var ide = require("core/ide");
 var oop = require("ace/lib/oop");
 var DebugHandler = require("ext/debugger/debug_handler");
 var extDebugger = require("ext/debugger/debugger");
+
+/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack */
 
 var v8DebugClient = module.exports = function() {
 };
@@ -397,7 +396,8 @@ oop.inherits(v8DebugClient, DebugHandler);
                 return {};
             }
 
-            var i, l;
+            var i;
+            var l;
             var frames    = body.frames;
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isSameFrameset(xmlFrames, frames)) {
@@ -421,7 +421,6 @@ oop.inherits(v8DebugClient, DebugHandler);
 
     this.loadSource = function(script, callback) {
         var id = script.getAttribute("scriptid");
-        var _self = this;
         this.$v8dbg.scripts(4, [id], true, function(scripts) {
             if (!scripts.length)
                 return;
@@ -601,7 +600,7 @@ oop.inherits(v8DebugClient, DebugHandler);
 
 }).call(v8DebugClient.prototype);
 
-v8DebugClient.handlesRunner = function (runner) {
+v8DebugClient.handlesRunner = function(runner) {
     return runner === "node";
 };
 

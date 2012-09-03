@@ -1,8 +1,15 @@
-
+/**
+ * Debugger interface to be extended to support different debugger types
+ *
+ * @copyright 2010, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
+
 var DebugHandler = module.exports = function() {
-    // used from other plugins
+    // Used from other plugins
     /**
      * state of the debugged process
      *    null:  process doesn't exist
@@ -92,7 +99,7 @@ var DebugHandler = module.exports = function() {
     };
 
     /**
-     * Evaluate an exressiom string in a specific frame
+     * Evaluate an expression string in a specific frame
      * @param expression string
      * @param frame the stack frame object
      * @param global boolean
@@ -102,7 +109,7 @@ var DebugHandler = module.exports = function() {
     };
 
     /**
-     * Evaluate an exressiom string in a specific frame
+     * Change a live running source to the latest code state
      * @param sourceId the scriptid attribute of the target source
      * @param newSource string of the new source code
      * @param previewOnly boolean
