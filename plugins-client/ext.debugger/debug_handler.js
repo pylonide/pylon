@@ -16,11 +16,11 @@ var DebugHandler = module.exports = function() {
 
     /**
      * Attaches the debugger to the started debugee instance
-     * when attached, it emits "dbg.attached" ide event with
-     * dbgImpl attribute to the debugger object that should be used
+     * when attached, onAttach is called with err and dbgImpl
+     * referring to the debugger object that should be used
      * for further debug calls
      */
-    this.attach = function() {
+    this.attach = function(runner, onAttach) {
     };
 
     /**
@@ -42,34 +42,36 @@ var DebugHandler = module.exports = function() {
     };
 
     /**
-     
+     * Returns the debug stack trace representing the current state of the
+     * debugee instance - mainly including the stack frames and references
+     * to the frame source
      */
     this.backtrace = function(callback) {
     };
 
     /**
-     * Loads all the active scripts from the debugee instance
+     * Loads all the active sources from the debugee instance
      */
-    this.loadScripts = function(callback) {
+    this.loadSources = function(callback) {
     };
 
     /**
-     * Loads a specific script from the active scripts in the debugee instance
-     * @param script APF node to extract request attributes from
+     * Loads a specific source from the active sources in the debugee instance
+     * @param source APF node to extract request attributes from
      */
-    this.loadScript = function(script, callback) {
+    this.loadSource = function(source, callback) {
     };
 
     /**
      * Loads an object with its properties using its handle
      * @param item APF node for the object to load to extract the handle from
      */
-    this.loadObjects = function(item, callback) {
+    this.loadObject = function(item, callback) {
     };
 
     /**
      * Loads a stack frame to the UI
-     * @param frame the stack frame object to load 
+     * @param frame the stack frame object to load
      */
     this.loadFrame = function(frame, callback) {
     };
@@ -80,7 +82,7 @@ var DebugHandler = module.exports = function() {
      * @param stepaction <"in", "next" or "out">
      * @param stepcount <number of steps (default 1)>
      */
-    this.continueScript = function(stepaction, stepcount, callback) {
+    this.resume = function(stepaction, stepcount, callback) {
     };
 
     /**
@@ -101,19 +103,19 @@ var DebugHandler = module.exports = function() {
 
     /**
      * Evaluate an exressiom string in a specific frame
-     * @param scriptId the scriptid attribute of the target script
-     * @param newSource string of the new script source code
+     * @param sourceId the scriptid attribute of the target source
+     * @param newSource string of the new source code
      * @param previewOnly boolean
      */
-    this.changeLive = function(scriptId, newSource, previewOnly, callback) {
+    this.changeLive = function(sourceId, newSource, previewOnly, callback) {
     };
 
     /**
      * Lookup multiple generic objects using their handles
-     * (can be VM objects or scripts)
+     * (can be VM objects or sources)
      * @param handles the array of handles to lookup for
      * @param includeSource boolean whether to include the source
-     * when script objects are returned
+     * when source objects are returned
      */
     this.lookup = function(handles, includeSource, callback) {
     };
@@ -123,8 +125,29 @@ var DebugHandler = module.exports = function() {
      * Gets called with every change in the breakpoints added to the UI
      * Should compare UI breakpoints with the really added breakpoints
      * to the debugger and add/clear to sync breakpoint state
+     * UI breakpoints can easily be get calling: this.$getUIBreakpoints()
      */
-    this.updateBreakpoints = function() { 
+    this.updateBreakpoints = function() {
+        // Call the debugger to actually set/clear breakpoints
+        var uiBreakpoints = this.$getUIBreakpoints();
+    };
+
+    /////////////////////////////// Utilities \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/
+
+    /**
+     * Utility function can be used to easily get the UI breakpoints
+     */
+    this.$getUIBreakpoints = function (argument) {
+        return mdlDbgBreakpoints.queryNodes("breakpoint").map(function(bp) {
+            return {
+                path: bp.getAttribute("path") || "",
+                line: parseInt(bp.getAttribute("line"), 10),
+                column: parseInt(bp.getAttribute("column"), 10) || 0,
+                enabled: bp.getAttribute("enabled") == "true",
+                condition: bp.getAttribute("condition") || "",
+                ignoreCount: bp.getAttribute("ignoreCount") || 0
+            };
+        });
     };
 
 }).call(DebugHandler.prototype);

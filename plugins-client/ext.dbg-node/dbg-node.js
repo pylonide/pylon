@@ -47,25 +47,25 @@ oop.inherits(v8DebugClient, DebugHandler);
         };
     };
 
-    this.attach = function() {
+    this.attach = function(runner, onAttach) {
         var _self = this;
-        var onAttach = function(err, dbgImpl) {
-            ide.dispatchEvent("dbg.attached", {dbgImpl: dbgImpl});
+        var _onAttach = function(err, dbgImpl) {
+            onAttach(null, dbgImpl);
             _self.onChangeRunning();
             _self.$syncAfterAttach();
         };
 
-        this.$v8ds = new WSV8DebuggerService(ide.socket);
+        this.$v8ds = new WSV8DebuggerService(ide.socket, runner);
 
         this.$v8ds.attach(0, function() {
             _self.$startDebugging();
-            onAttach(null, _self);
+            _onAttach(null, _self);
         });
     };
 
     this.$syncAfterAttach = function () {
         var _self = this;
-        _self.loadScripts(function() {
+        _self.loadSources(function() {
             _self.backtrace(function() {
                 _self.updateBreakpoints(function() {
                     _self.$v8dbg.listbreakpoints(function(e){
@@ -146,7 +146,7 @@ oop.inherits(v8DebugClient, DebugHandler);
             return;
 
         this.$v8dbg.clearbreakpoint(1, function(){});
-        this.continueScript();
+        this.resume();
     };
 
     // apf xml helpers
@@ -368,7 +368,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         xml.push("</frame>");
     };
 
-    this.loadScripts = function(callback) {
+    this.loadSources = function(callback) {
         var model = mdlDbgSources;
         var _self = this;
         this.$v8dbg.scripts(4, null, false, function(scripts) {
@@ -419,7 +419,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         });
     };
 
-    this.loadScript = function(script, callback) {
+    this.loadSource = function(script, callback) {
         var id = script.getAttribute("scriptid");
         var _self = this;
         this.$v8dbg.scripts(4, [id], true, function(scripts) {
@@ -430,7 +430,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         });
     };
 
-    this.loadObjects = function(item, callback) {
+    this.loadObject = function(item, callback) {
         var ref   = item.getAttribute("ref");
         var _self = this;
         this.$v8dbg.lookup([ref], false, function(body) {
@@ -487,7 +487,7 @@ oop.inherits(v8DebugClient, DebugHandler);
             return callback("<vars />");
     };
 
-    this.continueScript = function(stepaction, stepcount, callback) {
+    this.resume = function(stepaction, stepcount, callback) {
         this.$v8dbg.continueScript(stepaction, stepcount, callback);
     };
 
@@ -538,16 +538,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         var _self = this;
 
         // read all the breakpoints, then call the debugger to actually set them
-        var uiBreakpoints = mdlDbgBreakpoints.queryNodes("breakpoint").map(function(bp) {
-            return {
-                path: bp.getAttribute("path") || "",
-                line: parseInt(bp.getAttribute("line"), 10),
-                column: parseInt(bp.getAttribute("column"), 10) || 0,
-                enabled: bp.getAttribute("enabled") == "true",
-                condition: bp.getAttribute("condition") || "",
-                ignoreCount: bp.getAttribute("ignoreCount") || 0
-            };
-        });
+        var uiBreakpoints = this.$getUIBreakpoints();
 
         // keep track of all breakpoints and check if they're really added
         var counter = 0;

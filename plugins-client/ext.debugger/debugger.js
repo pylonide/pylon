@@ -49,7 +49,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "resume the current paused process",
             bindKey: {mac: "F8", win: "F8"},
             exec: function(){
-                _self.continueScript();
+                _self.resume();
             }
         });
         commands.addCommand({
@@ -57,7 +57,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "step into the function that is next on the execution stack",
             bindKey: {mac: "F11", win: "F11"},
             exec: function(){
-                _self.continueScript("in");
+                _self.resume("in");
             }
         });
         commands.addCommand({
@@ -65,7 +65,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "step over the current expression on the execution stack",
             bindKey: {mac: "F10", win: "F10"},
             exec: function(){
-                _self.continueScript("next");
+                _self.resume("next");
             }
         });
         commands.addCommand({
@@ -73,7 +73,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             hint: "step out of the current function scope",
             bindKey: {mac: "Shift-F11", win: "Shift-F11"},
             exec: function(){
-                _self.continueScript("out");
+                _self.resume("out");
             }
         });
         commands.addCommand({
@@ -224,12 +224,12 @@ module.exports = ext.register("ext/debugger/debugger", {
             return dbgVariable;
         });
 
-        ide.addEventListener("dbg.attached", function(e) {
+        function onAttach(err, dbgImpl) {
             if (!_self.inited)
                 ext.initExtension(_self);
-            _self.$dbgImpl = e.dbgImpl;
+            _self.$dbgImpl = dbgImpl;
             _self.$attaching = false;
-        });
+        }
 
         function getDebugHandler(runner) {
             return _self.handlers.filter(function (handler) {
@@ -245,7 +245,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             if (runnerMatch && (debugHandler = getDebugHandler(runnerMatch[1]))) {
                 var dbgImpl = new debugHandler();
                 _self.$attaching = true;
-                dbgImpl.attach();
+                dbgImpl.attach(runnerMatch[1], onAttach);
             } else {
                 console.log("Appropriate debug handler not found !!");
             }
@@ -268,7 +268,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 if ((runnerMatch = runnerRE.exec(attr)) && (debugHandler = getDebugHandler(runnerMatch[1]))) {
                     var dbgImpl = new debugHandler();
                     _self.$attaching = true;
-                    dbgImpl.attach();
+                    dbgImpl.attach(runnerMatch[1], onAttach);
                 }
             }
         });
@@ -347,26 +347,26 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.$dbgImpl && this.$dbgImpl.setFrame(frame);
     },
 
-    loadScripts : function(callback) {
-        this.$dbgImpl && this.$dbgImpl.loadScripts(callback);
+    loadSources : function(callback) {
+        this.$dbgImpl && this.$dbgImpl.loadSources(callback);
     },
 
-    loadScript : function(script, callback) {
-        this.$dbgImpl && this.$dbgImpl.loadScript(script, callback);
+    loadSource : function(script, callback) {
+        this.$dbgImpl && this.$dbgImpl.loadSource(script, callback);
     },
 
-    loadObjects : function(item, callback) {
-        this.$dbgImpl && this.$dbgImpl.loadObjects(item, callback);
+    loadObject : function(item, callback) {
+        this.$dbgImpl && this.$dbgImpl.loadObject(item, callback);
     },
 
     loadFrame : function(frame, callback) {
         this.$dbgImpl && this.$dbgImpl.loadFrame(frame, callback);
     },
 
-    continueScript : function(stepaction, stepcount, callback) {
+    resume : function(stepaction, stepcount, callback) {
         ide.dispatchEvent("beforecontinue");
 
-        this.$dbgImpl && this.$dbgImpl.continueScript(stepaction, stepcount || 1, callback);
+        this.$dbgImpl && this.$dbgImpl.resume(stepaction, stepcount || 1, callback);
     },
 
     suspend : function() {
