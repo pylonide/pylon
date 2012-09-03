@@ -956,9 +956,7 @@ module.exports = ext.register("ext/console/console", {
         logger.appendConsoleFragmentsAfterInit();
         
         // when the IDE socket is ready we'll retrieve a list of running processes
-        ide.onSocketReady(function () {
-            _self.getRunningServerProcesses();
-        });
+        _self.getRunningServerProcesses();
     },
 
     newtab : function() {

@@ -72,16 +72,14 @@ module.exports = ext.register("ext/filelist/filelist", {
             ide.addEventListener("socketMessage", this.$onMessage);
         }
         
-        ide.onSocketReady(function () {
-            _self.cached = "";
-            ide.send({
-                command: "search",
-                type: "filelist",
-                path: "",
-                showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
-            });
-            _self.retrieving = true;
+        _self.cached = "";
+        ide.send({
+            command: "search",
+            type: "filelist",
+            path: "",
+            showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
         });
+        _self.retrieving = true;
     },
 
     enable : function() {

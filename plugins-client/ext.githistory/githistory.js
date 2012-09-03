@@ -695,9 +695,7 @@ module.exports = ext.register("ext/githistory/githistory", {
 
         if (ext.execCommand(this.command, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
-                ide.onSocketReady(function () {
-                    ide.send(data);
-                });
+                ide.send(data);
             }
         }
 

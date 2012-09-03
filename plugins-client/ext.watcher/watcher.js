@@ -225,42 +225,34 @@ module.exports = ext.register("ext/watcher/watcher", {
     },
 
     sendWatchFile : function(path) {
-        ide.onSocketReady(function () {
-            ide.send({
-                "command"     : "watcher",
-                "type"        : "watchFile",
-                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-            });
+        ide.send({
+            "command"     : "watcher",
+            "type"        : "watchFile",
+            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
     
     sendWatchDirectory : function(path) {
-        ide.onSocketReady(function () {
-            ide.send({
-                "command"     : "watcher",
-                "type"        : "watchDirectory",
-                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-            });
+        ide.send({
+            "command"     : "watcher",
+            "type"        : "watchDirectory",
+            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
     
     sendUnwatchDirectory : function(path) {
-        ide.onSocketReady(function () {
-            ide.send({
-                "command"     : "watcher",
-                "type"        : "unwatchDirectory",
-                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-            });
+        ide.send({
+            "command"     : "watcher",
+            "type"        : "unwatchDirectory",
+            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
 
     sendUnwatchFile : function(path) {
-        ide.onSocketReady(function () {
-            ide.send({
-                "command"     : "watcher",
-                "type"        : "unwatchFile",
-                "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
-            });
+        ide.send({
+            "command"     : "watcher",
+            "type"        : "unwatchFile",
+            "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
 
