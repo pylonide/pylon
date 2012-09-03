@@ -4,6 +4,10 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+ 
+/*global tabEditors searchRow winSearchInFiles winSearchReplace  rbSFSelection
+    txtSFFind chkSFRegEx tooltipSearchInFiles txtSFReplace txtSFPatterns 
+    trFiles chkSFMatchCase chkSFRegEx chkSFConsole tabConsole btnSFFind */
 
 define(function(require, exports, module) {
 
@@ -113,7 +117,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
                 if (self.trFiles)
                     trFiles.removeEventListener("afterselect", 
-                        this.setSearchSelection);
+                        _self.setSearchSelection);
             }
         });
         ide.addEventListener("init.ext/tree/tree", function(){
@@ -526,7 +530,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         // "string" type is the parent filename
         while (currRow --> 0) {
             var token = session.getTokenAt(currRow, 0);
-            if (token && token.type.indexOf("string") < 0)
+            if (token && token.type.indexOf("string") != -1)
                 break;
         }
 
@@ -541,7 +545,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         if (!path)
             return;
-        var row = parseInt(clickedLine[0]);
+        var row = parseInt(clickedLine[0], 10);
         var range = editor.getSelectionRange();
         var offset = clickedLine[0].length + 2;
         editors.gotoDocument({
@@ -641,7 +645,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
             
-            this.$panel.addEventListener("afterclose", function(){
+            this.$panel.addEventListener("afterclose", function() {
                 this.removeNode();
                 _self.$panel = null;
                 _self.consoleacedoc = null;
@@ -655,7 +659,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                         _self.returnFocus = false;
                     }
                     else {
-                        editor.insert("\n");
+                        _self.searchConsole.$editor.insert("\n");
                     } 
                     return false;
                 }
