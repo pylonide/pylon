@@ -329,7 +329,7 @@ module.exports = {
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
-        _self.updateDoc();
+        _self.updateDoc(true);
     },
     
     updateDoc : function(delayPopup) {
