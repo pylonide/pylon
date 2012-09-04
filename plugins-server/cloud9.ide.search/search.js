@@ -49,7 +49,8 @@ util.inherits(SearchPlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on("search::filelist", function(msg) {
-            console.log(msg)
+            console.log(msg);
+            process.exit(1)
             if (msg.type == "shell-start")
                 self.processCount += 1;
             else if (msg.type == "shell-exit")
@@ -61,6 +62,7 @@ util.inherits(SearchPlugin, Plugin);
         });
 
         this.eventbus.on("search::codesearch", function(msg) {
+            console.log(msg)
             if (msg.type == "shell-start") {
                 self.processCount += 1;
                 self.filecount = 0;
@@ -100,7 +102,7 @@ util.inherits(SearchPlugin, Plugin);
 
         var self = this;
         self.options = message;
-        console.log(args, message.path)
+        console.log("command", args)
         this.pm.spawn("shell", {
             command: args.command,
             args: args,
@@ -116,15 +118,22 @@ util.inherits(SearchPlugin, Plugin);
     };
 
     this.assembleSearchCommand = function(options) {
-        var cmd = ackCmd + " --nocolor " + 
-            ( !options.casesensitive ? "-i" : "" ) +
-            ( options.wholeword ? "-w" : "") +
-            ( !options.regexp ? "-Q" : "");
+        var args;
 
-        var query = options.query;
-        if (!query)
-            return;
- 
+        if (useAg) {
+            args = [options.query, "--nocolor", "-f", options.path];
+
+            //if (options.casesensitive)
+            //    args.push("depth " + options.maxdepth);
+            if (options.wholeword)
+                args.push("-w");
+            if (!!options.regexp)
+                args.push("-Q");
+        }
+        else {
+            
+        }
+
         if (options.replaceAll) {
             if (!options.replacement)
                 options.replacement = "";
@@ -132,8 +141,8 @@ util.inherits(SearchPlugin, Plugin);
             cmd = "perl -i -p -e 's/" + query + "/" + options.replacement + "/g' $(" + cmd + ")";
         }
 
-        var args = ["-c", cmd];
-        args.command = "bash";
+        args.command = useAg ? agCmd : ackCmd;
+
         return args;
     }
 
@@ -182,10 +191,13 @@ util.inherits(SearchPlugin, Plugin);
         var args;
         
         if (useAg) {
-            args =[" ", "--nocolor", "-l", "-f", "--search-binary", options.path];
+            console.log(__dirname);
+            args =[" ", "--nocolor", "-p", path.join(__dirname, ".agignore"), "-l", "-f", "--search-binary", options.path];
 
-            //if (options.maxdepth)
-            //    agCmd += "--depth " + options.maxdepth;
+            if (options.maxdepth)
+                args.push("--depth " + options.maxdepth);
+            //if (options.casesensitive)
+            //    args.push("depth " + options.maxdepth);
         }
         else {
             
