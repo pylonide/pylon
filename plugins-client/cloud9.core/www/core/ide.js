@@ -80,23 +80,19 @@ define(function(require, exports, module) {
 
     ide.start();
 
-    // fire up the socket connection:    
+    // fire up the socket connection:
     if (window.cloud9config.debug) console.info("Connecting", JSON.parse(window.cloud9config.smithIo));
 
     SMITH_IO.connect(JSON.parse(window.cloud9config.smithIo), function(err, connection) {
+        if (err)
+            return console.error(err);
 
-        if (err) {
-            console.error(err);
-            return;
-        }
-        
         ide.connection = connection;
 
         connection.on("connect", function() {
-            if (window.cloud9config.debug) {
+            if (window.cloud9config.debug)
                 console.info("Connected");
-            }
-            
+
             ide.connecting = true;
             // send over the internal method, otherwise it'll be queued
             // because we aren't fully attached to the server yet
@@ -107,10 +103,9 @@ define(function(require, exports, module) {
             });
         });
         connection.on("disconnect", function(reason) {
-            if (window.cloud9config.debug) {
+            if (window.cloud9config.debug)
                 console.info("Disconnected");
-            }
-            
+
             ide.connected = false;
             ide.dispatchEvent("socketDisconnect");
         });
@@ -166,7 +161,8 @@ define(function(require, exports, module) {
         }
         else {
             // otherwise execute when we're done
-            ide.addEventListener("socketConnect", function () {
+            ide.addEventListener("socketConnect", function onConnect() {
+                ide.removeEventListener("socketConnect", onConnect);
                 ide.connection.send(msg);
             });
         }
@@ -191,6 +187,6 @@ define(function(require, exports, module) {
             return page.$model.data;
         });
     };
-    
+
     module.exports = ide;
 });
