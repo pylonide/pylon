@@ -23,6 +23,7 @@ var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 1500;
+var SHOW_DOC_DELAY_MOUSE_OVER = 100;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
@@ -314,7 +315,9 @@ module.exports = {
                 _self.matchEls[_self.selectedIdx].className = CLASS_UNSELECTED;
                 _self.selectedIdx = idx;
                 _self.matchEls[_self.selectedIdx].className = CLASS_SELECTED;
-                _self.updateDoc();                
+                _self.updateDoc();
+                if (!isDrawDocInvokeScheduled)
+                    drawDocInvoke.schedule(SHOW_DOC_DELAY_MOUSE_OVER);
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
