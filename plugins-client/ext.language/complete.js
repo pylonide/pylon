@@ -6,11 +6,13 @@
  */
 define(function(require, exports, module) {
 
+/*global txtCompleter txtCompleterDoc txtCompleterHolder barCompleterCont
+  ceEditor sbCompleter*/
+
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
-var editors = require("ext/editors/editors");
 
 var lang = require("ace/lib/lang");
 var language;
