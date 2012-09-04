@@ -38,8 +38,7 @@
         "nodeunit": "0.7.4",
         "sinon": "1.3.4",
         "rimraf": "2.0.1",
-        "vfs-local": "0.1.6",
-        "vfs-nodefs-adapter": "0.0.4"
+        "vfs-local": "0.3.4"
     },
 
     "mappings": {
@@ -50,7 +49,8 @@
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/01597eacd22ad660977d43c44b4001107117b8ea"],
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/61841e99eda6ea9a8b801fd145b9a0af286ad324"],
-        "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
+        "vfs-nodefs-adapter": ["npm", "https://github.com/c9/vfs-nodefs-adapter/tarball/850d0e3dc32f32bb076f984075f7aeeb0e0ef8d9"],
+        "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/778b1eceb958e1c0c0e372d3e7a66a7f86561a74"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/d7ab6ada6ec802f8d4107dae038327c7fa9c5601"],
         "browser-msgpack-js":   ["npm", "https://github.com/creationix/msgpack-js-browser/tarball/e6dc213cb602d5a8fb402520d7841d2664cd10e9"],
         "smith":        ["npm", "https://github.com/c9/smith/tarball/0080a7cd8308401473941aa97a02043c0467467e"]
