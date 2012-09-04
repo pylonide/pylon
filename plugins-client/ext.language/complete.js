@@ -357,13 +357,13 @@ module.exports = {
     },
 
     $guidToLongString : function(guid, name) {
-        var result = guid && guid.replace(/^[^:]+:(([^\/]+)\/)*?([^\/]*?)$|.*/, "$1$3");
+        var result = guid && guid.replace(/^[^:]+:(([^\/]+\/)*)*?([^\/]*?)$|.*/, "$1$3");
         if (!result || result === "Object")
             return "";
         result = result.replace(/\//g, ".").replace(/\[\d+[^\]]*\]/g, "");
         if (name !== "prototype")
-            result = result.replace("/prototype$", "");
-        return result
+            result = result.replace(/\.prototype$/, "");
+        return result;
     },
     
     updateDoc : function(delayPopup) {
