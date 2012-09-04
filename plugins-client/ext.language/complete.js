@@ -22,7 +22,7 @@ var isDocShown;
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
-var SHOW_DOC_DELAY = 2000;
+var SHOW_DOC_DELAY = 1500;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
