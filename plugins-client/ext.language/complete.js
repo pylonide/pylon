@@ -387,7 +387,7 @@ module.exports = {
             txtCompleterDoc.parentNode.hide();   
         }
         if (selected && selected.docUrl)
-            this.docElement.innerHTML += '<div><a href="' + selected.docUrl + '" target="c9doc">(more)</a></div>';
+            this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
         this.docElement.innerHTML += '</span>';
     },
 
