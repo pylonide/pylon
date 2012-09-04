@@ -55,7 +55,12 @@
                 position: absolute;
                 top: 0px;
                 white-space: nowrap;
+                width: inherited;
+            }
+
+            .code_complete_bar .maintrim {
                 width: 220px;
+                overflow: hidden;
             }
 
             .code_complete_bar .deferred {

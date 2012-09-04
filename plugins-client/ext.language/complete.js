@@ -295,31 +295,35 @@ module.exports = {
             
             if (match.icon)
                 html = "<img src='" + ide.staticPrefix + "/ext/language/img/" + match.icon + ".png'/>";
-                
-            if (!isInferAvailable || match.icon) {
-                html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
-            }
-            else if (hasIcons) {
-                html += '<span class="main"><span class="deferred">' + match.name + '</span>';
-            }
-            else {
-                html += '<span class="main"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
-            }
-
-            html += '</span>';
             
             var docHead;
             if (match.type) {
                 var shortType = _self.$guidToShortString(match.type)
-                html += '<span class="meta">' + shortType + '</span>';
-                if (shortType)
+                if (shortType) {
+                    match.meta = shortType;
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
-            }
-            else if (match.meta) {
-                html += '<span class="meta">' + match.meta + '</span>';
+                }
             }
             
-            match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' +  (match.doc || "")
+            var trim = match.meta ? " maintrim" : "";
+            if (!isInferAvailable || match.icon) {
+                html += '<span class="main' + trim + '"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
+            }
+            else if (hasIcons) {
+                html += '<span class="main' + trim + '"><span class="deferred">' + match.name + '</span></span>';
+            }
+            else {
+                html += '<span class="main' + trim + '"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span></span>';
+            }
+            
+            if (match.meta)
+                html += '<span class="meta">' + match.meta + '</span>';
+            
+            if (match.doc)
+                match.doc = '<p>' + match.doc + '</p>';
+                
+            if (match.icon || match.type)
+                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "")
                 
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
