@@ -63,9 +63,6 @@ module.exports = ext.register("ext/autosave/autosave", {
             hideonclick : true
         });
         
-        if(require("core/ide").readonly)
-            btnSave.hide();
-        
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
@@ -73,6 +70,8 @@ module.exports = ext.register("ext/autosave/autosave", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
+        
+        this.setSaveButtonCaption();
     },
 
     /////////////////////
@@ -144,7 +143,7 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         btnSave.show();
         var page = page || tabEditors.getPage();
-        if (page) {
+        if (page && !ide.readonly) {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
                 if (btnSave.currentState !== SAVING) {
@@ -165,6 +164,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         }
         else {
             btnSave.setCaption("");
+            btnSave.hide();
         }
     },
 
