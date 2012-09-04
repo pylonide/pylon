@@ -357,6 +357,8 @@ module.exports = {
     },
 
     $guidToLongString : function(guid, name) {
+        if (guid.substr(0, 6) === "local:")
+            return this.$guidToShortString(guid);
         var result = guid && guid.replace(/^[^:]+:(([^\/]+\/)*)*?([^\/]*?)$|.*/, "$1$3");
         if (!result || result === "Object")
             return "";
