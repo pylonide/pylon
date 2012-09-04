@@ -55,7 +55,7 @@
                 position: absolute;
                 top: 0px;
                 white-space: nowrap;
-                width: inherit;
+                width: 220px;
             }
 
             .code_complete_bar .deferred {
@@ -74,6 +74,7 @@
                 position: absolute;
                 right: 35px;
                 opacity: .5;
+                width: 45px;
             }
         ]]></a:style>
         <a:style condition="{apf.isWebkit}"><![CDATA[
@@ -104,7 +105,7 @@
                 box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
                 padding: 5px;
                 overflow: hidden;
-                width: 290px;
+                width: 320px;
             }
             .dark .code_complete_text_holder {
                 border-width: 0 2px 2px 2px;
@@ -141,6 +142,14 @@
         <a:style><![CDATA[
             .code_complete_doc_text .cc_complete_option.selected {
                 text-shadow: none;
+            }
+            
+            .code_complete_doc_body {
+            
+            }
+            
+            .code_complete_doc_head {
+                text-decoration: underline;
             }
             
             .code_complete_doc_text {
