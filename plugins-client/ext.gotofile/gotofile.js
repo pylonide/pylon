@@ -325,8 +325,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 dgGoToFile.clear("loading")
                 this.filter("");
             }
-            else
+            else {
+                dgGoToFile.removeAttribute("height");
                 dgGoToFile.clear("empty");
+            }
         }
         else {
             dgGoToFile.$removeClearMessage();
@@ -347,7 +349,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
 
         if (!vp.length) {
-            dgGoToFile.setAttribute('height', 18);
+            if (this.arraySearchResults.length)
+                dgGoToFile.setAttribute("height", 18);
         }
         else if (vp.length < 100) {
             var sh = vp.getScrollHeight();
@@ -356,10 +359,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
             var ht = Math.min(350, sh);
             if (ht != dgGoToFile.height)
-                dgGoToFile.setAttribute('height', ht);
+                dgGoToFile.setAttribute("height", ht);
         }
         else if (dgGoToFile.height != 350) {
-            dgGoToFile.setAttribute('height', 350);
+            dgGoToFile.setAttribute("height", 350);
         }
     },
 
