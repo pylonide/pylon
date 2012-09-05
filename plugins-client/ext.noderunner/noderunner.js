@@ -64,24 +64,20 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         //if (message.type != "shell-data")
            // console.log("MSG", message)
 
-        switch(message.type) {
-            case "node-debug-ready":
-            case "php-debug-ready":
-            case "python-debug-ready":
-            case "ruby-debug-ready":
-                ide.dispatchEvent("dbg.ready", message);
-                break;
-            case "node-exit":
-            case "php-exit":
-            case "python-exit":
-            case "ruby-exit":
-                ide.dispatchEvent("dbg.exit", message);
-                if (message.pid == this.nodePid) {
-                    stProcessRunning.deactivate();
-                    this.nodePid = 0;
-                }
-                break;
+        if (/^\w+-debug-ready$/.test(message.type)) {
+            ide.dispatchEvent("dbg.ready", message);
+            return;
+        }
+        else if (/^\w+-exit$/.test(message.type)) {
+            ide.dispatchEvent("dbg.exit", message);
+            if (message.pid == this.nodePid) {
+                stProcessRunning.deactivate();
+                this.nodePid = 0;
+            }
+            return;
+        }
 
+        switch(message.type) {
             case "state":
                 this.nodePid = message.processRunning || 0;
                 stProcessRunning.setProperty("active", !!message.processRunning);
