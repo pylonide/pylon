@@ -404,6 +404,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     createProcessLog: function(message_pid, lang) {
+        lang = lang ? (lang[0].toUpperCase() + lang.substring(1)) : "Generic";
         var command_id = this.createOutputBlock("Running " + lang + " Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
@@ -433,18 +434,13 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
-        function capitalise (word) {
-            return word[0].toUpperCase() + word.substring(1);
-        }
-
         var lang;
         if ((lang = /^(\w+)-start$/.exec(message.type))) {
-            lang = capitalise(lang[1]);
             var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
             if (apf.isTrue(clearOnRun) && window["txtOutput"])
                 txtOutput.clear();
 
-            this.createProcessLog(message.pid, lang);
+            this.createProcessLog(message.pid, lang[1]);
             return;
         } else if ((lang = /^(\w+)-data$/.exec(message.type))) {
             if (message.data && message.data.indexOf("Tip: you can") === 0) {
