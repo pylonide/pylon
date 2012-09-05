@@ -30,7 +30,6 @@
         "connect-architect": "0.0.3",
 
         "smith.io": "0.0.10",
-        "events": "0.5.0",
         "engine.io-client": "0.2.0"
     },
 
