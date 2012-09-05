@@ -242,7 +242,7 @@ util.inherits(SearchPlugin, Plugin);
         });
 
         excludeDirectories.forEach(function(pattern){
-            args.push("!", "-regex", "'.*\\/" + pattern + "\\/.*'");
+            args.push("!", "-regex", ".*\\/" + pattern + "\\/.*");
         });
 
         if (platform !== "darwin")
