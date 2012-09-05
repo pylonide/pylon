@@ -156,7 +156,7 @@ var config = [
     {
         packagePath: "smith.io/server-plugin",
         clientRoute: "/static/smith.io/client.js",
-        messageRoute: "/smith.io/server"        
+        messagePath: "/smith.io/server"
     },
     "./cloud9.socket",
     {
