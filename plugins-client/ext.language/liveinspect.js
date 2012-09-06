@@ -219,7 +219,7 @@ module.exports = (function () {
         if (dbg.state == 'stopped') {
             // debugger running
         }
-        else if (self.winLiveInspect) {
+        else if (winLiveInspect) {
             hide();
         }
     };
@@ -229,7 +229,7 @@ module.exports = (function () {
      * debugger is in.
      */
     var isCurrentFrame = function(){
-        var frame = self.dbg.activeframe;
+        var frame = dbg.activeframe;
         if (!frame)
             return false;
         
