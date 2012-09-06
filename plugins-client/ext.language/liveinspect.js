@@ -8,8 +8,9 @@ var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword
 var debuggerPlugin = require("ext/debugger/debugger"); 
-var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
+
+/*global winLiveInspect dgLiveInspect  tabEditors ceEditor dbg mnuCtxEditor*/
 
 module.exports = (function () {
     

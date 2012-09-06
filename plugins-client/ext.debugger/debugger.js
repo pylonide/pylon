@@ -21,7 +21,8 @@ var apfhook = require("./apfhook");
 
 require("ext/debugger/inspector");
 
-/*global dbInteractive:true txtCode:true dbg:true ceEditor:true dbgVariable:true pgDebugNav:true tabDebug:true*/
+/*global dbInteractive:true txtCode:true dbg:true ceEditor:true dbgVariable:true
+  pgDebugNav:true tabDebug:true dgVars*/
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
