@@ -20,18 +20,6 @@ module.exports = ext.register("ext/offline/offline", {
     offlineStartup : 0,
 
     /**
-     * Test method for going offline/online
-     * @param {Boolean} online If the request is to go online or not
-     */
-    test : function(online){
-        ide.testOffline = online ? 2 : 1;
-        if (online)
-            ide.socket.socket.connect();
-        else
-            ide.socket.socket.disconnect();
-    },
-
-    /**
      * Init method to create the offline logic
      */
     init : function(){
@@ -103,7 +91,7 @@ module.exports = ext.register("ext/offline/offline", {
             ide.dispatchEvent("afteroffline"); // Faking offline startup
         
         // We may miss the first socketConnect event
-        if (ide.socket.socket.connected)
+        if (ide.connected)
             offline.goOnline();
         else
             offline.goOffline();

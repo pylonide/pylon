@@ -14,6 +14,8 @@ var markup = require("text!ext/noderunner/noderunner.xml");
 var c9console = require("ext/console/console");
 var _debugger = require("ext/debugger/debugger");
 
+/*global stProcessRunning*/
+
 module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",
     dev     : "Ajax.org",
@@ -32,7 +34,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             ide.addEventListener("socketDisconnect", function() {
                 ide.dispatchEvent("dbg.exit");
             });
-        } else {           
+        } else {
             ide.addEventListener("socketConnect", function() {
                 _self.queryServerState();
             });
@@ -62,24 +64,20 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         //if (message.type != "shell-data")
            // console.log("MSG", message)
 
-        switch(message.type) {
-            case "node-debug-ready":
-            case "php-debug-ready":
-            case "python-debug-ready":
-            case "ruby-debug-ready":
-                ide.dispatchEvent("dbg.ready", message);
-                break;
-            case "node-exit":
-            case "php-exit":
-            case "python-exit":
-            case "ruby-exit":
-                ide.dispatchEvent("dbg.exit", message);
-                if (message.pid == this.nodePid) {
-                    stProcessRunning.deactivate();
-                    this.nodePid = 0;
-                }
-                break;
+        if (/^\w+-debug-ready$/.test(message.type)) {
+            ide.dispatchEvent("dbg.ready", message);
+            return;
+        }
+        else if (/^\w+-exit$/.test(message.type)) {
+            ide.dispatchEvent("dbg.exit", message);
+            if (message.pid == this.nodePid) {
+                stProcessRunning.deactivate();
+                this.nodePid = 0;
+            }
+            return;
+        }
 
+        switch(message.type) {
             case "state":
                 this.nodePid = message.processRunning || 0;
                 stProcessRunning.setProperty("active", !!message.processRunning);
@@ -142,7 +140,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (stProcessRunning.active || typeof path != "string")
             return false;
         // TODO there should be a way to set satate to waiting
-        stProcessRunning.activate()
+        stProcessRunning.activate();
 
         path = path.trim();
 
@@ -191,7 +189,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
-            return "php";
+            return "apache";
         
         if (path.match(/\.py$/))
             return "python";

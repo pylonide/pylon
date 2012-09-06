@@ -27,7 +27,11 @@
         "async": "0.1.21",
         "netutil": "0.0.1",
         "architect": "0.1.4",
-        "connect-architect": "0.0.3"
+        "connect-architect": "0.0.3",
+
+        "smith.io": "0.0.10",
+        "events": "0.5.0",
+        "engine.io-client": "0.2.0"
     },
 
     "devDependencies": {
@@ -39,17 +43,17 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/97e40eb58050f7ee9dee435f9e2cf7fc0956a108"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/ca9053b1a9a499d587063f04cc02acf091d44b28"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/7bd83a46d97ef2f79d8afe9bf38fec5c3745016a"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/266b87a91c7498b3f4fc77f79da9a4cc53be7f8f"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/53818b85736cbe12f63a7cd46e4cbc4214d1c64c"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/01597eacd22ad660977d43c44b4001107117b8ea"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/9d7e39b1221bfecb2b462079e77193d19898adaa"],
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/61841e99eda6ea9a8b801fd145b9a0af286ad324"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/8026fea03e87a5a773e87ae9d78e29fab912d52e"],
-        "socket.io":    ["npm", "https://github.com/ajaxorg/socket.io/tarball/7aa252bab49e6bbc314dc2678b108b6e0876007a"],
-        "socket.io-client": ["npm", "https://github.com/ajaxorg/socket.io-client/tarball/35f0763ffcaa7ccc3c664460667577e77da82b10"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/d7ab6ada6ec802f8d4107dae038327c7fa9c5601"],
+        "browser-msgpack-js":   ["npm", "https://github.com/creationix/msgpack-js-browser/tarball/e6dc213cb602d5a8fb402520d7841d2664cd10e9"],
+        "smith":        ["npm", "https://github.com/c9/smith/tarball/0080a7cd8308401473941aa97a02043c0467467e"]
     },
 
     "repository" : {

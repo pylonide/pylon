@@ -6,6 +6,7 @@
     <a:checkbox position="4000" class="underlined" label="Highlight Gutter Line" value="[editors/code/@gutterline]" skin="checkbox_grey" />
     <a:checkbox position="5000" class="underlined" id="cbsh"  label="Show Invisible Characters" value="[editors/code/@showinvisibles]" skin="checkbox_grey" />
     <a:checkbox position="6000" class="underlined" label="Show Gutter" value="[editors/code/@gutter]" skin="checkbox_grey" />
+    <a:checkbox position="6500" class="underlined" label="Show Indent Guides" value="[editors/code/@showindentguides]" skin="checkbox_grey" />
     <a:checkbox position="7000" class="underlined" label="Highlight Selected Word" value="[editors/code/@highlightselectedword]" skin="checkbox_grey" />
     <a:checkbox position="8000" class="underlined" label="Auto-hide Horizontal Scrollbar" value="[editors/code/@autohidehorscrollbar]" skin="checkbox_grey" />
     <a:checkbox position="9000" class="underlined" label="Fade Fold Widgets" value="[editors/code/@fadefoldwidgets]" skin="checkbox_grey" />

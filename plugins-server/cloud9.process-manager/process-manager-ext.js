@@ -17,6 +17,9 @@ module.exports = function setup(options, imports, register) {
             ps: function(callback) {
                 callback(null, pm.ps());
             },
+            runnerTypes: function () {
+                return Object.keys(runners);
+            },
             debug: pm.debug.bind(pm),
             spawn: pm.spawn.bind(pm),
             exec: function(runnerId, options, callback) {
