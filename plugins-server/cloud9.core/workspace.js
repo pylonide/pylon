@@ -81,12 +81,12 @@ var Workspace = module.exports = function(ide) {
     this.send = function(msg, replyTo, scope) {
         if (replyTo)
             msg.sid = replyTo.sid;
-        this.ide.broadcast(JSON.stringify(msg), scope);
+        this.ide.broadcast(msg, scope);
     };
 
     this.sendError = function(error, client) {
         if (client)
-            client.send(JSON.stringify(error));
+            client.send(error);
         else
             this.ide.broadcast(error);
     };

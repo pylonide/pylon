@@ -49,8 +49,32 @@ var v8DebugClient = exports.v8DebugClient = function() {
             _self.onChangeRunning();
             _self.syncAfterAttach();
         };
+        
+        // wsv8debuggerservice still expects stuff to be here stringified
+        var wrapInStringify = function (fn) {
+            return function (ev) {
+                fn(JSON.stringify(ev.message));
+            };
+        };
 
-        this.$v8ds = new WSV8DebuggerService(ide.socket);
+        // mock a nice socket here
+        this.$v8ds = new WSV8DebuggerService({
+            on: function (ev, fn) {
+                if (ev !== "message") {
+                    return console.error("WSV8DebuggerService mocked socket only supports 'message'");
+                }
+                
+                ide.addEventListener("socketMessage", wrapInStringify(fn));
+            },
+            removeListener: function (ev, fn) {
+                if (ev !== "message") {
+                    return console.error("WSV8DebuggerService mocked socket only supports 'message'");
+                }
+                
+                ide.removeEventListener("socketMessage", wrapInStringify(fn));
+            },
+            send: ide.send
+        });
 
         this.$v8ds.attach(0, function() {
             _self.$startDebugging();

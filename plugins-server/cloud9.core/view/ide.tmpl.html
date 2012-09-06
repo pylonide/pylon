@@ -16,7 +16,6 @@
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
         [%loadedDetectionScript%]
-        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
         <script type="text/javascript">
@@ -37,8 +36,7 @@
                 version: <%version%>,
                 workerUrl: "[%workerUrl%]",
                 staticUrl: "[%staticUrl%]",
-                socketIoUrl: <%socketIoUrl%>,
-                socketIoTransports: <%socketIoTransports%>,
+                smithIo: <%smithIo%>,
                 hosted: [%hosted%],
                 local: <%local%>,
                 env: <%env%>,
