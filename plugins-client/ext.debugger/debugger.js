@@ -346,10 +346,6 @@ module.exports = ext.register("ext/debugger/debugger", {
         this.handlers.push(handler);
     },
 
-    setFrame : function(frame) {
-        this.$dbgImpl && this.$dbgImpl.setFrame(frame);
-    },
-
     loadSources : function(callback) {
         this.$dbgImpl && this.$dbgImpl.loadSources(callback);
     },

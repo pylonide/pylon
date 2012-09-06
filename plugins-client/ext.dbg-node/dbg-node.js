@@ -35,7 +35,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         v8dbg.addEventListener("exception", onException);
         v8dbg.addEventListener("afterCompile", onAfterCompile);
 
-        this.setFrame(null);
+        this.onChangeFrame(null);
 
         // on detach remove all event listeners
         this.removeListeners = function () {
@@ -78,7 +78,7 @@ oop.inherits(v8DebugClient, DebugHandler);
     };
 
     this.detach = function(callback) {
-        this.setFrame(null);
+        this.onChangeFrame(null);
         if (!this.$v8dbg)
             return callback();
 
@@ -103,7 +103,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         ide.dispatchEvent("dbg.changeState", {state: this.state});
 
         if (this.state != "stopped")
-            this.setFrame(null);
+            this.onChangeFrame(null);
     };
 
     this.onBreak = function(e) {
@@ -127,6 +127,11 @@ oop.inherits(v8DebugClient, DebugHandler);
         if (oldNode)
             mdlDbgSources.removeXml(oldNode);
         mdlDbgSources.appendXml(script);
+    };
+    
+    this.onChangeFrame = function(frame) {
+        this.activeFrame = frame;
+        ide.dispatchEvent("dbg.changeFrame", {data: frame});
     };
 
     this.$handleDebugBreak = function(remoteBreakpoints) {
@@ -414,7 +419,7 @@ oop.inherits(v8DebugClient, DebugHandler);
 
             var topFrame = model.data.firstChild;
             topFrame && topFrame.setAttribute("istop", true);
-            _self.setFrame(topFrame);
+            _self.onChangeFrame(topFrame);
             callback();
         });
     };

@@ -6,7 +6,6 @@
  */
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 
 var DebugHandler = module.exports = function() {
     // Used from other plugins
@@ -35,17 +34,6 @@ var DebugHandler = module.exports = function() {
      * and resets the debug UI
      */
     this.detach = function(callback) {
-    };
-
-    /**
-     * Sets the debugger active frame
-     * emits "dbg.changeFrame" ide event with data attribute referring
-     * to the active frame
-     * @param frame to set as the active frame
-     */
-    this.setFrame = function(frame) {
-        this.activeFrame = frame;
-        ide.dispatchEvent("dbg.changeFrame", {data: frame});
     };
 
     /**
