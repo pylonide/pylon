@@ -5,7 +5,7 @@ var ide = require("core/ide");
 var menus = require("ext/menus/menus");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/salesforce/salesforce.xml");
-
+var Util = require("core/util");
 //var sfhtml = require("text!ext/salesforce/salesforce.html");
 
 //Is there a library I can use to make http calls?
@@ -26,8 +26,7 @@ module.exports = ext.register("ext/salesforce/salesforce", {
 
     init: function(amlNode) {
         //innerSalesForce.$ext.innerHTML = sfhtml;
-
-        organization.init();
+        organization.init(ide);
         
     },
     
@@ -38,7 +37,7 @@ module.exports = ext.register("ext/salesforce/salesforce", {
         };
         ide.send(data);
     },
-
+    
     onMessage : function(e) {
         if (!e.message.type || e.message.type !== 'salesforce')
             return;
@@ -50,7 +49,10 @@ module.exports = ext.register("ext/salesforce/salesforce", {
                
                if (values) {
                    console.log(values);
-                   this.saveOrganizationSettings(values);
+                   organization.save(values);
+                   sfdcInstanceUrl.setProperty('value', values.instanceUrl);
+                   sfdcToken.setProperty('value', values.token);
+               
                    sfdcStatus.$ext.innerHTML = "Authenticated";
                } else {
                    values = { token : '', instanceUrl : '' };
@@ -58,14 +60,36 @@ module.exports = ext.register("ext/salesforce/salesforce", {
                    console.log(error);
                    sfdcStatus.$ext.innerHTML = "Error authenticating: "+error;
                }
-               sfdcInstanceUrl.setProperty('value', values.instanceUrl);
-               sfdcToken.setProperty('value', values.token);
-               this.shouldSave = true;
-               settings.save();
+               
         } else if (e.message.subType && e.message.subType === 'queryResults') {
             sfdcStatus.$ext.innerHTML = e.message.records;
             //I shouldn't get it from the UI element every time. I should get it fomr SfdcOrganizations
             this.createOrUpdateProjectDirectory(sfdcProjectName.value, e.message.records);
+        } else if (e.message.subType && e.message.subType === 'compile') {
+            if (this.currentEditor && e.message.error) {
+                var line = 0;
+                var error = e.message.error;
+                if (typeof error !== 'string') {
+                    if (error.name) {
+                        //If I need the name to get the class out of the tabs
+                    }
+                    if (error.extent || error.id) {
+                        //If I need the extent of id
+                    }
+                    if (error.line) {
+                        line = error.line;
+                    }
+                    if (error.problem) {
+                        error = error.problem;
+                    }
+                }
+                this.currentEditor.setAnnotations([{
+                    row: line,
+                    column: 0, //can be undefined
+                    text: error,
+                    type: "error" // or "warning" or "info"
+                }]);
+            }
         }
         
         
@@ -95,20 +119,139 @@ module.exports = ext.register("ext/salesforce/salesforce", {
     hook: function() {
         var _self = this;
         console.log('--------- Hook -----------');
-        organization.hook();
+        organization.hook(ide);
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
-
         
+        this.$onOpenFileFn = this.onOpenFile.bind(this);
+        //this.$onCloseFileFn = this.onCloseFile.bind(this);
+        //this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
         
-        menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
-        menus.addItemByPath("Tools/SalesForce", new apf.item({
+        ide.addEventListener("afteropenfile", this.$onOpenFileFn);
+        //ide.addEventListener("closefile", this.$onCloseFileFn);
+        //ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
+        
+        ide.addEventListener('beforefilesave',  function(e) {
+            console.log('Before Save');
+            console.log(e);
+//            if (doc.acesession && doc.acesession.getAnnotations()) {
+                return false;
+//            }
+//            return true;
+            //self.onDocChange.call(self, e, doc);
+        });
+        menus.addItemByPath("Tools/~", new apf.divider());//, 1000000);
+        menus.addItemByPath("Tools/SalesForce", new apf.item({}));
+//            onclick: function() {
+//                winSalesForce.show();
+//                _self.loadOrganization();
+//            }
+//        }));//, 2000000);
+        menus.addItemByPath("Tools/SalesForce/Organization Settings", new apf.item({
             onclick: function() {
                 winSalesForce.show();
                 _self.loadOrganization();
             }
-        }), 2000000);
+        }));
+        menus.addItemByPath("Tools/SalesForce/Refresh from server", new apf.item({
+            onclick: function() {
+                //winSalesForce.show();
+                _self.syncClasses();
+            }
+        }));
+        menus.addItemByPath("Tools/SalesForce/Logs", new apf.item({
+            onclick: function() {
+                downloadLog.show();
+            }
+        }));
+        
+        //, 2000000);
+        
+        //OrganizationSettings
 
         ext.initExtension(this);
+    },
+    
+    docChangeTimeout: null,
+    docChangeListeners: {},
+    docBeforeSaveListeners: {},
+    
+    onOpenFile: function(data) {
+        console.log(data);
+        if (!data || !data.doc)
+            return;
+
+        var self = this;
+        var doc = data.doc;
+        //console.log(doc);
+        var page = doc.$page;
+        //console.log(page);
+        if (!page || !Util.pageIsCode(page)) {
+            return;
+        }
+
+        // Add document change listeners to an array of functions so that we
+        // can clean up on disable plugin.
+        var path = Util.getDocPath(page);
+        console.log(path);
+        if (!path || !path.match(/\.apex$/)) {
+            return;
+        }
+        
+        //doc.acesession.on('changeAnnotation', function() {
+        //    return false;
+        //});
+        
+        if (!this.docChangeListeners[path]) {
+            this.docChangeListeners[path] = function(e) {
+                self.onDocChange.call(self, e, doc);
+            };
+        }
+
+        if (!Util.isNewPage(page)) {
+            //console.log('Not a new page');
+            //this.setSaveButtonCaption();
+        }
+        //console.log(doc.acedoc.eventRegistry.change[0]);
+        (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
+        
+    },
+    
+    onDocChange: function(e, doc) {
+        var as = doc.acesession;
+        
+        //Test the annotations
+        as.setAnnotations([{
+            row: 1,
+            column: 2, //can be undefined
+            text: "Missing argument",
+            type: "error" // or "warning" or "info"
+        }]);
+        
+        //Get the error from salesforce
+        /*
+        var data = {
+            command: "salesforce",
+            type: 'compile',
+            name : 'MonitorAPIRequest',
+            body : as.getValue()
+        };
+        ide.send(data);
+        
+        this.currentEditor = as;
+        */
+        
+        var page = doc.$page;
+        if (page) {// && this.isAutoSaveEnabled && !Util.isNewPage(page)) {
+            //console.log(page);
+            /*
+            clearTimeout(this.docChangeTimeout);
+            this.docChangeTimeout = setTimeout(function(self) {
+                self.setSaveButtonCaption();
+                stripws.disable();
+                self.save(page);
+            }, CHANGE_TIMEOUT, this);
+            */
+        }
     },
     
     authenticateOrganization : function(values) {
@@ -136,8 +279,21 @@ module.exports = ext.register("ext/salesforce/salesforce", {
 
         
     },
+    
+    downloadLog : function() {
+        var id = logId.value;
+        console.log('Download Log : '+id);
+        var data = {
+            command: "salesforce",
+            type: 'downloadLog',
+            logId : id
+            
+            //values : values
+        };
+        ide.send(data);
+    },
 
-    queryClasses : function() {
+    syncClasses : function() {
          var data = {
             command: "salesforce",
             type: 'query',
@@ -154,9 +310,9 @@ module.exports = ext.register("ext/salesforce/salesforce", {
         
         //TODO Need to change this to load any org settings into the given tab or row
         var orgs = organization.getAll();
-        console.log(orgs);
-        if (orgs.length == 1) {
-            this.setOrgInUI([0]);
+        if (orgs.length == 2) {
+            
+            this.setOrgInUI(orgs[1]);
         }
     },
     

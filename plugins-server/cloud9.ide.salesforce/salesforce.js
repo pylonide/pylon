@@ -1,8 +1,8 @@
 "use strict";
 
 var util = require("util");
-var https = require("https");
-var Path = require("path");
+//var https = require("https");
+var path = require("path");
 
 var Plugin = require("../cloud9.core/plugin");
 //var c9util = require("../cloud9.core/util");
@@ -10,17 +10,21 @@ var Plugin = require("../cloud9.core/plugin");
 var fsnode = require("vfs-nodefs-adapter");
 var fs;
 
+var sfdcUtil = require('./SfdcToolingApi/Util');
+var Entity = require('./SfdcToolingApi/ToolingEntities');
+
+
 var name = "salesforce";
 //var ProcessManager;
 //var EventBus;
 
 module.exports = function setup(options, imports, register) {
-    //imports.ide.getProjectDir(function(err, projectDir) {
-     //   if (err) return register(err);
+    imports.sandbox.getProjectDir(function(err, projectDir) {
+        if (err) return register(err);
 
-        fs = fsnode(imports.vfs, './');
+        fs = fsnode(imports.vfs, projectDir);
         imports.ide.register(name, SalesForce, register);
-    //});
+    });
     
     
     //ProcessManager = imports["process-manager"];
@@ -65,52 +69,71 @@ util.inherits(SalesForce, Plugin);
     };
 
     this.command = function (user, message, client) {
-        var self = this;
+        var _self = this;
         var cmd = message.command ? message.command.toLowerCase() : "";
 
-        //console.log("Got command", cmd);
+        
         if (cmd !== "salesforce")
             return false;
-
         var type = message.type ? message.type.toLowerCase() : "";
+        
+        console.log("Got command: " + cmd + ' with type ' + type);
         
         if (type === 'authenticate') {
             this.authenticateOrganization(message.values);   
         } else if (type === 'query') {
-            var options = {
-                //TODO I could probably cache these on the server
-                access_token : message.token,
-                instance_url : message.instance
-            };
-            
-            //this.query('ApexClass', ['Id', 'Name'], null, options, function(records) {
-                var folder = this.ide.workspaceDir + "/ApexClasses";
-                console.log(folder);
 
-                fs.exists(Path.dirname(folder), function(exists) {
-                    console.log("Exists", exists, Path.dirname(folder));
-                });
-                fs.exists(folder, function(exists) {
-                    console.log('ApexClasses exists = ', exists, folder);
-                    if (exists) {
-                        return;
-                    }
-                    fs.mkdirP(folder, function(err) {
-                        console.log(err);
-                        if (!err) {
-                            console.log('success');
-                            //renameFn();
-                        }
+            var folder = this.ide.workspaceDir + "/ApexClasses"; 
+            console.log(folder);
+
+            this.onDir(folder, function() {
+                _self.syncEntityFolder(folder, Entity.types[0]);
+            });
+        } else if (type === 'downloadlog') {
+            Entity.ApexLogs.downloadLog(message.logId, function(logData) {
+                //console.log(logData);
+            });
+        } else if (type === 'compile') {
+            var mcName = 'SymbolTableContainer';
+            //Replace the name with message.name;
+            
+            //var apexClass = this.entities['ApexClasses']['MonitorAPIRequest'];
+            //console.log(message.name);
+            //console.log(message.body);
+            Entity.ApexClasses.query(['Id', 'Name', 'Body'], 'Name = \''+message.name+'\'', function(records) {
+                if (records.length > 0) {
+                    //TODO I should really have the records returned be instances of the type queried
+                    var apexClass = new Entity.ApexClass(records[0]);
+                    apexClass.set('Body', message.body);
+                    
+                    _self.getContainer(mcName, function(mc) {
+                        _self.getMember(mc, apexClass, function(mcm) {
+                            _self.compile(mc, mcm, function(results) {
+                                console.log('Compile results');
+                                console.log(results);
+                                if (results.symbolTable) {
+                                    _self.sendAction('compile', { symbolTable : results.symbolTable });
+                                    //var path = folder + '/' + apexClass.get('Name') + '.st';
+                                    //fs.writeFile(path, JSON.stringify(results.symbolTable, null, 4), emptyCallback);
+                                    //results.cont(success, results.symbolTable);
+                                }
+                                if (results.error) {
+                                    _self.sendAction('compile', { error : results.error });
+                                    //sfdcUtil.cont(failure, results.error);
+                                }
+                            });
+                        });
                     });
-                });
-                /*
-                self.ide.broadcast(JSON.stringify({
-                    type : self.name,
-                    subType : 'queryResults',
-                    records : records
-                }), self.name);
-                */
-            //});   
+                }
+            });
+            
+//            
+//            apexClass.
+//            this.getSymbolTableOnFirstClassInEntities('ApexClasses', function(symbolTable) {
+//                _self.sendAction('compile', { symbolTable : symbolTable });
+//            }, function(error) {
+//                _self.sendAction('compile', { error : error });
+//            });
         }
 
         // Only send back to originator of message
@@ -123,259 +146,273 @@ util.inherits(SalesForce, Plugin);
             extra : "extra data"
         }), this.name);
         */
-        console.log("MESSAGE FROM CLIENT", message);
+        //console.log("MESSAGE FROM CLIENT", message);
         return true;
     };
     
-    var createRequest = function(options, callback) {
-        /*
-        var instance = decodeURIComponent(settings.get('instance_url'));
-    
-        var options = {
-            host: //instance.substring(instance.indexOf('/')+2),
-            //port: '80',
-            path: path,
-            method: method,*/
-        options.host = options.instance_url;
-        options.headers = {
-            'Authorization': 'Bearer ' + options.access_token,//decodeURIComponent(settings.get('access_token')),
-            'Accept' : 'application/json',
-            'Content-Type' : 'application/json'
-        };
-        //};
-        
-        var req = https.request(options, function(response) {
-            var data = '';
-            
-            response.on('data', function(d) {
-                data += d;
-            });
-    
-            response.on('end', function() {
-                var results = JSON.parse(data);
-    
-                if (results[0] && results[0].errorCode) {
-                    console.log(results[0].errorCode + ' : ' + results[0].message);
-                    return;
-                }
-                
-                if (callback && callback.call) {
-                    callback(results);
-                }
-            });
-        });
-        req.on('error', function(e) {
-            console.log(e);
-        });
-        return req;
-    };
-    
-    var getRequest = function(options, callback) {
-        options.method = 'GET';
-        var req = createRequest(options, callback);
-        req.end();
-    };
-    
-    this.query = function(entity, fields, where, options, callback) {
-        console.log('\n----- Query for entitiy ------');
-        
-        var query = 'SELECT '+fields.join(',')+' FROM ' + entity + (where ? ' WHERE '+where : '');
-        console.log(query);
-        
-        //TODO When I get the prerel org, I need to change it to version 25, and add "tooling"
-        options.path = '/services/data/v25.0/query/?q='+encodeURIComponent(query);
-        
-        //console.log(encodeURIComponent(query));
-        getRequest(options, function(results) {
-            var records = results.records ? results.records : [];
-            /*
-            console.log(results);
-    
-            for(var r = 0; r < records.length; r++) {
-                console.log('Record ' + r + ': ');
-                for(var f = 0; f < fields.length; f++) {
-                    console.log('     ' + fields[f] + ' = ' + records[r][fields[f]])
-                }
+    /**
+     * Run a task on a directory. If the directory doesn't exist, it will be created.
+     */
+    this.onDir = function(dir, task) {
+        path.exists(dir, function(exists) {
+            if (!exists) {
+                console.log('Making dir ' + dir);
+                fs.mkdir(dir, task);
+            } else {
+                console.log('Found dir ' + dir);
+                sfdcUtil.cont(task);
             }
-            */
-            if (callback && callback.call) {
-                callback(records);
-            }
-        });
-    };
-    
-    // Must be in the format <id>=<value>&...
-    var parseSettingString = function(data) {
-            var resObj = {};
-            
-            if (data && typeof data === 'string') { 
-                var results = data.split('&');
-                
-                for (var i = 0; i < results.length; i++) {
-                    var result = results[i];
-                    var id = result.substring(0, result.indexOf('='));
-                    resObj[id] = result.substring(id.length + 1);
-                }
-            }
-            return resObj;
+        });   
     };
     
     this.authenticateOrganization = function(options) {
+        if (!options) { return; }
         
-        console.log(options);
-        
-        if (!options) return;
-        
-        var redirectUri = 'https://ec2-23-22-63-218.compute-1.amazonaws.com:3131/';
-
-        var urlParams = {
-            host: 'test.salesforce.com',
-            path: '/services/oauth2/token',
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/x-www-form-urlencoded',
-                'Accept' : 'application/x-www-form-urlencoded'
-            }
-        };
-    
         var _self = this;
-        
-        /*Send it to the client 
-        _self.ide.broadcast(JSON.stringify({
+        Entity.api.authenticate(options, function(authResponse) {
+            
+            var instance = decodeURIComponent(authResponse.instance_url);
+            instance = instance.substring(instance.indexOf('/')+2);
+
+            //Send it to the client
+            _self.sendAction('authenticated', { values : {
+                name : options.name,
+                token : decodeURIComponent(authResponse.access_token),
+                instanceUrl : instance
+            }});
+        }, function(err) {
+            var error = '';
+            if (err && err.error) {
+                error += decodeURIComponent(err.error) + ': ' + decodeURIComponent(err.error_description);
+            } else if (err instanceof 'object') {
+                error = JSON.stringify(err);
+            } else {
+                error = err;
+            }
+            
+            _self.sendAction('authenticated', {error : error});
+        }); 
+    };
+    
+    this.sendAction = function(action, values) {
+        var actionRequest = sfdcUtil.union(values, {
             type : this.name,
-            values : {
-                name : 'sdf',
-                token : 'sdfa'
-            }
-            //message : message,
-            //extra : "extra data"
-        }), this.name);
-        */
-        var req = https.request(urlParams, function(response) {
-            var data = '';
-            //console.log('AUTH-STATUS: ' + response.statusCode);
-            //console.log('AUTH-HEADERS: ' + JSON.stringify(response.headers));
-    
-            // Should only be called once for this request
-            response.on('data', function(d) {
-                data += d;
-            });
-    
-            response.on('end', function() {
-                // The token and instance are in the response data, 
-                // so let's add it to the settings and write it
-                
-                var resObj = parseSettingString(data);
-                console.log(resObj);
-                
-                if (resObj.access_token) {
-                    var instance = decodeURIComponent(resObj.instance_url);
-                    instance = instance.substring(instance.indexOf('/')+2);
-                    
-                    //!! This gets logged
-                    //console.log(instance);
-                    
-                    //Send it to the client 
-                    _self.ide.broadcast(JSON.stringify({
-                        type : _self.name,
-                        subType : 'authenticated',
-                        values : {
-                            name : options.name,
-                            token : decodeURIComponent(resObj.access_token),
-                            instanceUrl : instance
-                        }
-                    }), _self.name);
-                } else {
-                    _self.ide.broadcast(JSON.stringify({
-                        type : _self.name,
-                        subType : 'authenticated',
-                        error : resObj.error
-                    }), _self.name);
-                
-                    console.log('Arg! ' + resObj.error.message);
-                }
-                
-                
-            });
-            
+            subType : action
         });
         
-        //We need these POST parameters for the authentication
-        req.write(
-            'client_id='+options.consumerKey+
-            '&client_secret='+options.consumerSecret+
-            '&redirect_uri='+redirectUri+
-            '&grant_type='+'password'+
-            '&username='+options.username+
-            '&password='+options.password+options.securityToken
-        );
-            
-        req.on('error', function(e) {
-            _self.ide.broadcast(JSON.stringify({
-                    type : _self.name,
-                    subType : 'authenticated',
-                    error : e
-                }), _self.name);
-            
-            console.log('Arg! ' + e.message);
-        });
-        req.end(); 
+        this.ide.broadcast(JSON.stringify(actionRequest), this.name);
     };
     
+    var emptyCallback = function() {};
+    this.entities = {};
+    //Should generate entities based on project structure too
     
-    //If I want to tie into the command line?
-/*
-    var githelp     = null;
-    var commandsMap = {
-            "default": {
-                "commands": {
-                    "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
+    
+    this.containerCache = {};
+    /**
+     * Get or create a MetadataContainer with the given name
+     */
+    this.getContainer = function(/* String */ name, /* function */ callback) {
+        if (this.containerCache[name]) {
+            console.log('Using container cache');
+            sfdcUtil.cont(callback, this.containerCache[name]);
+            return;
+        }
+        var _self = this;
+        Entity.MetadataContainers.query(['Id', 'Name'], "Name='" + name + "'", function(containers) {
+            //console.log(containers);
+            var mc;
+            if (containers.length === 0) {
+                mc = new Entity.MetadataContainer({Name : name});
+                mc.create(function(data) {
+                    _self.containerCache[name] = mc;
+                    sfdcUtil.cont(callback, mc);
+                });
+            } else {
+                mc = new Entity.MetadataContainer(containers[0]);
+                _self.containerCache[name] = mc;
+                sfdcUtil.cont(callback, mc);
+            }
+        });
+    };
+    
+    this.memberCache = {};
+    this.getMember = function(mc, entity, callback) {
+        var id = entity.get('Id');
+        var mcm;
+        if (this.memberCache[id]) {
+            console.log('Using member cache');
+            mcm = this.memberCache[id];
+            mcm.set('Body', entity.get('Body'));
+            mcm.update(function() {
+                sfdcUtil.cont(callback, mcm);
+            });
+            return;
+        }
+        var _self = this;
+        Entity.MetadataContainerMembers.query(
+            ['Id', 'MetadataContainerId', 'ContentEntityId', 'Body', 'SymbolTable'], 
+            "MetadataContainerId='" + mc.get('Id') + "' AND ContentEntityId='" + entity.get('Id') + "'", 
+            function(members) {
+                
+                if (members.length === 0) {
+                    mcm = new Entity.MetadataContainerMember({
+                        MetadataContainerId : mc.get('Id'),
+                        ContentEntityId : entity.get('Id'),
+                        Body : entity.get('Body')
+                    });
+                    mcm.create(function(data) {
+                        _self.memberCache[id] = mcm;
+                        sfdcUtil.cont(callback, mcm);
+                    });
+                } else {
+                    mcm = new Entity.MetadataContainerMember(members[0]);
+                    //Update the member with the new body
+                    //console.log(entity.get('Body'));
+                    mcm.set('Body', entity.get('Body'));
+                    mcm.update(function() {
+                        _self.memberCache[id] = mcm;
+                        sfdcUtil.cont(callback, mcm);
+                    });
                 }
             }
-        };
-
-    this.$commandHints = function(commands, message, callback) {
-        var self = this;
-
-        if (!githelp) {
-            githelp = {};
-            this.pm.exec("shell", {
-                command: "git",
-                args: [],
-                cwd: message.cwd,
-                env: this.gitEnv
-            }, function(code, out, err) {
-                if (!out && err)
-                    out = err;
-
-                if (!out)
-                    return callback();
-
-                githelp = {"git": {
-                    "hint": "the stupid content tracker",
-                    "commands": {}
-                }};
-                out.replace(/[\s]{3,4}([\w]+)[\s]+(.*)\n/gi, function(m, sub, hint) {
-                    githelp.git.commands[sub] = self.augmentCommand(sub, {"hint": hint});
+        );
+    };
+    
+    var waitForDeployToFinish = function(car, callback) {
+        car.refresh(function() {
+            var state = car.get('State');
+            console.log(state);
+            if (state !== 'Queued' && state !== 'InProgress') {
+                sfdcUtil.cont(callback, car);
+            } else {
+                setTimeout(function() {waitForDeployToFinish(car, callback);}, 1000);
+            }
+        });
+    };
+    
+    this.deployContainer = function(mc, save, callback) {
+        var car = new Entity.ContainerAsyncRequest({
+            MetadataContainerId : mc.get('Id'),
+            isCheckOnly : !save//true
+        });
+        car.create(function () {
+            var id = car.get('Id');
+            console.log(id);
+            //Need to poll to check the results
+            waitForDeployToFinish(car, function() {
+                //TODO might want to send back the async request?
+                sfdcUtil.cont(callback, car);
+            });
+        });  
+    };
+    
+    this.compile = function(mc, mcm, callback) {
+        var _self = this;
+        this.deployContainer(mc, false, function(car) {
+            var compileResults = {};
+            compileResults.Id = mc.get('ContentEntityId');
+            if (car.get('State') === 'Error') {
+                //console.log(car);
+                var error;
+                
+                try {
+                    error = JSON.parse(car.get('CompilerErrors'));
+                    //TODO this will only work for compiling one class at a time. Need to change it to handel multiple saves
+                    if (error && error.length > 0) {
+                        error = error[0];
+                    }
+                } catch(e) {}
+                if (!error) {
+                    error = car.get('ErrorMsg');
+                }
+                compileResults.error = error;
+                //console.log(compileResults.error);
+                //_self.sendAction('compileFinished', compileResults);
+                sfdcUtil.cont(callback, compileResults);
+            } else {
+                //TODO also send something to the client to update something?
+            
+                //Refresh the member to get the latest symbol table
+                mcm.refresh(function() {
+                    //console.log(JSON.stringify(mcm, null, 4));
+                    compileResults.symbolTable = JSON.parse(mcm.get('SymbolTable'));
+                    _self.sendAction('compileFinished', compileResults);
+                    sfdcUtil.cont(callback, compileResults);
                 });
-                onfinish();
-            }, null, null);
-        }
-        else {
-            onfinish();
-        }
-
-        function onfinish() {
-            c9util.extend(commands, githelp);
-            callback();
+            }
+        });
+    };
+    
+    this.getSymbolTable = function(folder, apexClass, success, failure) {
+        var _self = this;
+        var mcName = 'SymbolTableContainer';
+        _self.getContainer(mcName, function(mc) {
+            _self.getMember(mc, apexClass, function(mcm) {
+                _self.compile(mc, mcm, function(results) {
+                    if (results.symbolTable) {
+                        var path = folder + '/' + apexClass.get('Name') + '.st';
+                        fs.writeFile(path, JSON.stringify(results.symbolTable, null, 4), emptyCallback);
+                        results.cont(success, results.symbolTable);
+                    }
+                    if (results.error) {
+                        sfdcUtil.cont(failure, results.error);
+                    }
+                });
+            });
+        });
+    };
+    
+    this.getSymbolTableOnFirstClassInEntities = function(folder, success, failure) {
+        for (var className in this.entities.ApexClasses) {
+            //console.log(this.entities.ApexClasses[className]);
+            //TODO When I change this to iterate over all classes and triggers, I need to change the success and failure to happen on each one and at the end
+            this.getSymbolTable(folder, this.entities.ApexClasses[className], success, failure);
+            //TODO Only get one symbol table because I haven't build in the logic to attach muliple members on the same container
+            break;
         }
     };
-
-    this.augmentCommand = function(cmd, struct) {
-        var map = commandsMap[cmd] || commandsMap["default"];
-        return c9util.extend(struct, map || {});
+    
+    //new Entity.ContainerAsyncRequest({Id : '1drD000000000LfIAI'}).refresh();
+    /*
+    Entity.ApexClasses.query(['Id', 'Name', 'Body'], null, function(classes) {
+        getSymbolTable(new Entity.ApexClass(classes[0]));
+    });
+    */
+    this.syncEntityFolder = function(path, typeInfo) {
+        var _self = this;
+        var pluralName = typeInfo.plural;
+        Entity[pluralName].describe(function(data) {
+            _self.entities[pluralName] = [];
+            var fields = data.fields;
+            
+            fs.writeFile(path + '/' + '_describe.json', JSON.stringify(data, null, 4), emptyCallback);
+            
+            var fieldNames = sfdcUtil.getNames(fields);
+            Entity[pluralName].query(fieldNames, null, function(records) {
+                console.log('Found ' + records.length + ' ' + pluralName);
+                for (var i = 0; i < records.length; i++) {
+                    var data = records[i];
+                    _self.entities[pluralName][data.Name] = new Entity[typeInfo.name](data);
+                    if (typeInfo.fileBodyField && typeInfo.fileExtension) {
+                        var fileName = data.Name + '.' + typeInfo.fileExtension;
+                        var body = data[typeInfo.fileBodyField];
+                        fs.writeFile(path + '/' + fileName, body, emptyCallback);
+                        //No need to have this in the JSON too. Maybe use delete?
+                        data.Body = 'In file ' + fileName;
+                    }
+                    //console.log(_self.entities[pluralName][data.Name].get('Body'));
+                    fs.writeFile(path + '/' + (data.Name ? data.Name : data.Id) + '.json', JSON.stringify(data, null, 4), emptyCallback);
+                }
+                //TODO Check this differently than checking the type here
+                if (pluralName === 'ApexClasses') {
+                    _self.getSymbolTableOnFirstClassInEntities(path);
+                }
+            });
+        });
     };
-*/
+    
+
     this.canShutdown = function() {
         //TODO what is this for?
         return false;//this.processCount === 0;

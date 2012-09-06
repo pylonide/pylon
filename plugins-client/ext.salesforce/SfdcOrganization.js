@@ -1,4 +1,3 @@
-var ide = require("core/ide");
 var settings = require("ext/settings/settings");
 
 /**
@@ -13,8 +12,8 @@ define(function(require, exports, module) {
     
     module.exports = {
         
-        init : function() {
-            ide.addEventListener("settings.save", function(e){
+        init : function(ide) {
+            ide.addEventListener("settings.save", function(e) {
                 if (!shouldSave) { return; }
                 
                 //Removing old settings
@@ -41,7 +40,7 @@ define(function(require, exports, module) {
             });   
         },
         
-        hook : function() {
+        hook : function(ide) {
              //Not sure if I need this, but I'm pretty sure I do
             if (!organizations.data) {
                 console.log('Initializing organization data');

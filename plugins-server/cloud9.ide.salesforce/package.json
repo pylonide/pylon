@@ -11,6 +11,7 @@
             "process-manager",
             "run-shell",
             "eventbus",
+            "sandbox",
             "vfs"
         ]
     }

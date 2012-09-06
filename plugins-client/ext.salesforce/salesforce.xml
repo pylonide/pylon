@@ -61,11 +61,11 @@
                               caption = "Save"
                               onclick = "require('ext/salesforce/salesforce').saveOrganization()"
                             />
-                            <a:button width="100"
+                            <!--<a:button width="100"
                               default = "1"
-                              caption = "Query Classes"
-                              onclick = "require('ext/salesforce/salesforce').queryClasses()"
-                            />
+                              caption = "Sync Apex Classes"
+                              onclick = "require('ext/salesforce/salesforce').syncClasses()"
+                            />-->
                         </a:hbox>
                         <a:vbox id="sfdcStatus">
                         
@@ -85,4 +85,37 @@
             </a:hbox>
         </a:vbox>
     </a:window>
+    
+    <a:window
+      id        = "downloadLog"
+      title     = "Download Log"
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "close"
+      modal     = "false"
+      skin      = "bk-window"
+      width     = "750"
+      height    = "450"
+      kbclose   = "true"
+      draggable = "true">
+        <a:vbox id="log" anchors="0 0 0 0" edge="0 0 11 0">
+            <a:hbox edge="0 0 5 0" padding="5">
+                <a:label textAlign="right" width="100">Log Id:</a:label>
+                <a:textbox id="logId" flex="1" realtime="true" />
+            </a:hbox>
+            
+            <a:hbox align="center" edge="5 0 5 0" padding="5">
+                <a:button width="80"
+                  default = "1"
+                  caption = "Get log"
+                  onclick = "require('ext/salesforce/salesforce').downloadLog()"
+                />
+            </a:hbox>
+            <a:vbox id="logOutput">
+            
+            </a:vbox>
+        </a:vbox>
+    </a:window>
+    
 </a:application>
