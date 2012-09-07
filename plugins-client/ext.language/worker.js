@@ -598,7 +598,7 @@ function asyncParForEach(array, fn, callback) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
                         if (result)
-                            _self.sender.emit("jumpToDefinition", result);
+                            _self.sender.emit("definition", result);
                         next();
                     });
                 }

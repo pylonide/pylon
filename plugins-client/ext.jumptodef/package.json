@@ -1,0 +1,14 @@
+{
+    "name": "ext.jumptodef",
+    "version": "0.0.1",
+    "main": "jumptodef-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.jumptodef"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

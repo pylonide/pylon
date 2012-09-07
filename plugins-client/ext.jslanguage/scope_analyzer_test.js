@@ -158,18 +158,16 @@ module.exports = {
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "function g(err){this};");
     },
-    ">test jump to definition should point to variable declaration" : function(next) {
+    "test jump to definition should point to variable declaration" : function(next) {
         disabledFeatures = { jshint: true };
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
-        emitter.on("jumpToDefinition", function(ev) {
-            console.log("OMGOMGOMG", ev);
-            
+        emitter.on("definition", function(def) {
+            assert.equal(def.row, 0);
+            assert.equal(def.column, 4);
             next();
         });
         emitter.once("markers", function(markers) {
-            console.log("heeya markers");
-                
             worker.jumpToDefinition({
                 data: {
                     row: 0,
@@ -180,7 +178,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab + ab);");
+        worker.switchFile("test.js", "javascript", "var ab = 4; var ab = 5; console.log(ab + ab);");
     }
 };
 

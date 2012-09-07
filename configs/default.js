@@ -59,7 +59,6 @@ var config = [
         debug: false,
         fsUrl: fsUrl,
         smithIo: {
-            host: host,
             port: port,
             prefix: "/smith.io/server"
         },
@@ -137,7 +136,8 @@ var config = [
             "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
-            "ext/language/liveinspect"
+            "ext/language/liveinspect",
+            "ext/jumptodef/jumptodef"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"
