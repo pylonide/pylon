@@ -27,7 +27,7 @@
         "async": "0.1.21",
         "netutil": "0.0.1",
         "architect": "0.1.4",
-        "connect-architect": "0.0.3",
+        "connect-architect": "0.0.4",
 
         "smith.io": "0.0.16",
         "engine.io-client": "0.2.0"
