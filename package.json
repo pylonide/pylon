@@ -12,7 +12,7 @@
 
     "pm": "sm",
     "dependencies": {
-        "connect": "1.8.x",
+        "connect": "1.8.7",
 
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",
@@ -27,9 +27,9 @@
         "async": "0.1.21",
         "netutil": "0.0.1",
         "architect": "0.1.4",
-        "connect-architect": "0.0.3",
+        "connect-architect": "0.0.4",
 
-        "smith.io": "0.0.16",
+        "smith.io": "0.0.17",
         "engine.io-client": "0.2.0"
     },
 
