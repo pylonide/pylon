@@ -122,22 +122,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
         if (message.command === "node" && message.argv.length > 1)
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
-        var self = this;
-        // first try to find a module hook
-        self.searchForModuleHook(message.command, function(found, filePath) {
-            // if not found
-            if (!found) {
-                // then run it on the server via sh
-                self.searchAndRunShell(message, cb);
-                return;
-            }
-
-            // otherwise execute the bastard!
-            if (message.argv.length)
-                message.argv.shift();
-
-            self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
-        });
+        this.searchAndRunShell(message, cb);
     };
 
     this.searchAndRunShell = function(message, callback) {
@@ -199,46 +184,6 @@ util.inherits(NpmRuntimePlugin, Plugin);
                     
                 self.children[pid] = child;
             });
-        });
-    };
-
-    this.searchForModuleHook = function(command, cb) {
-        var baseDir = this.ide.workspaceDir + "/node_modules";
-        var fs = this.fs;
-
-        function searchModules(dirs, it) {
-            if (!dirs[it])
-                return cb(false);
-
-            var currentDir = baseDir + "/" + dirs[it];
-            fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
-                if (err)
-                    return searchModules(dirs, it+1);
-
-                try {
-                    file = JSON.parse(file);
-                }
-                catch (ex) {
-                    return searchModules(dirs, it+1);
-                }
-
-                if (!file.bin)
-                    return searchModules(dirs, it+1);
-
-                for (var binIdent in file.bin) {
-                    if (binIdent === command)
-                        return cb(true, currentDir + "/" + file.bin[binIdent]);
-                }
-
-                searchModules(dirs, it+1);
-            });
-        }
-
-        fs.readdir(baseDir, function(err, res) {
-            if (err)
-                return cb(false);
-
-            searchModules(res, 0);
         });
     };
 
