@@ -12,6 +12,8 @@ var LanguageWorker = require('../ext.language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 module.exports = {
+    timeout: 1000000,
+    
     "test jshint-style globals" : function(next) {
         disabledFeatures = { jshint: undefined };
         var emitter = Object.create(EventEmitter);
@@ -155,6 +157,30 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "function g(err){this};");
+    },
+    ">test jump to definition should point to variable declaration" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("jumpToDefinition", function(ev) {
+            console.log("OMGOMGOMG", ev);
+            
+            next();
+        });
+        emitter.once("markers", function(markers) {
+            console.log("heeya markers");
+                
+            worker.jumpToDefinition({
+                data: {
+                    row: 0,
+                    column: 26
+                }
+            });
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab + ab);");
     }
 };
 

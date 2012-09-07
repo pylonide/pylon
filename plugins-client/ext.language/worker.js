@@ -590,10 +590,11 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
             var ast = this.cachedAst;
+        
         if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-            asyncForEach(this.handlers, function(handler, next) {
+            asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
                         if (result)
@@ -611,7 +612,8 @@ function asyncParForEach(array, fn, callback) {
     this.sendVariablePositions = function(event) {
         var pos = event.data;
         var _self = this;
-            var ast = this.cachedAst;
+        var ast = this.cachedAst;
+        
         if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {

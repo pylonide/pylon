@@ -700,21 +700,22 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
         }
     );
     var pos = mainNode.getPos();
-    var others = [];
+    var declarations = [];
+    var uses = [];
 
     var length = pos.ec - pos.sc;
 
     v.declarations.forEach(function(node) {
          if(node !== currentNode[0]) {
             var pos = node.getPos();
-            others.push({column: pos.sc, row: pos.sl});
+            declarations.push({column: pos.sc, row: pos.sl});
         }
     });
     
     v.uses.forEach(function(node) {
         if(node !== currentNode) {
             var pos = node.getPos();
-            others.push({column: pos.sc, row: pos.sl});
+            uses.push({column: pos.sc, row: pos.sl});
         }
     });
     callback({
@@ -723,8 +724,20 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
             row: pos.sl,
             column: pos.sc
         },
-        others: others
+        others: declarations.concat(uses),
+        declarations: declarations,
+        uses: uses
     });
 };
 
+handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
+    handler.getVariablePositions(doc, fullAst, pos, currentNode, function (data) {
+        if (!data || !data.declarations || data.declarations.length === 0) {
+            return callback(null);
+        }
+        
+        // invoke the callback with the position of the last declared variable
+        callback(data.declarations[data.declarations.length - 1]);
+    });
+};
 });
