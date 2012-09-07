@@ -25,8 +25,7 @@ var host = argv.l || process.env.IP || "localhost";
 var config = [
     {
         packagePath: "connect-architect/connect",
-        port: port,
-        host: host
+        port: port
     }, {
         packagePath: "./cloud9.sourcemint",
         prefix: "/static/bundles",
