@@ -54,7 +54,31 @@ oop.inherits(v8DebugClient, DebugHandler);
             _self.$syncAfterAttach();
         };
 
-        this.$v8ds = new WSV8DebuggerService(ide.socket, runner);
+        // wsv8debuggerservice still expects stuff to be here stringified
+        var wrapInStringify = function (fn) {
+            return function (ev) {
+                fn(JSON.stringify(ev.message));
+            };
+        };
+
+        // mock a nice socket here
+        this.$v8ds = new WSV8DebuggerService({
+            on: function (ev, fn) {
+                if (ev !== "message") {
+                    return console.error("WSV8DebuggerService mocked socket only supports 'message'");
+                }
+                
+                ide.addEventListener("socketMessage", wrapInStringify(fn));
+            },
+            removeListener: function (ev, fn) {
+                if (ev !== "message") {
+                    return console.error("WSV8DebuggerService mocked socket only supports 'message'");
+                }
+                
+                ide.removeEventListener("socketMessage", wrapInStringify(fn));
+            },
+            send: ide.send
+        }, runner);
 
         this.$v8ds.attach(0, function() {
             _self.$startDebugging();

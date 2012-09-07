@@ -225,6 +225,7 @@ var BlameGutter = function(editor, blameData) {
         event.addListener(gutterEl, "mousemove", this.onMousemove);
         event.addListener(gutterEl, "mouseout", this.onMouseout);
 
+        gutter.element.style.width = "";
         this.resizer.style.right = "40px";
         this.element.style.width = "260px";
         this.element.parentNode.style.width = "300px";

@@ -8,23 +8,35 @@ module.exports = function startup(options, imports, register) {
     var workerPrefix = options.workerPrefix || "/static";
     
     var staticServer = connect.createServer();
-    imports.connect.useMain(options.bindPrefix || prefix, staticServer)
+    imports.connect.useMain(options.bindPrefix || prefix, staticServer);
 
     register(null, {
         "static": {
             addStatics: function(statics) {
-                for (var i = 0; i < statics.length; i++) {
-                    var s = statics[i];
 
-//                    console.log("MOUNT", s.mount, s.path, prefix);
+                statics.forEach(function(s) {
 
-                    staticServer.use(s.mount, connect.static(s.path));
+//                    console.log("MOUNT", prefix, s.mount, s.path);
+                    
+                    if (s.router) {
+
+                        var server = connect.static(s.path);
+                        staticServer.use(s.mount, function(req, res, next) {
+                            s.router(req, res);
+                            server(req, res, next);
+                        });
+
+                    } else {
+
+                        staticServer.use(s.mount, connect.static(s.path));
+
+                    }
 
                     var libs = s.rjs || {};
                     for (var name in libs) {
                         rjs[name] = join(prefix, libs[name]);
                     }
-                }
+                });
             },
 
             getRequireJsPaths: function() {
