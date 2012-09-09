@@ -12,6 +12,7 @@ module.exports = function setup(options, imports, register) {
 
     var log = imports.log;
     var hub = imports.hub;
+    var pm = imports["process-manager"];
     var connect = imports.connect;
     var permissions = imports["workspace-permissions"];
 
@@ -54,6 +55,7 @@ module.exports = function setup(options, imports, register) {
             workerUrl: workerPrefix,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,
+            runners: pm.runnerTypes(),
             name: options.name || workspaceId,
             version: options.version || null,
             requirejsConfig: {
