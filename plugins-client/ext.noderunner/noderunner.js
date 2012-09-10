@@ -63,12 +63,13 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         var message = e.message;
         //if (message.type != "shell-data")
            // console.log("MSG", message)
-
-        if (/^\w+-debug-ready$/.test(message.type)) {
+        var runners = window.cloud9config.runners;
+        var lang;
+        if ((lang = /^(\w+)-debug-ready$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             ide.dispatchEvent("dbg.ready", message);
             return;
         }
-        else if (/^\w+-exit$/.test(message.type)) {
+        else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             ide.dispatchEvent("dbg.exit", message);
             if (message.pid == this.nodePid) {
                 stProcessRunning.deactivate();

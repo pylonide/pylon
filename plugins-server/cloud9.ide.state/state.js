@@ -77,11 +77,12 @@ util.inherits(StatePlugin, Plugin);
             // TODO could we just send all ps?
             for (var pid in ps) {
                 var processType = ps[pid].type;
-                if (self.pm.runnerTypes().indexOf(processType) >= 0) {
+                var runners = self.pm.runnerTypes();
+                if (runners.indexOf(processType) >= 0) {
                     state[processType] = parseInt(pid, 10);
                     state.processRunning = pid;
-                 if (processType.substr(-5) == "debug")
-                    state.debugClient = pid;
+                    if (processType.substr(-5) == "debug")
+                        state.debugClient = pid;
                 }
             }
 
