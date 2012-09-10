@@ -175,7 +175,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "runner" : "node",
             "pid"    : this.nodePid
         });
-        ide.send({"command": "state", "action": "publish"});
+        this.queryServerState();
     },
 
     enable : function(){

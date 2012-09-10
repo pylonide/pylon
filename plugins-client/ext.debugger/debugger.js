@@ -253,10 +253,9 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
 
         ide.addEventListener("dbg.exit", function(e) {
-            if (_self.$dbgImpl && e.pid == _self.$dbgImpl.pid) {
+            if (_self.$dbgImpl) {
                 _self.$dbgImpl.detach();
                 _self.$dbgImpl = null;
-                console.log("detach")
             }
         });
 
