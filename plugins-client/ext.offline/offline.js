@@ -93,8 +93,6 @@ module.exports = ext.register("ext/offline/offline", {
         // We may miss the first socketConnect event
         if (ide.connected)
             offline.goOnline();
-        else
-            offline.goOffline();
     },
 
     enable : function(){
