@@ -56,8 +56,6 @@ module.exports = (function () {
                     return hide();
                 }
                 
-                console.log("inspect", event);
-                
                 // create an expression that the debugger understands
                 if (event.data.value) {
                     liveWatch(event.data);
