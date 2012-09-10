@@ -11,8 +11,9 @@ var Util = require("v8debug/util");
 var EventEmitter = Util.EventEmitter;
 var ide = require("core/ide");
 
-var DebuggerService = module.exports = function(pid) {
-    this.pid = pid;
+var DebuggerService = module.exports = function(pid, runner) {
+    this.$pid = pid;
+    this.$runner = runner;
     this.$onMessageHandler = this.$onMessage.bind(this);
 };
 
@@ -33,7 +34,7 @@ var DebuggerService = module.exports = function(pid) {
 
     this.$onMessage = function(data) {
         var message = data.message;
-        if (message.type == "node-debug" && message.pid == this.pid) {
+        if (message.type == "node-debug" && message.pid == this.$pid) {
             this.emit("debugger_command_0", {data: message.body});
         }
     };
@@ -41,8 +42,8 @@ var DebuggerService = module.exports = function(pid) {
     this.debuggerCommand = function(tabId, v8Command) {
         ide.send({
             command: "debugNode",
-            pid: this.pid,
-            runner: "node",
+            pid: this.$pid,
+            runner: this.$runner,
             body: JSON.parse(v8Command)
         });
     };

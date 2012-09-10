@@ -7,9 +7,9 @@
 define(function(require, exports, module) {
 
 var V8Debugger = require("v8debug/V8Debugger");
-var DebuggerService = require("./service");
 var ide = require("core/ide");
 var oop = require("ace/lib/oop");
+var DebuggerService = require("ext/dbg-node/service");
 var DebugHandler = require("ext/debugger/debug_handler");
 var extDebugger = require("ext/debugger/debugger");
 
@@ -62,11 +62,11 @@ oop.inherits(v8DebugClient, DebugHandler);
         });
     };
 
-    this.attach = function(pid) {
+    this.attach = function(pid, runner) {
         if (this.$v8ds)
             this.$v8ds.disconnect();
         this.pid = pid;
-        this.$v8ds = new DebuggerService(pid);
+        this.$v8ds = new DebuggerService(pid, runner);
         this.$v8ds.connect();
         this.$startDebugging();
         this.$syncAfterAttach();

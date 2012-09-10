@@ -22,11 +22,10 @@ var DebugHandler = module.exports = function() {
 
     /**
      * Attaches the debugger to the started debugee instance
-     * when attached, onAttach is called with err and dbgImpl
-     * referring to the debugger object that should be used
-     * for further debug calls
+     * @param pid The running instance process id
+     * @param runner The type of the running process
      */
-    this.attach = function(runner, onAttach) {
+    this.attach = function(pid, runner) {
     };
 
     /**

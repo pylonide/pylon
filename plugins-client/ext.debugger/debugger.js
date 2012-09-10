@@ -225,12 +225,11 @@ module.exports = ext.register("ext/debugger/debugger", {
             return dbgVariable;
         });
 
-        function onAttach(debugHandler, pid) {
+        function onAttach(debugHandler, pid, runner) {
             if (!_self.inited)
                 ext.initExtension(_self);
-                console.log("attach", pid)
-            _self.$dbgImpl = new debugHandler(pid);
-            _self.$dbgImpl.attach(parseInt(pid, 10));
+            _self.$dbgImpl = new debugHandler();
+            _self.$dbgImpl.attach(parseInt(pid, 10), runner);
         }
 
         function getDebugHandler(runner) {
@@ -245,7 +244,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             var runnerMatch = /(\w+)-debug-ready/.exec(e.type);
             var debugHandler;
             if (runnerMatch && (debugHandler = getDebugHandler(runnerMatch[1]))) {
-                onAttach(debugHandler, e.pid);
+                onAttach(debugHandler, e.pid, runnerMatch[1]);
             }
             else {
                 console.log("Appropriate debug handler not found !!");
@@ -260,7 +259,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         });
 
         ide.addEventListener("dbg.state", function(e) {
-            if (_self.$dbgImpl || _self.attaching)
+            if (_self.$dbgImpl)
                 return;
 
             var runnerRE = /(\w+)-debug/;
@@ -268,7 +267,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             var debugHandler;
             for (var attr in e) {
                 if ((runnerMatch = runnerRE.exec(attr)) && (debugHandler = getDebugHandler(runnerMatch[1]))) {
-                    onAttach(debugHandler, e[runnerMatch[0]]);
+                    onAttach(debugHandler, e[runnerMatch[0]], runnerMatch[1]);
                 }
             }
         });
