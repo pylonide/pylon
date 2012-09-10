@@ -140,6 +140,14 @@ exports.cssText = ".ace-eclipse .ace_editor {\
 \
 .ace-eclipse .ace_marker-layer .ace_active_line {\
   background: rgb(232, 242, 254);\
+}\
+\
+.ace-eclipse .ace_marker-layer .ace_selected_word {\
+  border: 1px solid rgb(181, 213, 255);\
+}\
+\
+.ace-eclipse .ace_indent-guide {\
+  background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }";
 
 exports.cssClass = "ace-eclipse";

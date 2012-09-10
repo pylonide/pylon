@@ -55,7 +55,7 @@ exports.cssText = "\
 \
 .ace-solarized-dark .ace_print_margin {\
   width: 1px;\
-  background: #e8e8e8;\
+  background: #33555E;\
 }\
 \
 .ace-solarized-dark .ace_scroller {\
@@ -169,6 +169,10 @@ color:#657B83;\
 \
 .ace-solarized-dark .ace_markup.ace_underline {\
     text-decoration:underline;\
+}\
+\
+.ace-solarized-dark .ace_indent-guide {\
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNg0Db7zzBz5sz/AA82BCv7wOIDAAAAAElFTkSuQmCC) right repeat-y;\
 }";
 
     var dom = require("../lib/dom");
