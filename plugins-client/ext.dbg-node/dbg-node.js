@@ -7,7 +7,7 @@
 define(function(require, exports, module) {
 
 var V8Debugger = require("v8debug/V8Debugger");
-var WSV8DebuggerService = require("v8debug/WSV8DebuggerService");
+var DebuggerService = require("./service");
 var ide = require("core/ide");
 var oop = require("ace/lib/oop");
 var DebugHandler = require("ext/debugger/debug_handler");
@@ -46,46 +46,6 @@ oop.inherits(v8DebugClient, DebugHandler);
         };
     };
 
-    this.attach = function(runner, onAttach) {
-        var _self = this;
-        var _onAttach = function(err, dbgImpl) {
-            onAttach(null, dbgImpl);
-            _self.onChangeRunning();
-            _self.$syncAfterAttach();
-        };
-
-        // wsv8debuggerservice still expects stuff to be here stringified
-        var wrapInStringify = function (fn) {
-            return function (ev) {
-                fn(JSON.stringify(ev.message));
-            };
-        };
-
-        // mock a nice socket here
-        this.$v8ds = new WSV8DebuggerService({
-            on: function (ev, fn) {
-                if (ev !== "message") {
-                    return console.error("WSV8DebuggerService mocked socket only supports 'message'");
-                }
-                
-                ide.addEventListener("socketMessage", wrapInStringify(fn));
-            },
-            removeListener: function (ev, fn) {
-                if (ev !== "message") {
-                    return console.error("WSV8DebuggerService mocked socket only supports 'message'");
-                }
-                
-                ide.removeEventListener("socketMessage", wrapInStringify(fn));
-            },
-            send: ide.send
-        }, runner);
-
-        this.$v8ds.attach(0, function() {
-            _self.$startDebugging();
-            _onAttach(null, _self);
-        });
-    };
-
     this.$syncAfterAttach = function () {
         var _self = this;
         _self.loadSources(function() {
@@ -101,20 +61,22 @@ oop.inherits(v8DebugClient, DebugHandler);
         });
     };
 
-    this.detach = function(callback) {
-        this.onChangeFrame(null);
-        if (!this.$v8dbg)
-            return callback();
+    this.attach = function(pid) {
+        if (this.$v8ds)
+            this.$v8ds.disconnect();
+        this.pid = pid;
+        this.$v8ds = new DebuggerService(pid);
+        this.$v8ds.connect();
+        this.$startDebugging();
+        this.$syncAfterAttach();
+    };
 
+    this.detach = function() {
+        this.$v8ds.disconnect();
+        this.$v8ds = null;
         this.$v8dbg = null;
         this.onChangeRunning();
-
-        var _self = this;
         this.removeListeners();
-        this.$v8ds.detach(0, function(err) {
-            callback && callback(err);
-            _self.$v8ds = null;
-        });
     };
 
     this.onChangeRunning = function(e) {
@@ -152,7 +114,7 @@ oop.inherits(v8DebugClient, DebugHandler);
             mdlDbgSources.removeXml(oldNode);
         mdlDbgSources.appendXml(script);
     };
-    
+
     this.onChangeFrame = function(frame) {
         this.activeFrame = frame;
         ide.dispatchEvent("dbg.changeFrame", {data: frame});
