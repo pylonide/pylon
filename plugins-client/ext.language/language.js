@@ -221,10 +221,6 @@ module.exports = ext.register("ext/language/language", {
     },
     
     onEditorClick: function(event) {
-        if(event.domEvent.shiftKey) {
-            var pos = event.getDocumentPosition();
-            this.worker.emit("jumpToDefinition", {data: pos});
-        }
     },
     
     /**
