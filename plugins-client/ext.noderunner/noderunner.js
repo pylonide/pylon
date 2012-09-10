@@ -139,7 +139,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         var runner;
         if (stProcessRunning.active || typeof path != "string")
             return false;
-        // TODO there should be a way to set satate to waiting
+        // TODO there should be a way to set state to waiting
         stProcessRunning.activate();
 
         path = path.trim();

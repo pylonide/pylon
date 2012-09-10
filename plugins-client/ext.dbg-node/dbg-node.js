@@ -16,6 +16,7 @@ var extDebugger = require("ext/debugger/debugger");
 /*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack */
 
 var v8DebugClient = module.exports = function() {
+    this.stripPrefix = ide.workspaceDir;
 };
 
 oop.inherits(v8DebugClient, DebugHandler);
@@ -159,8 +160,8 @@ oop.inherits(v8DebugClient, DebugHandler);
         if (!this.stripPrefix)
             return str;
 
-        return str.indexOf(this.stripPrefix) === 0
-            ? str.slice(this.stripPrefix.length)
+        return str.lastIndexOf(this.stripPrefix, 0) === 0
+            ? str.slice(this.stripPrefix.length + 1)
             : str;
     };
 
