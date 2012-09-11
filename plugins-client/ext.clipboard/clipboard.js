@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 "use strict";
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
@@ -31,9 +32,9 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         
         var isAvailable = function(editor, event){
             if (apf.activeElement && apf.activeElement.localName == "codeeditor")
-                return !(event instanceof KeyboardEvent);
+                return !(event instanceof KeyboardEvent) && !ide.readonly;
             
-            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming;
+            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming && !ide.readonly;
         };
         
         commands.addCommand({

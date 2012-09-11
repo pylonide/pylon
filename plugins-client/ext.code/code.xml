@@ -37,7 +37,7 @@
         }"
     />
 
-    <a:menu id="mnuCtxEditor">
+    <a:menu id="mnuCtxEditor" disabled="{require('core/ide').readonly}">
         <a:item command="undo">Undo</a:item>
         <a:item command="redo">Redo</a:item>
         <a:divider />
