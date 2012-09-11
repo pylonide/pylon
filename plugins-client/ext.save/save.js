@@ -82,6 +82,10 @@ module.exports = ext.register("ext/save/save", {
             tabEditors.addEventListener("close", _self.$close = function(e) {
                 var at = e.page.$at;
                 var node = e.page.$doc.getNode();
+                
+                if (node.getAttribute("deleted"))
+                    return;
+                
                 if (node && (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
                   || !at.undo_ptr && node.getAttribute("changed") == 1)
                   && (!node.getAttribute("newfile") || e.page.$doc.getValue())) {
