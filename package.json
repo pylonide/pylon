@@ -29,7 +29,7 @@
         "architect": "0.1.4",
         "connect-architect": "0.0.5",
 
-        "smith.io": "0.0.18"
+        "smith.io": "0.0.19"
     },
 
     "devDependencies": {
