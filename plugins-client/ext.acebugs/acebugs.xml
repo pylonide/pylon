@@ -3,7 +3,7 @@
         <a:model id="mdlAceAnnotations"></a:model>
         <a:page id="aceAnnotations" caption="Bugs">
             <a:datagrid id="dgAceAnnotations"
-              anchors    = "0 0 0 0" 
+              anchors    = "0 0 0 0"
               border     = "0"
               options    = "size|move"
               prerender  = "false"

@@ -1,106 +1,137 @@
+/*global aceAnnotations mdlAceAnnotations dgAceAnnotations */
 /**
  * Ace Bugs extension for Cloud9. Displays a window in the dock panel
  * showing warnings and errors retrieved from Ace
- * 
- * @copyright 2011, Ajax.org B.V.
+ *
+ * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
 define(function(require, exports, module) {
 
-var ext     = require("core/ext");
-var ide     = require("core/ide");
-var dock    = require("ext/dockpanel/dockpanel");
+var ext = require("core/ext");
+var ide = require("core/ide");
+var dock = require("ext/dockpanel/dockpanel");
 var editors = require("ext/editors/editors");
-var markup  = require("text!ext/acebugs/acebugs.xml");
+var markup = require("text!ext/acebugs/acebugs.xml");
 
 module.exports = ext.register("ext/acebugs/acebugs", {
-    name: "Ace Bugs",
+    name: "Bug Panel",
     dev: "Ajax.org",
     alone: true,
     type: ext.GENERAL,
     markup: markup,
-
     nodes: [],
 
-    init: function(amlNode) {
-        var currEditor = editors.currentEditor;
-        if (currEditor) {
-            this.editorSession = currEditor.amlEditor.getSession();
+    lastAnnotations: null,
 
+    _getEditor: function(callback) {
+        var editor = editors.currentEditor && editors.currentEditor.amlEditor;
+        if (editor)
+            callback.call(this, editor);
+    },
+
+    _updateSession: function() {
+        this._getEditor(function(editor) {
+            this.editorSession = editor.getSession();
+
+            var _self = this;
             this.editorSession.on("changeAnnotation", function(e) {
                 _self.updateAnnotations();
             });
-        }
+        });
+    },
+
+    init: function(amlNode) {
+        this._updateSession();
     },
 
     hook: function() {
-        var _self = this;
-        this.annotationWorker = new Worker(ide.staticPrefix + "/ext/acebugs/annotation_worker.js");
-        this.lastAnnotations = "";
-        this.annotationWorker.onmessage = function(e) {
-            if (e.data.outXml == _self.lastAnnotations)
-                return;
+        ide.addEventListener("afteropenfile", this.updateAnnotations.bind(this));
+        ide.addEventListener("tab.afterswitch", this._updateSession.bind(this));
 
-            if (e.data.errors > 0)
-                dock.increaseNotificationCount("aceAnnotations", e.data.errors);
-            mdlAceAnnotations.load(apf.getXml(e.data.outXml.replace(/&/g, "&amp;")));
-        };
+        var name = "ext/acebugs/acebugs";
 
-        this.annotationWorker.onerror = function(e) {
-
-        };
-
-        ide.addEventListener("afteropenfile", function(e) {
-            _self.updateAnnotations();
+        dock.addDockable({
+            expanded : -1,
+            width : 300,
+            "min-width" : 300,
+            barNum: 1,
+            sections : [{
+                width : 260,
+                height: 350,
+                buttons : [{
+                    caption: "Bugs",
+                    ext : [name, "aceAnnotations"],
+                    hidden : true
+                }]
+            }]
         });
 
-        ide.addEventListener("tab.afterswitch", function(e){
-            var ce = editors.currentEditor;
-            if (ce) {
-                _self.editorSession = ce.amlEditor.getSession();
-                _self.editorSession.on("changeAnnotation", function(e) {
-                    _self.updateAnnotations();
-                });
-
-                _self.updateAnnotations();
-            }
-        });
-
-        this.section = dock.getSection(this.name, {
-            width  : 260,
-            height : 360
-        });
-
-        dock.registerPage(this.section, null, function() {
-            ext.initExtension(_self);
-            return aceAnnotations;
-        }, {
-            ident   : "aceAnnotations",
+        dock.register(name, "aceAnnotations", {
+            menu : "Bug Panel",
             primary : {
                 backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
                 defaultState: { x: -6, y: -391 },
-                activeState: { x: -6, y: -391 }
+                activeState:  { x: -6, y: -391 }
             }
+        }, function() {
+            return aceAnnotations;
         });
 
         ext.initExtension(this);
     },
 
-    updateAnnotations : function() {
-        var ce = editors.currentEditor;
-        if (!ce || typeof mdlAceAnnotations === "undefined")
+    process: function(annotations) {
+        var annotationsString = JSON.stringify(annotations);
+        if (annotations !== null && (annotationsString === this.lastAnnotations))
             return;
 
-        this.amlEditor = ce.amlEditor;
-        var editorSession = this.amlEditor.getSession();
-        dock.resetNotificationCount("aceAnnotations");
-        this.annotationWorker.postMessage(editorSession.getAnnotations());
+        this.lastAnnotations = annotationsString;
+
+        var aceerrors = 0;
+        var outXml = "";
+
+        for (var key in annotations) {
+            annotations[key].forEach(function(a) {
+                if (a.type === "error") {
+                    aceerrors += 1;
+                }
+
+                outXml += '<annotation line="' + (a.row + 1) +
+                        '" text="' + a.text +
+                        '" type="' + a.type + '" />';
+            });
+        }
+
+        outXml = "<annotations>" + outXml + "</annotations>";
+
+        if (aceerrors > 0)
+            dock.increaseNotificationCount("aceAnnotations", aceerrors);
+
+        mdlAceAnnotations.load(apf.getXml(outXml.replace(/&/g, "&amp;")));
+    },
+
+    updateAnnotations : function() {
+        if (aceAnnotations.visible === false)
+            return;
+
+        this._getEditor(function(editor) {
+            if (typeof mdlAceAnnotations === "undefined")
+                return;
+
+            this.amlEditor = editor;
+            dock.resetNotificationCount("aceAnnotations");
+
+            setTimeout(function(self) {
+                self.process(editor.getSession().getAnnotations());
+            }, 0, this);
+        });
     },
 
     goToAnnotation : function() {
-        var line_num = dgAceAnnotations.selected.getAttribute("line");
-        this.amlEditor.$editor.gotoLine(line_num);
+        this.amlEditor.$editor.gotoLine(
+            dgAceAnnotations.selected.getAttribute("line"));
     },
 
     enable: function() {
