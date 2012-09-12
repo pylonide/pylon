@@ -36,7 +36,7 @@
             <a href="http://c9.io/site/pricing/" target="_blank" class="nodecor-link">
                 <a:button skin="button-colorless" class="dark" onclick="" margin="0 10" width="65">Sign up</a:button>
             </a>
-            or
+            <span>or</span>
             <a:button skin="button-colorless" class="dark green" onclick="
                 ide.addEventListener('login', function() { location.reload(); });
                 winLogin.show();

@@ -546,8 +546,8 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Selection/Select to Line Start", "selecttolinestart"),
 
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-            addEditorMenu("Selection/Select to Document Start", "selecttostart"),
-            addEditorMenu("Selection/Select to Document End", "selecttoend")
+            addEditorMenu("Selection/Select to Document End", "selecttoend"),
+            addEditorMenu("Selection/Select to Document Start", "selecttostart")
         );
 
         c = 0;

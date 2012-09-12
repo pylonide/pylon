@@ -49,8 +49,8 @@
       <a:item type="check" caption="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[editors/code/@activeline]" />
       <a:item type="check" caption="Highlight Gutter Line" checked="[editors/code/@gutterline]" />
-      <a:item type="check" caption="Show IndentGuides" checked="[editors/code/@showindentguides]" />
       <a:item type="check" caption="Show Gutter" checked="[editors/code/@gutter]" />
+      <a:item type="check" caption="Show Indent Guides" checked="[editors/code/@showindentguides]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[editors/code/@highlightselectedword]" />
       <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[editors/code/@behaviors]" />
       <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[editors/code/@autohidehorscrollbar]" />

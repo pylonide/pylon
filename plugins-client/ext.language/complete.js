@@ -6,11 +6,13 @@
  */
 define(function(require, exports, module) {
 
+/*global txtCompleter txtCompleterDoc txtCompleterHolder barCompleterCont
+  ceEditor sbCompleter*/
+
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
-var editors = require("ext/editors/editors");
 
 var lang = require("ace/lib/lang");
 var language;
@@ -22,7 +24,8 @@ var isDocShown;
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
-var SHOW_DOC_DELAY = 2000;
+var SHOW_DOC_DELAY = 1500;
+var SHOW_DOC_DELAY_MOUSE_OVER = 100;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
@@ -260,6 +263,8 @@ module.exports = {
 
     closeCompletionBox : function(event) {
         barCompleterCont.$ext.style.display = "none";
+        if (!editors.currentEditor.amlEditor) // no editor, try again later
+            return;
         var ace = editors.currentEditor.amlEditor.$editor;
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
@@ -314,7 +319,9 @@ module.exports = {
                 _self.matchEls[_self.selectedIdx].className = CLASS_UNSELECTED;
                 _self.selectedIdx = idx;
                 _self.matchEls[_self.selectedIdx].className = CLASS_SELECTED;
-                _self.updateDoc();                
+                _self.updateDoc();
+                if (!isDrawDocInvokeScheduled)
+                    drawDocInvoke.schedule(SHOW_DOC_DELAY_MOUSE_OVER);
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
@@ -326,7 +333,7 @@ module.exports = {
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
-        _self.updateDoc();
+        _self.updateDoc(true);
     },
     
     updateDoc : function(delayPopup) {
