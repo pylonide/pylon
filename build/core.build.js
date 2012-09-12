@@ -13,7 +13,7 @@
         "engine.io": "node_modules/engine.io-client/dist/engine.io",
         "smith.io": "node_modules/smith.io/server-plugin/www/client",
         "smith": "node_modules/smith/smith",
-        "msgpack-js": "node_modules/browser-msgpack-js/msgpack",
+        "msgpack-js": "node_modules/msgpack-js-browser/msgpack",
         "raw.github.com/Gozala/extendables/v0.2.0/extendables": "plugins-client/lib.smith.io/www/extendables"
     },
     include: [
