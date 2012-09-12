@@ -55,7 +55,7 @@ exports.cssText = "\
 \
 .ace-monokai .ace_print_margin {\
   width: 1px;\
-  background: #555651;\
+  background: #e8e8e8;\
 }\
 \
 .ace-monokai .ace_scroller {\
@@ -183,10 +183,6 @@ color:#FD971F;\
 \
 .ace-monokai .ace_markup.ace_underline {\
     text-decoration:underline;\
-}\
-\
-.ace-monokai .ace_indent-guide {\
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNQ11D6z7Bq1ar/ABCKBG6g04U2AAAAAElFTkSuQmCC) right repeat-y;\
 }";
 
     var dom = require("../lib/dom");

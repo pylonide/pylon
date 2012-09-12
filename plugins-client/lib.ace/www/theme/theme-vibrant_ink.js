@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-vibrant-ink .ace_gutter {\
   background: #1a1a1a;\
-  color: #BEBEBE;\
+  color: white;\
 }\
 \
 .ace-vibrant-ink .ace_print_margin {\
@@ -179,10 +179,6 @@ color:#99CC99;\
 \
 .ace-vibrant-ink .ace_markup.ace_underline {\
     text-decoration:underline;\
-}\
-\
-.ace-vibrant-ink .ace_indent-guide {\
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWPg5+f/z7Bq1ar/AA5lBCqoLxsgAAAAAElFTkSuQmCC) right repeat-y;\
 }";
 
     var dom = require("../lib/dom");

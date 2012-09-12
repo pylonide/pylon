@@ -1395,17 +1395,16 @@ exports.CssHighlightRules = CssHighlightRules;
 
 });
 
-define('ace/mode/html_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/lib/lang', 'ace/mode/css_highlight_rules', 'ace/mode/javascript_highlight_rules', 'ace/mode/xml_util', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
+define('ace/mode/html_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/css_highlight_rules', 'ace/mode/javascript_highlight_rules', 'ace/mode/xml_util', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
 
 
 var oop = require("../lib/oop");
-var lang = require("../lib/lang");
 var CssHighlightRules = require("./css_highlight_rules").CssHighlightRules;
 var JavaScriptHighlightRules = require("./javascript_highlight_rules").JavaScriptHighlightRules;
 var xmlUtil = require("./xml_util");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
-var tagMap = lang.createMap({
+var tagMap = {
     a           : 'anchor',
     button 	    : 'form',
     form        : 'form',
@@ -1422,7 +1421,7 @@ var tagMap = lang.createMap({
     tfoot       : 'table',
     th          : 'table',
     tr          : 'table'
-});
+};
 
 var HtmlHighlightRules = function() {
 
@@ -1562,12 +1561,13 @@ exports.tag = function(states, name, nextState, tagMap) {
     }, {
         //token : "meta.tag",
         
-    token : !tagMap ? "meta.tag.tag-name" : function(value) {
-            if (tagMap[value])
-                return "meta.tag.tag-name." + tagMap[value];
-            else
+    token : function(value) {
+            if (tagMap && tagMap[value]) {
+                return "meta.tag.tag-name" + '.' + tagMap[value];
+            } else {
                 return "meta.tag.tag-name";
-        },
+            }
+        },        
         merge : true,
         regex : "[-_a-zA-Z0-9:]+",
         next : name + "_embed_attribute_list" 

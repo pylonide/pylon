@@ -50,12 +50,12 @@ exports.cssText = "\
 \
 .ace-mono-industrial .ace_gutter {\
   background: #1d2521;\
-  color: #C5C9C9;\
+  color: #fff;\
 }\
 \
 .ace-mono-industrial .ace_print_margin {\
   width: 1px;\
-  background: #555651;\
+  background: #e8e8e8;\
 }\
 \
 .ace-mono-industrial .ace_scroller {\
@@ -186,10 +186,6 @@ background-color:#151C19;\
 \
 .ace-mono-industrial .ace_markup.ace_underline {\
     text-decoration:underline;\
-}\
-\
-.ace-mono-industrial .ace_indent-guide {\
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNQ0tH4zzBz5sz/ABAOBECKH+evAAAAAElFTkSuQmCC) right repeat-y;\
 }";
 
     var dom = require("../lib/dom");

@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-twilight .ace_gutter {\
   background: #232323;\
-  color: #E2E2E2;\
+  color: #F8F8F8;\
 }\
 \
 .ace-twilight .ace_print_margin {\
@@ -200,10 +200,6 @@ color:#5F5A60;\
 \
 .ace-twilight .ace_markup.ace_list {\
   color:#F9EE98;\
-}\
-\
-.ace-twilight .ace_indent-guide {\
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWMQERH5zzBz5sz/AA5EBAYqeZXWAAAAAElFTkSuQmCC) right repeat-y;\
 }";
 
     var dom = require("../lib/dom");
