@@ -67,7 +67,20 @@
             
             var config = <%requirejsConfig%>; 
 
+            var splashNode;
             require(config, [apfLoc], function(){
+                var splashMarkup = '<a:application xmlns:a="http://ajax.org/2005/aml"><a:hbox id="loads2" style="background:#000 url(images/loader.gif) no-repeat center center;height: 100%;width: 100%;position: fixed;z-index: 1000;left: 0;top: 0;"></a:hbox></a:application>';
+                apf.addEventListener("load", function() {
+                /*  var loadingIde = document.createElement('div');
+                    loadingIde.setAttribute("id", "loadingide");
+                    loadingide.setAttribute("style", "background:#000 url(images/loader.gif) no-repeat center center;height: 100%;width: 100%;position: fixed;z-index: 1000;left: 0;top: 0;");
+                    document.body.appendChild(loadingIde); */
+                    apf.document.documentElement.insertMarkup(splashMarkup, {
+                        callback: function(add){
+                            splashNode = add.addedNode;
+                        }
+                    });
+                });
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
                     "core/settings", "ext/main/main", "ext/editors/editors",
@@ -81,7 +94,7 @@
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
                     }
-                    
+
                     // if you pass `force=true` into the querystring, then
                     // we bypass the browser check
                     if (window.cloud9config.hosted && !window.location.search.match(/\bforce\=true\b/)) {
@@ -127,6 +140,9 @@
                 console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
 
+                apf.document.documentElement.removeChild(splashNode);
+                // document.body.removeChild(document.getElementById("loadingide"));
+
                 ide.addEventListener("$event.extload", function(cb){
                     cb();
                 });
@@ -152,7 +168,7 @@
         //]]>
         </script>
     </head>
-    <body style="display:none">
+    <body>
         <div id="noscript">
             <div class="noscript">
                 <div id="hp_header">
