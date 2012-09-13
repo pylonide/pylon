@@ -229,8 +229,9 @@ api.failureHandler = function(error) {
     console.log('In Default Failure Handler');
     if (error && error.errorCode) {
         if (error.errorCode === 'INVALID_SESSION_ID') {
-            console.log('Invalid session. Trying to get a valid token...');
+            console.log('Invalid session. Please re-authenticate');//Trying to get a valid token...');
             //Try to get a valid token
+            /*
             api.authenticate(function() {
                 console.log('Successfully got a new token. Resending last request...');
                 if (api.lastRequest) {
@@ -241,6 +242,7 @@ api.failureHandler = function(error) {
             }, function(e) {
                 console.log('Failed to get a new token: ' + e);
             });
+            */
         } else {
             console.log(error.errorCode + ' : ' + error.message);
         }

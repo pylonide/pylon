@@ -86,7 +86,13 @@ SfdcToolingAPI.Entity = function() {
             throw 'Can only update an entity with Id';
         } else {
             var _self = this;
-            console.log('BEFORE UPDATE ' + JSON.stringify(this.fieldsToUpdate, null, 4));
+            
+            if (this.fieldsToUpdate.hasOwnProperty('Id')) {
+                //We can't send the Id in the post data
+                delete this.fieldsToUpdate.Id;
+            }
+            
+            //console.log('BEFORE UPDATE ' + JSON.stringify(this.fieldsToUpdate, null, 4));
             api.PATCH(this.SOBJECT + '/' + this.type + '/' + this.get('Id'), this.fieldsToUpdate, function(data) {
                 console.log('UPDATED ' + JSON.stringify(data, null, 4));
                 _self.set(data);
@@ -127,7 +133,7 @@ SfdcToolingAPI.Entity = function() {
         }
         
         var query = 'SELECT '+fields.join(',')+' FROM ' + this.type + (where ? ' WHERE '+where : '');    
-        console.log(query);
+        //console.log(query);
 
         api.GET(this.QUERY + '/?q=' + encodeURIComponent(query), function(results) {
             var records = results.records ? results.records : [];

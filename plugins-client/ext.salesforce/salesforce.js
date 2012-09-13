@@ -7,13 +7,11 @@ var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/salesforce/salesforce.xml");
 var Util = require("core/util");
 //var sfhtml = require("text!ext/salesforce/salesforce.html");
-
-//Is there a library I can use to make http calls?
-//var http = require('http');
-
+var Save = require("ext/save/save");
 var organization = require('ext/salesforce/SfdcOrganization');
-
-
+var commands = require("ext/commands/commands");
+//Just so I know where the test server is ran on computers I don't have it bookmarked
+//http://ec2-23-22-63-218.compute-1.amazonaws.com:3131/
 
 module.exports = ext.register("ext/salesforce/salesforce", {
     name    : "SalesForce",
@@ -67,32 +65,62 @@ module.exports = ext.register("ext/salesforce/salesforce", {
             this.createOrUpdateProjectDirectory(sfdcProjectName.value, e.message.records);
         } else if (e.message.subType && e.message.subType === 'compile') {
             if (this.currentEditor && e.message.error) {
-                var line = 0;
-                var error = e.message.error;
-                if (typeof error !== 'string') {
-                    if (error.name) {
-                        //If I need the name to get the class out of the tabs
-                    }
-                    if (error.extent || error.id) {
-                        //If I need the extent of id
-                    }
-                    if (error.line) {
-                        line = error.line;
-                    }
-                    if (error.problem) {
-                        error = error.problem;
-                    }
-                }
-                this.currentEditor.setAnnotations([{
-                    row: line,
-                    column: 0, //can be undefined
-                    text: error,
-                    type: "error" // or "warning" or "info"
-                }]);
+               this.addErrorToEditor(e.message.error, this.currentEditor.acesession);
+            }
+        } else if (e.message.subType && e.message.subType === 'saved') {
+            console.log('save finished: saving:'+this.saving+'; shouldSave:'+this.shouldSave);
+            if (this.currentEditor && this.saving && !e.message.error) {
+                console.log('Save successful');
+                
+                var _self = this;
+                var page = this.currentEditor.$page;
+                
+                this.shouldSave = true;
+                Save.quicksave(page, function() {
+                    _self.shouldSave = false;
+                    //stripws.enable();
+                    //_self.setSaveButtonCaption(page);
+                }, true);
+            } else if (this.currentEditor && e.message.error) {
+                this.addErrorToEditor(e.message.error, this.currentEditor.acesession);
+            }
+            //Need to remove the attribute otherwise Save will think it is saving
+            var node = this.currentEditor.getNode();
+            apf.xmldb.removeAttribute(node, "saving");
+            this.saving = false;
+        } else if (e.message.subType && e.message.subType === 'serverError') {
+            //console.log('');
+            console.log(error);
+            errorWindow.show();
+            var error = e.message.error;
+            errorText.$ext.innerHTML = typeof error === 'string' ? error : error.message;
+        } else if (e.message.subType && e.message.subType === 'finishedSyncing') {
+            console.log('Finished syncing');
+        }
+    },
+
+    addErrorToEditor : function(error, ace) {
+         var line = 0;
+        if (typeof error !== 'string') {
+            if (error.name) {
+                //If I need the name to get the class out of the tabs
+            }
+            if (error.extent || error.id) {
+                //If I need the extent of id
+            }
+            if (error.line) {
+                line = error.line;
+            }
+            if (error.problem) {
+                error = error.problem;
             }
         }
-        
-        
+        ace.setAnnotations([{
+            row: line,
+            column: 0, //can be undefined
+            text: error,
+            type: "error" // or "warning" or "info"
+        }]);  
     },
 
     createOrUpdateProjectDirectory : function(name, classes) {
@@ -131,13 +159,43 @@ module.exports = ext.register("ext/salesforce/salesforce", {
         //ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
         
         ide.addEventListener('beforefilesave',  function(e) {
-            console.log('Before Save');
-            console.log(e);
+           // console.log('Before Save');
+           // console.log(e.doc.getValue());
+        //    console.log(e.doc.$page.caption);
 //            if (doc.acesession && doc.acesession.getAnnotations()) {
-                return false;
-//            }
-//            return true;
-            //self.onDocChange.call(self, e, doc);
+
+            console.log('Before save: saving: '+_self.saving+'; shouldSave: '+_self.shouldSave);
+            
+            var doc = e.doc;
+            if (_self.shouldSave) {
+                return true;
+            } else if (!_self.saving) { //Don't dave multiple times, especially with autosave
+                var filename = doc.$page.caption;
+                filename = filename.replace(/^\W*(\w*).*/, "$1");
+                console.log('Saving ' + filename + '...');
+                _self.saving = true;
+                
+                try {
+                    //Errors are no longer valid, if we are going to save again
+                    doc.acesession.clearAnnotations();
+                    
+                    //Need the UI to show the file is saving
+                    var node = doc.getNode();
+                    apf.xmldb.setAttribute(node, "saving", "1");
+                    
+                    var data = {
+                        command: "salesforce",
+                        type: 'save',
+                        name : filename,//'MonitorAPIRequest', //TODO get the name from the file
+                        body : e.doc.getValue()
+                    };
+                    ide.send(data);
+                } catch (e) {
+                    console.log('Error in before save handler!' + e);
+                    _self.saving = false;
+                }
+            }
+            return false;
         });
         menus.addItemByPath("Tools/~", new apf.divider());//, 1000000);
         menus.addItemByPath("Tools/SalesForce", new apf.item({}));
@@ -158,12 +216,30 @@ module.exports = ext.register("ext/salesforce/salesforce", {
                 _self.syncClasses();
             }
         }));
-        menus.addItemByPath("Tools/SalesForce/Logs", new apf.item({
+        menus.addItemByPath("Tools/SalesForce/Search Methods", new apf.item({
             onclick: function() {
-                downloadLog.show();
+                searchMethods.show();
+                _self.filterMethods();
             }
         }));
         
+        
+        commands.addCommand({
+            name: "searchMethods",
+            hint: "search apex methods in the project",
+            bindKey: {mac: "Command-Shift-M", win: "Ctrl-Shift-M"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
+            exec: function () {
+                if (searchMethods.visible) {
+                    searchMethods.close();
+                } else {
+                    searchMethods.show();
+                    _self.filterMethods();
+                }
+            }
+        });
         //, 2000000);
         
         //OrganizationSettings
@@ -171,12 +247,31 @@ module.exports = ext.register("ext/salesforce/salesforce", {
         ext.initExtension(this);
     },
     
+    methods : {},
+    filterMethods : function(text) {
+        //Get the methods
+        
+        //Genetate UI
+        var ui = '<div id="classes">';
+        for (var key in this.methods) {
+            if (this.methods.hasOwnProperty(key)) {
+                ui += '<div class="apexClass" style="padding: 5px"><b>'+key+'</b></div>';
+                var ms = this.methods[key];
+                for (var i = 0; i < ms.length; i++) {
+                    ui += '<div class="method" style="padding: 5px; margin-left: 20px">'+ms[i]+'</div>';
+                }
+            }
+        }
+        ui += "</div>";
+        methodOutput.$ext.innerHTML = ui;
+    },
+    
     docChangeTimeout: null,
     docChangeListeners: {},
     docBeforeSaveListeners: {},
     
     onOpenFile: function(data) {
-        console.log(data);
+        //console.log(data);
         if (!data || !data.doc)
             return;
 
@@ -192,10 +287,33 @@ module.exports = ext.register("ext/salesforce/salesforce", {
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
         var path = Util.getDocPath(page);
-        console.log(path);
-        if (!path || !path.match(/\.apex$/)) {
+        
+        if (path && path.match(/\.st/)) {
+            try {
+                var st = JSON.parse(doc.getValue());
+                var symbols = st.symbols;
+                
+                this.methods[st.name] = [];
+                for (var i = 0; i < symbols.length; i++) {
+                    var symbol = symbols[i];
+                    if (symbol.kind === 'METHOD') {
+                        this.methods[st.name].push(symbol.name);
+                    }
+                }
+            } catch (e) {
+                errorWindow.show();
+                errorText.$ext.innerHTML = e;
+            }
             return;
         }
+        if (!path || !path.match(/\.apex$/)) {
+            ext.enableExt("ext/language/language");
+            ext.enableExt("ext/autosave/autosave");
+            return;
+        }
+
+        ext.disableExt("ext/language/language");
+        //ext.disableExt("ext/autosave/autosave");
         
         //doc.acesession.on('changeAnnotation', function() {
         //    return false;
@@ -218,7 +336,8 @@ module.exports = ext.register("ext/salesforce/salesforce", {
     
     onDocChange: function(e, doc) {
         var as = doc.acesession;
-        
+        /*
+        console.log(as);
         //Test the annotations
         as.setAnnotations([{
             row: 1,
@@ -226,7 +345,7 @@ module.exports = ext.register("ext/salesforce/salesforce", {
             text: "Missing argument",
             type: "error" // or "warning" or "info"
         }]);
-        
+        */
         //Get the error from salesforce
         /*
         var data = {
@@ -236,9 +355,9 @@ module.exports = ext.register("ext/salesforce/salesforce", {
             body : as.getValue()
         };
         ide.send(data);
-        
-        this.currentEditor = as;
         */
+        this.currentEditor = doc;
+        
         
         var page = doc.$page;
         if (page) {// && this.isAutoSaveEnabled && !Util.isNewPage(page)) {
@@ -294,6 +413,7 @@ module.exports = ext.register("ext/salesforce/salesforce", {
     },
 
     syncClasses : function() {
+        this.syncingProject = true;
          var data = {
             command: "salesforce",
             type: 'query',

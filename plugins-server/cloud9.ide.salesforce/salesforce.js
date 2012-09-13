@@ -66,8 +66,13 @@ util.inherits(SalesForce, Plugin);
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
         */
+        var _self = this;
+        Entity.api.failureHandler = function(error) {
+            console.log('\nSend error to the client: '+error);
+            _self.sendAction('serverError', { error : error});
+        };
     };
-
+    
     this.command = function (user, message, client) {
         var _self = this;
         var cmd = message.command ? message.command.toLowerCase() : "";
@@ -77,7 +82,7 @@ util.inherits(SalesForce, Plugin);
             return false;
         var type = message.type ? message.type.toLowerCase() : "";
         
-        console.log("Got command: " + cmd + ' with type ' + type);
+        //console.log("Got command: " + cmd + ' with type ' + type);
         
         if (type === 'authenticate') {
             this.authenticateOrganization(message.values);   
@@ -87,7 +92,10 @@ util.inherits(SalesForce, Plugin);
             console.log(folder);
 
             this.onDir(folder, function() {
-                _self.syncEntityFolder(folder, Entity.types[0]);
+                _self.syncEntityFolder(folder, Entity.types[0], function() {
+                    //Let the client know we finished syncing
+                    _self.sendAction('finishedSyncing', { });
+                });
             });
         } else if (type === 'downloadlog') {
             Entity.ApexLogs.downloadLog(message.logId, function(logData) {
@@ -95,45 +103,54 @@ util.inherits(SalesForce, Plugin);
             });
         } else if (type === 'compile') {
             var mcName = 'SymbolTableContainer';
-            //Replace the name with message.name;
             
-            //var apexClass = this.entities['ApexClasses']['MonitorAPIRequest'];
             //console.log(message.name);
             //console.log(message.body);
-            Entity.ApexClasses.query(['Id', 'Name', 'Body'], 'Name = \''+message.name+'\'', function(records) {
-                if (records.length > 0) {
-                    //TODO I should really have the records returned be instances of the type queried
-                    var apexClass = new Entity.ApexClass(records[0]);
-                    apexClass.set('Body', message.body);
-                    
-                    _self.getContainer(mcName, function(mc) {
-                        _self.getMember(mc, apexClass, function(mcm) {
-                            _self.compile(mc, mcm, function(results) {
-                                console.log('Compile results');
-                                console.log(results);
-                                if (results.symbolTable) {
-                                    _self.sendAction('compile', { symbolTable : results.symbolTable });
-                                    //var path = folder + '/' + apexClass.get('Name') + '.st';
-                                    //fs.writeFile(path, JSON.stringify(results.symbolTable, null, 4), emptyCallback);
-                                    //results.cont(success, results.symbolTable);
-                                }
-                                if (results.error) {
-                                    _self.sendAction('compile', { error : results.error });
-                                    //sfdcUtil.cont(failure, results.error);
-                                }
-                            });
+            
+            _self.getApexClass(message.name, function(apexClass) {
+                apexClass.set('Body', message.body);
+                _self.getContainer(mcName, function(mc) {
+                    _self.getMember(mc, apexClass, function(mcm) {
+                        _self.compile(mc, mcm, function(results) {
+                            console.log('Compile results');
+                            console.log(results);
+                            if (results.symbolTable) {
+                                _self.sendAction('compile', { symbolTable : results.symbolTable });
+                                //var path = folder + '/' + apexClass.get('Name') + '.st';
+                                //fs.writeFile(path, JSON.stringify(results.symbolTable, null, 4), emptyCallback);
+                                //results.cont(success, results.symbolTable);
+                            }
+                            if (results.error) {
+                                _self.sendAction('compile', { error : results.error });
+                                //sfdcUtil.cont(failure, results.error);
+                            }
                         });
                     });
-                }
+                });
             });
             
-//            
 //            apexClass.
 //            this.getSymbolTableOnFirstClassInEntities('ApexClasses', function(symbolTable) {
 //                _self.sendAction('compile', { symbolTable : symbolTable });
 //            }, function(error) {
 //                _self.sendAction('compile', { error : error });
 //            });
+        } else if (type === 'save') {
+            _self.getApexClass(message.name, function(apexClass) {
+                apexClass.set('Body', message.body);
+                //TODO add this to the entity definition so I just have to say apexClass.compile or apexClass.save
+                _self.save(apexClass, function(results) {
+                    if (results.symbolTable) {
+                        console.log('Save complete for ' + message.name);
+                        _self.sendAction('saved', { symbolTable : results.symbolTable });
+                    } else if (results.error) {
+                        console.log('Save error for ' + message.name); 
+                        _self.sendAction('saved', { error : results.error });
+                    } else {
+                       console.log('Save completed with no error or symbol table!!!'); 
+                    }
+                });
+            });
         }
 
         // Only send back to originator of message
@@ -164,16 +181,16 @@ util.inherits(SalesForce, Plugin);
             }
         });   
     };
-    
+    this.entites = {};
     this.authenticateOrganization = function(options) {
         if (!options) { return; }
-        
+        console.log('Authenticating...');
         var _self = this;
         Entity.api.authenticate(options, function(authResponse) {
             
             var instance = decodeURIComponent(authResponse.instance_url);
             instance = instance.substring(instance.indexOf('/')+2);
-
+            console.log('Authenicated\n');
             //Send it to the client
             _self.sendAction('authenticated', { values : {
                 name : options.name,
@@ -208,28 +225,68 @@ util.inherits(SalesForce, Plugin);
     //Should generate entities based on project structure too
     
     
+    this.getApexClass = function(name, callback) {
+        if (this.entities.ApexClasses && this.entities.ApexClasses[name]) {
+            sfdcUtil.cont(callback, this.entities.ApexClasses[name]);
+        } else {
+            var _self = this;
+            //IF we don't already have the classes cached, retrieve all classes from the server
+            //TODO I will need to optimize this for larger orgs. Maybe retrieve just the one 
+            //class using 'Name = \''+name+'\'', then start a worker to cache the rest
+            this.refreshApexClasses(function(classes) {
+                if (_self.entities.ApexClasses && _self.entities.ApexClasses[name]) {
+                    sfdcUtil.cont(callback, _self.entities.ApexClasses[name]);
+                } else {
+                    //TODO return this to the client
+                    console.log('ERROR: Class '+name+' not found on server');
+                }
+            });
+        }
+    };
+    
+    this.refreshApexClasses = function(callback) {
+        if (!this.entities.ApexClasses) {
+            this.entities.ApexClasses = {};
+        }
+        var _self = this;
+        Entity.ApexClasses.query(['Id', 'Name', 'Body'], null, function(records) {
+            var classes = [];
+            for (var i = 0; i < records.length; i++) {
+                //TODO I should really have the records returned be instances of the type queried
+                var apexClass = new Entity.ApexClass(records[i]);
+                classes.push(apexClass);
+                //Cache this class for furture use
+                _self.entities.ApexClasses[apexClass.get('Name')] = apexClass;
+            }
+            sfdcUtil.cont(callback, classes);
+        });
+    };
+    
     this.containerCache = {};
     /**
      * Get or create a MetadataContainer with the given name
      */
     this.getContainer = function(/* String */ name, /* function */ callback) {
         if (this.containerCache[name]) {
-            console.log('Using container cache');
+            console.log('\nUsing container cache');
             sfdcUtil.cont(callback, this.containerCache[name]);
             return;
         }
         var _self = this;
+        console.log('\nQuering for MetadataContainer');
         Entity.MetadataContainers.query(['Id', 'Name'], "Name='" + name + "'", function(containers) {
             //console.log(containers);
             var mc;
             if (containers.length === 0) {
                 mc = new Entity.MetadataContainer({Name : name});
+                console.log('\nCreating MetatdataContainer "' + name + '"');
                 mc.create(function(data) {
                     _self.containerCache[name] = mc;
                     sfdcUtil.cont(callback, mc);
                 });
             } else {
                 mc = new Entity.MetadataContainer(containers[0]);
+                console.log('\nUsing MetatdataContainer ' + mc.get('Id'));
                 _self.containerCache[name] = mc;
                 sfdcUtil.cont(callback, mc);
             }
@@ -241,7 +298,7 @@ util.inherits(SalesForce, Plugin);
         var id = entity.get('Id');
         var mcm;
         if (this.memberCache[id]) {
-            console.log('Using member cache');
+            console.log('\nUsing member cache');
             mcm = this.memberCache[id];
             mcm.set('Body', entity.get('Body'));
             mcm.update(function() {
@@ -249,7 +306,9 @@ util.inherits(SalesForce, Plugin);
             });
             return;
         }
+        //TODO After we initially do this when setting up the cache, we should need to anymore, because if there isn't one then we already checked or used it and need to create a new one
         var _self = this;
+        console.log('\nQuering for MetadataContainerMember');
         Entity.MetadataContainerMembers.query(
             ['Id', 'MetadataContainerId', 'ContentEntityId', 'Body', 'SymbolTable'], 
             "MetadataContainerId='" + mc.get('Id') + "' AND ContentEntityId='" + entity.get('Id') + "'", 
@@ -261,7 +320,9 @@ util.inherits(SalesForce, Plugin);
                         ContentEntityId : entity.get('Id'),
                         Body : entity.get('Body')
                     });
+                    console.log('\nCreating new MetatdataContainerMember for ' + entity.get('Name') + ' in MetatdataContainer ' + mc.get('Id'));
                     mcm.create(function(data) {
+                        //console.log('Adding entity '+id+' to member cache');
                         _self.memberCache[id] = mcm;
                         sfdcUtil.cont(callback, mcm);
                     });
@@ -270,7 +331,9 @@ util.inherits(SalesForce, Plugin);
                     //Update the member with the new body
                     //console.log(entity.get('Body'));
                     mcm.set('Body', entity.get('Body'));
+                    console.log('\nUpdating MetatdataContainerMember ' + mcm.get('Id') + ' with new body');
                     mcm.update(function() {
+                        //console.log('Adding entity '+id+' to member cache');
                         _self.memberCache[id] = mcm;
                         sfdcUtil.cont(callback, mcm);
                     });
@@ -282,7 +345,7 @@ util.inherits(SalesForce, Plugin);
     var waitForDeployToFinish = function(car, callback) {
         car.refresh(function() {
             var state = car.get('State');
-            console.log(state);
+            console.log('\nPolling ContainerAsyncRequest ' + car.get('Id') + ' with state ' + state);
             if (state !== 'Queued' && state !== 'InProgress') {
                 sfdcUtil.cont(callback, car);
             } else {
@@ -291,14 +354,14 @@ util.inherits(SalesForce, Plugin);
         });
     };
     
-    this.deployContainer = function(mc, save, callback) {
+    this.deployContainer = function(mc, isCheckOnly, callback) {
         var car = new Entity.ContainerAsyncRequest({
             MetadataContainerId : mc.get('Id'),
-            isCheckOnly : !save//true
+            isCheckOnly : isCheckOnly
         });
         car.create(function () {
             var id = car.get('Id');
-            console.log(id);
+            console.log('\nDeploying MetatdataContainer '+mc.get('Id')+' in ContainerAsyncRequest '+id);
             //Need to poll to check the results
             waitForDeployToFinish(car, function() {
                 //TODO might want to send back the async request?
@@ -307,11 +370,38 @@ util.inherits(SalesForce, Plugin);
         });  
     };
     
-    this.compile = function(mc, mcm, callback) {
+    this.compile = function(apexClass, callback) {
+        this.deployApex(apexClass, false, callback);
+    };
+    
+    this.save = function(apexClass, callback) {
+        this.deployApex(apexClass, true, callback);
+    };
+    
+    this.deployApex = function(apexClass, save, callback) {
+        var mcName = 'SymbolTableContainer';
         var _self = this;
-        this.deployContainer(mc, false, function(car) {
+        _self.getContainer(mcName, function(mc) {
+            _self.getMember(mc, apexClass, function(mcm) {
+                //Passes in the compile restuls (error or symbol table) to the callback
+                _self.deployContainerMember(mc, mcm, !save, callback);
+            });
+        });
+    };
+    
+    //Deploy container member and handel errors or refresh the member
+    this.deployContainerMember = function(mc, mcm, isCheckOnly, callback) {
+        var _self = this;
+        this.deployContainer(mc, isCheckOnly, function(car) {
             var compileResults = {};
-            compileResults.Id = mc.get('ContentEntityId');
+            compileResults.Id = mcm.get('ContentEntityId');
+            
+            //If we deployed this member, we can no longer use it, so delete it from the cache
+            if (_self.memberCache[compileResults.Id]) {
+                //console.log('Deleting entity '+compileResults.Id+' from member cache');
+                delete _self.memberCache[compileResults.Id];
+            }
+            
             if (car.get('State') === 'Error') {
                 //console.log(car);
                 var error;
@@ -346,20 +436,15 @@ util.inherits(SalesForce, Plugin);
     
     this.getSymbolTable = function(folder, apexClass, success, failure) {
         var _self = this;
-        var mcName = 'SymbolTableContainer';
-        _self.getContainer(mcName, function(mc) {
-            _self.getMember(mc, apexClass, function(mcm) {
-                _self.compile(mc, mcm, function(results) {
-                    if (results.symbolTable) {
-                        var path = folder + '/' + apexClass.get('Name') + '.st';
-                        fs.writeFile(path, JSON.stringify(results.symbolTable, null, 4), emptyCallback);
-                        results.cont(success, results.symbolTable);
-                    }
-                    if (results.error) {
-                        sfdcUtil.cont(failure, results.error);
-                    }
-                });
-            });
+        _self.compile(apexClass, function(results) {
+            if (results.symbolTable) {
+                var path = folder + '/' + apexClass.get('Name') + '.st';
+                fs.writeFile(path, JSON.stringify(results.symbolTable, null, 4), emptyCallback);
+                sfdcUtil.cont(success, results.symbolTable);
+            }
+            if (results.error) {
+                sfdcUtil.cont(failure, results.error);
+            }
         });
     };
     
@@ -379,9 +464,10 @@ util.inherits(SalesForce, Plugin);
         getSymbolTable(new Entity.ApexClass(classes[0]));
     });
     */
-    this.syncEntityFolder = function(path, typeInfo) {
+    this.syncEntityFolder = function(path, typeInfo, callback) {
         var _self = this;
         var pluralName = typeInfo.plural;
+        
         Entity[pluralName].describe(function(data) {
             _self.entities[pluralName] = [];
             var fields = data.fields;
@@ -390,13 +476,14 @@ util.inherits(SalesForce, Plugin);
             
             var fieldNames = sfdcUtil.getNames(fields);
             Entity[pluralName].query(fieldNames, null, function(records) {
-                console.log('Found ' + records.length + ' ' + pluralName);
+                console.log('\nFound ' + records.length + ' ' + pluralName);
                 for (var i = 0; i < records.length; i++) {
                     var data = records[i];
                     _self.entities[pluralName][data.Name] = new Entity[typeInfo.name](data);
                     if (typeInfo.fileBodyField && typeInfo.fileExtension) {
                         var fileName = data.Name + '.' + typeInfo.fileExtension;
                         var body = data[typeInfo.fileBodyField];
+                        console.log('Writing file '+fileName);
                         fs.writeFile(path + '/' + fileName, body, emptyCallback);
                         //No need to have this in the JSON too. Maybe use delete?
                         data.Body = 'In file ' + fileName;
@@ -404,9 +491,18 @@ util.inherits(SalesForce, Plugin);
                     //console.log(_self.entities[pluralName][data.Name].get('Body'));
                     fs.writeFile(path + '/' + (data.Name ? data.Name : data.Id) + '.json', JSON.stringify(data, null, 4), emptyCallback);
                 }
+                console.log(' ');
+                function finishProgress() {
+                    setTimeout(function() {
+                        //I have to do this because I stop saving to save it to the server, which I don't want to do when I refresh the server. So wait till the files are finshed being created
+                        sfdcUtil.cont(callback);
+                    }, 1000);
+                }
                 //TODO Check this differently than checking the type here
                 if (pluralName === 'ApexClasses') {
-                    _self.getSymbolTableOnFirstClassInEntities(path);
+                    _self.getSymbolTableOnFirstClassInEntities(path, finishProgress);
+                } else {
+                    finishProgress();
                 }
             });
         });

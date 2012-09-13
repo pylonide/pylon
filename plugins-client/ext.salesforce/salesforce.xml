@@ -56,9 +56,9 @@
                         </a:hbox>
                         <a:divider />
                         <a:hbox align="center" edge="5 0 5 0" padding="5">
-                            <a:button width="80"
+                            <a:button width="150"
                               default = "1"
-                              caption = "Save"
+                              caption = "Authenticate"
                               onclick = "require('ext/salesforce/salesforce').saveOrganization()"
                             />
                             <!--<a:button width="100"
@@ -87,8 +87,8 @@
     </a:window>
     
     <a:window
-      id        = "downloadLog"
-      title     = "Download Log"
+      id        = "searchMethods"
+      title     = "Search Methos"
       icon      = ""
       center    = "true"
       resizable = "true"
@@ -100,16 +100,48 @@
       kbclose   = "true"
       draggable = "true">
         <a:vbox id="log" anchors="0 0 0 0" edge="0 0 11 0">
-            <a:hbox edge="0 0 5 0" padding="5">
-                <a:label textAlign="right" width="100">Log Id:</a:label>
+            <a:hbox edge="5">
+                <a:label textAlign="right" width="100" edge="10">Filter:</a:label>
                 <a:textbox id="logId" flex="1" realtime="true" />
             </a:hbox>
-            
+            <!--
             <a:hbox align="center" edge="5 0 5 0" padding="5">
                 <a:button width="80"
                   default = "1"
                   caption = "Get log"
                   onclick = "require('ext/salesforce/salesforce').downloadLog()"
+                />
+            </a:hbox>
+            -->
+            <a:vbox id="methodOutput">
+            
+            </a:vbox>
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+      id        = "errorWindow"
+      title     = "Server error: "
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "close"
+      modal     = "false"
+      skin      = "bk-window"
+      width     = "650"
+      height    = "250"
+      kbclose   = "true"
+      draggable = "true">
+        <a:vbox id="log" anchors="0 0 0 0" edge="0 0 11 0">
+            <a:hbox edge="20" padding="50" id="errorText">
+                
+            </a:hbox>
+            
+            <a:hbox align="center" edge="10" padding="10">
+                <a:button width="100"
+                  default = "1"
+                  caption = "Close"
+                  onclick = "errorWindow.close()"
                 />
             </a:hbox>
             <a:vbox id="logOutput">

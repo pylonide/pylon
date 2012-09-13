@@ -19,7 +19,7 @@ var stripws = require("ext/stripws/stripws");
 var tooltip = require("ext/tooltip/tooltip");
 
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 500;
+var CHANGE_TIMEOUT = 2000;
 
 module.exports = ext.register("ext/autosave/autosave", {
     name: "Autosave",
