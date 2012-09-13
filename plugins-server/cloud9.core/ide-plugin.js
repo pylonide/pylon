@@ -90,8 +90,13 @@ module.exports = function setup(options, imports, register) {
                     return;
                 }
 
-                next();
-                pause.resume();
+				// Guard against `Can't set headers after they are sent. Error: Can't set headers after they are sent.`.
+				try {
+	                next();
+	                pause.resume();
+				} catch(err) {
+					console.error(err.stack);
+				}
             });
         });
 

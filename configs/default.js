@@ -25,8 +25,8 @@ var host = argv.l || process.env.IP || "localhost";
 var config = [
     {
         packagePath: "connect-architect/connect",
-        port: port,
-        host: host
+        host: host,
+        port: port
     }, {
         packagePath: "./cloud9.sourcemint",
         prefix: "/static/bundles",
@@ -59,7 +59,6 @@ var config = [
         debug: false,
         fsUrl: fsUrl,
         smithIo: {
-            host: host,
             port: port,
             prefix: "/smith.io/server"
         },
@@ -156,7 +155,7 @@ var config = [
     {
         packagePath: "smith.io/server-plugin",
         clientRoute: "/static/smith.io/client.js",
-        messageRoute: "/smith.io/server"        
+        messagePath: "/smith.io/server"
     },
     "./cloud9.socket",
     {

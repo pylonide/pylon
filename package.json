@@ -12,7 +12,7 @@
 
     "pm": "sm",
     "dependencies": {
-        "connect": "1.8.x",
+        "connect": "1.8.7",
 
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",
@@ -27,12 +27,10 @@
         "async": "0.1.21",
         "netutil": "0.0.1",
         "architect": "0.1.4",
-        "connect-architect": "0.0.3",
+        "connect-architect": "0.0.5",
 
-        "smith.io": "0.0.10",
-        "events": "0.5.0",
-        "engine.io-client": "0.2.0",
-		"msgpack-js-browser": "0.1.3"
+        "smith.io": "0.0.20",
+        "msgpack-js-browser": "0.1.3"
     },
 
     "devDependencies": {
@@ -53,7 +51,8 @@
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/61841e99eda6ea9a8b801fd145b9a0af286ad324"],
         "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43bd19b9e7b2ddb95bdc1116143ce7fb22c6a5d3"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/d7ab6ada6ec802f8d4107dae038327c7fa9c5601"],
-        "smith":        ["npm", "https://github.com/c9/smith/tarball/0080a7cd8308401473941aa97a02043c0467467e"]
+        "smith":        ["npm", "https://github.com/c9/smith/tarball/0080a7cd8308401473941aa97a02043c0467467e"],
+        "engine.io-client":     ["npm", "https://github.com/c9/engine.io-client/tarball/cdf25f5461821b7a80843d87414e2ee1add02873"]        
     },
 
     "repository" : {

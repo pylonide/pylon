@@ -21,10 +21,14 @@ module.exports = function setup(options, imports, register) {
     }]);
 
     imports.static.addStatics([{
-        path: PATH.dirname(require.resolve("events/events")),
+        path: PATH.join(__dirname, "www"),
         mount: "/events/lib",
         rjs: {
-            "events": "/events/lib/events",
+            "events": "/events/lib/events"
+        },
+        router: function(req, res) {
+            req.url = "/events.js";
+            res.setHeader("Content-Type", "application/javascript");
         }
     }]);
 
@@ -33,18 +37,6 @@ module.exports = function setup(options, imports, register) {
         mount: "/msgpack-js/lib",
         rjs: {
             "msgpack-js": "/msgpack-js/lib/msgpack",
-        }
-    }]);
-
-    imports.static.addStatics([{
-        path: PATH.join(__dirname, "www"),
-        mount: "/raw.github.com/Gozala/extendables/v0.2.0/extendables.js",
-        rjs: {
-            "extendables": "/"
-        },
-        router: function(req, res) {
-            req.url = "/extendables.js";
-            res.setHeader("Content-Type", "application/javascript");
         }
     }]);
 
