@@ -939,7 +939,7 @@ apf.MultiselectBinding = function(){
         if (this.signalXmlUpdate && actionFeature[action] & 16) {
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
-                if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
+                if (parseInt(uniqueId, 10) != uniqueId) continue; //safari_old stuff
 
                 var o = apf.lookup(uniqueId);
                 if (!this.selected) continue;
@@ -975,7 +975,7 @@ apf.MultiselectBinding = function(){
         }
         // #endif
 
-        var htmlNode, lastNode;
+        var htmlNode, lastNode, loopNode;
         isChild          = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);
