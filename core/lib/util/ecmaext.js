@@ -51,17 +51,16 @@ Function.prototype.dataType = apf.FUNCTION;
  * @see core.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
-    var vars = [];
+    var prop, vars = [];
 
     function recur(o, stack) {
-        var prop;
         if (apf.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
-        } 
+        }
         else if (typeof o == "object") {
             for (prop in o) {
-                if (apf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
                     continue;
 
                 if (typeof o[prop] == "function")
@@ -77,7 +76,8 @@ apf.getCgiString = function(args, multicall, mcallname){
         vars.push("func=" + mcallname);
         for (var i = 0; i < args[0].length; i++)
             recur(args[0][i], "f%5B" + i + "%5D");
-    } else {
+    }
+    else {
         for (prop in args) {
             if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                 continue;
@@ -161,7 +161,7 @@ Function.prototype.extend = function() {
  * @see apf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
-    var __method = this, 
+    var __method = this,
         args     = Array.prototype.slice.call(arguments),
         o        = args.shift(),
         ev       = args.shift();
@@ -179,31 +179,31 @@ Function.prototype.bindWithEvent = function() {
 
 /**
  * The bind function creates a new function (a bound function) that calls the
- * function that is its this value (the bound function's target function) with 
- * a specified this parameter, which cannot be overridden. bind also accepts 
- * leading default arguments to provide to the target function when the bound 
- * function is called.  A bound function may also be constructed using the new 
- * operator: doing so acts as though the target function had instead been 
- * constructed.  The provided this value is ignored, while prepended arguments 
+ * function that is its this value (the bound function's target function) with
+ * a specified this parameter, which cannot be overridden. bind also accepts
+ * leading default arguments to provide to the target function when the bound
+ * function is called.  A bound function may also be constructed using the new
+ * operator: doing so acts as though the target function had instead been
+ * constructed.  The provided this value is ignored, while prepended arguments
  * are provided to the emulated function.
- * 
+ *
  * @param {Object} context The 'this' context of the bound function
  * @type Function
  */
-if (!Function.prototype.bind)  
-    Function.prototype.bind = function(context /*, arg1, arg2... */) {  
-        if (typeof this !== 'function') throw new TypeError();  
-        var _arguments = Array.prototype.slice.call(arguments, 1),  
-            _this = this,  
-            _concat = Array.prototype.concat,  
-            _function = function() {  
-                return _this.apply(this instanceof _dummy ? this : context,  
-                    _concat.apply(_arguments, arguments));  
-            },  
-            _dummy = function() {};  
-        _dummy.prototype = _this.prototype;  
-        _function.prototype = new _dummy();  
-        return _function;  
+if (!Function.prototype.bind)
+    Function.prototype.bind = function(context /*, arg1, arg2... */) {
+        if (typeof this !== 'function') throw new TypeError();
+        var _arguments = Array.prototype.slice.call(arguments, 1),
+            _this = this,
+            _concat = Array.prototype.concat,
+            _function = function() {
+                return _this.apply(this instanceof _dummy ? this : context,
+                    _concat.apply(_arguments, arguments));
+            },
+            _dummy = function() {};
+        _dummy.prototype = _this.prototype;
+        _function.prototype = new _dummy();
+        return _function;
 };
 
 /**
@@ -268,21 +268,120 @@ Array.prototype.equals = function(obj){
 
 /**
  * Make sure that an array instance contains only unique values (NO duplicates).
+ * Elaborate implementation to allow for O(n) time complexity compared to O(n^2)
+ * time complexity when using Array.prototype.indexOf.
+ * @see http://bbenvie.com/articles/2012-06-10/Array-prototype-unique-in-O-n-time-complexity
+ * @see http://jsperf.com/array-unique2/9
  *
  * @type {Array}
  */
-Array.prototype.makeUnique = function(){
-    var i, length, newArr = [];
-    for (i = 0, length = this.length; i < length; i++)
-        if (newArr.indexOf(this[i]) == -1)
-            newArr.push(this[i]);
+var uniqueBenvie = function(){
+    var hasOwn = {}.hasOwnProperty,
+        uids = {};
 
-    this.length = 0;
-    for (i = 0, length = newArr.length; i < length; i++)
-        this.push(newArr[i]);
+    // use hash for primitives and tagging for objects
+    function uid(){
+        var chars = [], i = 20, num;
+        while (i--) {
+            num = Math.random() * 52 | 0;
+            chars[i] = String.fromCharCode(num + (num >= 26 ? 71 : 65));
+        }
+        chars = chars.join("");
 
-    return this;
-};
+        if (chars in uids)
+            return uid();
+
+        uids[chars] = true;
+        return chars;
+    }
+
+    function unique(array){
+        var strings = {}, numbers = {}, others = {},
+            tagged = [], failed = [],
+            count = 0, i = array.length,
+            item, type;
+
+        var id = uid();
+
+        while (i--) {
+            item = array[i];
+            type = typeof item;
+            if (item === null || type !== "object" && type !== "function") {
+                // primitive
+                switch (type) {
+                    case "string":
+                        strings[item] = true;
+                        break;
+                    case "number":
+                        numbers[item] = true;
+                        break;
+                    default:
+                        others[item] = item;
+                        break;
+                }
+            }
+            else {
+                // object
+                if (!hasOwn.call(item, id)) {
+                    try {
+                        item[id] = true;
+                        tagged[count++] = item;
+                    }
+                    catch (e){
+                        if (failed.indexOf(item) === -1)
+                            failed[failed.length] = item;
+                    }
+                }
+            }
+        }
+
+        // remove the tags
+        while (count--)
+            delete tagged[count][id];
+
+        tagged = tagged.concat(failed);
+        count = tagged.length;
+
+        // append primitives to results
+        for (i in strings)
+            if (hasOwn.call(strings, i))
+                tagged[count++] = i;
+
+        for (i in numbers)
+            if (hasOwn.call(numbers, i))
+                tagged[count++] = +i;
+
+        for (i in others)
+            if (hasOwn.call(others, i))
+                tagged[count++] = others[i];
+
+        return tagged;
+    }
+
+    return unique;
+}();
+
+if (typeof Set !== "undefined") {
+    Array.prototype.makeUnique = function(){
+        var out = [],
+            seen = new Set,
+            i = this.length;
+
+        while (i--) {
+            if (!seen.has(this[i])) {
+                out[out.length] = this[i];
+                seen.add(this[i]);
+            }
+        }
+
+        return out;
+    }
+}
+else {
+    Array.prototype.makeUnique = function(){
+        return uniqueBenvie(this);
+    };
+}
 
 /**
  * Check if this array instance contains a value 'obj'.
@@ -735,7 +834,7 @@ String.prototype.toXml = function(){
 };
 
 
-if (typeof window != "undefined" && typeof window.document != "undefined" 
+if (typeof window != "undefined" && typeof window.document != "undefined"
   && typeof window.document.createElement == "function") {
     /**
      * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
@@ -889,9 +988,9 @@ String.prototype.sprintf = function() {
 };
 
 /**
- * The now method returns the milliseconds elapsed since 
+ * The now method returns the milliseconds elapsed since
  * 1 January 1970 00:00:00 UTC up until now as a number.
- * 
+ *
  * @type {Number}
  */
 if (!Date.now) {
