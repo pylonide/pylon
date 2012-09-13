@@ -45,7 +45,6 @@
         "apf-packaged/apf_release",
         "core/document",
         "core/ext",
-        "raw.github.com/Gozala/extendables/v0.2.0/extendables",
         "core/ide",
         "core/settings", 
         "core/util", 
