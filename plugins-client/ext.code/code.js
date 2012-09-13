@@ -353,38 +353,7 @@ module.exports = ext.register("ext/code/code", {
 
     hook: function() {
         var _self = this;
-
-        var fnWrap = function(command){
-            command.readOnly = command.readOnly || false;
-            command.focusContext = true;
-
-            var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor, event) {
-                if (event instanceof KeyboardEvent &&
-                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
-                    return false;
-
-                return isAvailable ? isAvailable(editor) : true;
-            };
-
-            command.findEditor = function(editor) {
-                if (editor && editor.ceEditor)
-                    return editor.ceEditor.$editor;
-                return editor;
-            };
-        };
-
-        if (!defaultCommands.wrapped) {
-            defaultCommands.each(fnWrap, defaultCommands);
-            defaultCommands.wrapped = true;
-        }
-        if (!MultiSelectCommands.wrapped) {
-            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
-            MultiSelectCommands.wrapped = true;
-        }
-
-        commands.addCommands(defaultCommands, true);
-        commands.addCommands(MultiSelectCommands, true);
+        this.wrapAceCommands();
 
         commands.addCommand({
             name: "syntax",
@@ -448,21 +417,60 @@ module.exports = ext.register("ext/code/code", {
                 editor.afterOpenFile(editor.getSession(), path);
             }
         });
+        
+        this.registerMenuItems();
+    },
+    
+    wrapAceCommands: function() {
+        var fnWrap = function(command){
+            command.readOnly = command.readOnly || false;
+            command.focusContext = true;
 
+            var isAvailable = command.isAvailable;
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
+                    return false;
+
+                return isAvailable ? isAvailable(editor) : true;
+            };
+
+            command.findEditor = function(editor) {
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
+                return editor;
+            };
+        };
+
+        if (!defaultCommands.wrapped) {
+            defaultCommands.each(fnWrap, defaultCommands);
+            defaultCommands.wrapped = true;
+        }
+        if (!MultiSelectCommands.wrapped) {
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
+            MultiSelectCommands.wrapped = true;
+        }
+
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
+        
+        
         // Override ACE key bindings (conflict with goto definition)
         commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Alt-Shift-R" };
         commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Alt-R" };
         commands.addCommand(commands.commands.togglerecording);
         commands.addCommand(commands.commands.replaymacro);
-
-        c = 20000;
+    },
+    
+    registerMenuItems: function() {
+        var c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
             addEditorMenu("Tools/Toggle Macro Recording", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
 
-        var c = 600;
+        c = 600;
         this.menus.push(
             menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
             menus.addItemByPath("Edit/Line/", null, c += 100),
