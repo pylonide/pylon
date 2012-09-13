@@ -24,6 +24,7 @@ var namedColors = apf.color.colorshex;
 
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
+// markup = markup.replace(/\{ide\.staticPrefix\}/g, ide.staticPrefix);
 var skin = require("text!ext/colorpicker/skin.xml");
 
 var markupSettings = require("text!ext/colorpicker/settings.xml");
@@ -69,7 +70,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     name   : "Colorpicker Code Tool",
     alone  : true,
     type   : ext.GENERAL,
-    skin   : skin,
+    skin   : {
+        id   : "colorpicker",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/colorpicker/images/"
+    },
 
     nodes : [],
 
