@@ -47,7 +47,7 @@
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/7bd83a46d97ef2f79d8afe9bf38fec5c3745016a"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/266b87a91c7498b3f4fc77f79da9a4cc53be7f8f"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/53818b85736cbe12f63a7cd46e4cbc4214d1c64c"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/187780281fde4d8a59b3a5e6e1ed77bc5374cb69"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/9d7e39b1221bfecb2b462079e77193d19898adaa"],
         "vfs":          ["npm", "https://github.com/c9/vfs/tarball/61841e99eda6ea9a8b801fd145b9a0af286ad324"],
