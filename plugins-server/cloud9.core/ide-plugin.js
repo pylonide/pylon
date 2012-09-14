@@ -60,7 +60,8 @@ module.exports = function setup(options, imports, register) {
             version: options.version || null,
             requirejsConfig: {
                 baseUrl: staticPrefix,
-                paths: imports.static.getRequireJsPaths()
+                paths: imports.static.getRequireJsPaths(),
+                packages: imports.static.getRequireJsPackages()
             },
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
