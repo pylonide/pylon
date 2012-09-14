@@ -27,7 +27,7 @@
         },
         {
             "name": "smith",
-            "location": "node_modules/smith.io/node_modules/smith",
+            "location": "node_modules/smith",
             "main": "smith.js"
         },
         {
