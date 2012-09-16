@@ -7,6 +7,8 @@
 
 define(function(require, exports, module) {
 
+/*global tabEditors mnuContextTabs mnuContext trFiles*/
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
@@ -752,7 +754,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     removeItem: function(page) {
-        var item, idx, keyId;
+        var item;
         var i = 0;
         var l = this.nodes.length;
         var _self = this;

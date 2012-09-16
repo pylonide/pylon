@@ -7,11 +7,12 @@
 
 define(function(require, exports, module) {
 
+/*global tabEditors ceEditor*/
+
 require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
@@ -463,6 +464,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     registerMenuItems: function() {
+        var _self = this;
         var c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
