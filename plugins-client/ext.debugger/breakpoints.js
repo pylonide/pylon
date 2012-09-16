@@ -200,6 +200,8 @@ module.exports = {
         session.on("change", session.$breakpointListener);
     },
     updateSession: function(session) {
+        if (!session.c9doc)
+            return;
         var rows = [];
         var path = session.c9doc.getNode().getAttribute("path");
         var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path='" + path + "']");
@@ -303,8 +305,7 @@ module.exports = {
         var page = tabEditors.$activepage;
         if (page && page.$editor && page.$editor.ceEditor) {
             var session = page.$editor.ceEditor.$editor.session;
-            if (session.c9doc)
-                this.updateSession(session);
+            this.updateSession(session);
         }
     }
 };

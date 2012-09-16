@@ -219,12 +219,12 @@ module.exports = ext.register("ext/code/code", {
         if (self.ceEditor)
             self.ceEditor.setAttribute("syntax", this.getSyntax(file));
     },
-    
+
     getContentType : function(node) {
         var syntax = this.getSyntax(node);
         if (!syntax)
             return "auto";
-        
+
         return SupportedModes[syntax].mime || "auto";
     },
 
@@ -266,7 +266,7 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
-                
+
                 if (!doc || !doc.acesession)
                     return; //This is probably a deconstructed document
 
@@ -328,7 +328,7 @@ module.exports = ext.register("ext/code/code", {
                     //??? call doc.$page.destroy()
                 });
             });
-            
+
             doc.dispatchEvent("init");
         }
 
@@ -413,14 +413,14 @@ module.exports = ext.register("ext/code/code", {
                 var path = (e.nextPage.name.indexOf(e.currentTarget.davPrefix) === 0 ?
                     e.nextPage.name.substr(e.currentTarget.davPrefix.length) :
                     e.nextPage.name).replace(/^\/+/, "")
-                
+
                 editor.afterOpenFile(editor.getSession(), path);
             }
         });
-        
+
         this.registerMenuItems();
     },
-    
+
     wrapAceCommands: function() {
         var fnWrap = function(command){
             command.readOnly = command.readOnly || false;
@@ -453,15 +453,15 @@ module.exports = ext.register("ext/code/code", {
 
         commands.addCommands(defaultCommands, true);
         commands.addCommands(MultiSelectCommands, true);
-        
-        
+
+
         // Override ACE key bindings (conflict with goto definition)
         commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Alt-Shift-R" };
         commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Alt-R" };
         commands.addCommand(commands.commands.togglerecording);
         commands.addCommand(commands.commands.replaymacro);
     },
-    
+
     registerMenuItems: function() {
         var c = 20000;
         this.menus.push(
@@ -656,11 +656,11 @@ module.exports = ext.register("ext/code/code", {
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;
-                        
+
                     var page = tabEditors.getPage();
-                    if (page.$model) 
+                    if (page.$model)
                         return apf.isTrue(page.$model.queryValue("@wrapmode"));
-                    
+
                     return false;
                 }
             }), 600000)
@@ -778,11 +778,11 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("afteronline", function(){
             menus.menus["View/Syntax"].enable();
         });
-        
+
         ide.addEventListener("animate", function(e){
             if (!ceEditor.$ext.offsetHeight)
                 return;
-        
+
             if (e.type == "editor") {
                 var renderer = ceEditor.$editor.renderer;
                 renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
@@ -791,19 +791,56 @@ module.exports = ext.register("ext/code/code", {
                 if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getHeight() - parseInt(e.options.height);
                     if (delta < 0) return;
-                    
+
                     var renderer = ceEditor.$editor.renderer;
                     renderer.onResize(true, null, null, ceEditor.getHeight() + delta);
                 }
                 else if (e.options.width != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getWidth() - parseInt(e.options.width);
                     if (delta < 0) return;
-                    
+
                     var renderer = ceEditor.$editor.renderer;
                     renderer.onResize(true, null, ceEditor.getWidth() + delta);
                 }
             }
         });
+        
+        // display feedback while loading files
+        var isOpen, bgMessage, startTime;
+        var checkLoading = function(e) {
+            if (!ceEditor.xmlRoot)
+                return;
+            var loading = ceEditor.xmlRoot.hasAttribute("loading");
+            var container = ceEditor.$editor.container;
+
+            if (loading) {
+                startTime = Date.now();
+                if (!bgMessage || !bgMessage.parentNode) {
+                    bgMessage = bgMessage|| document.createElement("div");
+                    bgMessage.className = "ace_smooth_loading";
+                    container.parentNode.appendChild(bgMessage);
+                }
+                bgMessage.textContent = "...Loading " + ceEditor.xmlRoot.getAttribute("name") + "...";
+                container.style.transitionProperty = "opacity";
+                container.style.transitionDuration = "300ms";
+                container.style.pointerEvents = "none";
+                container.style.opacity = 0;
+                isOpen = true;
+            } else if (isOpen) {
+                if (startTime - Date.now() < 300) {
+                    container.style.transitionDuration = "0.1s";
+                }
+                isOpen = false;
+                container.style.opacity = 1;
+                container.style.pointerEvents = "";
+            }
+        };
+
+        ide.addEventListener("openfile", function(){
+            setTimeout(checkLoading, 0);
+        });
+        ide.addEventListener("afteropenfile", checkLoading);
+        ide.addEventListener("tab.afterswitch", checkLoading);
     },
 
     /**
@@ -910,3 +947,5 @@ module.exports = ext.register("ext/code/code", {
 });
 
 });
+
+
