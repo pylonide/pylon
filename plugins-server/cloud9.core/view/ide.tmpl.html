@@ -67,20 +67,19 @@
             
             var config = <%requirejsConfig%>; 
 
-            var splashNode;
+            function createSplash() {
+                var loadingIde = document.createElement('div');
+                loadingIde.setAttribute("id", "loadingide");
+                loadingIde.setAttribute("style", "background:#000 url(images/loader.gif) no-repeat center center;height: 100%;width: 100%;position: fixed;z-index: 1000;left: 0;top: 0;");
+                document.body.appendChild(loadingIde);
+            }
+
             require(config, [apfLoc], function(){
-                var splashMarkup = '<a:application xmlns:a="http://ajax.org/2005/aml"><a:hbox id="loads2" style="background:#000 url(images/loader.gif) no-repeat center center;height: 100%;width: 100%;position: fixed;z-index: 1000;left: 0;top: 0;"></a:hbox></a:application>';
-                apf.addEventListener("load", function() {
-                /*  var loadingIde = document.createElement('div');
-                    loadingIde.setAttribute("id", "loadingide");
-                    loadingide.setAttribute("style", "background:#000 url(images/loader.gif) no-repeat center center;height: 100%;width: 100%;position: fixed;z-index: 1000;left: 0;top: 0;");
-                    document.body.appendChild(loadingIde); */
-                    apf.document.documentElement.insertMarkup(splashMarkup, {
-                        callback: function(add){
-                            splashNode = add.addedNode;
-                        }
-                    });
-                });
+                if (typeof apf === "undefined")
+                    setTimeout(createSplash);
+                else
+                    apf.addEventListener("load", function() { createSplash(); });
+
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
                     "core/settings", "ext/main/main", "ext/editors/editors",
@@ -140,8 +139,9 @@
                 console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
 
-                apf.document.documentElement.removeChild(splashNode);
-                // document.body.removeChild(document.getElementById("loadingide"));
+                var loadingDiv = document.getElementById("loadingide");
+                if (loadingDiv)
+                    document.body.removeChild(loadingDiv);
 
                 ide.addEventListener("$event.extload", function(cb){
                     cb();
@@ -168,47 +168,6 @@
         //]]>
         </script>
     </head>
-    <body style="display:none">
-        <div id="noscript">
-            <div class="noscript">
-                <div id="hp_header">
-                    <div id="logo"></div>
-                </div>
-                <div class="oldbro_middle_panel">
-                    <div class="content">
-                        <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
-                        <span class="browser_option">
-                            <a href="http://www.mozilla.com/firefox" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ff_32x32.png" alt="" />
-                                <div>Mozilla Firefox</div>
-                            </a>
-                        </span>
-                        <span class="browser_option" style="width:50px;">
-                            <a href="http://www.apple.com/safari" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/safari_32x32.png" alt="" />
-                                <div>Safari</div>
-                            </a>
-                        </span>
-                        <span class="browser_option">
-                            <a href="http://www.google.com/chrome" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/chrome_32x32.png" alt="" />
-                                <div>Google Chrome</div>
-                            </a>
-                        </span>
-                        <span class="browser_option">
-                            <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ie_32x32.png" alt="" />
-                                <div>Internet Explorer</div>
-                            </a>
-                        </span>
-                    </div>
-                </div>
-                <div class="wn_main_section_rounded">
-                    <div class="wnmsr_left"></div>
-                    <div class="wnmsr_middle"></div>
-                    <div class="wnmsr_right"></div>
-                </div>
-            </div>
-        </div>
+    <body>
     </body>
 </html>
