@@ -59,6 +59,7 @@ plugins-client/lib.ace/www/worker/worker-language.js : $(wildcard plugins-client
         $(wildcard node_modules/treehugger/lib/*/*) \
         $(wildcard node_modules/ace/lib/*) \
         $(wildcard node_modules/ace/*/*) \
+        node_modules/ace/lib/ace/worker/worker.js \
         Makefile.dryice.js
 	mkdir -p plugins-client/lib.ace/www/worker
 	rm -rf /tmp/c9_worker_build

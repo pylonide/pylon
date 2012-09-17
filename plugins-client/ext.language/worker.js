@@ -270,25 +270,33 @@ function asyncParForEach(array, fn, callback) {
      * Registers a handler by loading its code and adding it the handler array
      */
     this.register = function(path) {
+        var handler;
         try {
-            var handler = require(path);
-            handler.proxy = this.serverProxy;
-            handler.sender = this.sender;
-            this.handlers.push(handler);
-            this.$initHandler(handler, null, function() {});
+            handler = require(path);
         } catch (e) {
-            if (isWorkerEnabled())
-                throw new Error("Could not load language handler " + path, e);
-            // In ?noworker=1 debugging mode, synchronous require doesn't work
+            // Only packed worker plugins can be loaded like this
+        }
+        if (handler) {
+            this.$registerLoaded(path, handler)
+        }
+        else {
+            // Patch path for worker's require()
+            if (isWorkerEnabled() && !path.match("^\\w+://") && path[0] !== ".")
+                path = "./" + path;
             var _self = this;
             require([path], function(handler) {
-                if (!handler)
-                    throw new Error("Could not load language handler " + path, e);
-                handler.proxy = _self.serverProxy;
-                handler.sender = _self.sender;
-                _self.handlers.push(handler);
+                _self.$registerLoaded(path, handler);
             });
         }   
+    };
+
+    this.$registerLoaded = function(path, handler) {
+        if (!handler)
+            throw new Error("Could not load language handler " + path, e);
+        handler.proxy = this.serverProxy;
+        handler.sender = this.sender;
+        this.handlers.push(handler);
+        this.$initHandler(handler, null, function() {});
     };
 
     this.parse = function(callback, allowCached) {
