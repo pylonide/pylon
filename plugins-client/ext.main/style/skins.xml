@@ -2057,6 +2057,10 @@
             background-color: #85C410;
             right: 10px;
         }
+        .c9-toolbarbutton-glossy.error .c9-icon {
+            background-color: red;
+            right: 10px;
+        }
         .c9-toolbarbutton-glossy.save .c9-icon {
             background-color: #D01616;
             right: 10px;

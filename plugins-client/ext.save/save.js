@@ -312,6 +312,12 @@ module.exports = ext.register("ext/save/save", {
             callback(winCloseConfirm.all);
         });
     },
+    
+    ideIsOfflineMessage: function() {
+        util.alert("Cannot save", 
+            "Your connection appears to be down", 
+            "Please check your connection and try again");
+    },
 
     // `silentsave` indicates whether the saving of the file is forced by the user or not.
     quicksave : function(page, callback, silentsave) {
@@ -343,12 +349,16 @@ module.exports = ext.register("ext/save/save", {
             this.saveas(page, callback);
             return;
         }
+        
+        if (!ide.onLine) {
+            return this.ideIsOfflineMessage();
+        }
 
         if (callback) {
             ide.addEventListener("afterfilesave", function(e) {
                 if (e.node == node) {
                     callback();
-                    this.removeEventListener("afterfilesave", arguments.callee);
+                    ide.removeEventListener("afterfilesave", arguments.callee);
                 }
             });
         }
@@ -376,6 +386,18 @@ module.exports = ext.register("ext/save/save", {
             apf.xmldb.removeAttribute(node, "saving");
 
             if (state != apf.SUCCESS) {
+                // ide is not online, or away??
+                if (!ide.onLine || ide.connection.away) {
+                    // if we're doing a silent save, we'll ignore it
+                    // because its a not user triggered action
+                    if (silentsave) {
+                        return;
+                    }
+                    // otherwise we show a message that saving failed unfortunately
+                    return _self.ideIsOfflineMessage();
+                }
+                
+                // all other error cases
                 return util.alert(
                     "Could not save document",
                     "An error occurred while saving this document",

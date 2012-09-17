@@ -21,14 +21,17 @@ var tooltip = require("ext/tooltip/tooltip");
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
 
+var SAVING = 0;
+var SAVED = 1;
+
 module.exports = ext.register("ext/autosave/autosave", {
     name: "Autosave",
     dev: "Cloud9",
     alone: true,
     type: ext.GENERAL,
     offline: true,
-    nodes: [],
-
+    nodes: [ btnSave ],
+    
     docChangeTimeout: null,
     docChangeListeners: {},
 
@@ -45,6 +48,20 @@ module.exports = ext.register("ext/autosave/autosave", {
                 return;
 
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
+        });
+        
+        ide.addEventListener("afteroffline", function() {
+            self.disable();
+            
+            // don't pretend we're in progress
+            self.setUiStateOffline();
+        });
+        
+        ide.addEventListener("afteronline", function() {
+            self.enable();
+            
+            // the autosave thing will update the UI
+            self.doAutoSave();
         });
 
         btnSave.setAttribute("caption", "");
@@ -135,30 +152,23 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     setSaveButtonCaption: function(page) {
-        if (!self.btnSave)
+        var _self = this;
+        
+        if (!window.btnSave)
             return;
-
-        var SAVING = 0;
-        var SAVED = 1;
 
         btnSave.show();
         var page = page || tabEditors.getPage();
         if (page && !ide.readonly) {
             var hasChanged = Util.pageHasChanged(page);
-            if (this.isAutoSaveEnabled && hasChanged) {
+            if (_self.isAutoSaveEnabled && hasChanged) {
                 if (btnSave.currentState !== SAVING) {
-                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                    apf.setStyleClass(saveStatus, "saving", ["saved"]);
-                    btnSave.currentState = SAVING;
-                    btnSave.setCaption("Saving");
+                    _self.setUiStateSaving();
                 }
             }
             else if (!hasChanged) {
                 if (btnSave.currentState !== SAVED) {
-                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                    apf.setStyleClass(saveStatus, "saved", ["saving"]);
-                    btnSave.currentState = SAVED;
-                    btnSave.setCaption("Changes saved");
+                    _self.setUiStateSaved();
                 }
             }
         }
@@ -166,6 +176,36 @@ module.exports = ext.register("ext/autosave/autosave", {
             btnSave.setCaption("");
             btnSave.hide();
         }
+    },
+    
+    /**
+     * Set the UI state to 'saving'
+     */
+    setUiStateSaving: function () {
+        apf.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
+        apf.setStyleClass(saveStatus, "saving", ["saved"]);
+        btnSave.currentState = SAVING;
+        btnSave.setCaption("Saving");
+    },
+    
+    /**
+     * Set the UI state to 'saved'
+     */
+    setUiStateSaved: function () {
+        apf.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
+        apf.setStyleClass(saveStatus, "saved", ["saving"]);
+        btnSave.currentState = SAVED;
+        btnSave.setCaption("Changes saved");
+    },
+    
+    setUiStateOffline: function () {
+        //self.setUiStateSaved();
+        
+        // don't blink!
+        apf.setStyleClass(btnSave.$ext, "saved");
+        apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
+        
+        btnSave.setCaption("Offline cannot save");
     },
 
     doAutoSave: function() {
@@ -195,6 +235,10 @@ module.exports = ext.register("ext/autosave/autosave", {
             return;
 
         if ((forceSave !== true) && (!Util.pageHasChanged(page) || !Util.pageIsCode(page)))
+            return;
+            
+        // not online? then we're not going to save it
+        if (ide.onLine === false)
             return;
 
         var node = page.$doc.getNode();
@@ -251,7 +295,6 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     disable: function() {
-        this.hide();
         this.nodes.each(function(item){
             item.disable();
         });
