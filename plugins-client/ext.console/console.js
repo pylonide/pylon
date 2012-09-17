@@ -375,7 +375,7 @@ module.exports = ext.register("ext/console/console", {
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
 
-        if (txtConsolePrompt) // fix for c9local packed
+        if (window.txtConsolePrompt) // fix for c9local packed
             txtConsolePrompt.hide();
 
         if (spinnerElement) {
