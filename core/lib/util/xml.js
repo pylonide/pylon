@@ -101,20 +101,24 @@ apf.xmlEntityMap = {
 /**
  * Escapes "&amp;", greater than, less than signs, quotation marks and others into
  * the proper XML entities.
- * 
+ *
  * @param {String} str the xml string to escape.
+ * @param {Boolean} strictMode by default, this function attempts to NOT double-escape XML entities, this flag turns that behavior off.
  * @return {String} the escaped string.
  */
-apf.escapeXML = function(str) {
+apf.escapeXML = function(str, strictMode) {
     if (typeof str != "string")
         return str;
-    return (str || "")
-        .replace(/&/g, "&#38;")
+    if (strictMode)
+        str = (str || "").replace(/&/g, "&#38;");
+    else
+        str = (str || "").replace(/&(?!#[0-9]{2,5};|[a-zA-Z]{2,};)/g, "&#38;");
+    return str
         .replace(/"/g, "&#34;")
         .replace(/</g, "&#60;")
         .replace(/>/g, "&#62;")
         .replace(/'/g, "&#39;")
-        .replace(/&([a-z]+);/gi, function(a, m) {
+        .replace(/&([a-zA-Z]+);/gi, function(a, m) {
             var x = apf.xmlEntityMap[m.toLowerCase()];
             if (x)
                 return "&#" + (apf.isArray(x) ? x[0] : x) + ";";
@@ -268,7 +272,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
-        
+
         if (options.filter)
             nodes = options.filter(parentNode, nodes);
 
@@ -338,7 +342,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             nodeValue = nodeValue.replace(/&/g, "&amp;");
 
         var oldValue      = xmlNode.nodeValue;
-        xmlNode.nodeValue = nodeValue == undefined || nodeValue == null 
+        xmlNode.nodeValue = nodeValue == undefined || nodeValue == null
                               || nodeValue == NaN ? "" : String(nodeValue);
 
         if (undoObj) {
