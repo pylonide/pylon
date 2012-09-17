@@ -28,7 +28,10 @@ module.exports = function setup(options, imports, register) {
         if (err) return register(err);
         sandbox.getWorkspaceId(function(err, workspaceId) {
             if (err) return register(err);
-            init(projectDir, workspaceId);
+            pm.runnerTypes(function(err, runnerTypes) {
+                if (err) return register(err);
+                init(projectDir, workspaceId, runnerTypes);
+            });
         });
     });
 
@@ -43,10 +46,10 @@ module.exports = function setup(options, imports, register) {
         });
     }
 
-    function init(projectDir, workspaceId, settingsPath) {
+    function init(projectDir, workspaceId, runnerTypes) {
         ide = new IdeServer({
             workspaceDir: projectDir,
-            settingsPath: settingsPath,
+            settingsPath: "",
             davPrefix: baseUrl + "/workspace",
             projectName: options.projectName || "",
             smithIo: options.smithIo,
@@ -55,7 +58,7 @@ module.exports = function setup(options, imports, register) {
             workerUrl: workerPrefix,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,
-            runners: pm.runnerTypes(),
+            runners: runnerTypes,
             name: options.name || workspaceId,
             version: options.version || null,
             requirejsConfig: {
