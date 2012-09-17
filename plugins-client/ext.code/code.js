@@ -7,7 +7,7 @@
 
 define(function(require, exports, module) {
 
-/*global tabEditors ceEditor*/
+/*global tabEditors ceEditor mnuSyntax*/
 
 require("apf/elements/codeeditor");
 
@@ -413,7 +413,7 @@ module.exports = ext.register("ext/code/code", {
                 // path without dav prefix and without trailing slashes
                 var path = (e.nextPage.name.indexOf(e.currentTarget.davPrefix) === 0 ?
                     e.nextPage.name.substr(e.currentTarget.davPrefix.length) :
-                    e.nextPage.name).replace(/^\/+/, "")
+                    e.nextPage.name).replace(/^\/+/, "");
 
                 editor.afterOpenFile(editor.getSession(), path);
             }
@@ -808,7 +808,7 @@ module.exports = ext.register("ext/code/code", {
         });
         
         // display feedback while loading files
-        var isOpen, bgMessage, startTime;
+        var isOpen, bgMessage;
         var checkLoading = function(e) {
             if (!ceEditor.xmlRoot)
                 return;
@@ -816,22 +816,20 @@ module.exports = ext.register("ext/code/code", {
             var container = ceEditor.$editor.container;
 
             if (loading) {
-                startTime = Date.now();
                 if (!bgMessage || !bgMessage.parentNode) {
-                    bgMessage = bgMessage|| document.createElement("div");
-                    bgMessage.className = "ace_smooth_loading";
+                    bgMessage = bgMessage|| document.createElement("div");                    
                     container.parentNode.appendChild(bgMessage);
                 }
-                bgMessage.textContent = "...Loading " + ceEditor.xmlRoot.getAttribute("name") + "...";
+                var isDark = container.className.indexOf("ace_dark")!=-1;
+                bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
+                
+                bgMessage.textContent = "Loading " + ceEditor.xmlRoot.getAttribute("name");
                 container.style.transitionProperty = "opacity";
                 container.style.transitionDuration = "300ms";
                 container.style.pointerEvents = "none";
                 container.style.opacity = 0;
                 isOpen = true;
             } else if (isOpen) {
-                if (startTime - Date.now() < 300) {
-                    container.style.transitionDuration = "0.1s";
-                }
                 isOpen = false;
                 container.style.opacity = 1;
                 container.style.pointerEvents = "";
