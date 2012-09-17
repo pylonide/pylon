@@ -60,7 +60,8 @@ module.exports = function setup(options, imports, register) {
             version: options.version || null,
             requirejsConfig: {
                 baseUrl: staticPrefix,
-                paths: imports.static.getRequireJsPaths()
+                paths: imports.static.getRequireJsPaths(),
+                packages: imports.static.getRequireJsPackages()
             },
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
@@ -90,8 +91,13 @@ module.exports = function setup(options, imports, register) {
                     return;
                 }
 
+				// Guard against `Can't set headers after they are sent. Error: Can't set headers after they are sent.`.
+				try {
                 next();
                 pause.resume();
+				} catch(err) {
+					console.error(err.stack);
+				}
             });
         });
 
