@@ -4,6 +4,10 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+ 
+/*global tabEditors searchRow winSearchInFiles winSearchReplace  rbSFSelection
+    txtSFFind chkSFRegEx tooltipSearchInFiles txtSFReplace txtSFPatterns 
+    trFiles chkSFMatchCase chkSFRegEx chkSFConsole tabConsole btnSFFind */
 
 define(function(require, exports, module) {
 
@@ -102,7 +106,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         winSearchInFiles.addEventListener("prop.visible", function(e) {
             if (e.value) {
-                if (self.trFiles)
+                if (trFiles)
                     trFiles.addEventListener("afterselect", _self.setSearchSelection);
                 _self.setSearchSelection();
             }
@@ -111,9 +115,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 if (editor)
                     editor.focus();
         
-                if (self.trFiles)
+                if (trFiles)
                     trFiles.removeEventListener("afterselect", 
-                        this.setSearchSelection);
+                        _self.setSearchSelection);
             }
         });
         ide.addEventListener("init.ext/tree/tree", function(){
@@ -168,7 +172,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     setSearchSelection: function(e){
         var selectedNode;
         
-        if (self.trFiles) {
+        if (trFiles) {
             // If originating from an event
             if (e && e.selected)
                 selectedNode = e.selected;
@@ -204,7 +208,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     getSelectedTreeNode: function() {
-        var node = self["trFiles"] ? trFiles.selected : fs.model.queryNode("folder[1]");
+        var node = trFiles ? trFiles.selected : fs.model.queryNode("folder[1]");
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder[1]");
         while (node.tagName != "folder")
@@ -364,7 +368,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (grpSFScope.value == "projects") {
             path = ide.davPrefix;
         }
-        else if (!self.trFiles) {
+        else if (!trFiles) {
             path = settings.model.queryValue("auto/tree_selection/@path");
             if (!path)
                 return;
@@ -518,22 +522,19 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     launchFileFromSearch : function(editor) {
         var session = editor.getSession();
         var currRow = editor.getCursorPosition().row;
-        var path = null;
-        
-        if (editor.getSession().getLine(currRow).length == 0) // no text in this row
-            return;
-        
-        var clickedLine = session.getLine(currRow).trim().split(":"); // number:text
-        
+
+        var clickedLine = session.getLine(currRow).split(": "); // number:text
         if (clickedLine.length < 2) // some other part of the editor
             return;
-        
+
         // "string" type is the parent filename
-        while (currRow > 0 && session.getTokenAt(currRow, 0).type.indexOf("string") < 0) {
-          currRow--;
+        while (currRow --> 0) {
+            var token = session.getTokenAt(currRow, 0);
+            if (token && token.type.indexOf("string") != -1)
+                break;
         }
-        
-        path = editor.getSession().getLine(currRow);
+
+        var path = editor.getSession().getLine(currRow);
         
         if (path.charAt(path.length - 1) == ":")
             path = path.substring(0, path.length-1);
@@ -542,13 +543,17 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if(path[0] === '/')
             path = path.substring(1);
         
-        if (path !== undefined && path.length > 0)
-            editors.gotoDocument({
-                path: ide.davPrefix + "/" + path,
-                row: clickedLine[0],
-                col: 0,
-                text: clickedLine[1]
-            });
+        if (!path)
+            return;
+        var row = parseInt(clickedLine[0], 10);
+        var range = editor.getSelectionRange();
+        var offset = clickedLine[0].length + 2;
+        editors.gotoDocument({
+            path: ide.davPrefix + "/" + path,
+            row: row,
+            column: range.start.column - offset,
+            endColumn: range.end.column - offset
+        });
     },
 
     appendLines : function(doc, content) {
@@ -640,7 +645,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
             
-            this.$panel.addEventListener("afterclose", function(){
+            this.$panel.addEventListener("afterclose", function() {
                 this.removeNode();
                 _self.$panel = null;
                 _self.consoleacedoc = null;
@@ -654,7 +659,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                         _self.returnFocus = false;
                     }
                     else {
-                        editor.insert("\n");
+                        _self.searchConsole.$editor.insert("\n");
                     } 
                     return false;
                 }

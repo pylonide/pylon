@@ -16,7 +16,6 @@
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
         [%loadedDetectionScript%]
-        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
         <script type="text/javascript">
@@ -29,6 +28,7 @@
                 debug: <%debug%>,
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,
+                runners: <%runners%>,
                 name: <%name%>,
                 uid: <%uid%>,
                 pid: <%pid%>,
@@ -37,8 +37,7 @@
                 version: <%version%>,
                 workerUrl: "[%workerUrl%]",
                 staticUrl: "[%staticUrl%]",
-                socketIoUrl: <%socketIoUrl%>,
-                socketIoTransports: <%socketIoTransports%>,
+                smithIo: <%smithIo%>,
                 hosted: [%hosted%],
                 local: <%local%>,
                 env: <%env%>,
@@ -154,46 +153,5 @@
         </script>
     </head>
     <body style="display:none">
-        <div id="noscript">
-            <div class="noscript">
-                <div id="hp_header">
-                    <div id="logo"></div>
-                </div>
-                <div class="oldbro_middle_panel">
-                    <div class="content">
-                        <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
-                        <span class="browser_option">
-                            <a href="http://www.mozilla.com/firefox" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ff_32x32.png" alt="" />
-                                <div>Mozilla Firefox</div>
-                            </a>
-                        </span>
-                        <span class="browser_option" style="width:50px;">
-                            <a href="http://www.apple.com/safari" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/safari_32x32.png" alt="" />
-                                <div>Safari</div>
-                            </a>
-                        </span>
-                        <span class="browser_option">
-                            <a href="http://www.google.com/chrome" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/chrome_32x32.png" alt="" />
-                                <div>Google Chrome</div>
-                            </a>
-                        </span>
-                        <span class="browser_option">
-                            <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ie_32x32.png" alt="" />
-                                <div>Internet Explorer</div>
-                            </a>
-                        </span>
-                    </div>
-                </div>
-                <div class="wn_main_section_rounded">
-                    <div class="wnmsr_left"></div>
-                    <div class="wnmsr_middle"></div>
-                    <div class="wnmsr_right"></div>
-                </div>
-            </div>
-        </div>
     </body>
 </html>

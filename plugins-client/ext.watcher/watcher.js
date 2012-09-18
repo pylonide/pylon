@@ -260,6 +260,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         this.disabled = false;
 
         var _self = this;
+        
         var pages = tabEditors.getPages();
         pages.forEach(function(page) {
             if (page.$model) {
@@ -267,8 +268,8 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
         });
 
-        for (var path in this.expandedPaths) {
-            this.sendWatchDirectory(path);
+        for (var path in _self.expandedPaths) {
+            _self.sendWatchDirectory(path);
         }
     },
 

@@ -39,12 +39,10 @@
 define(function(require, exports, module) {
 "use strict";
 
-var ide = require("core/ide");
 var Editor = require("ace/editor").Editor;
 var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
-var Range = require("ace/range").Range;
 var MultiSelect = require("ace/multi_select").MultiSelect;
 var ProxyDocument = require("ext/code/proxydocument");
 var Document = require("ace/document").Document;
@@ -69,7 +67,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$focussable       = true; // This object can get the focus
     this.$childProperty    = "value";
     this.$isTextInput      = true;
-    this.$activeFrame      = null;
 
     this.value             = "";
     this.multiline         = true;
@@ -79,9 +76,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["gutterline"]               = true;
     this.$booleanProperties["caching"]                  = true;
     this.$booleanProperties["readonly"]                 = true;
-    this.$booleanProperties["activeline"]               = true;
     this.$booleanProperties["showinvisibles"]           = true;
     this.$booleanProperties["showprintmargin"]          = true;
+    this.$booleanProperties["showindentguides"]         = true;
     this.$booleanProperties["overwrite"]                = true;
     this.$booleanProperties["softtabs"]                 = true;
     this.$booleanProperties["gutter"]                   = true;
@@ -97,7 +94,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
-        "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
+        "overwrite", "tabsize", "softtabs", "scrollspeed", "showindentguides",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
         "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
         "gutterline");
@@ -200,82 +197,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setShowPrintMargin(_self.showprintmargin);
 
-        // remove existing markers
-        _self.$clearMarker();
-
         _self.$editor.setSession(doc);
-
-        // clear breakpoints
-        doc.setBreakpoints([]);
     };
 
     this.afterOpenFile = function(doc, path) {
-        this.$updateBreakpoints(doc);
-        
-        // if we have a buffered frame with the correct path
-        if (this.$activeFrame && this.$activeFrame.script === path) {
-            // set the marker in this file
-            this.$updateMarker(this.$activeFrame);
-        }
-    };
-
-    this.$clearMarker = function () {
-        if (this.$marker) {
-            this.$editor.renderer.removeGutterDecoration(this.$lastRow[0], this.$lastRow[1]);
-            this.$editor.getSession().removeMarker(this.$marker);
-            this.$marker = null;
-        }
-    };
-
-    /**
-     * Indicates whether we are going to set a marker
-     */
-    this.$updateMarkerPrerequisite = function () {
-        return this.$debugger && this.$debugger.$updateMarkerPrerequisite();
-    };
-
-    this.$updateMarker = function (data) {
-        this.$clearMarker();
-        
-        if (!data) {
-            return;
-        }
-        
-        var row = data.line;
-
-        var range = new Range(row, 0, row + 1, 0);
-        this.$marker = this.$editor.getSession().addMarker(range, "ace_step", "line");
-        var type = "arrow";
-        this.$lastRow = [row, type];
-        this.$editor.renderer.addGutterDecoration(row, type);
-        this.$editor.gotoLine(row + 1, data.column, false);
-    };
-
-    this.$updateBreakpoints = function(doc) {
-        doc = doc || this.$editor.getSession();
-
-        var rows = [];
-        if (this.xmlRoot && this.$breakpoints) {
-            var path = this.xmlRoot.getAttribute("path");
-            var scriptName = ide.workspaceDir + path.slice(ide.davPrefix.length);
-
-            var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']");
-
-            for (var i=0; i<breakpoints.length; i++) {
-                rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
-            }
-        }
-        doc.setBreakpoints(rows);
-    };
-
-    this.$toggleBreakpoint = function(row, session) {
-        var bp = session.getBreakpoints();
-        bp[row] = !bp[row];
-        session.setBreakpoints(bp);
-        var script = this.xmlRoot;
-        script.setAttribute("scriptname",
-            ide.workspaceDir + script.getAttribute("path").slice(ide.davPrefix.length));
-        this.$debugger.toggleBreakpoint(script, row, session.getLine(row));
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -288,7 +213,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["syntax"] = function(value) {
-        this.$editor.getSession().setMode(this.getMode(value));
+        this.$editor.session.setMode(this.getMode(value));
+        this.$editor.session.syntax = value;
     };
 
     this.getMode = function(syntax) {
@@ -325,6 +251,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
+    };
+    
+    this.$propHandlers["showindentguides"] = function(value, prop, initial) {
+        this.$editor.setDisplayIndentGuides(value);
     };
 
     this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
@@ -395,77 +325,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.setBehavioursEnabled(value);
     };
 
-    this.$propHandlers["model-breakpoints"] = function(value, prop, inital) {
-        this.$debuggerBreakpoints = false;
-
-        if (this.$breakpoints)
-            this.$breakpoints.removeEventListener("update", this.$onBreakpoint);
-
-        this.$breakpoints = value;
-
-        if (!this.$breakpoints) {
-            this.$updateBreakpoints();
-            return;
-        }
-
-        var _self = this;
-        _self.$updateBreakpoints();
-        this.$onBreakpoint = function() {
-            _self.$updateBreakpoints();
-        };
-        this.$breakpoints.addEventListener("update", this.$onBreakpoint);
-        this.$updateBreakpoints();
-    };
-
-    this.$propHandlers["debugger"] = function(value, prop, inital) {
-        if (this.$debugger) {
-            this.$debugger.removeEventListener("break", this.$onBreak);
-            this.$debugger.removeEventListener("beforecontinue", this.$onBeforeContinue);
-        }
-
-        if (typeof value === "string") {
-            //#ifdef __WITH_NAMESERVER
-            this.$debugger = apf.nameserver.get("debugger", value);
-            //#endif
-        } else {
-            this.$debugger = value;
-        }
-
-        if (!this.$breakpoints || this.$debuggerBreakpoints) {
-            this.setProperty("model-breakpoints", this.$debugger ? this.$debugger.$mdlBreakpoints : null);
-            this.$debuggerBreakpoints = true;
-        }
-
-        if (!this.$debugger) {
-            this.$updateMarker();
-            return;
-        }
-
-        this.$updateMarker();
-        var _self = this;
-        this.$onBreak = function(e) {
-            // buffer the active frame so we can keep track of the marker
-            // when navigating multiple files
-            _self.$activeFrame = e;
-            
-            _self.$updateMarker(e);
-        };
-        this.$onBeforeContinue = function() {
-            // clear it!
-            _self.$activeFrame = null;
-            
-            _self.$clearMarker();
-        };
-        
-        this.$debugger.addEventListener("break", this.$onBreak);
-        this.$debugger.addEventListener("beforecontinue", this.$onBeforeContinue);
-    };
-
     var propModelHandler = this.$propHandlers["model"];
     this.$propHandlers["model"] = function(value) {
         propModelHandler.call(this, value);
-
-        this.$updateBreakpoints();
     };
 
     this.addEventListener("xmlupdate", function(e){
@@ -580,9 +442,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     //@todo
-    this.addEventListener("keydown", function(e){
-
-    }, true);
+    // this.addEventListener("keydown", function(e){}, true);
 
     /**** Init ****/
 
@@ -622,17 +482,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
 
         ed.addEventListener("guttermousedown", function(e) {
-            if (_self.$debugger && ed.isFocused()) {
-                if (e.clientX - ed.container.getBoundingClientRect().left > 20)
-                    return;
-
-                var row = e.getDocumentPosition().row;
-                _self.$toggleBreakpoint(row, ed.getSession());
-                e.stop();
-            }
-            else {
-                _self.dispatchEvent("guttermousedown", e);
-            }
+            _self.dispatchEvent("guttermousedown", e);
         });
 
         ed.addEventListener("gutterdblclick", function(e) {
@@ -652,14 +502,18 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.softtabs = doc.getUseSoftTabs(); //true
         if (this.scrollspeed === undefined)
             this.scrollspeed = ed.getScrollSpeed();
-        if (this.animatedscroll === undefined)
-            this.animatedscroll = ed.getAnimatedScroll();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
-        if (this.activeline === undefined)
-            this.activeline = ed.getHighlightActiveLine();//true;
-        if (this.gutterline === undefined)
-            this.gutterline = ed.getHighlightGutterLine();//true;
+        
+        //@todo this is a workaround for a bug in handling boolean properties in apf.$setDynamicProperty
+        this.activeline = ed.getHighlightActiveLine();//true;
+        this.gutterline = ed.getHighlightGutterLine();//true;
+        this.animatedscroll = ed.getAnimatedScroll();//true
+        this.showindentguides = ed.getDisplayIndentGuides();//true
+        this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
+        this.highlightselectedword = ed.getHighlightSelectedWord();
+        this.behaviors = !ed.getBehavioursEnabled();
+            
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
         if (this.showinvisibles === undefined)
@@ -682,12 +536,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.wrapmode = doc.getUseWrapMode(); //false
         if (this.gutter === undefined)
             this.gutter = ed.renderer.getShowGutter();
-        if (this.highlightselectedword === undefined)
-            this.highlightselectedword = ed.getHighlightSelectedWord();
-        if (this.autohidehorscrollbar)
-            this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();
-        if (this.behaviors === undefined)
-            this.behaviors = !ed.getBehavioursEnabled();
         if (this.folding === undefined)
             this.folding = true;
         if (this.newlinemode == undefined)
@@ -837,7 +685,6 @@ apf.codebox = function(struct, tagName) {
             }
             
             var longestLine = this.$getLongestLine();
-            var firstRow = 0;
             var lastRow = this.session.getLength();
 
             this.scrollTop = 0;            

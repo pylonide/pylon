@@ -1,6 +1,6 @@
-/*global winQuestionRev:true, winQuestionRevMsg:true, ceEditor:true, revisionsPanel: true
-mnuContextTabs:true, mnuCtxEditor: true, tabEditors:true, mnuCtxEditorCut: true, pgRevisions:true 
-lstRevisions: true, revisionsInfo: true*/
+/*global winQuestionRev winQuestionRevMsg ceEditor revisionsPanel mnuContextTabs
+ * mnuCtxEditor tabEditors mnuCtxEditorCut pgRevisions lstRevisions revisionsInfo
+ */
 
 /**
  * Revisions Module for the Cloud9 IDE!
