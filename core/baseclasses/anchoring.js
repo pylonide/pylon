@@ -389,6 +389,7 @@ apf.Anchoring = function(){
             }
             else if (hasWidth && typeof this.maxwidth == "number" && typeof this.minwidth == "number") {
                 if (parseInt(width) != width) {
+                    this.width = width = (this.width || "").replace(/--(\d+)/, "-(-$1)");
                     width = setPercentage(width, "pWidth");
                     rules.push("oHtml.style.width = Math.max(" 
                         + (this.minwidth - this.$hordiff)
