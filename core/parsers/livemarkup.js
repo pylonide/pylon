@@ -1981,7 +1981,7 @@ apf.lm_exec = new (function(){
     function __val(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
-        return apf.escapeXml((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
+        return apf.escapeXML((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/""));
     }
@@ -1993,7 +1993,7 @@ apf.lm_exec = new (function(){
     function __valattr(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
-        return apf.escapeXml((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
+        return apf.escapeXML((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/""));
     }

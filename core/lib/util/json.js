@@ -37,7 +37,7 @@ apf.json2Xml = (function(){
     var jsonToXml = function (v, name, xml, notag) {
         var i, n, m, t;
         // do an apf warn
-        var cleanString = apf.escapeXml || function(s){
+        var cleanString = apf.escapeXML || function(s){
             return s.replace(/&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
         };
         if (!notag) {
