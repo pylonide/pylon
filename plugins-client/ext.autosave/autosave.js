@@ -23,6 +23,7 @@ var CHANGE_TIMEOUT = 500;
 
 var SAVING = 0;
 var SAVED = 1;
+var OFFLINE = 2;
 
 module.exports = ext.register("ext/autosave/autosave", {
     name: "Autosave",
@@ -36,29 +37,46 @@ module.exports = ext.register("ext/autosave/autosave", {
     docChangeListeners: {},
 
     hook: function() {
-        var self = this;
+        var _self = this;
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
         });
         
+        // when we're going offline we'll disable the UI
         ide.addEventListener("afteroffline", function() {
-            self.disable();
+            _self.disable();
         });
         
+        // when we're back online we'll first update the UI and then trigger an autosave if enabled
         ide.addEventListener("afteronline", function() {
-            self.enable();
+            _self.enable();
             
             // the autosave thing will update the UI
-            self.doAutoSave();
+            _self.doAutoSave();
+        });
+        
+        // if we retrieve an actual 'real' file save event then we'll set the UI state to 'saving'
+        ide.addEventListener("fs.beforefilesave", function () {
+            _self.setUiStateSaving();
+        });
+        
+        // and afterwards we'll show 'SAVED' or 'NOT SAVED' depending on whether it succeeded
+        ide.addEventListener("fs.afterfilesave", function (e) {
+            if (e.success) {
+                _self.setUiStateSaved();
+            }
+            else {
+                _self.setUiStateOffline();
+            }
         });
 
         btnSave.setAttribute("caption", "");
@@ -84,8 +102,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
-        
-        this.setSaveButtonCaption();
     },
 
     /////////////////////
@@ -120,18 +136,12 @@ module.exports = ext.register("ext/autosave/autosave", {
             };
         }
 
-        if (!Util.isNewPage(page)) {
-            this.setSaveButtonCaption();
-        }
-
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
     },
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
             btnSave.hide();
-        else
-            this.setSaveButtonCaption(e.page);
 
         this.save(e.page);
     },
@@ -141,67 +151,57 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (page && this.isAutoSaveEnabled && !Util.isNewPage(page)) {
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
-                self.setSaveButtonCaption();
                 stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
     },
 
-    setSaveButtonCaption: function(page) {
-        var _self = this;
-        
-        if (!window.btnSave)
-            return;
-
-        btnSave.show();
-        var page = page || tabEditors.getPage();
-        if (page && !ide.readonly) {
-            var hasChanged = Util.pageHasChanged(page);
-            if (_self.isAutoSaveEnabled && hasChanged) {
-                if (btnSave.currentState !== SAVING) {
-                    _self.setUiStateSaving();
-                }
-            }
-            else if (!hasChanged) {
-                if (btnSave.currentState !== SAVED) {
-                    _self.setUiStateSaved();
-                }
-            }
-        }
-        else {
-            btnSave.setCaption("");
-            btnSave.hide();
-        }
-    },
-    
     /**
      * Set the UI state to 'saving'
      */
     setUiStateSaving: function () {
+        btnSave.show();
+        
         apf.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
         apf.setStyleClass(saveStatus, "saving", ["saved"]);
         btnSave.currentState = SAVING;
         btnSave.setCaption("Saving");
     },
     
+    $uiStateSavedTimeout: null,
     /**
      * Set the UI state to 'saved'
      */
     setUiStateSaved: function () {
+        var _self = this;
+        
+        btnSave.show();
+        
         apf.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
         apf.setStyleClass(saveStatus, "saved", ["saving"]);
         btnSave.currentState = SAVED;
         btnSave.setCaption("Changes saved");
+        
+        // after 4000 ms. we'll hide the label (clear old timeout first)
+        if (_self.$uiS$uiStateSavedTimeout) 
+            clearTimeout(_self.$ui$uiStateSavedTimeout);
+
+        _self.$uiStateSavedTimeout = setTimeout(function () {
+            if (btnSave.currentState === SAVED) {
+                btnSave.hide();
+            }
+        }, 4000);
     },
     
     setUiStateOffline: function () {
-        //self.setUiStateSaved();
+        btnSave.show();
         
         // don't blink!
         apf.setStyleClass(btnSave.$ext, "saved");
         apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
         
+        btnSave.currentState = OFFLINE;
         btnSave.setCaption("Not saved");
     },
 
@@ -215,7 +215,6 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         this.save(tabEditors.getPage());
     },
-
 
     /**
      * Autosave#save([page])
@@ -248,7 +247,6 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         Save.quicksave(page, function() {
             stripws.enable();
-            _self.setSaveButtonCaption(page);
         }, true);
     },
 

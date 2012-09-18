@@ -376,6 +376,9 @@ module.exports = ext.register("ext/save/save", {
 
         var value = doc.getValue();
 
+        // raw fs events
+        ide.dispatchEvent("fs.beforefilesave", { path: path });
+
         fs.saveFile(path, value, function(data, state, extra){
 
             ide.dispatchEvent("track_action", {
@@ -384,6 +387,8 @@ module.exports = ext.register("ext/save/save", {
                 success: state != apf.SUCCESS ? "false" : "true"
             });
             apf.xmldb.removeAttribute(node, "saving");
+            
+            ide.dispatchEvent("fs.afterfilesave", { path: path, success: state == apf.SUCCESS });
 
             if (state != apf.SUCCESS) {
                 // ide is not online, or away??
