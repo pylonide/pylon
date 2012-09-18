@@ -1043,7 +1043,10 @@ module.exports = ext.register("ext/editors/editors", {
         var hasData = !!( page && page.$doc);
         
         function select() {
-            var ace = _self.currentEditor.amlEditor.$editor;
+            var ace = _self.currentEditor.amlEditor && _self.currentEditor.amlEditor.$editor;
+            if (!ace)
+                return;
+            
             row -= 1;
             var endRow = typeof options.endRow == "number" ? options.endRow - 1 : row;
             var endColumn = options.endColumn;
@@ -1066,7 +1069,10 @@ module.exports = ext.register("ext/editors/editors", {
         }
         
         function focus() {
-            var ace = _self.currentEditor.amlEditor.$editor;
+            var ace = _self.currentEditor.amlEditor && _self.currentEditor.amlEditor.$editor;
+            if (!ace)
+                return;
+            
             if (!ace.$isFocused) {
                 setTimeout(f = function() {
                     ace.focus();
