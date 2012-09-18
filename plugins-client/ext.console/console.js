@@ -83,8 +83,7 @@ module.exports = ext.register("ext/console/console", {
         },
         
         kill: function(message, outputElDetails) {
-            logger.logNodeStream(message.body, null, outputElDetails || message.body.err, ide);
-            // this.markProcessAsCompleted(message.body.pid, true, message.body.err);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         __default__: function(message, outputElDetails) {
@@ -121,7 +120,7 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             else {
-                command_id = this.createNodeProcessLog(spi);
+                command_id = this.createProcessLog(spi);
             }
 
             this.tracerToPidMap[command_id] = spi;
@@ -376,7 +375,7 @@ module.exports = ext.register("ext/console/console", {
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
 
-        if (txtConsolePrompt) // fix for c9local packed
+        if (window.txtConsolePrompt) // fix for c9local packed
             txtConsolePrompt.hide();
 
         if (spinnerElement) {
@@ -404,8 +403,9 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    createNodeProcessLog: function(message_pid) {
-        var command_id = this.createOutputBlock("Running Node Process", true);
+    createProcessLog: function(message_pid, lang) {
+        lang = lang ? (lang[0].toUpperCase() + lang.substring(1)) : "Generic";
+        var command_id = this.createOutputBlock("Running " + lang + " Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
     
@@ -413,58 +413,6 @@ module.exports = ext.register("ext/console/console", {
         containerEl.setAttribute("rel", command_id);
         apf.setStyleClass(containerEl, "has_pid");
     
-        this.command_id_tracer++;
-        return command_id;
-    },
-
-    createPhpProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running PHP Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
-        this.command_id_tracer++;
-        return command_id;
-    },
-    
-    createApacheProcessLog: function (message_pid) {
-        var command_id = this.createOutputBlock("Running Apache Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
-        this.command_id_tracer++;
-        return command_id;
-    },
-
-    createPythonProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running Python Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
-        this.command_id_tracer++;
-        return command_id;
-    },
-
-    createRubyProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running Ruby Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
         this.command_id_tracer++;
         return command_id;
     },
@@ -486,80 +434,64 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
+        var runners = window.cloud9config.runners;
+        var lang;
+        // Skip internal processes
+        if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
+            if (apf.isTrue(clearOnRun) && window["txtOutput"])
+                txtOutput.clear();
+
+            this.createProcessLog(message.pid, lang[1]);
+            return;
+        } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            if (message.data && message.data.indexOf("Tip: you can") === 0) {
+                (function () {
+                    var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
+                    if (!prjmatch) return;
+
+                    var user = prjmatch[2];
+                    var project = prjmatch[1];
+
+                    var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
+
+                    if (project !== ide.projectName) {
+                        // concurrency bug, project does not match
+                        apf.ajax("/api/debug", {
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                agent: navigator.userAgent,
+                                type: "Concurrency bug, project does not match",
+                                e: [user, project, urlPath],
+                                workspaceId: ide.workspaceId
+                            })
+                        });
+                    }
+                    else if (urlPath.length && user !== urlPath[0]) {
+                        // concurrency bug, user does not match
+                        apf.ajax("/api/debug", {
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                agent: navigator.userAgent,
+                                type: "Concurrency bug, user does not match",
+                                e: [user, project, urlPath],
+                                workspaceId: ide.workspaceId
+                            })
+                        });
+                    }
+                }());
+            }
+
+            logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
+            return;
+        } else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            this.markProcessAsCompleted(message.pid, true);
+            return;
+        }
+
         switch (message.type) {
-            case "node-start":
-                var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-                if (apf.isTrue(clearOnRun) && window["txtOutput"]) txtOutput.clear();
-                this.createNodeProcessLog(message.pid);
-                return;
-            case "php-start":
-                this.createPhpProcessLog(message.pid);
-                return;
-            case "apache-start":
-                this.createApacheProcessLog(message.pid);
-                return;
-            case "python-start":
-                this.createPythonProcessLog(message.pid);
-                return;
-            case "ruby-start":
-                this.createRubyProcessLog(message.pid);
-                return;
-            case "node-data":
-            case "apache-data":
-            case "php-data":
-            case "python-data":
-            case "ruby-data":
-            case "php-data":            
-                if (message.data && message.data.indexOf("Tip: you can") === 0) {
-                    (function () {
-                        var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
-                        if (!prjmatch) return;
-                        
-                        var user = prjmatch[2];
-                        var project = prjmatch[1];
-                        
-                        var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
-                        
-                        if (project !== ide.projectName) {
-                            // concurrency bug, project does not match
-                            apf.ajax("/api/debug", {
-                                method: "POST",
-                                contentType: "application/json",
-                                data: JSON.stringify({
-                                    agent: navigator.userAgent,
-                                    type: "Concurrency bug, project does not match",
-                                    e: [user, project, urlPath],
-                                    workspaceId: ide.workspaceId
-                                })
-                            });
-                        }
-                        else if (urlPath.length && user !== urlPath[0]) {
-                            // concurrency bug, user does not match
-                            apf.ajax("/api/debug", {
-                                method: "POST",
-                                contentType: "application/json",
-                                data: JSON.stringify({
-                                    agent: navigator.userAgent,
-                                    type: "Concurrency bug, user does not match",
-                                    e: [user, project, urlPath],
-                                    workspaceId: ide.workspaceId
-                                })
-                            });
-                        }
-                        
-                        return;
-                    }());
-                }
-                
-                logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
-                return;
-            case "node-exit":
-            case "php-exit":
-            case "python-exit":
-            case "ruby-exit":
-            case "apache-exit":
-                this.markProcessAsCompleted(message.pid, true);
-                return;
             case "npm-module-start":
                 if (!extra.original_line || !this.inited)
                     return;
@@ -955,8 +887,9 @@ module.exports = ext.register("ext/console/console", {
         });
 
         logger.appendConsoleFragmentsAfterInit();
-
-        this.getRunningServerProcesses();
+        
+        // when the IDE socket is ready we'll retrieve a list of running processes
+        _self.getRunningServerProcesses();
     },
 
     newtab : function() {
