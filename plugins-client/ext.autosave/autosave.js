@@ -1,4 +1,4 @@
-/*global btnSave:true, tabEditors:true, saveStatus:true*/
+/*global btnSave:true, tabEditors:true */
 /*
  * Autosave Module for the Cloud9 IDE
  *
@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Util = require("core/util");
+var Util = require("core/util"); 
 
 var Save = require("ext/save/save");
 var settings = require("ext/settings/settings");
@@ -21,17 +21,13 @@ var tooltip = require("ext/tooltip/tooltip");
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
 
-var SAVING = 0;
-var SAVED = 1;
-var OFFLINE = 2;
-
 module.exports = ext.register("ext/autosave/autosave", {
     name: "Autosave",
     dev: "Cloud9",
     alone: true,
     type: ext.GENERAL,
     offline: true,
-    nodes: [ btnSave ],
+    nodes: [ ],
     
     docChangeTimeout: null,
     docChangeListeners: {},
@@ -50,33 +46,11 @@ module.exports = ext.register("ext/autosave/autosave", {
 
             _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
         });
-        
-        // when we're going offline we'll disable the UI
-        ide.addEventListener("afteroffline", function() {
-            _self.disable();
-        });
-        
-        // when we're back online we'll first update the UI and then trigger an autosave if enabled
+
+        // when we're back online we'll trigger an autosave if enabled
         ide.addEventListener("afteronline", function() {
-            _self.enable();
-            
             // the autosave thing will update the UI
             _self.doAutoSave();
-        });
-        
-        // if we retrieve an actual 'real' file save event then we'll set the UI state to 'saving'
-        ide.addEventListener("fs.beforefilesave", function () {
-            _self.setUiStateSaving();
-        });
-        
-        // and afterwards we'll show 'SAVED' or 'NOT SAVED' depending on whether it succeeded
-        ide.addEventListener("fs.afterfilesave", function (e) {
-            if (e.success) {
-                _self.setUiStateSaved();
-            }
-            else {
-                _self.setUiStateOffline();
-            }
         });
 
         btnSave.setAttribute("caption", "");
@@ -157,54 +131,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         }
     },
 
-    /**
-     * Set the UI state to 'saving'
-     */
-    setUiStateSaving: function () {
-        btnSave.show();
-        
-        apf.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
-        apf.setStyleClass(saveStatus, "saving", ["saved"]);
-        btnSave.currentState = SAVING;
-        btnSave.setCaption("Saving");
-    },
-    
-    $uiStateSavedTimeout: null,
-    /**
-     * Set the UI state to 'saved'
-     */
-    setUiStateSaved: function () {
-        var _self = this;
-        
-        btnSave.show();
-        
-        apf.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
-        apf.setStyleClass(saveStatus, "saved", ["saving"]);
-        btnSave.currentState = SAVED;
-        btnSave.setCaption("Changes saved");
-        
-        // after 4000 ms. we'll hide the label (clear old timeout first)
-        if (_self.$uiS$uiStateSavedTimeout) 
-            clearTimeout(_self.$ui$uiStateSavedTimeout);
-
-        _self.$uiStateSavedTimeout = setTimeout(function () {
-            if (btnSave.currentState === SAVED) {
-                btnSave.hide();
-            }
-        }, 4000);
-    },
-    
-    setUiStateOffline: function () {
-        btnSave.show();
-        
-        // don't blink!
-        apf.setStyleClass(btnSave.$ext, "saved");
-        apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
-        
-        btnSave.currentState = OFFLINE;
-        btnSave.setCaption("Not saved");
-    },
-
     doAutoSave: function() {
         // Take advantage of the interval and dump our offlineQueue into
         // localStorage.
@@ -237,7 +163,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             
         // not online? then we're not going to save it
         if (ide.onLine === false) {
-            _self.setUiStateOffline();
+            Save.setUiStateOffline();
             return;
         }
 
