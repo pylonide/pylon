@@ -52,9 +52,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         
         ide.addEventListener("afteroffline", function() {
             self.disable();
-            
-            // don't pretend we're in progress
-            self.setUiStateOffline();
         });
         
         ide.addEventListener("afteronline", function() {
@@ -205,7 +202,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         apf.setStyleClass(btnSave.$ext, "saved");
         apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
         
-        btnSave.setCaption("Offline cannot save");
+        btnSave.setCaption("Not saved");
     },
 
     doAutoSave: function() {
@@ -228,6 +225,8 @@ module.exports = ext.register("ext/autosave/autosave", {
      * Prompts a save of the desired document.
      **/
     save: function(page, forceSave) {
+        var _self = this;
+        
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
@@ -238,14 +237,15 @@ module.exports = ext.register("ext/autosave/autosave", {
             return;
             
         // not online? then we're not going to save it
-        if (ide.onLine === false)
+        if (ide.onLine === false) {
+            _self.setUiStateOffline();
             return;
+        }
 
         var node = page.$doc.getNode();
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        var _self = this;
         Save.quicksave(page, function() {
             stripws.enable();
             _self.setSaveButtonCaption(page);

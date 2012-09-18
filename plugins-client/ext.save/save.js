@@ -314,9 +314,9 @@ module.exports = ext.register("ext/save/save", {
     },
     
     ideIsOfflineMessage: function() {
-        util.alert("Cannot save", 
-            "Your connection appears to be down", 
-            "Please check your connection and try again");
+        util.alert("Could not save", 
+            "Please check your connection", 
+            "When your connection has been restored you can try to save the file again.");
     },
 
     // `silentsave` indicates whether the saving of the file is forced by the user or not.
