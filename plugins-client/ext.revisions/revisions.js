@@ -40,6 +40,9 @@ var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
 
+// postfix with plugin because its a pretty generic term...
+var savePlugin = require("ext/save/save");
+
 // Constants
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
@@ -595,8 +598,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     // Force-save the current page
                     var node = e.doc.getNode();
                     if (!node.getAttribute("newfile") && !node.getAttribute("debug")) {
-                        require("ext/save/save")
-                            .quicksave(_page, function() {
+                        savePlugin.quicksave(_page, function() {
                                 stripws.enable();
                             }, true);
                     }
