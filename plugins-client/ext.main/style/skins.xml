@@ -5693,7 +5693,8 @@
             font-size: 12px;
         }
         
-        .menu-bk .label {
+        .menu-bk .label,
+        .white-label.label {
             color: #F1F1F1;
         }
     ]]></a:style>
