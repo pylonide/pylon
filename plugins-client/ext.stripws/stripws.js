@@ -52,7 +52,7 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     hook: function () {
         var self = this;
-        
+
         commands.addCommand({
             name: "stripws",
             hint: "strip whitespace at the end of each line",
@@ -64,7 +64,7 @@ module.exports = ext.register("ext/stripws/stripws", {
                 self.stripws();
             }
         });
-        
+
         this.nodes.push(
             menus.addItemByPath("Tools/Strip Whitespace", new apf.item({
                 command : "stripws"
@@ -81,7 +81,7 @@ module.exports = ext.register("ext/stripws/stripws", {
                 self.stripws();
             }
         });
-        
+
         ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [["stripws", "false"]]);
         });
@@ -94,6 +94,7 @@ module.exports = ext.register("ext/stripws/stripws", {
     },
 
     enable: function () {
+        ext.initExtension(this);
         this.nodes.each(function(item) {
             item.enable();
         });
