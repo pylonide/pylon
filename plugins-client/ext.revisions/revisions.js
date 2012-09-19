@@ -899,15 +899,14 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     /**
      * Revisions#iAmMaster(path) -> Boolean
-     * - path(String): Path for the document to be checked
+     * - fullPath(String): Path for the document to be checked
      *
      * Returns true if the current user is the "master" document in a collab
      * session. That means that the contents of his document will be the ones
      * saved in the collab session.
      **/
-    iAmMaster: function(path) {
-        // Has to be implemented.
-        return true;
+    isMaster: function(fullPath) {
+        return this.getConcorde().isMaster(fullPath);
     },
 
     getRevision: function(id, content) {
@@ -1198,7 +1197,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.offlineQueue.push(data);
         }
         else {
-            if (this.isCollab() && !this.iAmMaster(docPath)) {
+            if (this.isCollab() && !this.isMaster(page.name)) {
                 // We are not master, so we want to tell the server to tell
                 // master to save for us. For now, since the master is saving
                 // every .5 seconds and auto-save is mandatory, we are not
@@ -1248,6 +1247,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     getCollab: function() {
         return require("core/ext").extLut["ext/collaborate/collaborate"];
+    },
+
+    getConcorde: function() {
+        return require("core/ext").extLut["ext/concorde/concorde"];
     },
 
     getUser: function(suffix, doc) {
