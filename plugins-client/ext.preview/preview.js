@@ -1,41 +1,66 @@
 /**
- * HTML Editor for the Cloud9 IDE
+ * App or HTML previewer in Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
+var markup = require("text!ext/preview/preview.xml");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/html/html", {
-    name  : "HTML Editor",
-    dev   : "Ajax.org",
-    type  : ext.GENERAL,
-    alone : true,
-    deps  : [code],
-    nodes : [],
+    name    : "Preview",
+    dev     : "Ajax.org",
+    fileExtensions : [ "#!preview" ],
+    type    : ext.EDITOR,
+    alone   : true,
+    markup  : markup,
+    deps    : [code, editors],
     autodisable : ext.ONLINE | ext.LOCAL,
-    
-    init : function(){
+
+    counter : 0,
+    nodes : [],
+
+    setDocument : function(doc, actiontracker) {
+        var node = doc.getNode();
+        var path = node.getAttribute("path");
+        node.setAttribute("name", node.getAttribute("name").split("." + this.fileExtensions[0])[0]);
+        var url = path.substring(0, path.length - 10);
+        frmPreview.$ext.src = url;
+        txtPreviewURL.setValue(url);
+        if (! doc.preview)
+            doc.preview = {fd: ++this.counter};
+        var editor = barPreview;
+        editor.show();
+    },
+
+    hook : function() {
         var _self = this;
-        
+
+        // TODO single preview page
+
         this.nodes.push(
             menus.$insertByIndex(barTools, new apf.button({
                 skin : "c9-toolbarbutton-glossy",
-                //icon : "preview.png" ,
+                //icon : "preview.png",
                 "class" : "preview",
                 tooltip : "Preview in browser",
                 caption : "Preview",
                 disabled : true,
                 onclick : function(){
                     var file = tabEditors.getPage().$model.data;
-                    window.open(location.protocol + "//" 
-                        + location.host + file.getAttribute("path"), "_blank");
+                    var url = location.protocol + "//" + location.host + file.getAttribute("path");
+                    // window.open(url, "_blank");
+                    editors.gotoDocument({
+                        path: url + ".#!preview",
+                        // node: apf.getXml("<file type='preview' path='Preview " + url + ".#!preview' name='toto.html' />"),
+                        type: "nofile"
+                    });
                 }
             }), 10)
         );
@@ -49,8 +74,25 @@ module.exports = ext.register("ext/html/html", {
                     _self.disable();
             });
         });
+    },
 
+    init : function(){
+        var _self = this;
+        var editor = barPreview;
+        this.container = barPreview.firstChild.$ext;
         this.enabled = false;
+    },
+
+    getState : function(doc){
+        if (!doc.preview)
+            return;
+        
+        return {
+            "fd": doc.preview.fd,
+            "width": barPreview.lastWidth || barPreview.getWidth(),
+            "height": barPreview.lastHeight || barPreview.getHeight(),
+            "type": "nofile"
+        };
     },
 
     enable : function() {
@@ -80,4 +122,5 @@ module.exports = ext.register("ext/html/html", {
         this.nodes = [];
     }
 });
+
 });
