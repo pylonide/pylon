@@ -8596,7 +8596,6 @@
         }
         .btnRun .main { 
             background-position: 0px -457px; 
-            /*background-position: 0px -424px; */
             margin-right: 3px;
             overflow: visible;
         }
@@ -8617,9 +8616,6 @@
             left: 3px;
             top: 3px;
         }
-        .btnRun .main.c9-dropdown-btnOver { 
-            /*background-position: 0px -457px; */
-        }
         .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -397px -457px; 
         }
@@ -8632,11 +8628,7 @@
 
         .btnRun .arrow { 
             background-position: -400px -457px; 
-            /*background-position: -400px -424px; */
             width: 16px; 
-        }
-        .btnRun .arrow.c9-dropdown-btnOver { 
-            /*background-position: -400px -457px; */
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
             background-position: -400px -490px; 
