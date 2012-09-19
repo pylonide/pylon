@@ -119,8 +119,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         else
             this.setSaveButtonCaption(e.page);
         
-        if (!e.page.$doc.getNode().getAttribute("deleted"))
-            this.save(e.page);
+        this.save(e.page);
     },
 
     onDocChange: function(e, doc) {
