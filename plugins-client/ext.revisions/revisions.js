@@ -282,6 +282,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revObj.useCompactList = true;
             revObj.groupedRevisionIds = [];
             revObj.previewCache = {};
+            revObj.usersChanged = [];
         }
         return revObj;
     },
@@ -356,6 +357,29 @@ module.exports = ext.register("ext/revisions/revisions", {
                 path: CoreUtil.getDocPath(page)
             });
         }
+
+        var _self = this;
+        (doc.acedoc || doc).addEventListener("change", function(e) {
+            _self.onDocChange(e, doc);
+        });
+    },
+
+    onDocChange: function(e, doc) {
+        if (!e.data || !e.data.delta || !e.data.delta[0])
+            return;
+
+        var _self = this;
+        setTimeout(function() {
+            var suffix = e.data.delta[0].suffix;
+            if (!suffix)
+                return;
+
+            var user = _self.getUser(suffix, doc);
+            if (!user)
+                return;
+
+            _self.addUserToDocChangeList(user, doc);
+        }, 50);
     },
 
     onFileUpdate: function(data) {
@@ -1216,14 +1240,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (user && doc) {
             var path = CoreUtil.getDocPath(doc.$page);
             var stack = this.rawRevisions[path];
-            if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
-                stack.usersChanged.push(user.user.email);
+            if (stack && (stack.usersChanged.indexOf(user.email) === -1)) {
+                stack.usersChanged.push(user.email);
             }
         }
     },
 
     getCollab: function() {
-        return require("core/ext").extLut["ext/collab/collab"];
+        return require("core/ext").extLut["ext/collaborate/collaborate"];
     },
 
     getUser: function(suffix, doc) {
@@ -1237,14 +1261,17 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     getUserColorByEmail: function(email) {
-        var color;
         var collab = this.getCollab();
-        if(!collab)
+        if (!collab)
             return;
+
+        var color;
         var user = collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
+
+        return color;
     },
 
     /**
