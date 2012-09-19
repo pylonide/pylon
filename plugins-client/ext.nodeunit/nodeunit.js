@@ -77,7 +77,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                 for (var i = project.length - 1; i >= 0; i--) {
                     str.push(util.toXmlTag("file", {
                         path: ide.davPrefix + project[i],
-                        name: project[i].split("/").pop()
+                        name: project[i].split("/").pop(),
                         type: "nodeunit"
                     }));
                 }

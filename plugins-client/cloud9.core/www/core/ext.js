@@ -83,7 +83,7 @@ module.exports = ext = {
 
         if (!this.model.queryNode("plugin[@path='" + path + "']"))
             this.model.appendXml(apf.n("<plugin/>")
-                .attr("type=", this.typeLut[oExtension.type])
+                .attr("type", this.typeLut[oExtension.type])
                 .attr("name", oExtension.name || "")
                 .attr("path", path)
                 .attr("dev", oExtension.dev || "")
