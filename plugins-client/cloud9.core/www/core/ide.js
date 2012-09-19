@@ -9,7 +9,6 @@ var ide; //Global on purpose!!!!
 define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
-    require("engine.io");
     var SMITH_IO = require("smith.io");
 
     ide = new apf.Class().$init();
