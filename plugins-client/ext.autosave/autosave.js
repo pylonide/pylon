@@ -118,7 +118,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             btnSave.hide();
         else
             this.setSaveButtonCaption(e.page);
-
+        
         this.save(e.page);
     },
 
