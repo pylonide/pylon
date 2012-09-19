@@ -443,6 +443,8 @@ module.exports = ext.register("ext/console/console", {
                 txtOutput.clear();
 
             this.createProcessLog(message.pid, lang[1]);
+
+            require("ext/preview/preview").preview(message.url);
             return;
         } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.data && message.data.indexOf("Tip: you can") === 0) {

@@ -60,6 +60,9 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     self.scriptArgs = options.args || [];
     self.apacheArgs = [];
 
+    var suffix = DIRECT_OPEN_FILES.test(this.file) ? "/" + this.file : "";
+    options.url += suffix;
+
     startProcess(options.url);
 
     function startProcess (url) {
@@ -73,9 +76,8 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             }
 
             if (msg.type === "apache-start") {
-                var suffix = DIRECT_OPEN_FILES.test(self.file) ? "/" + self.file : "";
                 var info = [
-                    "Tip: you can access the running page at '" + url + suffix + "'."
+                    "Tip: you can access the running page at '" + url + "'."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {

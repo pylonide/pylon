@@ -85,7 +85,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                 if (err) return console.error(err);
 
                 var url = "http://" + host + ":" + port;
-
+                options.url = url;
                 startProcess(url, port);
             });
         }

@@ -36,6 +36,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
+    this.url = options.url;
     this.extra = options.extra;
     this.encoding = options.encoding;
 
@@ -152,6 +153,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             emit({
                 "type": self.name + "-start",
                 "pid": pid,
+                "url": self.url,
                 "extra": self.extra
             });
         });

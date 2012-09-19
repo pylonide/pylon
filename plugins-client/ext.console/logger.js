@@ -45,7 +45,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
             .replace(wsRe, html.replace("___", workspaceDir + "/"));
     }
     else if (line.search(RE_URL) !== -1) {
-        line = line.replace(RE_URL, "<a href='$1' target='_blank'>$1</a>");
+        line = line.replace(RE_URL, "<a onclick='require(\"ext/preview/preview\").preview(\"$1\"); return false;' href='$1' target='_blank'>$1</a>");
     }
 
     // escape HTML/ XML, but preserve the links

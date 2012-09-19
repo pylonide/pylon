@@ -13,14 +13,14 @@ var menus = require("ext/menus/menus");
 var markup = require("text!ext/preview/preview.xml");
 var editors = require("ext/editors/editors");
 
-module.exports = ext.register("ext/html/html", {
+module.exports = ext.register("ext/preview/preview", {
     name    : "Preview",
     dev     : "Ajax.org",
     fileExtensions : [ "#!preview" ],
     type    : ext.EDITOR,
     alone   : true,
     markup  : markup,
-    deps    : [code, editors],
+    deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
 
     counter : 0,
@@ -33,7 +33,7 @@ module.exports = ext.register("ext/html/html", {
         var url = path.substring(0, path.length - 10);
         frmPreview.$ext.src = url;
         txtPreviewURL.setValue(url);
-        if (! doc.preview)
+        if (!doc.preview)
             doc.preview = {fd: ++this.counter};
         var editor = barPreview;
         editor.show();
@@ -55,12 +55,7 @@ module.exports = ext.register("ext/html/html", {
                 onclick : function(){
                     var file = tabEditors.getPage().$model.data;
                     var url = location.protocol + "//" + location.host + file.getAttribute("path");
-                    // window.open(url, "_blank");
-                    editors.gotoDocument({
-                        path: url + ".#!preview",
-                        // node: apf.getXml("<file type='preview' path='Preview " + url + ".#!preview' name='toto.html' />"),
-                        type: "nofile"
-                    });
+                    _self.preview(url);
                 }
             }), 10)
         );
@@ -76,6 +71,14 @@ module.exports = ext.register("ext/html/html", {
         });
     },
 
+    preview : function (url) {
+        // window.open(url, "_blank");
+        editors.gotoDocument({
+            path: url + ".#!preview",
+            type: "nofile"
+        });
+    },
+
     init : function(){
         var _self = this;
         var editor = barPreview;
@@ -86,7 +89,7 @@ module.exports = ext.register("ext/html/html", {
     getState : function(doc){
         if (!doc.preview)
             return;
-        
+
         return {
             "fd": doc.preview.fd,
             "width": barPreview.lastWidth || barPreview.getWidth(),
