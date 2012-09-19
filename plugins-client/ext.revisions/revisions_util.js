@@ -134,7 +134,7 @@ exports.addCodeMarker = function(session, doc, type, range) {
 
 exports.question = function(title, header, msg, onyesall, onnoall) {
     winQuestionRev.show();
-    winQuestionRev.setAttribute("title", title);
+    winQuestionRev.setAttribute("title", apf.escapeXML(title));
     winQuestionRevHeader.$ext.innerHTML = header;
     winQuestionRevMsg.$ext.innerHTML = msg;
     btnQuestionRevYesAll.onclick = onyesall;

@@ -21,8 +21,8 @@ var openLinkedFile = function(path, row, column) {
     row = parseInt(row.slice(1), 10);
     column = column ? parseInt(column.slice(1), 10) : 0;
     editors.gotoDocument({
-        path: path, 
-        row: row, 
+        path: path,
+        row: row,
         column: column
     });
 };
@@ -125,7 +125,7 @@ var getOutputElement = function(getTxtOutput) {
     var defaultHandler = typeof txtConsole !== "undefined" && txtConsole && txtConsole.$ext
                             ? txtConsole.$ext
                             : preInitOutputBuffer;
-    
+
     if (typeof getTxtOutput === "object" && getTxtOutput && getTxtOutput.$ext && getTxtOutput.id) {
         return {
             element: getTxtOutput.$ext,
@@ -261,7 +261,7 @@ var messages = {
 };
 
 module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
-    msg = msg.toString().escapeHTML();
+    msg = apf.escapeXML(msg.toString());
     if (!type)
         type = "log";
 
@@ -280,7 +280,7 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
         parentEl.innerHTML += containerOutput.join("");
     else
         parentEl.innerHTML = containerOutput.join("");
-    
+
     //@todo this implementation is hacking the apf abstraction
     //      so we have to trigger the scrollbar update ourselves
     if (window["tabConsole"]) {

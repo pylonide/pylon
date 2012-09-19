@@ -103,16 +103,17 @@ module.exports = {
             if (frame) {
                 var path = ceEditor.xmlRoot.getAttribute("path");
                 var framePath = frame.getAttribute("scriptPath");
-                var row = parseInt(frame.getAttribute("line"));
+                var row = parseInt(frame.getAttribute("line"), 10);
                 if (frame.hasAttribute("istop")) {
                     if (path == framePath)
                         addMarker(session, "step", row);
-                } else {
+                }
+                else {
                     if (path == framePath)
                         addMarker(session, "stack", row);
                     if (dbg.topframe) {
                         framePath = dbg.topframe.getAttribute("scriptPath");
-                        row = parseInt(dbg.topframe.getAttribute("line"));
+                        row = parseInt(dbg.topframe.getAttribute("line"), 10);
                         if (path == framePath)
                             addMarker(session, "step", row);
                     }
@@ -133,8 +134,8 @@ module.exports = {
 
     showDebugFrame: function(frame) {
         this.show({
-            row: parseInt(frame.getAttribute("line")),
-            column: parseInt(frame.getAttribute("column")),
+            row: parseInt(frame.getAttribute("line"), 10),
+            column: parseInt(frame.getAttribute("column"), 10),
             text: frame.getAttribute("name"),
             path: frame.getAttribute("scriptPath")
         })
@@ -158,7 +159,8 @@ module.exports = {
         if (!path) {
             var script = mdlDbgSources.queryNode("//file[@scriptid='" + scriptId + "']");
             path = script && script.getAttribute("path");
-        } else {
+        }
+        else {
             var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
             scriptId = script && script.getAttribute("scriptid");
         }
@@ -173,7 +175,8 @@ module.exports = {
                 text    : text,
                 animate : false
             });
-        } else if (scriptId) {
+        }
+        else if (scriptId) {
             var page = tabEditors.getPage(path);
 
             if (page) {
@@ -185,7 +188,8 @@ module.exports = {
                     text    : text,
                     animate : false
                 });
-            } else {
+            }
+            else {
                 var node = apf.n("<file />")
                     .attr("name", path.split("/").pop())
                     .attr("path", path)

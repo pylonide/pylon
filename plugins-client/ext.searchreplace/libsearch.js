@@ -133,7 +133,7 @@ module.exports = {
             new RegExp(searchTxt);
         } catch(e) {
             tooltip.$ext.innerHTML
-                = e.message.replace(": /" + searchTxt + "/", "");
+                = apf.escapeXML(e.message.replace(": /" + searchTxt + "/", ""));
             apf.setOpacity(tooltip.$ext, 1);
 
             var pos = apf.getAbsolutePosition(win.$ext);
@@ -368,7 +368,7 @@ module.exports = {
         }
         token.value && res.push(token);
         return res;
-    },
+    }
 }
 
 });

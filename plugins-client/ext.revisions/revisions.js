@@ -837,17 +837,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revision) { return; }
 
         var contributorToXml = function(c) {
-            return "<contributor email='" + c + "' />";
+            return "<contributor email='" + apf.escapeXML(c) + "' />";
         };
 
         var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
         var restoring = revision.restoring || "";
 
-        var xmlString = "<revision " +
-                "id='" + revision.ts + "' " +
-                "name='" + friendlyDate + "' " +
-                "silentsave='" + revision.silentsave + "' " +
-                "restoring='" + restoring + "'>";
+        var xmlString = CoreUtil.toXmlTag("revision", {
+            id: revision.ts,
+            name: friendlyDate,
+            silentsave: revision.silentsave,
+            restoring: restoring
+        }, true);
 
         var contributors = "";
         if (revision.contributors && revision.contributors.length) {

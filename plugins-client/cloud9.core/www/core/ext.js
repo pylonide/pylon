@@ -28,7 +28,7 @@ var util = require("core/util");
 //    apf.nameserver.register(this.localName, value, this);
 //    apf.nameserver.register("all", value, this);
 //    //#endif
-//    
+//
 //    this.name = value;
 //};
 
@@ -82,9 +82,13 @@ module.exports = ext = {
             this.model.load("<plugins />");
 
         if (!this.model.queryNode("plugin[@path='" + path + "']"))
-            this.model.appendXml('<plugin type="' + this.typeLut[oExtension.type]
-                + '" name="' + (oExtension.name || "") + '" path="' + path
-                + '" dev="' + (oExtension.dev || "") + '" enabled="1" userext="0" />');
+            this.model.appendXml(apf.n("<plugin/>")
+                .attr("type=", this.typeLut[oExtension.type])
+                .attr("name", oExtension.name || "")
+                .attr("path", path)
+                .attr("dev", oExtension.dev || "")
+                .attr("enabled", "1")
+                .attr("userext", "0").node());
         else
             this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
@@ -104,7 +108,7 @@ module.exports = ext = {
 
         if (oExtension.hook) {
             oExtension.hook();
-            
+
             ide.addEventListener("$event.hook." + oExtension.path, function(callback){
                 callback.call(this, {ext : oExtension});
             });
@@ -112,7 +116,7 @@ module.exports = ext = {
                 ext : oExtension
             });
         }
-        
+
         var initTime = parseInt(this.model.queryValue("plugin[@path='" + path + "']/@init") || 0);
         this.model.queryNode("plugin[@path='" + path + "']").setAttribute("hook", Number(new Date() - dt) - initTime);
 
@@ -176,7 +180,7 @@ module.exports = ext = {
 
         return true;
     },
-    
+
     getExtension : function(extension) {
         return this.extLut[extension];
     },
@@ -184,9 +188,9 @@ module.exports = ext = {
     initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
             return;
-        
+
         var dt = new Date();
-        
+
         oExtension.inited = true; // Prevent Re-entry
 
         var skin = oExtension.skin;
@@ -199,7 +203,7 @@ module.exports = ext = {
 
         //Load markup
         var markup = oExtension.markup;
-        if (markup) 
+        if (markup)
             (oExtension.markupInsertionPoint || amlParent || apf.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
@@ -221,14 +225,14 @@ module.exports = ext = {
         }
 
         oExtension.init(amlParent);
-        
+
         ide.addEventListener("$event.init." + oExtension.path, function(callback){
             callback.call(this, {ext : oExtension});
         });
         ide.dispatchEvent("init." + oExtension.path, {
             ext : oExtension
         });
-        
+
         this.model.queryNode("plugin[@path='" + oExtension.path + "']").setAttribute("init", Number(new Date() - dt));
     },
 

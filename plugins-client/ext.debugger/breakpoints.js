@@ -55,7 +55,7 @@ module.exports = {
             convertBreakpoints(mdlDbgBreakpoints);
             _self.$syncOpenFiles();
         });
-        
+
         // converts Breakpoints to the new format, needed only for the transition period
         function convertBreakpoints(model) {
             var brokenNodes = model.queryNodes("//breakpoint[not(@path)]");
@@ -176,7 +176,8 @@ module.exports = {
             len = range.end.row - range.start.row;
             if (delta.action == "insertText") {
                 firstRow = range.start.column ? range.start.row + 1 : range.start.row;
-            } else {
+            }
+            else {
                 firstRow = range.start.row;
             }
 
@@ -184,7 +185,8 @@ module.exports = {
                 var args = Array(len);
                 args.unshift(firstRow, 0);
                 this.$breakpoints.splice.apply(this.$breakpoints, args);
-            } else {
+            }
+            else {
                 var rem = this.$breakpoints.splice(firstRow + 1, len);
 
                 if (!this.$breakpoints[firstRow]) {
@@ -204,7 +206,7 @@ module.exports = {
         var path = session.c9doc.getNode().getAttribute("path");
         var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path='" + path + "']");
 
-        for (var i=0; i< breakpoints.length; i++) {
+        for (var i = 0; i < breakpoints.length; i++) {
             var bp = breakpoints[i];
             var line = parseInt(bp.getAttribute("line"), 10);
             var offset = parseInt(bp.getAttribute("lineoffset"), 10);
@@ -218,8 +220,10 @@ module.exports = {
     gotoBreakpoint: function(bp) {
         var row = parseInt(bp.getAttribute("line"), 10);
         var column = parseInt(bp.getAttribute("column"), 10);
-        if (isNaN(row)) row = null;
-        if (isNaN(column)) column = null;
+        if (isNaN(row))
+            row = null;
+        if (isNaN(column))
+            column = null;
         var path = bp.getAttribute("path");
 
         sources.show({
@@ -244,12 +248,12 @@ module.exports = {
         var tofind = ide.davPrefix;
         if (path.indexOf(tofind) > -1)
             displayText = path.substring(path.indexOf(tofind) + tofind.length);
-        
+
         this.removeBreakpoint(path, row);
         var className = session.$breakpoints[row];
         if (!className)
             return;
-        
+
         var content = session.getLine(row);
         var bp = apf.n("<breakpoint/>")
             .attr("path", path)
