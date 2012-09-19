@@ -8,7 +8,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
 var markup = require("text!ext/preview/preview.xml");
 var editors = require("ext/editors/editors");
@@ -28,8 +27,9 @@ module.exports = ext.register("ext/preview/preview", {
 
     setDocument : function(doc, actiontracker) {
         var node = doc.getNode();
+        doc.editor = this;
         var path = node.getAttribute("path");
-        node.setAttribute("name", node.getAttribute("name").split("." + this.fileExtensions[0])[0]);
+        node.setAttribute("name", node.getAttribute("name").split(".#!preview")[0]);
         var url = path.substring(0, path.length - 10);
         frmPreview.$ext.src = url;
         txtPreviewURL.setValue(url);
@@ -41,8 +41,6 @@ module.exports = ext.register("ext/preview/preview", {
 
     hook : function() {
         var _self = this;
-
-        // TODO single preview page
 
         this.nodes.push(
             menus.$insertByIndex(barTools, new apf.button({
@@ -82,7 +80,6 @@ module.exports = ext.register("ext/preview/preview", {
     init : function(){
         var _self = this;
         var editor = barPreview;
-        this.container = barPreview.firstChild.$ext;
         this.enabled = false;
     },
 
