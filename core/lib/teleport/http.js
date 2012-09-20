@@ -22,13 +22,13 @@
 // #ifdef __TP_HTTP
 
 /**
- * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 
- * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most 
- * cases it sends or receives <strong>X</strong>ml. It allows for easy http 
+ * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously
+ * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most
+ * cases it sends or receives <strong>X</strong>ml. It allows for easy http
  * communication from within the browser. This object provides
  * {@link teleport.http.method.savecache caching} on top of
  * the browser's cache. This enables you to optimize your application, because
- * this can be set on a per call basis. 
+ * this can be set on a per call basis.
  * Example:
  * Retrieving content over http synchronously:
  * <code>
@@ -108,16 +108,16 @@ apf.http = function(){
      * Sets the timeout of http requests in milliseconds. Default is 10000ms (10s).
      */
     this.timeout   = this.timeout || 10000; //default 10 seconds
-    
+
     /**
      * Sets whether this element routes traffic through a server proxy.
      * Remarks:
      * This can also be set on a per call basis. See {@link teleport.http.method.get}.
      */
     this.autoroute = this.autoroute || false;
-    
+
     /**
-     * String specifying the url to the route script. 
+     * String specifying the url to the route script.
      * Remarks:
      * The route script will receive the route information in 3 extra headers:
      *   X-Route-Request     - Containing the destination url.<br />
@@ -200,7 +200,7 @@ apf.http = function(){
         options.callback = callback;
         return this.get(url, options);
     };
-    
+
     this.getJSON = function(url, callback, options){
         if (!options) options = {};
         options.callback = callback;
@@ -267,17 +267,17 @@ apf.http = function(){
             //#endif
         }
         //#endif
-        
+
         //#ifdef __ENABLE_UIRECORDER_HOOK
         if (apf.uirecorder && apf.uirecorder.captureDetails) {
             if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                apf.uirecorder.capture.trackHttpCall(this, url, options); 
+                apf.uirecorder.capture.trackHttpCall(this, url, options);
             }
         }
         //#endif
 
         var binary = apf.hasXhrBinary && options.binary;
-        var async = options.async = (options.async || binary 
+        var async = options.async = (options.async || binary
             || typeof options.async == "undefined" || apf.isOpera || false);
 
         //#ifdef __SUPPORT_WEBKIT
@@ -381,7 +381,7 @@ apf.http = function(){
         }
         // #endif
         var headers = [];
-        
+
         function setRequestHeader(name, value){
             //#ifdef __DEBUG
             headers.push(name + ": " + value);
@@ -400,12 +400,19 @@ apf.http = function(){
                     + apf.config.queryAppend;
             }
             //#endif
-            
+
             var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
             if (requestedWithParam) {
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
                     + requestedWithParam + "=1";
             }
+            // global support for protection against Cross Site Request Forgery
+            // attacks by supplying a token to the global APF config object. This
+            // token will be appended to the URL and sent for each XHR.
+            // Warning: if you are doing CORS, be sure to use a different method!
+            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
+            if (CSRFToken)
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
 
             http.open(this.method || options.method || "GET", httpUrl, async);
 
@@ -427,7 +434,7 @@ apf.http = function(){
                 setRequestHeader("X-Proxy-Request", url);
                 setRequestHeader("X-Compress-Response", "gzip");
             }
-            
+
             if (binary) {
                 setRequestHeader("Cache-Control", "no-cache");
                 setRequestHeader("X-File-Name", binary.filename);
@@ -481,7 +488,7 @@ apf.http = function(){
             for (var name in options.headers)
                 setRequestHeader(name, options.headers[name]);
         }
-        
+
         // #ifdef __DEBUG
         if (!options.hideLogMessage)
             this.queue[id].log.request(headers);
@@ -535,7 +542,7 @@ apf.http = function(){
                     }
                     else {
                         window.onerror = oldWinOnerror;
-                        
+
                         if (oldWinOnerror)
                             return oldWinOnerror.apply(window, arguments);
                     }
@@ -589,7 +596,7 @@ apf.http = function(){
             return id;
         }
     };
-    
+
     // #ifdef __WITH_DATA
     /**
      * Method that all async objects should implement
@@ -599,27 +606,27 @@ apf.http = function(){
         this.exec = function(method, args, callback, options){
             if (!options)
                 options = {};
-            
+
             var url = args[0], query = "";
             if (!options.method)
                 options.method = method.toUpperCase();
             if (!options.callback)
                 options.callback = callback;
-            
+
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(
-                apf.getAbsolutePath(apf.config.baseurl, url), 
-                options.method == "GET" 
-                    ? options 
+                apf.getAbsolutePath(apf.config.baseurl, url),
+                options.method == "GET"
+                    ? options
                     : apf.extend({data : query}, options)
             );
         }
     }
     // #endif
-    
+
     /**
-     * Sends the binary blob to server and multipart encodes it if needed this code 
-     * will only be executed on Gecko since it's currently the only browser that 
+     * Sends the binary blob to server and multipart encodes it if needed this code
+     * will only be executed on Gecko since it's currently the only browser that
      * supports direct file access
      * @private
      */
@@ -682,7 +689,7 @@ apf.http = function(){
                 }, 10);
             }
         }
-        
+
         /* #ifdef __DEBUG
         if (!qItem.options.hideLogMessage) {
             apf.console.info("[HTTP] Receiving [" + id + "]"
@@ -716,11 +723,11 @@ apf.http = function(){
         if (http.status > 600)
             return this.$timeout(id);
 
-        extra.data = qItem.options.useJSON 
-            ? eval("(" + http.responseText + ")") 
+        extra.data = qItem.options.useJSON
+            ? eval("(" + http.responseText + ")")
             : http.responseText; //Can this error?
 
-        if (http.status >= 400 && http.status < 600 || http.status < 10 
+        if (http.status >= 400 && http.status < 600 || http.status < 10
           && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
@@ -846,12 +853,12 @@ apf.http = function(){
             message : "HTTP Call timed out",
             retries : qItem.retries || 0
         }) : false;
-        
+
         //#ifdef __DEBUG
         if (qItem.log)
             qItem.log.response(extra);
         //#endif
-        
+
         if (!noClear)
             this.clearQueueItem(id);
     };
