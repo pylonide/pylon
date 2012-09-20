@@ -227,7 +227,7 @@ module.exports = ext.register("ext/tree/tree", {
             for (var filename in files) {
                 var file = files[filename];
 
-                var xmlNode = apf.n("<" + file.type + " />")
+                var xmlNode = apf.n("<" + apf.escapeXML(file.type) + " />")
                     .attr("type", file.type)
                     .attr("name", filename)
                     .attr("path", path + "/" + filename)

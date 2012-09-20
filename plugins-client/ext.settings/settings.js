@@ -40,7 +40,7 @@ module.exports = ext.register("ext/settings/settings", {
     addSection : function(tagName, name, xpath, cbCommit){
         var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node)
-            this.model.appendXml(apf.n("<" + tagName + "/>").attr("name", name).node(), xpath);
+            this.model.appendXml(apf.n("<" + apf.escapeXML(tagName) + "/>").attr("name", name).node(), xpath);
     },
 
     hook : function(){

@@ -404,7 +404,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
         apf.xmldb.appendChild(file.targetFolder, apf.getXml(xmlNode));
         //trFiles.add(xmlNode, file.targetFolder);
-        file.treeNode = trFiles.queryNode("//file[@path='" + path + "/" + filename + "'][@name='" + filename + "']");
+        file.treeNode = trFiles.queryNode("//file[@path='" + util.escapeXpathString(path) +
+            "/" + util.escapeXpathString(filename) + "'][@name='" + util.escapeXpathString(filename) + "']");
     },
 
     //add file to upload activity list
