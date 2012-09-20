@@ -51,7 +51,10 @@ module.exports = ext.register("ext/preview/preview", {
                 caption : "Preview",
                 disabled : true,
                 onclick : function(){
-                    var file = tabEditors.getPage().$model.data;
+                    var page = tabEditors.getPage();
+                    if (page.$editor === _self)
+                        return;
+                    var file = page.$model.data;
                     var url = location.protocol + "//" + location.host + file.getAttribute("path");
                     _self.preview(url);
                 }
