@@ -146,7 +146,6 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     clipboardEvent : function(event) {
-        // try-catch is needed because firefox throws error instead of returning false
         try {
             if (util.isChrome() && !chrome.app.isInstalled) {
                 ext.initExtension(this);
@@ -154,7 +153,9 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             }
             else
                 document.execCommand(event);
-        } catch(e) {}
+        } catch(e) {
+            // try-catch is needed because firefox throws error instead of returning false
+        }
     },
     
     $getAce : function() {
