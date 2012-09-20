@@ -403,16 +403,18 @@ apf.http = function(){
 
             var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
             if (requestedWithParam) {
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
-                    + requestedWithParam + "=1";
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") +
+                    encodeURIComponent(requestedWithParam) + "=1";
             }
             // global support for protection against Cross Site Request Forgery
             // attacks by supplying a token to the global APF config object. This
             // token will be appended to the URL and sent for each XHR.
             // Warning: if you are doing CORS, be sure to use a different method!
             var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
-            if (CSRFToken)
+            if (CSRFToken) {
+                CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
+            }
 
             http.open(this.method || options.method || "GET", httpUrl, async);
 
