@@ -11,6 +11,7 @@
       gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"
       showinvisibles    = "[{require('core/settings').model}::editors/code/@showinvisibles]"
       showprintmargin   = "[{require('core/settings').model}::editors/code/@showprintmargin]"
+      showindentguides  = "[{require('core/settings').model}::editors/code/@showindentguides]"
       printmargincolumn = "[{require('core/settings').model}::editors/code/@printmargincolumn]"
       softtabs          = "[{require('core/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('core/settings').model}::editors/code/@tabsize]"
@@ -29,24 +30,27 @@
 
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
-      debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{[@loading] || require('core/ide') || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
+      readonly          = "{
+            (!stServerConnected.active and !require('core/ide').local) 
+            || [@loading] 
+            || (location.host and window.dbg and dbg.state and [@debug])
+        }"
     />
 
-    <a:menu id="mnuCtxEditor" >
+    <a:menu id="mnuCtxEditor">
         <a:item command="undo">Undo</a:item>
         <a:item command="redo">Redo</a:item>
-        <a:divider visible="{!window.cloud9config.local}" />
-        <a:item id="mnuCtxEditorCut" visible="{!window.cloud9config.local}" command="cut">Cut</a:item>
-        <a:item visible="{!window.cloud9config.local}" command="copy">Copy</a:item>
-        <a:item visible="{!window.cloud9config.local}" command="paste">Paste</a:item>
         <a:divider />
-        <a:item 
-          visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
+        <a:item id="mnuCtxEditorCut" command="cut">Cut</a:item>
+        <a:item command="copy">Copy</a:item>
+        <a:item command="paste">Paste</a:item>
+        <a:divider />
+        <a:item
+          visible="{dbg.state == 'stopped'}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);
           ">Quick Watch</a:item>
-        <a:divider visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}" />
+        <a:divider visible="{dbg.state == 'stopped'}" />
         <a:item command="selectall">Select All</a:item>
     </a:menu>
 
@@ -85,6 +89,6 @@
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
-    <a:item type="radio" value="application/x-yaml">YAML</a:item>
+        <a:item type="radio" value="application/x-yaml">YAML</a:item>
     </a:menu>
 </a:application>

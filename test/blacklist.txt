@@ -1,0 +1,5 @@
+./plugins-client/ext.console/logger_test.js
+./plugins-server/cloud9.ide.revisions/revisions_test.js
+./plugins-server/cloud9.process-manager/process_manager_test.js
+./plugins-server/cloud9.run.node-debug/node_debug_test.js
+./plugins-server/cloud9.run.shell/shell_test.js

@@ -70,23 +70,29 @@ util.inherits(StatePlugin, Plugin);
             if (err)
                 return callback(err);
 
-            var state = {
-                "type": "state"
-            };
-
-            for (var pid in ps) {
-                var processType = ps[pid].type;
-                if (processType == "node" || processType == "apache" || processType == "php" || processType == "python" || processType == "ruby")
-                    state.processRunning = pid;
-                else if (processType == "node-debug") {
-                    state.processRunning = pid;
-                    state.debugClient = pid;
+            self.pm.runnerTypes(function(err, runners) {
+                if (err)
+                    return callback(err);
+                    
+                var state = {
+                    "type": "state"
+                };
+                
+                // TODO could we just send all ps?
+                for (var pid in ps) {
+                    var processType = ps[pid].type;
+                    if (runners.indexOf(processType) >= 0) {
+                        state[processType] = parseInt(pid, 10);
+                        state.processRunning = pid;
+                        if (processType.substr(-5) == "debug")
+                            state.debugClient = pid;
+                    }
                 }
-            }
-
-            // give other plugins the chance to add to the state
-            self.emit("statechange", state);
-            callback(null, state);
+    
+                // give other plugins the chance to add to the state
+                self.emit("statechange", state);
+                callback(null, state);
+            });
         });
     };
 

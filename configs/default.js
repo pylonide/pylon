@@ -32,7 +32,7 @@ var config = [
         prefix: "/static/bundles",
         plugins: clientExtensions
     }, {
-        packagePath: "./cloud9.static",
+        packagePath: "connect-architect/connect.static",
         prefix: "/static"
     },
     "./cloud9.alive",
@@ -45,6 +45,10 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
+    {
+        packagePath: "smith.io/server-plugin",
+        messagePath: "/smith.io/server"
+    },
     // server plugins
     {
         packagePath: "./cloud9.sandbox",
@@ -57,8 +61,11 @@ var config = [
         packagePath: "./cloud9.core",
         debug: false,
         fsUrl: fsUrl,
+        smithIo: {
+            port: port,
+            prefix: "/smith.io/server"
+        },
         hosted: false,
-        socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
@@ -97,6 +104,7 @@ var config = [
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
+            "ext/dbg-node/dbg-node", 
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
             "ext/consolehints/consolehints",
@@ -128,6 +136,7 @@ var config = [
             "ext/colorpicker/colorpicker",
             "ext/gitblame/gitblame",
             //"ext/githistory/githistory",
+            "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
             "ext/language/liveinspect"
@@ -151,7 +160,8 @@ var config = [
         packagePath: "connect-architect/connect.session",
         key: "cloud9.sid." + port,
         secret: "v1234"
-    }, {
+    },
+    {
         packagePath: "connect-architect/connect.session.file",
         sessionsPath: __dirname + "/../.sessions"
     },
@@ -197,8 +207,7 @@ var config = [
     "./cloud9.ide.revisions",
     {
         packagePath: "./cloud9.ide.settings",
-        settingsPath: ".settings",
-        absoluteSettingsPath: path.join(projectDir, ".settings"),
+        settingsPath: ".settings"
     },
     "./cloud9.ide.shell",
     "./cloud9.ide.state",

@@ -7,6 +7,7 @@
 define(function(require, exports, module) {
 
 var parser = require("treehugger/js/parse");
+var traverse = require("treehugger/traverse");
 var baseLanguageHandler = require('ext/language/base_handler');
 
 var handler = module.exports = Object.create(baseLanguageHandler);
@@ -17,7 +18,21 @@ handler.handlesLanguage = function(language) {
     
 handler.parse = function(code, callback) {
     code = code.replace(/^(#!.*\n)/, "//$1");
-    callback(parser.parse(code));
+    var ast = parser.parse(code);
+    traverse.addParentPointers(ast);
+    callback(ast);
+};
+
+handler.isParsingSupported = function() {
+    return true;
+}; 
+
+handler.findNode = function(ast, pos, callback) {
+    callback(ast.findNode(pos));
+};
+
+handler.getPos = function(node, callback) {
+    callback(node.getPos());
 };
 
 /* Ready to be enabled to replace Narcissus, when mature

@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-idle-fingers .ace_gutter {\
   background: #3b3b3b;\
-  color: #333;\
+  color: #fff;\
 }\
 \
 .ace-idle-fingers .ace_print_margin {\
@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-idle-fingers .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: #353637;\
 }\
 \
 .ace-idle-fingers .ace_marker-layer .ace_selected_word {\

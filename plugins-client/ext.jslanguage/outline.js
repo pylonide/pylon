@@ -7,13 +7,14 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var outlineHandler = module.exports = Object.create(baseLanguageHandler);
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
-var EVENT_REGEX = /[a-zA-Z_0-9\$\_\ \(\)\[\]/@]/;
+var EVENT_REGEX = /[a-zA-Z_0-9\$\_\ \(\)\[\]\/@]/;
 
 var NOT_EVENT_HANDLERS = {
     addMarker: true,
     traverseUp : true,
     traverse : true,
-    topdown : true
+    topdown : true,
+    traverseTopDown : true
 };
 
 outlineHandler.handlesLanguage = function(language) {
@@ -98,7 +99,8 @@ function extractOutline(doc, node) {
             });
             return this;
         },
-        'VarDeclInit(x, Function(name, fargs, body))', function(b) {
+        'VarDeclInit(x, Function(name, fargs, body))', 'ConstDeclInit(x, Function(name, fargs, body))',
+        function(b) {
             results.push({
                 icon: 'method',
                 name: b.x.value + fargsToString(b.fargs),
@@ -130,7 +132,7 @@ function extractOutline(doc, node) {
             return this;
         },
         */
-        'VarDeclInit(x, e)', function(b) {
+        'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
             var items = extractOutline(doc, b.e);
             if (items.length === 0)
                 return this;
@@ -174,36 +176,15 @@ function extractOutline(doc, node) {
         },
         // e.on("listen", function(...) { ... }) -> name is listen
         'Call(e, args)', function(b) {
-            var name = expressionToName(b.e);
-            if (!name || b.args.length < 2 || NOT_EVENT_HANDLERS[name])
+            var eventHandler = tryExtractEventHandler(this);
+            if (!eventHandler)
                 return false;
-            // Require handler at first or second position
-            var s;
-            var fun;
-            if (b.args[0] && b.args[0].cons === 'String' && b.args[1] && b.args[1].cons === 'Function') {
-                s = b.args[0];
-                fun = b.args[1]
-            }
-            else if (b.args[1] && b.args[1].cons === 'String' && b.args[2] && b.args[2].cons === 'Function') {
-                s = b.args[1];
-                fun = b.args[2];
-            }
-            else {
-                return false;
-            }
-            if (!s[0].value.match(EVENT_REGEX))
-                return false;
-            // Ignore if more handler-like arguments exist
-            if (b.args.length >= 4 && b.args[2].cons === 'String' && b.args[3].cons === 'Function')
-                return false;
-            var fargs = fun[1];
-            var body = fun[2];
             results.push({
                 icon: 'event',
-                name: s[0].value + fargsToString(fargs),
+                name: eventHandler.s[0].value,
                 pos: this.getPos(),
-                displayPos: fixStringPos(doc, s),
-                items: extractOutline(doc, body)
+                displayPos: fixStringPos(doc, eventHandler.s),
+                items: eventHandler.body && extractOutline(doc, eventHandler.body)
             });
             return this;
         },
@@ -246,6 +227,49 @@ function extractOutline(doc, node) {
     return results;
 }
 
+var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(node, ignoreBind) {
+    var result;
+    node.rewrite('Call(e, args)', function(b) {
+        var name = expressionToName(b.e);
+        if (!name || b.args.length < 2 || NOT_EVENT_HANDLERS[name])
+            return false;
+        // Require handler at first or second position
+        var s;
+        var fun;
+        if (b.args[0] && b.args[0].cons === 'String' && isCallbackArg(b.args[1], ignoreBind)) {
+            s = b.args[0];
+            fun = b.args[1];
+        }
+        else if (b.args[1] && b.args[1].cons === 'String' && isCallbackArg(b.args[2], ignoreBind)) {
+            s = b.args[1];
+            fun = b.args[2];
+        }
+        else {
+            return false;
+        }
+        if (!s[0].value.match(EVENT_REGEX))
+            return false;
+        // Ignore if more handler-like arguments exist
+        if (b.args.length >= 4 && b.args[2].cons === 'String' && b.args[3].cons === 'Function')
+            return false;
+        result = {
+            s: s,
+            fargs: fun[1],
+            body: fun[2]
+        };
+    });
+    return result;
+};
+
+var isCallbackArg = function(node, ignoreBind) {
+    if (!node)
+        return false;
+    var result;
+    node.rewrite(
+        'Function(_, _, _)', function() { result = true; },
+        'Call(PropAccess(_, "bind"), [_])', function() { result = !ignoreBind; }
+    );
+    return result;
+};
+
 });
-
-

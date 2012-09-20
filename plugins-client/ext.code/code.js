@@ -406,6 +406,7 @@ module.exports = ext.register("ext/code/code", {
                 ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
+                ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
                 ["behaviors", ""],
                 ["softtabs", "true"],
@@ -436,33 +437,21 @@ module.exports = ext.register("ext/code/code", {
 
         settings.addSettings("Code Editor", markupSettings);
 
-        ide.addEventListener("afteropenfile", function(e) {
-            if (_self.setState)
-                _self.setState(e.doc, e.doc.state);
-
-            if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
-                // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
-                  && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
-                  && e.node.hasAttribute("path")) {
-                    var path = e.node.getAttribute("path").slice(ide.davPrefix.length + 1);
-                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + path.replace(/"/g, "&quot;") + '"]');
-                    if (nodes.length)
-                        e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
-                }
-                e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
+        ide.addEventListener("tab.afterswitch", function(e) {
+            var editor = _self.amlEditor;
+            if (typeof editor !== "undefined") {
+                // path without dav prefix and without trailing slashes
+                var path = (e.nextPage.name.indexOf(e.currentTarget.davPrefix) === 0 ?
+                    e.nextPage.name.substr(e.currentTarget.davPrefix.length) :
+                    e.nextPage.name).replace(/^\/+/, "")
+                
+                editor.afterOpenFile(editor.getSession(), path);
             }
         });
 
-        ide.addEventListener("tab.afterswitch", function(e) {
-            var editor = _self.amlEditor;
-            if (typeof editor != "undefined")
-                editor.afterOpenFile(editor.getSession());
-        });
-
         // Override ACE key bindings (conflict with goto definition)
-        commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Ctrl-Shift-R" };
-        commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Ctrl-Alt-R" };
+        commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Alt-Shift-R" };
+        commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Alt-R" };
         commands.addCommand(commands.commands.togglerecording);
         commands.addCommand(commands.commands.replaymacro);
 
@@ -557,8 +546,8 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Selection/Select to Line Start", "selecttolinestart"),
 
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-            addEditorMenu("Selection/Select to Document Start", "selecttostart"),
-            addEditorMenu("Selection/Select to Document End", "selecttoend")
+            addEditorMenu("Selection/Select to Document End", "selecttoend"),
+            addEditorMenu("Selection/Select to Document Start", "selecttostart")
         );
 
         c = 0;

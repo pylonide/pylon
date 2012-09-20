@@ -8,8 +8,11 @@
       bottom  = "3"
       right   = "3">
         <a:hbox height="23">
-            <a:label id="lblInsertActive" caption="INS" visible="false" margin="2 3 0 3" />
-            <a:label id="lblSelectionLength" visible="false" margin="2 3 0 3" />
+            <a:label id="lblEditorStatus" caption="" margin="2 3 0 3" />
+            <a:label id="lblSelectionLength" 
+              caption="" margin="2 3 0 3"
+              onclick = "require('ext/statusbar/statusbar').toggleSelectionLength()"
+            />
             <a:label id="lblRowCol"
               class   = "lbl_row_col"
               margin  = "2 6 0 3"
@@ -40,13 +43,14 @@
       class = "mnuSbPrefs"
       sticky = "true"
       render = "runtime"
-      model  = "{require('core/settings').model}">
-      <a:item type="check" caption="Show Invisibles" checked="[editors/code/@showinvisibles]" />
+      model  = "{require('ext/settings/settings').model}">
+      <a:item type="check" caption="Show Invisibles" checked="[editors/code/@showinvisibles]" model  = "{require('ext/settings/settings').model}"/>
       <a:item type="check" caption="Code Folding" checked="[editors/code/@folding]" />
       <a:item type="check" caption="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[editors/code/@activeline]" />
       <a:item type="check" caption="Highlight Gutter Line" checked="[editors/code/@gutterline]" />
       <a:item type="check" caption="Show Gutter" checked="[editors/code/@gutter]" />
+      <a:item type="check" caption="Show Indent Guides" checked="[editors/code/@showindentguides]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[editors/code/@highlightselectedword]" />
       <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[editors/code/@behaviors]" />
       <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[editors/code/@autohidehorscrollbar]" />

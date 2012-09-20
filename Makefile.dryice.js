@@ -66,7 +66,7 @@ function worker(project) {
                     'ext/codecomplete/open_files_local_completer',
                     'ext/jslanguage/parse',
                     'ext/jslanguage/scope_analyzer',
-                    'ext/jslanguage/narcissus_jshint',
+                    'ext/jslanguage/jshint',
                     'ext/jslanguage/debugger',
                     'ext/jslanguage/outline'
                 ]
@@ -81,7 +81,7 @@ function worker(project) {
             worker
         ],
         filter: [ /* copy.filter.uglifyjs */],
-        dest: __dirname + "/plugins-client/lib.ace/www/worker/worker.js"
+        dest: __dirname + "/plugins-client/lib.ace/www/worker/worker-language.js"
     });
     
     console.error = yeOldeError;

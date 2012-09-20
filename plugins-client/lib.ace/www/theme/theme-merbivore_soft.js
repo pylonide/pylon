@@ -50,7 +50,7 @@ exports.cssText = "\
 \
 .ace-merbivore-soft .ace_gutter {\
   background: #262424;\
-  color: #333;\
+  color: #E6E1DC;\
 }\
 \
 .ace-merbivore-soft .ace_print_margin {\
@@ -98,7 +98,7 @@ exports.cssText = "\
 }\
 \
 .ace-merbivore-soft .ace_gutter_active_line {\
-  background-color : #dcdcdc;\
+  background-color: #333435;\
 }\
 \
 .ace-merbivore-soft .ace_marker-layer .ace_selected_word {\

@@ -95,6 +95,7 @@ util.inherits(SearchPlugin, Plugin);
 
         var self = this;
         self.options = message;
+        
         this.pm.spawn("shell", {
             command: args.command,
             args: args,

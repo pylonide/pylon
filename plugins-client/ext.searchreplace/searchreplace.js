@@ -265,10 +265,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (increment && !this.$matchCountTimer) {
             var iter = parseInt(oIter.innerHTML);
             var total = parseInt(oTotal.innerHTML.substr(3))
-            if (!isNaN(iter) && !isNaN(total)) {
-				iter += increment;
+            if (!isNaN(iter) && !isNaN(total) && total) {
+                iter += increment;
                 oIter.innerHTML = iter > total ? 1 : iter < 0 ? total : iter;
-			}
+            }
             return;
         }
 
@@ -697,7 +697,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var txt = this.$editor.getCopyText();
         this.$editor.$search.set({preserveCase: chkPreserveCase.checked})
         var strReplace = this.$editor.$search.replace(txt, strReplace);
-        if (!strReplace)
+        if (typeof strReplace != "string")
             return this.findNext(backwards);
 
         this.$editor.insert(strReplace);

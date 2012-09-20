@@ -188,7 +188,8 @@ exports.cssText = ".ace-tm .ace_editor {\
 .ace-tm .ace_marker-layer .ace_active_line {\
   background: rgba(0, 0, 0, 0.07);\
 }\
-.ace-tm .ace_gutter_active_line{\
+\
+.ace-tm .ace_gutter_active_line {\
     background-color : #dcdcdc;\
 }\
 \

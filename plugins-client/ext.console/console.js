@@ -26,6 +26,10 @@ var anims = require("ext/anims/anims");
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
+/*global txtConsolePrompt tabEditors txtConsole btnCollapseConsole
+         txtConsoleInput txtOutput consoleRow  tabConsole winDbgConsole cliBox
+*/
+
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
     dev    : "Cloud9 IDE, Inc.",
@@ -77,6 +81,10 @@ module.exports = ext.register("ext/console/console", {
             if (message.body.extra.sentatinit)
                 this.recreateLogStreamBlocks(message.body.out);
         },
+        
+        kill: function(message, outputElDetails) {
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
+        },
 
         __default__: function(message, outputElDetails) {
             var res = message.body;
@@ -99,6 +107,11 @@ module.exports = ext.register("ext/console/console", {
             if (proc.extra) {
                 command_id = proc.extra.command_id;
                 original_line = proc.extra.original_line;
+                
+                if (!original_line) {
+                    continue;
+                }
+                
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
 
                 if (proc.type === "run-npm") {
@@ -107,14 +120,14 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             else {
-                command_id = this.createNodeProcessLog(spi);
+                command_id = this.createProcessLog(spi);
             }
 
             this.tracerToPidMap[command_id] = spi;
             this.pidToTracerMap[spi] = command_id;
 
             var containerEl = document.getElementById("console_section" + command_id);
-            if (!containerEl) {
+            if (containerEl) {
                 containerEl.setAttribute("rel", command_id);
                 apf.setStyleClass(containerEl, "has_pid");
             }
@@ -286,7 +299,7 @@ module.exports = ext.register("ext/console/console", {
         if (defCmd !== "") {
             this.markProcessAsCompleted(this.command_id_tracer);
             logger.logNodeStream(defCmd, null,
-                this.getLogStreamOutObject(this.command_id_tracer), ide);
+            this.getLogStreamOutObject(this.command_id_tracer), ide);
             this.command_id_tracer++;
         }
         else {
@@ -362,6 +375,9 @@ module.exports = ext.register("ext/console/console", {
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
 
+        if (window.txtConsolePrompt) // fix for c9local packed
+            txtConsolePrompt.hide();
+
         if (spinnerElement) {
             logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
@@ -370,11 +386,8 @@ module.exports = ext.register("ext/console/console", {
             if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
-            if (pNode.className.indexOf("quitting") !== -1) {
+            if (pNode.className.indexOf("quitting") !== -1)
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
-                logger.logNodeStream("Process successfully quit", null,
-                    this.getLogStreamOutObject(id), ide);
-            }
 
             setTimeout(function() {
                 spinnerElement = document.getElementById("spinner" + id);
@@ -390,8 +403,9 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    createNodeProcessLog: function(message_pid) {
-        var command_id = this.createOutputBlock("Running Node Process", true);
+    createProcessLog: function(message_pid, lang) {
+        lang = lang ? (lang[0].toUpperCase() + lang.substring(1)) : "Generic";
+        var command_id = this.createOutputBlock("Running " + lang + " Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
     
@@ -399,65 +413,13 @@ module.exports = ext.register("ext/console/console", {
         containerEl.setAttribute("rel", command_id);
         apf.setStyleClass(containerEl, "has_pid");
     
-        this.command_id_tracer++;
-        return command_id;
-    },
-
-    createPhpProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running PHP Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
-        this.command_id_tracer++;
-        return command_id;
-    },
-    
-    createApacheProcessLog: function (message_pid) {
-        var command_id = this.createOutputBlock("Running Apache Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
-        this.command_id_tracer++;
-        return command_id;
-    },
-
-    createPythonProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running Python Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
-        this.command_id_tracer++;
-        return command_id;
-    },
-
-    createRubyProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running Ruby Process", true);
-        this.tracerToPidMap[command_id] = message_pid;
-        this.pidToTracerMap[message_pid] = command_id;
-
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
-
         this.command_id_tracer++;
         return command_id;
     },
 
     onMessage: function(e) {
         if (!e.message.type)
-                return;
+            return;
 
         var message = e.message;
         //console.log(message.type, message);
@@ -472,81 +434,67 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
+        var runners = window.cloud9config.runners;
+        var lang;
+        // Skip internal processes
+        if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
+            if (apf.isTrue(clearOnRun) && window["txtOutput"])
+                txtOutput.clear();
+
+            this.createProcessLog(message.pid, lang[1]);
+            return;
+        } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            if (message.data && message.data.indexOf("Tip: you can") === 0) {
+                (function () {
+                    var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
+                    if (!prjmatch) return;
+
+                    var user = prjmatch[2];
+                    var project = prjmatch[1];
+
+                    var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
+
+                    if (project !== ide.projectName) {
+                        // concurrency bug, project does not match
+                        apf.ajax("/api/debug", {
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                agent: navigator.userAgent,
+                                type: "Concurrency bug, project does not match",
+                                e: [user, project, urlPath],
+                                workspaceId: ide.workspaceId
+                            })
+                        });
+                    }
+                    else if (urlPath.length && user !== urlPath[0]) {
+                        // concurrency bug, user does not match
+                        apf.ajax("/api/debug", {
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                agent: navigator.userAgent,
+                                type: "Concurrency bug, user does not match",
+                                e: [user, project, urlPath],
+                                workspaceId: ide.workspaceId
+                            })
+                        });
+                    }
+                }());
+            }
+
+            logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
+            return;
+        } else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            this.markProcessAsCompleted(message.pid, true);
+            return;
+        }
+
         switch (message.type) {
-            case "node-start":
-                var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-                if (apf.isTrue(clearOnRun) && window["txtOutput"]) txtOutput.clear();
-                this.createNodeProcessLog(message.pid);
-                return;
-            case "php-start":
-                this.createPhpProcessLog(message.pid);
-                return;
-            case "apache-start":
-                this.createApacheProcessLog(message.pid);
-                return;
-            case "python-start":
-                this.createPythonProcessLog(message.pid);
-                return;
-            case "ruby-start":
-                this.createRubyProcessLog(message.pid);
-                return;
-            case "node-data":
-            case "apache-data":
-            case "php-data":
-            case "python-data":
-            case "ruby-data":
-            case "php-data":            
-                if (message.data && message.data.indexOf("Tip: you can") === 0) {
-                    (function () {
-                        var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
-                        if (!prjmatch) return;
-                        
-                        var user = prjmatch[2];
-                        var project = prjmatch[1];
-                        
-                        var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
-                        
-                        if (project !== ide.projectName) {
-                            // concurrency bug, project does not match
-                            apf.ajax("/api/debug", {
-                                method: "POST",
-                                contentType: "application/json",
-                                data: JSON.stringify({
-                                    agent: navigator.userAgent,
-                                    type: "Concurrency bug, project does not match",
-                                    e: [user, project, urlPath],
-                                    workspaceId: ide.workspaceId
-                                })
-                            });
-                        }
-                        else if (urlPath.length && user !== urlPath[0]) {
-                            // concurrency bug, user does not match
-                            apf.ajax("/api/debug", {
-                                method: "POST",
-                                contentType: "application/json",
-                                data: JSON.stringify({
-                                    agent: navigator.userAgent,
-                                    type: "Concurrency bug, user does not match",
-                                    e: [user, project, urlPath],
-                                    workspaceId: ide.workspaceId
-                                })
-                            });
-                        }
-                        
-                        return;
-                    }());
-                }
-                
-                logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
-                return;
-            case "node-exit":
-            case "php-exit":
-            case "python-exit":
-            case "ruby-exit":
-            case "apache-exit":
-                this.markProcessAsCompleted(message.pid, true);
-                return;
             case "npm-module-start":
+                if (!extra.original_line || !this.inited)
+                    return;
                 var stdin_prompt = extra.original_line.split(" ")[0];
                 this.pageIdToPidMap[extra.page_id] = {
                     pid: message.pid,
@@ -556,8 +504,12 @@ module.exports = ext.register("ext/console/console", {
                 txtConsolePrompt.show();
                 break;
             case "npm-module-data":
+                if (!extra.original_line || !this.inited)
+                    return;
                 break;
             case "npm-module-exit":
+                if (!extra.original_line || !this.inited)
+                    return;
                 this.pageIdToPidMap[extra.page_id] = null;
                 if (tabConsole.getPage().$uniqueId === extra.page_id) {
                     txtConsolePrompt.hide();
@@ -791,7 +743,10 @@ module.exports = ext.register("ext/console/console", {
             else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
 
-            if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
+            var showInput = e.model.queryValue("auto/console/@showinput");
+            if (showInput === "")
+                _self.showInput(false, true);
+            else if (apf.isTrue(showInput))
                 _self.showInput(null, true);
         });
 
@@ -891,8 +846,9 @@ module.exports = ext.register("ext/console/console", {
                     return false;
                 _self.evalInputCommand(inputVal);
                 input.setValue("");
-            },
-        })
+                txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
+            }
+        });
 
         if (this.logged.length) {
             this.logged.forEach(function(text){
@@ -931,8 +887,9 @@ module.exports = ext.register("ext/console/console", {
         });
 
         logger.appendConsoleFragmentsAfterInit();
-
-        this.getRunningServerProcesses();
+        
+        // when the IDE socket is ready we'll retrieve a list of running processes
+        _self.getRunningServerProcesses();
     },
 
     newtab : function() {
@@ -1009,8 +966,9 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         apf.setStyleClass(pNode, "quitting_proc");
-        logger.logNodeStream("Quitting this process...", null,
-            this.getLogStreamOutObject(command_id), ide);
+        logger.logNodeStream("Process terminated", null,
+        this.getLogStreamOutObject(command_id), ide);
+        this.markProcessAsCompleted(pid, true);
 
         ide.send({
             command: "kill",
@@ -1119,7 +1077,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hideInput(true);
                 txtConsoleInput.removeEventListener("blur", arguments.callee);
             });
-            txtConsoleInput.focus()
+            txtConsoleInput.focus();
         }
         else {
             settings.model.setQueryValue("auto/console/@showinput", true);
@@ -1247,8 +1205,10 @@ module.exports = ext.register("ext/console/console", {
         this.animating = true;
 
         var finish = function() {
+            if (_self.onFinishTimer)
+                clearTimeout(_self.onFinishTimer);
             
-            setTimeout(function(){
+            _self.onFinishTimer = setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
                 }

@@ -1,3 +1,4 @@
+/*global diff_match_patch */
 /**
  * Revisions Worker for the Cloud9 IDE.
  *
@@ -21,9 +22,9 @@ var keysToSortedArray = function(obj) {
 
 var rNL = /\r?\n/;
 var startChar = {
-    "equal" : "  ",
-    "delete": "- ",
-    "insert": "+ "
+    "0": "  ",
+    "-1": "- ",
+    "1": "+ "
 };
 
 var docContentsOnRev = {};
@@ -70,12 +71,16 @@ var loadLibs = function(prefix) {
         importScripts(prefix + "/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
     }
-
-    if (!self.difflib) {
-        importScripts(prefix + "/ext/revisions/difflib.js");
-        self.difflib = difflib;
-    }
 };
+
+function diffLineMode(text1, text2) {
+    var dmp = self.dmp;
+    var a = dmp.diff_linesToChars_(text1, text2);
+    var diffs = dmp.diff_main(a.chars1, a.chars2, false);
+
+    dmp.diff_charsToLines_(diffs, a.lineArray);
+    return diffs;
+}
 
 self.onmessage = function(e) {
     var packet = {};
@@ -84,71 +89,43 @@ self.onmessage = function(e) {
         case "preloadlibs":
             loadLibs(e.data.prefix);
             break;
+
         case "closefile":
             docContentsOnRev[e.data.path] = null;
             break;
+
         case "preview":
-            var results = getLastAndAfterRevisions(e.data);
-            beforeRevision = results[0];
-            afterRevision = results[1];
-
-            var lines1 = beforeRevision.split(rNL);
-            var lines2 = afterRevision.split(rNL);
-
-            var ops = new self.difflib.SequenceMatcher(lines1, lines2).get_opcodes();
             var str = "";
             var ranges = [];
             var extraCounter = 0;
 
-            var processLine = function(line, row, type) {
-                extraCounter = extraCounter + 1;
-                str += startChar[type] + line + "\n";
-                if (type === "equal")
+            // Takes an array of lines, processes them by adding the proper sign
+            // at the beginning of each one for the diff, and pushes the metadata
+            // of the lines into the ranges, which will be used to mark the lines.
+            var process = function(lines, type) {
+                var counterBefore = extraCounter;
+                str += lines.map(function(line) {
+                    extraCounter = extraCounter + 1; // Keep a count for current line
+                    return (extraCounter === 1 ? "" : "\n") + startChar[type] + line;
+                }).join("");
+
+                // If this range of lines is unchanged, we don't need metadata.
+                if (type === "0")
                     return;
 
-                var prev = ranges[ranges.length - 1];
-                // If there is a previous non-neutral change and this change is
-                // of the same kind as the current one and the last line of the
-                // previous change is the line before the first line of the
-                // current one.
-                if (prev && prev[4] === type && (prev[2] === (row - 1))) {
-                    prev[2] = row + 1;
-                    prev[3] = 0;
-                    return;
-                }
-                ranges.push([row, 0, row, 1, type]);
+                ranges.push([counterBefore + 1, 0, extraCounter + 1, 0, type]);
             };
 
-            var j;
-            for (i = 0, l = ops.length; i < l; i++) {
-                var op = ops[i];
-                switch (op[0]) {
-                    case "equal":
-                        for (j = op[1]; j < op[2]; j++) {
-                            processLine(lines1[j], j, op[0]);
-                        }
-                        break;
-                    case "insert":
-                        for (j = op[3]; j < op[4]; j++) {
-                            processLine(lines2[j], extraCounter, op[0]);
-                        }
-                        break;
-                    case "delete":
-                        for (j = op[1]; j < op[2]; j++) {
-                            processLine(lines1[j], extraCounter, op[0]);
-                        }
-                        break;
-                    case "replace":
-                        for (j = op[1]; j < op[2]; j++) {
-                            processLine(lines1[j], extraCounter, "delete");
-                        }
+            var results = getLastAndAfterRevisions(e.data);
+            beforeRevision = results[0];
+            afterRevision = results[1];
 
-                        for (j = op[3]; j < op[4]; j++) {
-                            processLine(lines2[j], extraCounter, "insert");
-                        }
-                        break;
-                }
-            }
+            var ops = diffLineMode(beforeRevision, afterRevision);
+            ops.forEach(function(op) {
+                // Get rid of a newline at the end of the block and split.
+                var lines = op[1].replace(/\n$/, "").split(rNL);
+                process(lines, op[0].toString());
+            });
 
             packet.type = "preview";
             packet.content = {
@@ -171,8 +148,8 @@ self.onmessage = function(e) {
         case "newRevision":
             lastContent = e.data.lastContent;
             // That means that the main thread has already sent the revisions to
-            // the worker before, thus the latter has the data and the previous 
-            // content of the document, so we don't have to calculate again, and 
+            // the worker before, thus the latter has the data and the previous
+            // content of the document, so we don't have to calculate again, and
             // more important, the amount of data the main thread has to sent is
             // MUCH smaller.
             if (e.data.hasBeenSentToWorker === true) {
@@ -195,7 +172,7 @@ self.onmessage = function(e) {
                     });
                 }
             }
-            
+
             patch = self.dmp.patch_make(beforeRevision, lastContent);
             docContentsOnRev[e.data.path] = lastContent;
 
