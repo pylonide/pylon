@@ -8,7 +8,8 @@
       autoHideLoading           = "false"
       storage                   = "cookie"
       baseurl                   = "{apf.host ? apf.host : ''}"
-      requested-with-getparam   = "xhr" />
+      requested-with-getparam   = "xhr"
+      csrf-token                = "{'_csrf=' + window.cloud9config._csrf}"/>
 
     <!-- default model -->
     <a:model />
@@ -47,11 +48,11 @@
         <span class="blue-label">This project you are viewing is owned by <span id="lblPrjUser" class="yellow-label"></span></span>
         <a:filler />
         <a:hbox align="center">
-            <span class="blue-label">Need edit-rights? Simply 
+            <span class="blue-label">Need edit-rights? Simply
                 <a id="chatWithUser" href="javascript:void(0)" class="green-label">chat</a> with the project owner!</span>
         </a:hbox>
         <a:filler />
-        <a href="javascript:void(0)" class="white-label nodecor-link" 
+        <a href="javascript:void(0)" class="white-label nodecor-link"
           onclick="
               self['view-mode-box-readonly'].hide();
               self['view-mode-box-readonly'].noshow=true;
@@ -76,7 +77,7 @@
                 <a:divider skin="c9-divider" visible="false" />
             </a:bar>
         </a:bar>
-        
+
         <a:hsplitbox>
             <a:vsplitbox id="consoleRow" splitter="true">
                 <a:vsplitbox id="searchRow">

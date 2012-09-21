@@ -5903,17 +5903,16 @@ Function.prototype.dataType = apf.FUNCTION;
  * @see core.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
-    var vars = [];
+    var prop, vars = [];
 
     function recur(o, stack) {
-        var prop;
         if (apf.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
-        } 
+        }
         else if (typeof o == "object") {
             for (prop in o) {
-                if (apf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
                     continue;
 
                 if (typeof o[prop] == "function")
@@ -5929,7 +5928,8 @@ apf.getCgiString = function(args, multicall, mcallname){
         vars.push("func=" + mcallname);
         for (var i = 0; i < args[0].length; i++)
             recur(args[0][i], "f%5B" + i + "%5D");
-    } else {
+    }
+    else {
         for (prop in args) {
             if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                 continue;
@@ -6005,7 +6005,7 @@ Function.prototype.extend = function() {
  * @see apf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
-    var __method = this, 
+    var __method = this,
         args     = Array.prototype.slice.call(arguments),
         o        = args.shift(),
         ev       = args.shift();
@@ -6020,31 +6020,31 @@ Function.prototype.bindWithEvent = function() {
 
 /**
  * The bind function creates a new function (a bound function) that calls the
- * function that is its this value (the bound function's target function) with 
- * a specified this parameter, which cannot be overridden. bind also accepts 
- * leading default arguments to provide to the target function when the bound 
- * function is called.  A bound function may also be constructed using the new 
- * operator: doing so acts as though the target function had instead been 
- * constructed.  The provided this value is ignored, while prepended arguments 
+ * function that is its this value (the bound function's target function) with
+ * a specified this parameter, which cannot be overridden. bind also accepts
+ * leading default arguments to provide to the target function when the bound
+ * function is called.  A bound function may also be constructed using the new
+ * operator: doing so acts as though the target function had instead been
+ * constructed.  The provided this value is ignored, while prepended arguments
  * are provided to the emulated function.
- * 
+ *
  * @param {Object} context The 'this' context of the bound function
  * @type Function
  */
-if (!Function.prototype.bind)  
-    Function.prototype.bind = function(context /*, arg1, arg2... */) {  
-        if (typeof this !== 'function') throw new TypeError();  
-        var _arguments = Array.prototype.slice.call(arguments, 1),  
-            _this = this,  
-            _concat = Array.prototype.concat,  
-            _function = function() {  
-                return _this.apply(this instanceof _dummy ? this : context,  
-                    _concat.apply(_arguments, arguments));  
-            },  
-            _dummy = function() {};  
-        _dummy.prototype = _this.prototype;  
-        _function.prototype = new _dummy();  
-        return _function;  
+if (!Function.prototype.bind)
+    Function.prototype.bind = function(context /*, arg1, arg2... */) {
+        if (typeof this !== 'function') throw new TypeError();
+        var _arguments = Array.prototype.slice.call(arguments, 1),
+            _this = this,
+            _concat = Array.prototype.concat,
+            _function = function() {
+                return _this.apply(this instanceof _dummy ? this : context,
+                    _concat.apply(_arguments, arguments));
+            },
+            _dummy = function() {};
+        _dummy.prototype = _this.prototype;
+        _function.prototype = new _dummy();
+        return _function;
 };
 
 /**
@@ -6109,21 +6109,120 @@ Array.prototype.equals = function(obj){
 
 /**
  * Make sure that an array instance contains only unique values (NO duplicates).
+ * Elaborate implementation to allow for O(n) time complexity compared to O(n^2)
+ * time complexity when using Array.prototype.indexOf.
+ * @see http://bbenvie.com/articles/2012-06-10/Array-prototype-unique-in-O-n-time-complexity
+ * @see http://jsperf.com/array-unique2/9
  *
  * @type {Array}
  */
-Array.prototype.makeUnique = function(){
-    var i, length, newArr = [];
-    for (i = 0, length = this.length; i < length; i++)
-        if (newArr.indexOf(this[i]) == -1)
-            newArr.push(this[i]);
+var uniqueBenvie = function(){
+    var hasOwn = {}.hasOwnProperty,
+        uids = {};
 
-    this.length = 0;
-    for (i = 0, length = newArr.length; i < length; i++)
-        this.push(newArr[i]);
+    // use hash for primitives and tagging for objects
+    function uid(){
+        var chars = [], i = 20, num;
+        while (i--) {
+            num = Math.random() * 52 | 0;
+            chars[i] = String.fromCharCode(num + (num >= 26 ? 71 : 65));
+        }
+        chars = chars.join("");
 
-    return this;
-};
+        if (chars in uids)
+            return uid();
+
+        uids[chars] = true;
+        return chars;
+    }
+
+    function unique(array){
+        var strings = {}, numbers = {}, others = {},
+            tagged = [], failed = [],
+            count = 0, i = array.length,
+            item, type;
+
+        var id = uid();
+
+        while (i--) {
+            item = array[i];
+            type = typeof item;
+            if (item === null || type !== "object" && type !== "function") {
+                // primitive
+                switch (type) {
+                    case "string":
+                        strings[item] = true;
+                        break;
+                    case "number":
+                        numbers[item] = true;
+                        break;
+                    default:
+                        others[item] = item;
+                        break;
+                }
+            }
+            else {
+                // object
+                if (!hasOwn.call(item, id)) {
+                    try {
+                        item[id] = true;
+                        tagged[count++] = item;
+                    }
+                    catch (e){
+                        if (failed.indexOf(item) === -1)
+                            failed[failed.length] = item;
+                    }
+                }
+            }
+        }
+
+        // remove the tags
+        while (count--)
+            delete tagged[count][id];
+
+        tagged = tagged.concat(failed);
+        count = tagged.length;
+
+        // append primitives to results
+        for (i in strings)
+            if (hasOwn.call(strings, i))
+                tagged[count++] = i;
+
+        for (i in numbers)
+            if (hasOwn.call(numbers, i))
+                tagged[count++] = +i;
+
+        for (i in others)
+            if (hasOwn.call(others, i))
+                tagged[count++] = others[i];
+
+        return tagged;
+    }
+
+    return unique;
+}();
+
+if (typeof Set !== "undefined") {
+    Array.prototype.makeUnique = function(){
+        var out = [],
+            seen = new Set,
+            i = this.length;
+
+        while (i--) {
+            if (!seen.has(this[i])) {
+                out[out.length] = this[i];
+                seen.add(this[i]);
+            }
+        }
+
+        return out;
+    }
+}
+else {
+    Array.prototype.makeUnique = function(){
+        return uniqueBenvie(this);
+    };
+}
 
 /**
  * Check if this array instance contains a value 'obj'.
@@ -6460,7 +6559,7 @@ String.prototype.toXml = function(){
 };
 
 
-if (typeof window != "undefined" && typeof window.document != "undefined" 
+if (typeof window != "undefined" && typeof window.document != "undefined"
   && typeof window.document.createElement == "function") {
     /**
      * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
@@ -6614,9 +6713,9 @@ String.prototype.sprintf = function() {
 };
 
 /**
- * The now method returns the milliseconds elapsed since 
+ * The now method returns the milliseconds elapsed since
  * 1 January 1970 00:00:00 UTC up until now as a number.
- * 
+ *
  * @type {Number}
  */
 if (!Date.now) {
@@ -13895,13 +13994,13 @@ apf.setModel = function(instruction, amlNode){
 
 
 /**
- * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 
- * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most 
- * cases it sends or receives <strong>X</strong>ml. It allows for easy http 
+ * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously
+ * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most
+ * cases it sends or receives <strong>X</strong>ml. It allows for easy http
  * communication from within the browser. This object provides
  * {@link teleport.http.method.savecache caching} on top of
  * the browser's cache. This enables you to optimize your application, because
- * this can be set on a per call basis. 
+ * this can be set on a per call basis.
  * Example:
  * Retrieving content over http synchronously:
  * <code>
@@ -13981,16 +14080,16 @@ apf.http = function(){
      * Sets the timeout of http requests in milliseconds. Default is 10000ms (10s).
      */
     this.timeout   = this.timeout || 10000; //default 10 seconds
-    
+
     /**
      * Sets whether this element routes traffic through a server proxy.
      * Remarks:
      * This can also be set on a per call basis. See {@link teleport.http.method.get}.
      */
     this.autoroute = this.autoroute || false;
-    
+
     /**
-     * String specifying the url to the route script. 
+     * String specifying the url to the route script.
      * Remarks:
      * The route script will receive the route information in 3 extra headers:
      *   X-Route-Request     - Containing the destination url.<br />
@@ -14031,7 +14130,7 @@ apf.http = function(){
         options.callback = callback;
         return this.get(url, options);
     };
-    
+
     this.getJSON = function(url, callback, options){
         if (!options) options = {};
         options.callback = callback;
@@ -14065,11 +14164,11 @@ apf.http = function(){
         var _self = this;
         var id    = options.id;
         
-        
+
         
 
         var binary = apf.hasXhrBinary && options.binary;
-        var async = options.async = (options.async || binary 
+        var async = options.async = (options.async || binary
             || typeof options.async == "undefined" || apf.isOpera || false);
 
         
@@ -14121,7 +14220,7 @@ apf.http = function(){
 
         
         var headers = [];
-        
+
         function setRequestHeader(name, value){
             
             http.setRequestHeader(name, value);
@@ -14133,11 +14232,24 @@ apf.http = function(){
                 httpUrl = apf.getNoCacheUrl(httpUrl);
 
             
-            
+
             var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
             if (requestedWithParam) {
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
-                    + requestedWithParam + "=1";
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") +
+                    encodeURIComponent(requestedWithParam) + "=1";
+            }
+            // global support for protection against Cross Site Request Forgery
+            // attacks by supplying a token to the global APF config object. This
+            // token will be appended to the URL and sent for each XHR.
+            // Warning: if you are doing CORS, be sure to use a different method!
+            var CSRFHeader = apf.config ? apf.config["csrf-header"] : null;
+            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
+            if (CSRFHeader) {
+                setRequestHeader("X-CSRF-Token", CSRFHeader);
+            }
+            else if (CSRFToken) {
+                CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
             }
 
             http.open(this.method || options.method || "GET", httpUrl, async);
@@ -14160,7 +14272,7 @@ apf.http = function(){
                 setRequestHeader("X-Proxy-Request", url);
                 setRequestHeader("X-Compress-Response", "gzip");
             }
-            
+
             if (binary) {
                 setRequestHeader("Cache-Control", "no-cache");
                 setRequestHeader("X-File-Name", binary.filename);
@@ -14211,7 +14323,7 @@ apf.http = function(){
             for (var name in options.headers)
                 setRequestHeader(name, options.headers[name]);
         }
-        
+
         
 
         function handleError(){
@@ -14252,7 +14364,7 @@ apf.http = function(){
                     }
                     else {
                         window.onerror = oldWinOnerror;
-                        
+
                         if (oldWinOnerror)
                             return oldWinOnerror.apply(window, arguments);
                     }
@@ -14306,7 +14418,7 @@ apf.http = function(){
             return id;
         }
     };
-    
+
     
     /**
      * Method that all async objects should implement
@@ -14316,27 +14428,27 @@ apf.http = function(){
         this.exec = function(method, args, callback, options){
             if (!options)
                 options = {};
-            
+
             var url = args[0], query = "";
             if (!options.method)
                 options.method = method.toUpperCase();
             if (!options.callback)
                 options.callback = callback;
-            
+
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(
-                apf.getAbsolutePath(apf.config.baseurl, url), 
-                options.method == "GET" 
-                    ? options 
+                apf.getAbsolutePath(apf.config.baseurl, url),
+                options.method == "GET"
+                    ? options
                     : apf.extend({data : query}, options)
             );
         }
     }
     
-    
+
     /**
-     * Sends the binary blob to server and multipart encodes it if needed this code 
-     * will only be executed on Gecko since it's currently the only browser that 
+     * Sends the binary blob to server and multipart encodes it if needed this code
+     * will only be executed on Gecko since it's currently the only browser that
      * supports direct file access
      * @private
      */
@@ -14397,7 +14509,7 @@ apf.http = function(){
                 }, 10);
             }
         }
-        
+
         
 
         //Gonna check for validity of the http response
@@ -14419,11 +14531,11 @@ apf.http = function(){
         if (http.status > 600)
             return this.$timeout(id);
 
-        extra.data = qItem.options.useJSON 
-            ? eval("(" + http.responseText + ")") 
+        extra.data = qItem.options.useJSON
+            ? eval("(" + http.responseText + ")")
             : http.responseText; //Can this error?
 
-        if (http.status >= 400 && http.status < 600 || http.status < 10 
+        if (http.status >= 400 && http.status < 600 || http.status < 10
           && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
             
             //@todo This should probably have an RPC specific handler
@@ -14530,9 +14642,9 @@ apf.http = function(){
             message : "HTTP Call timed out",
             retries : qItem.retries || 0
         }) : false;
+
         
-        
-        
+
         if (!noClear)
             this.clearQueueItem(id);
     };
@@ -19906,6 +20018,7 @@ apf.Anchoring = function(){
             }
             else if (hasWidth && typeof this.maxwidth == "number" && typeof this.minwidth == "number") {
                 if (parseInt(width) != width) {
+                    this.width = width = (this.width || "").replace(/--(\d+)/, "-(-$1)");
                     width = setPercentage(width, "pWidth");
                     rules.push("oHtml.style.width = Math.max(" 
                         + (this.minwidth - this.$hordiff)
@@ -24674,7 +24787,7 @@ apf.MultiselectBinding = function(){
         if (this.signalXmlUpdate && actionFeature[action] & 16) {
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
-                if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
+                if (parseInt(uniqueId, 10) != uniqueId) continue; //safari_old stuff
 
                 var o = apf.lookup(uniqueId);
                 if (!this.selected) continue;
@@ -24703,7 +24816,7 @@ apf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
         
 
-        var htmlNode, lastNode;
+        var htmlNode, lastNode, loopNode;
         isChild          = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);
@@ -37227,7 +37340,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
          
         copied = nodes.slice(0);
         amlNode.$dragDrop(selected, copied, candrop && candrop[1], action, 
-            null, null, null, true)
+            null, null, null, this.copied);
         
         //amlNode.copy(nodes, selected, undefined, !this.copied);
     }

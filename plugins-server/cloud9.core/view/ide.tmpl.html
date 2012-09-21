@@ -43,7 +43,8 @@
                 env: <%env%>,
                 settings: <%settingsXml%>,
                 packed: <%packed%>,
-                packedName: <%packedName%>
+                packedName: <%packedName%>,
+                _csrf: <%_csrf%>
             };
 
             // prevent console messages from crashing our app!
@@ -64,24 +65,24 @@
             else {
                var apfLoc = "";
             }
-            
-            var config = <%requirejsConfig%>; 
+
+            var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
                 if (!cloud9config.packed) {
-                    var list = ["core/ide", "core/ext", "core/util", 
+                    var list = ["core/ide", "core/ext", "core/util",
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
                 }
                 else {
                     var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "packed.js")];
                 }
-                
+
                 require(list, function(ide, ext, util){
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
                     }
-                    
+
                     // if you pass `force=true` into the querystring, then
                     // we bypass the browser check
                     if (window.cloud9config.hosted && !window.location.search.match(/\bforce\=true\b/)) {
@@ -99,7 +100,7 @@
                     aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
-                    
+
                     //Load extensions
                     if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
@@ -124,7 +125,7 @@
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time " 
+                console.log("Total Load Time "
                     + (cloud9config.totalTime) + "ms");
 
                 ide.addEventListener("$event.extload", function(cb){

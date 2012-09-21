@@ -69,9 +69,10 @@ util.inherits(Ide, EventEmitter);
         this.workspace.createPlugins(exts);
         var statePlugin = this.workspace.getExt("state");
         if (statePlugin) {
+            var self = this;
             statePlugin.on("statechange", function(state) {
-                state.workspaceDir = this.workspace.workspaceDir;
-                state.davPrefix =  this.ide.davPrefix;
+                state.workspaceDir = self.workspaceDir;
+                state.davPrefix =  self.options.davPrefix;
             });
         }
     };
@@ -121,7 +122,8 @@ util.inherits(Ide, EventEmitter);
 
             var loadedDetectionScript = "";
             if (_self.options.local) {
-                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' + _self.options.workspaceId + '"></script>';
+                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' +
+                    _self.options.workspaceId + '"></script>';
             }
 
             var replacements = {
@@ -149,7 +151,8 @@ util.inherits(Ide, EventEmitter);
                 packed: _self.options.packed,
                 packedName: _self.options.packedName,
                 local: _self.options.local,
-                loadedDetectionScript: loadedDetectionScript
+                loadedDetectionScript: loadedDetectionScript,
+                _csrf: req.session && req.session._csrf || ""
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
