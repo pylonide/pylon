@@ -31,7 +31,7 @@ var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
 var CONCORDE_DELAY = 70;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
-var MENU_WIDTH = 300;
+var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
 var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
@@ -125,7 +125,7 @@ function asyncReplaceText(editor, prefix, match) {
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
         isInvokeScheduled = true;
-    }   
+    }
     
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
@@ -295,21 +295,36 @@ module.exports = {
             
             if (match.icon)
                 html = "<img src='" + ide.staticPrefix + "/ext/language/img/" + match.icon + ".png'/>";
-                
-            if (!isInferAvailable || match.icon) {
-                html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
-            }
-            else if (hasIcons) {
-                html += '<span class="main"><span class="deferred">' + match.name + '</span>';
-            }
-            else {
-                html += '<span class="main"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
+            
+            var docHead;
+            if (match.type) {
+                var shortType = _self.$guidToShortString(match.type);
+                if (shortType) {
+                    match.meta = shortType;
+                    docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
+                }
             }
             
-            if (match.meta) {
-                html += '<span class="meta">' + match.meta + '</span>';
+            var trim = match.meta ? " maintrim" : "";
+            if (!isInferAvailable || match.icon) {
+                html += '<span class="main' + trim + '"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
             }
-            html += '</span>';
+            else if (hasIcons) {
+                html += '<span class="main' + trim + '"><span class="deferred">' + match.name + '</span></span>';
+            }
+            else {
+                html += '<span class="main' + trim + '"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span></span>';
+            }
+            
+            if (match.meta)
+                html += '<span class="meta">' + match.meta + '</span>';
+            
+            if (match.doc)
+                match.doc = '<p>' + match.doc + '</p>';
+                
+            if (match.icon || match.type)
+                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "");
+                
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
                 if (ignoreMouseOnce) {
@@ -335,9 +350,26 @@ module.exports = {
         });
         _self.updateDoc(true);
     },
+
+    $guidToShortString : function(guid) {
+        var result = guid && guid.replace(/^[^:]+:(([^\/]+)\/)*?([^\/]*?)(\[\d+[^\]]*\])?(\/prototype)?$|.*/, "$3");
+        return result && result !== "Object" ? result : "";
+    },
+
+    $guidToLongString : function(guid, name) {
+        if (guid.substr(0, 6) === "local:")
+            return this.$guidToShortString(guid);
+        var result = guid && guid.replace(/^[^:]+:(([^\/]+\/)*)*?([^\/]*?)$|.*/, "$1$3");
+        if (!result || result === "Object")
+            return "";
+        result = result.replace(/\//g, ".").replace(/\[\d+[^\]]*\]/g, "");
+        if (name !== "prototype")
+            result = result.replace(/\.prototype$/, "");
+        return result;
+    },
     
     updateDoc : function(delayPopup) {
-        this.docElement.innerHTML = '<span class="codecompletedoc_body">';
+        this.docElement.innerHTML = '<span class="code_complete_doc_body">';
         var selected = this.matches[this.selectedIdx];
 
         if (selected && selected.doc) {
@@ -352,12 +384,12 @@ module.exports = {
             this.docElement.innerHTML += selected.doc + '</span>';
         }
         else {
-            txtCompleterDoc.parentNode.hide();   
+            txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
-            this.docElement.innerHTML += '<div><a ' +
-        'onclick="require(\'ext/preview/preview\').preview(\'' + selected.docUrl + '\'); return false;"' +
-        'href="' + selected.docUrl + '" target="c9doc">(more)</a></div>';
+            this.docElement.innerHTML += '<p><a' +
+                ' onclick="require(\'ext/preview/preview\').preview(\'' + selected.docUrl + '\'); return false;"' +
+                ' href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
         this.docElement.innerHTML += '</span>';
     },
 
@@ -434,7 +466,7 @@ module.exports = {
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.selectedIdx <= 0)
-                    return; 
+                    return;
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
@@ -501,7 +533,7 @@ module.exports = {
                 matches.splice(i, 1);
                 i--;
             }
-        }        
+        }
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0]);
