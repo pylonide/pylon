@@ -12,6 +12,7 @@ module.exports = function setup(options, imports, register) {
 
     var log = imports.log;
     var hub = imports.hub;
+    var pm = imports["process-manager"];
     var connect = imports.connect;
     var permissions = imports["workspace-permissions"];
 
@@ -27,7 +28,10 @@ module.exports = function setup(options, imports, register) {
         if (err) return register(err);
         sandbox.getWorkspaceId(function(err, workspaceId) {
             if (err) return register(err);
-            init(projectDir, workspaceId);
+            pm.runnerTypes(function(err, runnerTypes) {
+                if (err) return register(err);
+                init(projectDir, workspaceId, runnerTypes);
+            });
         });
     });
 
@@ -42,10 +46,10 @@ module.exports = function setup(options, imports, register) {
         });
     }
 
-    function init(projectDir, workspaceId, settingsPath) {
+    function init(projectDir, workspaceId, runnerTypes) {
         ide = new IdeServer({
             workspaceDir: projectDir,
-            settingsPath: settingsPath,
+            settingsPath: "",
             davPrefix: baseUrl + "/workspace",
             projectName: options.projectName || "",
             smithIo: options.smithIo,
@@ -54,11 +58,13 @@ module.exports = function setup(options, imports, register) {
             workerUrl: workerPrefix,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,
+            runners: runnerTypes,
             name: options.name || workspaceId,
             version: options.version || null,
             requirejsConfig: {
                 baseUrl: staticPrefix,
-                paths: imports.static.getRequireJsPaths()
+                paths: imports.static.getRequireJsPaths(),
+                packages: imports.static.getRequireJsPackages()
             },
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
@@ -88,8 +94,13 @@ module.exports = function setup(options, imports, register) {
                     return;
                 }
 
+				// Guard against `Can't set headers after they are sent. Error: Can't set headers after they are sent.`.
+				try {
                 next();
                 pause.resume();
+				} catch(err) {
+					console.error(err.stack);
+				}
             });
         });
 

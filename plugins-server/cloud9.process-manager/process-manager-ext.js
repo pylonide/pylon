@@ -17,8 +17,11 @@ module.exports = function setup(options, imports, register) {
             ps: function(callback) {
                 callback(null, pm.ps());
             },
-            runnerTypes: function () {
-                return Object.keys(runners);
+            runnerTypes: function(callback) {
+                var exclude = ["npm", "shell", "run-npm"];
+                callback(null, Object.keys(runners).filter(function(runner) {
+                    return exclude.indexOf(runner) === -1;
+                }));
             },
             debug: pm.debug.bind(pm),
             spawn: pm.spawn.bind(pm),

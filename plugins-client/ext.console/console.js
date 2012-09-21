@@ -375,7 +375,7 @@ module.exports = ext.register("ext/console/console", {
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
 
-        if (txtConsolePrompt) // fix for c9local packed
+        if (window.txtConsolePrompt) // fix for c9local packed
             txtConsolePrompt.hide();
 
         if (spinnerElement) {
@@ -434,15 +434,17 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
+        var runners = window.cloud9config.runners;
         var lang;
-        if ((lang = /^(\w+)-start$/.exec(message.type))) {
+        // Skip internal processes
+        if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
             if (apf.isTrue(clearOnRun) && window["txtOutput"])
                 txtOutput.clear();
 
             this.createProcessLog(message.pid, lang[1]);
             return;
-        } else if ((lang = /^(\w+)-data$/.exec(message.type))) {
+        } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.data && message.data.indexOf("Tip: you can") === 0) {
                 (function () {
                     var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
@@ -484,7 +486,7 @@ module.exports = ext.register("ext/console/console", {
 
             logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
             return;
-        } else if ((lang = /^(\w+)-exit$/.exec(message.type))) {
+        } else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             this.markProcessAsCompleted(message.pid, true);
             return;
         }
