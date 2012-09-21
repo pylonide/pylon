@@ -24,19 +24,30 @@ module.exports = ext.register("ext/preview/preview", {
 
     counter : 0,
     nodes : [],
+    page: null,
 
     setDocument : function(doc, actiontracker) {
         var node = doc.getNode();
+        var page = this.page = doc.$page;
         doc.editor = this;
         var path = node.getAttribute("path");
         node.setAttribute("name", node.getAttribute("name").split(".#!preview")[0]);
         var url = path.substring(0, path.length - 10);
-        frmPreview.$ext.src = url;
-        txtPreviewURL.setValue(url);
+        if (frmPreview.$ext.src !== url) {
+            // onload is fired when the url changes
+            page.setAttribute("class", "loading_active");
+            frmPreview.$ext.src = url;
+            txtPreviewURL.setValue(url);
+        }
         if (!doc.preview)
             doc.preview = {fd: ++this.counter};
         var editor = barPreview;
         editor.show();
+    },
+
+    onLoad: function () {
+        if (this.page)
+            this.page.setAttribute("class", "");
     },
 
     hook : function() {

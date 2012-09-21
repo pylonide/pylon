@@ -2,6 +2,9 @@
     <a:bar id="barPreview" anchors="0 0 0 0">
       <a:divider />
       <a:textbox id="txtPreviewURL" skin="searchbox_textbox" value="" readonly="true" />
-      <iframe id="frmPreview" style="width:100%;height:100%;" src="" />
+      <iframe id="frmPreview"
+        style="width:100%;height:100%;"
+        onload="require('ext/preview/preview').onLoad()"
+        src="" />
     </a:bar>
 </a:application>
