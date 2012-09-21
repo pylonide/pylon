@@ -5,7 +5,6 @@ var EventEmitter = require("events").EventEmitter;
 var ProcessManager = require("./process_manager");
 var shell = require("../cloud9.run.shell/shell");
 var vfsLocal = require("vfs/local");
-var fsnode = require("vfs-nodefs-adapter");
 
 module.exports = {
 
