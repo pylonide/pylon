@@ -7,7 +7,7 @@
       name = "apf_{version.replace(/\./g, '_')}"
       cwd = "{__dirname}/.."
       tmp = "/tmp"
-      platform = "{__dirname}/../support/apf"
+      platform = "{__dirname}/../../apf"
       release = "~">
     </p:settings>
 
@@ -24,10 +24,10 @@
           out = "{cwd}/build/apf_release_dashboard.js"
           filehead = "1" />
 
-        <p:compress
+        <!--p:compress
           cmd = "yuicompressor"
           in = "{cwd}/build/apf_release_dashboard.js"
-          out = "{cwd}/build/apf_release_dashboard.js" />
+          out = "{cwd}/build/apf_release_dashboard.js" /-->
     </p:process>
 
     <p:files>
@@ -94,7 +94,7 @@
             <p:node path="processinginstructions" />
             <p:node path="jpack_end.js" />
         </p:node>
-    </p:files> 
+    </p:files>
 
     <p:defines defaults="defines.xml">
         <p:define name="__APFVERSION" value="{version}"/>
@@ -117,12 +117,12 @@
         <p:define name="__WITH_PROPERTY_WATCH" value="1" />
         <p:define name="__WITH_APP_DEFAULTS" value="1" />
         <p:define name="__WITH_AUTH" value="1" />
-        
-        
+
+
         <p:define name="__ENABLE_LIVETEXT" value="1" />
         <p:define name="__WITH_LIVETEXT" value="1" />
         <p:define name="__WITH_LIVEMARKUP" value="1" />
-        
+
         <p:define name="__WITH_HISTORY" value="1" />
         <p:define name="__WITH_COOKIE" value="1" />
         <p:define name="__WITH_CONTEXTMENU" value="1" />
