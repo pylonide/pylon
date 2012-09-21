@@ -14,39 +14,43 @@ var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
 var ProcessManager = require("../cloud9.process-manager/process_manager");
 var vfsLocal = require("vfs/local");
-
-var home = __dirname + "/../fixtures/node_env";
+var fsnode = require("vfs-nodefs-adapter");
 
 module.exports = {
 
     timeout: 15000,
+    vfs: null,
+    home: __dirname + "/../fixtures/node_env",
 
     setUpSuite : function(next) {
-        async.rmtree(home, next);
+        var _self = this;
+        async.rmtree(this.home, function (err) {
+            if (err) return next(err);
+            async.makePath(_self.home, next);
+        });
     },
 
     setUp: function(next) {
+        var _self = this;
         this.eventEmitter = new EventEmitter();
-        var vfs = vfsLocal({
-            root: "/"
-        });
+        var vfs = this.vfs || vfsLocal({ root: "/" });
+        this.fs = fsnode(vfs);
         var pm = this.pm = new ProcessManager({}, this.eventEmitter);
         pm.addRunner = function (name, runner) {
             pm.runners[name] = runner;
         };
         var sandbox = {
             getProjectDir: function (callback) {
-                callback(null, home);
+                callback(null, _self.home);
             },
             getPort: function (callback) {
-                callback(null, 3000);
+                callback(null, 8080);
             }
         };
         // fake setup
         node_debug("http://localhost:5858", null, vfs, pm,
             sandbox, node_runner, false, null, 5858,
-            function () {});
-        async.makePath(home, next);
+            function () { next(); });
     },
 
     createDebugClient: function(child, event, callback) {
@@ -77,16 +81,16 @@ module.exports = {
 
     "test connect debugger": function(next) {
         var _self = this;
-        fs.writeFile(home + "/hello.js", "console.log('hello')", function(err) {
+        this.fs.writeFile(this.home + "/hello.js", "console.log('hello')", function(err) {
             assert.equal(err, null);
 
             _self.pm.spawn("node-debug", {
                 file: "hello.js",
                 args: [],
                 env: {},
-                cwd: home,
+                cwd: _self.home,
                 breakOnStart: true,
-                eventEmitter: this.eventEmitter
+                eventEmitter: _self.eventEmitter
             }, "node-d", function(err, pid, child) {
                 assert.ok(pid);
                 assert.equal(err, null);
