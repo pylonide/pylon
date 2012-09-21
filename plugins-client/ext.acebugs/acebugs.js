@@ -74,9 +74,9 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         dock.register(this._name, "aceAnnotations", {
             menu : "Bug Panel",
             primary : {
-                backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
-                defaultState: { x: -6, y: -391 },
-                activeState:  { x: -6, y: -391 }
+                backgroundImage: ide.staticPrefix + "/ext/acebugs/images/main_icon.png",
+                defaultState: { x: -6, y: 0 },
+                activeState:  { x: -6, y: -40 }
             }
         }, function() {
             return aceAnnotations;
