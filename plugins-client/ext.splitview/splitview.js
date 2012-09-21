@@ -37,6 +37,17 @@ module.exports = ext.register("ext/splitview/splitview", {
 
     init : function(){
         apf.importCssString(css || "");
+        ide.addEventListener("theme.init", function(e) {
+            var cssClass = e.theme.cssClass;
+            var isDark = e.theme.isDark;
+            var stringColor = apf.getStyleRule("." + cssClass + " .ace_string", "color");
+            apf.importStylesheet([
+                ["." + cssClass + " .editor_tab .btnsesssioncontainer div.curbtn.splitview_active .tab_middle", "color: " + stringColor + " !important"],
+                ["." + cssClass + " .editor_tab .btnsesssioncontainer div.curbtn.splitview_active .tab_middle", "text-shadow: " + (isDark
+                    ? "rgba(0, 0, 0, .71) !important"
+                    : "rgba(255, 255, 255, .71) 0px 1px 0px !important")]
+            ]);
+        });
 
         var _self = this;
         var tabs = tabEditors; // localize global 'tabEditors'
