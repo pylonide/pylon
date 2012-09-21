@@ -22,8 +22,13 @@ module.exports = ext.register("ext/acebugs/acebugs", {
     type: ext.GENERAL,
     markup: markup,
     nodes: [],
+    _name: "ext/acebugs/acebugs",
 
     lastAnnotations: null,
+
+    _getDockButton: function() {
+        return dock.getButtons(this._name)[0].cache;
+    },
 
     _getEditor: function(callback) {
         var editor = editors.currentEditor && editors.currentEditor.amlEditor;
@@ -50,8 +55,6 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         ide.addEventListener("afteropenfile", this.updateAnnotations.bind(this));
         ide.addEventListener("tab.afterswitch", this._updateSession.bind(this));
 
-        var name = "ext/acebugs/acebugs";
-
         dock.addDockable({
             expanded : -1,
             width : 300,
@@ -62,13 +65,13 @@ module.exports = ext.register("ext/acebugs/acebugs", {
                 height: 350,
                 buttons : [{
                     caption: "Bugs",
-                    ext : [name, "aceAnnotations"],
+                    ext : [this._name, "aceAnnotations"],
                     hidden : true
                 }]
             }]
         });
 
-        dock.register(name, "aceAnnotations", {
+        dock.register(this._name, "aceAnnotations", {
             menu : "Bug Panel",
             primary : {
                 backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
@@ -107,7 +110,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         outXml = "<annotations>" + outXml + "</annotations>";
 
         if (aceerrors > 0)
-            dock.increaseNotificationCount("aceAnnotations", aceerrors);
+            dock.updateNotificationElement(this._getDockButton(), aceerrors);
 
         mdlAceAnnotations.load(apf.getXml(outXml.replace(/&/g, "&amp;")));
     },
@@ -124,7 +127,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             dock.resetNotificationCount("aceAnnotations");
 
             setTimeout(function(self) {
-                self.process(editor.getSession().getAnnotations());
+                self.process.call(self, editor.getSession().getAnnotations());
             }, 0, this);
         });
     },
