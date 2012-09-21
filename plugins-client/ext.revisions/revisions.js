@@ -265,14 +265,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && window.lstRevisions && !CoreUtil.isNewPage(page)) {
-            var selection = lstRevisions.selection;
-            var node = model.data.firstChild;
-            if (selection && selection.length === 0 && page.$selectedRevision) {
-                node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
-            }
-            lstRevisions.select(node);
-        }
+        if (page.$showRevisions !== true || !window.lstRevisions || CoreUtil.isNewPage(page))
+            return;
+
+        var selection = lstRevisions.selection;
+        var node = model.data.firstChild;
+
+        if (selection && selection.length === 0 && page.$selectedRevision)
+            node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
+
+        lstRevisions.select(node);
     },
 
     $getRevisionObject: function(path) {
