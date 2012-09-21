@@ -62,7 +62,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
             barNum: 1,
             sections : [{
                 width : 260,
-                height: 350,
+                height: 300,
                 buttons : [{
                     caption: "Bugs",
                     ext : [this._name, "aceAnnotations"],
@@ -109,8 +109,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
 
         outXml = "<annotations>" + outXml + "</annotations>";
 
-        if (aceerrors > 0)
-            dock.updateNotificationElement(this._getDockButton(), aceerrors);
+        dock.updateNotificationElement(this._getDockButton(), aceerrors);
 
         mdlAceAnnotations.load(apf.getXml(outXml.replace(/&/g, "&amp;")));
     },
