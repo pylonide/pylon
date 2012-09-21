@@ -89,6 +89,7 @@ exports.removeInteractive = function (amlNode) {
                 "You are about to remove the " + (type || "item") + " " + name,
                 "Do you want continue? (This change cannot be undone)",
                 function () { // Yes
+                    file.setAttribute("deleted", true);
                     amlNode.confirmed = true;
                     amlNode.remove(file);
                     amlNode.confirmed = false;
@@ -101,6 +102,7 @@ exports.removeInteractive = function (amlNode) {
                     amlNode.confirmed = true;
                     amlNode.remove(file);
                     files.forEach(function (file) {
+                        file.setAttribute("deleted", true);
                         amlNode.remove(file);
                     });
                     amlNode.confirmed = false;
