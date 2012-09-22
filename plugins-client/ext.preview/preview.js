@@ -9,33 +9,37 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
+var markup = require("text!ext/preview/preview.xml");
+var css = require("text!ext/preview/styles.css");
 
 module.exports = ext.register("ext/html/html", {
-    name  : "HTML Editor",
-    dev   : "Ajax.org",
-    type  : ext.GENERAL,
-    alone : true,
-    deps  : [code],
-    nodes : [],
+    name   : "HTML Editor",
+    dev    : "Ajax.org",
+    type   : ext.GENERAL,
+    alone  : true,
+    markup : markup,
+    css    : util.replaceStaticPrefix(css),
+    deps   : [code],
+    nodes  : [],
     autodisable : ext.ONLINE | ext.LOCAL,
     
     init : function(){
         var _self = this;
         
         this.nodes.push(
-            menus.$insertByIndex(barTools, new apf.button({
-                skin : "c9-toolbarbutton-glossy",
-                //icon : "preview.png" ,
+            menus.$insertByIndex(barTools, new apf.splitbutton({
+                id : "btnPreviewFile",
+                //skin : "c9-toolbarbutton-glossy",
                 "class" : "preview",
                 tooltip : "Preview in browser",
+                submenu : "mnuPreview",
                 caption : "Preview",
                 disabled : true,
                 onclick : function(){
-                    var file = tabEditors.getPage().$model.data;
-                    window.open(location.protocol + "//" 
-                        + location.host + file.getAttribute("path"), "_blank");
+                    _self.previewCurrentFile();
                 }
             }), 10)
         );
@@ -50,7 +54,28 @@ module.exports = ext.register("ext/html/html", {
             });
         });
 
+        apf.importCssString(this.css);
+
         this.enabled = false;
+    },
+
+    previewCurrentFile : function() {
+        var file = tabEditors.getPage().$model.data;
+        window.open(location.protocol + "//" 
+            + location.host + file.getAttribute("path"), "_blank");
+    },
+    
+    appendMenuChild : function(child) {
+        mnuPreview.appendChild(child);
+    },
+    
+    testAppendMenuChild : function() {
+        this.appendMenuChild(
+            new apf.item({
+                caption : "OHAI",
+                submenu : "mnuContext"
+            })
+        );
     },
 
     enable : function() {
