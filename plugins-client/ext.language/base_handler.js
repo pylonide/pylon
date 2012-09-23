@@ -84,6 +84,13 @@ module.exports = {
     // OTHER CALLBACKS
     
     /**
+     * Initialize this language handler.
+     */
+    init: function(callback) {
+        callback();
+    },
+    
+    /**
      * Invoked when the document has been updated (possibly after a certain interval)
      * @param doc the Document object repersenting the source
      */
