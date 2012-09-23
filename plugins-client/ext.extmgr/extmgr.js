@@ -165,6 +165,10 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 btnAdd.enable();
                 return;
             }
+            ide.dispatchEvent("track_action", {
+                type: "extmgr",
+                path: path
+            });
             apf.xmldb.setAttribute(extNode, "userext", "1");
             apf.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();
