@@ -1,0 +1,30 @@
+include ../../common_layout
+include lib
+
+mixin doctype
+
+html(xmlns="http://www.w3.org/1999/xhtml")
+	head
+		mixin head
+	
+	body
+		mixin navBar
+		#nonFooter
+			#wrapper
+				.content
+					.row.centerpiece
+						.span3#sidebarContainer
+							#sidebar
+								include ace_menu.jade
+						.span9#mainContent
+							#documentation
+								-if (isIndex)
+									!= content
+								-else
+									mixin api()
+
+							div(id="disqus_thread")
+			.push
+		mixin footer
+	
+		mixin endingScripts
