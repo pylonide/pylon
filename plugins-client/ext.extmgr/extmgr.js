@@ -16,7 +16,7 @@ var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
 
 /*global dgExt dgExtUser tbModuleName tabExtMgr btnUserExtEnable
-  btnDefaultExtEnable winExt btnAdd*/
+  btnDefaultExtEnable winExt btnAdd winQuestion*/
 
 var LOAD_TIMEOUT_REMOTE = 30 * 1000;
 var LOAD_TIMEOUT_LOCAL = 5 * 1000;
@@ -95,7 +95,6 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
 
     addExtension : function() {
-        var _self = this;
         var path = this.canonicalizePath(tbModuleName.value);
         tbModuleName.setValue(path);
         if (this.requireFailed) {
@@ -148,7 +147,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                     function() {
                         winQuestion.hide();
                         _self.$reportBadInput(path, "Please reload Cloud9.");
-                    })
+                    });
                 return;
             }
             _self.requireFailed = true;
