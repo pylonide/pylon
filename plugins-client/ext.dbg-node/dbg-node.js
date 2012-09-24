@@ -347,7 +347,7 @@ var v8DebugClient = exports.v8DebugClient = function() {};
 
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
-        xml.push(util.xmlToTag("frame", {
+        xml.push(util.toXmlTag("frame", {
             index: frame.index,
             name: apf.escapeXML(this.$frameToString(frame)), //dual escape???
             column: frame.column,
@@ -382,7 +382,7 @@ var v8DebugClient = exports.v8DebugClient = function() {};
         var scopes = frame.scopes;
         for (j = 0, l = scopes.length; j < l; j++) {
             var scope = scopes[j];
-            xml.push(util.xmlToTag("scope", {
+            xml.push(util.toXmlTag("scope", {
                 index: scope.index,
                 type: scope.type
             }));
