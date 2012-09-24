@@ -402,7 +402,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             .attr("path", path + "/" + filename)
             .node();
 
-        apf.xmldb.appendChild(file.targetFolder, apf.getXml(xmlNode));
+        apf.xmldb.appendChild(file.targetFolder, xmlNode);
         //trFiles.add(xmlNode, file.targetFolder);
         file.treeNode = trFiles.queryNode("//file[@path='" + util.escapeXpathString(path) +
             "/" + util.escapeXpathString(filename) + "'][@name='" + util.escapeXpathString(filename) + "']");
@@ -415,7 +415,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     removeFromQueue: function(name) {
         var file;
-        for (var i = 0, l = this.uploadQueue.length; i < l; i++) {
+        for (var i = this.uploadQueue.length - 1; i >= 0; --i) {
             file = this.uploadQueue[i];
             if (file.name == name) {
                 this.uploadQueue.splice(i, 1);
@@ -512,7 +512,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     var targetFolder;
                     if (filepath) {
                         targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" +
-                            apf.escapeXML(targetPath + "/" + filepath) + "/" + apf.escapeXML(filepath) + "']");
+                            util.escapeXpathString(targetPath + "/" + filepath) + "']");
 
                         // folder not exist yet, create first
                         if (!targetFolder) {
@@ -522,7 +522,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             var folders = filepath.split("/");
                             apf.asyncForEach(folders, function(folder, next) {
                                 currentPath += "/" + folder;
-                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(currentPath) + "']");
+                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + util.escapeXpathString(currentPath) + "']");
 
                                 // subfolder is already created
                                 if (subfolder) {

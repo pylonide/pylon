@@ -393,7 +393,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         return true;
     },
 
-    remove: function(path, callback) {
+    remove: function(node, callback) {
+        var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
         if (page) {
             tabEditors.remove(page);

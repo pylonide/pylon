@@ -837,7 +837,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revision) { return; }
 
         var contributorToXml = function(c) {
-            return "<contributor email='" + apf.escapeXML(c) + "' />";
+            return apf.n("<contributor />").attr("email", c).node().xml;
         };
 
         var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");

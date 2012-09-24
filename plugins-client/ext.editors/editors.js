@@ -422,13 +422,13 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$buttons.style.overflow = "";
 
         var model = new apf.model();
-        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + %[.].getAttribute('name')}", filepath, editor.path, null, function(page){
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
             page.$editor = editor;
             page.setAttribute("autofocus", false);
-            page.setAttribute("tooltip", "[@path]");
+            page.setAttribute("tooltip", "{%[.].getAttribute('path')}");
             page.setAttribute("class",
                 "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                 ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"

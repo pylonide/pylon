@@ -276,8 +276,8 @@ module.exports = ext.register("ext/menus/menus", {
             if (!item) {
                 item = items[name] = new apf.item({
                     submenu : menu.id,
-                    caption : apf.escapeXML((this.debug ? "\\[" + index + "\\] " : "") +
-                        name.split("/").pop())
+                    caption : (this.debug ? "\\[" + index + "\\] " : "") +
+                        name.split("/").pop()
                 });
             }
             else {

@@ -33,7 +33,7 @@ exports.alert = function(title, header, msg, onhide) {
         apf.document.documentElement.insertMarkup(markup);
 
     winAlert.show();
-    winAlert.setAttribute("title", exports.escapeXml(title));
+    winAlert.setAttribute("title", title);
     winAlertHeader.$ext.innerHTML = exports.escapeXml(header);
     winAlertMsg.$ext.innerHTML = exports.escapeXml(msg);
     if (onhide)
@@ -50,7 +50,7 @@ exports.confirm = function(title, header, msg, onconfirm, oncancel) {
         apf.document.documentElement.insertMarkup(markup);
 
     winConfirm.show();
-    winConfirm.setAttribute("title", exports.escapeXml(title));
+    winConfirm.setAttribute("title", title);
     winConfirmHeader.$ext.innerHTML = exports.escapeXml(header);
     winConfirmMsg.$ext.innerHTML = exports.escapeXml(msg);
     btnConfirmOk.onclick = onconfirm;
@@ -62,7 +62,7 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
         apf.document.documentElement.insertMarkup(markup);
 
     winQuestion.show();
-    winQuestion.setAttribute("title", exports.escapeXml(title));
+    winQuestion.setAttribute("title", title);
     winQuestionHeader.$ext.innerHTML = exports.escapeXml(header);
     winQuestionMsg.$ext.innerHTML = exports.escapeXml(msg);
     btnQuestionYes.onclick = onyes;
