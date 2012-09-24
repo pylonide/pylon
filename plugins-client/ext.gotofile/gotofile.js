@@ -468,8 +468,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     winGoToFile.visible = true;
                     winGoToFile.hide();
 
-                    if (editors.currentEditor && editors.currentEditor.ceEditor)
-                        editors.currentEditor.ceEditor.focus();
+                    setTimeout(function() {
+                        if (editors.currentEditor && editors.currentEditor.ceEditor)
+                            editors.currentEditor.ceEditor.focus();
+                    }, 0);
 
                     callback && callback();
                 });
