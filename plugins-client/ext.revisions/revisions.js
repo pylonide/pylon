@@ -346,6 +346,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         var doc = data.doc;
+        if (!doc.acedoc)
+            return;
+            
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
