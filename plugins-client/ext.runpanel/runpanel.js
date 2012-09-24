@@ -99,7 +99,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run it'}",
+                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -177,7 +177,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             ]);
 
             settings.setDefaults("auto/configurations", [
-                ["debug", "false"],
+                ["debug", "true"],
                 ["autohide", "true"]
             ]);
 
@@ -297,8 +297,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.push(winRunPanel);
 
         lstRunCfg.addEventListener("click", function(e){
-            if (e.htmlEvent.target.tagName == "SPAN") {
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
+            if (e.htmlEvent.target.tagName == "STRONG") {
+                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
                 this.remove(xmlNode);
             }
         });

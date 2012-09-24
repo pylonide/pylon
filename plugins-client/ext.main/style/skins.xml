@@ -1654,7 +1654,7 @@
             font-family   : Tahoma, Arial;
             font-size     : 12px;
             line-height   : 14px;
-            color         : #cecece;
+            color         : #e8e8e8;
             height        : 20px;
             padding       : 4px 2px 0 2px;
             margin        : 0 5px;
@@ -2353,7 +2353,7 @@
         }
         .c9-header-plus {
         	background-position: 0px -294px;
-        	right:31px;
+        	right:0px;
         	top: 0;
         }
         .deploy.c9-header-plus {
@@ -6046,6 +6046,121 @@
     </a:presentation>
 </a:list>
 
+<a:list name="runconfigurations">
+    <a:style><![CDATA[
+        .listRC{
+            overflow: hidden;
+            position: relative;
+            background-color: #fafbfc;
+            cursor: default;
+            padding    : 2px 2px 2px 2px;
+            color      : #333;
+        }
+        
+        .listRC .rcItem{
+            padding    : 2px 2px 2px 22px;
+            position : relative;
+        }
+        
+        .listRC .content{
+            cursor : pointer;
+            font-family : Arial, Tahoma;
+            font-size : 12px;
+            padding : 2px 0 0 0;
+        }
+        
+        .listRC .content div{
+            font-family : Courier New;
+            padding : 2px 0 0 0;
+            font-size : 12px;
+            white-space : nowrap;
+            overflow : hidden;
+        }
+
+        .listRC .radiobutton {
+            width      : 16px;
+            height     : 17px;
+            background : url("images/radio-grey.png") no-repeat 0 0;
+            display : block;
+            position : absolute;
+            left : 2px;
+            top : 3px;
+        }
+
+        .listRC .rcItem .radiobutton:hover{
+            background-position : 0 -119px;
+        }
+        
+        .listRC .rcItem .radiobutton:active{
+            background-position : 0 -17px;
+        }
+
+        .listRC .selected .radiobutton:active {
+            background-position : 0 -51px !important;
+        }
+        
+        .listRC .selected .radiobutton {
+            background-position : 0 -34px;
+        }
+
+        .listRC .selected .radiobutton:hover{
+            background-position : 0 -102px;
+        }
+
+        .listRCDisabled .radiobutton {
+            background-position : 0 -68px;
+        }
+
+        .listRCDisabled .rcItem {
+            color : #bebebe;
+        }
+        
+        .listRC .rcItem .btnclose {
+            width               : 14px;
+            height              : 14px;
+            position            : absolute;
+            right               : 2px;
+            top                 : 5px;
+            background-image    : url(images/close_tab_btn.png);
+            background-repeat   : no-repeat;
+            background-position : -28px 0;
+        }
+        
+        .listRC .rcItem:hover .btnclose {
+        }
+
+        .listRC .rcItem:hover .btnclose {
+            display: block;
+        }
+
+        .listRC .rcItem .btnclose:hover {
+            background-position : -14px 0;
+        }
+
+        .listRC .rcItem .btnclose:active {
+            background-position : -28px -14px;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="listRC">
+            </div>
+        </a:main>
+        <a:item class="." caption="div" icon="div" select="." check="span">
+            <div class="rcItem">
+                <span class="radiobutton"> </span> 
+                <div class="content"> </div>
+                <strong class="btnclose"> </strong>
+            </div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
@@ -8432,7 +8547,7 @@
             overflow:hidden;
             font-family:Arial;
             font-size:12px;
-            color:#cecece;
+            color:#d6d6d6;
             line-height:14px;
             height             : 14px;
             padding:1px 5px 0 7px;
@@ -8595,7 +8710,7 @@
             height: 23px;
         }
         .btnRun .main { 
-            background-position: 0px -457px; 
+            background-position: 0px -424px; 
             margin-right: 3px;
             overflow: visible;
         }
@@ -8616,6 +8731,9 @@
             left: 3px;
             top: 3px;
         }
+        .btnRun .main.c9-dropdown-btnOver { 
+            background-position: 0px -457px; 
+        }
         .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -397px -457px; 
         }
@@ -8627,8 +8745,11 @@
         }
 
         .btnRun .arrow { 
-            background-position: -400px -457px; 
+            background-position: -400px -424px; 
             width: 16px; 
+        }
+        .btnRun .arrow.c9-dropdown-btnOver { 
+            background-position: -400px -457px; 
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
             background-position: -400px -490px; 
@@ -11892,14 +12013,6 @@
         .filemgr-tree.openfile .item-fix .item{
         }
         
-        .rundebug .item-fix .item label{
-            padding-left : 4px;
-        }
-        
-        .rundebug .curfile span{
-            display : none !important;
-        }
-
         .filemgr-tree .item-fix.selected {
             background : rgba(0,0,0,0.04);
         }

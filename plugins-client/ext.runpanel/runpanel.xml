@@ -7,19 +7,19 @@
       skin     = "fm-window"
       flex     = "1" 
       optimize = "true"
-      minwidth = "200"
+      minwidth = "100"
       modal    = "false">
         <a:bar skin="c9-header-bar" height="26" class="c9-header-divider">
             <a:hbox>
                 <a:button id="btnAddRunConf"
-                  class  = "c9-header-plus c9-header-divider"
+                  class  = "c9-header-plus"
                   onclick  = "require('ext/runpanel/runpanel').addConfig()"
                   skin     = "header-btn" />
-                <a:button 
+                <!--a:button 
                   class  = "c9-header-minus c9-header-divider"
                   skin     = "header-btn"
                   onclick  = "lstRunCfg.remove(lstRunCfg.selected)"
-                  disabled = "{!lstRunCfg.selected || !![{lstRunCfg.selected}::@curfile]}"/>
+                  disabled = "{!lstRunCfg.selected || !![{lstRunCfg.selected}::@curfile]}"/-->
                   
                 <!--a:divider skin="c9-divider-double" /-->
                 
@@ -59,17 +59,21 @@
         </a:menu>
       
         <a:vbox anchors="0 0 0 0">
+            <a:hbox>
+                <a:button caption="Run" flex="1"></a:button>
+                <a:button caption="Debug" flex="1"></a:button>
+            </a:hbox>
             <a:list id="lstRunCfg" 
               model   = "{require('ext/runpanel/runpanel').model}"
               border  = "0"
               each    = "[config]"
               caption = "[@name]"
               flex    = "1"
-              skin    = "tree"
+              skin    = "runconfigurations"
               class   = "openfile rundebug"
               autoselect    = "true"
               empty-message = "no run configurations"
-              onafterchoose = "
+              onafterchoose2 = "
                 require('ext/runpanel/runpanel').run();
               ">
                 <a:css match="[@curfile]" value="curfile" />
