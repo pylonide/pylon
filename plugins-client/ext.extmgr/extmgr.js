@@ -135,7 +135,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var timer = setTimeout(function() {
             if (extNode) {
                 path = extNode.getAttribute("path");
-                util.question("Extension Manager", "Extension '" + path + "' failed to load.",
+                util.question("Extension Manager", "Extension '" + path +
+                    "' failed to load. Check your browser's error log.",
                     "Would you like to remove it?",
                     function() {
                         winQuestion.hide();
@@ -151,7 +152,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 return;
             }
             _self.requireFailed = true;
-            _self.$reportBadInput(path, "Please reload Cloud9 to add another extension.");
+            _self.$reportBadInput(path, "Check your browser's error log. " + 
+                "Please reload Cloud9 to add another extension.");
             _self.$enableInput();
         }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
         var _self = this;
