@@ -113,17 +113,60 @@ apf.escapeXML = function(str, strictMode) {
         str = (str || "").replace(/&/g, "&#38;");
     else
         str = (str || "").replace(/&(?!#[0-9]{2,5};|[a-zA-Z]{2,};)/g, "&#38;");
+    var map = apf.xmlEntityMap;
+    var isArray = apf.isArray;
     return str
         .replace(/"/g, "&#34;")
         .replace(/</g, "&#60;")
         .replace(/>/g, "&#62;")
         .replace(/'/g, "&#39;")
         .replace(/&([a-zA-Z]+);/gi, function(a, m) {
-            var x = apf.xmlEntityMap[m.toLowerCase()];
+            var x = map[m.toLowerCase()];
             if (x)
-                return "&#" + (apf.isArray(x) ? x[0] : x) + ";";
+                return "&#" + (isArray(x) ? x[0] : x) + ";";
             return a;
         });
+};
+
+/**
+ * Unescapes "&#38;" and other similar XML entities into HTML entities and then replaces
+ * 'special' ones (`&apos;`, `&gt;`, `&lt;`, `&quot;`, `&amp;`) into characters
+ * (`'`, `>`, `<`, `"`, `&`).
+ *
+ * @param {String} str the xml string to unescape.
+ * @return {String} the unescaped string.
+ */
+apf.unescapeXML = function(str) {
+    if (typeof str != "string")
+        return str;
+    var map = apf.xmlEntityMapReverse;
+    var isArray = apf.isArray;
+    if (!map) {
+        map = apf.xmlEntityMapReverse = {};
+        var origMap = apf.xmlEntityMap;
+        var keys = Object.keys(origMap);
+        for (var val, j, l2, i = 0, l = keys.length; i < l; ++i) {
+            val = origMap[keys[i]];
+            if (isArray(val)) {
+                for (j = 0, l2 = val.length; j < l2; ++j)
+                    map[val[j]] = keys[i];
+            }
+            else
+                map[val] = keys[i];
+        }
+    }
+    return str
+        .replace(/&#([0-9]{2,5});/g, function(a, m) {
+            var x = map[m];
+            if (x)
+                return "&" + x + ";";
+            return a;
+        })
+        .replace(/&apos;/gi, "'")
+        .replace(/&gt;/gi, ">")
+        .replace(/&lt;/gi, "<")
+        .replace(/&quot;/gi, "\"")
+        .replace(/&amp;/gi, "&");
 };
 
 /**
