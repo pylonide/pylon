@@ -28,16 +28,35 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onMessage: function(e) { // TODO
-    
+        console.log("linereport.onMessage: ", e);
     },
     
-    initReporter: function(command, callback) {
-        // For now, this is an alias of invokeReporter
-        this.invokeReporter(command, callback);
+    initReporter: function(checkInstall, performInstall, callback) {
+        this.invoke("if ! " + checkInstall + "; then " + performInstall + "; fi", callback);
     },
 
     invokeReporter: function(command, callback) {
-        
+        var _self = this;
+        this.invoke(command, function(err, output) {
+            if (err)
+                return callback();
+            callback(_self.parseReporterOutput(output));
+        });
+    },
+    
+    invoke: function(command, callback) {
+        var id = this.$commandId++;
+        var data = {
+            command: "alert",
+            argv: ["alert","1"],
+            line: "alert 1",
+            cwd: "/",
+            requireshandling: true,
+            tracer_id: id,
+            extra: { command_id: id }
+        };
+        ide.send(data);
+        this.callbacks[id] = callback;
     },
     
     parseReporterOutput: function(output) {
