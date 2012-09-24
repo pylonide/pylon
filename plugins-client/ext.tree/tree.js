@@ -582,7 +582,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (path === ide.davPrefix)
                 parentNode = trFiles.queryNode("folder[@root=1]");
             else
-                parentNode = trFiles.queryNode('//folder[@path="' + path + '"]');
+                parentNode = trFiles.queryNode('//folder[@path=' + util.escapeXpathString(path) + ']');
 
             return parentNode;
         }
@@ -691,8 +691,8 @@ module.exports = ext.register("ext/tree/tree", {
 
             // Re-select the last selected item
             if(_self.treeSelection.path) {
-                var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
-                    _self.treeSelection.path + '" and @type="' +
+                var xmlNode = trFiles.$model.queryNode('//node()[@path=' +
+                    util.escapeXpathString(_self.treeSelection.path) + ' and @type="' +
                     _self.treeSelection.type + '"]');
                 if (xmlNode)
                     trFiles.select(xmlNode);

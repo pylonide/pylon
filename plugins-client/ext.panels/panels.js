@@ -59,8 +59,8 @@ module.exports = ext.register("ext/panels/panels", {
         });
 
         ide.addEventListener("settings.load", function(){
-            if (!settings.model.queryNode("auto/panels/panel[@path='"
-                + panelExt.path + "']")) {
+            if (!settings.model.queryNode("auto/panels/panel[@path="
+                + util.escapeXpathString(panelExt.path) + "]")) {
                 settings.model.appendXml(apf.n("<panel/>")
                     .attr("path", panelExt.path)
                     .attr("width", panelExt.defaultWidth)
@@ -184,8 +184,8 @@ module.exports = ext.register("ext/panels/panels", {
         if (this.currentPanel && (this.currentPanel != this))
             this.deactivate();
 
-        var width = settings.model.queryValue("auto/panels/panel[@path='"
-            + panelExt.path + "']/@width") || panelExt.defaultWidth;
+        var width = settings.model.queryValue("auto/panels/panel[@path="
+            + util.escapeXpathString(panelExt.path) + "]/@width") || panelExt.defaultWidth;
 
         colLeft.show();
 
@@ -284,8 +284,8 @@ module.exports = ext.register("ext/panels/panels", {
             if (!_self.currentPanel)
                 return;
 
-            var query = "auto/panels/panel[@path='"
-                + _self.currentPanel.path + "']/@width";
+            var query = "auto/panels/panel[@path="
+                + util.escapeXpathString(_self.currentPanel.path) + "]/@width";
 
             if (settings.model.queryValue(query) != colLeft.getWidth())
                 settings.model.setQueryValue(query, colLeft.getWidth());

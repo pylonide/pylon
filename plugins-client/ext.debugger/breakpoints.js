@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var dock = require("ext/dockpanel/dockpanel");
 var sources = require("ext/debugger/sources");
+var util = require("core/util");
 var BREAKPOINT_DELAY = 100;
 
 /*global dbgBreakpoints:true mdlDbgBreakpoints:true dbg:true lstBreakpoints:true lstScripts:true tabEditors:true*/
@@ -204,7 +205,7 @@ module.exports = {
     updateSession: function(session) {
         var rows = [];
         var path = session.c9doc.getNode().getAttribute("path");
-        var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path='" + path + "']");
+        var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path=" + util.escapeXpathString(path) + "]");
 
         for (var i = 0; i < breakpoints.length; i++) {
             var bp = breakpoints[i];
@@ -235,8 +236,8 @@ module.exports = {
 
     removeBreakpoint: function(path, row) {
         this.$updating = true;
-        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path +
-            "' and @line='" + row + "']");
+        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path=" + util.escapeXpathString(path) +
+            " and @line='" + row + "']");
         bp && apf.xmldb.removeNode(bp);
         this.$updating = false;
     },
@@ -276,7 +277,7 @@ module.exports = {
         if (path.indexOf(tofind) == 0)
             displayText = path.substring(tofind.length + 1);
 
-        var bpList = mdlDbgBreakpoints.queryNodes("breakpoint[@path='" + path + "']");
+        var bpList = mdlDbgBreakpoints.queryNodes("breakpoint[@path=" + util.escapeXpathString(path) + "]");
         for (var i = bpList.length; i--; ) {
             apf.xmldb.removeNode(bpList[i]);
         }

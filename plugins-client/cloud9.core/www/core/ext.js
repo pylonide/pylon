@@ -81,7 +81,7 @@ module.exports = ext = {
         if (!this.model.data)
             this.model.load("<plugins />");
 
-        if (!this.model.queryNode("plugin[@path='" + path + "']"))
+        if (!this.model.queryNode("plugin[@path=" + util.escapeXpathString(path) + "]"))
             this.model.appendXml(apf.n("<plugin/>")
                 .attr("type", this.typeLut[oExtension.type])
                 .attr("name", oExtension.name || "")
@@ -90,7 +90,7 @@ module.exports = ext = {
                 .attr("enabled", "1")
                 .attr("userext", "0").node());
         else
-            this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+            this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(path) + "]/@enabled", 1);
 
         //Don't init general extensions that cannot live alone
         if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
@@ -117,8 +117,9 @@ module.exports = ext = {
             });
         }
 
-        var initTime = parseInt(this.model.queryValue("plugin[@path='" + path + "']/@init") || 0);
-        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("hook", Number(new Date() - dt) - initTime);
+        var escapedPath = util.escapeXpathString(path);
+        var initTime = parseInt(this.model.queryValue("plugin[@path=" + escapedPath + "]/@init") || 0);
+        this.model.queryNode("plugin[@path=" + escapedPath + "]").setAttribute("hook", Number(new Date() - dt) - initTime);
 
         return oExtension;
     },
@@ -171,7 +172,7 @@ module.exports = ext = {
 
         this.extHandlers[oExtension.type].unregister(oExtension);
 
-        this.model.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
+        this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(oExtension.path) + "]/@enabled", 0);
 
         if (oExtension.inited) {
             oExtension.destroy();
@@ -233,7 +234,7 @@ module.exports = ext = {
             ext : oExtension
         });
 
-        this.model.queryNode("plugin[@path='" + oExtension.path + "']").setAttribute("init", Number(new Date() - dt));
+        this.model.queryNode("plugin[@path=" + util.escapeXpathString(oExtension.path) + "]").setAttribute("init", Number(new Date() - dt));
     },
 
     enableExt : function(path) {
@@ -242,7 +243,7 @@ module.exports = ext = {
             return;
 
         ext.enable();
-        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+        this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(path) + "]/@enabled", 1);
     },
 
     disableExt : function(path) {
@@ -251,7 +252,7 @@ module.exports = ext = {
             return;
 
         ext.disable();
-        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
+        this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(path) + "]/@enabled", 0);
     },
 
     execCommand: function(cmd, data) {
