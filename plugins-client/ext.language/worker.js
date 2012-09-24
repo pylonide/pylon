@@ -717,6 +717,7 @@ function asyncParForEach(array, fn, callback) {
             return callback();
         handler.path = this.$path;
         handler.language = this.$language;
+        handler.doc = this.doc;
         var _self = this;
         handler.init(function() {
             handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
