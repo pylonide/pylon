@@ -153,7 +153,6 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             emit({
                 "type": self.name + "-start",
                 "pid": pid,
-                "url": self.url,
                 "extra": self.extra
             });
         });

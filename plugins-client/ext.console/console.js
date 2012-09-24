@@ -436,6 +436,7 @@ module.exports = ext.register("ext/console/console", {
 
         var runners = window.cloud9config.runners;
         var lang;
+        console.log("type:", message.type);
         // Skip internal processes
         if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
@@ -443,12 +444,9 @@ module.exports = ext.register("ext/console/console", {
                 txtOutput.clear();
 
             this.createProcessLog(message.pid, lang[1]);
-
-            setTimeout(function () {
-                require("ext/preview/preview").preview(message.url);
-            }, 500);
-            
             return;
+        } else if ((lang = /^([\w-]+)-web-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+            require("ext/preview/preview").preview(message.url);
         } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.data && message.data.indexOf("Tip: you can") === 0) {
                 (function () {
