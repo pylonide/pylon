@@ -93,7 +93,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 return;
 
             var node = model.queryNode('//node()[@path=' +
-                util.escapeXpathString(e.page.id) + ']');
+                util.escapeXpathString(e.page.id || "") + ']');
 
             if (!node || !node.parentNode || node.beingRemoved)
                 return;

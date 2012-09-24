@@ -285,7 +285,7 @@ module.exports = ext.register("ext/panels/panels", {
                 return;
 
             var query = "auto/panels/panel[@path="
-                + util.eescapeXpathString(_self.currentPanel.path) + "]/@width";
+                + util.escapeXpathString(_self.currentPanel.path) + "]/@width";
 
             if (settings.model.queryValue(query) != colLeft.getWidth())
                 settings.model.setQueryValue(query, colLeft.getWidth());
