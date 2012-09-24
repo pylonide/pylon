@@ -294,7 +294,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     break;
                 case "change":
                     //Reread file and put tests update in model
-                    var xmlNode = mdlTests.selectSingleNode("//file[@path='" + message.path + "']");
+                    var xmlNode = mdlTests.selectSingleNode("//file[@path=" +  util.escapeXpathString(message.path) + "]");
                     _self.reloadTestFile(xmlNode);
                     break;
             }

@@ -75,7 +75,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
             }
             else if (event.message.action === "opendir") {
-                var node = fs.model.queryNode("//folder[@path='" + event.message.args.path + "']");
+                var node = fs.model.queryNode("//folder[@path=" + util.escapeXpathString(event.message.args.path) + "]");
                 if (!node) {
                     node = fs.createFolderNodeFromPath(event.message.args.path);
                 }

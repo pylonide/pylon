@@ -163,8 +163,8 @@ var v8DebugClient = exports.v8DebugClient = function() {};
             return;
 
         var uibp = mdlDbgBreakpoints.queryNode("//breakpoint[@line='" +
-            frame.getAttribute("line") +"' and @path='" +
-            frame.getAttribute("scriptPath") + "']");
+            frame.getAttribute("line") +"' and @path=" +
+            util.escapeXpathString(frame.getAttribute("scriptPath")) + "]");
 
         if (uibp && uibp.getAttribute("enabled") == "true")
             return;
@@ -227,7 +227,7 @@ var v8DebugClient = exports.v8DebugClient = function() {};
     };
 
     this.getScriptIdFromPath = function(path) {
-        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (!script)
             return;
         return script.getAttribute("scriptid");
@@ -236,7 +236,7 @@ var v8DebugClient = exports.v8DebugClient = function() {};
     this.getScriptnameFromPath = function(path) {
         if (!path)
             return;
-        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (script)
             return script.getAttribute("scriptname");
         // if script isn't added yet reconstruct it's name from ide.workspaceDir

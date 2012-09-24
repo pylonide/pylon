@@ -157,7 +157,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
         var _self = this;
         require([path], function(loaded) {
-            var extNode = ext.model.queryNode("plugin[@path='" + loaded.path + "']");
+            var extNode = ext.model.queryNode("plugin[@path=" + util.escapeXpathString(loaded.path) + "]");
             if (!extNode) {
                 _self.requireFailed = true;
                 _self.$reportBadInput(path, "Extension was loaded but not registered successfully.");

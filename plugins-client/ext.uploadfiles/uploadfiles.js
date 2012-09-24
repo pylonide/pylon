@@ -392,7 +392,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var filename = apf.escapeXML(file.name)
         var path = apf.escapeXML(file.path);
 
-        var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
+        var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path + "/" + filename) + "]");
         if (treeNode)
             apf.xmldb.removeNode(treeNode);
 
@@ -623,7 +623,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var node = file.targetFolder;
         var path     = node.getAttribute("path");
         var filename = file.name;
-        var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
+        var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path + "/" + filename) + "]");
         if (treeNode)
             apf.xmldb.removeNode(treeNode);
 

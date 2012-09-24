@@ -146,7 +146,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         var nodesInDirXml = apf.getXml(data);
                         // we expect the new created file in the directory listing
                         var fullFolderPath = path + "/" + name;
-                        var folder = nodesInDirXml.selectSingleNode("//folder[@path='" + fullFolderPath + "']");
+                        var folder = nodesInDirXml
+                            .selectSingleNode("//folder[@path=" + util.escapeXpathString(fullFolderPath) + "]");
 
                         // not found? display an error
                         if (!folder) {
@@ -161,7 +162,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             if (!data)
                                 tree.add(folder, node);
 
-                            folder = apf.queryNode(node, "folder[@path='"+ fullFolderPath +"']");
+                            folder = apf.queryNode(node, "folder[@path="+ util.escapeXpathString(fullFolderPath) +"]");
 
                             tree.select(folder);
 
@@ -258,7 +259,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
                                 // we expect the new created file in the directory listing
                                 var fullFilePath = path + "/" + filename;
-                                var nodes = filesInDirXml.selectNodes("//file[@path='" + fullFilePath + "']");
+                                var nodes = filesInDirXml
+                                    .selectNodes("//file[@path=" + util.escapeXpathString(fullFilePath) + "]");
 
                                 // not found? display an error
                                 if (nodes.length === 0) {
@@ -405,7 +407,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             var model = new apf.model();
             model.load(modelString);
 
-            var nodeToRemove = model.queryNode("//node()[@path='" + path + "']");
+            var nodeToRemove = model.queryNode("//node()[@path=" + util.escapeXpathString(path) + "]");
             var isFolder = nodeToRemove && nodeToRemove.getAttribute("type") === "folder";
             var cb = function(data, state, extra) {
                 // In WebDAV, a 204 status from the DELETE verb means that the

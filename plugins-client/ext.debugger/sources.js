@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
@@ -44,7 +45,7 @@ module.exports = {
             if (!dbg.state)
                 return;
             var path = e.node.getAttribute("path");
-            var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+            var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
             if (!script)
                 return;
 
@@ -161,12 +162,12 @@ module.exports = {
             path = script && script.getAttribute("path");
         }
         else {
-            var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+            var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
             scriptId = script && script.getAttribute("scriptid");
         }
 
         if (path && path.substring(0, ide.davPrefix.length) == ide.davPrefix) {
-            var file = fs.model.queryNode("//file[@path='" + path + "']")
+            var file = fs.model.queryNode("//file[@path=" + util.escapeXpathString(path) + "]")
                 || fs.createFileNodeFromPath(path);
             editors.jump({
                 node    : file,
