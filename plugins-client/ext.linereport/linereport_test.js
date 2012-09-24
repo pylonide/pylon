@@ -6,12 +6,12 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("assert");
-var parser = require("./linereport_parser");
+var report = require("./linereport_base");
 
 module.exports = {
     
     "test parse line" : function(next) {
-        var results = parser.parseOutput("1:2: 3");
+        var results = report.parseOutput("1:2: 3");
         console.log(results[0]);
         assert.equal(results[0].pos.sl, 1);
         assert.equal(results[0].pos.sc, 2);
@@ -20,13 +20,13 @@ module.exports = {
     },
     
     "test parse two lines" : function(next) {
-        var results = parser.parseOutput("1:1: line 1\n1:2: line 2");
+        var results = report.parseOutput("1:1: line 1\n1:2: line 2");
         assert.equal(results.length, 2);
         next();
     },
     
     "test ignore lines" : function(next) {
-        var results = parser.parseOutput("1:1: line 1\n1:2: line 2\bmove zig");
+        var results = report.parseOutput("1:1: line 1\n1:2: line 2\bmove zig");
         assert.equal(results.length, 2);
         next();
     }

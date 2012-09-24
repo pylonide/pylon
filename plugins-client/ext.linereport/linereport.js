@@ -9,7 +9,8 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var parser = require("ext/linereport/linereport");
+var language = require("ext/language/language");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/linereport/linereport", {
     name     : "linereport",
@@ -17,50 +18,32 @@ module.exports = ext.register("ext/linereport/linereport", {
     alone    : true,
     type     : ext.GENERAL,
     disabled : false,
+    deps     : [language, editors],
     nodes : [],
     
-    $commandId: 0,
-    
-    callbacks: {},
-    
-    hook: function() { // TODO
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
+    hook: function() {
+        language.worker.on("linereport_invoke", function(event) {
+            if (ext.disabled)
+                return;
+            ide.send(event.data.command);
+        });
+        ide.addEventListener("socketMessage", function(event) {
+            console.log("linereport.onMessage: ", event.type || event);
+        });
+        // Make sure base is initialized and kept up-to-date
+        language.registerLanguageHandler("ext/linereport/linereport_base");
     },
     
-    onMessage: function(e) { // TODO
-        console.log("linereport.onMessage: ", e);
-    },
-    
-    initReporter: function(checkInstall, performInstall, callback) {
-        this.invoke("if ! " + checkInstall + "; then " + performInstall + "; fi", callback);
+    enable: function() {
+        this.disabled = false;
     },
 
-    invokeReporter: function(command, callback) {
-        var _self = this;
-        this.invoke(command, function(err, output) {
-            if (err)
-                return callback();
-            callback(_self.parseReporterOutput(output));
-        });
+    disable: function() {
+        this.disabled = true;
     },
-    
-    invoke: function(command, callback) {
-        var id = this.$commandId++;
-        var data = {
-            command: "alert",
-            argv: ["alert","1"],
-            line: "alert 1",
-            cwd: "/",
-            requireshandling: true,
-            tracer_id: id,
-            extra: { command_id: id }
-        };
-        ide.send(data);
-        this.callbacks[id] = callback;
-    },
-    
-    parseReporterOutput: function(output) {
-        parser.parseOutput(output);
+
+    destroy: function() {
+        this.disabled = true;
     }
     
 });
