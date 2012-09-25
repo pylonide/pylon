@@ -19,6 +19,8 @@ var nextJob = {}; // map command to function
 worker.init = function() {
     worker.sender.on("linereport_invoke_result", function(event) {
        // Note: invoked at least once for each linereport_base instance
+       if (!callbacks[event.id])
+           return; // already handled
        callbacks[event.id](event.code, event.output);
        delete callbacks[event.id];
     });
