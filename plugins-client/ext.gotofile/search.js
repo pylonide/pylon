@@ -27,75 +27,98 @@ var fileTypes = {
  */
 module.exports.fileSearch = function(filelist, keyword, cache) {
     var klen = keyword.length;
-    
+
     /**
-     * full filename with extension             1000
-     * name part without the extension           201
-     * start of filename                         200
-     * part of filename                          100
-     * depth of path (or length to optimize)     200 - 10 * count("/")
-     * full part of path                          50
-     * extension weight                           -1 * lut[ext]
+     * FULL MATCHES                              >= 50
+     *   full filename with extension             1000
+     *   name part without the extension           201
+     *   start of filename                         200
+     *   part of filename                          100
+     *   depth of path (or length to optimize)     200 - 10 * count("/")
+     *   full part of path                          50
+     *
+     * SCATTERED MATCHES                         <= 45
+     *   path depth                                 20 - count("/")
+     *   match diff                                 15 - len(diff)
+     *   path depth diff                            10 - (match.count("/") - keyword.count("/"))
+     *
+     * Extension weight                             -1 * lut[ext]
      */
-    
+
     var dt = new Date();
-    
+
     var type = "value";
     var toS = function(){
         return this[type];
     };
-     
+
     var name, res = [], value, ext;
-    for (var i = 0, l = filelist.length, s, j, k, q, p; i < l; i++) {
+    for (var i = 0, l = filelist.length, s, j, k, q, p, m, n; i < l; i++) {
         name = filelist[i];
-        
+
         // We only add items that have the keyword in it's path
+        value = 0;
         if ((j = name.lastIndexOf(keyword)) > -1) {
-            cache.push(name);
-            
             if (klen < 3) {
-                res.push(name);
+                cache.push(name); res.push(name);
                 continue;
             }
-            
-            value = 0;
-            
+
             // We prioritize ones that have the name in the filename
             if (j > (q = name.lastIndexOf("/"))) {
                 k = name.lastIndexOf("/" + keyword);
-
                 if (k > -1) {
                     // We give first prio to full filename matches
                     if (name.length == klen + 1 + k)
                         value += 1000;
-                    
+
                     // Then to match of name prior to extension
                     else if (name.lastIndexOf(".") == k + klen + 1)
                         value += 201;
-                    
+
                     // Then to matches from the start of the filename
                     else if (k == q)
                         value += 200;
-                    
+
                     // Then anywhere in the filename
                     else
                         value += 100;
                 }
-                
+
                 // The shorter the path depth, the higher prio we give
-                value += 200 - (name.split("/").length * 10);
+                value += 200 - Math.min(name.split("/").length * 10, 150);
             }
             // Then the rest
             else
                 value += 50;
-        
-            //Check extension
+        }
+        // Check for spatial matches
+        else {
+            if (klen < 3)
+                continue;
+            var result = matching(name, keyword);
+            if (! result)
+                continue;
+            if (name.indexOf("node-runner") > 0 && keyword === "noderunner")
+                console.log("HERE");
+            cache.push(name);
+            var matched = name.substring(result[0].val.length);
+            // The shorter the match diff, the higher prio we give
+            value += 20 - Math.min(matched.length - keyword.length, 20);
+            // The shorter the path depth, the higher prio we give
+            value += 15 - Math.min(name.split("/").length, 15);
+            // The shorter path depth diff, the higher prio we give
+            value += 10 - Math.min(Math.abs(matched.split("/").length - keyword.split("/").length), 10);
+        }
+
+        if (value > 0) {
+            // Check extension
             s = name.lastIndexOf(".");
             if (s > -1)
                 value -= 10 * (fileTypes[name.substr(s+1)] || 0) || 20;
             else
                 value -= 20;
-        
+
             res.push({
                 toString : toS,
                 value : 2000000 - value,
@@ -105,18 +128,15 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
         }
     }
 
-    if (!res.length)
-        return [];
-    
     if (klen < 3)
         return res;
-    
+
     if (klen > 2 && res.length < 10000)
         res.sort();
-    
+
     var type = "name";
     res = res.join("\n").split("\n");
-    
+
     return res;
 };
 
@@ -154,5 +174,39 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensi
     return results;
 };
 
+var matching = module.exports.matching = function (value, keyword) {
+    // find matched parts
+    var matchI = null;
+    var missI = null;
+    var result = [];
+    for (i = value.length-1, j = keyword.length-1; i >= 0 && j >= 0; i--) {
+        if (value[i] === keyword[j]) {
+            matchI = matchI || i;
+            j--;
+            if (missI) {
+                result.unshift({ val: value.substring(i+1, missI+1) });
+                missI = null;
+            }
+        }
+        else {
+            missI = missI || i;
+            if (matchI) {
+                result.unshift({ match: true, val: value.substring(i+1, matchI+1)});
+                matchI = null;
+            }
+        }
+    }
+    if (j !== -1)
+        return null;
+
+    if (missI)
+        result.unshift({ val: value.substring(i+1, missI+1) });
+    if (matchI)
+        result.unshift({ match: true, val: value.substring(i+1, matchI+1)});
+    if (i > -1)
+        result.unshift({ val: value.substring(0, i+1) });
+
+    return result;
+};
 
 });
