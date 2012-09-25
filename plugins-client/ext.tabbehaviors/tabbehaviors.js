@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var panels = require("ext/panels/panels");
 var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
@@ -654,7 +655,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var parts, file, pathList, str, xpath;
         var type = docNode.tagName || "file";
         var path = docNode.getAttribute('path');
-        var node = trFiles.queryNode('//' + type + '[@path="' + path + '"]');
+        var node = trFiles.queryNode('//' + type + '[@path=' + util.escapeXpathString(path) + ']');
 
         if (node) {
             trFiles.expandAndSelect(node);

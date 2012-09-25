@@ -4,9 +4,9 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 /*global dbg */
- 
+
 define(function(require, exports, module) {
 var ide = require("core/ide");
 
@@ -18,7 +18,8 @@ window.adbg = {
             dbg.loadScript(script, function(source) {
                 if (options && options.callback) {
                     options.callback(apf.escapeXML(source), apf.SUCCESS);
-                } else {
+                }
+                else {
                     // callback("<file>" + apf.escapeXML(source) + "</file>", apf.SUCCESS);
                     // TODO: ugly text() bug workaround
                     callback("<file><![CDATA[" + source.replace("]]>", "]] >") + "]]></file>", apf.SUCCESS);
@@ -32,7 +33,8 @@ window.adbg = {
             dbg.loadObjects(item, function(xml) {
                 if (options && options.callback) {
                     options.callback(xml, apf.SUCCESS);
-                } else {
+                }
+                else {
                     callback(xml, apf.SUCCESS);
                 }
             });
@@ -44,7 +46,8 @@ window.adbg = {
             dbg.loadFrame(frame, function(xml) {
                 if (options && options.callback) {
                     options.callback(xml, apf.SUCCESS);
-                } else {
+                }
+                else {
                     callback(xml, apf.SUCCESS);
                 }
             });
@@ -63,7 +66,7 @@ module.exports = {
         new apf.state({
             "id" : "dbg"
         });
-        
+
         dbg.main = _debugger;
         dbg.breakpoints = _debugger.breakpoints;
         dbg.sources = _debugger.sources;
@@ -71,7 +74,7 @@ module.exports = {
         ide.addEventListener("dbg.changeState", function(e) {
             apf.xmldb.setAttribute(dbg, "state", e.state || false);
         });
-        
+
         ide.addEventListener("dbg.changeFrame", function(e) {
             apf.xmldb.setAttribute(dbg, "activeframe", e.data || false);
             dbg.topframe = e.data || null;

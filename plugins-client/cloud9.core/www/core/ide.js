@@ -80,7 +80,8 @@ define(function(require, exports, module) {
     ide.start();
 
     // fire up the socket connection:
-    if (window.cloud9config.debug) console.info("Connecting", JSON.parse(window.cloud9config.smithIo));
+    if (window.cloud9config.debug)
+        console.info("Connecting", JSON.parse(window.cloud9config.smithIo));
 
     SMITH_IO.connect(JSON.parse(window.cloud9config.smithIo), function(err, connection) {
         if (err)
