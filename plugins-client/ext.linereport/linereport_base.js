@@ -12,26 +12,49 @@ var worker = module.exports = Object.create(baseLanguageHandler);
 
 var commandId = 1;
 var callbacks = {};
-var resultCache = {};
+var resultCache = {}; // // map command to doc to result array
+var inProgress = {}; // map command to boolean
+var nextJob = {}; // map command to function
     
+worker.init = function() {
+    worker.sender.on("linereport_invoke_result", function(event) {
+       // Note: invoked at least once for each linereport_base instance
+       callbacks[event.id](event.code, event.output);
+       delete callbacks[event.id];
+    });
+};
+
 worker.initReporter = function(checkInstall, performInstall, callback) {
    worker.$invoke("if ! " + checkInstall + "; then " + performInstall + "; fi", callback);
 },
 
 worker.invokeReporter = function(command, callback) {
-    resultCache[command] = resultCache[command] || {};
-    if (resultCache[command][this.doc])
-        return callback(resultCache[this.command][this.doc]);
-    if (resultCache[command].inProgress)
-        return callbacks[resultCache[command].inProgress] = callback;
-    
-    resultCache[command].inProgress = commandId;
     var _self = this;
-    this.$invoke(command, function(err, output) {
-        if (err)
-            return callback();
-        callback(resultCache[command][_self.doc] = _self.parseOutput(output));
-    });
+        
+    resultCache[command] = resultCache[command] || {};
+    var doc = this.doc.getValue();
+    if (resultCache[command][doc])
+        return callback(resultCache[command][doc]);
+    if (resultCache[command].inProgress)
+        return nextJob[command] = invoke;
+    
+    invoke();
+    
+    function invoke() {
+        inProgress[command] = true;
+        _self.$invoke(command, function(code, output) {
+            var result = resultCache[command][_self.doc.getValue()] = _self.parseOutput(output);
+            if (result.length === 0 && code !== 0)
+                console.err("External tool produced an error:", output);
+            
+            delete inProgress[command];
+            callback(result);
+            if (nextJob[command]) {
+                nextJob[command]();
+                delete nextJob[command];
+            }
+        });
+    }
 };
 
 worker.onDocumentOpen = function(path) {
@@ -40,28 +63,26 @@ worker.onDocumentOpen = function(path) {
 
 worker.$invoke = function(command, callback) {
     var id = commandId++;
-    var data = {
-        command: "alert",
-        argv: ["alert","1"],
-        line: "alert 1",
-        cwd: "/",
+    var command = {
+        command: "sh",
+        argv: ["sh", "-c", command],
+        line: command,
+        cwd: window.ide.workspaceDir,
         requireshandling: true,
         tracer_id: id,
-        extra: { command_id: id }
+        extra: { linereport_id: id }
     };
     callbacks[id] = callback;
-    this.sender.emit("linereport_invoke", { command: data });
-};
-
-worker.init = function() {
-    console.log("init linereport"); // DEBUG
+    this.sender.emit("linereport_invoke", { command: command, path: worker.path });
 };
 
 worker.parseOutput = function(output) {
     var lines = output.split("\n");
     var results = [];
     for (var i = 0; i < lines.length; i++) {
-        results.push(this.$parseOutputLine(lines[i]));
+        var result = this.$parseOutputLine(lines[i]);
+        if (result)
+            results.push(result);
     }
     return results;
 };

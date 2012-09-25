@@ -19,19 +19,46 @@ module.exports = ext.register("ext/linereport/linereport", {
     type     : ext.GENERAL,
     disabled : false,
     deps     : [language, editors],
-    nodes : [],
+    nodes    : [],
+    
+    buffers : {},
     
     hook: function() {
-        language.worker.on("linereport_invoke", function(event) {
-            if (ext.disabled)
-                return;
-            ide.send(event.data.command);
-        });
-        ide.addEventListener("socketMessage", function(event) {
-            console.log("linereport.onMessage: ", event.type || event);
-        });
+        language.worker.on("linereport_invoke", this.onWorkerMessage.bind(this));
+        ide.addEventListener("socketMessage", this.onServerMessage.bind(this));
+        ide.removeEventListener("afterfilesave", this.onFileSave.bind(this))
         // Make sure base is initialized and kept up-to-date
         language.registerLanguageHandler("ext/linereport/linereport_base");
+    },
+    
+    onWorkerMessage : function(event) {
+        if (ext.disabled)
+            return;
+        ide.send(event.data.command);
+    },
+    
+    onServerMessage : function(event) {
+        var id = event.message.extra && event.message.extra.linereport_id;
+        if (!id)
+            return;
+        switch (event.message.type) {
+            case "npm-module-data":
+                this.buffers[id] = (this.buffers[id] || "") + event.message.data;
+                break;
+            case "npm-module-exit":
+                language.worker.emit("linereport_invoke_result", {
+                    id: id,
+                    code: event.message.code,
+                    output: this.buffers[id] || ""
+                });
+                delete this.buffers[id];
+                break;
+        }
+    },
+    
+    onFileSave: function(event) {
+        
+        
     },
     
     enable: function() {
