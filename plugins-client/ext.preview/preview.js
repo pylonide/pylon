@@ -24,6 +24,7 @@ module.exports = ext.register("ext/preview/preview", {
 
     counter : 0,
     nodes : [],
+    popups: [],
     page: null,
 
     setDocument : function(doc, actiontracker) {
@@ -81,6 +82,18 @@ module.exports = ext.register("ext/preview/preview", {
                     _self.disable();
             });
         });
+
+        ide.addEventListener("afterfilesave", function(e) {
+            if (!_self.popups.length)
+                return;
+            // var path = e.node.getAttribute("path");
+            _self.popups = _self.popups.filter(function (popup) {
+                return !! popup.Array;
+            });
+            _self.popups.forEach(function(popup) {
+                    popup.location.reload();
+            });
+        });
     },
 
     preview : function (url) {
@@ -89,6 +102,12 @@ module.exports = ext.register("ext/preview/preview", {
             path: url + ".#!preview",
             type: "nofile"
         });
+    },
+
+    popup: function (url) {
+        url = url || txtPreviewURL.getValue();
+        var w = window.open(url);
+        this.popups.push(w);
     },
 
     init : function(){
