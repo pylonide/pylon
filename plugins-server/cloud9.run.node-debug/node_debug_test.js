@@ -96,21 +96,23 @@ module.exports = {
                 assert.equal(err, null);
                 console.log("Runner created");
 
-                _self.createDebugClient(child, "node-d", function (err, debug) {
-                    debug.version(function(version) {
-                        assert.ok(version.V8Version);
-                    });
+                setTimeout(function () {
+                    _self.createDebugClient(child, "node-d", function (err, debug) {
+                        debug.version(function(version) {
+                            assert.ok(version.V8Version);
+                        });
 
-                    debug.continueScript(null, null, function() {
-                    });
+                        debug.continueScript(null, null, function() {
+                        });
 
-                    _self.eventEmitter.on("node-d", function(msg) {
-                        console.log("MSG:", msg);
-                        if (msg.type === "node-debug-exit") {
-                            next();
-                        }
+                        _self.eventEmitter.on("node-d", function(msg) {
+                            console.log("MSG:", msg.type);
+                            if (msg.type === "node-debug-exit") {
+                                next();
+                            }
+                        });
                     });
-                });
+                }, 50);
             });
         });
     }
