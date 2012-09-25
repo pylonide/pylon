@@ -39,7 +39,7 @@ module.exports = ext.register("ext/linereport/linereport", {
         function send() {
             ide.send(event.data.command);
         };
-        if (doc.getNode().getAttribute("changed"))
+        if (doc.getNode().getAttribute("changed") && doc.getNode().getAttribute("changed") !== "0")
             this.saveTriggers[event.data.path] = send;
         else
             send();
