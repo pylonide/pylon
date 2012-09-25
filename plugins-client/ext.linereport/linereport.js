@@ -33,11 +33,16 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onWorkerMessage : function(event) {
-        if (ext.disabled)
+        var doc = tabEditors.getPage().$doc;
+        if (ext.disabled || !doc || doc.getNode().getAttribute("path") !== event.data.path)
             return;
-        this.saveTriggers[event.path] = function() {
+        function send() {
             ide.send(event.data.command);
         };
+        if (doc.getNode().getAttribute("changed"))
+            this.saveTriggers[event.data.path] = send;
+        else
+            send();
     },
     
     onServerMessage : function(event) {
@@ -60,9 +65,9 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onFileSave: function(event) {
-        if (this.saveTriggers[event.oldPath]) {
-            this.saveTriggers[event.oldPath]();
-            delete this.saveTriggers[event.oldPath];
+        if (this.saveTriggers[event.oldpath]) {
+            this.saveTriggers[event.oldpath]();
+            delete this.saveTriggers[event.oldpath];
         }
     },
     
