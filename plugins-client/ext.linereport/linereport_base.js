@@ -27,7 +27,7 @@ worker.init = function() {
 };
 
 worker.initReporter = function(checkInstall, performInstall, callback) {
-   worker.$invoke("if ! " + checkInstall + "; then " + performInstall + "; fi", callback);
+   worker.$invoke("if ! " + checkInstall + "\n then " + performInstall + "\n fi", callback);
 },
 
 worker.invokeReporter = function(command, callback) {
