@@ -24,6 +24,7 @@ var WARNING_LEVELS = {
 };
 
 // Leaking into global namespace of worker, to allow handlers to have access
+/*global disabledFeatures: true*/
 disabledFeatures = {};
 
 EventEmitter.once = function(event, fun) {
@@ -270,25 +271,28 @@ function asyncParForEach(array, fn, callback) {
      * Registers a handler by loading its code and adding it the handler array
      */
     this.register = function(path) {
+        var _self = this;
+        function onRegistered(handler) {
+            handler.$source = path;
+            handler.proxy = _self.serverProxy;
+            handler.sender = _self.sender;
+            _self.$initHandler(handler, null, function() {
+                _self.handlers.push(handler);
+            });    
+        } 
         try {
             var handler = require(path);
-            handler.proxy = this.serverProxy;
-            handler.sender = this.sender;
-            this.handlers.push(handler);
-            this.$initHandler(handler, null, function() {});
+            onRegistered(handler);
         } catch (e) {
             if (isWorkerEnabled())
                 throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
-            var _self = this;
             require([path], function(handler) {
                 if (!handler)
                     throw new Error("Could not load language handler " + path, e);
-                handler.proxy = _self.serverProxy;
-                handler.sender = _self.sender;
-                _self.handlers.push(handler);
+                onRegistered(handler);
             });
-        }   
+        }
     };
 
     this.parse = function(callback, allowCached) {
