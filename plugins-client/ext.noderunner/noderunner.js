@@ -39,7 +39,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 _self.queryServerState();
             });
         }
-        
+
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
@@ -102,11 +102,11 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 // Command error
                 else if (message.code === 9) {
                     c9console.log("<div class='item console_log' style='font-weight:bold;color:yellow'>"
-                        + message.message + "</div>");
+                        + apf.escapeXML(message.message) + "</div>");
                 }
                 else if (message.code !== 6 && message.code != 401 && message.code != 455 && message.code != 456) {
                     c9console.log("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception "
-                        + (message.code || "") + "] " + message.message + "</div>");
+                        + apf.escapeXML(message.code || "") + "] " + apf.escapeXML(message.message) + "</div>");
 
                     apf.ajax("/api/debug", {
                         method      : "POST",
@@ -116,7 +116,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                             type    : "C9 SERVER EXCEPTION",
                             code    : e.code,
                             message : e.message
-//                            log     : apf.console.debugInfo.join("\n")
                         })
                     });
                 }
@@ -148,7 +147,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         if (nodeVersion == 'default' || !nodeVersion) {
             runner = this.detectRunner(path);
             nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
-        } else {
+        }
+        else {
             runner = nodeVersion.split(" ")[0];
             nodeVersion = nodeVersion.split(" ")[1] || 'auto';
         }
@@ -187,17 +187,17 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     destroy : function(){
     },
-    
+
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
             return "apache";
-        
+
         if (path.match(/\.py$/))
             return "python";
-        
+
         if (path.match(/\.rb$/))
             return "ruby";
-        
+
         return "node";
     }
 });

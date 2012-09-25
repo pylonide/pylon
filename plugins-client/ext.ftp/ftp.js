@@ -26,12 +26,12 @@ module.exports = ext.register("ext/ftp/ftp", {
     pageID   : "pgFtpConsole",
     css      : css,
     nodes    : [],
-    
+
     pageId: "ftpConsoleHbox",
 
     hook: function(){
         ext.initExtension(this);
-        
+
         // hack to hide the dock panel!!
 //        if (window.dockPanelRight)
 //            dockPanelRight.setAttribute("visible", false);
@@ -41,25 +41,25 @@ module.exports = ext.register("ext/ftp/ftp", {
 
     init: function(amlNode) {
         var _self = this;
-        
+
         apf.importCssString(this.css || "");
-        
+
         if (!this.$panel) {
-            ide.addEventListener("init.ext/console/console", function() { 
+            ide.addEventListener("init.ext/console/console", function() {
                 // remove the console and output panels and add a super FTP panel
                 // to the console
                 var console = window.tabConsole;
-                
+
                 // append our own panel to the console
                 self.$panel = console.add("FTP Log", _self.pageId);
                 self.$panel.setAttribute("closebtn", false);
                 self.$panel.appendChild(ftpConsoleHbox);
-                
+
                 // make ourselves the active panel
                 // first show then activate
                 ftpConsoleHbox.show();
                 console.set(_self.pageID);
-                
+
                 // remove the other tabs, until we refactored them out nicely
                 console.remove("console");
                 console.remove("output");
@@ -72,7 +72,7 @@ module.exports = ext.register("ext/ftp/ftp", {
             ideConsole.enable();
 
         // Converts HTML special characters to their entity equivalents.
-        msg = apf.htmlentities("" + msg);
+        msg = apf.escapeXML("" + msg);
 
         if (type === "response")
             msg = msg.replace(/\n/gm, "<br>").replace(/\s/gm, "&nbsp;");
@@ -95,7 +95,7 @@ module.exports = ext.register("ext/ftp/ftp", {
         if (message.type !== "transcript") {
             return;
         }
-        
+
         if (message.body === "noop") {
             return;
         }
