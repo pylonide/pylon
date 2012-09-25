@@ -16,6 +16,7 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
+var linereport = require("ext/linereport/linereport_base");
 
 var WARNING_LEVELS = {
     error: 3,
@@ -85,6 +86,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.serverProxy = new ServerProxy(sender);
     
     Mirror.call(this, sender);
+    linereport.sender = sender;
     this.setTimeout(500);
     
     sender.on("hierarchy", function(event) {
