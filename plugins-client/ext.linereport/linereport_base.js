@@ -10,6 +10,8 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var worker = module.exports = Object.create(baseLanguageHandler);
 
+var REPORTER_TIMEOUT = 60000;
+
 var commandId = 1;
 var callbacks = {};
 var resultCache = {}; // // map command to doc to result array
@@ -27,7 +29,7 @@ worker.init = function() {
 };
 
 worker.initReporter = function(checkInstall, performInstall, callback) {
-   worker.$invoke("if ! " + checkInstall + "\n then " + performInstall + "\n fi", callback);
+   worker.$invoke("if ! " + checkInstall + "\n then " + performInstall + "\n fi", null, callback);
 },
 
 worker.invokeReporter = function(command, callback) {
@@ -44,13 +46,18 @@ worker.invokeReporter = function(command, callback) {
     invoke();
     
     function invoke() {
-        inProgress[command] = false;
-        _self.$invoke(command, function(code, output) {
+        inProgress[command] = setTimeout(function() {
+            delete inProgress[command];
+        }, REPORTER_TIMEOUT);
+        _self.$invoke(command, worker.path, function(code, output) {
             var result = resultCache[command][_self.doc.getValue()] = _self.parseOutput(output);
             if (result.length === 0 && code !== 0)
                 console.err("External tool produced an error:", output);
             
-            delete inProgress[command];
+            if (inProgress[command]) {
+                clearTimeout(inProgress[command]);
+                delete inProgress[command];
+            }
             callback(result);
             if (nextJob[command]) {
                 nextJob[command]();
@@ -60,11 +67,12 @@ worker.invokeReporter = function(command, callback) {
     }
 };
 
-worker.onDocumentOpen = function(path) {
+worker.onDocumentOpen = function(path, doc, oldPath, callback) {
     resultCache = {};
+    callback();
 };
 
-worker.$invoke = function(command, callback) {
+worker.$invoke = function(command, path, callback) {
     var id = commandId++;
     var command = {
         command: "sh",
@@ -76,7 +84,7 @@ worker.$invoke = function(command, callback) {
         extra: { linereport_id: id }
     };
     callbacks[id] = callback;
-    this.sender.emit("linereport_invoke", { command: command, path: worker.path });
+    this.sender.emit("linereport_invoke", { command: command, path: path });
 };
 
 worker.parseOutput = function(output) {

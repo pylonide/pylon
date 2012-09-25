@@ -37,15 +37,16 @@ module.exports = ext.register("ext/linereport/linereport", {
     
     onWorkerMessage : function(event) {
         var doc = tabEditors.getPage().$doc;
-        if (ext.disabled || !doc || doc.getNode().getAttribute("path") !== event.data.path)
+        var path = event.data.path;
+        if (ext.disabled || !doc || (path && path !== doc.getNode().getAttribute("path")))
             return;
         function send() {
-            ide.send(event.data.command);
+            window.ide.send(event.data.command);
         };
-        if (doc.getNode().getAttribute("changed") && doc.getNode().getAttribute("changed") !== "0")
-            this.saveTriggers[event.data.path] = send;
-        else
+        if (!path || !doc.getNode().getAttribute("changed") || doc.getNode().getAttribute("changed") == "0")
             send();
+        else
+            this.saveTriggers[path] = send;
     },
     
     onServerMessage : function(event) {
