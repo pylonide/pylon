@@ -22,11 +22,12 @@ module.exports = ext.register("ext/linereport/linereport", {
     nodes    : [],
     
     buffers : {},
+    saveTriggers : {},
     
     hook: function() {
         language.worker.on("linereport_invoke", this.onWorkerMessage.bind(this));
         ide.addEventListener("socketMessage", this.onServerMessage.bind(this));
-        ide.removeEventListener("afterfilesave", this.onFileSave.bind(this))
+        ide.addEventListener("afterfilesave", this.onFileSave.bind(this));
         // Make sure base is initialized and kept up-to-date
         language.registerLanguageHandler("ext/linereport/linereport_base");
     },
@@ -34,7 +35,9 @@ module.exports = ext.register("ext/linereport/linereport", {
     onWorkerMessage : function(event) {
         if (ext.disabled)
             return;
-        ide.send(event.data.command);
+        this.saveTriggers[event.path] = function() {
+            ide.send(event.data.command);
+        };
     },
     
     onServerMessage : function(event) {
@@ -57,8 +60,10 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onFileSave: function(event) {
-        
-        
+        if (this.saveTriggers[event.oldPath]) {
+            this.saveTriggers[event.oldPath]();
+            delete this.saveTriggers[event.oldPath];
+        }
     },
     
     enable: function() {
