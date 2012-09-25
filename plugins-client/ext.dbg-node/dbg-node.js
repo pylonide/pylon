@@ -549,7 +549,7 @@ var v8DebugClient = exports.v8DebugClient = function() {};
             var name = expression.trim();
             if (error) {
                 str.push(util.toXmlTag("item", {
-                    name: ".error",
+                    type: ".error",
                     name: name,
                     value: error.message
                 }));
