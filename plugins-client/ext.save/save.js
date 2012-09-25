@@ -469,7 +469,7 @@ module.exports = ext.register("ext/save/save", {
                                     .replace(/\//, "") || "node()";
                 if (self.trFiles && xpath) {
                     var oNode = trFiles.queryNode(xpath);
-                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]'))
+                    if (oNode && !trFiles.queryNode('//node()[@path=' + util.escapeXpathString(newPath) + ']'))
                         apf.xmldb.appendChild(oNode, file);
                 }
             }

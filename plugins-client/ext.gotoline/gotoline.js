@@ -33,7 +33,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
     hook : function(){
         var _self = this;
-        
+
         this.nodes.push(
             menus.addItemByPath("Goto/Goto Line...", new apf.item({
                 caption : "Goto Line...",
@@ -60,31 +60,33 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
     init : function() {
         var _self = this;
+        var list = lstLineNumber;
+        var text = txtLineNr;
 
-        lstLineNumber.addEventListener("afterchoose", function() {
-            if (lstLineNumber.selected) {
-                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr"), 10));
+        list.addEventListener("afterchoose", function() {
+            if (list.selected) {
+                _self.execGotoLine(parseInt(list.selected.getAttribute("nr"), 10));
             }
             else {
                 _self.execGotoLine();
             }
         });
-        lstLineNumber.addEventListener("afterselect", function() {
+        list.addEventListener("afterselect", function() {
             if (!this.selected)
                 return;
-            
-            txtLineNr.setValue(this.selected.getAttribute("nr"));
+
+            text.setValue(this.selected.getAttribute("nr"));
             _self.execGotoLine(null, null, true);
         });
 
         var restricted = [38, 40, 36, 35];
-        lstLineNumber.addEventListener("keydown", function(e) {
+        list.addEventListener("keydown", function(e) {
             if (e.keyCode == 13 && this.selected){
                 return false;
             }
             else if (e.keyCode == 38) {
                 if (this.selected == this.getFirstTraverseNode()) {
-                    txtLineNr.focus();
+                    text.focus();
                     this.clearSelection();
                 }
             }
@@ -93,10 +95,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 ceEditor.focus();
             }
             else if (restricted.indexOf(e.keyCode) == -1)
-                txtLineNr.focus();
+                text.focus();
         }, true);
 
-        txtLineNr.addEventListener("keydown", function(e) {
+        text.addEventListener("keydown", function(e) {
             if (e.keyCode == 13){
                 _self.execGotoLine();
                 return false;
@@ -104,27 +106,27 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             else if (e.keyCode == 27){
                 _self.hide();
                 ceEditor.focus();
-                
+
                 if (_self.$originalLine) {
                     _self.execGotoLine(_self.$originalLine, _self.$originalColumn, true);
-                    
+
                     delete _self.$originalLine;
                     delete _self.$originalColumn;
                 }
-                
+
                 return false;
             }
             else if (e.keyCode == 40) {
-                var first = lstLineNumber.getFirstTraverseNode();
+                var first = list.getFirstTraverseNode();
                 if (first) {
-                    lstLineNumber.select(first);
-                    lstLineNumber.$container.scrollTop = 0;
-                    lstLineNumber.focus();
+                    list.select(first);
+                    list.$container.scrollTop = 0;
+                    list.focus();
                 }
             }
             else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
-            
+
             if (!e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
                 setTimeout(function(){
                     _self.execGotoLine(null, null, true);
@@ -136,13 +138,13 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (!apf.isChildOf(winGotoLine, e.toElement))
                 _self.hide();
         });
-        
-        txtLineNr.addEventListener("blur", function(e){
+
+        text.addEventListener("blur", function(e){
             if (!apf.isChildOf(winGotoLine, e.toElement))
                 _self.hide();
         });
     },
-    
+
     show : function() {
         var editor = editors.currentEditor;
         var ace = editor.ceEditor.$editor;
@@ -151,7 +153,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         this.$originalLine = cursor.row + 1;
         this.$originalColumn = cursor.column;
-        
+
         //Set the current line
         txtLineNr.setValue(txtLineNr.getValue() || cursor.row + 1);
 
@@ -171,7 +173,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             winGotoLine.setWidth(0);
             anims.animate(winGotoLine, {
-                width: "60px", 
+                width: "60px",
                 timingFunction: "cubic-bezier(.11, .93, .84, 1)",
                 duration : 0.15
             });
@@ -184,7 +186,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     hide : function() {
         if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             anims.animate(winGotoLine, {
-                width: "0px", 
+                width: "0px",
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)",
                 duration : 0.15
             }, function(){
@@ -229,12 +231,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         if (typeof line != "number")
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
-        if (!this.lastLine || this.lastLine != line 
+        if (!this.lastLine || this.lastLine != line
           || !ace.isRowFullyVisible(line)) {
             ace.gotoLine(line, column);
             this.lastLine = line;
         }
-        
+
         if (typeof preview != "undefined") {
             var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
             if (!animate)
@@ -242,7 +244,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
             var cursor = ace.getCursorPosition();
             var aceHtml = editor.ceEditor.$ext;
-            
+
             var firstLine = ace.renderer.textToScreenCoordinates(0, 0).pageY;
             var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
             var half = aceHtml.offsetHeight / 2; //ceEditor.$editor.renderer.$size.scrollerHeight / 2; //
@@ -250,7 +252,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var totalLines = ace.getSession().getLength();
             var lastLine = ace.renderer.textToScreenCoordinates(totalLines, 0).pageY + lineHeight;
             var maxTop = aceHtml.offsetHeight - winGotoLine.getHeight() - 10;
-            
+
             var top;
             //First part of doc
             if (pos.pageY - firstLine < half) {
@@ -273,10 +275,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
             if (this.lineControl)
                 this.lineControl.stop();
-    
+
             //Animate
             anims.animate(winGotoLine, {
-                top: top + "px", 
+                top: top + "px",
                 timingFunction: "cubic-bezier(.11, .93, .84, 1)",
                 duration : 0.25
             });
@@ -293,10 +295,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 gotoline = apf.createNodeFromXpath(history.data, "gotoline");
                 lineEl   = apf.getXml("<line nr='" + line + "' />");
             }
-    
+
             if (lineEl != gotoline.firstChild)
                 apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
-                
+
             amlEditor.focus();
         }
     },
@@ -315,7 +317,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
     destroy : function(){
         commands.removeCommandByName("gotoline");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
