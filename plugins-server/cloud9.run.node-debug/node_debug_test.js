@@ -105,7 +105,7 @@ module.exports = {
                     });
 
                     _self.eventEmitter.on("node-d", function(msg) {
-                        console.log("MSG:", msg.type);
+                        console.log("MSG:", msg);
                         if (msg.type === "node-debug-exit") {
                             next();
                         }
