@@ -265,11 +265,20 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             return;
         }
 
-        if (!keyword)
-            this.arraySearchResults = this.arrayCache;
+        if (!keyword || !keyword.length) {
+            var result = this.arrayCache.slice();
+            // More prioritization for already open files
+            tabEditors.getPages().forEach(function (page) {
+                var path = page.$doc.getNode().getAttribute("path")
+                     .substring(window.cloud9config.davPrefix.length);
+                result.remove(path);
+                result.unshift(path);
+            });
+            this.arraySearchResults = result;
+        }
         else {
             dgGoToFile.$viewport.setScrollTop(0);
-            this.arraySearchResults = search.fileSearch(this.arrayCache, keyword, []);
+            this.arraySearchResults = openFiles.concat(search.fileSearch(this.arrayCache, keyword));
         }
 
         this.lastSearch = keyword;
@@ -303,8 +312,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     replaceStrong : function (value, keyword){
         if (!value) return "";
 
-        if (value.indexOf("node-runner") > 0 && keyword === "noderunner")
-            console.log("HERE");
         var i, j;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);

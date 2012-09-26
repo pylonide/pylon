@@ -25,7 +25,7 @@ var fileTypes = {
 /**
  * Search through a list of filenames.
  */
-module.exports.fileSearch = function(filelist, keyword, cache) {
+module.exports.fileSearch = function(filelist, keyword) {
     var klen = keyword.length;
 
     /**
@@ -60,7 +60,7 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
         value = 0;
         if ((j = name.lastIndexOf(keyword)) > -1) {
             if (klen < 3) {
-                cache.push(name); res.push(name);
+                res.push(name);
                 continue;
             }
 
@@ -104,8 +104,6 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
             result = matchPath(name, keyword);
             if (! result.length || result.length > 6)
                 continue;
-            if (name.indexOf("node-runner") > 0 && keyword === "noderunner")
-                console.log("HERE");
             var matched = name.substring(result[0].val.length);
             // The less the number of groups matched, the higher prio we give
             value += 20 - Math.min((result.length-2)*3, 19);
@@ -117,7 +115,6 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
         }
 
         if (value > 0) {
-            cache.push(name);
             // Check extension
             s = name.lastIndexOf(".");
             if (s > -1)
