@@ -1,7 +1,12 @@
+/*global btnSave:true, tabEditors:true, winCloseConfirm:true, btnYesAll:true, btnNoAll:true*/
+/*global btnSaveCancel:true, btnSaveYes:true, btnSaveNo:true, saveStatus:true*/
+/*global trSaveAs:true, winSaveAs:true, fileDesc:true, barTools:true*/
+/*global trFiles:true, txtSaveAs:true, lblPath:true, winConfirm:true, btnConfirmOk:true*/
+
 /**
- * Refactor Module for the Cloud9 IDE
+ * Save Module for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2010-2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -16,6 +21,10 @@ var menus = require("ext/menus/menus");
 var markup = require("text!ext/save/save.xml");
 var commands = require("ext/commands/commands");
 
+var SAVING = 0;
+var SAVED = 1;
+var OFFLINE = 2;
+
 module.exports = ext.register("ext/save/save", {
     dev         : "Ajax.org",
     name        : "Save",
@@ -26,7 +35,7 @@ module.exports = ext.register("ext/save/save", {
     deps        : [fs],
     offline     : true,
 
-    nodes       : [],
+    nodes       : [ ],
     saveBuffer  : {},
 
     hook : function(){
@@ -180,16 +189,6 @@ module.exports = ext.register("ext/save/save", {
             }), 700)
         );
 
-        ide.addEventListener("afteroffline", function(){
-            itmRevertToSaved.disable();
-            saveAsItem.disable();
-        });
-
-        ide.addEventListener("afteronline", function(){
-            itmRevertToSaved.enable();
-            saveAsItem.enable();
-        });
-        
         ide.addEventListener("afterreload", function(e){
             var doc = e.doc;
             var at = doc.$page.$at;
@@ -198,6 +197,31 @@ module.exports = ext.register("ext/save/save", {
                 at.undo_ptr = at.$undostack[at.$undostack.length-1];
                 apf.xmldb.removeAttribute(doc.getNode(), "changed");
             });
+        });
+        
+        // when we're going offline we'll disable the UI
+        ide.addEventListener("afteroffline", function() {
+            _self.disable();
+        });
+        
+        // when we're back online we'll first update the UI and then trigger an autosave if enabled
+        ide.addEventListener("afteronline", function() {
+            _self.enable();
+        });
+        
+        // if we retrieve an actual 'real' file save event then we'll set the UI state to 'saving'
+        ide.addEventListener("fs.beforefilesave", function () {
+            _self.setUiStateSaving();
+        });
+        
+        // and afterwards we'll show 'SAVED' or 'NOT SAVED' depending on whether it succeeded
+        ide.addEventListener("fs.afterfilesave", function (e) {
+            if (e.success) {
+                _self.setUiStateSaved();
+            }
+            else {
+                _self.setUiStateOffline();
+            }
         });
     },
 
@@ -316,6 +340,12 @@ module.exports = ext.register("ext/save/save", {
             callback(winCloseConfirm.all);
         });
     },
+    
+    ideIsOfflineMessage: function() {
+        util.alert("Could not save", 
+            "Please check your connection", 
+            "When your connection has been restored you can try to save the file again.");
+    },
 
     // `silentsave` indicates whether the saving of the file is forced by the user or not.
     quicksave : function(page, callback, silentsave) {
@@ -347,12 +377,16 @@ module.exports = ext.register("ext/save/save", {
             this.saveas(page, callback);
             return;
         }
+        
+        if (!ide.onLine) {
+            return this.ideIsOfflineMessage();
+        }
 
         if (callback) {
             ide.addEventListener("afterfilesave", function(e) {
                 if (e.node == node) {
                     callback();
-                    this.removeEventListener("afterfilesave", arguments.callee);
+                    ide.removeEventListener("afterfilesave", arguments.callee);
                 }
             });
         }
@@ -370,6 +404,9 @@ module.exports = ext.register("ext/save/save", {
 
         var value = doc.getValue();
 
+        // raw fs events
+        ide.dispatchEvent("fs.beforefilesave", { path: path });
+
         fs.saveFile(path, value, function(data, state, extra){
 
             ide.dispatchEvent("track_action", {
@@ -378,8 +415,22 @@ module.exports = ext.register("ext/save/save", {
                 success: state != apf.SUCCESS ? "false" : "true"
             });
             apf.xmldb.removeAttribute(node, "saving");
+            
+            ide.dispatchEvent("fs.afterfilesave", { path: path, success: state == apf.SUCCESS });
 
             if (state != apf.SUCCESS) {
+                // ide is not online, or away??
+                if (!ide.onLine || ide.connection.away) {
+                    // if we're doing a silent save, we'll ignore it
+                    // because its a not user triggered action
+                    if (silentsave) {
+                        return;
+                    }
+                    // otherwise we show a message that saving failed unfortunately
+                    return _self.ideIsOfflineMessage();
+                }
+                
+                // all other error cases
                 return util.alert(
                     "Could not save document",
                     "An error occurred while saving this document",
@@ -462,7 +513,7 @@ module.exports = ext.register("ext/save/save", {
             if (parseInt(file.getAttribute("newfile") || "0", 10) === 1) {
                 apf.xmldb.removeAttribute(file, "newfile");
                 apf.xmldb.removeAttribute(file, "changed");
-                var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
+                var xpath = newPath.replace(new RegExp("\/" + window.cloud9config.davPrefix.split("/")[1]), "")
                                     .replace(new RegExp("\/" + file.getAttribute("name")), "")
                                     .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                     .replace(/\/node\(\)\[@name="workspace"\]/, "")
@@ -493,7 +544,7 @@ module.exports = ext.register("ext/save/save", {
     choosePath : function(path, select) {
         fs.list((path.match(/(.*)\/[^/]*/) || {})[1] || path, function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
-                path  = path.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
+                path  = path.replace(new RegExp("\/" + window.cloud9config.davPrefix.split("/")[1]), "")
                             .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                             .replace(/\/node\(\)\[@name="workspace"\]/, "")
                             .replace(/\//, "");
@@ -526,7 +577,7 @@ module.exports = ext.register("ext/save/save", {
             ide.addEventListener("afterfilesave", function(e){
                 if (e.doc == doc) {
                     callback();
-                    this.removeEventListener("afterfilesave", arguments.callee);
+                    ide.removeEventListener("afterfilesave", arguments.callee);
                 }
             });
         }
@@ -562,7 +613,7 @@ module.exports = ext.register("ext/save/save", {
             if (window.winConfirm) {
                 winConfirm.hide();
 
-                if (self["btnConfirmOk"] && btnConfirmOk.caption == "Yes")
+                if (window.btnConfirmOk && btnConfirmOk.caption == "Yes")
                     btnConfirmOk.setCaption("Ok");
             }
         };
@@ -575,7 +626,6 @@ module.exports = ext.register("ext/save/save", {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name = newPath.match(/\/([^/]*)$/)[1];
-                    var folder = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
 
                     isReplace = true;
                     util.confirm(
@@ -634,6 +684,54 @@ module.exports = ext.register("ext/save/save", {
                 isFolder: node.getAttribute("type") === "folder"
             });
         });
+    },
+    
+    /**
+     * Set the UI state to 'saving'
+     */
+    setUiStateSaving: function () {
+        btnSave.show();
+        
+        apf.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
+        apf.setStyleClass(saveStatus, "saving", ["saved"]);
+        btnSave.currentState = SAVING;
+        btnSave.setCaption("Saving");
+    },
+    
+    $uiStateSavedTimeout: null,
+    /**
+     * Set the UI state to 'saved'
+     */
+    setUiStateSaved: function () {
+        var _self = this;
+        
+        btnSave.show();
+        
+        apf.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
+        apf.setStyleClass(saveStatus, "saved", ["saving"]);
+        btnSave.currentState = SAVED;
+        btnSave.setCaption("Changes saved");
+        
+        // after 4000 ms. we'll hide the label (clear old timeout first)
+        if (_self.$uiS$uiStateSavedTimeout) 
+            clearTimeout(_self.$ui$uiStateSavedTimeout);
+
+        _self.$uiStateSavedTimeout = setTimeout(function () {
+            if (btnSave.currentState === SAVED) {
+                btnSave.hide();
+            }
+        }, 4000);
+    },
+    
+    setUiStateOffline: function () {
+        btnSave.show();
+        
+        // don't blink!
+        apf.setStyleClass(btnSave.$ext, "saved");
+        apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
+        
+        btnSave.currentState = OFFLINE;
+        btnSave.setCaption("Not saved");
     },
     
     enable : function(){
