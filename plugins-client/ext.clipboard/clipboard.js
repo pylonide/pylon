@@ -147,7 +147,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
 
     clipboardEvent : function(event) {
         try {
-            if (util.isChrome() && !chrome.app.isInstalled) {
+            if (util.isChrome() && cloud9config.hosted && !chrome.app.isInstalled) {
                 ext.initExtension(this);
                 dlgInstallExtension.show();
             }
