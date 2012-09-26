@@ -3779,7 +3779,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 
         var oldValue      = xmlNode.nodeValue;
         xmlNode.nodeValue = nodeValue === undefined || nodeValue === null ||
-            isNaN(nodeValue) ? "" : String(nodeValue);
+            nodeValue == NaN ? "" : String(nodeValue);
 
         if (undoObj) {
             undoObj.name = xmlNode.nodeName;
