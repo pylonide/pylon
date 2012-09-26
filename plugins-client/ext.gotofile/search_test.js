@@ -25,7 +25,7 @@ module.exports = {
     },
 
     "test searching": function(next) {
-        var xml = search.fileSearch([
+        var fileList = [
             "/.test", // excluded
             "/etc/config.js", // excluded
             "/etc/code", // first
@@ -33,16 +33,18 @@ module.exports = {
             "/blah/code/others.png", //included but no prio
             "/etc/code_test.xml", //included and prio because of in word
             "/blah/code/me.jpg" //included but no prio
-        ], "code", []);
+        ];
 
-        assert.deepEqual(xml, ["/etc/code", "/etc/code.xml", "/etc/code_test.xml", "/blah/code/others.png", "/blah/code/me.jpg"]);
-        
+        assert.deepEqual(search.fileSearch(fileList, "code"), ["/etc/code", "/etc/code.xml", "/etc/code_test.xml", "/blah/code/others.png", "/blah/code/me.jpg"]);
+        assert.deepEqual(search.fileSearch(fileList, "etc.xml"), ["/etc/code.xml", "/etc/code_test.xml"]);
         next();
     },
 
     "test match": function (next) {
         var matches = search.matchPath("etc/code_test.xml", "etc/xml");
-        console.log(matches);
+        assert.equal(matches.length, 4);
+        assert.equal(matches.map(function (m) { return m.val; }).join(""), "etc/code_test.xml");
+        assert.equal(matches.map(function (m) { return m.match && m.val; }).join(""), "etc/xml");
         next();
     }
 };
