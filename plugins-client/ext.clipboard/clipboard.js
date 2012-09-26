@@ -10,9 +10,11 @@ define(function(require, exports, module) {
 "use strict";
 
 var ext = require("core/ext");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
+var markup = require("text!ext/clipboard/clipboard.xml");
 
 var aceClipboardText = "";
 
@@ -26,6 +28,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     text   : "",
     range  : null,
  
+    markup: markup,
+    
     hook : function(){
         var _self = this;
         
@@ -100,11 +104,9 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
-            // try-catch is needed because firefox throws error instead of returning false
-            try {
-                // due to some bug in chrome "cut" is very slow
-                document.execCommand("copy");
-            } catch(e) {}
+            
+            this.clipboardEvent("cut");
+
             aceClipboardText = ace.getCopyText() || aceClipboardText;
 
             var cutCommand = ace.$nativeCommands.commands.cut;
@@ -122,9 +124,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
-            try {
-                if (document.execCommand("copy")) return;
-            } catch(e) {}
+            
+            this.clipboardEvent("copy");
 
             aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
@@ -137,14 +138,26 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
-            try {
-                if (document.execCommand("paste")) return;
-            } catch(e) {}
+
+            this.clipboardEvent("paste");
 
             ace.onPaste(aceClipboardText);
         }
     },
 
+    clipboardEvent : function(event) {
+        try {
+            if (util.isChrome() && cloud9config.hosted && !chrome.app.isInstalled) {
+                ext.initExtension(this);
+                dlgInstallExtension.show();
+            }
+            else
+                document.execCommand(event);
+        } catch(e) {
+            // try-catch is needed because firefox throws error instead of returning false
+        }
+    },
+    
     $getAce : function() {
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)

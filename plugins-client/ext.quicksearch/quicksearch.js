@@ -43,17 +43,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     currentRange: null,
 
     hook : function(){
-        var _self = this;
-        
-        
     },
 
     init : function(){
-        var _self = this;
-        
-        
-
-        
     },
 
     updateBarPosition : function() {
@@ -159,7 +151,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
-            
+
         editor.amlEditor.parentNode.appendChild(winQuickSearch);
 
         var _self = this;
@@ -167,7 +159,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (!force && !winQuickSearch.visible || force > 0) {
             if (winQuickSearch.visible)
                 return;
-            
+
             this.position = -1;
 
             if (this.control && this.control.stop)
@@ -193,7 +185,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
-            
+
             if (corrected) {
                 if (typeof corrected.right != "undefined")
                     winQuickSearch.$ext.style.right = corrected.right + "px";
@@ -224,7 +216,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
                 anim: "in"
             });
-            
+
             if (this.control && this.control.stop)
                 this.control.stop();
 
@@ -341,8 +333,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var search = apf.createNodeFromXpath(history.data, "search");
 
         if (!search.firstChild || search.firstChild.getAttribute("key") != searchTxt) {
-            var keyEl = apf.getXml("<word />");
-            keyEl.setAttribute("key", searchTxt);
+            var keyEl = apf.n("<word/>").attr("key", searchTxt).node();
             apf.xmldb.appendChild(search, keyEl, search.firstChild);
         }
     },
@@ -405,7 +396,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     destroy : function(){
         commands.removeCommandByName("find");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

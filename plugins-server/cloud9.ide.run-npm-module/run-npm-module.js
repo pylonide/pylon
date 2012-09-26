@@ -16,7 +16,6 @@ var VFS;
 var AllowShell;
 var USER;
 var ALLOWEDDIRS;
-var ALLOWEDEXECUTABLES;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
@@ -24,7 +23,6 @@ module.exports = function setup(options, imports, register) {
     VFS = imports.vfs;
     USER = options.user;
     ALLOWEDDIRS = options.allowedDirs;
-    ALLOWEDEXECUTABLES = options.allowedExecs;
     AllowShell = !!options.allowShell;
     imports.ide.register(name, NpmRuntimePlugin, register);
 };
@@ -133,9 +131,6 @@ util.inherits(NpmRuntimePlugin, Plugin);
         var ws   = self.ide.workspaceDir;
         var cwd  = message.cwd || ws;
 
-        var isAllowedExecutable = !this.user || this.user.runvmSsh || !ALLOWEDEXECUTABLES 
-            || ALLOWEDEXECUTABLES.indexOf(message.command) > -1;
-
         this.pm.exec("shell", {
             command: "which",
             args: [message.command],
@@ -144,20 +139,6 @@ util.inherits(NpmRuntimePlugin, Plugin);
             if (code)
                 return callback(null, false);
             
-            if (!isAllowedExecutable) {
-                var found = false;
-                for (var i = 0, wsl = ws.length; i < ALLOWEDDIRS.length; i++) {
-                    if (out.substr(0, wsl + ALLOWEDDIRS[i].length) == ws + ALLOWEDDIRS[i]) {
-                        found = true;
-                        break;
-                    }
-                }
-                
-                if (!found)
-                    return callback("This command is only available in premium plans. "
-                        + "<a href='javascript:void(0)' onclick='require(\"ext/upgrade/upgrade\").suggestUpgrade()'>Click here to Upgrade.</a>", false);
-            }
-
             // use resolved command
             message.argv[0] = out.split("\n")[0];
             

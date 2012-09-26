@@ -1652,7 +1652,7 @@
             font-family   : Tahoma, Arial;
             font-size     : 12px;
             line-height   : 14px;
-            color         : #e8e8e8;
+            color         : #cecece;
             height        : 20px;
             padding       : 4px 2px 0 2px;
             margin        : 0 5px;
@@ -2051,6 +2051,10 @@
         }
         .c9-toolbarbutton-glossy.saved .c9-icon {
             background-color: #85C410;
+            right: 10px;
+        }
+        .c9-toolbarbutton-glossy.error .c9-icon {
+            background-color: red;
             right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-icon {
@@ -8410,7 +8414,7 @@
             overflow:hidden;
             font-family:Arial;
             font-size:12px;
-            color:#d6d6d6;
+            color:#cecece;
             line-height:14px;
             height             : 14px;
             padding:1px 5px 0 7px;
@@ -8565,7 +8569,7 @@
             height: 23px;
         }
         .btnRun .main { 
-            background-position: 0px -424px; 
+            background-position: 0px -457px; 
             margin-right: 3px;
             overflow: visible;
         }
@@ -8586,9 +8590,6 @@
             left: 3px;
             top: 3px;
         }
-        .btnRun .main.c9-dropdown-btnOver { 
-            background-position: 0px -457px; 
-        }
         .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -397px -457px; 
         }
@@ -8600,11 +8601,8 @@
         }
 
         .btnRun .arrow { 
-            background-position: -400px -424px; 
-            width: 16px; 
-        }
-        .btnRun .arrow.c9-dropdown-btnOver { 
             background-position: -400px -457px; 
+            width: 16px; 
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
             background-position: -400px -490px; 

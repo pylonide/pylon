@@ -160,7 +160,7 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + " .searchresults > div",
              (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")]
         ], self, _self.stylesheet);
-          
+
         ide.dispatchEvent("theme.init", {theme: theme, path: path});
     },
 

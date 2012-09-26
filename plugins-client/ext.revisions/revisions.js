@@ -40,6 +40,9 @@ var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
 
+// postfix with plugin because its a pretty generic term...
+var savePlugin = require("ext/save/save");
+
 // Constants
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
@@ -436,13 +439,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onRevisionSaved: function(data) {
-        var savedTS = parseInt(data.ts, 10);
-        var matches = this.offlineQueue.filter(function(rev) {
-            return rev && (parseInt(rev.applyOn, 10) === savedTS);
-        });
+        if (typeof data.ts !== "number")
+            throw new Error("Expected number, but got " + typeof data.ts);
 
-        if (matches.length) {
-            this.$makeNewRevision(matches[0]);
+        var queue = this.offlineQueue;
+        for (var i = 0, l = queue.length; i < l; i++) {
+            var rev = queue[i];
+            if (rev && rev.applyOn === data.ts) {
+                this.$makeNewRevision(rev);
+                break;
+            }
         }
     },
 
@@ -582,15 +588,22 @@ module.exports = ext.register("ext/revisions/revisions", {
             var index = self.changedPaths.indexOf(path);
             if (self.changedPaths.indexOf(path) > -1) {
                 ide.addEventListener("afterreload", function onDocReload(e) {
-                    if (e.doc === _page.$doc) {
-                        // doc.setValue is redundant here, but it ensures that
-                        // the proper value will be saved.
-                        e.doc.setValue(e.data);
-                        setTimeout(function() {
-                            self.save(_page, true);
-                        });
-                        ide.removeEventListener("afterreload", onDocReload);
+                    if (e.doc !== _page.$doc)
+                        return;
+
+                    // doc.setValue is redundant here, but it ensures that
+                    // the proper value will be saved.
+                    e.doc.setValue(e.data);
+
+                    // Force-save the current page
+                    var node = e.doc.getNode();
+                    if (!node.getAttribute("newfile") && !node.getAttribute("debug")) {
+                        savePlugin.quicksave(_page, function() {
+                                stripws.enable();
+                            }, true);
                     }
+
+                    ide.removeEventListener("afterreload", onDocReload);
                 });
                 ide.dispatchEvent("reload", { doc : _page.$doc });
             }
@@ -691,11 +704,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                     var revisionString = this.getXmlStringFromRevision(revision);
                     var page = tabEditors.getPage(ide.davPrefix + "/" + message.path);
                     if (page) {
-                            var model = page.$mdlRevisions;
-                            if (model && model.data && model.data.childNodes.length) {
+                        var model = page.$mdlRevisions;
+                        if (model && model.data && model.data.childNodes.length) {
                             var revisionNode = apf.getXml(revisionString);
                             apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
-                            }
+                        }
                     }
                 }
                 break;
@@ -778,6 +791,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         revObj.previewCache = {};
         this.$setRevisionListClass();
 
+        model = model || tabEditors.getPage().$mdlRevisions;
         // Select first child upon change of list view
         setTimeout(function() {
             var node = model.data.firstChild;
@@ -823,17 +837,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revision) { return; }
 
         var contributorToXml = function(c) {
-            return "<contributor email='" + c + "' />";
+            return apf.n("<contributor />").attr("email", c).node().xml;
         };
 
         var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
         var restoring = revision.restoring || "";
 
-        var xmlString = "<revision " +
-                "id='" + revision.ts + "' " +
-                "name='" + friendlyDate + "' " +
-                "silentsave='" + revision.silentsave + "' " +
-                "restoring='" + restoring + "'>";
+        var xmlString = CoreUtil.toXmlTag("revision", {
+            id: revision.ts,
+            name: friendlyDate,
+            silentsave: revision.silentsave,
+            restoring: restoring
+        }, true);
 
         var contributors = "";
         if (revision.contributors && revision.contributors.length) {
@@ -1231,7 +1246,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (user) {
             color = user.getAttribute("color");
         }
-        // This cannot possibly do anything
     },
 
     /**
@@ -1314,11 +1328,13 @@ module.exports = ext.register("ext/revisions/revisions", {
             // If there is no revision object for the current doc, we should
             // retrieve if it is not being retrieved right now. After retrieval,
             // `populateModel` will take care of setting model.data.
-            var currentDocRevision = this.rawRevisions[CoreUtil.getDocPath()];
+            var docPath = CoreUtil.getDocPath();
+            var currentDocRevision = this.rawRevisions[docPath];
             if (!currentDocRevision && !this.waitingForRevisionHistory) {
-                this.getRevisionHistory({ path: CoreUtil.getDocPath() });
+                this.getRevisionHistory({ path: docPath });
             }
             else {
+                this.populateModel(currentDocRevision, model);
                 this.$restoreSelection(page, model);
             }
         }
@@ -1328,7 +1344,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.model.setQueryValue("general/@revisionsvisible", false);
         ceEditor.$ext.style.right = "0";
         var page = tabEditors.getPage();
-        if (!page) return;
+        if (!page) {
+            return;
+        }
 
         page.$showRevisions = false;
         this.panel.hide();

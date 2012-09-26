@@ -9,13 +9,33 @@
         "v8debug": "node_modules/v8debug/lib/v8debug",
         "ext/main": "plugins-client/ext.main",
         "apf-packaged": "plugins-client/lib.apf/www/apf-packaged",
-        "events": "empty:", // NOTE: Do not set path here as `r.js` seems to pull in an empty module. Maybe because of the `events` name?
-        "engine.io": "node_modules/engine.io-client/dist/engine.io",
-        "smith.io": "node_modules/smith.io/server-plugin/www/client",
-        "smith": "node_modules/smith/smith",
-        "msgpack-js": "node_modules/msgpack-js-browser/msgpack",
-        "raw.github.com/Gozala/extendables/v0.2.0/extendables": "plugins-client/lib.smith.io/www/extendables"
+
+        // Needed because `r.js` has a bug based on packages config below:
+        //   `Error evaluating module "undefined" at location "~/cloud9infra/node_modules/cloud9/events-amd.js"`
+        "events-amd": "empty:"
     },
+    packages: [
+        {
+            "name": "engine.io",
+            "location": "node_modules/smith.io/node_modules/engine.io-client/dist",
+            "main": "engine.io.js"
+        },
+        {
+            "name": "smith.io",
+            "location": "node_modules/smith.io/server-plugin/www",
+            "main": "client.js"
+        },
+        {
+            "name": "smith",
+            "location": "node_modules/smith",
+            "main": "smith.js"
+        },
+        {
+            "name": "msgpack-js",
+            "location": "node_modules/smith.io/node_modules/msgpack-js-browser",
+            "main": "msgpack.js"
+        }
+    ],
     include: [
         "node_modules/ace/build/src/ace",
         "node_modules/ace/build/src/theme-chrome",
@@ -45,7 +65,6 @@
         "apf-packaged/apf_release",
         "core/document",
         "core/ext",
-        "raw.github.com/Gozala/extendables/v0.2.0/extendables",
         "core/ide",
         "core/settings", 
         "core/util", 

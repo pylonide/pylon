@@ -36,7 +36,7 @@
               scrollbar="sbShared 2 2 2"
             >
                 <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                    <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
+                    <a:insert match="[folder]" get="{davProject.readdir(%[.].getAttribute('path'))}" />
                     <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                     <a:icon match="[folder|project]" value="folder.png" />
                     <a:selectable match="[folder|file[not(@type='fileupload')]]" />
@@ -45,17 +45,14 @@
                     <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
                 </a:each>
 
-                <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-                <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                <!-- Resolved merge conflict, old HEAD:
-                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{require('ext/tree/tree').renameFile(%[.])}" />
-                <a:move set="{require('ext/tree/tree').moveFile(%[.], createPath([@path], [../@path]))}"/> -->
+                <a:add type="folder" get="{davProject.mkdir(%[.].getAttribute('path'), 'New Folder')}" />
+                <a:add type="file" get="{davProject.create(%[.].getAttribute('path'), 'New File.txt', '')}" />
                 <a:rename match="[file|folder[not(@root)]]" set="{require('ext/tree/tree').renameFile(%[.])}" />
-                <a:move set="{require('ext/tree/tree').moveFile(%[.], createPath([@path], [../@path]))}"/>
+                <a:move set="{require('ext/tree/tree').moveFile(%[.], createPath(%[.].getAttribute('path'), %[../.].getAttribute('path')))}"/>
 
-                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove(%[.])}"/>
                 <a:copy match="[file|folder]" set="{
-                    davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
+                    davProject.copy([@path], createPath(%[.].getAttribute('newname') || %[.].getAttribute('path'), %[../.].getAttribute('path')))
                 }" undo="{
 
                 }"/>
