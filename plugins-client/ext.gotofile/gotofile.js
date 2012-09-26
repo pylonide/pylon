@@ -269,7 +269,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             this.arraySearchResults = this.arrayCache;
         else {
             dgGoToFile.$viewport.setScrollTop(0);
-            this.arraySearchResults = search.fileSearch(nodes, keyword, []);
+            this.arraySearchResults = search.fileSearch(this.arrayCache, keyword, []);
         }
 
         this.lastSearch = keyword;
@@ -308,8 +308,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var i, j;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
-        var result = search.matching(value, keyword);
-        if (! result)
+        var result = search.matchPath(value, keyword);
+        if (! result.length)
             return value;
         result.forEach(function(part, i) {
             if (part.match)

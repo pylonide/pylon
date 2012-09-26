@@ -38,9 +38,9 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
      *   full part of path                          50
      *
      * SCATTERED MATCHES                         <= 45
-     *   path depth                                 20 - count("/")
-     *   match diff                                 15 - len(diff)
-     *   path depth diff                            10 - (match.count("/") - keyword.count("/"))
+     *   number of match groups                     20 - 6 * #groups
+     *   path depth                                 15 - 2 * count("/")
+     *   match diff                                 10 - len(diff)
      *
      * Extension weight                             -1 * lut[ext]
      */
@@ -63,6 +63,9 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
                 cache.push(name); res.push(name);
                 continue;
             }
+
+            if (name.indexOf("node-runner") > 0 && keyword === "node-runner")
+                console.log("HERE1");
 
             // We prioritize ones that have the name in the filename
             if (j > (q = name.lastIndexOf("/"))) {
@@ -96,22 +99,25 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
         else {
             if (klen < 3)
                 continue;
-            var result = matching(name, keyword);
-            if (! result)
+            var path = "";
+            var result;
+            result = matchPath(name, keyword);
+            if (! result.length || result.length > 6)
                 continue;
             if (name.indexOf("node-runner") > 0 && keyword === "noderunner")
                 console.log("HERE");
-            cache.push(name);
             var matched = name.substring(result[0].val.length);
-            // The shorter the match diff, the higher prio we give
-            value += 20 - Math.min(matched.length - keyword.length, 20);
+            // The less the number of groups matched, the higher prio we give
+            value += 20 - Math.min((result.length-2)*3, 19);
             // The shorter the path depth, the higher prio we give
-            value += 15 - Math.min(name.split("/").length, 15);
-            // The shorter path depth diff, the higher prio we give
-            value += 10 - Math.min(Math.abs(matched.split("/").length - keyword.split("/").length), 10);
+            value += 15 - Math.min(name.split("/").length*2, 14);
+            // The shorter the match diff, the higher prio we give
+            value += 10 - Math.min(matched.length - keyword.length, 9);
+            value += 20; // extension
         }
 
         if (value > 0) {
+            cache.push(name);
             // Check extension
             s = name.lastIndexOf(".");
             if (s > -1)
@@ -131,7 +137,7 @@ module.exports.fileSearch = function(filelist, keyword, cache) {
     if (klen < 3)
         return res;
 
-    if (klen > 2 && res.length < 10000)
+    if (klen > 2)
         res.sort();
 
     var type = "name";
@@ -174,38 +180,51 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensi
     return results;
 };
 
-var matching = module.exports.matching = function (value, keyword) {
-    // find matched parts
-    var matchI = null;
-    var missI = null;
+var matchPath = module.exports.matchPath = function (path, keyword) {
     var result = [];
-    for (i = value.length-1, j = keyword.length-1; i >= 0 && j >= 0; i--) {
-        if (value[i] === keyword[j]) {
-            matchI = matchI || i;
-            j--;
-            if (missI) {
-                result.unshift({ val: value.substring(i+1, missI+1) });
-                missI = null;
+    var pathSplits = path.split("/");
+    // Optimization
+    if (pathSplits.length > 4)
+        pathSplits = [pathSplits.slice(0, pathSplits.length - 4).join("/") + "/"]
+            .concat(pathSplits.slice(pathSplits.length - 4, pathSplits.length));
+    var value = "";
+    var k, i, j = -1;
+    for (k = pathSplits.length-1; k >= 0  && !result.length; k--) {
+        value = (k > 0 ? "/" : "") + pathSplits[k] + value;
+        // find matched parts
+        var matchI = null;
+        var missI = null;
+        for (i = 0, j = 0; i < value.length && j < keyword.length; i++) {
+            if (value[i] === keyword[j]) {
+                matchI = matchI === null ? i : matchI;
+                j++;
+                if (missI !== null) {
+                    result.push({ val: value.substring(missI, i) });
+                    missI = null;
+                }
+            }
+            else {
+                missI = missI === null ? i : missI;
+                if (matchI !== null) {
+                    result.push({ match: true, val: value.substring(matchI, i)});
+                    matchI = null;
+                }
             }
         }
-        else {
-            missI = missI || i;
-            if (matchI) {
-                result.unshift({ match: true, val: value.substring(i+1, matchI+1)});
-                matchI = null;
-            }
+        if (j !== keyword.length) {
+            result = [];
+            continue;
         }
+
+        if (missI !== null)
+            result.push({ val: value.substring(missI, i) });
+        if (matchI !== null)
+            result.push({ match: true, val: value.substring(matchI, i)});
+        result.push({ val: value.substring(i, value.length) });
+        // Add the first non matched part if exists
+        if (k)
+            result.unshift({ val: pathSplits.slice(0, k).join('/') });
     }
-    if (j !== -1)
-        return null;
-
-    if (missI)
-        result.unshift({ val: value.substring(i+1, missI+1) });
-    if (matchI)
-        result.unshift({ match: true, val: value.substring(i+1, matchI+1)});
-    if (i > -1)
-        result.unshift({ val: value.substring(0, i+1) });
-
     return result;
 };
 

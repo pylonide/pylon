@@ -11,7 +11,7 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("assert");
-var search = require("./search").fileSearch;
+var search = require("./search");
 
 module.exports = {
     timeout: 30000,
@@ -25,7 +25,7 @@ module.exports = {
     },
 
     "test searching": function(next) {
-        var xml = search([
+        var xml = search.fileSearch([
             "/.test", // excluded
             "/etc/config.js", // excluded
             "/etc/code", // first
@@ -37,6 +37,12 @@ module.exports = {
 
         assert.deepEqual(xml, ["/etc/code", "/etc/code.xml", "/etc/code_test.xml", "/blah/code/others.png", "/blah/code/me.jpg"]);
         
+        next();
+    },
+
+    "test match": function (next) {
+        var matches = search.matchPath("etc/code_test.xml", "etc/xml");
+        console.log(matches);
         next();
     }
 };
