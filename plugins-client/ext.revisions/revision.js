@@ -27,7 +27,6 @@ var Util = require("ext/revisions/revisions_util");
 
 // Constants
 var INTERVAL = 60000;
-var isInfoActive = false;
 /*
 var RunOnBgThread = function (fn, then) {
     var _blob = new Blob(['onmessage = ' + fn.toString()], { "type" : "text/javascript" });
@@ -49,6 +48,18 @@ var RevisionedDoc = function(doc) {
     this.doc = doc;
     this.page = doc.$page;
     this.path = CoreUtil.getDocPath(this.page);
+
+    // Contains the revisions that have been saved during Cloud9 being offline.
+    // Its items are not revision objects, but hold their own format (for
+    // example, they have a generated timestamp of the moment of saving).
+    if (localStorage.offlineQueue && localStorage.offlineQueue[this.path]) {
+        try {
+            this.offlineQueue = JSON.parse(localStorage.offlineQueue[this.path]);
+        }
+        catch(e) {
+            console.error("Error loading revisions from local storage", e);
+        }
+    }
 };
 
 RevisionedDoc.prototype = {
@@ -449,8 +460,7 @@ RevisionedDoc.prototype = {
         }
 
         var path = CoreUtil.getDocPath();
-        var revObj = this.rawRevisions[path];
-        if (revObj) {
+        if (this.rawRevisions[path]) {
             return this.onMessage({
                 message: {
                     id: id,
