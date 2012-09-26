@@ -5,3 +5,4 @@
 .DS_Store
 .c9revisions
 .settings
+node_modules/

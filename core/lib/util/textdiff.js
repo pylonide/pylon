@@ -1326,7 +1326,7 @@ apf.diff_match_patch = new (function() {
      * @param {string} text1 Source string for the diff.
      * @param {string} delta Delta text.
      * @return {Array.<Array.<number|string>>} Array of diff tuples.
-     * @throws {Error} If invalid input.
+     * @throws An error if the input is invalid.
      */
     this.diff_fromDelta = function(text1, delta) {
         var diffs       = [],

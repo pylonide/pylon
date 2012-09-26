@@ -22,23 +22,33 @@
 // #ifdef __TP_HTTP
 
 /**
- * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 
- * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most 
- * cases it sends or receives <strong>X</strong>ml. It allows for easy http 
- * communication from within the browser. This object provides
+ * @class apf.http
+ *
+ * This object does what is commonly known as Ajax; it **A**synchronously 
+ * communicates using **J**avaScript, **A**nd in most 
+ * cases it sends or receives **X**ml. It allows for easy HTTP 
+ * communication from within the browser. 
+ *
+ * This object provides
  * {@link teleport.http.method.savecache caching} on top of
  * the browser's cache. This enables you to optimize your application, because
  * this can be set on a per call basis. 
- * Example:
- * Retrieving content over http synchronously:
- * <code>
+ *
+ * #### Example:
+ *
+ * Retrieving content over HTTP synchronously:
+ *
+ * ```javascript
  *  var http = new apf.http();
  *  var data = http.get("http://www.example.com/mydata.jsp", {async: false});
  *  alert(data);
- * </code>
- * Example:
- * Retrieving content over http asynchronously:
- * <code>
+ * ```
+ *
+ * #### Example:
+ *
+ * Retrieving content over HTTP asynchronously:
+ *
+ * ```javascript
  *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
@@ -48,10 +58,13 @@
  *         alert(data);
  *      }
  *  });
- * </code>
- * Example:
- * Async http request with retry.
- * <code>
+ * ```
+ *
+ * #### Example:
+ *
+ * An asynchronous HTTP request, with retry:
+ *
+ * ```javascript
  *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
@@ -68,29 +81,28 @@
  *          alert(data);
  *      }
  *  });
- * </code>
- *
+ * ```
+ */
+/**
  * @event error Fires when a communication error occurs.
- *   bubbles: yes
- *   cancelable:  Prevents a communication error to be thrown.
- *   object:
- *     {Error}          error     the error object that is thrown when the event
+ * @bubbles
+ * @cancelable  Prevents a communication error to be thrown.
+ * @param {Object} e An object returned by the callback. It contains the following properties:
+ *     - {Error}          error     The error object that is thrown when the event
  *                                callback doesn't return false.
- *     {Number}         state     the state of the call
- *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
- *                                the callback of the http request.
- *     {XMLHttpRequest} http      the object that executed the actual http request.
- *     {String}         url       the url that was requested.
- *     {Http}           tpModule  the teleport module that is making the request.
- *     {Number}         id        the id of the request.
- *     {String}         message   the error message.
+ *     - {Number}         state     The state of the call. Possible values include:
+ *       - `apf.SUCCESS`  The request was successfull
+ *       - `apf.TIMEOUT`  The request has timed out.
+ *       - `apf.ERROR`    An error has occurred while making the request.
+ *       - `apf.OFFLINE`  The request was made while the application was offline.
+ *     - {Mixed}          userdata  Data that the caller wanted to be available in
+ *                                the callback of the HTTP request.
+ *     - {XMLHttpRequest} http      The object that executed the actual HTTP request.
+ *     - {String}         url       The URL that was requested.
+ *     - {Http}           tpModule  The teleport module that is making the request.
+ *     - {Number}         id        The id of the request.
+ *     - {String}         message   The error message.
  *
- * @constructor
  * @define http
  * @addnode teleport
  * @default_private
@@ -169,7 +181,7 @@ apf.http = function(){
     };
 
     /**
-     * Removes the stored http cache from the available {@link core.storage storage engine}.
+     * Removes the stored HTTP cache from the available {@link core.storage storage engine}.
      */
     this.clearCache = function(){
         apf.storage.remove("cache_" + this.name,
@@ -178,19 +190,18 @@ apf.http = function(){
     //#endif
 
     /**
-     * Makes an http request that receives xml
-     * @param {String}   url       the url that is accessed.
-     * @param {Object}   options   the options for the http request
-     *   Properties:
-     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
-     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   {Boolean} nocache        whether browser caching is prevented.
-     *   {String}  data           the data sent in the body of the message.
-     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-     *   {Boolean} caching        whether the request should use internal caching.
-     *   {Boolean} ignoreOffline  whether to ignore offline catching.
-     *   {Function} callback      the handler that gets called whenever the
+     * Makes an HTTP request that receives XML.
+     * @param {String}   url       The url that is accessed.
+     * @param {Object}   options   The options for the HTTP request. It contains the following properties:
+     *   - {Boolean} async          Specifies whether the request is sent asynchronously. Defaults to true.
+     *   - {mixed}   userdata       custom data that is available to the callback function.
+     *   - {String}  method         The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
+     *   - {Boolean} nocache        Specifies whether browser caching is prevented.
+     *   - {String}  data           the data sent in the body of the message.
+     *   - {Boolean} autoroute      Specifies whether the request can fallback to a server proxy.
+     *   - {Boolean} caching        Specifies whether the request should use internal caching.
+     *   - {Boolean} ignoreOffline  Specifies whether to ignore offline catching.
+     *   - {Function} callback      The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */
@@ -209,21 +220,20 @@ apf.http = function(){
     };
 
     /**
-     * Makes an http request.
-     * @param {String}   url       the url that is accessed.
-     * @param {Object}   options   the options for the http request
-     *   Properties:
-     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
-     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   {Boolean} nocache        whether browser caching is prevented.
-     *   {String}  data           the data sent in the body of the message.
-     *   {Boolean} useXML         whether the result should be interpreted as xml.
-     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-     *   {Boolean} caching        whether the request should use internal caching.
-     *   {Boolean} ignoreOffline  whether to ignore offline catching.
-     *   {String}  contentType    the mime type of the message
-     *   {Function} callback      the handler that gets called whenever the
+     * Makes an HTTP request.
+     * @param {String}   url       The URL that is accessed.
+     * @param {Object}   options   The options for the HTTP request. It contains the following properties:
+     *   - {Boolean} async          Specifies whether the request is sent asynchronously. Defaults to true.
+     *   - {mixed}   userdata       Custom data that is available to the callback function.
+     *   - {String}  method         The request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   - {Boolean} nocache        Specifies whether browser caching is prevented.
+     *   - {String}  data           The data sent in the body of the message.
+     *   - {Boolean} useXML         Specifies whether the result should be interpreted as xml.
+     *   - {Boolean} autoroute      Specifies whether the request can fallback to a server proxy.
+     *   - {Boolean} caching        Specifies whether the request should use internal caching.
+     *   - {Boolean} ignoreOffline  Specifies whether to ignore offline catching.
+     *   - {String}  contentType    The mime type of the message
+     *   - {Function} callback      The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */
@@ -591,11 +601,12 @@ apf.http = function(){
     };
     
     // #ifdef __WITH_DATA
-    /**
-     * Method that all async objects should implement
-     * @private
-     */
     if (!this.exec) {
+            /**
+             * A method that all async objects should implement.
+             *
+             * @private
+             */
         this.exec = function(method, args, callback, options){
             if (!options)
                 options = {};
@@ -618,9 +629,9 @@ apf.http = function(){
     // #endif
     
     /**
-     * Sends the binary blob to server and multipart encodes it if needed this code 
+     * Sends the binary blob to the server, and multipart encodes it if needed. This code 
      * will only be executed on Gecko since it's currently the only browser that 
-     * supports direct file access
+     * supports direct file access.
      * @private
      */
     function getBinaryBlob(data, http, binary) {
@@ -857,22 +868,21 @@ apf.http = function(){
     };
 
     /**
-     * Checks if the request has times out. If so it's retried
+     * Checks if the request has timed out. If so, it is retried
      * three times before an exception is thrown. Request retrying is a very
-     * good way to create robust Ajax applications. In many cases, even with
-     * good connections requests time out.
-     * @param {Object}  extra      the information object given as a third
-     *                             argument of the http request callback.
-     * @param {Number}  state      the return code of the http request.
-     *   Possible values:
-     *   apf.SUCCESS  the request was successfull
-     *   apf.TIMEOUT  the request has timed out.
-     *   apf.ERROR    an error has occurred while making the request.
-     *   apf.OFFLINE  the request was made while the application was offline.
-     * @param {AmlNode} [amlNode]    the element receiving the error event.
-     * @param {Error}   [oError]     the error to be thrown when the request is
+     * good way to create a robust Ajax application. In many cases, even with
+     * good connections, requests still time out.
+     * @param {Object}  extra      The information object given as a third
+     *                             argument of the HTTP request callback.
+     * @param {Number}  state      The return code of the HTTP request. It contains the following properties:
+     *   - `apf.SUCCESS`:  the request was successfull
+     *   - `apf.TIMEOUT`:  the request has timed out.
+     *   - `apf.ERROR`:    an error occurred while making the request.
+     *   - `apf.OFFLINE`:  the request was made while the application was offline.
+     * @param {AmlNode} [amlNode]    The element receiving the error event.
+     * @param {Error}   [oError]     The error to be thrown when the request is
      *                               not retried.
-     * @param {Number}  [maxRetries] the number of retries that are done before
+     * @param {Number}  [maxRetries] The number of retries that are done before
      *                               the request times out. Default is 3.
      */
     this.retryTimeout = function(extra, state, amlNode, oError, maxRetries){
@@ -896,14 +906,17 @@ apf.http = function(){
 
     /**
      * Removes the item from the queue. This is usually done automatically.
-     * However when the callback returns true the queue isn't cleared, for instance
+     * However, when the callback returns `true` the queue isn't cleared; for instance,
      * when a request is retried. The id of the call
-     * is found on the 'extra' object. The third argument of the callback.
-     * Example:
-     * <code>
+     * is found on the `'extra'` object, the third argument of the callback.
+     * 
+     * #### Example
+     *
+     * ```javascript
      *  http.clearQueueItem(extra.id);
-     * </code>
-     * @param {Number} id the id of the call that should be removed from the queue.
+     * ```
+     *
+     * @param {Number} id The id of the call that should be removed from the queue.
      */
     this.clearQueueItem = function(id){
         if (!this.queue[id])
@@ -923,18 +936,21 @@ apf.http = function(){
     };
 
     /**
-     * Retries a call based on it's id. The id of the call is found on the
-     * 'extra' object. The third argument of the callback.
-     * Example:
-     * <code>
+     * Retries a call based on its id. The id of the call is found on the
+     * `'extra'` object, the third argument of the callback.
+     * 
+     * #### Example
+     *
+     * ```javascript
      *  function callback(data, state, extra){
      *      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
      *          return extra.tpModule.retry(extra.id);
      *
      *      //Do stuff here
      *  }
-     * </code>
-     * @param {Number} id the id of the call that should be retried.
+     * ```
+     *
+     * @param {Number} id The id of the call that should be retried.
      */
     this.retry = function(id){
         if (!this.queue[id])
@@ -958,7 +974,12 @@ apf.http = function(){
     };
 
     /**
-     * see {@link teleport.http.method.clearqueueitem}
+     * Cancels a call based on its id. The id of the call is found on the
+     * `'extra'` object, the third argument of the callback.
+     *
+     * @see {@link teleport.http.method.clearqueueitem}
+     *
+     * @param {Number} id The id of the call that should be canceled.
      */
     this.cancel = function(id){
         if (id === null)

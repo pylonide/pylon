@@ -117,20 +117,22 @@ apf.nameserver = {
 
 //#ifdef __WITH_REGISTRY
 /**
- * Object which provides a means to store key values pairs in a named context.
- * This objects primary purpose is to provide a way to serialize the state
+ * Object which provides a means to store key-value pairs in a named context.
+ *
+ * This object's primary purpose is to provide a way to serialize the state
  * of all the custom state you introduce when building the application. This way
  * you can use {@link element.offline apf.offline} to start the application in 
  * the exact state it was when your user closed the app.
  *
+ * @class apf.registry
  * @see core.storage
  */
 apf.registry = apf.extend({
     /**
      * Stores a key value pair.
-     * @param {String} key       the identifier of the information.
-     * @param {mixed}  value     the information to store.
-     * @param {String} namespace the named context into which to store the key value pair.
+     * @param {String} key       The identifier of the information.
+     * @param {mixed}  value     The information to store.
+     * @param {String} namespace The named context into which to store the key-value pair.
      */
     put : function(key, value, namespace){
         this.register(namespace, key, value);
@@ -145,8 +147,8 @@ apf.registry = apf.extend({
     
     /**
      * Retrieves all the keys of a namespace.
-     * @param {String} namespace the named context of the keys to retrieve.
-     * @return {Array} the list of keys in the namespace.
+     * @param {String} namespace The named context of the keys to retrieve.
+     * @return {Array} The list of keys in the namespace.
      */
     getKeys : function(namespace){
         return this.getAllNames(namespace);
@@ -154,8 +156,8 @@ apf.registry = apf.extend({
     
     /**
      * Removes a key in a namespace.
-     * @param {String} key       the identifier of the information.
-     * @param {String} namespace the named context of the keys to remove.
+     * @param {String} key       The identifier of the information.
+     * @param {String} namespace The named context of the keys to remove.
      */
     remove : function(key, namespace){
         delete this.lookup[namespace][key];
@@ -172,9 +174,9 @@ apf.registry = apf.extend({
     //here for doc purposes only
     /**
      * Retrieves a keys in a namespace.
-     * @param {String} key       the identifier of the information.
-     * @param {String} namespace the named context of the keys to retrieve.
-     * @return {mixed} the value that correspond to the key in the namespace.
+     * @param {String} key       The identifier of the information.
+     * @param {String} namespace The named context of the keys to retrieve.
+     * @returns {Mixed} The value that correspond to the key in the namespace.
      */
     get : function(){},
     //#endif

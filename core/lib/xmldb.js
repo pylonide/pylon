@@ -22,12 +22,11 @@
 //#ifdef __WITH_XMLDATABASE
 
 /**
- * The xml database object provides local storage for xml data. This object
- * routes all changes to the xml data to the data bound objects. It further
- * provides utility functions for xml handling.
+ * The XML database object provides local storage for XML data. This object
+ * routes all changes to the XML data to the data bound objects. It also
+ * provides utility functions for XML handling.
  *
- * @constructor
- * @apfclass
+ * @class apf.xmldb
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -144,7 +143,7 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Sets the model of an element
+     * Sets the model of an element.
      *
      * @param {Model} The model to be set
      *
@@ -157,9 +156,9 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Find the model of an element
+     * Finds the model of an element.
      *
-     * @param {XMLNode} xmlNode the {@link term.datanode data node} to find its model.
+     * @param {XMLNode} xmlNode The {@link term.datanode data node} to find its model.
      *
      */
     this.findModel = function(xmlNode){
@@ -175,14 +174,14 @@ apf.xmldb = new (function(){
     this.getXmlId = function(xmlNode){
         return xmlNode.getAttribute(this.xmlIdTag) ||
           this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
-    }
+    };
 
     /**
-     * Gets the html representation of an xml node for a certain element.
+     * Gets the HTML representation of an XML node for a certain element.
      *
-     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {AMLNode} oComp    the element that has created the representation.
-     * @return {HTMLNode} the html node representing the xml node.
+     * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
+     * @param {AMLNode} oComp    The element that has created the representation.
+     * @return {HTMLNode} The HTML node representing the XML node.
      */
     this.getHtmlNode = function(xmlNode, oComp){
         if (xmlNode && xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
@@ -190,14 +189,14 @@ apf.xmldb = new (function(){
                 + "|" + oComp.$uniqueId);
         }
         return null;
-    }
+    };
 
     /**
-     * Finds the html representation of an xml node for a certain element.
+     * Finds the HTML representation of an XML node for a certain element.
      *
-     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {AMLNode} oComp    the element that has created the representation.
-     * @return {HTMLNode} the html node representing the xml node.
+     * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
+     * @param {AMLNode} oComp    The element that has created the representation.
+     * @return {HTMLNode} The HTML node representing the XML node.
      */
     this.findHtmlNode = function(xmlNode, oComp){
         do {
@@ -216,10 +215,10 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Finds the {@link term.datanode data node} that is represented by the html node.
+     * Finds the {@link term.datanode data node} that is represented by the HTML node.
      *
-     * @param {HTMLNode} htmlNode  the html node representing the an xml node.
-     * @return {XMLNode} the {@link term.datanode data node} for which the html node is it's representation.
+     * @param {HTMLNode} htmlNode  The HTML node representing the an XML node.
+     * @return {XMLNode} The {@link term.datanode data node} for which the HTML node is its representation.
      */
     this.findXmlNode = function(htmlNode){
         if (!htmlNode)
@@ -268,13 +267,15 @@ apf.xmldb = new (function(){
         return htmlId;
     };
 
+
+
+    this.$listeners = [null];    
+    // make sure that "0" is never a listener index    
+    // @todo this is cleanup hell! Listeners should be completely rearchitected
     /**
      * @private
-     * @todo this is cleanup hell! Listeners should be completely rearchitected
+     * 
      */
-
-    // make sure that "0" is never a listener index
-    this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
         // #ifdef __DEBUG
         if (!o || (!o.$xmlUpdate && !o.setProperty))
@@ -365,7 +366,7 @@ apf.xmldb = new (function(){
         return xmlNode;
     };
 
-    /**
+    /*
      * @todo  Use this function when an element really unbinds from a
      *        piece of data and does not uses it for caching
      * @private
@@ -402,14 +403,15 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Sets the value of a text node. If the node doesn't exists it is created.
+     * Sets the value of a text node. If the node doesn't exist, it is created.
+     *
      * Changes are propagated to the databound elements listening for changes
      * on the data changed.
      *
-     * @param {XMLElement} pNode     the parent of the text node.
-     * @param {String}     value     the value of the text node.
-     * @param {String}     [xpath]   the xpath statement which selects the text node.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} pNode     The parent of the text node.
+     * @param {String}     value     The value of the text node.
+     * @param {String}     [xpath]   The xpath statement which selects the text node.
+     * @param {UndoObj}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.setTextNode =
     apf.setTextNode  = function(pNode, value, xpath, undoObj, range){
@@ -459,11 +461,11 @@ apf.xmldb = new (function(){
      * Sets an attribute on a node. Changes are propagated to the databound
      * elements listening for changes on the data changed.
      *
-     * @param {XMLElement} xmlNode   the xml node to set the attribute on.
-     * @param {String}     name      the name of the attribute.
-     * @param {String}     value     the value of the attribute.
-     * @param {String}     [xpath]   the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} xmlNode   The XML node to set the attribute on.
+     * @param {String}     name      The name of the attribute.
+     * @param {String}     value     The value of the attribute.
+     * @param {String}     [xpath]   The xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.setAttribute =
     apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
@@ -487,13 +489,13 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Removes an attribute of an xml node. Changes are propagated to the
+     * Removes an attribute of an XML node. Changes are propagated to the
      * databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} xmlNode   the xml node to delete the attribute from
-     * @param {String}     name      the name of the attribute.
-     * @param {String}     [xpath]   the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} xmlNode   The XML node to delete the attribute from
+     * @param {String}     name      The name of the attribute.
+     * @param {String}     [xpath]   The xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.removeAttribute =
     apf.removeAttribute  = function(xmlNode, name, xpath, undoObj){
@@ -518,10 +520,10 @@ apf.xmldb = new (function(){
      * Replace one node with another. Changes are propagated to the
      * databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} oldNode   the xml node to remove.
-     * @param {XMLElement} newNode   the xml node to set.
-     * @param {String}     [xpath]   the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} oldNode   The XML node to remove.
+     * @param {XMLElement} newNode   The XML node to set.
+     * @param {String}     [xpath]   The xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.replaceNode =
     apf.replaceNode  = function(newNode, oldNode, xpath, undoObj){
@@ -565,15 +567,15 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Creates a new element under a parent xml node. Changes are propagated
+     * Creates a new element under a parent XML node. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} pNode       the parent xml node to add the new element to.
-     * @param {String}     tagName     the tagName of the {@link term.datanode data node} to add.
+     * @param {XMLElement} pNode       The parent XML node to add the new element to.
+     * @param {String}     tagName     The tagName of the {@link term.datanode data node} to add.
      * @param {Array}      attr        list of the attributes to set. Each item is another array with the name and value.
-     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
-     * @param {String}     [xpath]     the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
+     * @param {String}     [xpath]     The xpath statement to select the attribute.
+     * @param {UndoObj}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.addChildNode =
     apf.addChildNode  = function(pNode, tagName, attr, beforeNode, undoObj){
@@ -601,15 +603,15 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Appends an xml node to a parent. Changes are propagated
+     * Appends an XML node to a parent. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} pNode       the parent xml node to add the element to.
-     * @param {XMLElement} xmlNode     the xml node to insert.
-     * @param {XMLElement} beforeNode  Node  the xml node which indicates the insertion point.
-     * @param {Boolean}    unique      whether the parent can only contain one element with a certain tagName.
-     * @param {String}     [xpath]     the xpath statement to select the parent node.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} pNode       The parent XML node to add the element to.
+     * @param {XMLElement} xmlNode     The XML node to insert.
+     * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
+     * @param {Boolean}    unique      Specifies whether the parent can only contain one element with a certain tag name.
+     * @param {String}     [xpath]     The xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.appendChild =
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
@@ -664,14 +666,14 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Moves an xml node to a parent node. Changes are propagated
+     * Moves an XML node to a parent node. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} pNode       the new parent xml node of the node.
-     * @param {XMLElement} xmlNode     the xml node to move.
-     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
-     * @param {String}     [xpath]     the xpath statement to select the parent node.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} pNode       The new parent XML node of the node.
+     * @param {XMLElement} xmlNode     The XML node to move.
+     * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
+     * @param {String}     [xpath]     The xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.moveNode =
     apf.moveNode  = function(pNode, xmlNode, beforeNode, xpath, undoObj){
@@ -711,12 +713,12 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Removes an xml node from it's parent. Changes are propagated
+     * Removes an XML node from its parent. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} xmlNode     the xml node to remove from the dom tree.
-     * @param {String}     [xpath]     the xpath statement to select the parent node.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} xmlNode     The XML node to remove from the dom tree.
+     * @param {String}     [xpath]     The xpath statement to select the parent node.
+     * @param {UndoObj}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.removeNode =
     apf.removeNode  = function(xmlNode, xpath, undoObj){
@@ -748,11 +750,11 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Removes a list of xml nodes from their parent. Changes are propagated
+     * Removes a list of XML nodes from their parent. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {Array}   xmlNodeList list of xml nodes to remove.
-     * @param {UndoObj} [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {Array}   xmlNodeList A list of XML nodes to remove.
+     * @param {UndoObj} [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.removeNodeList =
     apf.removeNodeList  = function(xmlNodeList, undoObj){
@@ -907,7 +909,7 @@ apf.xmldb = new (function(){
         }
     };
 
-    /**
+    /*
      *  @todo in actiontracker - add stack auto purging
      *        - when undo item is purged which was a removed, remove cache item
      *  @todo shouldn't the removeNode method remove all this.$listeners?
@@ -960,7 +962,7 @@ apf.xmldb = new (function(){
     };
 
     // #ifdef __WITH_RDB
-    /**
+    /*
      * Sends Message through transport to tell remote databound this.$listeners
      * that data has been changed
      * @private
@@ -1061,8 +1063,8 @@ apf.xmldb = new (function(){
      * data nodes contain special attributes to track them. These attributes
      * are removed from the copied node when using this method.
      *
-     * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
-     * @return {XMLElement} the copy of the {@link term.datanode data node}.
+     * @param {XMLElement} xmlNode The {@link term.datanode data node} to copy.
+     * @return {XMLElement} The copy of the {@link term.datanode data node}.
      */
     this.copy         =
     this.getCleanCopy =

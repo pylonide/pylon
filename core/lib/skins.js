@@ -22,11 +22,15 @@
 // #ifdef __WITH_PRESENTATION
 
 /**
+ * 
+ * Controls the skinning modifications for AML.
+ *
  * @private
  */
 apf.skins = {
     skins  : {},
     css    : [],
+    // @TODO Doc these ?
     events : ["onmousemove", "onmousedown", "onmouseup", "onmouseout",
         "onclick", "ondragcopy", "ondragstart", "ondblclick"],
 
@@ -123,9 +127,9 @@ apf.skins = {
     },
 
     /**
-     * This method loads a stylesheet from a url
-     * @param {String}    filename Required The url to load the stylesheet from
-     * @param {String}    title Optional Title of the stylesheet to load
+     * Loads a stylesheet from a URL.
+     * @param {String}    filename  The url to load the stylesheet from
+     * @param {String}    [title]  Title of the stylesheet to load
      * @method
      */
     loadStylesheet: function(filename, title){

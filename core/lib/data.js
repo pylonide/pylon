@@ -21,96 +21,31 @@
 
 //#ifdef __WITH_DATA
 
-/**
- * @term datainstruction Data instructions offer a single and consistent way for
- * storing and retrieving
- * data from different data sources. For instance from a webserver using REST
- * or RPC, or from local data sources such as gears, air, o3, html5, as well as
- * from in memory sources from javascript or cookies. There is often an xml
- * element which is relevant to storing information. This element can be
- * accessed using xpath statements in the data instruction using curly braces.
- *
- *  - for complex model expr. replace model.
- *  - use property binding for selection, instead of setConnections
- *  <a:bar model="{tree.selected}">
- *      <a:textbox value="[persons/person/text]" />
- *      <a:textbox value="[persons/person/text1]" />
- *      <a:textbox value="[persons/person/text2]" />
- *      <a:textbox value="[persons/person/text3]" />
- *      <a:textbox value="[persons/person/text4]" />
- *  </a:bar>
- *  - create exec function for async objects
- *  - have list of async objects
- *
- * Syntax:
- * Using data instructions to retrieve data
- * <code>
- *  model="name_of_model"
- *  model="[name_of_model::xpath]"
- *  model="{element.selected}"
- *  model="[local(element.selected) {xpath}]"
- *  model="{element.choose}"
- *      model="[local(element.choose) {xpath}]"
- *      model="[local(element.root) {xpath}]"
- *      load="<specialtag>[comm.doCall([@id], test(), 5+10).xml]</specialtag>"
- *      get="example.jsp"
- *      get="http://www.bla.nl?blah=10&foo=[@bar]&example=[10+5]"
- *      get="{comm.submit('abc', [@bar])}"
- *      get="[local(comm.submit('abc', [@bar])) return [xpath]]"
- *      get="[submit('abc', [@bar])]"
- *      get="{xmpp.login(username, password)}"
- *      get="{webdav.getRoot()}"
- *      get="[10+5]"
- * </code>
- *
- * Syntax:
- * Using data instructions to store data
- * <code>
- *  set="http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
- *  set="post http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
- * <a:add set="[[@uid] = comm.addPerson('abc', {/bar})]" />
- *  set="[submit('abc', {/bar})]"
- *  set="[example=[@name]]"
- *  set="[apf.setcookie('something', [.])]"
- *  set="[o3.fs.get('/var/test.xml').data = [.]]"
- * </code>
- *
- * [
- *  function test(){
- *      var blah = comm.blah();
- *      return blah;
- *  }
- * ]
- * <a:add set="[test([.])]" />
- *
- * See:
- * <ul>
- *  <li>{@link teleport.cgi the cgi teleport module}</li>
- *  <li>{@link teleport.rpc the rpc teleport module}</li>
- *  <li>{@link teleport.webdav the webdav teleport module}</li>
- *  <li>{@link teleport.xmpp the xmpp teleport module}</li>
- * </ul>
- */
 
 /**
  * Stores data using a {@link term.datainstruction data instruction}.
  *
- * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to store the data.
- * @param {Object}      [options]    the options for this instruction
- *   Properties:
- *   {Boolean} multicall    whether this call should not be executed immediately but saved for later sending using the purge() command.
- *   {mixed}   userdata     any data that is useful to access in the callback function.
- *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
- *   {XMLElement}  [xmlContext] the subject of the xpath queries
- *   {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
+ * @method saveData
+ * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to store the data.
+ * @param {Object}      [options]    The options for this instruction. Available properties include:
+ *   - {Boolean} multicall    Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
+ *   - {mixed}   userdata     Any data that is useful to access in the callback function
+ *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
+ *   - {XMLElement}  [xmlContext] The subject of the xpath queries
+ *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
+ *
  */
+ // @TODO Doc: This is screwing up docs above and below; need to explicitly call @method
 apf.saveData = 
 
 /**
  * Retrieves data using a {@link term.datainstruction data instruction}.
- * Example:
- * Several uses for a data instruction
- * <code>
+ * 
+ * #### Example
+ * 
+ * Here are several uses for data instructions:
+ * 
+ * ```xml
  *  <!-- loading aml from an xml file -->
  *  <a:bar aml="moreaml.xml" />
  *
@@ -135,17 +70,18 @@ apf.saveData =
  *
  *  <!-- loads data into a model and when submitted sends the altered data back -->
  *  <a:model load="load_contact.jsp" submission="save_contact.jsp" />
- * </code>
+ * ```
  *
- * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data.
- * @param {XMLElement}  [xmlContext] the subject of the xpath queries
- * @param {Object}      [options]    the options for this instruction
- *   Properties:
- *   {Boolean} multicall    whether this call should not be executed immediately but saved for later sending using the purge() command.
- *   {mixed}   userdata     any data that is useful to access in the callback function.
- *   {mixed}   data         data to use in the call
- *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
- * @param {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
+ * @method getData
+ * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data.
+ * @param {XMLElement}  [xmlContext] The subject of the xpath queries
+ * @param {Object}      [options]    The options for this instruction. Available properties include:
+ *   - {Boolean} multicall    Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
+ *   - {mixed}   userdata     Any data that is useful to access in the callback function
+ *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
+ *   - {XMLElement}  [xmlContext] The subject of the xpath queries
+ *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
+ * @param {Function}    [callback]   The code that is executed when the call returns, either successfully or not
  */
 apf.getData = function(instruction, options){
     if (!instruction) return false;
@@ -319,8 +255,8 @@ apf.getData = function(instruction, options){
 /**
  * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
- * @param {String} instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data for the model.
- * @param {AmlNode} amlNode     the element the model is added to.
+ * @param {String} instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data for the model
+ * @param {AmlNode} amlNode     The element the model is added to
  */
 apf.setModel = function(instruction, amlNode){
     if (!instruction) return;

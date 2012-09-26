@@ -22,197 +22,25 @@
 //#ifdef __WITH_CLASS
 
 /**
- * @term propertybinding With property binding you can define the way a
- * property is calculated. <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
- * This statement is usually based on a javascript
- * expression including one or more properties on other objects. The value of
- * the property will always be kept up to date. This means that when one of the
- * dependent properties changes, the property is recalculated. See the picture
- * for a graphical explanation.
- * Example:
- * Let me give you an example to make it a bit straightforward. This example
- * sets the visibility of the slider based on the state of the checkbox.
- * <code>
- *  <a:slider visible="{myCheckbox.value}" />
- *  <a:checkbox id="myCheckbox">Toggle this</a:checkbox>
- * </code>
- *
- * Expressions:
- * The use of { and } tell Ajax.org Platform(APF) that the visible property will
- * be bound. By specifying myCheckbox.value APF knows that the value of
- * myCheckbox should be retrieved for this property. Whenever the checkbox
- * changes, the slider will show or hide.
- *
- * Bidirectional:
- * Sometimes it's necessary to make a binding from one property to another one,
- * and vice versa. Think of a slider that is connected to the position property
- * of a video element. When the video plays, the value of the slider should be
- * updated. When the slider is dragged the video should be updated. This works
- * in the same way as above, but instead of using curly braces
- * you use brackets: [ and ]. The next example keeps the state of a dropdown in
- * sync with the state of the tab page.
- * <code>
- *  <a:tab activepage="[myDropdown.value]">
- *     <a:page caption="Page 1" />
- *     <!-- etc -->
- *  </a:tab>
- *  <a:dropdown id="myDropdown">
- *     <a:item value="0">Page 1</a:item>
- *     <!-- etc -->
- *  </a:dropdown>
- * </code>
- *
- * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
- *
- * Internals:
- * Property binding in apf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
- * system. When a binding is established the element that receives the value sets
- * a listener on the property of another element. There can be any number of
- * elements referenced in a single expression. When any of the properties that
- * are listened to change, the subscriber gets notified to update the value
- * of it's property.
- */
-
-/**
- * @term baseclass A baseclass in Ajax.org Platform (apf) is a class that
- * adds properties, methods, attributes, bindings and actions to the class that
- * inherits from it. Javascript doesn't have most object oriented concepts like
- * classes, class inheritance, interfaces, protected members and so on. When
- * using apf you will find that some of these concepts have
- * been implemented in a way that enables the core developers of apf to think in
- * those concepts. The most important one is class inheritance. Because of the
- * freedoms that javascript allows, it is possible to implement
- * {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
- * and even {@link http://en.wikipedia.org/wiki/Multiple_inheritance multiple inheritance}.
- *
- * Usage:
- * In apf multiple inheritance is used on all elements to assign specific traits
- * to aml elements. Check the list of baseclasses on the right to familiarize
- * yourself with the traits that are available (i.e. dragdrop, rename, multiselect,
- * databinding, alignment, etc). At the article of each element that inherits
- * from a baseclass you will find an inheritance tree on the right. This tree
- * will show you <strong>from which baseclasses that element has received traits</strong>.
- * Compared to Java and other strict OOP languages, the inheritance tree is
- * inverted. To give an example, in Java for instance, a Lamborghini inherits from
- * Car which inherits from Vehicle. In apf Audi inherits from Engine, Wheels,
- * Seats and Airco. So we can make the latest Lamborghini inherit from Airco too.
- *
- * Class:
- * The apf.Class baseclass provides all basic features a apf element needs, such
- * as event system, property binding and multiple inheritance with state defined
- * by each baseclass.
- * By setting the prototype of a function to an instance of apf.Class
- * these  <i title="an inherited characteristic (merriam-webster)">traits</i> are
- * transferred to your class.
- *
- * API:
- * The first method is the one that tells an object to implement traits from a
- * baseclass.
- * It works as follows:
- * <code>
- *  var myClass = function(){
- *      this.$init();
- *  }
- *  myClass.prototype = new apf.Class();
- * </code>
- * There is a class tree that you can use to create your own elements. For
- * instance to create a visible element that uses skinning you can inherit from
- * apf.Presentation:
- * <code>
- *  var myElement = function(){
- *      this.$init();
- *  }
- *  myElement.prototype = new apf.Presentation();
- * </code>
- * Please find a full description of the inheritance tree below.
- *
- * To check whether an object has inherited from baseclass use the following
- * syntax:
- * <code>
- *  myObj.hasFeature(apf.__PRESENTATION__);
- * </code>
- * Where the constant is the name of the baseclass in all caps.
- *
- * Apf supports multiple inheritance. Use the implement method to add a
- * baseclass to your class that is not part of the inheritance tree:
- * <code>
- *  var myElement = function(){
- *      this.$init();
- *
- *      this.implement(apf.Rename);
- *  }
- *  myElement.prototype = new apf.MultiSelect();
- * </code>
- *
- * Inheritance Tree:
- * <code>
- *  - apf.Class
- *      - apf.AmlNode
- *          - apf.AmlElement
- *              - apf.Teleport
- *              - apf.GuiElement
- *                  - apf.Presentation
- *                      - apf.BaseTab
- *                      - apf.DataBinding
- *                          - apf.StandardBinding
- *                              - apf.BaseButton
- *                              - apf.BaseSimple
- *                              - apf.Media
- *                          - apf.MultiselectBinding
- *                              - apf.MultiSelect
- *                                  - apf.BaseList
- * </code>
- * Generally elements inherit from AmlElement, Presentation, StandardBinding,
- * MultiselectBinding, or one of the leafs.
- *
- * The following classes are implemented using the implement method:
- * <code>
- * - apf.Cache
- * - apf.ChildValue
- * - apf.LiveEdit
- * - apf.DataAction
- * - apf.Media
- * - apf.MultiCheck
- * - apf.Rename
- * - apf.Xforms
- * </code>
- *
- * The following classes are automatically implemented when needed by apf.GuiElement.
- * <code>
- * - apf.Anchoring
- * - apf.DelayedRender
- * - apf.DragDrop
- * - apf.Focussable
- * - apf.Interactive
- * - apf.Transaction
- * - apf.Validation
- * </code>
- *
- * The following class is automatically implemented by apf.MultiselectBinding
- * <code>
- * - apf.VirtualViewport
- * </code>
- */
-
-/**
  * All elements that implemented this {@link term.baseclass baseclass} have
  * {@link term.propertybinding property binding},
  * event handling and constructor & destructor hooks. The event system is
  * implemented following the W3C specification, similar to the
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
  *
- * @constructor
- * @baseclass
+ * @class apf.Class
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
- *
+ */
+
+/**
  * @event propertychange Fires when a property changes.
- *   object:
- *     {String} name          the name of the changed property
- *     {Mixed}  originalvalue the value it had before the change
- *     {Mixed}  value         the value it has after the change
+ * @param {Object} e An object containing the following properties
+ * - {String} name          The name of the changed property
+ * - {Mixed}  originalvalue The value it had before the change
+ * - {Mixed}  value         The value it has after the change
  *
  */
 apf.Class = function(){};
@@ -230,7 +58,7 @@ apf.Class.prototype = new (function(){
     this.$regbase   = 0;
     /**
      * Tests whether this object has implemented a {@link term.baseclass baseclass}.
-     * @param {Number} test the unique number of the {@link term.baseclass baseclass}.
+     * @param {Number} test The unique number of the {@link term.baseclass baseclass}.
      */
     this.hasFeature = function(test){
         return this.$regbase & test;
@@ -293,7 +121,7 @@ apf.Class.prototype = new (function(){
 
     this.implement = apf.implement;
 
-    /**** Property Binding ****/
+    // **** Property Binding **** //
 
     this.$handlePropSet = function(prop, value){
         this[prop] = value;
@@ -302,19 +130,19 @@ apf.Class.prototype = new (function(){
     //#ifdef __WITH_PROPERTY_BINDING
 
     /**
-     * Bind a property of another compontent to a property of this element.
+     * Binds a property of another compontent to a property of this element.
      *
      * @param  {String} myProp           the name of the property of this element
      *                                   of which the value is communicated to
-     *                                   <code>bObject</code>.
+     *                                   `bObject`.
      * @param  {Class}  bObject          the object which will receive the property
      *                                   change message.
-     * @param  {String} bProp            the property of <code>bObject</code> which
+     * @param  {String} bProp            the property of `bObject` which
      *                                   will be set using the value of
-     *                                   <code>myProp</code> optionally
-     *                                   processed using <code>strDynamicProp</code>.
+     *                                   `myProp` optionally
+     *                                   processed using `strDynamicProp`.
      * @param  {String} [strDynamicProp] a javascript statement which contains the
-     *                                   value of <code>myProp</code>. The string
+     *                                   value of `myProp`. The string
      *                                   is used to calculate a new value.
      * @private
      */
@@ -411,16 +239,17 @@ apf.Class.prototype = new (function(){
 
     /**
      * Sets a dynamic property from a string.
+     *
      * The string used for this function is the same as used in AML to set a
      * dynamic property:
-     * <code>
+     * ```xml
      *  <a:button visible="{rbTest.value == 'up'}" />
      *  <a:textbox id="rbTest" value="" />
-     * </code>
+     * ```
      *
-     * @param  {String}  prop   the name of the property of this element to set
+     * @param  {String}  prop   The name of the property of this element to set
      *                          using a dynamic rule.
-     * @param  {String}  pValue the dynamic property binding rule.
+     * @param  {String}  pValue The dynamic property binding rule.
      */
     this.$attrExcludePropBind = false;
     this.$setDynamicProperty = function(prop, pValue){
@@ -664,8 +493,11 @@ apf.Class.prototype = new (function(){
     //#ifdef __WITH_PROPERTY_WATCH
     /**
      * Adds a listener to listen for changes to a certain property.
-     * Implemented as Mozilla suggested see
+     *
+     * Implemented as Mozilla suggests; see
      * {@link https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch their site}.
+     * @param {String} propName The property to watch
+     * @param {Function} callback A function to call once the property changes
      */
     this.watch = function(propName, callback){
         var eventName = PROP + propName,
@@ -680,6 +512,8 @@ apf.Class.prototype = new (function(){
 
     /**
      * Removes a listener to listen for changes to a certain property.
+     * @param {String} propName The property to stop watching
+     * @param {Function} callback The function to remove from the property
      */
     this.unwatch = function(propName, callback){
         var list, eventName = PROP + propName;
@@ -699,6 +533,7 @@ apf.Class.prototype = new (function(){
 
     /**
      * Gets an array of properties for this element which can be bound.
+     * @returns {Array}
      */
     this.getAvailableProperties = function(){
         return this.$supportedProperties.slice();
@@ -706,14 +541,15 @@ apf.Class.prototype = new (function(){
 
     /**
      * Sets the value of a property of this element.
-     * Note: Only the value is set, dynamic properties will remain bound and the
+     *
+     * Note: The value is the only thing set. Dynamic properties remain bound and the
      * value will be overridden.
      *
-     * @param  {String}  prop        the name of the property of this element to
+     * @param  {String}  prop        The name of the property of this element to
      *                               set using a dynamic rule.
-     * @param  {String}  value       the value of the property to set.
-     * @param  {Boolean} [forceOnMe] whether the property should be set even when
-     *                               its the same value.
+     * @param  {String}  value       The value of the property to set.
+     * @param  {Boolean} [forceOnMe] Specifies whether the property should be set even when
+     *                               it has the same value.
      */
     this.setProperty = function(prop, value, forceOnMe, setAttr, inherited){
         var s, r, arr, e, i, l,
@@ -875,7 +711,7 @@ apf.Class.prototype = new (function(){
     /**
      * Gets the value of a property of this element.
      *
-     * @param  {String}  prop   the name of the property of this element for which to get the value.
+     * @param  {String}  prop   The name of the property of this element for which to get the value.
      */
     this.getProperty = function(prop){
         return this[prop];
@@ -889,15 +725,14 @@ apf.Class.prototype = new (function(){
     /**
      * Calls all functions that are registered as listeners for an event.
      *
-     * @param  {String}  eventName  the name of the event to dispatch.
-     * @param  {Object}  [options]  the properties of the event object that will be created and passed through.
-     *   Properties:
-     *   {Boolean} bubbles  whether the event should bubble up to it's parent
-     *   {Boolean} captureOnly whether only the captured event handlers should be executed
-     * @return {mixed} return value of the event
+     * @param  {String}  eventName  The name of the event to dispatch.
+     * @param  {Object}  [options]  The properties of the event object that will be created and passed through. These can be:
+     *  - {Boolean} bubbles  Specifies whether the event should bubble up to it's parent
+     *  - {Boolean} captureOnly Specifies whether only the captured event handlers should be executed
+     * @return {Mixed} return value of the event
      */
-    //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
     this.dispatchEvent = function(eventName, options, e){
+    //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
         var arr, result, rValue, i, l;
 
         if (!apf.AmlEvent)
@@ -1014,11 +849,11 @@ apf.Class.prototype = new (function(){
     };
 
     /**
-     * Add a function to be called when a event is called.
+     * Adds a function to be called when a event is called.
      *
-     * @param  {String}   eventName the name of the event for which to register
+     * @param  {String}   eventName The name of the event for which to register
      *                              a function.
-     * @param  {function} callback  the code to be called when event is dispatched.
+     * @param  {function} callback  The code to be called when an event is dispatched.
      */
     this.addEventListener = function(a, b, c){
         this.$bufferEvents.push([a,b,c]);
@@ -1048,11 +883,11 @@ apf.Class.prototype = new (function(){
     };
 
     /**
-     * Remove a function registered for an event.
+     * Removes a function registered for an event.
      *
-     * @param  {String}   eventName the name of the event for which to unregister
+     * @param  {String}   eventName The name of the event for which to unregister
      *                              a function.
-     * @param  {function} callback  the function to be removed from the event stack.
+     * @param  {function} callback  The function to be removed from the event stack.
      */
     this.removeEventListener = function(eventName, callback, useCapture){
         var stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName];
@@ -1071,19 +906,19 @@ apf.Class.prototype = new (function(){
     /**
      * Checks if there is an event listener specified for the event.
      *
-     * @param  {String}  eventName  the name of the event to check.
-     * @return {Boolean} whether the event has listeners
+     * @param  {String}  eventName  The name of the event to check.
+     * @return {Boolean} Specifies whether the event has listeners
      */
     this.hasEventListener = function(eventName){
         return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
 
     /**
-     * Destructor of a Class.
-     * Calls all destructor functions and removes all mem leaking references.
+     * The destructor of a Class.
+     * Calls all the destructor functions, and removes all memory leaking references.
      * This function is called when exiting the application or closing the window.
      * @param {Boolean} deep whether the children of this element should be destroyed.
-     * @method
+     * @param {Boolean} [clean]
      */
     this.destroy = function(deep, clean){
         //Remove from apf.all

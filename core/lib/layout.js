@@ -22,8 +22,104 @@
 // #ifdef __WITH_LAYOUT
 
 /**
- * Object dealing with layout updates
+ * @class apf.layout
+ *
+ * Takes care of the spatial order of elements within the display area
+ * of the browser. Layouts can be saved to XML and loaded again. Window
+ * elements are dockable, which means the user can change the layout as s/he
+ * wishes. The state of the layout can be saved as XML at any time.
+ *
+ * #### Example
+ * 
+ * This example shows five windows which have a layout defined in layout.xml.
+ * 
+ * ```xml
+ *  <a:appsettings layout="[mdlLayouts::layout[1]]" />
+ *  <a:model id="mdlLayouts" src="layout.xml" />
+ *  
+ *  <a:window title="Main Window" id="b1" />
+ *  <a:window title="Tree Window" id="b2" />
+ *  <a:window title="Window of Oppertunity" id="b3" />
+ *  <a:window title="Small window" id="b4" />
+ *  <a:window title="Some Window" id="b5" />
+ * ```
+ *
+ * This is the layout file containing two layouts (_layout.xml_):
+ * 
+ * ```xml
+ *  <layouts>
+ *      <layout name="Layout 1" margin="2,2,2,2">
+ *          <vbox edge="splitter">
+ *              <node name="b1" edge="2"/>
+ *              <hbox edge="2">
+ *                  <vbox weight="1">
+ *                      <node name="b2"/>
+ *                      <node name="b3"/>
+ *                  </vbox>
+ *                  <node name="b4" weight="1" />
+ *              </hbox>
+ *              <node name="b5" height="20" />
+ *          </vbox>
+ *      </layout>
+ *
+ *      <layout name="Layout 2">
+ *          <vbox edge="splitter">
+ *              <node name="b1" edge="2" />
+ *              <node name="b2" height="100" />
+ *              <hbox edge="2">
+ *                  <node name="b3" width="20%" />
+ *                  <node name="b4" width="100" />
+ *              </hbox>
+ *              <node name="b5" height="20" />
+ *          </vbox>
+ *      </layout>
+ *  </layouts>
+ * ```
+ *
+ * By binding on the _layout.xml_ you can easily create a layout manager.
+ * 
+ * ```xml
+ *  <a:list id="lstLayouts"
+ *    model          = "mdlLayouts"
+ *    allowdeselect  = "false"
+ *    onafterselect  = "
+ *      if(!this.selected || apf.layout.isLoadedXml(this.selected))
+ *          return;
+ *     
+ *      apf.layout.saveXml();
+ *      apf.layout.loadXml(this.selected);
+ *    "
+ *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
+ *      <a:bindings>
+ *          <a:caption match="[@name]" />
+ *          <a:icon value="layout.png" />
+ *          <a:each match="[layout]" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:rename match="[.]" />
+ *          <a:remove match="[.]" />
+ *      </a:actions>
+ *  </a:list>
+ *  <a:button
+ *    onclick = "
+ *      if (!lstLayouts.selected)
+ *          return;
+ *     
+ *      var newLayout = apf.layout.getXml(document.body);
+ *      newLayout.setAttribute('name', 'New');
+ *      apf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
+ *      lstLayouts.select(newLayout, null, null, null, null, true);
+ *      apf.layout.loadXml(newLayout);
+ *      lstLayouts.startRename();
+ *    ">
+ *    Add Layout
+ *  </a:button>
+ * ```
+ *
+ * @default_private
  */
+ // @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this element.
+
 apf.layout = {
     compile : function(oHtml){
         var l = this.layouts[oHtml.getAttribute("id")];
@@ -131,11 +227,11 @@ apf.layout = {
 
     /**
      * Adds layout rules to the resize event of the browser. Use this instead
-     * of onresize events to add rules that specify determine the layout.
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element. Use this to easily update or remove the rules added.
-     * @param {String}      rules       the javascript code that is executed when the html element resizes.
-     * @param {Boolean}     [overwrite] whether the rules are added to the resize function or overwrite the previous set rules with the specified id.
+     * of `"onresize"` events to add rules that specify determine the layout.
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {String}      id          The identifier for the rules within the resize function of this element. Use this to easily update or remove the rules added.
+     * @param {String}      rules       The JavaScript code that is executed when the html element resizes.
+     * @param {Boolean}     [overwrite] Whether the rules are added to the resize function or overwrite the previous set rules with the specified id.
      */
     setRules : function(oHtml, id, rules, overwrite){
         if (!this.getHtmlId(oHtml))
@@ -152,9 +248,9 @@ apf.layout = {
     },
 
     /**
-     * Retrieves the rules set for the resize event of an html element specified by an identifier
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element.
+     * Retrieves the rules set for the `"resize"` event of an HTML element specified by an identifier
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {String}      id          The identifier for the rules within the resize function of this element.
      */
     getRules : function(oHtml, id){
         return id
@@ -163,9 +259,9 @@ apf.layout = {
     },
 
     /**
-     * Removes the rules set for the resize event of an html element specified by an identifier
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element.
+     * Removes the rules set for the `"resize"` event of an html element specified by an identifier
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {String}      id          The identifier for the rules within the resize function of this element.
      */
     removeRule : function(oHtml, id){
         var htmlId = this.getHtmlId(oHtml);
@@ -203,8 +299,9 @@ apf.layout = {
     },
 
     /**
-     * Activates the rules set for an html element
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
+     * Activates the rules set for an HTML element
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {Boolean} [no_exec]       
      */
     activateRules : function(oHtml, no_exec){
         if (!oHtml) { //!apf.hasSingleRszEvent &&
@@ -308,8 +405,8 @@ apf.layout = {
     },
 
     /**
-     * Forces calling the resize rules for an html element
-     * @param {HTMLElement} oHtml  the element for which the rules are executed.
+     * Forces calling the resize rules for an HTML element
+     * @param {HTMLElement} oHtml  The element for which the rules are executed.
      */
     forceResize : function(oHtml){
         if (apf.hasSingleRszEvent)
@@ -335,9 +432,9 @@ apf.layout = {
     paused : {},
 
     /**
-     * Disables the resize rules for the html element temporarily.
-     * @param {HTMLElement} oHtml  the element for which the rules are paused.
-     * @param {Function}    func   the resize code that is used temporarily for resize of the html element.
+     * Temporarily disables the resize rules for the HTML element.
+     * @param {HTMLElement} oHtml  The element for which the rules are paused.
+     * @param {Function}    func   The resize code that is used temporarily for resize of the HTML element.
      */
     pause  : function(oHtml, replaceFunc){
         if (apf.hasSingleRszEvent) {
@@ -365,8 +462,8 @@ apf.layout = {
     },
 
     /**
-     * Enables paused resize rules for the html element
-     * @param {HTMLElement} oHtml  the element for which the rules have been paused.
+     * Enables paused resize rules for the HTML element
+     * @param {HTMLElement} oHtml  The element for which the rules were paused.
      */
     play : function(oHtml){
         if (!this.paused[this.getHtmlId(oHtml)])

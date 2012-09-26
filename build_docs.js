@@ -1,4 +1,4 @@
-var panino = require("./index.js");
+var panino = require("doc/panino");
 
 var buildOptions = {
 	parseOptions: "./doc/parseOptions.json",
