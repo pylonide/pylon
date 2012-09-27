@@ -26,7 +26,12 @@
  * position specified by the position attribute. After the timeout has passed
  * the popup will dissapear automatically. When the mouse hovers over the popup
  * it doesn't dissapear.
+ * 
+ * @class apf.event
+ * @define event
  *
+ */
+/**
  * @event click Fires when the user clicks on the representation of this event.
  */
 apf.event = function(struct, tagName){

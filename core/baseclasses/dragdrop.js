@@ -24,29 +24,38 @@ apf.__DRAGDROP__ = 1 << 5;
 // #ifdef __WITH_DRAGDROP
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} have drag&drop 
- * features. This baseclass operates on the bound data of this element. 
- * When a rendered item is dragged and dropped the bound data is moved or 
+ * All elements inheriting from this {@link term.baseclass baseclass} have drag & drop 
+ * features. 
+ *
+ * This baseclass operates on the bound data of this element. 
+ * When a rendered item is dragged and dropped, the bound data is moved or 
  * copied from one element to another, or to the same element but at a different 
  * position. This is possible because the rendered item has a 
- * {@link term.smartbinding bidirectional connection} to the data. Drag&drop can 
+ * {@link term.smartbinding bidirectional connection} to the data. Drag & drop can 
  * be turned on with a simple boolean, or by specifying detailed rules to set 
  * which data can be dragged and dropped and where.
  *
- * Example:
- * This is a simple example, enabling drag&drop for a list.
- * <code>
+ *
+ * #### Example
+ *
+ * This is a simple example, enabling drag & drop for a list:
+ *
+ * ```xml
+ *
  *  <a:list
  *    drag     = "true"
  *    drop     = "true"
  *    dragcopy = "true" />
- * </code>
+ * ```
  *
- * Example:
- * This example shows a smartbinding that represents files and folders. It uses 
- * {@link term.datainstruction data instruction} to tell communicat to the webdav
+ *
+ * #### Example
+ *
+ * This example shows a smartbinding that represents files and folders. It uses a
+ * {@link term.datainstruction data instruction} to communicate to the webdav
  * server when an item is copied or moved.
- * <code>
+ *
+ * ```xml
  *  <a:smartbinding>
  *      <a:bindings>
  *          <a:caption match="[@filename]" />
@@ -75,54 +84,76 @@ apf.__DRAGDROP__ = 1 << 5;
  *              set   = "{myWebdav.copy([@path], [../@path])}" />
  *      </a:actions>
  *  </a:smartbinding>
- * </code>
- *
- * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
- *   object:
- *   {XMLElement} data the default data for the drag&drop operation
+ * ```
+ * 
+ * @class apf.DragDrop
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.5
+ * 
+ */
+/**
+ * @event  dragdata  Fires before a drag & drop operation is started to determine the data that is dragged.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - `data` ([[XMLElement]]): The default data for the drag & drop operation
+ */
+/**
  * @event  dragstart Fires before a drag operation is started.
- *   cancelable: Prevents the drag operation to start.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
+ * @cancelable Prevents the drag operation to start.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - `data` ([[XMLElement]]): The data for the drag & drop operation
+ *   - `selection` ([[XMLElement]]): The selection at the start of the drag operation
+ *   - `indicator` ([[HTMLElement]]): The HTML element that is shown while dragging the data
+ *   - `host` ([[apf.AmlElement]]): The AML source element.
+ */
+/**
+ * @event  dragover Fires when the users drags over this AML element.
+ * @cancelable Prevents the possibility to drop.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   {XMLElement}  data      The data for the drag & drop operation
+ *   {XMLElement}  selection The selection at the start of the drag operation
+ *   {HTMLElement} indicator The HTML element that is shown while dragging the data
+ *   {apf.AmlElement}  host      the AML source element.
+ */
+/**
+ * @event  dragout  Fires when the user moves away from this AML element.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   {XMLElement}  data      the data for the drag & drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
+ *   {HTMLElement} indicator the HTML element that is shown while dragging the data
  *   {apf.AmlElement}  host      the aml source element.
- * @event  dragover Fires when the users drags over this aml element.
- *   cancelable: Prevents the possibility to drop.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {apf.AmlElement}  host      the aml source element.
- * @event  dragout  Fires when the user moves away from this aml element.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {apf.AmlElement}  host      the aml source element.
+ */
+/**
  * @event  dragdrop  Fires when the user drops an item on this aml element.
- *   cancelable: Prevents the possibility to drop.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {apf.AmlElement}  host      the aml source element.
- *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
+ * @cancelable Prevents the possibility to drop.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   {XMLElement}  data      The data for the drag & drop operation
+ *   {XMLElement}  selection The selection at the start of the drag operation
+ *   {HTMLElement} indicator The html element that is shown while dragging the data
+ *   {apf.AmlElement}  host      The AML source element.
+ *   {Boolean}     candrop   Specifies whether the data can be inserted at the point hovered over by the user
  *
  * @see element.drag
  * @see element.drop
  * @see element.dragdrop
  *
+ */
+/**
  * @define dragdrop
  * @allowchild drop, drag
  * @define drag   Determines whether a {@link term.datanode data node} can 
  * be dragged from this element. 
- * Example:
+ * 
+ * #### Example 
+ *
  * This example shows a small mail application. The tree element displays a root
  * node, accounts and folders in a tree. The datagrid contains the mails. This
  * rule specifies which data nodes can be dropped where. Folders can be dropped 
  * in folders and accounts. Mails can be dropped in folders.
- * <code>
+ *
+ * ```xml
+ *
  *  <a:tree align="left" width="200">
  *      <a:each match="[root|account|folder|mail]">
  *          <a:caption match="[@name]" />
@@ -158,46 +189,54 @@ apf.__DRAGDROP__ = 1 << 5;
  *          </data>
  *      </a:model>
  *  </a:datagrid>
- * </code>
+ *```
  *
- * @attribute {String} match           an xpath statement querying the
+ */
+/**
+ * @attribute {String} match           An XPath statement querying the
  *                                     {@link term.datanode data node} that is
  *                                     dragged. If the query matches a node it
- *                                     is allowed to be dropped. The xpath is
- *                                     automatically prefixed by 'self::'.
- * @attribute {String} copy            a javascript expression that determines
+ *                                     is allowed to be dropped. The XPath is
+ *                                     automatically prefixed by `'self::'`.
+ */
+/**
+ * @attribute {String} copy            A JavaScript expression that determines
  *                                     whether the dragged element is a copy or
  *                                     a move. Use event.ctrlKey to use the Ctrl
  *                                     key to determine whether the element is copied.
  *
+ */
+/**
  * @define drop   Determines whether a {@link term.datanode data node} can 
  * be dropped on a data node bound to this element. 
  * 
- * @attribute {String} match           an xpath statement querying the
- *                                     {@link term.datanode data node} that is
- *                                     dragged. If the query matches a node it
- *                                     is allowed to be dropped. The xpath is
- *                                     automatically prefixed by 'self::'.
- * @attribute {String} target          an xpath statement determining the new
- *                                     parent of the dropped {@link term.datanode data node}.
- *                                     The xpath is automatically prefixed by 'self::'.
- * @attribute {String} action          the action to perform when the
- *                                     {@link term.datanode data node} is inserted.
- *   Possible values:
- *   tree-append    Appends the {@link term.datanode data node} to the element it's dropped on.
- *   list-append    Appends the {@link term.datanode data node} to the root element of this element.
- *   insert-before  Inserts the {@link term.datanode data node} before the elements it's dropped on.
- * @attribute {String} copy            a javascript expression that determines
- *                                     whether the drop is a copy or a move.
- *                                     Use event.ctrlKey to use the Ctrl key to
- *                                     determine whether the element is copied.
  */
 /**
- * @constructor
- * @baseclass
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.5
+ * @attribute {String} match           An XPath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The XPath is
+ *                                     automatically prefixed by `'self::'`.
+ */
+/**
+ * @attribute {String} target          An XPath statement determining the new
+ *                                     parent of the dropped {@link term.datanode data node}.
+ *                                     The XPath is automatically prefixed by `'self::'`.
+ */
+/**
+ * @attribute {String} action          The action to perform when the
+ *                                     {@link term.datanode data node} is inserted.
+ *   The possible values include:
+ *
+ *   - `tree-append`:    Appends the {@link term.datanode data node} to the element its dropped on.
+ *   - `list-append`:    Appends the {@link term.datanode data node} to the root element of this element.
+ *   - `insert-before`:  Inserts the {@link term.datanode data node} before the elements its dropped on.
+ */
+/**
+ * @attribute {String} copy            A JavaScript expression that determines
+ *                                     whether the drop is a copy or a move.
+ *                                     Use event.ctrlKey to use the [[keys: Ctrl]] key to
+ *                                     determine whether the element is copied.
  */
 apf.DragDrop = function(){
     this.$regbase = this.$regbase | apf.__DRAGDROP__;
@@ -212,12 +251,12 @@ apf.DragDrop = function(){
      * Copies a {@link term.datanode data node} to the bound data of this element.
      *
      * @action
-     * @param  {XMLElement} xmlNode      the {@link term.datanode data node} which is copied.
-     * @param  {XMLElement} pNode        the new parent element of the copied
-     *                                   {@link term.datanode data node}. If none
+     * @param  {XMLElement} xmlNode      The {@link term.datanode data node} which is copied.
+     * @param  {XMLElement} [pNode]        The new parent element of the copied
+     *                                   {@link term.datanode data node}. If none is
      *                                   specified the root element of the data
      *                                   loaded in this element is used.
-     * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node}
+     * @param  {XMLElement} [beforeNode] The position where the {@link term.datanode data node}
      *                                   is inserted.
      */
     this.copy = function(nodeList, pNode, beforeNode, isMove){
@@ -257,12 +296,12 @@ apf.DragDrop = function(){
      * Moves a {@link term.datanode data node} to the bound data of this element.
      *
      * @action
-     * @param  {XMLElement}  xmlNode      the {@link term.datanode data node} which is copied.
-     * @param  {XMLElement}  pNode        the new parent element of the moved
+     * @param  {XMLElement}  xmlNode      The {@link term.datanode data node} which is copied.
+     * @param  {XMLElement}  [pNode]      The new parent element of the moved
      *                                    {@link term.datanode data node}. If none
      *                                    specified the root element of the data
      *                                    loaded in this element is used.
-     * @param  {XMLElement}  [beforeNode] the position where the
+     * @param  {XMLElement}  [beforeNode] The position where the
      *                                    {@link term.datanode data node} is inserted.
      */
     this.move = function(nodeList, pNode, beforeNode){
@@ -274,13 +313,15 @@ apf.DragDrop = function(){
      * {@link term.datanode data node}. The decision is made based on the 
      * {@link element.drag drag} and {@link element.drag drag} 
      * rules. These elements determine when a data node can be dropped on 
-     * another data node. For instance, imagine a mail application with a root
+     * another data node. 
+     *
+     * For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
-     * would specify you can drag&drop folders within an account, and emails between
+     * would specify you can drag & drop folders within an account, and emails between
      * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject to the test.
-     * @return {Boolean} result of the test
+     * @param  {XMLElement} dataNode The {@link term.datanode data node} subject to the test.
+     * @return {Boolean} The result of the test
      * @see baseclass.dragdrop.method.isDragAllowed
      */
     this.isDragAllowed = function(x, data){
@@ -321,20 +362,22 @@ apf.DragDrop = function(){
     };
 
     /**
-     * Determines whether the user is allowed to dropped the passed 
+     * Determines whether the user is allowed to drop the passed 
      * {@link term.datanode data node}. The decision is made based on the 
      * {@link element.drag drag} and {@link element.drag drag} 
      * rules. These elements determine when a data node can be dropped on 
-     * another data node. For instance, imagine a mail application with a root
+     * another data node. 
+     * 
+     * For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
-     * would specify you can drag&drop folders within an account, and emails between
+     * would specify you can drag & drop folders within an account, and emails between
      * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject
+     * @param  {XMLElement} dataNode The {@link term.datanode data node} subject
      *                               to the test.
-     * @param  {XMLElement} target   the {@link term.datanode data node} on which
+     * @param  {XMLElement} target   The {@link term.datanode data node} on which
      *                               the dragged data node is dropped.
-     * @return {Boolean} result of the test
+     * @return {Boolean} The result of the test
      * @see baseclass.dragdrop.method.isDragAllowed
      */
     this.isDropAllowed = function(x, target){
@@ -523,11 +566,11 @@ apf.DragDrop = function(){
             Init
     ***********************/
 
-    /**
+    /*
      * Loads the dragdrop rules from the dragdrop element
      *
-     * @param  {Array}      rules     the rules array created using {@link core.apf.method.getrules}
-     * @param  {XMLElement} [node] the reference to the dragdrop element
+     * @param  {Array}      rules     The rules array created using {@link core.apf.method.getrules}
+     * @param  {XMLElement} [node] The reference to the drag & drop element
      * @see  SmartBinding
      * @private
      */
@@ -668,18 +711,26 @@ apf.DragDrop = function(){
     this.$supportedProperties.push("drop", "drag", "dragcopy");
 
     /**
-     * @attribute  {Boolean}  drag       whether the element allows dragging of it's items.
-     * Example:
-     * <code>
+     * @attribute  {Boolean}  drag   Sets or gets whether the element allows dragging of its items.
+     *
+     * #### Example
+     *
+     * ```xml
+     *
      *  <a:list drag="true">
      *      <a:item>item 1</a:item>
      *      <a:item>item 2</a:item>
      *      <a:item>item 3</a:item>
      *  </a:list>
-     * </code>
+     *```
+     *
+     */
+    /**
      * @attribute  {Boolean}  dragcopy   whether dragged items are copied.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list 
      *    drag    = "true" 
      *    align   = "right" 
@@ -694,27 +745,36 @@ apf.DragDrop = function(){
      *          </data>
      *      </a:model>
      *  </a:list>
-     * </code>
-     * Example:
-     * Items are only copied when the user holds the Ctrl key
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * Items are only copied when the user holds the [[keys: Ctrl]] key
+     *
+     * ```xml
      *  <a:list dragcopy="[ctrlKey]">
      *      <a:item>item 1</a:item>
      *      <a:item>item 2</a:item>
      *      <a:item>item 3</a:item>
      *  </a:list>
-     * </code>
-     * @attribute  {Boolean}  drop       whether the element allows items to be dropped.
-     * Example:
-     * <code>
+     * ```
+     */
+    /**
+     * @attribute  {Boolean}  drop       Sets or gets whether the element allows items to be dropped.
+     *
+     * #### Example
+     *
+     *
+     * ```xml
      *  <a:list drop="true">
      *      <a:item>item 1</a:item>
      *      <a:item>item 2</a:item>
      *      <a:item>item 3</a:item>
      *  </a:list>
-     * </code>
-     * @attribute  {String}   dragdrop          the name of the dragdrop element for this element.
-     * <code>
+     * ```
+     * @attribute  {String}   dragdrop    Sets or gets the name of the dragdrop element for this element.
+     *
+     * ```xml
      *  <a:tree align="left" width="200" height="300">
      *      <a:each match="[root|account|folder|mail]">
      *          <a:caption match  = "[@name]" />
@@ -757,7 +817,7 @@ apf.DragDrop = function(){
      *        match = "[mail]"
      *        action = "list-append" />
      *   </a:bindings>
-     * </code>
+     * ```
      */
     this.$propHandlers["dragcopy"] =
     this.$propHandlers["dropcopy"] =
@@ -805,7 +865,7 @@ apf.GuiElement.propHandlers["drag"]     = function(value, prop) {
     }
 };
 
-/**
+/*
  * Central object for dragdrop handling.
  * @private
  */
@@ -1273,7 +1333,7 @@ apf.DragServer = {
     }
 };
 
-/**
+/*
  * @private
  */
 apf.MultiselectDragDrop = function() {
@@ -1482,7 +1542,7 @@ apf.MultiselectDragDrop = function() {
     // #endif
 };
 
-/**
+/*
  * @private
  */
 apf.StandardDragDrop = function() {

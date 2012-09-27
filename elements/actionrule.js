@@ -21,16 +21,40 @@
  
 //#ifdef __WITH_DATABINDING
 
+/** 
+ * Define some action rules.
+ *
+ * @class apf.ActionRule
+ */
+// @todo Doc do all of these.
 /**
  * @attribute {String} match
+ */
+/** 
  * @attribute {String} set
+ */
+/** 
  * @attribute {String} undo
+ */
+/** 
  * @attribute {String} lock
+ */
+/** 
  * @define update
+ */
+/** 
  * @attribute {String} get 
+ */
+/** 
  * @attribute {String} parent
+ */
+/** 
  * @define add
+ */
+/** 
  * @attribute {Boolean} get 
+ */
+/** 
  * @attribute {Boolean} parent
  */
 apf.ActionRule = function(struct, tagName){

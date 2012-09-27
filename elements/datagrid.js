@@ -24,10 +24,13 @@
 /**
  * Element providing a sortable, selectable grid containing scrollable 
  * information. Grid columns can be reordered and resized.
- * Example:
+ * 
+ * #### Example
+ *
  * This example shows a datagrid width several columns mixing percentage and
  * fixed size columns.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlNews">
  *      <data>
  *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
@@ -43,9 +46,9 @@
  *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
  *      </a:each>
  *  </a:datagrid>
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.datagrid
  * @define datagrid
  * @addnode elements
  *
@@ -55,8 +58,12 @@
  *
  * @inherits apf.BaseTree
  *
+ */
+/**
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
- * @binding description Determines the text that is displayed under the expanded row.
+ */
+/**
+ *  @binding description Determines the text that is displayed under the expanded row.
  */
 apf.datagrid = function(struct, tagName){
     this.$init(tagName || "datagrid", apf.NODE_VISIBLE, struct);
@@ -101,17 +108,19 @@ apf.datagrid = function(struct, tagName){
     //#endif
 
     /**
-     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
+     * @attribute {Boolean} iframe  Sets or gets whether this element is rendered inside an iframe. This is only supported for IE. Default is `false` for datagrid and `true` for spreadsheet and propedit.
      */
     this.$booleanProperties["iframe"]     = true;
 
      // #ifdef __WITH_MULTICHECK
     
     /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     * @attribute {String} mode Sets or gets the way this element interacts with the user.
+     *   
+     * Possible values include:
+     *
+     *   - `check`:  The user can select a single item from this element. The selected item is indicated.
+     *   - `radio`: The user can select multiple items from this element. Each selected item is indicated.
      */
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
@@ -1075,7 +1084,7 @@ apf.datagrid = function(struct, tagName){
 
     /**
      * Returns a column definition object based on the column number.
-     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
+     * @param {Number} nr The heading number; this number is based on the sequence of the column elements.
      */
     this.getColumn = function(nr){
         return this.$headings[nr || this.$lastcol || 0];
@@ -1083,18 +1092,18 @@ apf.datagrid = function(struct, tagName){
     
     /** 
      * Resizes a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
-     * @param {Number} newsize  the new size of the column.
-     * @todo optimize but bringing down the string concats
+     * @param {Number} nr      The heading number; this number is based on the sequence of the column elements. 
+     * @param {Number} newsize  The new size of the column.
+     *
      */
-    this.resizeColumn = function(nr, newsize){
+    this.resizeColumn = function(nr, newsize){ //  @todo optimize but bringing down the string concats
         var h = this.$headings[nr];
         h.resize(newsize);
     };
 
     /**
      * Hides a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
+     * @param {Number} nr      The heading number; this number is based on the sequence of the column elements. 
      */
     this.hideColumn = function(nr){
         var h = this.$headings[nr];
@@ -1103,7 +1112,7 @@ apf.datagrid = function(struct, tagName){
     
     /**
      * Shows a hidden column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
+     * @param {Number} nr      The heading number; this number is based on the sequence of the column elements. 
      */
     this.showColumn = function(nr){
         var h = this.$headings[nr];
@@ -1112,7 +1121,7 @@ apf.datagrid = function(struct, tagName){
     
     /**
      * Sorts a column.
-     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
+     * @param {Number} hid The heading number; this number is based on the sequence of the column elements.
      */
     this.sortColumn = function(hid){
         var h = this.$headings[nr];
@@ -1121,8 +1130,8 @@ apf.datagrid = function(struct, tagName){
     
     /**
      * Moves a column to another position.
-     * @param {Number} fromHid the heading number of the column to move; this number is based on the sequence of the column elements.
-     * @param {Number} toHid   the position the column is moved to;
+     * @param {Number} from The heading number of the column to move; this number is based on the sequence of the column elements.
+     * @param {Number} to   The position to move the column to
      */
     this.moveColumn = function(from, to){
         var h = this.$headings[nr];

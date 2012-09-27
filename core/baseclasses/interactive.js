@@ -26,50 +26,15 @@ apf.__INTERACTIVE__ = 1 << 21;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have interactive features, making an
  * element draggable and resizable.
- * Example:
- * <code>
- *  <a:textarea draggable="true" resizable="true" />
- * </code>
  * 
- * @attribute {Boolean} draggable whether an element is draggable. The user will
- * able to move the element around while holding the mouse button down on the 
- * element.
- * Example:
- * <code>
- *  <a:bar 
- *    draggable = "true" 
- *    width     = "200" 
- *    height    = "200" 
- *    left      = "10" 
- *    top       = "10" />
- * </code>
- * @attribute {Boolean} resizable whether an element is resizable. The user will able
- * to resize the element by grabbing one of the four edges of the element and 
- * pulling it in either direction. Grabbing the corners allows users to 
- * resize horizontally and vertically at the same time. The right bottom corner 
- * is special, because it offers an especially big grab area. The size of this
- * area can be configured in the skin of the element.
- * Example:
- * <code>
- *  <a:window 
- *    resizable = "true"
- *    visible   = "true" 
- *    width     = "400" 
- *    height    = "200" />
- * </code>
- * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
- * @attribute {Number} minheight the minimum vertical size the element can get when resizing.
- * @attribute {Number} maxwidth  the maximum horizontal size the element can get when resizing.
- * @attribute {Number} maxheight the maximum vertical size the element can get when resizing.
+ * #### Example
  *
- * @event drag          Fires when the widget has been dragged.
- * @event resizestart   Fires before the widget is resized.
- *   cancelable: Prevents this resize action to start.
- *   object:
- *   {String} type the type of resize. This is a combination of the four directions, n, s, e, w.
- * @event resize        Fires when the widget has been resized.
- *
- * @constructor
+ * ```xml
+ *  <a:textarea draggable="true" resizable="true" />
+ * ```
+ * 
+ * @class apf.Interactive
+ * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -78,6 +43,68 @@ apf.__INTERACTIVE__ = 1 << 21;
  * @see element.appsettings.attribute.outline
  * @see element.appsettings.attribute.resize-outline
  * @see element.appsettings.attribute.drag-outline
+ */
+/**
+ * @attribute {Boolean} draggable Sets or gets whether an element is draggable. The user will
+ * able to move the element around while holding the mouse button down on the 
+ * element.
+ * 
+ * #### Example
+ *
+ * ```xml
+ *  <a:bar 
+ *    draggable = "true" 
+ *    width     = "200" 
+ *    height    = "200" 
+ *    left      = "10" 
+ *    top       = "10" />
+ * ```
+ */
+/**
+ * @attribute {Boolean} resizable Sets or gets whether an element is resizable. 
+ * 
+ * The user will able
+ * to resize the element by grabbing one of the four edges of the element and 
+ * pulling it in either direction. Grabbing the corners allows users to 
+ * resize horizontally and vertically at the same time. The right bottom corner 
+ * is special, because it offers an especially big grab area. The size of this
+ * area can be configured in the skin of the element.
+ * 
+ * #### Example
+ *
+ * ```xml
+ *  <a:window 
+ *    resizable = "true"
+ *    visible   = "true" 
+ *    width     = "400" 
+ *    height    = "200" />
+ * ```
+ */
+/**
+ * @attribute {Number} minwidth  Sets or gets the minimum horizontal size the element can get when resizing.
+ */
+/**
+ * @attribute {Number} minheight Sets or gets the minimum vertical size the element can get when resizing.
+ */
+/**
+ * @attribute {Number} maxwidth  Sets or gets the maximum horizontal size the element can get when resizing.
+ */
+/**
+ * @attribute {Number} maxheight Sets or gets the maximum vertical size the element can get when resizing.
+ *
+ */
+/**
+ * @event drag          Fires when the widget has been dragged.
+ */
+/**
+ * @event resizestart   Fires before the widget is resized.
+ * @cancelable Prevents this resize action to start.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - type ([[String]]): the type of resize. This is a combination of the four directions--`"n"`, `"s"`, `"e"`, `"w"`.
+ */
+/**
+ * @event resize        Fires when the widget has been resized.
+ *
  */
 apf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, r, b, lMax, tMax, lMin,

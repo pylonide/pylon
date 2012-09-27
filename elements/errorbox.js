@@ -22,21 +22,27 @@
 // #ifdef __AMLERRORBOX || __INC_ALL
 
 /**
- * Element showing an error message when the attached element 
- * is in erroneous state and has the invalidmsg="" attribute specified.
- * In most cases the errorbox element is implicit and will be created 
+ * An element showing an error message when the attached element 
+ * is in erroneous state and has the `invalidmsg=""` attribute specified.
+ *
+ * In most cases, the errorbox element is implicit and will be created 
  * automatically. 
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:errorbox>
  *      Invalid e-mail address entered.
  *  </a:errorbox>
- * </code>
- * Remarks:
- * In most cases the errorbox element is not created directly but implicitly
+ * ```
+ * 
+ * #### Remarks
+ *
+ * In most cases the errorbox element is not created directly, but implicitly
  * by a validationgroup. An element that goes into an error state will
  * show the errorbox.
- * <code>
+ * 
+ * ```xml
  *  <a:bar validgroup="vgForm">
  *      <a:label>Phone number</a:label>
  *      <a:textbox id="txtPhone"
@@ -52,26 +58,28 @@
  *          invalidmsg = "Please enter a password of at least four characters" />
  *      <a:button onclick="vgForm.validate()">Validate</a:button>
  *  </a:bar>
- * </code>
+ * ```
  *
  * To check if the element has valid information entered, leaving the textbox
- * (focussing another element) will trigger a check. Programmatically a check
+ * (focussing another element) will trigger a check. A programmatic check
  * can be done using the following code:
- * <code>
+ * 
+ * ```javascript
  *  txtPhone.validate();
  * 
  *  //Or use the html5 syntax
  *  txtPhone.checkValidity();
- * </code>
+ * ```
  *
  * To check for the entire group of elements use the validation group. For only 
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <code>
+ * 
+ * ```javascript
  *  vgForm.validate();
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.errorbox
  * @define errorbox
  * 
  * @allowchild {anyxhtml}
@@ -129,7 +137,7 @@ apf.errorbox = function(struct, tagName){
     
     /**
      * Sets the message of the errorbox.
-     * @param {String} value 
+     * @param {String} value The message to set.
      */
     this.setMessage = function(value){
         if (value && value.indexOf(";") > -1) {

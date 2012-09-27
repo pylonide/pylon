@@ -37,10 +37,10 @@
 
 /**
  * @event propertychange Fires when a property changes.
- * @param {Object} e An object containing the following properties
- * - {String} name          The name of the changed property
- * - {Mixed}  originalvalue The value it had before the change
- * - {Mixed}  value         The value it has after the change
+ * @param {Object} e An object containing the following properties:
+ * - name ([[String]]): The name of the changed property
+ * - originalvalue ([[Mixed]]): The value it had before the change
+ * - value ([[Mixed]]): The value it has after the change
  *
  */
 apf.Class = function(){};
@@ -727,8 +727,8 @@ apf.Class.prototype = new (function(){
      *
      * @param  {String}  eventName  The name of the event to dispatch.
      * @param  {Object}  [options]  The properties of the event object that will be created and passed through. These can be:
-     *  - {Boolean} bubbles  Specifies whether the event should bubble up to it's parent
-     *  - {Boolean} captureOnly Specifies whether only the captured event handlers should be executed
+     *  - bubbles ([[Boolean]]): Specifies whether the event should bubble up to it's parent
+     *  - captureOnly ([[Boolean]]): Specifies whether only the captured event handlers should be executed
      * @return {Mixed} return value of the event
      */
     this.dispatchEvent = function(eventName, options, e){

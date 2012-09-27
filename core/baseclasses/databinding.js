@@ -61,18 +61,18 @@ apf.__DATABINDING__ = 1 << 1;
  * @cancelable Prevents the error from being thrown.
  * @bubbles
  * @param {Object} e The standard event object. It contains the following properties:
- *                   - {Error}          error     the error object that is thrown when the event callback doesn't return false.
- *                   - {Number}         state     the state of the call
+ *                   - error ([[Error]]): the error object that is thrown when the event callback doesn't return false.
+ *                   - state ([[Number]]): the state of the call
  *                                                - `apf.SUCCESS`:  The request was successfull
  *                                                - `apf.TIMEOUT`:  The request has timed out.
  *                                                - `apf.ERROR  `:  An error has occurred while making the request.
  *                                                - `apf.OFFLINE`:  The request was made while the application was offline.
- *                   - {Mixed}          userdata  Data that the caller wanted to be available in the callback of the http request.
- *                   - {XMLHttpRequest} http      The object that executed the actual http request.
- *                   - {String}         url       The url that was requested.
- *                   - {Http}           tpModule  The teleport module that is making the request.
- *                   - {Number}         id        The ID of the request.
- *                   - {String}         message   The error message.
+ *                   - userdata ([[Mixed]]): Data that the caller wanted to be available in the callback of the http request.
+ *                   - http ([[XMLHttpRequest]]): The object that executed the actual http request.
+ *                   - url ([[String]]): The url that was requested.
+ *                   - tpModule ([[Http]]): The teleport module that is making the request.
+ *                   - id ([[Number]]): The ID of the request.
+ *                   - message ([[String]]): The error message.
  */
 /** 
  * @event beforeretrieve    Fires before a request is made to retrieve data.
@@ -85,7 +85,7 @@ apf.__DATABINDING__ = 1 << 1;
 /**
  * @event receive           Fires when data is successfully retrieved
  * @param {Object} e The standard event object. It contains the following properties:
- *                   - {String} data  the retrieved data
+ *                   - data ([[String]]): the retrieved data
  *
  */
 apf.DataBinding = function(){
@@ -454,13 +454,13 @@ apf.DataBinding = function(){
      *                                                - {String}: Either an XML string, or, an instruction to load the data from a remote source
      *                                                - `null`: Clears this element from its data (just like {@link baseclass.cache.method.clear})
      * @param {Object} [options] Set of additional options to pass. Properties include:
-     *                           - {XMLElement} [xmlNode]    The {@link term.datanode data node} that provides
+     *                           - [[xmlNode]] ([[XMLElement]]):   The {@link term.datanode data node} that provides
      *                                                       context to the data instruction.
-     *                           - {Function}   [callback]   The code executed when the data request returns
-     *                           - {Mixed}      []           Custom properties available in the data instruction
-     *                           - {String}     [cacheId]    The xml element to which the binding rules are applied
-     *                           - {Boolean}    [force]      Specifies whether cache is checked before loading the data
-     *                           - {Boolean}    [noClearMsg] Specifies whether a message is set when clear is called
+     *                           - [callback] ([[Function]]): The code executed when the data request returns
+     *                           - [] ([[Mixed]]): Custom properties available in the data instruction
+     *                           - [cacheId] ([[String]]): The xml element to which the binding rules are applied
+     *                           - [force] ([[Boolean]]): Specifies whether cache is checked before loading the data
+     *                           - [noClearMsg] ([[Boolean]]): Specifies whether a message is set when clear is called
      */
     this.load = function(xmlNode, options){
         if (options) {

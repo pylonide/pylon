@@ -170,7 +170,8 @@ apf.AmlWindow = function(struct, tagName){
     //#ifdef __WITH_CONVENIENCE_API
 
     /**
-     * Sets the title of the window. Call-chaining is supported.
+     * Sets the title of the window.
+     * @chainable
      * @param {String} caption the text of the title.
      */
     this.setTitle = function(caption){
@@ -179,7 +180,8 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * Sets the icon of the window. Call-chaining is supported.
+     * Sets the icon of the window.
+     * @chainable
      * @param {String} icon the location of the image.
      */
     this.setIcon = function(icon){

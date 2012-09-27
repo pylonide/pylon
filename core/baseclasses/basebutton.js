@@ -23,15 +23,17 @@
 
 /**
  * Baseclass of an element that has one or two states and can be clicked on to
- * trigger an action. (i.e. {@link element.button} or {@link element.checkbox}).
+ * trigger an action (_i.e._ {@link element.button} or {@link element.checkbox}).
  *
- * @constructor
+ * @class apf.BaseButton
  * @baseclass
  * @author      Abe Ginner
  * @version     %I%, %G%
  * @since       0.8
  *
- * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ */
+/**
+ * @event click Fires when the user presses a mouse button while over this element...and then lets the mousebutton go. 
  */
 apf.BaseButton = function(){
     this.$init(true);
@@ -50,23 +52,26 @@ apf.BaseButton = function(){
     // *** Properties and Attributes *** //
 
     /**
-     * @attribute {string} background sets a multistate background. The arguments
-     * are seperated by pipes '|' and are in the order of:
-     * 'imagefilename|mapdirection|nrofstates|imagesize'
-     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
-     * The nrofstates argument specifies the number of states the iconfile contains:
-     * 1 - normal
-     * 2 - normal, hover
-     * 3 - normal, hover, down
-     * 4 - normal, hover, down, disabled
-     * The imagesize argument specifies how high or wide each icon is inside the
-     * map, depending of the mapdirection argument.
+     * @attribute {String} background Sets or gets a multistate background. The arguments
+     * are seperated by pipes '|' and are in the order of:'imagefilename|mapdirection|nrofstates|imagesize'
      *
-     * Example:
-     * A 3 state picture where each state is 16px high, vertically spaced
-     * <code>
+     * - The `mapdirection` argument may have the value of `'vertical'` or `'horizontal'`.
+     * - The `nrofstates` argument specifies the number of states the iconfile contains:
+     *     - 1: normal
+     *     - 2: normal, hover
+     *     - 3: normal, hover, down
+     *     - 4: normal, hover, down, disabled
+     * - The `imagesize` argument specifies how high or wide each icon is inside the
+     * map, depending on the `mapdirection` argument.
+     *
+     * 
+     * #### Example
+     * 
+     * Here's a three state picture where each state is 16px high, vertically spaced:
+     * 
+     * ```xml
      * background="threestates.gif|vertical|3|16"
-     * </code>
+     * ```
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);

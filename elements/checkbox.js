@@ -24,12 +24,14 @@
 /**
  * Element displaying a clickable rectangle having two states which
  * can be toggled by user interaction.
- * Example:
- * <code>
- *  <a:checkbox values="full|empty">the glass is full</a:checkbox>
- * </code>
+ * 
+ * #### Example
  *
- * @constructor
+ * ```xml
+ *  <a:checkbox values="full|empty">the glass is full</a:checkbox>
+ * ```
+ *
+ * @class apf.checkbox
  *
  * @define checkbox
  * @addnode elements
@@ -41,26 +43,31 @@
  * @inherits apf.BaseButton
  * @inherits apf.XForms
  *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ *
  * Sets the value of the checkbox based on data loaded into this component.
- * <code>
+ * ```xml
  *  <a:model id="mdlCheckbox">
  *      <data answer="Something"></data>
  *  </a:model>
  *  <a:checkbox 
  *    model = "mdlCheckbox" 
  *    value = "[@answer]">Caption</a:checkbox>
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlCheckbox">
  *      <data answer="Something"></data>
  *  </a:model>
  *  <a:checkbox value="[mdlCheckbox::@answer]">Caption</a:checkbox>
- * </code>
+ * ```
  */
 apf.checkbox = function(struct, tagName){
     this.$init(tagName || "checkbox", apf.NODE_VISIBLE, struct);
@@ -86,7 +93,7 @@ apf.checkbox = function(struct, tagName){
     this.$supportedProperties.push("value", "checked", "label", "values");
 
     /**
-     * @attribute {String}  value    the value of this element.
+     * @attribute {String}  value   Sets or gets the value of this element.
      */
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
@@ -109,7 +116,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {Boolean} checked  whether the element is in the checked state.
+     * @attribute {Boolean} checked  Sets or gets whether the element is in the checked state.
      */
     this.$propHandlers["checked"] = function(value) {
         if (!this.$values) {
@@ -122,7 +129,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {String}  label    the caption of the label explaining what
+     * @attribute {String}  label Sets or gets the caption of the label explaining what
      * the meaning of the checked state of this element is.
      */
     this.$propHandlers["label"] = function(value){
@@ -140,9 +147,9 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {String}  values   a pipe seperated list of two values which
+     * @attribute {String="true|false"}  values Sets or gets a pipe seperated list of two values which
      * correspond to the two states of the checkbox. The first for the checked
-     * state, the second for the unchecked state. Defaults to "true|false".
+     * state, the second for the unchecked state.
      */
     this.$propHandlers["values"] = function(value){
         this.$values = typeof value == "string"
@@ -158,8 +165,8 @@ apf.checkbox = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the [[apf.checkbox.values]] attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         if (!this.$values) return;
@@ -167,7 +174,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * Returns the current value
+     * Returns the current value.
      */
     this.getValue = function(){
         return this.xmlRoot ? (this.$values 
@@ -176,7 +183,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * Sets the checked state and related value
+     * Sets the checked state (and related value).
      */
     this.check = function(){
         this.setProperty("value", this.$values
@@ -185,7 +192,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * Sets the unchecked state and related value
+     * Sets the unchecked state (and related value).
      */
     this.uncheck = function(){
         this.setProperty("value", this.$values

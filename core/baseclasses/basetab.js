@@ -24,30 +24,35 @@
 /**
  * Baseclass of a paged element. 
  *
- * @constructor
+ * @class apf.BaseTab
  * @baseclass
  * @allowchild page
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  * 
+ *
+ */
+/**
  * @event beforeswitch  Fires before this element switches to another page.
- *   cancelable: Prevents the page to become active.
- *   object:
- *   {Mixed}    previous     the name or number of the current page.
- *   {Number}   previousId   the number of the current page.
- *   {apf.page} previousPage the current page.
- *   {Mixed}    next         the name or number of the page the will become active.
- *   {Number}   nextId       the number of the page the will become active.
- *   {apf.page} nextPage     the page the will become active.
- * @event afterswitch   Fires after this element has switched to another page.
- *   object:
- *   {Mixed}    previous     the name or number of the previous page.
- *   {Number}   previousId   the number of the previous page.
- *   {apf.page} previousPage the previous page.
- *   {Mixed}    next         the name or number of the current page.
- *   {Number}   nextId       the number of the the current page.
- *   {apf.page} nextPage     the the current page.   
+ * @cancelable Prevents the page to become active.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - previous ([[String]] or [[Number]]): The name or number of the current page.
+ *   - previousId ([[Number]]): The number of the current page.
+ *   - previousPage ([[apf.page]]): The current page.
+ *   - next ([[String]] or [[Number]]): The name or number of the page the will become active.
+ *   - nextId ([[Number]]): The number of the page the will become active.
+ *   - nextPage ([[apf.page]]): The page the will become active.
+ */
+/**
+ *  @event afterswitch   Fires after this element has switched to another page.
+ *  @param {Object} e The standard event object. It contains the following properties:
+ *   - previous ([[String | Number]]): The name or number of the previous page.
+ *   - previousId ([[Number]]): The number of the previous page.
+ *   - previousPage ([[apf.page]]): The previous page.
+ *   - next ([[String | Number]]): The name or number of the current page.
+ *   - nextId ([[Number]]): The number of the the current page.
+ *   - nextPage ([[apf.page]]): The the current page.   
  */
 apf.BaseTab = function(){
     this.$init(true);
@@ -64,8 +69,8 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {Mixed}    page     the name of numer of the page which is made active.
-     * @param {Function} callback the function called after setting the page. Especially handy when using the src attribute.
+     * @param {Stirng | Number}    page     The name of numer of the page which is made active.
+     * @param {Function} callback The function called after setting the page. Especially handy when using the `src` attribute.
      */
     this.set = function(page, callback, noEvent){
         if (noEvent || this.src && !this.$findPage(page, {})) {
@@ -85,12 +90,27 @@ apf.BaseTab = function(){
     this.$supportedProperties.push("activepage", "activepagenr", "length",
         "src", "loading", "trans-in", "trans-out");
 
+    /*
+     * @property [SCROLL_LEFT=1] The constant representing the "scroll left" button
+     * @readonly
+     */
+    /*
+     * @property [SCROLL_RIGHT=2] The constant representing the "scroll right" button
+     * @readonly
+     */
+    /*
+     * @property [SCROLL_BOTH=4] The constant representing the "scroll left" and "scroll right" buttons
+     * @readonly
+     */
     /**
-     * @attribute {Number} activepagenr the child number of the active page.
-     * Example:
+     * @attribute {Number} activepagenr Sets or gets the child number of the active page.
+     * 
+     * #### Example
+     *
      * This example uses property binding to maintain consistency between a
      * dropdown which is used as a menu, and a pages element
-     * <code>
+     * 
+     * ```xml
      *  <a:dropdown id="ddMenu" value="0">
      *      <a:item value="0">Home</a:item>
      *      <a:item value="1">General</a:item>
@@ -108,14 +128,16 @@ apf.BaseTab = function(){
      *          <h1>Advanced Page</h1>
      *      </a:page>
      *  </a:pages>
-     * </code>
+     * ```
      */
     this.$propHandlers["activepagenr"] =
 
     /**
-     * @attribute {String} activepage the name of the active page.
-     * Example:
-     * <code>
+     * @attribute {String} activepage Sets or gets the name of the active page.
+     *  
+     * #### Example
+     *
+     * ```xml
      *  <a:tab activepage="general" width="250" height="100">
      *      <a:page id="home" caption="Home">
      *      ...
@@ -127,7 +149,7 @@ apf.BaseTab = function(){
      *          ...
      *      </a:page>
      *   </a:tab>
-     * </code>
+     * ```
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
         if (!this.inited || apf.isNot(next) || next == -1) return;
@@ -296,11 +318,12 @@ apf.BaseTab = function(){
     };
     
     /**
-     * @attribute {String} buttons the modifier for tab page buttons, seperated by a | character
-     *   Possible values:
-     *   close   the button has a close button inside it.
-     *   scale   the buttons are scaled to make room for more buttons.
-     *   scroll  when the buttons take too much space scroll buttons are displayed.
+     * @attribute {String} buttons Sets or gets the modifier for tab page buttons, seperated by a `|` character
+     *   
+     * Possible values include:
+     *   - `close`:   The button has a close button inside it
+     *   - `scale`:  The buttons are scaled to make room for more buttons
+     *   - `scroll`:  When the buttons take too much space, scroll buttons are displayed
      */
     this.$propHandlers["buttons"] = function(value){
         //this.buttons = value;
@@ -574,7 +597,7 @@ apf.BaseTab = function(){
         }
     }
     
-    /**
+    /*
      * Update the size of the tab container
      */
     function scalersz(e, excl){
@@ -789,6 +812,7 @@ apf.BaseTab = function(){
 
     /**
      * Retrieves an array of all the page elements of this element.
+     * @returns {Array} An array of all the {apf.page} elements
      */
     this.getPages = function(){
         var r = [], nodes = this.childNodes;
@@ -800,9 +824,9 @@ apf.BaseTab = function(){
     };
 
     /**
-     * Retrieves a page element by it's name or child number
-     * @param {Mixed} nameOrId the name or child number of the page element to retrieve.
-     * @return {Page} the found page element.
+     * Retrieves a page element by its name or child number.
+     * @param {String | Number} nameOrId The name or child number of the page element to retrieve.
+     * @return {apf.page} The found page element.
      */
     this.getPage = function(nameOrId){
         if (apf.isNot(nameOrId))
@@ -812,10 +836,13 @@ apf.BaseTab = function(){
     };
 
     /**
-     * Add a new page element
-     * @param {String} [caption] the text displayed on the button of the page.
-     * @param {String} [name]    the name of the page which is can be referenced by.
-     * @return {page} the created page element.
+     * Adds a new page element
+     * @param {String} [caption] The text displayed on the button of the page
+     * @param {String} [name]    The name of the page which is can be referenced by
+     * @param {String} [type]    The type of the page
+     * @param {apf.page} [insertBefore]   The page to insert ahead of; `null` means to put it at the end
+     * @param {Function} [callback]   A callback to call and pass the new page to
+     * @return {apf.page} The created page element.
      */
     this.add = function(caption, name, type, before, callback){
         var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
@@ -839,11 +866,11 @@ apf.BaseTab = function(){
 
     /**
      * Removes a page element from this element. This function destroys ALL children
-     * of this page. To simple remove the page from the DOM tree use the
-     * removeNode() method.
+     * of this page. To simple remove the page from the DOM tree, use the
+     * [[apf.page.removeNode]] method.
      *
-     * @param {Mixed} nameOrId the name or child number of the page element to remove.
-     * @return {Page} the removed page element.
+     * @param {Mixed} nameOrId The name or child number of the page element to remove
+     * @return {Page} The removed page element
      */
     this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
@@ -953,12 +980,12 @@ apf.BaseTab = function(){
     }
 
     /**
-     * Set the state scroller buttons: enabled, disabled or completely hidden,
+     * Sets the state scroller buttons: `enabled`, `disabled` or completely `hidden`,
      * depending on the state of the tab buttons
      *
      * @param {Boolean} [bOn]   Indicates whether to turn the scroll buttons on or off
-     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be SCROLL_LEFT, SCROLL_RIGHT or SCROLL_BOTH
-     * @type  {void}
+     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be [[apf.BaseTab.SCROLL_LEFT]], [[apf.BaseTab.SCROLL_RIGHT]] or [[apf.BaseTab.SCROLL_BOTH]]
+     * 
      */
     this.setScrollerState = function(bOn, iBtns) {
         if (!this.ready || !this.$hasButtons || !this.oScroller) return;
@@ -1001,7 +1028,6 @@ apf.BaseTab = function(){
      * Corrects the state of the scroller buttons when the state of external
      * components change, like on a resize event of a window.
      *
-     * @type {void}
      */
     this.correctScrollState = function() {
         if (!this.ready || !this.$hasButtons || !this.oScroller) return;
@@ -1012,9 +1038,9 @@ apf.BaseTab = function(){
      * Retrieves the utmost left or right boundaries of the tab buttons strip that
      * can be scrolled to. The tabs cannot scroll any further than these boundaries
      *
-     * @param {Number} dir        Determines which boundary side to look at; SCROLL_LEFT or SCROLL_RIGHT
+     * @param {Number} dir        Determines which boundary side to look at, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
      * @param {Boolan} [useCache] Used only when tabs are draggable. Not implemented.
-     * @type  {Number}
+     * @returns  {Number}
      */
     function getAnimationBoundary(dir, useCache) {
         if (SCROLLANIM.size <= 0) {
@@ -1038,13 +1064,15 @@ apf.BaseTab = function(){
     }
 
     /**
-     * Event handler; executed when the user pressed one of the two scroll buttons
-     * (left or right one). If the tab-buttons strip may/ can be scrolled, the
+     * @event scroll Executed when the user presses one of the two scroll buttons
+     * (left or right). 
+     * 
+     * If the tab-buttons strip can be scrolled, the
      * respective behavior is called.
      *
-     * @param {Event}  e   Event object, usually a mousedown event from a scroller-button
-     * @param {Number} dir Direction to scroll; SCROLL_LEFT or SCROLL_RIGHT
-     * @type  {void}
+     * @param {Event}  e   An event object, usually a mousedown event from a scroller-button
+     * @param {Number} dir The direction of the scroll, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     *
      */
     this.scroll = function(e, dir) {
         if (!this.ready || !this.$hasButtons || !this.oScroller) return;
@@ -1183,11 +1211,11 @@ apf.BaseTab = function(){
     };
 
     /**
-     * If a tabpage is outside of the users' view, this function scrolls that
+     * If a tab page is outside of the user's view, this function scrolls that
      * tabpage into view smoothly.
      *
      * @param {page} oPage The page to scroll into view
-     * @type  {void}
+     * 
      */
     this.scrollIntoView = function(oPage) {
         bAnimating = false;

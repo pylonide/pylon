@@ -100,9 +100,9 @@ apf.__VALIDATION__ = 1 << 6;
  * @bubbles
  * @cancelable Prevents the default context menu from appearing.
  * @param {Object} e The standard event object. Contains the following properties:
- *                   - {Number} x         The x coordinate where the contextmenu is requested on
- *                   - {Number} y         The y coordinate where the contextmenu is requested on
- *                   - {Event}  htmlEvent The HTML event object that triggered this event from being called
+ *                   - x ([[Number]]): The x coordinate where the contextmenu is requested on
+ *                   - y ([[Number]]): The y coordinate where the contextmenu is requested on
+ *                   - htmlEvent ([[Event]]): The HTML event object that triggered this event from being called
  */
 /**  
  * @event focus       Fires when this element receives focus.
@@ -115,11 +115,11 @@ apf.__VALIDATION__ = 1 << 6;
  * @bubbles
  * @cancelable Prevents the default key action.
  * @param {Object} e The standard event object. Contains the following properties:
- *                   - {Boolean} ctrlKey   Specifies whether the [[keys: Ctrl]] key was pressed
- *                   - {Boolean} shiftKey  Specifies whether the [[keys: Shift]] key was pressed
- *                   - {Boolean} altKey    Specifies whether the [[keys: Alt ]] key was pressed
- *                   - {Number}  keyCode   Indicates which key was pressed. This is an ascii number
- *                   - {Event}   htmlEvent the HTML event object that triggered this event from being called
+ *                   - ctrlKey ([[Boolean]]): Specifies whether the [[keys: Ctrl]] key was pressed
+ *                   - shiftKey ([[Boolean]]): Specifies whether the [[keys: Shift]] key was pressed
+ *                   - altKey ([[Boolean]]): Specifies whether the [[keys: Alt ]] key was pressed
+ *                   - keyCode ([[Number]]): Indicates which key was pressed. This is an ascii number
+ *                   - htmlEvent ([[Event]]): the HTML event object that triggered this event from being called
  */
 apf.GuiElement = function(){
     this.$init(true);

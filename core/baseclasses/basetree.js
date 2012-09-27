@@ -21,11 +21,11 @@
 
 // #ifdef __AMLBASETREE || __INC_ALL
 
-/**
+/*
  * Baseclass of elements that allows the user to select one or more items
  * from a tree based element.
  *
- * @constructor
+ * @class apf.BaseTree
  * @baseclass
  *
  * @inherits apf.XForms
@@ -99,12 +99,22 @@ apf.BaseTree = function(){
     // *** Properties and Attributes *** //
 
     /**
-     * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
-     * @attribute {Boolean} startcollapsed  whether the tree collapses all nodes that contain children on load. Defaults to true.
-     * @attribute {Boolean} nocollapse      whether the user cannot collapse a node. Defaults to false.
-     * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
-     * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
-     * @attribute {Boolean} disableremove   whether the tree disallows removing nodes with the keyboard, by pressing DEL. Defaults to false.
+     * @attribute {Boolean} openadd         Sets or gets whether the tree expands the parent to which a node is added. Defaults to `true`.
+     */
+    /**
+     * @attribute {Boolean} startcollapsed  Sets or gets whether the tree collapses all nodes that contain children on load. Defaults to `true`.
+    */
+    /**
+     *  @attribute {Boolean} nocollapse      Sets or gets whether the user cannot collapse a node. Defaults to `false`.
+     */
+    /**
+     *  @attribute {Boolean} singleopen      Sets or gets whether the tree will expand a node by a single click. Defaults to `false`.
+     */
+    /**
+     *  @attribute {Boolean} prerender       Sets or gets whether the tree will render all the nodes at load. Defaults to `true`.
+     */
+    /**
+     *  @attribute {Boolean} disableremove   Sets or gets whether the tree disallows removing nodes with the keyboard, by pressing [[keys: Del]]. Defaults to `false`.
      */
     this.$booleanProperties["openadd"]         = true;
     this.$booleanProperties["startcollapsed"]  = true;
@@ -128,7 +138,7 @@ apf.BaseTree = function(){
     // *** Public Methods *** //
 
     /**
-     * Expands all items in the tree
+     * Expands all items in the tree.
      */
     this.expandAll    = function(){
         if (!this.xmlRoot)
@@ -149,7 +159,7 @@ apf.BaseTree = function(){
     };
 
     /**
-     * Collapses all items in the tree
+     * Collapses all items in the tree.
      */
     this.collapseAll   = function(){
         if (!this.xmlRoot)
@@ -165,7 +175,8 @@ apf.BaseTree = function(){
     };
 
     /**
-     * Collapse a single node in the tree
+     * Collapse a single node in the tree.
+     * - xmlNode ([[XMLNode]]): The node to collapse
      */
     this.collapse = function(xmlNode) {
         if (!this.xmlRoot)
@@ -181,6 +192,7 @@ apf.BaseTree = function(){
 
     /**
      * Selects a node and expands each parent of it.
+     * - xmlNode ([[XMLNode]]): The node to expand
      */
     this.expandAndSelect = function(xmlNode) {
         if (!this.xmlRoot)
@@ -201,9 +213,9 @@ apf.BaseTree = function(){
     };
 
     /**
-     * Loads a list of folders
-     * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
-     * onFinished {Function} Callback to be called when finished
+     * Loads a list of folders.
+     * paths {[String]} Array of strings in the form of `'folder[1]/folder[2]'` representing a list of folders
+     * onFinished {Function} A callback to be called when finished
      */
     this.expandList = function (paths, onFinished) {
         var _self = this;
@@ -289,7 +301,7 @@ apf.BaseTree = function(){
         });
     };
 
-    /**
+    /*
      * @notimplemented
      * @todo who's volunteering?
      * @private
@@ -298,7 +310,7 @@ apf.BaseTree = function(){
 
     // *** Sliding functions *** //
 
-    /**
+    /*
      * @private
      */
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
@@ -345,7 +357,7 @@ apf.BaseTree = function(){
     }
 
     var lastOpened = {};
-    /**
+    /*
      * @event expand Fires when a tree leaf is expanded from collapsed view to
      *               reveal its children leaves.
      * @private
@@ -463,7 +475,7 @@ apf.BaseTree = function(){
         }
     };
 
-    /**
+    /*
      * @event collapse Fires when a tree leaf is collapsed from expanded view to
      *                 conceal its children leaves.
      * @private
@@ -1353,11 +1365,8 @@ apf.BaseTree = function(){
 
     /**
      * @event click Fires when the user presses a mousebutton while over this
-     *              element and then let's the mousebutton go.
-     * @see baseclass.multiselect.event.beforeselect
-     * @see baseclass.multiselect.event.afterselect
-     * @see baseclass.multiselect.event.beforechoose
-     * @see baseclass.multiselect.event.afterchoose
+     *              element, and then lets the mousebutton go.
+     *
      */
     this.$drawBase = function(){
         //@todo apf3.0 checkmode, radiomode

@@ -22,26 +22,35 @@
 // #ifdef __AMLDROPDOWN || __INC_ALL
 
 /**
- * Element allowing a user to select a value from a list, which is 
+ * An element allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
- * Example:
+ * 
+ * #### Example
+ *
  * A simple dropdown with inline items.
- * <code>
+ * 
+ * ```xml
  *  <a:dropdown>
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
  *      <a:item>United Kingdom</a:item>
  *      ...
  *  </a:dropdown>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * A databound dropdown with items loaded from an xml file.
- * <code>
+ * 
+ * ```xml
  *  <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * A databound dropdown using the bindings element
- * <code>
+ * 
+ * ```xml
  *  <a:dropdown model="friends.xml">
  *      <a:bindings>
  *          <a:caption  match = "[@name]" />
@@ -49,10 +58,13 @@
  *          <a:each     match = "[friend]" />
  *      </a:bindings>
  *  </a:dropdown>
- * </code>
- * Example:
- * A small form.
- * <code>
+ * ```
+ * 
+ * #### Example
+ *
+ * A small form:
+ * 
+ * ```xml
  *  <a:model id="mdlForm" submission="save_form.asp">
  *      <data>
  *          <name>Mike</name>
@@ -75,14 +87,9 @@
  *    
  *      <a:button default="true" action="submit">Submit</a:button>
  *  </a:bar>
- * </code>
+ * ```
  *
- * @event slidedown Fires when the calendar slides open.
- *   cancelable: Prevents the calendar from sliding open
- * @event slideup   Fires when the calendar slides up.
- *   cancelable: Prevents the calendar from sliding up
- *
- * @constructor
+ * @class apf.dropdown
  * @define dropdown
  * @allowchild item, {smartbinding}
  * @addnode elements
@@ -92,6 +99,15 @@
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ */
+/**
+ * @event slidedown Fires when the dropdown slides open.
+ * @cancelable Prevents the dropdown from sliding open
+ */
+/**
+ *  @event slideup   Fires when the dropdown slides up.
+ *  @cancelable Prevents the dropdown from sliding up
+ *
  */
 apf.dropdown = function(struct, tagName){
     this.$init(tagName || "dropdown", apf.NODE_VISIBLE, struct);
@@ -119,11 +135,13 @@ apf.dropdown = function(struct, tagName){
         "initial-message", "fill");
     
     /**
-     * @attribute {String} initial-message the message displayed by this element
+     * @attribute {String} initial-message Sets or gets the message displayed by this element
      * when it doesn't have a value set. This property is inherited from parent 
      * nodes. When none is found it is looked for on the appsettings element. 
      *
-     * @attribute {Number} maxitems the number of items that are shown at the 
+     */
+     /**
+     * @attribute {Number} maxitems Sets or gets the number of items that are shown at the 
      * same time in the container.
      */
     this.$propHandlers["maxitems"] = function(value){
@@ -143,7 +161,7 @@ apf.dropdown = function(struct, tagName){
     
     // *** Public methods *** //
     
-    /**
+    /*
      * Toggles the visibility of the container with the list elements. It opens
      * or closes it using a slide effect.
      * @private
@@ -159,7 +177,7 @@ apf.dropdown = function(struct, tagName){
             this.slideDown(e);
     };
 
-    /**
+    /*
      * Shows the container with the list elements using a slide effect.
      * @private
      */
@@ -207,7 +225,7 @@ apf.dropdown = function(struct, tagName){
         });
     };
     
-    /**
+    /*
      * Hides the container with the list elements using a slide effect.
      * @private
      */

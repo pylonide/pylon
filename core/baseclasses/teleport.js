@@ -24,9 +24,13 @@
 /**
  * Element which specifies the ways the application can communicate to remote
  * data sources.
- * Example:
- * Example of the {@link teleport.cgi rpc module with the cgi protocol}.
- * <code>
+ * 
+ *
+ * #### Example
+ *
+ * Here's an example of the {@link teleport.cgi rpc module with the cgi protocol}.
+ * 
+ * ```xml
  *  <a:rpc id="comm" protocol="cgi">
  *      <a:method
  *        name    = "searchProduct"
@@ -53,10 +57,13 @@
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </a:script>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * Example of the {@link teleport.soap rpc module with the soap protocol}.
- * <code>
+ * 
+ * ```xml
  *  <a:rpc id="comm" 
  *    protocol    = "soap" 
  *    url         = "http://example.com/show-product.php" 
@@ -85,10 +92,13 @@
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </a:script>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * Writing to a file with a WebDAV connector
- * <code>
+ * 
+ * ```xml
  *   <a:webdav id="myWebDAV"
  *    url   = "http://my-webdav-server.com/dav_files/" />
  *     
@@ -96,10 +106,13 @@
  *      // write the text 'bar' to a file on the server called 'foo.txt'
  *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
  *  </a:script>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * XMPP connector with new message notification
- * <code>
+ * 
+ * ```xml
  *  <a:xmpp id="myXMPP"
  *    url           = "http://my-jabber-server.com:5280/http-bind"
  *    model         = "mdlRoster"
@@ -116,27 +129,35 @@
  *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
  *          apf.xmpp.MSG_CHAT);
  *  </a:script>
- * </code>
+ * ```
  *
- * @attribute {String}  url              the location of the server that is
- *                                       recipient of the rpc messages.
- * @attribute {String}  [route-server]   String specifying the url to the route script.
- *                                       The route script will receive the route information in 3 extra headers:
- *                                           X-Route-Request     - Containing the destination url.<br />
- *                                           X-Proxy-Request     - Containing the destination url.<br />
- *                                           X-Compress-Response - Set to 'gzip'.<br />
- * @attribute {Boolean} [autoroute]      whether the call should be routed
- *                                       through a proxy when a permission
- *                                       error occurs due to the same domein policy.
- * @attribute {Number}  [timeout]        the number of milliseconds after
- *                                       which the call is considered timed out.
- *
- * 
+ * @class apf.Teleport
  * @define teleport
  * @addnode global
  * @allowchild {teleport}
  *
  * @default_private
+ */
+/**
+ * @attribute {String}  url              The location of the server that is
+ *                                       recipient of the RPC messages.
+ */
+/**
+ *  @attribute {String}  [route-server]   String specifying the URL to the route script.
+ *                                       The route script will receive the route information in three extra headers:
+ *                                           - `X-Route-Request`: Containing the destination URL
+ *                                           - `X-Proxy-Request`: Containing the destination URL
+ *                                           - `X-Compress-Response`: Set to `'gzip'`
+ */
+/**
+ *  @attribute {Boolean} [autoroute]     Indicates whether the call should be routed
+ *                                       through a proxy when a permission
+ *                                       error occurs due to the same domain policy.
+ */
+/**
+ *  @attribute {Number}  [timeout]       The number of milliseconds after
+ *                                       which the call is considered timed out.
+ *
  */
 apf.Teleport = function(){
     this.$init(true);

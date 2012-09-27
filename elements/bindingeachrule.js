@@ -25,12 +25,15 @@
  * @binding each Determines the list of elements for which each
  * gets a visual representation within the element. It also can determine
  * the sequence of how the elements are visualized by offering a way to
- * specify the sort order. (N.B. The sorting mechanism is very similar to
- * that of XSLT)
- * Example:
+ * specify the sort order. The sorting mechanism is very similar to
+ * that of XSLT.
+ *
+ * #### Example
+ *
  * This example contains a list that displays elements with the tagName
- * 'mail' that do not have a deleted attribute set to 1.
- * <code>
+ * `'mail'` that do not have a deleted attribute set to 1.
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -46,11 +49,14 @@
  *          <a:each match="[item[not(@deleted='1')]]" />
  *      </a:bindings>
  *  </a:list>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * This example shows how to use the each rule to order files based
  * on their modified data.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12"></item>
@@ -62,10 +68,13 @@
  *          <a:caption match="[@date]" />
  *      </a:each>
  *  </a:list>
- * </code>
- * Example:
- * This example shows how to do complex sorting using a javascript callback function.
- * <code>
+ * ```
+ * 
+ * #### Example
+ * 
+ * This example shows how to do complex sorting using a JavaScript callback function.
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -85,44 +94,69 @@
  *          <a:caption match="[@date]" />
  *      </a:each>
  *  </a:list>
- * </code>
- * @attribute {String} match        an xpath statement which selects the nodes
+ * ```
+ *
+ */
+/**
+ * @attribute {String} match        Sets or gets an XPath statement which selects the nodes
  *                                  which will be rendered.
- * @attribute {String} sort         an xpath statement which selects the value
+ */
+/**
+ * @attribute {String} sort         Sets or gets an XPath statement which selects the value
  *                                  which is subject to the sorting algorithm.
- * @attribute {String} data-type    the way sorting is executed. See
+ */
+/**
+ * @attribute {String} data-type    Sets or gets the way sorting is executed. See
  *                                  {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
- *                                  on how to specify a custom sort method.
- *   Possible values:
- *   string  Sorts alphabetically
- *   number  Sorts based on numerical value (i.e. 9 is lower than 10).
- *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000).
+ *                                  for how to specify a custom sort method.
+ *   The possible values include:
+ *
+ *   - `string`:  Sorts alphabetically
+ *   - `number`:  Sorts based on numerical value (_i.e._, 9 is lower than 10).
+ *   - `date`:    Sorts based on the date sequence (`21-6-1980` is lower than `1-1-2000`).
  *           See {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
- *           on how to specify the date format.
- * @attribute {String} date-format  the format of the date on which is sorted.
- *   Possible values:
- *   YYYY   Full year
- *   YY     Short year
- *   DD     Day of month
- *   MM     Month
- *   hh     Hours
- *   mm     Minutes
- *   ss     Seconds
- * Example:
- * <code>
+ *           for how to specify the date format.
+ */
+/**
+ * @attribute {String} date-format  Sets or gets the format of the date on which is sorted.
+ *   
+ *  The possible values include:
+ *
+ *   - `YYYY`:   Full year
+ *   - `YY`:     Short year
+ *   - `DD`:     Day of month
+ *   - `MM`:     Month
+ *   - `hh`:     Hours
+ *   - `mm`:     Minutes
+ *   - `ss`:     Seconds
+ * 
+ * 
+ * #### Example
+ *
+ * ```
  *  date-format="DD-MM-YYYY"
- * </code>
- * @attribute {String} sort-method  the name of a javascript function to executed
+ * ```
+ */
+/**
+ * @attribute {String} sort-method  Sets or gets the name of a JavaScript function to execute
  *                                  to determine the value to sort on.
- * @attribute {String} order        the order of the sorted list.
- *   Possible values:
- *   ascending  Default sorting order
- *   descending Reverses the default sorting order.
- * @attribute {String} case-order   whether upper case characters have preference
+ */
+/**
+ * @attribute {String} order        Sets or gets the order of the sorted list.
+ *   
+ *  The possible values include:
+ *
+ *   - `ascending`:  Default sorting order
+ *   - `descending`: Reverses the default sorting order
+ */
+/**
+ * @attribute {String} case-order   Sets or gets whether upper case characters have preference
  *                                  above lower case characters.
- *   Possible values:
- *   upper-first    Upper case characters are higher.
- *   lower-first    Lower case characters are higher.
+ *   
+ *  The possible values include:
+ *
+ *   - `upper-first`:    Upper case characters are higher.
+ *   - `lower-first`:    Lower case characters are higher.
  */
 apf.BindingEachRule = function(struct, tagName){
     this.$init(tagName, apf.NODE_HIDDEN, struct);
@@ -223,7 +257,7 @@ apf.BindingEachRule = function(struct, tagName){
         return newEach.join("|");
     }
     
-    /**
+    /*
      *      <a:each 
      *         match="[group|item]"
      *         filter="{tb.value}"

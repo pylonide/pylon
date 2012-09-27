@@ -25,11 +25,11 @@ apf.__CACHE__ = 1 << 2;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have caching features. It takes care of
- * storing, retrieving and updating rendered data (in html form)
+ * storing, retrieving, and updating rendered data (in HTML form)
  * to overcome the waiting time while rendering the contents every time the
  * data is loaded.
  *
- * @constructor
+ * @class apf.Cache
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -144,16 +144,13 @@ apf.Cache = function(){
         }
     });
 
-    /**
-     * Checks the cache for a cached item by ID. If the ID is found the
+    /*
+     * Checks the cache for a cached item by ID. If the ID is found, the
      * representation is loaded from cache and set active.
      *
-     * @param  {String} id  the id of the cache element which is looked up.
+     * @param  {String} id  The id of the cache element which is looked up.
      * @param  {Object} xmlNode
-     * @return {Boolean}
-     *   Possible values:
-     *   true   the cache element is found and set active
-     *   false  otherwise
+     * @return {Boolean} If `true`, the cache element was found and set active
      * @see    baseclass.databinding.method.load
      * @private
      */
@@ -234,7 +231,7 @@ apf.Cache = function(){
         return true;
     }
 
-    /**
+    /*
      * Sets cache element and it's ID
      *
      * @param {String}           id        the id of the cache element to be stored.
@@ -247,7 +244,7 @@ apf.Cache = function(){
         this.cache[id] = fragment;
     }
 
-    /**
+    /*
      * Finds HTML presentation node in cache by ID
      *
      * @param  {String} id  the id of the HTMLElement which is looked up.
@@ -270,8 +267,8 @@ apf.Cache = function(){
     /**
      * Removes an item from the cache.
      *
-     * @param {String}  id       the id of the HTMLElement which is looked up.
-     * @param {Boolean} [remove] whether to destroy the Fragment.
+     * @param {String}  id       The id of the HTMLElement which is looked up.
+     * @param {Boolean} [remove] Specifies whether to destroy the Fragment.
      * @see baseclass.databinding.method.clear
      * @private
      */
@@ -286,7 +283,7 @@ apf.Cache = function(){
         this.cache[id] = null;
     };
 
-    /**
+    /*
      * Removes all items from the cache
      *
      * @see baseclass.databinding.method.clearCacheItem
@@ -300,9 +297,9 @@ apf.Cache = function(){
     };
 
     /**
-     * Gets the cache item by it's id
+     * Gets the cache item by its id
      *
-     * @param {String} id  the id of the HTMLElement which is looked up.
+     * @param {String} id  The id of the HTMLElement which is looked up.
      * @see baseclass.databinding.method.clearCacheItem
      * @private
      */
@@ -310,7 +307,7 @@ apf.Cache = function(){
         return this.cache[id];
     };
 
-    /**
+    /*
      * Checks whether a cache item exists by the specified id
      *
      * @param {String} id  the id of the cache item to check.
@@ -341,7 +338,7 @@ apf.Cache = function(){
     }
     
     /**
-     * @attribute {Boolean} caching whether caching is enabled for this element.
+     * @attribute {Boolean} caching Sets or gets whether caching is enabled for this element.
      */
     this.$booleanProperties["caching"] = true;
     this.$supportedProperties.push("caching");

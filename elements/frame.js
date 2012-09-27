@@ -22,17 +22,19 @@
 // #ifdef __AMLFRAME || __INC_ALL
 
 /**
- * Element displaying a frame with a caption, containing other elements. This
+ * AN element displaying a frame with a caption, containing other elements. This
  * element is called a fieldset in html.
- * Example:
- * <code>
+ * 
+ * #### Example
+ * 
+ * ```xml
  *  <a:frame caption="Options">
  *      <a:radiobutton value="1">Option 1</a:radiobutton>
  *      <a:radiobutton value="2">Option 2</a:radiobutton>
  *      <a:radiobutton value="3">Option 3</a:radiobutton>
  *      <a:radiobutton value="4">Option 4</a:radiobutton>
  *  </a:frame>
- * </code>
+ * ```
  *
  * @constructor
  * @define fieldset, frame

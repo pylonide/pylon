@@ -24,52 +24,13 @@ apf.__MULTISELECT__ = 1 << 8;
 // #ifdef __WITH_MULTISELECT
 
 /**
- * @term eachnode A each node is a {@link term.datanode data node} that is in the set selected by the 
- * {@link baseclass.multiselectbinding.binding.each each binding rule}.
- * These {@link term.datanode data nodes} get representation within the visual element. For instance
- * each item in a list is connected to such a each node. A each node
- * can be selected, removed, added, dragged, dropped and so on. 
- * Example:
- * In this example the person nodes that have the show attribute set to 1 are the 
- * each nodes of the list. This list will display three items.
- * <code>
- *  <a:list>
- *      <a:bindings>
- *          <a:caption match="[@name]" />
- *          <a:each match="[person[@show='1']]" />
- *      </a:bindings>
- *      <a:model>
- *          <data>
- *              <person name="test 5"/>
- *              <person show="1" name="test 3"/>
- *              <person name="test 4"/>
- *              <person show="1" name="test 2"/>
- *              <person show="1" name="test 1"/>
- *          </data>
- *      </a:model>
- *  </a:list>
- * </code>
- * Remarks:
- * A somewhat advanced topic is understanding how an element can use the 
- * each {@link term.binding binding rule}. For the tree this binding rules
- * can be used to create a virtual tree mapping of the xml.
- */
-
-/**
- * @term caret When selecting nodes in a list using the keyboard, the caret is 
- * the indication of the position within that list. The item that the caret is
- * on might or might not be selected. This feature is especially useful when 
- * holding the control key or using the shift key to multi select items.
- */
-
-/**
  * All elements inheriting from this {@link term.baseclass baseclass} have selection features. This includes handling
  * for multiselect and several keyboard based selection interaction. It also
  * takes care of {@link term.caret caret} handling when multiselect is enabled. Furthermore features 
  * for dealing with multinode component are included like adding and removing 
  * {@link term.datanode data nodes}.
  *
- * @constructor
+ * @class apf.MultiSelect
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -77,11 +38,11 @@ apf.__MULTISELECT__ = 1 << 8;
  *
  * @inherits apf.MultiselectBinding
  *
- * @binding select Determines whether the {@link term.eachnode each node} can be selected.
- * Example:
- * In this example the tree contains nodes that have a disabled flag set. 
- * These nodes cannot be selected
- * <code>
+ * #### Example
+ *
+ * In this example the tree contains nodes that have a disabled flag set. These nodes cannot be selected.
+ *
+ * ```xml
  *  <a:list width="200">
  *      <a:bindings>
  *          <a:selectable match="[self::node()[not(@disabled) or @disabled != 'true']]" />
@@ -98,11 +59,11 @@ apf.__MULTISELECT__ = 1 << 8;
  *          </data>
  *      </a:model>
  *  </a:list>
- * </code>
- * @binding value  Determines the way the value for the element is retrieved
- * from the selected node. The value property contains this value.
- * Example:
- * <code>
+ * ```
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:dropdown onafterchange="alert(this.value)">
  *      <a:bindings>
  *          <a:caption match="[text()]" />
@@ -117,7 +78,18 @@ apf.__MULTISELECT__ = 1 << 8;
  *          </items>
  *      </a:model>
  *  </a:dropdown>
- * </code>
+ * ```
+ */
+/**
+ *
+ * @binding select Determines whether the {@link term.eachnode each node} can be selected.
+ *
+ */
+ /**
+ *
+ * * @binding value  Determines the way the value for the element is retrieved
+ * from the selected node. The `apf.MultiSelect.value` property contains this value.
+ *
  */
 apf.MultiSelect = function(){
     this.$init(function(){
@@ -132,8 +104,9 @@ apf.MultiSelect = function(){
 
     // *** Properties *** //
 
+    // @todo Doc is that right? 
     /**
-     * the last selected item of this element.
+     * The last selected item of this element.
      * @type {XMLElement} 
      */
     this.sellength    = 0;
@@ -141,14 +114,14 @@ apf.MultiSelect = function(){
     this.$selected    = null;
     
     /**
-     * the xml element that has the {@link term.caret caret}.
+     * The XML element that has the {@link term.caret caret}.
      * @type {XMLElement} 
      */
     this.caret    = null;
     this.$caret   = null;
     
     /**
-     * whether to use a {@link term.caret caret} in the interaction of this element.
+     * Specifies whether to use a {@link term.caret caret} in the interaction of this element.
      * @type {Boolean} 
      */
     this.useindicator = true;
@@ -156,10 +129,13 @@ apf.MultiSelect = function(){
     // #ifdef __WITH_DATABINDING
 
     /**
-     * Removes an {@link term.datanode data node} from the data of this element.
-     * Example:
-     * A simple list showing products. This list is used in all following examples.
-     * <code>
+     * Removes a {@link term.datanode data node} from the data of this element.
+     *
+     * #### Example
+     *
+     * A simple list showing products. This list is used in all the following examples.
+     * 
+     * ```xml
      *  <a:list id="myList">
      *      <a:bindings>
      *          <a:caption match="[@name]" />
@@ -177,30 +153,38 @@ apf.MultiSelect = function(){
      *          </products>
      *      </a:model>
      *  </a:list>
-     * </code>
-     * Example:
-     * This example selects a product by it's value and then removes the
-     * selection.
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * This example selects a product by its value and then removes the selection.
+     * 
+     * ```xml
      *  <a:script><!--
      *      apf.onload = function() {
      *          myList.setValue("product20");
      *          myList.remove();
      *      }
      *  --></a:script>
-     * </code>
-     * Example:
-     * This example gets a product by it's value and then removes it.
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * This example gets a product by its value and then removes it.
+     * 
+     * ```xml
      *  <a:script>
      *      var xmlNode = myList.findXmlNodeByValue("product20");
      *      myList.remove(xmlNode);
      *  </a:script>
-     * </code>
-     * Example:
-     * This example retrieves all nodes from a list. All items with a length
+     * ```
+     *
+     * #### Example
+     *
+     * This example retrieves all nodes from the list. All items with a length
      * greater than 10 are singled out and removed.
-     * <code>
+     * 
+     * ```xml
      *  <a:script><![CDATA[
      *      apf.onload = function() {
      *          var list = myList.getTraverseNodes();
@@ -213,24 +197,31 @@ apf.MultiSelect = function(){
      *          myList.remove(removeList);
      *      }
      *   ]]></a:script>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
+     *
      * Another way to trigger this method is by using the action attribute on a
      * button.
-     * <code>
+     *
+     * ```xml
      *  <a:button action="remove" target="myList">Remove item</a:button>
-     * </code>
-     * Using the action methodology you can let the original data source
-     * (usually the server) know that the user removed an item.
-     * <code>
+     * ```
+     *
+     * Using the action methodology, you can let the original data source
+     * (usually the server) know that the user removed an item:
+     * 
+     * ```xml
      *     <a:list>
      *         <a:bindings />
      *         <a:remove set="remove_product.php?id=[@id]" />
      *     </a:list>
-     * </code>
-     * For undo this action should be extended and the server should maintain a
+     * ```
+     *
+     * For undo, this action should be extended and the server should maintain a
      * copy of the deleted item.
-     * <code>
+     * 
+     * ```xml
      *  <a:list actiontracker="atList">
      *      <a:bindings />
      *      <a:remove set  = "remove_product.php?id=[@id]"
@@ -243,13 +234,12 @@ apf.MultiSelect = function(){
      *     caption  = "Undo"
      *     disabled = "{!atList.undolength}" 
      *     onclick  = "atList.undo()" />
-     * </code>
+     * ```
+     *
      * @action
-     * @param  {Mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
-     *   Possible values:
-     *   {NodeList}   the {@link term.datanode data nodes} to be removed.
-     *   {XMLElement} the {@link term.datanode data node} to be removed.
-     * @return  {Boolean}  specifies if the removal succeeded
+     * @param  {NodeList | XMLElement} [nodeList]  The {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
+     *
+     * @return  {Boolean}  Indicates if the removal succeeded
      */
     this.remove = function(nodeList){
         //Use the current selection if no xmlNode is defined
@@ -291,10 +281,13 @@ apf.MultiSelect = function(){
     };
     //#endif
     /**
-     * Adds an {@link term.datanode data node} to the data of this element.
-     * Example:
+     * Adds a {@link term.datanode data node} to the data of this element.
+     *
+     * #### Example
+     *
      * A simple list showing products. This list is used in all following examples.
-     * <code>
+     * 
+     * ```xml
      *  <a:list id="myList">
      *      <a:bindings>
      *          <a:caption match="[@name]" />
@@ -312,22 +305,27 @@ apf.MultiSelect = function(){
      *          </products>
      *      </a:model>
      *  </a:list>
-     * </code>
-     * Example:
-     * This example adds a product to this element.
-     * selection.
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * This example adds a product to this element selection.
+     *
+     * ```xml
      *  <a:script><![CDATA[
      *      apf.onload = function() {
      *          myList.add('<product name="USB drive" type="storage" />');
      *      }
      *  ]]></a:script>
-     * </code>
-     * Example:
-     * This example copy's the selected product, changes it's name and then
-     * adds it. After selecting the new node the user is offered a rename input
+     * ```
+     *
+     * #### Example
+     *
+     * This example copys the selected product, changes its name, and then
+     * adds it. After selecting the new node, the user is offered a rename input
      * box.
-     * <code>
+     * 
+     * ```xml
      *  <a:script><![CDATA[
      *      apf.onload = function() {
      *          var xmlNode = apf.xmldb.copy(myList.selected);
@@ -337,11 +335,13 @@ apf.MultiSelect = function(){
      *          myList.startRename();
      *      }
      *  ]]></a:script>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
      * Another way to trigger this method is by using the action attribute on a
      * button.
-     * <code>
+     *
+     * ```xml
      *  <a:list>
      *      <a:bindings />
      *      <a:model />
@@ -352,14 +352,17 @@ apf.MultiSelect = function(){
      *      </a:actions>
      *  </a:list>
      *  <a:button action="add" target="myList">Add new product</a:button>
-     * </code>
-     * Using the action methodology you can let the original data source
-     * (usually the server) know that the user added an item.
-     * <code>
+     * ```
+     *
+     * Using the action methodology you can let the original data source (usually the server) know that the user added an item.
+     * 
+     * ```xml
      *  <a:add get="{comm.addProduct()}" />
-     * </code>
-     * For undo this action should be extended as follows.
-     * <code>
+     * ```
+     *
+     * For undo, this action should be extended as follows.
+     * 
+     * ```xml
      *  <a:list id="myList" actiontracker="atList">
      *      <a:bindings />
      *      <a:model />
@@ -377,24 +380,27 @@ apf.MultiSelect = function(){
      *     caption  = "Undo"
      *     disabled = "{!atList.undolength}" 
      *     onclick  = "atList.undo()" />
-     * </code>
-     * In some cases the server needs to create the new product before it's
+     * ```
+     *
+     * In some cases the server needs to create the new product before its
      * added. This is done as follows.
-     * <code>
+     * 
+     * ```xml
      *  <a:add get="{comm.createNewProduct()}" />
-     * </code>
+     * ```
      * Alternatively the template for the addition can be provided as a child of
      * the action rule.
-     * <code>
+     * ```
      *  <a:add set="add_product.php?xml=%[.]">
      *      <product name="USB drive" type="storage" />
      *  </a:add>
-     * </code>
+     * ```
+     *
      * @action
-     * @param  {XMLElement} [xmlNode]    the {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
-     * @param  {XMLElement} [pNode]      the parent node of the added {@link term.datanode data node}.
-     * @param  {XMLElement} [beforeNode] the position where the xml element should be inserted.
-     * @return  {XMLElement} the added {@link term.datanode data node} or false on failure.
+     * @param  {XMLElement} [xmlNode]    The {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add
+     * @param  {XMLElement} [pNode]      The parent node of the added {@link term.datanode data node}
+     * @param  {XMLElement} [beforeNode] The position where the XML element should be inserted
+     * @return  {XMLElement} The added {@link term.datanode data node} or false on failure
      */
     this.add = function(xmlNode, pNode, beforeNode, userCallback){
         var rule;
@@ -530,13 +536,12 @@ apf.MultiSelect = function(){
 
     if (!this.setValue) {
         /**
-         * Sets the value of this element.The value
+         * Sets the value of this element. The value
          * corresponds to an item in the list of loaded {@link term.datanode data nodes}. This
          * element will receive the selection. If no {@link term.datanode data node} is found, the
          * selection is cleared.
          *
-         * @param  {String}  value  the new value for this element.
-         * @param  {Boolean} disable_event
+         * @param  {String}  value  The new value for this element.
          * @see baseclass.multiselect.method.getValue
          */
         this.setValue = function(value, disable_event){
@@ -551,7 +556,8 @@ apf.MultiSelect = function(){
     /**
      * Retrieves an {@link term.datanode data node} that has a value that corresponds to the
      * string that is searched on.
-     * @param {String} value the value to match.
+     * @param {String} value The value to match.
+     * @returns {XMLNode} The found node, or `false`
      */
     this.findXmlNodeByValue = function(value){
         var nodes   = this.getTraverseNodes(),
@@ -569,10 +575,10 @@ apf.MultiSelect = function(){
     };
 
     if (!this.getValue) {
-        /**
+        /*
          * Retrieves the value of this element. This is the value of the
          * first selected {@link term.datanode data node}.
-         * @see #setValue
+         * 
          */
         this.getValue = function(xmlNode, noError){
             return this.value;
@@ -599,41 +605,44 @@ apf.MultiSelect = function(){
     }
 
     /**
-     * Select the current selection again.
+     * Select the current selection...again.
      *
-     * @todo Add support for multiselect
      */
-    this.reselect = function(){
+    this.reselect = function(){ // @todo Add support for multiselect
         if (this.selected) this.select(this.selected, null, this.ctrlselect,
             null, true);//no support for multiselect currently.
     };
 
     /**
-     * Selects a single, or set of {@link term.eachnode each nodes}.
+     * @event  beforeselect  Fires before a {@link baseclass.multiselect.method.select selection} is made
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                     - `selected` ([[XMLElement]]): The {@link term.datanode data node} that will be selected
+     *                     - `selection` ([[Array]]): An array of {@link term.datanode data nodes} that will be selected
+     *                     - `htmlNode` ([[HTMLElement]]): The HTML element that visually represents the {@link term.datanode data node} 
+     */
+    /**
+     * @event  afterselect  Fires after a {@link baseclass.multiselect.method.select selection} is made
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                     - `selected` ([[XMLElement]]):    the {@link term.datanode data node} that was selected
+     *                     - `selection` ([[Array]]():       an array of {@link term.datanode data node} that are selected
+     *                     - `htmlNode` ([[HTMLElement]](): the HTML element that visually represents the {@link term.datanode data node}
+     */
+    /**
+     * Selects a single, or set, of {@link term.eachnode each nodes}.
      * The selection can be visually represented in this element.
      *
-     * @param {Mixed}   xmlNode      the identifier to determine the selection.
-     *   Possible values:
-     *   {XMLElement}  the {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
-     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node} for selection.
-     *   {String}      the value of the {@link term.datanode data node} to be select.
-     * @param {Boolean} [ctrlKey]    whether the Ctrl key was pressed
-     * @param {Boolean} [shiftKey]   whether the Shift key was pressed
-     * @param {Boolean} [fakeselect] whether only visually a selection is made
-     * @param {Boolean} [force]      whether reselect is forced.
-     * @param {Boolean} [noEvent]    whether to not call any events
-     * @return  {Boolean}  whether the selection could be made
+     * @param {Mixed}   xmlNode      The identifier to determine the selection. It can be one of the following values:
+     *                                 - ([[XMLElement]]):  The {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
+     *                                 - ([[HTMLElement]]): The HTML element node used as visual representation of {@link term.datanode data node}. 
+     *                                                 Used to determine the {@link term.datanode data node} for selection.
+     *                                 - ([[String]]):      The value of the {@link term.datanode data node} to be selected.
+     * @param {Boolean} [ctrlKey]    Indicates whether the [[keys: Ctrl]] key was pressed
+     * @param {Boolean} [shiftKey]   Indicates whether the [[keys: Shift]]  key was pressed
+     * @param {Boolean} [fakeselect] Indicates whether only visually a selection is made
+     * @param {Boolean} [force]      Indicates whether reselect is forced
+     * @param {Boolean} [noEvent]    Indicates whether to not call any event
+     * @return  {Boolean}  Indicates whether the selection could be made
      *
-     * @event  beforeselect  Fires before a {@link baseclass.multiselect.method.select selection} is made
-     *   object:
-     *   {XMLElement}  selected the {@link term.datanode data node} that will be selected.
-     *   {Array}       selection an array of {@link term.datanode data node} that will be selected.
-     *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
-     * @event  afterselect  Fires after a {@link baseclass.multiselect.method.select selection} is made
-     *   object:
-     *   {XMLElement}  selected  the {@link term.datanode data node} that was selected.
-     *   {Array}       selection an array of {@link term.datanode data node} that are selected.
-     *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      */
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent, userAction){
         if (!this.selectable || userAction && this.disabled) 
@@ -838,20 +847,26 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * Choose a selected item. This is done by double clicking on the item or
+     * @event  beforechoose  Fires before a choice is made.
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                   - {XMLElement} xmlNode   The {@link term.datanode data node} that was choosen
+     *
+     */
+    /**
+     * @event  afterchoose   Fires after a choice is made.
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                   - {XMLElement} xmlNode   The {@link term.datanode data node} that was choosen
+     */
+    /**
+     * Chooses a selected item. This is done by double clicking on the item or
      * pressing the Enter key.
      *
-     * @param {Mixed}   xmlNode      the identifier to determine the selection.
-     *   Possible values:
-     *   {XMLElement}  the {@link term.datanode data node} to be choosen.
-     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
-     *   {String}      the value of the {@link term.datanode data node} to be choosen.
-     * @event  beforechoose  Fires before a choice is made.
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
-     * @event  afterchoose   Fires after a choice is made.
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
+     * @param {Mixed}   xmlNode      The identifier to determine the selection. It can be one of the following values: 
+     *                                - {XMLElement}:  The {@link term.datanode data node} to be choosen
+     *                                - {HTMLElement}: The HTML element node used as visual representation of {@link term.datanode data node}
+     *                                                 Used to determine the {@link term.datanode data node}
+     *                                - {String} :     The value of the {@link term.datanode data node} to be choosen
+     *
      */
     this.choose = function(xmlNode, userAction){
         if (!this.selectable || userAction && this.disabled) return;
@@ -869,12 +884,12 @@ apf.MultiSelect = function(){
         //#endif
     };
 
-    /**
+    /*
      * Removes the selection of one or more selected nodes.
      *
-     * @param {Boolean} [singleNode] whether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    whether to not call any events
+     * @param {Boolean} [noEvent]    Indicates whether or not to call any events
      */
+    // @todo Doc
     this.clearSelection = function(noEvent, userAction){
         if (!this.selectable || userAction && this.disabled || !this.$valueList.length)
             return;
@@ -919,12 +934,12 @@ apf.MultiSelect = function(){
         }
     };
 
-    /**
+    /*
      * Selects a set of items
      *
      * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
      */
-    //@todo I think there are missing events here?
+    //@todo Doc I think there are missing events here?
     this.selectList = function(xmlNodeList, noEvent, selected, userAction){
         if (!this.selectable || userAction && this.disabled) return;
 
@@ -988,20 +1003,22 @@ apf.MultiSelect = function(){
     };
 
     /**
+     * @event indicate Fires when an item becomes the indicator.
+     */
+
+    /**
      * Sets the {@link term.caret caret} on an item to indicate to the user that the keyboard
-     * actions are done relevant to that item. Using the keyboard
-     * a user can change the position of the indicator using the Ctrl and arrow
+     * actions are done relevant to that item. Using the keyboard,
+     * a user can change the position of the indicator using the [[keys: Ctrl]] and arrow
      * keys while not making a selection. When making a selection with the mouse
-     * or keyboard the indicator is always set to the selected node. Unlike a
+     * or keyboard, the indicator is always set to the selected node. Unlike a
      * selection there can be only one indicator item.
      *
-     * @param {Mixed}   xmlNode      the identifier to determine the indicator.
-     *   Possible values:
-     *   {XMLElement}  the {@link term.datanode data node} to be set as indicator.
-     *   {HTMLElement} the html element node used as visual representation of
-     *                 {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
-     *   {String}      the value of the {@link term.datanode data node} to be set as indicator.
-     * @event indicate Fires when an item becomes the indicator.
+     * @param {Mixed}   xmlNode      The identifier to determine the indicator. Its possible values include:
+     *                                - {XMLElement}  The {@link term.datanode data node} to be set as indicator.
+     *                                - {HTMLElement} The HTML element node used as visual representation of
+     *                                                   {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
+     *                                - {String}      The value of the {@link term.datanode data node} to be set as an indicator.
      */
     this.setCaret = function(xmlNode){
         if (!xmlNode) {
@@ -1040,7 +1057,7 @@ apf.MultiSelect = function(){
         this.setProperty("caret", this.caret = xmlNode);
     };
 
-    /**
+    /*
      * @private
      */
     this.$setTempSelected = function(xmlNode, ctrlKey, shiftKey, down){
@@ -1091,7 +1108,7 @@ apf.MultiSelect = function(){
         }
     };
 
-    /**
+    /*
      * @private
      */
     this.$selectTemp = function(){
@@ -1107,7 +1124,7 @@ apf.MultiSelect = function(){
 
     /**
      * Selects all the {@link term.eachnode each nodes} of this element
-     *
+     * 
      */
     this.selectAll = function(userAction){
         if (!this.multiselect || !this.selectable
@@ -1123,11 +1140,11 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * Retrieves an array or a document fragment containing all the selected
+     * Retrieves an Array or a document fragment containing all the selected
      * {@link term.datanode data nodes} from this element.
      *
-     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {Mixed} the selection of this element.
+     * @param {Boolean} [xmldoc] Specifies whether the method should return a document fragment.
+     * @return {Mixed} The selection of this element.
      */
     this.getSelection = function(xmldoc){
         var i, r;
@@ -1154,14 +1171,14 @@ apf.MultiSelect = function(){
     /**
      * Selects the next {@link term.datanode data node} to be selected.
      *
-     * @param  {XMLElement}  xmlNode  the context {@link term.datanode data node}.
-     * @param  {Boolean}     isTree
+     * @param  {XMLElement}  xmlNode  The context {@link term.datanode data node}.
+     * @param  {Boolean}     [isTree] If `true`, indicates that this node is a tree, and should select children
      */
     this.defaultSelectNext = function(xmlNode, isTree){
         var next = this.getNextTraverseSelected(xmlNode);
         //if(!next && xmlNode == this.xmlRoot) return;
 
-        //Why not use this.$isTreeArch ??
+        //@todo Why not use this.$isTreeArch ??
         if (next || !isTree)
             this.select(next ? next : this.getTraverseParent(xmlNode));
         else
@@ -1186,7 +1203,7 @@ apf.MultiSelect = function(){
             this.select(xmlNode);
     };
 
-    /**
+    /*
      * @private
      */
     this.getDefaultNext = function(xmlNode, isTree){  //@todo why is isTree an argument
@@ -1203,8 +1220,8 @@ apf.MultiSelect = function(){
     /**
      * Determines whether a node is selected.
      *
-     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
-     * @return  {Boolean} whether the element is selected.
+     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked
+     * @return  {Boolean} Identifies if the element is selected
      */
     this.isSelected = function(xmlNode){
         if (!xmlNode) return false;
@@ -1217,7 +1234,7 @@ apf.MultiSelect = function(){
         return false;
     };
 
-    /**
+    /*
      * This function checks whether the current selection is still correct.
      * Selection can become invalid when updates to the underlying data
      * happen. For instance when a selected node is removed.
@@ -1279,19 +1296,29 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for dropdown. 
-     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
-     * @attribute {Boolean} [selectable]    whether the {@link term.datanode data nodes} of this element can be selected. Default is true.
-     * @attribute {Boolean} [ctrlselect]    whether when a selection is made as if the user is holding the Ctrl key. When set to true each mouse selection will add to the current selection. selecting an already selected element will deselect it.
-     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected {@link term.datanode data node}.
-     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again and the selection events are called again. Default is false. When set to false a selected {@link term.datanode data node} cannot be selected again.
-     * @attribute {String}  [default]       the value that this component has when no selection is made.
-     * @attribute {String}  [eachvalue]     the {@link term.expression expression} that determines the value for each {@link term.datanode data nodes} in the dataset of the element.
-     * Remarks:
+     * @attribute {Boolean} [multiselect]   Sets or gets whether the user may select multiple items. Default is `true, but `false` for dropdown. 
+     */
+    /**
+     * @attribute {Boolean} [autoselect]    Sets or gets whether a selection is made after data is loaded. Default is `true`, but `false` for dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
+     */
+    /**
+     *  @attribute {Boolean} [selectable]    Sets or gets whether the {@link term.datanode data nodes} of this element can be selected. Default is `true`.
+     */
+    /**
+     *  @attribute {Boolean} [ctrlselect]    Sets or gets whether a selection is made as if the user is holding the [[keys: Ctrl]] key. When set to `true` each mouse selection will add to the current selection. Selecting an already selected element will deselect it.
+     */
+    /**
+     *  @attribute {Boolean} [allowdeselect] Sets or gets whether the user can remove the selection of this element. When set to `true` it is possible for this element to have no selected {@link term.datanode data node}.
+     */
+    /**
+     *  @attribute {Boolean} [reselectable]  Sets or gets whether selected nodes can be selected again, and the selection events are called again. Default is `false`. When set to `false` a selected {@link term.datanode data node} cannot be selected again.
+     */
+    /**
+     *  @attribute {String}  [default]      Sets or gets the value that this component has when no selection is made.
+     */
+    /**
+     *  @attribute {String}  [eachvalue]     Sets or gets the {@link term.expression expression} that determines the value for each {@link term.datanode data nodes} in the dataset of the element.
      * 
-     * Example:
-     *
-     * @see baseclass.multiselect.attribute.eachvalue
      */
     this.selectable = true;
     if (typeof this.ctrlselect == "undefined")
@@ -1319,12 +1346,8 @@ apf.MultiSelect = function(){
         "selection", "selected", "default", "value", "caret");
 
     /**
-     * @attribute {String} [value]   the value of the element that is selected.
-     * Remarks:
-     * 
-     * Example:
+     * @attribute {String} [value]  Sets or gets the value of the element that is selected.
      *
-     * @see baseclass.multiselect.attribute.eachvalue
      */
     //@todo add check here
     this.$propHandlers["value"] = function(value){
@@ -1376,12 +1399,7 @@ apf.MultiSelect = function(){
     }
     
     /**
-     * @attribute {String} [value]   the value of the element that is selected.
-     * Remarks:
-     * 
-     * Example:
-     *
-     * @see baseclass.multiselect.attribute.selected, baseclass.multiselect.attribute.selection
+     * @attribute {String} [value]   Sets or gets the caret value of the element.
      */
     //@todo fill this in
     this.$propHandlers["caret"] = function(value, prop){
@@ -1393,22 +1411,14 @@ apf.MultiSelect = function(){
     
     //@todo optimize this thing. Also implement virtual dataset support.
     /**
-     * @attribute {String} [selection]   the {@link term.expression expression} that determines the selection for this element. A reference to an xml nodelist can be passed as well.
-     * Remarks:
-     * 
-     * Example:
+     * @attribute {String} [selection]  Sets or gets the {@link term.expression expression} that determines the selection for this element. A reference to an XML nodelist can be passed as well.
      *
-     * @see baseclass.multiselect.attribute.selected, baseclass.multiselect.attribute.selection
      */
     this.$propHandlers["selection"] = 
     
     /**
-     * @attribute {String} [selected]   the {@link term.expression expression} that determines the selected node for this element. A reference to an xml element can be passed as well.
-     * Remarks:
+     * @attribute {String} [selected]   Sets or gets the {@link term.expression expression} that determines the selected node for this element. A reference to an XML element can be passed as well.
      * 
-     * Example:
-     *
-     * @see baseclass.multiselect.attribute.selected, baseclass.multiselect.attribute.selection
      */
     this.$propHandlers["selected"] = function(value, prop) {
         if (!value) value = this[prop] = null;

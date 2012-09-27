@@ -22,15 +22,21 @@
 // #ifdef __WITH_ACTIONTRACKER
 
 /**
- * Element keeping track of all user actions that are triggered in GUI
- * elements. This element maintains a stack of actions and knows how to
+ * Element the keeps track of all user actions that are triggered in GUI
+ * elements. 
+ * 
+ * This element maintains a stack of actions and knows how to
  * undo & redo them. It is aware of how to synchronize the changes to the
  * backend data store.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```javascript
  *   datagrid.getActionTracker().undo();
- * </code>
- * Remarks:
+ * ```
+ * 
+ * #### Remarks
+ *
  * With offline support enabled the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
  * be kept in between application sessions. This means that a user will be able
@@ -38,63 +44,72 @@
  * her entire undo/redo stack. Furthermore all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
- * @constructor
+ * @class apf.actiontracker
  * @inherits apf.Class
- *
- * @define actiontracker
- * @addnode smartbinding, global
- * @event afterchange   Fires after a change to the action stack occurs
- *    object:
- *    {String} action the name of the action that was execution
- * @event beforechange  Fires before a change to the action stack will occur
- *   cancelable:    Prevents the execution of the action.
- *   object:
- *   {String}  action           the action to be executed
- *   {Array}   args             the arguments for the action
- *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server
- *                              for both execution and undo. (See action rules)
- *   {apf.AmlNode} [amlNode]        the GUI element that triggered the action
- *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to
- *                              which the action node works on
- *   {Number}  [timestamp]      the start of the action that is now executed.
- * @event actionfail Fires when an action fails to be sent to the server.
- *   bubbles: true
- *   object:
- *     {Error}          error     the error object that is thrown when the event
- *                                callback doesn't return false.
- *     {Number}         state     the state of the call
- *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
- *     {Mixed}          userdata  data that the caller wanted to be available in
- *                                the callback of the http request.
- *     {XMLHttpRequest} http      the object that executed the actual http request.
- *     {String}         url       the url that was requested.
- *     {Http}           tpModule  the teleport module that is making the request.
- *     {Number}         id        the id of the request.
- *     {String}         message   the error message.
- * @see term.locking
- * @event actionsuccess Fires when an action is successfully sent to the server.
- *   bubbles: true
- *   object:
- *     {Number}         state     the state of the call
- *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
- *     {Mixed}          userdata  data that the caller wanted to be available in
- *                                the callback of the http request.
- *     {XMLHttpRequest} http      the object that executed the actual http request.
- *     {String}         url       the url that was requested.
- *     {Http}           tpModule  the teleport module that is making the request.
- *     {Number}         id        the id of the request.
- *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ *
+ */
+/**
+ * @define actiontracker
+ * @addnode smartbinding, global
+ *
+ */
+/**
+ * @event afterchange   Fires after a change to the action stack occurs
+ * @param {Object} e The standard event object. It contains the following property:
+ *    - action ([[String]]): the name of the action that was executed
+ */
+/**
+ * @event beforechange  Fires before a change to the action stack will occur
+ * @cancelable    Prevents the execution of the action.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - `action` ([[String]]): The action to be executed
+ *   - `args` ([[Array]]): The arguments for the action
+ *   - `[xmlActionNode]` ([[XmlNode]]): The rules to synchronize the changes to the server
+ *                              for both execution and undo.
+ *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
+ *   - `[selNode]` ([[XmlNode]]):        The relevant {@link term.datanode data node} to
+ *                              which the action node works on
+ *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
+ */
+/**
+ * @event actionfail Fires when an action fails to be sent to the server.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following property:
+ *     - `error` ([[Error]]): The error object that is thrown when the event
+ *                                callback doesn't return false.
+ *     - `state` ([[Number]]): The state of the call. It can be one of the following values:
+ *       - `apf.SUCCESS`:  The request was successfull
+ *       - `apf.TIMEOUT`:  The request has timed out.
+ *       - `apf.ERROR`:    An error has occurred while making the request.
+ *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *     - `userdata` ([[Mixed]]): Data that the caller wanted to be available in
+ *                                the callback of the HTTP request.
+ *     - `http` ([[XMLHttpRequest]]): the object that executed the actual HTTP request.
+ *     - `url` ([[String]]): The URL that was requested.
+ *     - `tpModule` ([[apf.http]]): The teleport module that is making the request.
+ *     - `id` ([[Number]]): The id of the request.
+ *     - `message` ([[String]]): The error message.
+ * @see term.locking
+ */
+/**
+ * @event actionsuccess Fires when an action is successfully sent to the server.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following property:
+ *     - `state` ([[Number]]): The state of the call. It can be one of the following values:
+ *       - `apf.SUCCESS`:  The request was successfull
+ *       - `apf.TIMEOUT`:  The request has timed out.
+ *       - `apf.ERROR`:    An error has occurred while making the request.
+ *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *     - `userdata` ([[Mixed]]): Data that the caller wanted to be available in
+ *                                the callback of the HTTP request.
+ *     - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
+ *     - `url` ([[String]]): The URL that was requested.
+ *     - `tpModule` ([[apf.http]]): The teleport module that is making the request.
+ *     - `id` ([[Number]]): The id of the request.
+ *
  */
 apf.actiontracker = function(struct, tagName){
     this.$init(tagName || "actiontracker", apf.NODE_HIDDEN, struct);
@@ -120,16 +135,25 @@ apf.actiontracker = function(struct, tagName){
     //#endif
 
     /**
-     * @attribute {Number}  !undolength the length of the undo stack.
-     * @attribute {Number}  !redolength the length of the redo stack.
-     * @attribute {Number}  !length     the length of the undo/redo stack combined.
+     * @attribute {Number}  undolength Sets or gets the length of the undo stack.
+     *
+     */
+    /** 
+     * @attribute {Number}  redolength Sets or gets the length of the redo stack.
+     */
+    /** 
+     *  @attribute {Number}  length     Sets or gets the length of the undo/redo stack combined.
      *                                  Use this attribute to bind a slider's max
      *                                  attribute to.
-     * @attribute {Number}  position    the position within the total length (same
-     *                                  value as undolength). Use this attribute
+     */
+    /** 
+     *  @attribute {Number}  position    Sets or gets the position within the total length (the same
+     *                                  value as [[apf.undolength]]). Use this attribute
      *                                  to bind a slider's value attribute to.
-     * @attribute {Boolean} realtime    whether changes are immediately send to
-     * the datastore, or held back until purge() is called.
+     */
+    /** 
+     *  @attribute {Boolean} realtime   Sets or gets whether changes are immediately sent to
+     * the datastore, or held back until [[apf.actiontracker.purge]] is called.
      */
     this.$booleanProperties = {};
     this.$booleanProperties["realtime"] = true;
@@ -215,15 +239,15 @@ apf.actiontracker = function(struct, tagName){
      * Adds a new action handler which can be used by any actiontracker.
      * @param {String} action Specifies the name of the action
      * @param {Function} func Specifies the function that is executed when
-     *                        Executing or undoing the action.
+     *                        executing or undoing the action.
      */
     this.define = function(action, func){
         apf.actiontracker.actions[action] = func;
     };
 
     /**
-     * Searches for the actiontracker that functions as a parent for this one.
-     * @return {ActionTracker} Returns the parent actiontracker
+     * Searches for the action tracker that functions as a parent for this one.
+     * @return {apf.ActionTracker} Returns the parent action tracker
      */
     this.getParent = function(){
         return this.parentNode && this.parentNode.getActionTracker
@@ -254,19 +278,19 @@ apf.actiontracker = function(struct, tagName){
     };
 
     /**
-     * Executes an action, which later can be undone and of which the execution
+     * Executes an action, which later can be undone and which the execution
      * can be synchronized to the data store.
-     * @param {Object} options the details of the execution.
+     * @param {Object} options The details of the execution. It contains the following properties:
      *   Properties:
-     *   {String}  action           the action to be executed
-     *   {Array}   args             the arguments for the action
-     *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the
-     *                              server for both execution and undo. (See action rules)
-     *   {apf.AmlNode} [amlNode]        the GUI element that triggered the action
-     *   {XmlNode} [selNode]        the relevant {@link term.datanode data node}
+     *   - `action` ([[String]]): The action to be executed
+     *   - `args` ([[Array]]): The arguments for the action
+     *   - `[xmlActionNode]` ([[XmlNode]]): The rules to synchronize the changes to the
+     *                              server for both execution and undo.
+     *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
+     *   - `[selNode]` ([[XmlNode]]):      The relevant {@link term.datanode data node}
      *                              to which the action node works on
-     *   {Number}  [timestamp]      the start of the action that is now executed.
-     *   {String}  [annotator]      the name or identifier of the entity that is
+     *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
+     *   - `[annotator]` ([[String]]): The name or identifier of the entity that is
      *                              responsible for the action
      */
     this.execute = function(options){
@@ -350,11 +374,10 @@ apf.actiontracker = function(struct, tagName){
         this.dispatchEvent("afterchange", {action: "group", done: done});
     };*/
 
+    // @todo I don't really know if this stacking into the parent is still used, for instance for apf.Transaction. please think about it.
     /**
      * Synchronizes all held back changes to the data store.
-     * @todo I don't really know if this stacking into the parent is
-     * still used, for instance for apf.Transaction. please think
-     * about it.
+     * 
      */
     this.purge = function(nogrouping, forcegrouping){//@todo, maybe add noReset argument
         //var parent = this.getParent();
@@ -381,11 +404,15 @@ apf.actiontracker = function(struct, tagName){
     //#ifdef __ENABLE_ACTIONTRACKER_TRANSACTIONS
     /**
      * Starts recording a transaction. The transaction can either be committed
-     * or rolled back. Changes won't be executed until committed for xml data
-     * nodes. For apf based data nodes (i.e. aml nodes) changes are executed
+     * or rolled back. 
+     *
+     * Changes won't be executed until committed for XML data
+     * nodes. For APF based data nodes (_i.e._ AML nodes) changes are executed
      * immediately and reverted on rollback.
-     * @see element.actiontracker.method.commit
-     * @see element.actiontracker.method.rollback
+     *
+     *
+     * For more information, see {@link element.actiontracker.method.commit} and
+     * {@link element.actiontracker.method.rollback}
      */
     this.begin = function(dataNode, bClear){
         var id;
@@ -454,7 +481,7 @@ apf.actiontracker = function(struct, tagName){
     }
 
     /**
-     * Rolls back a transaction
+     * Rolls back a transaction.
      */
     this.rollback = function(dataNode){
         var id;
@@ -483,7 +510,7 @@ apf.actiontracker = function(struct, tagName){
     }
 
     /**
-     * Commits a transaction
+     * Commits a transaction.
      */
     this.commit = function(dataNode){
         var id, stack;
@@ -554,7 +581,7 @@ apf.actiontracker = function(struct, tagName){
     }
 
     /**
-     * Executes a function as a single transaction
+     * Executes a function as a single transaction.
      */
     this.transact = function(func, dataNode){
         this.begin(dataNode);
@@ -638,7 +665,7 @@ apf.actiontracker = function(struct, tagName){
     //#endif
 
     /**
-     * Empties the action stack. After this method is run running undo
+     * Empties the action stack. After this method is run, running undo
      * or redo will not do anything.
      */
     this.reset = function(){
@@ -655,14 +682,14 @@ apf.actiontracker = function(struct, tagName){
     };
 
     /**
-     * Revert the most recent action on the action stack
+     * Revert the most recent action on the action stack.
      */
     this.undo = function(id, single, rollback){
         change.call(this, id, single, true, rollback);
     };
 
     /**
-     * Re-executes the last undone action
+     * Re-executes the last undone action.
      */
     this.redo = function(id, single, rollback){
         change.call(this, id, single, false, rollback);

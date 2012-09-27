@@ -21,10 +21,10 @@
 // #ifdef __AMLBASESIMPLE || __INC_ALL
 
 /**
- * Baseclass of a simple element. This are usually displaying elements 
- * (i.e. {@link element.label}, {@link element.picture})
+ * Baseclass of a simple element. These are usually displaying elements 
+ * (_i.e._ {@link element.label}, {@link element.picture})
  *
- * @constructor
+ * @class apf.BaseSimple
  * @baseclass
  *
  * @inherits apf.StandardBinding

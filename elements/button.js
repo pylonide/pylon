@@ -22,10 +22,25 @@
 // #ifdef __AMLBUTTON || __INC_ALL
 
 /**
+ * 
+ * @class apf.trigger
+ * @inheritdoc apf.button
+ */
+/**
+ * 
+ * @class apf.submit
+ * @inheritdoc apf.button
+ */
+/**
+ * 
+ * @class apf.reset
+ * @inheritdoc apf.button
+ */
+/**
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
- * @constructor
+ * @class apf.button
  * @define button, submit, trigger, reset
  * @addnode elements
  *
@@ -38,6 +53,7 @@
 apf.submit  = function(struct, tagName){
     this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
 };
+
 
 apf.trigger = function(struct, tagName){
     this.$init(tagName || "trigger", apf.NODE_VISIBLE, struct);
@@ -172,28 +188,46 @@ apf.button  = function(struct, tagName){
     });
 
     /**
-     * @attribute {String}  icon     the url from which the icon image is loaded.
-     * @attribute {Boolean} state    whether this boolean is a multi state button.
-     * @attribute {String}  value    the initial value of a state button.
-     * @attribute {String}  color    the text color of the caption of this element.
-     * @attribute {String}  caption  the text displayed on this element indicating the action when the button is pressed.
-     * @attribute {String}  action   one of the default actions this button can perform when pressed.
-     *   Possible values:
-     *   undo     Executes undo on the action tracker of the target element.
-     *   redo     Executes redo on the action tracker of the target element.
-     *   remove   Removes the selected node(s) of the target element.
-     *   add      Adds a node to the target element.
-     *   rename   Starts the rename function on the target element.
-     *   login    Calls log in on the auth element with the values of the textboxes of type username and password.
-     *   logout   Calls lot out on the auth element.
-     *   submit   Submits the data of a model specified as the target.
-     *   ok       Executes a commitTransaction() on the target element, and closes or hides that element.
-     *   cancel   Executes a rollbackTransaction() on the target element, and closes or hides that element.
-     *   apply    Executes a commitTransaction() on the target element.
-     *   close    Closes the target element.
-     * @attribute {String}  target   id of the element to apply the action to. Defaults to the parent container.
-     * @attribute {Number}  default  Search depth for which this button is the default action. 1 specifies the direct parent. 2 the parent of this parent. Et cetera.
-     * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
+     * @attribute {String}  icon     Sets or gets the url from which the icon image is loaded.
+     */
+    /**
+     * @attribute {Boolean} state    Sets or gets whether this boolean is a multi state button.
+     */
+    /**
+     * @attribute {String}  value    Sets or gets the initial value of a state button.
+     */
+    /**
+     * @attribute {String}  color    Sets or gets the text color of the caption of this element.
+     */
+    /**
+     * @attribute {String}  caption  Sets or gets the text displayed on this element indicating the action when the button is pressed.
+     */
+    /**
+     *  @attribute {String}  action   Sets or gets one of the default actions this button can perform when pressed.
+     *   
+     * The possible values include:
+     *
+     *   - `undo`:     Executes undo on the action tracker of the target element.
+     *   - `redo`:     Executes redo on the action tracker of the target element.
+     *   - `remove`:   Removes the selected node(s) of the target element.
+     *   - `add`:      Adds a node to the target element.
+     *   - `rename`:   Starts the rename function on the target element.
+     *   - `login`:    Calls log in on the auth element with the values of the textboxes of type username and password.
+     *   - `logout`:   Calls lot out on the auth element.
+     *   - `submit`:   Submits the data of a model specified as the target.
+     *   - `ok`:       Executes a `commitTransaction()` on the target element, and closes or hides that element.
+     *   - `cancel`:   Executes a `rollbackTransaction()` on the target element, and closes or hides that element.
+     *   - `apply`:    Executes a `commitTransaction()` on the target element.
+     *   - `close`:    Closes the target element.
+     */
+    /**
+     * @attribute {String}  target   Sets or gets the id of the element to apply the action to. Defaults to the parent container.
+     */
+    /**
+     * @attribute {Number}  default  Sets or gets the search depth for which this button is the default action. `1` specifies the direct parent, `2` specifies the parent of this parent, _.e.t.c._
+     */
+    /**
+     * @attribute {String}  submenu  Sets or gets the name of the contextmenu to display when the button is pressed.
      */
     //this.$booleanProperties["default"] = true;
     this.$booleanProperties["state"]   = true;
@@ -263,14 +297,16 @@ apf.button  = function(struct, tagName){
 
     //#ifdef __WITH_HOTKEY
     /**
-     * @attribute {String} hotkey the key combination a user can press
+     * @attribute {String} hotkey Sets or gets the key combination a user can press
      * to active the function of this element. Use any combination of
-     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * [[keys: Ctrl]], [[keys: Shift]], [[keys: Alt]], [[keys: F1]]-[[keys: F12]], and alphanumerical characters. Use a
      * space, a minus or plus sign as a seperator.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:button hotkey="Ctrl-Z">Undo</a:button>
-     * </code>
+     * ```
      */
     this.$propHandlers["hotkey"] = function(value){
         if (this.$hotkey)
@@ -423,10 +459,6 @@ apf.button  = function(struct, tagName){
         return false;
     }
 
-    /**
-     * @attribute {string} submenu If this attribute is set, the button will
-     * function like a menu button
-     */
     this.$propHandlers["submenu"] = function(value){
         if (!value){
             if (this.value && this.parentNode) {
@@ -462,27 +494,32 @@ apf.button  = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
+     * specified in the `values` attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
     };
-    
+
+    /**
+     * If this button is a submenu, this method shows it.
+     */    
     this.showMenu = function(){
         if (this.submenu && !this.value)
             menuDown.call(this);
     }
-    
+    /**
+     * If this button is a submenu, this method hides it.
+     */     
     this.hideMenu = function(){
         if (this.submenu && this.value)
             menuDown.call(this);
     }
 
     /**
-     * Sets the text displayed as caption of this element.
+     * Sets the text displayed as a caption of this element.
      *
-     * @param  {String}  value  required  The string to display.
+     * @param  {String}  value   The string to display.
      * @see    baseclass.validation
      */
     this.setCaption = function(value){
@@ -492,9 +529,7 @@ apf.button  = function(struct, tagName){
     /**
      * Sets the URL of the icon displayed on this element.
      *
-     * @param  {String}  value  required  The URL to the location of the icon.
-     * @see    element.button
-     * @see    element.modalwindow
+     * @param  {String}  value   The URL to the location of the icon.
      */
     this.setIcon = function(url){
         this.setProperty("icon", url, false, true);

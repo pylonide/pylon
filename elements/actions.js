@@ -22,7 +22,7 @@
 //#ifdef __WITH_DATABINDING
 
 /**
-* @define actions  element containing all the action rules for the data 
+ * @define actions  element containing all the action rules for the data 
  * bound elements referencing this element.
  * Example:
  * <code>
@@ -39,7 +39,10 @@
  * @allowchild {actions}
  * @addnode smartbinding, global
  *
- * @constructor
+*/
+/**
+ * Defines some rules.
+ * @class apf.actions
  * @apfclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
