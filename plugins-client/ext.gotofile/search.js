@@ -64,9 +64,6 @@ module.exports.fileSearch = function(filelist, keyword) {
                 continue;
             }
 
-            if (name.indexOf("node-runner") > 0 && keyword === "node-runner")
-                console.log("HERE1");
-
             // We prioritize ones that have the name in the filename
             if (j > (q = name.lastIndexOf("/"))) {
                 k = name.lastIndexOf("/" + keyword);
