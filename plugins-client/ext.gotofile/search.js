@@ -38,7 +38,7 @@ module.exports.fileSearch = function(filelist, keyword) {
      *   full part of path                          50
      *
      * SCATTERED MATCHES                         <= 45
-     *   number of match groups                     20 - 6 * #groups
+     *   number of match groups                     20 - 3 * #groups
      *   path depth                                 15 - 2 * count("/")
      *   match diff                                 10 - len(diff)
      *
