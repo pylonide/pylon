@@ -2979,6 +2979,71 @@
             border-top: 1px solid #dd5757;
         }
         /*-----------*/
+        
+        /*-- DARK RED --*/
+        .btn-default-css3.btn-dark-red {
+            background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+
+            text-shadow   : #b60000 0px 1px 0px;
+        }
+
+        .btn-default-css3Over.btn-dark-red {
+            background-image: linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(197,51,51) 0%, rgb(213,51,51) 100%);
+        }
+
+        .btn-default-css3Focus.btn-dark-red {
+            background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+        }
+
+        .btn-default-css3Down.btn-dark-red {
+            background-image: linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(203,0,0) 0%, rgb(182,0,0) 100%);
+        }
+
+        .btn-default-css3Disabled.btn-dark-red {
+            background-image: linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -o-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -moz-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -webkit-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+            background-image: -ms-linear-gradient(bottom, rgb(182,0,0) 0%, rgb(203,0,0) 100%);
+
+            text-shadow   : #db0000 0px 1px 0px;
+            color: #9c0000;
+        }
+
+        .btn-default-css3.btn-dark-red .caption {
+            border-top: 1px solid #e47979;
+        }
+
+        .btn-default-css3.btn-default-css3Over.btn-dark-red .caption {
+            border-top: 1px solid #dd5757;
+        }
+
+        .btn-default-css3.btn-default-css3Focus.btn-dark-red .caption {
+            border-top: 1px solid #dd5757;
+        }
+        .btn-default-css3.btn-default-css3Down.btn-dark-red .caption {
+            border-top: 1px solid #cf5757;
+        }
+        .btn-default-css3.btn-default-css3Disabled.btn-dark-red .caption {
+            border-top: 1px solid #dd5757;
+        }
+        /*-----------*/
     ]]></a:style>
 
     <a:presentation>
@@ -3009,7 +3074,22 @@
         }
 
         .win-deploy-target .btn-default-simple {
+            font-size          : 13px;
+            text-shadow   : #141414 0px 1px 0px;
+        }
+        
+        
+        .pink {
+            color: #ffc5c5;
+            font-weight: normal;
+        }
+        
+        .win-deploy-target .pink {
             font-size          : 11px;
+        }
+        .no-bold {
+            font-weight: normal;
+            color: #cecece;
         }
     ]]></a:style>
 
@@ -4860,7 +4940,7 @@
         </a:main>
     </a:presentation>
 </a:divider>
-    <a:divider name="c9-divider">
+<a:divider name="c9-divider">
     <a:style><![CDATA[
         .c9-divider {
             position   : relative;
@@ -4878,6 +4958,11 @@
         .dockbar .c9-divider {
             border-left:1px solid #1d1e1f;
             border-right:1px solid #373737;
+        }
+        
+        .c9-divider.grey {
+            border-left:1px solid #d8d9da;
+            border-right:1px solid #ffffff;
         }
     ]]></a:style>
 
@@ -4910,6 +4995,11 @@
 
         .c9-divider-horCaption span{
             display : block;
+        }
+        
+        .c9-divider-hor.grey {
+            border-top:1px solid #d8d9da;
+            border-bottom:1px solid #ffffff;
         }
     ]]></a:style>
 
@@ -5088,7 +5178,7 @@
             padding: 0 0 0 8px;
         }
         .dropdown-dark-glossy .button {
-            background: url(images/dropdown-dark-glossy/button.png) no-repeat 50% 0;
+            background: url(images/dropdown-dark-glossy/button.png) no-repeat 3px 6px;
             display: inline-block;
             height: 25px;
             position: absolute;
@@ -5110,7 +5200,7 @@
      * Hover
      */
         .dropdown-dark-glossyOver,
-        .dropdown-dark-glossyOver .button,
+        
         .dropdown-dark-glossyOver .button:before {
             background-position: 50% -30px;
         }
@@ -5118,7 +5208,7 @@
      * Down
      */
         .dropdown-dark-glossyDown,
-        .dropdown-dark-glossyDown .button,
+       
         .dropdown-dark-glossyDown .button:before {
             background-position: 50% -60px;
         }
@@ -5131,7 +5221,7 @@
      * Disabled
      */
         .dropdown-dark-glossyDisabled,
-        .dropdown-dark-glossyDisabled .button,
+        
         .dropdown-dark-glossyDisabled .button:before {
             background-position: 50% -90px;
         }
@@ -5177,13 +5267,13 @@
      */
         .dropdown-dark-glossy-options .list .c9-dd-item.hover {
             background-color: #262626;
-            color: #F5B53C;
+            color: #c5d7bf;
         }
     /**
      * Options list - SELECTED
      */
         .dropdown-dark-glossy-options .list .c9-dd-item.selected {
-            color: #F5B53C;
+            color: #c5d7bf;
         }
     ]]></a:style>
 
@@ -5699,6 +5789,10 @@
         
         .menu-bk .label {
             color: #F1F1F1;
+        }
+        .gray.label {
+            color: #dbdbdb;
+            font-size     : 12px;
         }
     ]]></a:style>
 
@@ -6559,49 +6653,49 @@
 </a:menu>
 
 <a:modalwindow name="fm-window">
-        <a:style><![CDATA[
-            .fm-window {
-                position : relative;
-                overflow : hidden;
-                z-index  : 10000;
-                padding  : 30px 0 0 0;
-                border-right: 1px solid rgba(43,43,43,0.4);
-            }
-            .dark .fm-window {
-                border-right: 1px solid rgba(128,128,128,0.7);
-            }
+    <a:style><![CDATA[
+        .fm-window {
+            position : relative;
+            overflow : hidden;
+            z-index  : 10000;
+            padding  : 30px 0 0 0;
+            border-right: 1px solid rgba(43,43,43,0.4);
+        }
+        .dark .fm-window {
+            border-right: 1px solid rgba(128,128,128,0.7);
+        }
 
-            .fm-window .fm-header {
-                position : relative;
-                overflow : hidden;
-                height   : 32px;
-                top      : -30px;
-            }
+        .fm-window .fm-header {
+            position : relative;
+            overflow : hidden;
+            height   : 32px;
+            top      : -30px;
+        }
 
-            .fm-window .fm-header .hcontent {
-                background-color: rgba(220, 220, 220, 0.93);
-                background-image: url(images/c9-repeat-x.png),
-                                  url(images/c9-noise-light-10.png),
-                                  url(images/c9-noise-light-10.png),
-                                  url(images/c9-noise-light-10.png);
-                background-position: 0 -138px, 0 0;
-                background-repeat: repeat-x;
-                position      : relative;
-                overflow      : hidden;
-                height        : 26px;
-                padding       : 7px 0 0 7px;
-                font-family   : Arial;
-                font-size     : 11.3px;
-                line-height   : 14px;
-                color         : #595959;
-                text-shadow   : #fff 0px 1px 0px;
-                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
-                text-transform : uppercase;
-            }
-            
-            .dark .fm-window .fm-header .hcontent{
-                background-position: 0 -1318px, 0 0;
-            }
+        .fm-window .fm-header .hcontent {
+            background-color: rgba(220, 220, 220, 0.93);
+            background-image: url(images/c9-repeat-x.png),
+                              url(images/c9-noise-light-10.png),
+                              url(images/c9-noise-light-10.png),
+                              url(images/c9-noise-light-10.png);
+            background-position: 0 -138px, 0 0;
+            background-repeat: repeat-x;
+            position      : relative;
+            overflow      : hidden;
+            height        : 26px;
+            padding       : 7px 0 0 7px;
+            font-family   : Arial;
+            font-size     : 11.3px;
+            line-height   : 14px;
+            color         : #595959;
+            text-shadow   : #fff 0px 1px 0px;
+            box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
+            text-transform : uppercase;
+        }
+
+        .dark .fm-window .fm-header .hcontent{
+            background-position: 0 -1318px, 0 0;
+        }
 
         .fm-window .fm-header {
             position : relative;
@@ -6625,22 +6719,22 @@
             text-transform : uppercase;
         }
 
-            .fm-window .fm-content {
-                position:absolute;
-                overflow:visible;
-                left : 0;
-                top  : 32px;
-                right : 0;
-                bottom : 0;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
-                            -1px 0 0 0 rgba(255,255,255,.9) inset; 
-                background-color: rgba(220, 220, 220, 0.9);
-                background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
-                					url(images/c9-noise-light-10.png),
-                					url(images/c9-noise-light-10.png),
+        .fm-window .fm-content {
+            position:absolute;
+            overflow:visible;
+            left : 0;
+            top  : 32px;
+            right : 0;
+            bottom : 0;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
+                        -1px 0 0 0 rgba(255,255,255,.9) inset; 
+            background-color: rgba(220, 220, 220, 0.9);
+            background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
                                 url(images/c9-noise-light-10.png),
-                					url(images/c9-noise-light-10.png);
-            }
+                                url(images/c9-noise-light-10.png),
+                            url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png);
+        }
         ]]></a:style>
 
         <a:presentation>
@@ -7229,6 +7323,7 @@
             font-weight   : bold;
             color         : #ffffff;
             cursor        : default;
+            text-align: center;
         }
 
         .bk-window .bk-header .hcontent .buttons {
@@ -12536,7 +12631,7 @@
                             0 1px 0 0 rgba(0,0,0,.08),
                             0 1px 2px 1px rgba(0,0,0,.1);
                 color: #FFFFFF;
-                cursor: pointer;
+                cursor: default;
                 font-family: Arial;
                 font-size: 13px;
                 height: 25px;
@@ -12592,6 +12687,9 @@
             }
             .button-colorless.blue {
                 background-color: #1473DA
+            }
+            .button-colorless.dark-red {
+                background-color: #6a4040;
             }
 
 

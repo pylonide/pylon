@@ -366,3 +366,16 @@ BODY {
     line-height: 15px;
     text-align: center;
 }
+.info-text {
+    color: #cecece;
+    font-size: 11px;
+    text-align: center;
+    padding: 8px 0;
+}
+.info-text a {
+    color: #c5d7bf;
+    text-decoration: none;
+}
+.info-text a:hover {
+    text-decoration: underline;
+}
