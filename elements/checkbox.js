@@ -80,7 +80,7 @@ apf.checkbox = function(struct, tagName){
     this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.checked     = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "checked", "label", "values");
@@ -152,7 +152,7 @@ apf.checkbox = function(struct, tagName){
         this.$propHandlers["value"].call(this, this.value);
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -195,7 +195,7 @@ apf.checkbox = function(struct, tagName){
     
     //#endif
 
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
 
     this.addEventListener("$clear", function(){
         this.setProperty("value", this.$values ? this.$values[1] : false);
@@ -242,7 +242,7 @@ apf.checkbox = function(struct, tagName){
         return true;
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin

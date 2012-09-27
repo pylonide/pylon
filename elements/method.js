@@ -83,7 +83,7 @@ apf.method = function(struct, tagName){
         this.methodName = value;
     };
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (this.parentNode.$addMethod && e.currentTarget == this)

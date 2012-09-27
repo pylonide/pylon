@@ -204,7 +204,7 @@ apf.accordion = function(struct, tagName){
     this.$supportedProperties.push("animtype", "animdelay", "multiexpand",
         "expand", "startexpanded");
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin) {
         if (doOnlyAdmin)
             return;
@@ -470,7 +470,7 @@ apf.accordion = function(struct, tagName){
         return null;
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         //Build Main Skin

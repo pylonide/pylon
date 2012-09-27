@@ -128,7 +128,7 @@ apf.tree = function(struct, tagName){
         IS_ROOT   = 1 << 4,
         treeState = this.$treeState;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     // #ifdef __WITH_MULTICHECK
     
@@ -413,7 +413,7 @@ apf.tree = function(struct, tagName){
         // #endif
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$drawBase();

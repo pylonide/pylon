@@ -53,7 +53,7 @@
  *   {Array}   args             the arguments for the action
  *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server
  *                              for both execution and undo. (See action rules)
- *   {AmlNode} [amlNode]        the GUI element that triggered the action
+ *   {apf.AmlNode} [amlNode]        the GUI element that triggered the action
  *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to
  *                              which the action node works on
  *   {Number}  [timestamp]      the start of the action that is now executed.
@@ -68,7 +68,7 @@
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
+ *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -85,7 +85,7 @@
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
+ *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -262,7 +262,7 @@ apf.actiontracker = function(struct, tagName){
      *   {Array}   args             the arguments for the action
      *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the
      *                              server for both execution and undo. (See action rules)
-     *   {AmlNode} [amlNode]        the GUI element that triggered the action
+     *   {apf.AmlNode} [amlNode]        the GUI element that triggered the action
      *   {XmlNode} [selNode]        the relevant {@link term.datanode data node}
      *                              to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.

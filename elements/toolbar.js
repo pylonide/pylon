@@ -74,10 +74,10 @@ apf.toolbar = function(struct, tagName){
 (function(){
     this.$focussable     = false;
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin

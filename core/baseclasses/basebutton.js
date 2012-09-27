@@ -47,7 +47,7 @@ apf.BaseButton = function(){
     this.$mouseOver    =        // Mouse hovering over the button?
     this.$mouseLeft    = false; // Has the mouse left the control since pressing the button.
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
      * @attribute {string} background sets a multistate background. The arguments
@@ -91,7 +91,7 @@ apf.BaseButton = function(){
         }
     };
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -134,7 +134,7 @@ apf.BaseButton = function(){
     }, true);
     //#endif
 
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
 
     this.states = {
         "Out"   : 1,
@@ -268,7 +268,7 @@ apf.BaseButton = function(){
         }
     };
 
-    /**** Focus Handling ****/
+    // *** Focus Handling *** //
 
     this.$focus = function(){
         if (!this.$ext)

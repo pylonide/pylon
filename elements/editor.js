@@ -82,7 +82,7 @@ apf.editor = function(struct, tagName){
     this.$oBookmark =
     this.$fTimer    = null;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$isTextInput = true;
 
@@ -266,7 +266,7 @@ apf.editor = function(struct, tagName){
         this.$notifyAllPlugins("context", e);
     }
 
-    /**** Focus Handling ****/
+    // *** Focus Handling *** //
 
     /**
      * Fix for focus handling to mix 'n match nicely with other APF elements
@@ -398,7 +398,7 @@ apf.editor = function(struct, tagName){
 
     //this.addEventListener("contextmenu", onContextmenu);
 
-    /**** Button Handling ****/
+    // *** Button Handling *** //
 
     /**
      * Draw all the HTML elements at startup time.

@@ -398,7 +398,7 @@ apf.notifier = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         //Build Main Skin

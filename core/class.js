@@ -717,7 +717,7 @@ apf.Class.prototype = new (function(){
         return this[prop];
     };
 
-    /**** Event Handling ****/
+    // *** Event Handling ****/
 
     apf.$eventDepth = 0;
     this.$eventDepth = 0;
@@ -853,7 +853,7 @@ apf.Class.prototype = new (function(){
      *
      * @param  {String}   eventName The name of the event for which to register
      *                              a function.
-     * @param  {function} callback  The code to be called when an event is dispatched.
+     * @param  {Function} callback  The code to be called when an event is dispatched.
      */
     this.addEventListener = function(a, b, c){
         this.$bufferEvents.push([a,b,c]);
@@ -887,7 +887,7 @@ apf.Class.prototype = new (function(){
      *
      * @param  {String}   eventName The name of the event for which to unregister
      *                              a function.
-     * @param  {function} callback  The function to be removed from the event stack.
+     * @param  {Function} callback  The function to be removed from the event stack.
      */
     this.removeEventListener = function(eventName, callback, useCapture){
         var stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName];

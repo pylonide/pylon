@@ -165,7 +165,7 @@ apf.AmlWindow = function(struct, tagName){
     this.$focussable       = apf.KEYBOARD;
     this.$editableCaption  = ["title"];
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -303,7 +303,7 @@ apf.AmlWindow = function(struct, tagName){
         return this;
     };
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["modal"]        = true;
     this.$booleanProperties["center"]       = true;
@@ -471,7 +471,7 @@ apf.AmlWindow = function(struct, tagName){
         this.$ext.style.zIndex = value + 1;
     };
 
-    /**** Keyboard ****/
+    // *** Keyboard *** //
 
     //#ifdef __WITH_KEYBOARD
     //#ifdef __SUPPORT_IPHONE
@@ -553,7 +553,7 @@ apf.AmlWindow = function(struct, tagName){
 
     //#endif
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.popout = apf.isTrue(this.getAttribute("popout"));

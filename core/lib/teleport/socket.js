@@ -82,7 +82,7 @@
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
+ *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the socket request.
  *     {XMLHttpRequest} socket      the object that executed the actual socket request.
  *     {String}         url       the url that was requested.
@@ -131,7 +131,7 @@ apf.socket = function(){
      * @param {Object}   options   the options for the socket request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
+     *   {Mixed}   userdata       custom data that is available to the callback function.
      *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
      *   {Boolean} nocache        whether browser caching is prevented.
      *   {String}  data           the data sent in the body of the message.
@@ -154,7 +154,7 @@ apf.socket = function(){
      * @param {String}   url       the url that is accessed.
      * @param {Object}   options   the options for the socket request
      *   Properties:
-     *   {mixed}   userdata       custom data that is available to the callback function.
+     *   {Mixed}   userdata       custom data that is available to the callback function.
      *   {String}  data           the data sent in the body of the message.
      *   {Boolean} useXML         whether the result should be interpreted as xml.
      *   {Function} callback      the handler that gets called whenever the
@@ -424,7 +424,7 @@ apf.socket = function(){
      *   apf.TIMEOUT  the request has timed out.
      *   apf.ERROR    an error has occurred while making the request.
      *   apf.OFFLINE  the request was made while the application was offline.
-     * @param {AmlNode} [amlNode]    the element receiving the error event.
+     * @param {apf.AmlNode} [amlNode]    the element receiving the error event.
      * @param {Error}   [oError]     the error to be thrown when the request is
      *                               not retried.
      * @param {Number}  [maxRetries] the number of retries that are done before

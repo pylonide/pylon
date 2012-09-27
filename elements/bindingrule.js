@@ -104,7 +104,7 @@ apf.BindingRule = function(struct, tagName){
         }
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     /*this.addEventListener("DOMAttrModified", function(e){
         

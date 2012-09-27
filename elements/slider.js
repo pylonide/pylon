@@ -130,7 +130,7 @@ apf.slider = function(struct, tagName){
     this.$dragging   = false;
     this.$onlySetXml = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     this.disabled    = false; // Object is enabled
     this.realtime    = true;
     this.balloon     = true;
@@ -472,7 +472,7 @@ apf.slider = function(struct, tagName){
         this.$propHandlers["value"].call(this, value);
     };
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
     
@@ -497,7 +497,7 @@ apf.slider = function(struct, tagName){
     
     //#endif
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
@@ -636,7 +636,7 @@ apf.slider = function(struct, tagName){
         this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$getNewContext("main");

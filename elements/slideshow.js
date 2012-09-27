@@ -630,7 +630,7 @@ apf.slideshow = function(struct, tagName){
         });
     };
     
-    /**** Init ****/
+    // *** Init *** //
 
     /**
      * Display next image from imagelist

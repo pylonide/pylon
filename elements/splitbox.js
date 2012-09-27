@@ -46,7 +46,7 @@ apf.vsplitbox = function(struct, tagName){
     this.edge = 0;
     this.$edge = [0,0,0,0];
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -467,7 +467,7 @@ apf.vsplitbox = function(struct, tagName){
             this.$handle.hide();
     }
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)

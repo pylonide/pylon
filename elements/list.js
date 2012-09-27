@@ -207,7 +207,7 @@ apf.select1   = function(struct, tagName){
     });
     // #endif
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$supportedProperties.push("appearance", "mode", "more", "thumbsize", "morepos");
     
@@ -347,13 +347,13 @@ apf.select1   = function(struct, tagName){
     }*/
     //#endif
     
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", this.$keyHandler, true);
     //#endif
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.appearance = this.getAttribute("appearance") || "compact";

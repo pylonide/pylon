@@ -79,7 +79,7 @@
  *     apf.TIMEOUT  the request has timed out.
  *     apf.ERROR    an error has occurred while making the request.
  *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *   {Mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *   {XMLHttpRequest} http      the object that executed the actual http request.
  *   {String}         url       the url that was requested.
  *   {Http}           tpModule  the teleport module that is making the request.
@@ -194,7 +194,7 @@ apf.model = function(struct, tagName){
      * Registers a aml element to this model in order for the aml element to
      * receive data loaded in this model.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be registered.
+     * @param  {apf.AmlElement}  amlNode  The aml element to be registered.
      * @param  {String}      [xpath]  the xpath query which is executed on the
      *                                data of the model to select the node to be
      *                                loaded in the <code>amlNode</code>.
@@ -267,7 +267,7 @@ apf.model = function(struct, tagName){
      * The aml element will not receive any updates from this model, however
      * the data loaded in the aml element is not unloaded.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be unregistered.
+     * @param  {apf.AmlElement}  amlNode  The aml element to be unregistered.
      * @private
      */
     this.unregister = function(amlNode){
@@ -709,7 +709,7 @@ apf.model = function(struct, tagName){
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
      *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Mixed}      []        Custom properties available in the data instruction.
      */
     this.$loadFrom = function(instruction, options){
         //#ifdef __WITH_RDB
@@ -821,12 +821,12 @@ apf.model = function(struct, tagName){
     /**
      * Loads data in this model
      *
-     * @param  {mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
+     * @param  {Mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
      *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Mixed}      []        Custom properties available in the data instruction.
      *   {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
      */
     this.load = function(xmlNode, options){
@@ -991,7 +991,7 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("update", {xmlNode: xmlNode, action: action, undoObj: UndoObj});
     };
 
-    /**** INSERT ****/
+    // *** INSERT *** //
 
     /**
      * Inserts data into the data of this model using a data instruction.
@@ -1002,7 +1002,7 @@ apf.model = function(struct, tagName){
      *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
      *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
      *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     *   {Mixed}      <>           Custom properties available in the data instruction.
      */
     this.$insertFrom = function(instruction, options){
         if (!instruction) return false;
@@ -1072,7 +1072,7 @@ apf.model = function(struct, tagName){
      *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
      *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
      *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     *   {Mixed}      <>           Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {

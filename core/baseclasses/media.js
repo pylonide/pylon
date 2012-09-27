@@ -257,7 +257,7 @@ apf.Media = function(){
             this.player.setID3(value);
     };
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("AMLRemove", function(doOnlyAdmin){
         // #ifdef __DEBUG

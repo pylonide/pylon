@@ -42,7 +42,7 @@
  */
 /** 
  * @event movefocus         Fires when the focus moves from one element to another.
- * @param {AMLElement} toElement The element that receives the focus.
+ * @param {apf.AmlElement} toElement The element that receives the focus.
  */
 /** 
  * @event exit              Fires when the application wants to exit.
@@ -63,7 +63,7 @@
  * @cancelable Prevents the container from scrolling
  * @param {Object} e An object containing the following properties:
  *  - {Object}      htmlEvent The HTML event object
- *  - {AMLElement} amlElement  The element which was clicked.
+ *  - {apf.AmlElement} amlElement  The element which was clicked.
  *  - {Number} delta The scroll impulse.
  */
 /** 
@@ -92,7 +92,7 @@
  * @event mousedown     Fires when the user presses a mouse button
  * @param {Object} e An object containing the following properties:
  *  - {Object}      htmlEvent The HTML event object
- *  - {AMLElement} amlElement  The element which was clicked.
+ *  - {apf.AmlElement} amlElement  The element which was clicked.
  */
 /** 
  * @event onbeforeprint Fires before the application prints.
@@ -813,7 +813,7 @@ VERSION:'3.0beta',
     /**
      * Finds an AML element based on its unique id.
      * @param {Number} uniqueId The unique id to search on.
-     * @returns {AMLElement} The returned element.
+     * @returns {apf.AmlElement} The returned element.
      */
     lookup : function(uniqueId){
         return this.all[uniqueId];
@@ -824,7 +824,7 @@ VERSION:'3.0beta',
      * AML element that is responsible for rendering a specific html
      * element.
      * @param {HTMLElement} oHtml The html context to start the search from.
-     * @returns {AMLElement} The parent HTML element
+     * @returns {apf.AmlElement} The parent HTML element
      */
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
@@ -843,7 +843,7 @@ VERSION:'3.0beta',
     /**
      * Sets a reference to an object (by name) in the global JavaScript space.
      * @param {String} name The name of the reference.
-     * @param {mixed}  o    The reference to the object subject to the reference.
+     * @param {Mixed}  o    The reference to the object subject to the reference.
      */
     setReference : function(name, o){
         return self[name] && self[name].hasFeature
@@ -948,7 +948,7 @@ VERSION:'3.0beta',
     /**
      * Formats an Ajax.org Platform error message.
      * @param {Number}      number      The number of the error. This can be used to look up more information about the error.
-     * @param {AMLElement}  control     The aml element that will throw the error.
+     * @param {apf.AmlElement}  control     The aml element that will throw the error.
      * @param {String}      process     The action that was being executed.
      * @param {String}      message     The actual error message.
      * @param {XMLElement}  amlContext  The XML relevant to the error. For instance, this could be a piece of Ajax.org Markup Language XML.
@@ -1731,7 +1731,7 @@ apf.Class.prototype = new (function(){
 
     this.implement = apf.implement;
 
-    /**** Property Binding ****/
+    // *** Property Binding *** //
 
     this.$handlePropSet = function(prop, value){
         this[prop] = value;
@@ -2210,7 +2210,7 @@ apf.Class.prototype = new (function(){
         return this[prop];
     };
 
-    /**** Event Handling ****/
+    // *** Event Handling *** //
 
     apf.$eventDepth = 0;
     this.$eventDepth = 0;
@@ -2223,7 +2223,7 @@ apf.Class.prototype = new (function(){
      *   Properties:
      *   {Boolean} bubbles  whether the event should bubble up to it's parent
      *   {Boolean} captureOnly whether only the captured event handlers should be executed
-     * @return {mixed} return value of the event
+     * @return {Mixed} return value of the event
      */
     //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
     this.dispatchEvent = function(eventName, options, e){
@@ -3150,7 +3150,7 @@ apf.fromCgiString = function(args) {
  * Extends a Function object with properties from other objects, specified as
  * arguments.
  *
- * @param {mixed} obj1, obj2, obj3, etc.
+ * @param {Mixed} obj1, obj2, obj3, etc.
  * @type Function
  * @see apf.extend
  */
@@ -3166,7 +3166,7 @@ Function.prototype.extend = function() {
  *
  * @param {Object} The context the execute the Function within
  * @param {Boolean} Whether the passed event object should be extended with AbstractEvent
- * @param {mixed}  param1, param2, param3, etc.
+ * @param {Mixed}  param1, param2, param3, etc.
  * @type Function
  * @see apf.AbstractEvent
  */
@@ -3263,7 +3263,7 @@ Array.prototype.arrayAdd = function(){
 /**
  * Check if an object is contained within the current Array instance.
  *
- * @param {mixed}   obj The value to check for inside the Array
+ * @param {Mixed}   obj The value to check for inside the Array
  * @type  {Boolean}
  */
 Array.prototype.equals = function(obj){
@@ -3294,7 +3294,7 @@ Array.prototype.makeUnique = function(){
 /**
  * Check if this array instance contains a value 'obj'.
  *
- * @param {mixed}  obj    The value to check for inside the array
+ * @param {Mixed}  obj    The value to check for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Boolean}
  * @see Array.indexOf
@@ -3308,7 +3308,7 @@ Array.prototype.contains = function(obj, from){
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -3325,7 +3325,7 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
  * Search for the index of the last occurence of a value 'obj' inside an array
  * instance.
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -3343,7 +3343,7 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
  * Like Array.push, but only invoked when the value 'item' is already present
  * inside the array instance.
  *
- * @param {mixed} item, item, ...
+ * @param {Mixed} item, item, ...
  * @type  {Array}
  */
 Array.prototype.pushUnique = function(){
@@ -3395,7 +3395,7 @@ Array.prototype.forEach = Array.prototype.forEach || function(fn) {
 /**
  * Search for a value 'obj' inside an array instance and remove it when found.
  *
- * @type {mixed} obj
+ * @type {Mixed} obj
  * @type {Array}
  */
 Array.prototype.remove = function(obj){
@@ -3413,7 +3413,7 @@ Array.prototype.remove = function(obj){
  * Remove an item from an array instance which can be identified with key 'i'
  *
  * @param  {Number} i
- * @return {mixed}  The removed item
+ * @return {Mixed}  The removed item
  */
 Array.prototype.removeIndex = function(i){
     if (!this.length) return null;
@@ -3423,7 +3423,7 @@ Array.prototype.removeIndex = function(i){
 /**
  * Insert a new value at a specific object; alias for Array.splice.
  *
- * @param {mixed}  obj Value to insert
+ * @param {Mixed}  obj Value to insert
  * @param {Number} i   Index to insert 'obj' at
  * @type  {Number}
  */
@@ -5673,7 +5673,7 @@ apf.K = function(){};
 /**
  * Reliably determines whether a variable is a Number.
  *
- * @param {mixed}   value The variable to check
+ * @param {Mixed}   value The variable to check
  * @type  {Boolean}
  */
 apf.isNumber = function(value){
@@ -5684,7 +5684,7 @@ apf.isNumber = function(value){
  * Reliably determines whether a variable is an array.
  * @see http://thinkweb2.com/projects/prototype/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
  *
- * @param {mixed}   value The variable to check
+ * @param {Mixed}   value The variable to check
  * @type  {Boolean}
  */
 apf.isArray = function(value) {
@@ -5693,7 +5693,7 @@ apf.isArray = function(value) {
 
 /**
  * Determines whether a string is true in the html attribute sense.
- * @param {mixed} value the variable to check
+ * @param {Mixed} value the variable to check
  *   Possible values:
  *   true   The function returns true.
  *   'true' The function returns true.
@@ -5708,7 +5708,7 @@ apf.isTrue = function(c){
 
 /**
  * Determines whether a string is false in the html attribute sense.
- * @param {mixed} value the variable to check
+ * @param {Mixed} value the variable to check
  *   Possible values:
  *   false   The function returns true.
  *   'false' The function returns true.
@@ -5724,7 +5724,7 @@ apf.isFalse = function(c){
 /**
  * Determines whether a value should be considered false. This excludes amongst
  * others the number 0.
- * @param {mixed} value the variable to check
+ * @param {Mixed} value the variable to check
  * @return {Boolean} whether the variable is considered false.
  */
 apf.isNot = function(c){
@@ -8379,7 +8379,7 @@ apf.offline = {
  * @param {Object}      [options]    the options for this instruction
  *   Properties:
  *   {Boolean} multicall    whether this call should not be executed immediately but saved for later sending using the purge() command.
- *   {mixed}   userdata     any data that is useful to access in the callback function.
+ *   {Mixed}   userdata     any data that is useful to access in the callback function.
  *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
  *   {XMLElement}  [xmlContext] the subject of the xpath queries
  *   {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
@@ -8422,8 +8422,8 @@ apf.saveData =
  * @param {Object}      [options]    the options for this instruction
  *   Properties:
  *   {Boolean} multicall    whether this call should not be executed immediately but saved for later sending using the purge() command.
- *   {mixed}   userdata     any data that is useful to access in the callback function.
- *   {mixed}   data         data to use in the call
+ *   {Mixed}   userdata     any data that is useful to access in the callback function.
+ *   {Mixed}   data         data to use in the call
  *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
  * @param {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
  */
@@ -8580,7 +8580,7 @@ apf.getData = function(instruction, options){
  * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
  * @param {String} instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data for the model.
- * @param {AmlNode} amlNode     the element the model is added to.
+ * @param {apf.AmlNode} amlNode     the element the model is added to.
  */
 apf.setModel = function(instruction, amlNode){
     if (!instruction) return;
@@ -12706,7 +12706,7 @@ apf.xmldb = new (function(){
      * Gets the html representation of an xml node for a certain element.
      *
      * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {AMLNode} oComp    the element that has created the representation.
+     * @param {apf.AmlNode} oComp    the element that has created the representation.
      * @return {HTMLNode} the html node representing the xml node.
      */
     this.getHtmlNode = function(xmlNode, oComp){
@@ -12721,7 +12721,7 @@ apf.xmldb = new (function(){
      * Finds the html representation of an xml node for a certain element.
      *
      * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {AMLNode} oComp    the element that has created the representation.
+     * @param {apf.AmlNode} oComp    the element that has created the representation.
      * @return {HTMLNode} the html node representing the xml node.
      */
     this.findHtmlNode = function(xmlNode, oComp){
@@ -13976,7 +13976,7 @@ apf.xmldb = new (function(){
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
+ *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -14035,7 +14035,7 @@ apf.http = function(){
      * @param {Object}   options   the options for the http request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
+     *   {Mixed}   userdata       custom data that is available to the callback function.
      *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
      *   {Boolean} nocache        whether browser caching is prevented.
      *   {String}  data           the data sent in the body of the message.
@@ -14066,7 +14066,7 @@ apf.http = function(){
      * @param {Object}   options   the options for the http request
      *   Properties:
      *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
+     *   {Mixed}   userdata       custom data that is available to the callback function.
      *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
      *   {Boolean} nocache        whether browser caching is prevented.
      *   {String}  data           the data sent in the body of the message.
@@ -14571,7 +14571,7 @@ apf.http = function(){
      *   apf.TIMEOUT  the request has timed out.
      *   apf.ERROR    an error has occurred while making the request.
      *   apf.OFFLINE  the request was made while the application was offline.
-     * @param {AmlNode} [amlNode]    the element receiving the error event.
+     * @param {apf.AmlNode} [amlNode]    the element receiving the error event.
      * @param {Error}   [oError]     the error to be thrown when the request is
      *                               not retried.
      * @param {Number}  [maxRetries] the number of retries that are done before
@@ -15522,8 +15522,8 @@ apf.AmlNode = function(){
      * If the element was already a child of another element it is removed from
      * that parent before adding it this element.
      *
-     * @param  {AmlNode}  amlNode  the element to insert as child of this element.
-     * @return  {AmlNode}  the appended node
+     * @param  {apf.AmlNode}  amlNode  the element to insert as child of this element.
+     * @return  {apf.AmlNode}  the appended node
      * @method
      */
     this.appendChild =
@@ -15533,9 +15533,9 @@ apf.AmlNode = function(){
      * element. * If the element was already a child of another element it is
      * removed from that parent before adding it this element.
      *
-     * @param  {AmlNode}  amlNode     the element to insert as child of this element.
-     * @param  {AmlNode}  beforeNode  the element which determines the insertion position of the element.
-     * @return  {AmlNode}  the inserted node
+     * @param  {apf.AmlNode}  amlNode     the element to insert as child of this element.
+     * @param  {apf.AmlNode}  beforeNode  the element which determines the insertion position of the element.
+     * @return  {apf.AmlNode}  the inserted node
      */
     this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         
@@ -15770,7 +15770,7 @@ apf.AmlNode = function(){
      * Clones this element, creating an exact copy of it but does not insert
      * it in the document hierarchy.
      * @param {Boolean} deep whether the element's are cloned recursively.
-     * @return {AmlNode} the cloned element.
+     * @return {apf.AmlNode} the cloned element.
      */
     this.cloneNode = function(deep){
         if (deep && this.nodeType == 1) {
@@ -15845,14 +15845,14 @@ apf.AmlNode = function(){
     
     this.normalize = function(){};
     
-    /**** Xpath support ****/
+    // *** Xpath support *** //
 
     /**
      * Queries the aml dom using the W3C xPath query language and returns a node
      * list. This is not an official API call but can be useful in certain cases.
      * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
      * @param {String}  sExpr          the xpath expression to query the aml DOM tree with.
-     * @param {AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
+     * @param {apf.AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} list of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
@@ -15869,8 +15869,8 @@ apf.AmlNode = function(){
      * node. This is not an official API call but can be useful in certain cases.
      * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
      * @param {String}  sExpr          the xpath expression to query the aml DOM tree with.
-     * @param {AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
-     * @returns {AmlNode} the first node that matches the query.
+     * @param {apf.AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
+     * @returns {apf.AmlNode} the first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
         if (!apf) return;
@@ -16223,7 +16223,7 @@ apf.AmlElement = function(struct, tagName){
     /**
      * Retrieves the attribute node for a given name
      * @param {String} name the name of the attribute to find.
-     * @return {AmlNode} the attribute node or null if none was found with the name specified.
+     * @return {apf.AmlNode} the attribute node or null if none was found with the name specified.
      */
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
@@ -16250,7 +16250,7 @@ apf.AmlElement = function(struct, tagName){
     
     /**
      * Replaces the child aml elements with new aml.
-     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
+     * @param {Mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
      * @param {HTMLElement} oInt        the html parent of the created aml elements.
      */
     this.replaceMarkup = function(amlDefNode, options) {
@@ -16294,7 +16294,7 @@ apf.AmlElement = function(struct, tagName){
 
     /**
      * Inserts new aml into this element.
-     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
+     * @param {Mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
      * @param {Object}      options     
      *    Properties:
      *    callback
@@ -16973,7 +16973,7 @@ apf.AmlDocument = function(){
     /**
      * Gets a aml element based on it's id.
      * @param {String} id the id of the aml element to return.
-     * @return {AMLElement} the aml element with the id specified.
+     * @return {apf.AmlElement} the aml element with the id specified.
      */
     this.getElementById = function(id){
         return self[id];
@@ -17000,12 +17000,12 @@ apf.AmlDocument = function(){
 
     /**
      * Creates a new aml element.
-     * @param {mixed} tagName information about the new node to create.
+     * @param {Mixed} tagName information about the new node to create.
      *   Possible values:
      *   {String}     the tagName of the new element to create
      *   {String}     the aml definition for a single or multiple elements.
      *   {XMLElement} the aml definition for a single or multiple elements.
-     * @return {AMLElement} the created aml element.
+     * @return {apf.AmlElement} the created aml element.
      */
     this.createElement = function(qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
@@ -19739,10 +19739,10 @@ apf.Anchoring = function(){
         if (this.$inited) //@todo add code to reenable anchoring rules (when showing)
             return;
 
-        /**** Properties and Attributes ****/
+        // *** Properties and Attributes *** //
         apf.extend(this.$propHandlers, propHandlers);
 
-        /**** Event handlers ****/
+        // *** Event handlers *** //
         this.addEventListener("DOMNodeRemoved", remove); 
         this.addEventListener("DOMNodeInserted", reparent); 
         this.addEventListener("prop.visible", visibleHandler);
@@ -20124,30 +20124,30 @@ apf.__VALIDATION__ = 1 << 6;
  * @attribute {String} margin   
  * @todo attribute align
  *
- * @attribute {mixed} left the left position of this element. Depending
+ * @attribute {Mixed} left the left position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
  *
- * @attribute {mixed} top the top position of this element. Depending
+ * @attribute {Mixed} top the top position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
  *
- * @attribute {mixed} right the right position of this element. Depending
+ * @attribute {Mixed} right the right position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
  *
- * @attribute {mixed} bottom the bottom position of this element. Depending
+ * @attribute {Mixed} bottom the bottom position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
  *
- * @attribute {mixed} width the different between the left edge and the
+ * @attribute {Mixed} width the different between the left edge and the
  * right edge of this element. Depending on the choosen layout method the
  * unit can be pixels, a percentage or an expression.
  * Remarks:
  * When used as a child of a grid element the width can also be set as '*'. 
  * This will fill the rest space.
  *
- * @attribute {mixed} height the different between the top edge and the
+ * @attribute {Mixed} height the different between the top edge and the
  * bottom edge of this element. Depending on the choosen layout method the
  * unit can be pixels, a percentage or an expression.
  * Remarks:
@@ -20261,11 +20261,11 @@ apf.GuiElement = function(){
         
     );
     
-    /**** Convenience functions for gui nodes ****/
+    // *** Convenience functions for gui nodes *** //
 
     
 
-    /**** Geometry ****/
+    // *** Geometry *** //
 
     /**
      * Sets the different between the left edge and the right edge of this
@@ -20363,7 +20363,7 @@ apf.GuiElement = function(){
         return (this.$ext || {}).offsetTop;
     };
 
-    /**** Disabling ****/
+    // *** Disabling *** //
 
     /**
      * Activates the functions of this element. Call-chaining is supported.
@@ -20382,7 +20382,7 @@ apf.GuiElement = function(){
         return this;
     };
 
-    /**** z-Index ****/
+    // *** z-Index *** //
 
     /**
      * Moves this element to the lowest z ordered level.
@@ -20970,7 +20970,7 @@ apf.Presentation = function(){
 (function(){
     this.$regbase = this.$regbase | apf.__PRESENTATION__;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("skin");
     
@@ -21236,7 +21236,7 @@ apf.Presentation = function(){
     };
     
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$setStyleClass = apf.setStyleClass;
 
@@ -21451,7 +21451,7 @@ apf.Presentation = function(){
         return oExt;
     };
 
-    /**** Focus ****/
+    // *** Focus *** //
     this.$focus = function(){
         if (!this.$ext)
             return;
@@ -21484,7 +21484,7 @@ apf.Presentation = function(){
         }
     };
 
-    /**** Caching ****/
+    // *** Caching *** //
     /*
     this.$setClearMessage    = function(msg){};
     this.$updateClearMessage = function(){}
@@ -22100,7 +22100,7 @@ apf.ValidationGroup = function(name){
     /**
      * Retrieves {@link element.errorbox} used for a specified element.
      *
-     * @param  {AmlNode}  o  required  AmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
+     * @param  {apf.AmlNode}  o  required  AmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
      * @return  {Errorbox}  the found or created Errorbox;
      */
@@ -22165,7 +22165,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @param  {apf.AmlElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
@@ -22178,7 +22178,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @param  {apf.AmlElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
@@ -22191,7 +22191,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
+     * @param  {apf.AmlElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
      * @return  {Boolean}  specifying whether the checked elements are valid.
      * @method isValid, validate, checkValidity
      */
@@ -22286,7 +22286,7 @@ apf.__DATABINDING__ = 1 << 1;
  *     apf.TIMEOUT  the request has timed out.
  *     apf.ERROR    an error has occurred while making the request.
  *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in
+ *   {Mixed}          userdata  data that the caller wanted to be available in
  *                              the callback of the http request.
  *   {XMLHttpRequest} http      the object that executed the actual http request.
  *   {String}         url       the url that was requested.
@@ -22327,7 +22327,7 @@ apf.DataBinding = function(){
         //eachvalue : 1 //disabled because of line 1743 valueRule = in multiselect.js
     }, this.$attrExcludePropBind);
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
@@ -22571,7 +22571,7 @@ apf.DataBinding = function(){
      *  --></a:script>
      * </code>
      *
-     * @param {mixed}  [xmlNode]
+     * @param {Mixed}  [xmlNode]
      *   Possible Values:
      *   {XMLElement}  an xml element loaded in to this element.
      *   {String}      an xml string which is loaded in this element.
@@ -22582,7 +22582,7 @@ apf.DataBinding = function(){
      *   {XMLElement} [xmlNode]    the {@link term.datanode data node} that provides
      *                             context to the data instruction.
      *   {Function}   [callback]   the code executed when the data request returns.
-     *   {mixed}      []           Custom properties available in the data instruction.
+     *   {Mixed}      []           Custom properties available in the data instruction.
      *   {String}     [cacheId]    the xml element to which the binding rules are applied.
      *   {Boolean}    [force]      whether cache is checked before loading the data.
      *   {Boolean}    [noClearMsg] wether a message is set when clear is called.
@@ -25166,7 +25166,7 @@ apf.MultiSelect = function(){
 (function() {
     this.$regbase    = this.$regbase|apf.__MULTISELECT__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     /**
      * the last selected item of this element.
@@ -25281,7 +25281,7 @@ apf.MultiSelect = function(){
      *     onclick  = "atList.undo()" />
      * </code>
      * @action
-     * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
+     * @param  {Mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
      *   Possible values:
      *   {NodeList}   the {@link term.datanode data nodes} to be removed.
      *   {XMLElement} the {@link term.datanode data node} to be removed.
@@ -25611,7 +25611,7 @@ apf.MultiSelect = function(){
      * Selects a single, or set of {@link term.eachnode each nodes}.
      * The selection can be visually represented in this element.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
      *   {XMLElement}  the {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
      *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node} for selection.
@@ -25678,7 +25678,7 @@ apf.MultiSelect = function(){
 
         var htmlNode;
 
-        /**** Type Detection ****/
+        // *** Type Detection *** //
         if (!xmlNode) {
             
 
@@ -25727,7 +25727,7 @@ apf.MultiSelect = function(){
         }) === false)
               return false;
 
-        /**** Selection ****/
+        // *** Selection *** //
 
         var lastIndicator = this.caret;
         this.caret        = xmlNode;
@@ -25836,7 +25836,7 @@ apf.MultiSelect = function(){
      * Choose a selected item. This is done by double clicking on the item or
      * pressing the Enter key.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
      *   {XMLElement}  the {@link term.datanode data node} to be choosen.
      *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
@@ -25986,7 +25986,7 @@ apf.MultiSelect = function(){
      * or keyboard the indicator is always set to the selected node. Unlike a
      * selection there can be only one indicator item.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the indicator.
+     * @param {Mixed}   xmlNode      the identifier to determine the indicator.
      *   Possible values:
      *   {XMLElement}  the {@link term.datanode data node} to be set as indicator.
      *   {HTMLElement} the html element node used as visual representation of
@@ -26003,7 +26003,7 @@ apf.MultiSelect = function(){
             return;
         }
 
-        /**** Type Detection ****/
+        // *** Type Detection *** //
         var htmlNode;
         if (typeof xmlNode != "object")
             xmlNode = apf.xmldb.getNodeById(xmlNode);
@@ -26118,7 +26118,7 @@ apf.MultiSelect = function(){
      * {@link term.datanode data nodes} from this element.
      *
      * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @return {Mixed} the selection of this element.
      */
     this.getSelection = function(xmldoc){
         var i, r;
@@ -26982,7 +26982,7 @@ apf.__DATAACTION__ = 1 << 25;
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Gets the ActionTracker this element communicates with.
@@ -28342,7 +28342,7 @@ apf.BaseButton = function(){
     this.$mouseOver    =        // Mouse hovering over the button?
     this.$mouseLeft    = false; // Has the mouse left the control since pressing the button.
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
      * @attribute {string} background sets a multistate background. The arguments
@@ -28383,7 +28383,7 @@ apf.BaseButton = function(){
         }
     };
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -28426,7 +28426,7 @@ apf.BaseButton = function(){
     }, true);
     
 
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
 
     this.states = {
         "Out"   : 1,
@@ -28557,7 +28557,7 @@ apf.BaseButton = function(){
         }
     };
 
-    /**** Focus Handling ****/
+    // *** Focus Handling *** //
 
     this.$focus = function(){
         if (!this.$ext)
@@ -28734,7 +28734,7 @@ apf.BaseList = function(){
     );
     
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = true; // This object can get the focus
     this.$isWindowContainer = -1;
@@ -28794,7 +28794,7 @@ apf.BaseList = function(){
     
     
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     
 
@@ -29116,7 +29116,7 @@ apf.BaseList = function(){
 
     
 
-    /**** Private databinding functions ****/
+    // *** Private databinding functions *** //
 
     this.$deInitNode   = function(xmlNode, htmlNode){
         if (!htmlNode) return;
@@ -29464,7 +29464,7 @@ apf.BaseList = function(){
         });
     };
 
-    /**** Selection ****/
+    // *** Selection *** //
 
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [],
@@ -30349,7 +30349,7 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {mixed}    page     the name of numer of the page which is made active.
+     * @param {Mixed}    page     the name of numer of the page which is made active.
      * @param {Function} callback the function called after setting the page. Especially handy when using the src attribute.
      */
     this.set = function(page, callback, noEvent){
@@ -30365,7 +30365,7 @@ apf.BaseTab = function(){
         this.setProperty("activepage", page);
     };
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("activepage", "activepagenr", "length",
         "src", "loading", "trans-in", "trans-out");
@@ -30874,7 +30874,7 @@ apf.BaseTab = function(){
     }
     
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
@@ -30892,7 +30892,7 @@ apf.BaseTab = function(){
 
     /**
      * Retrieves a page element by it's name or child number
-     * @param {mixed} nameOrId the name or child number of the page element to retrieve.
+     * @param {Mixed} nameOrId the name or child number of the page element to retrieve.
      * @return {Page} the found page element.
      */
     this.getPage = function(nameOrId){
@@ -30933,7 +30933,7 @@ apf.BaseTab = function(){
      * of this page. To simple remove the page from the DOM tree use the
      * removeNode() method.
      *
-     * @param {mixed} nameOrId the name or child number of the page element to remove.
+     * @param {Mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
     this.remove = function(nameOrId, force, noAnimation){
@@ -31343,7 +31343,7 @@ apf.BaseTab = function(){
 
     
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         var amlNode = e.currentTarget;
@@ -31458,7 +31458,7 @@ apf.BaseTab = function(){
         
     });
 
-    /**** Private state handling functions ****/
+    // *** Private state handling functions *** //
 
     this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
@@ -31504,7 +31504,7 @@ apf.BaseTab = function(){
         }
     };
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     
 
@@ -31550,7 +31550,7 @@ apf.BaseTab = function(){
 
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$loadChildren = function(callback){
         var page  = false,
@@ -31817,7 +31817,7 @@ apf.BaseTree = function(){
     );
     
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     //Options
     this.$isTreeArch   = true; // This element has a tree architecture.
@@ -31845,7 +31845,7 @@ apf.BaseTree = function(){
     this.$treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     this.$treeState[IS_ROOT]                         = "root";
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
      * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
@@ -31874,7 +31874,7 @@ apf.BaseTree = function(){
     this.prerender      = true;
     this.disableremove  = false;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Expands all items in the tree
@@ -32045,7 +32045,7 @@ apf.BaseTree = function(){
      */
     this.selectPath = function(path){};
 
-    /**** Sliding functions ****/
+    // *** Sliding functions *** //
 
     /**
      * @private
@@ -32263,7 +32263,7 @@ apf.BaseTree = function(){
         });
     };
 
-    /**** Databinding Support ****/
+    // *** Databinding Support *** //
 
     this.$isStartCollapsed = function(xmlNode){
         return this.$hasBindRule("collapsed")
@@ -32688,7 +32688,7 @@ apf.BaseTree = function(){
 
     this.addEventListener("xmlupdate", xmlUpdateHandler);
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     
     this.addEventListener("beforerename", function(){
@@ -32985,7 +32985,7 @@ apf.BaseTree = function(){
     }, true);
     
 
-    /**** Rename Support ****/
+    // *** Rename Support *** //
 
     
     this.$getCaptionElement = function(){
@@ -32995,7 +32995,7 @@ apf.BaseTree = function(){
     };
     
 
-    /**** Selection Support ****/
+    // *** Selection Support *** //
     /*
         nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
                 ? this.xmlRoot.selectNodes(this.$isTreeArch
@@ -33092,7 +33092,7 @@ apf.BaseTree = function(){
         while(cNode);
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     /**
      * @event click Fires when the user presses a mousebutton while over this
@@ -33405,27 +33405,27 @@ apf.__DRAGDROP__ = 1 << 5;
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  * @event  dragover Fires when the users drags over this aml element.
  *   cancelable: Prevents the possibility to drop.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  * @event  dragout  Fires when the user moves away from this aml element.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  * @event  dragdrop  Fires when the user drops an item on this aml element.
  *   cancelable: Prevents the possibility to drop.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
  *
  * @see element.drag
@@ -34538,7 +34538,7 @@ apf.DragServer = {
  * @private
  */
 apf.MultiselectDragDrop = function() {
-    /**** Drag & Drop ****/
+    // *** Drag & Drop *** //
     
     this.diffX        =
     this.diffY        = 0;
@@ -35766,20 +35766,20 @@ apf.__MULTICHECK__ = 1 << 22;
 apf.MultiCheck = function(){
     this.$regbase    = this.$regbase | apf.__MULTICHECK__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.multicheck  = true;
     this.checklength = 0;
     this.$checkedList = [];
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
     
     /**
      * Checks a single, or set of.
      * The checking can be visually represented in this element.
      * The element can be checked, partialy checked or unchecked
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      * @return  {Boolean}  whether the selection could not be made
      *
      * @event  beforecheck  Fires before a check is made
@@ -35818,7 +35818,7 @@ apf.MultiCheck = function(){
     /**
      * Unchecks a single, or set of.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      * @return  {Boolean}  whether the selection could be made
      *
      * @event  beforeuncheck  Fires before a uncheck is made
@@ -35855,7 +35855,7 @@ apf.MultiCheck = function(){
     /**
      * Toggles between check and uncheck a single, or set of.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      *
      */
     this.checkToggle = function(xmlNode, userAction){
@@ -35999,7 +35999,7 @@ apf.MultiCheck = function(){
      * {@link term.datanode data nodes} from this element.
      *
      * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @return {Mixed} the selection of this element.
      */
     this.getChecked = function(xmldoc){
         var i, r;
@@ -36837,7 +36837,7 @@ apf.$viewportVirtual = function(amlNode){
         this.setScrollTop(nr * itemHeight + (toBottom ? itemHeight - this.getHeight() : 0));
     }
     
-    /**** Private ****/
+    // *** Private *** //
     
     //Assume all items have the same height;
     //@todo this can be optimized by caching
@@ -36861,7 +36861,7 @@ apf.$viewportVirtual = function(amlNode){
             : htmlNode);
     }
 
-    /**** Implementation ****/
+    // *** Implementation *** //
 
     this.draw = function(){
         this.inited = true;
@@ -37512,7 +37512,7 @@ apf.window = function(){
 
     
 
-    /**** Focus Internals ****/
+    // *** Focus Internals *** //
 
     
     this.vManager = new apf.visibilitymanager();
@@ -37809,11 +37809,11 @@ apf.window = function(){
         //this.$focusParent = null; //@experimental to not execute this
     }
 
-    /**** Focus API ****/
+    // *** Focus API *** //
 
     /**
      * Determines whether a given aml element has the focus.
-     * @param {AMLElement} the element to check
+     * @param {apf.AmlElement} the element to check
      * @returns {Boolean} whether the element has focus.
      */
     this.hasFocus = function(amlNode){
@@ -37911,7 +37911,7 @@ apf.window = function(){
 
     
 
-    /**** Set Window Events ****/
+    // *** Set Window Events *** //
 
     apf.addListener(window, "beforeunload", function(){
         return apf.dispatchEvent("exit");
@@ -37928,7 +37928,7 @@ apf.window = function(){
 
     
 
-    /**** Keyboard and Focus Handling ****/
+    // *** Keyboard and Focus Handling *** //
 
     apf.addListener(document, "contextmenu", function(e){
         if (!e)
@@ -39023,7 +39023,7 @@ apf.runNonIe = function (){
 
     
     
-    /**** XML Serialization ****/
+    // *** XML Serialization *** //
     if (XMLDocument.prototype.__defineGetter__) {
         //XMLDocument.xml
         XMLDocument.prototype.__defineGetter__("xml", function(){
@@ -43753,7 +43753,7 @@ apf.BindingRule = function(struct, tagName){
         }
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     /*this.addEventListener("DOMAttrModified", function(e){
         
@@ -43987,7 +43987,7 @@ apf.ActionRule = function(struct, tagName){
         delete this["c" + prop];
     }
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
@@ -44131,7 +44131,7 @@ apf.actions = function(struct, tagName){
         amlNode.dispatchEvent("actionsunload", {bindings: this});
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;
@@ -44207,7 +44207,7 @@ apf.aml.setElement("actions", apf.actions);
  *   {Array}   args             the arguments for the action
  *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server
  *                              for both execution and undo. (See action rules)
- *   {AmlNode} [amlNode]        the GUI element that triggered the action
+ *   {apf.AmlNode} [amlNode]        the GUI element that triggered the action
  *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to
  *                              which the action node works on
  *   {Number}  [timestamp]      the start of the action that is now executed.
@@ -44222,7 +44222,7 @@ apf.aml.setElement("actions", apf.actions);
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
+ *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -44239,7 +44239,7 @@ apf.aml.setElement("actions", apf.actions);
  *       apf.TIMEOUT  the request has timed out.
  *       apf.ERROR    an error has occurred while making the request.
  *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
+ *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the http request.
  *     {XMLHttpRequest} http      the object that executed the actual http request.
  *     {String}         url       the url that was requested.
@@ -44361,7 +44361,7 @@ apf.actiontracker = function(struct, tagName){
      *   {Array}   args             the arguments for the action
      *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the
      *                              server for both execution and undo. (See action rules)
-     *   {AmlNode} [amlNode]        the GUI element that triggered the action
+     *   {apf.AmlNode} [amlNode]        the GUI element that triggered the action
      *   {XmlNode} [selNode]        the relevant {@link term.datanode data node}
      *                              to which the action node works on
      *   {Number}  [timestamp]      the start of the action that is now executed.
@@ -47352,7 +47352,7 @@ apf.bindings = function(struct, tagName){
         }
     }
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;
@@ -47887,7 +47887,7 @@ apf.button  = function(struct, tagName){
     this.$isLeechingSkin = false;
     this.$canLeechSkin   = true;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable  = apf.KEYBOARD; // This object can get the focus
     this.value        = null;
@@ -48266,7 +48266,7 @@ apf.button  = function(struct, tagName){
     };
     
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
@@ -48312,7 +48312,7 @@ apf.button  = function(struct, tagName){
     
     
 
-    /**** Private state methods ****/
+    // *** Private state methods *** //
 
     this.$setStateBehaviour = function(value){
         this.value     = value || false;
@@ -48376,7 +48376,7 @@ apf.button  = function(struct, tagName){
     };
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.addEventListener("$skinchange", function(e){
         if (this.tooltip)
@@ -48633,7 +48633,7 @@ apf.checkbox = function(struct, tagName){
     this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.checked     = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "checked", "label", "values");
@@ -48705,7 +48705,7 @@ apf.checkbox = function(struct, tagName){
         this.$propHandlers["value"].call(this, this.value);
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
@@ -48748,7 +48748,7 @@ apf.checkbox = function(struct, tagName){
     
     
 
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
 
     this.addEventListener("$clear", function(){
         this.setProperty("value", this.$values ? this.$values[1] : false);
@@ -48795,7 +48795,7 @@ apf.checkbox = function(struct, tagName){
         return true;
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin
@@ -49924,7 +49924,7 @@ apf.datagrid = function(struct, tagName){
         o.scrollTop = (Q.offsetTop) - 21;
     }
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     
     /*function keyHandler(e){
@@ -50204,7 +50204,7 @@ apf.datagrid = function(struct, tagName){
     
     
     
-    /**** Focus ****/
+    // *** Focus *** //
     // Too slow for IE
     
     
@@ -50257,7 +50257,7 @@ apf.datagrid = function(struct, tagName){
         hideEditor.call(this);
     };
     
-    /**** Databinding ****/
+    // *** Databinding *** //
     
     this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
         var rules = e.bindings["column"];
@@ -50804,7 +50804,7 @@ apf.datagrid = function(struct, tagName){
     };
     this.addEventListener("beforeselect", hideEditor);
     
-    /**** Column management ****/
+    // *** Column management *** //
 
     /**
      * Returns a column definition object based on the column number.
@@ -50862,7 +50862,7 @@ apf.datagrid = function(struct, tagName){
         h.move(to);
     }
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$drawBase();
@@ -51223,7 +51223,7 @@ apf.dropdown = function(struct, tagName){
     this.$animSpeed       = 20;
     this.$itemSelectEvent = "onmouseup";
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.dragdrop      = false;
     this.reselectable  = true;
@@ -51261,7 +51261,7 @@ apf.dropdown = function(struct, tagName){
         this.$setStyleClass(this.oSlider, e.value);
     });
     
-    /**** Public methods ****/
+    // *** Public methods *** //
     
     /**
      * Toggles the visibility of the container with the list elements. It opens
@@ -51347,7 +51347,7 @@ apf.dropdown = function(struct, tagName){
         return false;
     };
     
-    /**** Private methods and event handlers ****/
+    // *** Private methods and event handlers *** //
 
     //@todo apf3.0 why is this function called 6 times on init.
     this.$setLabel = function(value){
@@ -51407,7 +51407,7 @@ apf.dropdown = function(struct, tagName){
 
     this.addEventListener("popuphide", this.slideUp);
     
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     
     this.addEventListener("keydown", function(e){
@@ -51485,7 +51485,7 @@ apf.dropdown = function(struct, tagName){
     }, true);
     
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$getNewContext("main");
@@ -52025,7 +52025,7 @@ apf.frame    = function(struct, tagName){
     
     
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     /**
      * @attribute {String} caption the text of the caption. 
@@ -52071,7 +52071,7 @@ apf.frame    = function(struct, tagName){
         this.setProperty("title", value);
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin
@@ -52220,7 +52220,7 @@ apf.vbox = function(struct, tagName){
     this.minwidth    = 0;
     this.minheight   = 0;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -52854,7 +52854,7 @@ apf.vbox = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)
@@ -53346,7 +53346,7 @@ apf.preview = function(struct, tagName){
             this.oImg.style.display = "none";
     });
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin
@@ -53475,7 +53475,7 @@ apf.aml.setElement("image", apf.BindingRule);
  * @event click Fires when a user presses the mouse button while over this element.
  *   object:
  *   {XMLElement} xmlContext the xml data node that was selected in the opener at the time of showing the context menu.
- *   {AMLElement} opener the element that was clicked upon when showing the context menu.
+ *   {apf.AmlElement} opener the element that was clicked upon when showing the context menu.
  */
 apf.item  = function(struct, tagName){
     this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
@@ -53491,7 +53491,7 @@ apf.item  = function(struct, tagName){
 
     this.implement(apf.ChildValue);
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -53817,7 +53817,7 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "", ["disabled"]);
     }
 
-    /**** Dom Hooks ****/
+    // *** Dom Hooks *** //
 
     //@todo apf3.0
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
@@ -53830,7 +53830,7 @@ apf.item  = function(struct, tagName){
         }
     });
 
-    /**** Events ****/
+    // *** Events *** //
 
     this.$down = function(){
 
@@ -53977,7 +53977,7 @@ apf.item  = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(isSkinSwitch){
         var p = this.parentNode;
@@ -54587,7 +54587,7 @@ apf.select1   = function(struct, tagName){
     
     
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$supportedProperties.push("appearance", "mode", "more", "thumbsize", "morepos");
     
@@ -54727,13 +54727,13 @@ apf.select1   = function(struct, tagName){
     }*/
     
     
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
     
     
     this.addEventListener("keydown", this.$keyHandler, true);
     
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.appearance = this.getAttribute("appearance") || "compact";
@@ -55076,7 +55076,7 @@ apf.menu = function(struct, tagName){
     //var _self         = this;
     //var blurring      = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //this.zindex    = 10000000;
     this.visible   = false;
@@ -55180,7 +55180,7 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     var lastFocus;
 
@@ -55189,7 +55189,7 @@ apf.menu = function(struct, tagName){
      * @param {Number}     x        the left position of the menu.
      * @param {Number}     y        the top position of the menu.
      * @param {Boolean}    noanim   whether to animate the showing of this menu.
-     * @param {AMLElement} opener   the element that is the context of this menu.
+     * @param {apf.AmlElement} opener   the element that is the context of this menu.
      * @param {XMLElement} xmlNode  the {@link term.datanode data node} that provides data context to the menu child nodes.
      * @see baseclass.guielement.event.contextmenu
      */
@@ -55361,7 +55361,7 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Events ****/
+    // *** Events *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -55522,7 +55522,7 @@ apf.menu = function(struct, tagName){
     this.addEventListener("blur", forceHide);
     this.addEventListener("popuphide", forceHide);
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$pHtmlNode = document.body;
@@ -55633,7 +55633,7 @@ apf.method = function(struct, tagName){
         this.methodName = value;
     };
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (this.parentNode.$addMethod && e.currentTarget == this)
@@ -55823,7 +55823,7 @@ apf.AmlWindow = function(struct, tagName){
     this.$focussable       = apf.KEYBOARD;
     this.$editableCaption  = ["title"];
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
@@ -55860,7 +55860,7 @@ apf.AmlWindow = function(struct, tagName){
         return this;
     };
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["modal"]        = true;
     this.$booleanProperties["center"]       = true;
@@ -56028,7 +56028,7 @@ apf.AmlWindow = function(struct, tagName){
         this.$ext.style.zIndex = value + 1;
     };
 
-    /**** Keyboard ****/
+    // *** Keyboard *** //
 
     
     
@@ -56106,7 +56106,7 @@ apf.AmlWindow = function(struct, tagName){
 
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.popout = apf.isTrue(this.getAttribute("popout"));
@@ -56369,7 +56369,7 @@ apf.aml.setElement("window",      apf.modalwindow);
  *     apf.TIMEOUT  the request has timed out.
  *     apf.ERROR    an error has occurred while making the request.
  *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
+ *   {Mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
  *   {XMLHttpRequest} http      the object that executed the actual http request.
  *   {String}         url       the url that was requested.
  *   {Http}           tpModule  the teleport module that is making the request.
@@ -56475,7 +56475,7 @@ apf.model = function(struct, tagName){
      * Registers a aml element to this model in order for the aml element to
      * receive data loaded in this model.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be registered.
+     * @param  {apf.AmlElement}  amlNode  The aml element to be registered.
      * @param  {String}      [xpath]  the xpath query which is executed on the
      *                                data of the model to select the node to be
      *                                loaded in the <code>amlNode</code>.
@@ -56548,7 +56548,7 @@ apf.model = function(struct, tagName){
      * The aml element will not receive any updates from this model, however
      * the data loaded in the aml element is not unloaded.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be unregistered.
+     * @param  {apf.AmlElement}  amlNode  The aml element to be unregistered.
      * @private
      */
     this.unregister = function(amlNode){
@@ -56969,7 +56969,7 @@ apf.model = function(struct, tagName){
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
      *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Mixed}      []        Custom properties available in the data instruction.
      */
     this.$loadFrom = function(instruction, options){
         
@@ -57076,12 +57076,12 @@ apf.model = function(struct, tagName){
     /**
      * Loads data in this model
      *
-     * @param  {mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
+     * @param  {Mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
      *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Mixed}      []        Custom properties available in the data instruction.
      *   {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
      */
     this.load = function(xmlNode, options){
@@ -57228,7 +57228,7 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("update", {xmlNode: xmlNode, action: action, undoObj: UndoObj});
     };
 
-    /**** INSERT ****/
+    // *** INSERT *** //
 
     /**
      * Inserts data into the data of this model using a data instruction.
@@ -57239,7 +57239,7 @@ apf.model = function(struct, tagName){
      *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
      *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
      *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     *   {Mixed}      <>           Custom properties available in the data instruction.
      */
     this.$insertFrom = function(instruction, options){
         if (!instruction) return false;
@@ -57301,7 +57301,7 @@ apf.model = function(struct, tagName){
      *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
      *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
      *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     *   {Mixed}      <>           Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
@@ -57833,7 +57833,7 @@ apf.notifier = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         //Build Main Skin
@@ -57919,7 +57919,7 @@ apf.page = function(struct, tagName){
     };
     
 
-    /**** Delayed Render Support ****/
+    // *** Delayed Render Support *** //
 
     
     //Hack
@@ -57936,7 +57936,7 @@ apf.page = function(struct, tagName){
     });
      
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
@@ -58093,7 +58093,7 @@ apf.page = function(struct, tagName){
             this.$activate();
     };
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e && e.currentTarget != this)
@@ -58136,7 +58136,7 @@ apf.page = function(struct, tagName){
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);
 
-    /**** Private state functions ****/
+    // *** Private state functions *** //
 
     this.$position = 0;
     this.$first = function(remove){
@@ -58517,7 +58517,7 @@ apf.page = function(struct, tagName){
         this.$btnPressed     = false;
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$canLeechSkin = true;
     
@@ -58845,7 +58845,7 @@ apf.progressbar = function(struct, tagName){
 
     this.$focussable = false; // This object can get the focus
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.value = 0;
     this.min   = 0;
@@ -58904,7 +58904,7 @@ apf.progressbar = function(struct, tagName){
         this.max = parseFloat(value);
     }
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
@@ -58999,7 +58999,7 @@ apf.progressbar = function(struct, tagName){
         }, time || 500);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$step = function(){
         if (this.value == this.max) 
@@ -59008,7 +59008,7 @@ apf.progressbar = function(struct, tagName){
         this.setValue(this.value + 1);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
@@ -59167,7 +59167,7 @@ apf.radiobutton = function(struct, tagName){
         selected: 1
     }, this.$attrExcludePropBind);*/
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["selected"] = true;
     this.$supportedProperties.push("value", "background", "group",
@@ -59304,7 +59304,7 @@ apf.radiobutton = function(struct, tagName){
         }
     }
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
@@ -59358,7 +59358,7 @@ apf.radiobutton = function(struct, tagName){
         this.doBgSwitch(1);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$enable = function(){
         if (this.oInput)
@@ -59441,7 +59441,7 @@ apf.radiobutton = function(struct, tagName){
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -59482,7 +59482,7 @@ apf.radiobutton = function(struct, tagName){
     }, true);
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin
@@ -61743,7 +61743,7 @@ apf.ViewPortAml = function(amlNode){
         }
     }
     
-    /**** Private ****/
+    // *** Private *** //
     
     this.$getHtmlHost = function(){
         var htmlNode = this.amlNode.$int || this.amlNode.$container;
@@ -61785,13 +61785,13 @@ apf.ViewPortAml = function(amlNode){
 }).call(apf.ViewPortAml.prototype);
 
 apf.ViewPortHtml = function(htmlNode){
-    /**** Private ****/
+    // *** Private *** //
     
     this.$getHtmlHost = function(){
         return htmlNode;
     }
     
-    /**** Init ****/
+    // *** Init *** //
     
     var _self = this;
     
@@ -62861,7 +62861,7 @@ apf.smartbinding = function(struct, tagName){
     /**
      * Loads xml data in the model of this smartbinding element.
      * 
-     * @param  {mixed}  xmlNode the {@link term.datanode data node} loaded into
+     * @param  {Mixed}  xmlNode the {@link term.datanode data node} loaded into
      * the model of this smartbinding element. This can be an XMLElement, a 
      * string or null. 
      * @private
@@ -63593,7 +63593,7 @@ apf.vsplitbox = function(struct, tagName){
     this.edge = 0;
     this.$edge = [0,0,0,0];
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -64014,7 +64014,7 @@ apf.vsplitbox = function(struct, tagName){
             this.$handle.hide();
     }
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)
@@ -65137,7 +65137,7 @@ apf.state = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("active");
     this.$booleanProperties["active"] = true;
@@ -65198,7 +65198,7 @@ apf.state = function(struct, tagName){
     };
 
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
@@ -65232,7 +65232,7 @@ apf.state = function(struct, tagName){
     
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$propHandlers["group"] = function(value){  
         if (value) {
@@ -65438,7 +65438,7 @@ apf.tab       = function(struct, tagName){
 (function(){
     this.$focussable = apf.KEYBOARD; // This object can get the focus from the keyboard
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(bSkinChange){
         //Build Main Skin
@@ -65543,7 +65543,7 @@ apf.table = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -65853,7 +65853,7 @@ apf.table = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)
@@ -66050,7 +66050,7 @@ apf.text = function(struct, tagName){
 
     this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
      * @attribute {Boolean} scrolldown  whether this elements viewport is always
@@ -66182,7 +66182,7 @@ apf.text = function(struct, tagName){
     // @todo replace this stub with something that does something
     this.$moveNode = function() {};
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
@@ -66210,7 +66210,7 @@ apf.text = function(struct, tagName){
     
     
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -66247,7 +66247,7 @@ apf.text = function(struct, tagName){
     }, true);
     
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$canLoadData = function(){
         return this.$attrBindings.value ? true : false;
@@ -66285,7 +66285,7 @@ apf.text = function(struct, tagName){
     this.$updateNode =
     this.$moveNode   = apf.K;
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$ext = this.$getExternal();
@@ -66679,7 +66679,7 @@ apf.textbox  = function(struct, tagName){
         return true;
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
@@ -66936,7 +66936,7 @@ apf.textbox  = function(struct, tagName){
         clearInterval(fTimer);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         var _self       = this,
@@ -67331,10 +67331,10 @@ apf.toolbar = function(struct, tagName){
 (function(){
     this.$focussable     = false;
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin
@@ -67479,7 +67479,7 @@ apf.tree = function(struct, tagName){
         IS_ROOT   = 1 << 4,
         treeState = this.$treeState;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     
     
@@ -67735,7 +67735,7 @@ apf.tree = function(struct, tagName){
         
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$drawBase();
@@ -67989,8 +67989,8 @@ apf.webdav = function(struct, tagName){
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
-     * @param {mixed}  value
-     * @type  {mixed}
+     * @param {Mixed}  value
+     * @type  {Mixed}
      * @private
      */
     this.$regVar = function(name, value) {
@@ -68021,7 +68021,7 @@ apf.webdav = function(struct, tagName){
      * space.
      *
      * @param {String} name
-     * @type  {mixed}
+     * @type  {Mixed}
      * @private
      */
     this.$getVar = function(name) {

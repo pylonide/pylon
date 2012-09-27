@@ -36,7 +36,7 @@
  * #### Remarks
  * 
  * In modern browsers (after 2009) the location hash can be set by script and
- * {@link element.history.event.hashchange} is called when it's changed by using the back or forward
+ * {@link apf.history@hashchange} is called when it's changed by using the back or forward
  * button of the browsers. In most of the current (2009) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.

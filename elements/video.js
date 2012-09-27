@@ -179,7 +179,7 @@ apf.video = function(struct, tagName){
         }
     };
 
-    /**** Event listeners ****/
+    // *** Event listeners *** //
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){

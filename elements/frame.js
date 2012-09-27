@@ -66,7 +66,7 @@ apf.frame    = function(struct, tagName){
     this.$editableCaption = ["caption"]
     //#endif
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     /**
      * @attribute {String} caption the text of the caption. 
@@ -112,7 +112,7 @@ apf.frame    = function(struct, tagName){
         this.setProperty("title", value);
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

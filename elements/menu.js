@@ -92,7 +92,7 @@ apf.menu = function(struct, tagName){
     //var _self         = this;
     //var blurring      = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //this.zindex    = 10000000;
     this.visible   = false;
@@ -208,7 +208,7 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     var lastFocus;
 
@@ -217,7 +217,7 @@ apf.menu = function(struct, tagName){
      * @param {Number}     x        the left position of the menu.
      * @param {Number}     y        the top position of the menu.
      * @param {Boolean}    noanim   whether to animate the showing of this menu.
-     * @param {AMLElement} opener   the element that is the context of this menu.
+     * @param {apf.AmlElement} opener   the element that is the context of this menu.
      * @param {XMLElement} xmlNode  the {@link term.datanode data node} that provides data context to the menu child nodes.
      * @see baseclass.guielement.event.contextmenu
      */
@@ -389,7 +389,7 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Events ****/
+    // *** Events *** //
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -550,7 +550,7 @@ apf.menu = function(struct, tagName){
     this.addEventListener("blur", forceHide);
     this.addEventListener("popuphide", forceHide);
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$pHtmlNode = document.body;

@@ -119,7 +119,7 @@ apf.bindings = function(struct, tagName){
         }
     }
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;

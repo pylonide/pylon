@@ -21,10 +21,10 @@
 
 // #ifdef __WITH_AMLEVENT
 /**
- * Implementation of W3C event object. An instance of this class is passed as
- * the first argument of any event handler. Per event it will contain different
+ * Implementation of the W3C event object. An instance of this class is passed as
+ * the first argument of any event handler. As per event, it contains different
  * properties giving context based information about the event.
- * @constructor
+ * @class apf.AmlEvent
  * @default_private
  */
 apf.AmlEvent = function(name, data){
@@ -42,7 +42,7 @@ apf.AmlEvent.prototype = {
     // #endif
 
     /**
-     * Cancels the event if it is cancelable, without stopping further 
+     * Cancels the event (if it is cancelable), without stopping further 
      * propagation of the event. 
      */
     preventDefault : function(){

@@ -37,20 +37,20 @@ apf.__MULTICHECK__ = 1 << 22;
 apf.MultiCheck = function(){
     this.$regbase    = this.$regbase | apf.__MULTICHECK__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.multicheck  = true;
     this.checklength = 0;
     this.$checkedList = [];
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
     
     /**
      * Checks a single, or set of.
      * The checking can be visually represented in this element.
      * The element can be checked, partialy checked or unchecked
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      * @return  {Boolean}  whether the selection could not be made
      *
      * @event  beforecheck  Fires before a check is made
@@ -120,7 +120,7 @@ apf.MultiCheck = function(){
     /**
      * Unchecks a single, or set of.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      * @return  {Boolean}  whether the selection could be made
      *
      * @event  beforeuncheck  Fires before a uncheck is made
@@ -160,7 +160,7 @@ apf.MultiCheck = function(){
     /**
      * Toggles between check and uncheck a single, or set of.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      *
      */
     this.checkToggle = function(xmlNode, userAction){
@@ -378,7 +378,7 @@ apf.MultiCheck = function(){
      * {@link term.datanode data nodes} from this element.
      *
      * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @return {Mixed} the selection of this element.
      */
     this.getChecked = function(xmldoc){
         var i, r;

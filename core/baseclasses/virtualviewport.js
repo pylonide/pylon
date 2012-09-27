@@ -682,7 +682,7 @@ apf.$viewportVirtual = function(amlNode){
         this.setScrollTop(nr * itemHeight + (toBottom ? itemHeight - this.getHeight() : 0));
     }
     
-    /**** Private ****/
+    // *** Private *** //
     
     //Assume all items have the same height;
     //@todo this can be optimized by caching
@@ -706,7 +706,7 @@ apf.$viewportVirtual = function(amlNode){
             : htmlNode);
     }
 
-    /**** Implementation ****/
+    // *** Implementation *** //
 
     this.draw = function(){
         this.inited = true;

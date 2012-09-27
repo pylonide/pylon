@@ -28,7 +28,7 @@ apf.__DATAACTION__ = 1 << 25;
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Gets the ActionTracker this element communicates with.

@@ -237,7 +237,7 @@ apf.silverlight = (function() {
      * @param {Object} properties
      * @param {Object} events
      * @param {Object} initParams
-     * @param {mixed} userContext
+     * @param {Mixed} userContext
      * @type {String}
      */
     function createObject(source, parentElement, id, properties, events, initParams, userContext) {

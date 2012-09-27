@@ -130,7 +130,7 @@ apf.MultiSelect = function(){
 (function() {
     this.$regbase    = this.$regbase|apf.__MULTISELECT__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     /**
      * the last selected item of this element.
@@ -245,7 +245,7 @@ apf.MultiSelect = function(){
      *     onclick  = "atList.undo()" />
      * </code>
      * @action
-     * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
+     * @param  {Mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
      *   Possible values:
      *   {NodeList}   the {@link term.datanode data nodes} to be removed.
      *   {XMLElement} the {@link term.datanode data node} to be removed.
@@ -612,7 +612,7 @@ apf.MultiSelect = function(){
      * Selects a single, or set of {@link term.eachnode each nodes}.
      * The selection can be visually represented in this element.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
      *   {XMLElement}  the {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
      *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node} for selection.
@@ -679,7 +679,7 @@ apf.MultiSelect = function(){
 
         var htmlNode;
 
-        /**** Type Detection ****/
+        // *** Type Detection *** //
         if (!xmlNode) {
             //#ifdef __DEBUG
             throw new Error(apf.formatErrorString(1075, this,
@@ -732,7 +732,7 @@ apf.MultiSelect = function(){
         }) === false)
               return false;
 
-        /**** Selection ****/
+        // *** Selection *** //
 
         var lastIndicator = this.caret;
         this.caret        = xmlNode;
@@ -841,7 +841,7 @@ apf.MultiSelect = function(){
      * Choose a selected item. This is done by double clicking on the item or
      * pressing the Enter key.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode      the identifier to determine the selection.
      *   Possible values:
      *   {XMLElement}  the {@link term.datanode data node} to be choosen.
      *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
@@ -995,7 +995,7 @@ apf.MultiSelect = function(){
      * or keyboard the indicator is always set to the selected node. Unlike a
      * selection there can be only one indicator item.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the indicator.
+     * @param {Mixed}   xmlNode      the identifier to determine the indicator.
      *   Possible values:
      *   {XMLElement}  the {@link term.datanode data node} to be set as indicator.
      *   {HTMLElement} the html element node used as visual representation of
@@ -1012,7 +1012,7 @@ apf.MultiSelect = function(){
             return;
         }
 
-        /**** Type Detection ****/
+        // *** Type Detection *** //
         var htmlNode;
         if (typeof xmlNode != "object")
             xmlNode = apf.xmldb.getNodeById(xmlNode);
@@ -1127,7 +1127,7 @@ apf.MultiSelect = function(){
      * {@link term.datanode data nodes} from this element.
      *
      * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @return {Mixed} the selection of this element.
      */
     this.getSelection = function(xmldoc){
         var i, r;

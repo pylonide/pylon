@@ -103,7 +103,7 @@ apf.dropdown = function(struct, tagName){
     this.$animSpeed       = 20;
     this.$itemSelectEvent = "onmouseup";
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.dragdrop      = false;
     this.reselectable  = true;
@@ -141,7 +141,7 @@ apf.dropdown = function(struct, tagName){
         this.$setStyleClass(this.oSlider, e.value);
     });
     
-    /**** Public methods ****/
+    // *** Public methods *** //
     
     /**
      * Toggles the visibility of the container with the list elements. It opens
@@ -227,7 +227,7 @@ apf.dropdown = function(struct, tagName){
         return false;
     };
     
-    /**** Private methods and event handlers ****/
+    // *** Private methods and event handlers *** //
 
     //@todo apf3.0 why is this function called 6 times on init.
     this.$setLabel = function(value){
@@ -289,7 +289,7 @@ apf.dropdown = function(struct, tagName){
 
     this.addEventListener("popuphide", this.slideUp);
     
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -367,7 +367,7 @@ apf.dropdown = function(struct, tagName){
     }, true);
     //#endif
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$getNewContext("main");

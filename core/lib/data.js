@@ -29,7 +29,7 @@
  * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to store the data.
  * @param {Object}      [options]    The options for this instruction. Available properties include:
  *   - {Boolean} multicall    Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
- *   - {mixed}   userdata     Any data that is useful to access in the callback function
+ *   - {Mixed}   userdata     Any data that is useful to access in the callback function
  *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
  *   - {XMLElement}  [xmlContext] The subject of the xpath queries
  *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
@@ -77,7 +77,7 @@ apf.saveData =
  * @param {XMLElement}  [xmlContext] The subject of the xpath queries
  * @param {Object}      [options]    The options for this instruction. Available properties include:
  *   - {Boolean} multicall    Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
- *   - {mixed}   userdata     Any data that is useful to access in the callback function
+ *   - {Mixed}   userdata     Any data that is useful to access in the callback function
  *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
  *   - {XMLElement}  [xmlContext] The subject of the xpath queries
  *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
@@ -256,7 +256,7 @@ apf.getData = function(instruction, options){
  * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
  * @param {String} instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data for the model
- * @param {AmlNode} amlNode     The element the model is added to
+ * @param {apf.AmlNode} amlNode     The element the model is added to
  */
 apf.setModel = function(instruction, amlNode){
     if (!instruction) return;

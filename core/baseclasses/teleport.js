@@ -121,7 +121,6 @@
  * @attribute {String}  url              the location of the server that is
  *                                       recipient of the rpc messages.
  * @attribute {String}  [route-server]   String specifying the url to the route script.
- *                                       Remarks:
  *                                       The route script will receive the route information in 3 extra headers:
  *                                           X-Route-Request     - Containing the destination url.<br />
  *                                           X-Proxy-Request     - Containing the destination url.<br />

@@ -767,7 +767,7 @@ apf.smartbinding = function(struct, tagName){
     /**
      * Loads xml data in the model of this smartbinding element.
      * 
-     * @param  {mixed}  xmlNode the {@link term.datanode data node} loaded into
+     * @param  {Mixed}  xmlNode the {@link term.datanode data node} loaded into
      * the model of this smartbinding element. This can be an XMLElement, a 
      * string or null. 
      * @private

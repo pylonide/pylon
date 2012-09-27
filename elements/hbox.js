@@ -60,7 +60,7 @@ apf.vbox = function(struct, tagName){
     this.minwidth    = 0;
     this.minheight   = 0;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -694,7 +694,7 @@ apf.vbox = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)

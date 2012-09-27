@@ -24,17 +24,22 @@ apf.__PRESENTATION__ = 1 << 9;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have skinning features. A skin is a description
- * of how the element is rendered. In the web browser this is done using html
- * elements and css.
- * Remarks:
- * The skin is set using the skin attribute. The skin of each element can be
+ * of how the element is rendered. In the web browser, this is done using HTML
+ * elements and CSS.
+ *
+ * #### Remarks
+ *
+ * The skin is set using the `skin` attribute. The skin of each element can be
  * changed at run time. Other than just changing the look of an element, a skin
  * change can help the user to perceive information in a different way. For 
- * example a list element has a default skin, but can also use the thumbnail 
+ * example, a list element has a default skin, but can also use the thumbnail 
  * skin to display thumbnails of the {@link term.datanode data nodes}.
  *
- * A skin for an element is always build up out of a standard set of parts.
- * <code>
+ * #### Example
+ *
+ * A skin for an element is always built up out of a standard set of parts:
+ *
+ * ```xml
  *   <a:textbox name="textbox">
  *      <a:alias>
  *          ...
@@ -50,14 +55,15 @@ apf.__PRESENTATION__ = 1 << 9;
  *          ...
  *      </a:presentation>
  *   </a:textbox>
- * </code>
+ * ```
+ *
  * The alias contains a name that contains alternative names for the skin. The
- * style tags contain the css. The main tag contains the html elements that are
+ * style tags contain the CSS. The main tag contains the HTML elements that are
  * created when the component is created. Any other skin items are used to render
  * other elements of the widget. In this reference guide you will find these
  * skin items described on the pages of each widget.
  *
- * @constructor
+ * @class apf.Presentation
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -70,37 +76,45 @@ apf.Presentation = function(){
 (function(){
     this.$regbase = this.$regbase | apf.__PRESENTATION__;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("skin");
     
     /**
-     * @attribute {string} skinset the skinset for
-     * this element. If none is specified the skinset attribute
-     * of the appsettings is used. When not defined the default skinset
+     * @attribute {string} skinset Sets or gets the skinset for
+     * this element. If none are specified ,the `skinset` attribute
+     * of the app settings is used. When that's not defined, the default skinset
      * is used.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     *
+     * ```xml
      *  <a:list skinset="perspex" />
-     * </code>
+     * ```
      */
     this.$propHandlers["skinset"] =
 
-    /**
-     * @attribute {string} skin the name of the skin in the skinset that defines 
-     * how this element is rendered. When a skin is changed the full state of the
-     * element is kept including it's selection, all the
-     * aml attributes, loaded data, focus and disabled state.
-     * Example:
-     * <code>
-     *  <a:list id="lstExample" skin="thumbnails" />
-     * </code>
-     * Example:
-     * <code>
-     *  lstExample.setAttribute("skin", "list");
-     * </code>
-     */
     //#ifdef __WITH_SKIN_CHANGE
+    /**
+     * @attribute {string} skin Sets or gets the name of the skin in the skinset that defines 
+     * how this element is rendered. When a skin is changed, the full state of the
+     * element is kept, including its selection, all the
+     * AML attributes, loaded data, and focus and disabled states.
+     *
+     * #### Example
+     *
+     * In XML:
+     *
+     * ```xml
+     *  <a:list id="lstExample" skin="thumbnails" />
+     * ```
+     * 
+     * Or, in JavaScript:
+     *
+     * ```javascript
+     *  lstExample.setAttribute("skin", "list");
+     * ```
+     */
     this.$propHandlers["skin"] = function(value){
         if (!this.$amlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
@@ -117,7 +131,7 @@ apf.Presentation = function(){
     //#endif
 
     /**
-     * @attribute {String} style the css style applied to the this element. This can be a string containing one or more css rules.
+     * @attribute {String} style Sets or gets the CSS style applied to the this element. This can be a string containing one or more CSS rules.
      */
     this.$propHandlers["style"] = function(value){
         if (!this.styleAttrIsObj && this.$amlLoaded)
@@ -125,7 +139,7 @@ apf.Presentation = function(){
     }
     
     /**
-     * @attribute {String} border turns borders on and off. Set sizes in the seq top, right, bottom, left.
+     * @attribute {String} border Sets or gets border values. Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off borders.
      */
     this.$propHandlers["border"] = function(value){
         if (!value)
@@ -135,7 +149,7 @@ apf.Presentation = function(){
     }
     
     /**
-     * @attribute {String} margin turns margins on and off. Set sizes in the seq top, right, bottom, left.
+     * @attribute {String} margin Sets or gets margin values. Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off margins.
      */
     this.$propHandlers["margin"] = function(value){
         if (!value)
@@ -145,7 +159,7 @@ apf.Presentation = function(){
     }
 
     /**
-     * @attribute {String} class the name of the css style class applied to the this element.
+     * @attribute {String} class Sets or gets the name of the CSS style class applied to this element.
      */
     this.$propHandlers["class"] = function(value){
         this.$setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
@@ -336,7 +350,7 @@ apf.Presentation = function(){
     };
     //#endif
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$setStyleClass = apf.setStyleClass;
 
@@ -410,10 +424,10 @@ apf.Presentation = function(){
         }
     }
 
-    /**
+    /*
      * Initializes the skin for this element when none has been set up.
      *
-     * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
+     * @param  {String}  skinName   Identifier for the new skin (for example: 'default:List' or 'win').
      * @param  {Boolean} [noError]
      */
     this.$loadSkin = function(skinName, noError){
@@ -581,7 +595,7 @@ apf.Presentation = function(){
         return oExt;
     };
 
-    /**** Focus ****/
+    // *** Focus *** //
     this.$focus = function(){
         if (!this.$ext)
             return;
@@ -614,7 +628,7 @@ apf.Presentation = function(){
         }
     };
 
-    /**** Caching ****/
+    // *** Caching *** //
     /*
     this.$setClearMessage    = function(msg){};
     this.$updateClearMessage = function(){}

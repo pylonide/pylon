@@ -126,7 +126,7 @@ apf.loadindicator = function(struct, tagName){
         this.$running = false;
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         //Build Main Skin

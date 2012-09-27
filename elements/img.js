@@ -162,7 +162,7 @@ apf.preview = function(struct, tagName){
             this.oImg.style.display = "none";
     });
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

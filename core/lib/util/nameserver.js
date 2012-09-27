@@ -131,7 +131,7 @@ apf.registry = apf.extend({
     /**
      * Stores a key value pair.
      * @param {String} key       The identifier of the information.
-     * @param {mixed}  value     The information to store.
+     * @param {Mixed}  value     The information to store.
      * @param {String} namespace The named context into which to store the key-value pair.
      */
     put : function(key, value, namespace){

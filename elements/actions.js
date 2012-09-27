@@ -81,7 +81,7 @@ apf.actions = function(struct, tagName){
         amlNode.dispatchEvent("actionsunload", {bindings: this});
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;

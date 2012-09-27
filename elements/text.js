@@ -58,7 +58,7 @@ apf.text = function(struct, tagName){
 
     this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
      * @attribute {Boolean} scrolldown  whether this elements viewport is always
@@ -190,7 +190,7 @@ apf.text = function(struct, tagName){
     // @todo replace this stub with something that does something
     this.$moveNode = function() {};
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -218,7 +218,7 @@ apf.text = function(struct, tagName){
     
     //#endif
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -255,7 +255,7 @@ apf.text = function(struct, tagName){
     }, true);
     //#endif
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$canLoadData = function(){
         return this.$attrBindings.value ? true : false;
@@ -293,7 +293,7 @@ apf.text = function(struct, tagName){
     this.$updateNode =
     this.$moveNode   = apf.K;
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$ext = this.$getExternal();

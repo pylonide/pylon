@@ -180,7 +180,7 @@ apf.xmldb = new (function(){
      * Gets the HTML representation of an XML node for a certain element.
      *
      * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
-     * @param {AMLNode} oComp    The element that has created the representation.
+     * @param {apf.AmlNode} oComp    The element that has created the representation.
      * @return {HTMLNode} The HTML node representing the XML node.
      */
     this.getHtmlNode = function(xmlNode, oComp){
@@ -195,7 +195,7 @@ apf.xmldb = new (function(){
      * Finds the HTML representation of an XML node for a certain element.
      *
      * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
-     * @param {AMLNode} oComp    The element that has created the representation.
+     * @param {apf.AmlNode} oComp    The element that has created the representation.
      * @return {HTMLNode} The HTML node representing the XML node.
      */
     this.findHtmlNode = function(xmlNode, oComp){

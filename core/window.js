@@ -290,7 +290,7 @@ apf.window = function(){
     };
     //#endif
 
-    /**** Focus Internals ****/
+    // *** Focus Internals *** //
 
     //#ifdef __WITH_VISIBILITYMANAGER
     this.vManager = new apf.visibilitymanager();
@@ -613,11 +613,11 @@ apf.window = function(){
         //this.$focusParent = null; //@experimental to not execute this
     }
 
-    /**** Focus API ****/
+    // *** Focus API *** //
 
     /**
      * Determines whether a given aml element has the focus.
-     * @param {AMLElement} the element to check
+     * @param {apf.AmlElement} the element to check
      * @returns {Boolean} whether the element has focus.
      */
     this.hasFocus = function(amlNode){
@@ -748,7 +748,7 @@ apf.window = function(){
 
     //#endif
 
-    /**** Set Window Events ****/
+    // *** Set Window Events *** //
 
     apf.addListener(window, "beforeunload", function(){
         return apf.dispatchEvent("exit");
@@ -877,7 +877,7 @@ apf.window = function(){
 
     //#endif
 
-    /**** Keyboard and Focus Handling ****/
+    // *** Keyboard and Focus Handling *** //
 
     apf.addListener(document, "contextmenu", function(e){
         if (!e)

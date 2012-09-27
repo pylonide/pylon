@@ -22,10 +22,10 @@
 // #ifdef __WITH_AMLDOCUMENT
 
 /**
- * The aml document, this is the root of the DOM Tree and has a nodeType with 
- * value 9 (apf.NODE_DOCUMENT). 
+ * The AML document. This is the root of the DOM tree and has a nodeType with 
+ * value 9 (`apf.NODE_DOCUMENT`). 
  *
- * @constructor
+ * @class apf.AmlDocument
  * @inherits apf.AmlNode
  * @inherits apf.Class
  * @default_private 
@@ -48,7 +48,7 @@ apf.AmlDocument = function(){
 (function() {
     /**
      * The type of node within the document.
-     *   Possible values:
+     * @type {Number}
      */
     this.nodeType   = this.NODE_DOCUMENT;
     this.nodeFunc   = apf.NODE_HIDDEN;
@@ -63,20 +63,30 @@ apf.AmlDocument = function(){
     this.characterSet    = apf.characterSet;
     
     /**
-     * The root element node of the aml application. This is an element with
-     * the tagName 'application'. This is similar to the 'html' element
+     * The root element node of the AML application. This is an element with
+     * the tagName `'application'`. This is similar to the `'html'` element for regular HTML.
+     * @type {apf.AmlNode}
      */
     this.documentElement = null;
     
     /**
-     * Gets a aml element based on it's id.
-     * @param {String} id the id of the aml element to return.
-     * @return {AMLElement} the aml element with the id specified.
+     * Gets a AML element based on its id.
+     * @param {String} id The id of the AML element to return.
+     * @return {apf.AmlElement} The AML element with the id specified.
      */
     this.getElementById = function(id){
         return self[id];
     };
-    
+
+    /**
+     * Returns a list of elements with the given tag name.
+     *
+     * The subtree below the [[apf.AmlDocument.documentElement]] is searched, excluding the
+     * element itself.
+     *
+     * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
+     * @return  {NodeList}  Contains any nodes matching the search string
+     */ 
     this.getElementsByTagName = function(tagName){
         var docEl, res = (docEl = this.documentElement)
             .getElementsByTagName(tagName);
@@ -85,7 +95,17 @@ apf.AmlDocument = function(){
             res.unshift(docEl);
         return res;
     };
-    
+
+    /**
+     * Returns a list of elements with the given tag name and the specified namespace URI.
+     *
+     * The subtree below the [[apf.AmlDocument.documentElement]] is searched, excluding the
+     * element itself.
+     *
+     * @param  {String}  namespaceURI  The namespace URI name to look for.
+     * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
+     * @return  {NodeList}  Contains any nodes matching the search string
+     */ 
     this.getElementsByTagNameNS = function(nameSpaceURI, tagName){
         var docEl,
             res = (docEl = this.documentElement)
@@ -97,24 +117,41 @@ apf.AmlDocument = function(){
     };
 
     /**
-     * Creates a new aml element.
-     * @param {mixed} tagName information about the new node to create.
-     *   Possible values:
-     *   {String}     the tagName of the new element to create
-     *   {String}     the aml definition for a single or multiple elements.
-     *   {XMLElement} the aml definition for a single or multiple elements.
-     * @return {AMLElement} the created aml element.
+     * Creates a new AML element.
+     *
+     * @param {Mixed} qualifiedName Information about the new node to create. Possible values include:
+     *                              - {String}     The tagName of the new element to create
+     *                              - {String}     The AML definition for a single or multiple elemnts
+     *                              - {XMLElement} The AML definition for a single or multiple elements
+     * @return {apf.AmlElement} The created AML element
      */
     this.createElement = function(qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
             this.namespaceURI, qualifiedName);
     };
-        
+
+    /**
+     * Creates a new AML element within the given namespace.
+     *
+     * @param  {String}  namespaceURI  The namespace URI name to use
+     * @param {Mixed} qualifiedName Information about the new node to create. Possible values include:
+     *                              - {String}     The tagName of the new element to create
+     *                              - {String}     The AML definition for a single or multiple elemnts
+     *                              - {XMLElement} The AML definition for a single or multiple elements
+     * @return {apf.AmlElement} The created AML element
+     */        
     this.createElementNS = function(namespaceURI, qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
             namespaceURI, qualifiedName);
     };
-    
+
+    /**
+     * Creates a copy of a node from an external document that can be inserted into the current document.
+     *
+     * @param  {apf.AmlNode}  node  The node to import and copy
+     * @param {Boolean} [deep]      Indicates whether the descendants of the imported node should also be imported
+     * @return {apf.AmlNode} The imported node
+     */     
     this.importNode = function(node, deep){
         if (deep && node.nodeType == 1) {
             return this.$domParser.parseFromXml(node, {
@@ -127,53 +164,99 @@ apf.AmlDocument = function(){
         }
     };
     
-    //@todo
+    /**
+     * Creates and returns a new attribute node.
+     *
+     * @param  {String}  nodeName  The name of the attribute
+     * @return {apf.AmlNode} The attribute node
+     */ 
     this.createAttribute = function(nodeName){
         return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
             this.nameSpaceURI, nodeName);
     };
     
-    //@todo
+    /**
+     * Creates and returns a new attribute node, within a specified URI.
+     *
+     * @param  {String} nameSpaceURI  The name of the URI
+     * @param  {String}  nodeName  The name of the attribute
+     * @return {apf.AmlNode} The attribute node
+     */ 
     this.createAttributeNS = function(nameSpaceURI, nodeName){
         return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
             nameSpaceURI, nodeName);
     };
-    
+    /**
+     * Creates and returns a new [[apf.AmlEvent]] .
+     */     
     this.createEvent = function(){
         return new apf.AmlEvent();
     };
-    
+
+    /**
+     * Creates and returns a new comment node.
+     * @param {String} nodeValue The data to be added to the comment
+     * @return {apf.AmlNode} The comment node
+     */    
     this.createComment = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_COMMENT, null, null,
             null, nodeValue);
     };
-    
+
+    /**
+     * Creates and returns a new processing instruction node.
+     * @param {String} target The target part of the processing instruction node, like `<?_target_ ...?>`
+     * @param {String} data The data to be added to the PI
+     * @return {apf.AmlNode} The processing instruction node
+     */     
     this.createProcessingInstruction = function(target, data){
         return this.$domParser.$createNode(this, this.NODE_PROCESSING_INSTRUCTION,
             null, null, target, data);
     };
-    
+ 
+    /**
+     * Creates and returns a new CDATA section node.
+     * @param {String} nodeValue The data to be added to the CDATA node
+     * @return {apf.AmlNode} The CDATA section node
+     */     
     this.createCDATASection = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_CDATA_SECTION, null,
             null, null, nodeValue);
     };
-    
+  
+    /**
+     * Creates and returns a new Text node.
+     * @param {String} nodeValue The data to be added to the text node
+     * @return {apf.AmlNode} The Text node
+     */      
     this.createTextNode = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_TEXT, null, null,
             null, nodeValue);
     };
-    
+
+    /**
+     * Creates and returns a new document fragment.
+     */ 
+
     this.createDocumentFragment = function(){
         return this.$domParser.$createNode(this, this.NODE_DOCUMENT_FRAGMENT);
     };
 
+    // @todo
     this.querySelector = function(){};
-    
+ 
+     // @todo   
     this.querySelectorAll = function(){};
 
     //#ifdef __WITH_AMLDOM_W3C_XPATH
-    /**
-     * See W3C evaluate
+    /*
+     * Based on the given XPath expression, this function returns an XPathResult.
+     *
+     * @param {String} sExpr A String representing the XPath to be evaluated
+     * @param {String} contextNode
+     * @param {String} nsResolver
+     * @param {String} type
+     * @param {String} sExpr
      */
     this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
         var result = apf.XPath.selectNodes(sExpr,
@@ -190,14 +273,16 @@ apf.AmlDocument = function(){
         }
     };
 
-    /**
+    /*
      * See W3C createNSResolver
      */
+     // @todo
     this.createNSResolver = function(contextNode){
         return {};
     };
     //#endif
 
+    // @todo
     this.hasFocus = function(){
         
     }

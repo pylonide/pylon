@@ -73,7 +73,7 @@ apf.page = function(struct, tagName){
     };
     //#endif
 
-    /**** Delayed Render Support ****/
+    // *** Delayed Render Support *** //
 
     // #ifdef __WITH_DELAYEDRENDER
     //Hack
@@ -90,7 +90,7 @@ apf.page = function(struct, tagName){
     });
      // #endif
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
@@ -251,7 +251,7 @@ apf.page = function(struct, tagName){
             this.$activate();
     };
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e && e.currentTarget != this)
@@ -294,7 +294,7 @@ apf.page = function(struct, tagName){
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);
 
-    /**** Private state functions ****/
+    // *** Private state functions *** //
 
     this.$position = 0;
     this.$first = function(remove){
@@ -675,7 +675,7 @@ apf.page = function(struct, tagName){
         this.$btnPressed     = false;
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$canLeechSkin = true;
     

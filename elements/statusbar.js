@@ -54,7 +54,7 @@ apf.statusbar = function(struct, tagName){
 (function(){
     this.$focussable     = false;
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     var insertChild;
     
     this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin){
@@ -91,7 +91,7 @@ apf.statusbar = function(struct, tagName){
     });
     
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

@@ -57,7 +57,7 @@ apf.vectorflow = function(struct, tagName){
     this.$focussable   = true; // This object can get the focus.
     this.bufferselect  = true;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     this.$snapping = false;
     this.$viewport = {
         width: 800,             // width for viewport and layers
@@ -105,10 +105,10 @@ apf.vectorflow = function(struct, tagName){
     this.$minLineLength = 30;
 
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
     
 
-    /**** Databinding Support ****/
+    // *** Databinding Support *** //
 
     //Here each xml node from the data is rendered
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode, isLast){
@@ -659,7 +659,7 @@ apf.vectorflow = function(struct, tagName){
         this.$drawLayers();
     }
     
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keyup", function(e){
@@ -739,7 +739,7 @@ apf.vectorflow = function(struct, tagName){
     }, true);
     // #endif
     
-    /**** Selection Support ****/
+    // *** Selection Support *** //
     
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r     = [],
@@ -805,7 +805,7 @@ apf.vectorflow = function(struct, tagName){
         
     };
     
-    /**** Init ****/
+    // *** Init *** //
     this.$node_style = {
         root : {
             inherit:'shape',

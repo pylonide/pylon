@@ -125,7 +125,7 @@ apf.lineselect = function(struct, tagName){
     }, true);
     //#endif
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(clear, parentNode){
         this.$ext = this.$getExternal();

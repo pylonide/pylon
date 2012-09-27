@@ -101,7 +101,7 @@ apf.radiobutton = function(struct, tagName){
         selected: 1
     }, this.$attrExcludePropBind);*/
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["selected"] = true;
     this.$supportedProperties.push("value", "background", "group",
@@ -243,7 +243,7 @@ apf.radiobutton = function(struct, tagName){
         }
     }
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -297,7 +297,7 @@ apf.radiobutton = function(struct, tagName){
         this.doBgSwitch(1);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$enable = function(){
         if (this.oInput)
@@ -380,7 +380,7 @@ apf.radiobutton = function(struct, tagName){
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -421,7 +421,7 @@ apf.radiobutton = function(struct, tagName){
     }, true);
     // #endif
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin

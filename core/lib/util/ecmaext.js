@@ -48,7 +48,13 @@ Function.prototype.dataType = apf.FUNCTION;
 
 /**
  * Converts a JavaScript object to a CGI string.
- * @see core.convertXml
+ *
+ * @param {Object} args The object to convert
+ * @param {Boolean} [multicall] Indicates if there will be a function call name
+ * @param {Function} [mcallname] A name to append to the CGI string, prefixed with `func=`
+ * @returns {Object} The converted object, joined with `"&"`
+ *
+ * @see apf.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
     var prop, vars = [];
@@ -95,7 +101,7 @@ apf.getCgiString = function(args, multicall, mcallname){
  * @param {String} args The argument string to convert, separated by `"&"`
  * @returns {Object} The converted object
  *
- * @see core.convertXml
+ * @see apf.convertXml
  */
 apf.fromCgiString = function(args) {
     if (!args)
@@ -160,7 +166,7 @@ Function.prototype.extend = function() {
  *
  * @param {Object} The context the execute the Function within
  * @param {Boolean} Whether the passed event object should be extended with AbstractEvent
- * @param {mixed}  param1, param2, param3, etc.
+ * @param {Mixed}  param1, param2, param3, etc.
  * @type Function
  * @see apf.AbstractEvent
  */
@@ -260,7 +266,7 @@ Array.prototype.arrayAdd = function(){
 /*
  * Check if an object is contained within the current Array instance.
  *
- * @param {mixed}   obj The value to check for inside the Array
+ * @param {Mixed}   obj The value to check for inside the Array
  * @type  {Boolean}
  */
 Array.prototype.equals = function(obj){
@@ -390,7 +396,7 @@ else {
 /*
  * Check if this array instance contains a value 'obj'.
  *
- * @param {mixed}  obj    The value to check for inside the array
+ * @param {Mixed}  obj    The value to check for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Boolean}
  * @see Array.indexOf
@@ -404,7 +410,7 @@ Array.prototype.contains = function(obj, from){
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -421,7 +427,7 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
  * Search for the index of the last occurence of a value 'obj' inside an array
  * instance.
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -439,7 +445,7 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
  * Like Array.push, but only invoked when the value 'item' is already present
  * inside the array instance.
  *
- * @param {mixed} item, item, ...
+ * @param {Mixed} item, item, ...
  * @type  {Array}
  */
 Array.prototype.pushUnique = function(){
@@ -491,7 +497,7 @@ Array.prototype.forEach = Array.prototype.forEach || function(fn) {
 /*
  * Search for a value 'obj' inside an array instance and remove it when found.
  *
- * @type {mixed} obj
+ * @type {Mixed} obj
  * @type {Array}
  */
 Array.prototype.remove = function(obj){
@@ -509,7 +515,7 @@ Array.prototype.remove = function(obj){
  * Remove an item from an array instance which can be identified with key 'i'
  *
  * @param  {Number} i
- * @return {mixed}  The removed item
+ * @return {Mixed}  The removed item
  */
 Array.prototype.removeIndex = function(i){
     if (!this.length) return null;
@@ -519,7 +525,7 @@ Array.prototype.removeIndex = function(i){
 /*
  * Insert a new value at a specific object; alias for Array.splice.
  *
- * @param {mixed}  obj Value to insert
+ * @param {Mixed}  obj Value to insert
  * @param {Number} i   Index to insert 'obj' at
  * @type  {Number}
  */
@@ -556,7 +562,7 @@ Array.prototype.reverse = Array.prototype.reverse || function(){
  * Adds one or more elements to the end of an array and returns the new length
  * of the array.
  *
- * @param {mixed} value1, value2, value3, etc.
+ * @param {Mixed} value1, value2, value3, etc.
  * @type  {Number}
  */
 Array.prototype.push = Array.prototype.push || function(){
@@ -568,7 +574,7 @@ Array.prototype.push = Array.prototype.push || function(){
 /*
  * Removes the last element from an array and returns that element.
  *
- * @type {mixed}
+ * @type {Mixed}
  */
 Array.prototype.pop = Array.prototype.pop || function(){
     var item = this[this.length - 1];
@@ -580,7 +586,7 @@ Array.prototype.pop = Array.prototype.pop || function(){
 /*
  * Removes the first element from an array and returns that element.
  *
- * @type {mixed}
+ * @type {Mixed}
  */
 Array.prototype.shift = Array.prototype.shift || function(){
     var item = this[0];

@@ -30,7 +30,7 @@ apf.Focussable = function(){
     /**
      * Sets the position in the list that determines the sequence
      * of elements when using the tab key to move between them.
-     * Call-chaining is supported.
+     * @chainable
      * @param {Number} tabindex the position in the list
      */
     this.setTabIndex = function(tabindex){
@@ -71,7 +71,7 @@ apf.Focussable = function(){
 
     /**
      * Removes the focus from this element.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.blur = function(noset, e){
         //#ifdef __WITH_POPUP

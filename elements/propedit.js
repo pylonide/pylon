@@ -260,7 +260,7 @@ apf.propedit    = function(struct, tagName){
         o.scrollTop = (Q.offsetTop) - 21;
     }
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     this.$findHtmlNode = function(id) {
         return this.$pHtmlDoc.getElementById(id);
@@ -377,7 +377,7 @@ apf.propedit    = function(struct, tagName){
     
     // #endif
     
-    /**** Focus ****/
+    // *** Focus *** //
     // Too slow for IE
     
     this.$focus = function(){
@@ -412,7 +412,7 @@ apf.propedit    = function(struct, tagName){
             this.$lastEditor[0].$blur();
     };
     
-    /**** Sliding functions ****/
+    // *** Sliding functions *** //
     
     this.$slideToggle = function(htmlNode){
         container = htmlNode.parentNode.lastChild;
@@ -470,7 +470,7 @@ apf.propedit    = function(struct, tagName){
         return node.nodeType == 1 ? node : node.nextSibling;
     };
     
-    /**** Databinding ****/
+    // *** Databinding *** //
     
     this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
         var rules = e.bindings["properties"];
@@ -493,7 +493,7 @@ apf.propedit    = function(struct, tagName){
         return this.$headings[nr || this.$lastcol || 0];
     };
     
-    /**** Column management ****/
+    // *** Column management *** //
 
     /** 
      * Resizes a column.
@@ -524,7 +524,7 @@ apf.propedit    = function(struct, tagName){
         h.show();
     };
     
-    /**** Databinding ****/
+    // *** Databinding *** //
     
     /*
     Property:
@@ -977,7 +977,7 @@ apf.propedit    = function(struct, tagName){
             this.$lastEditor[0].$focus();
     });*/
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin

@@ -178,7 +178,7 @@ apf.state = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("active");
     this.$booleanProperties["active"] = true;
@@ -250,7 +250,7 @@ apf.state = function(struct, tagName){
     };
 
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -284,7 +284,7 @@ apf.state = function(struct, tagName){
     
     //#endif
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$propHandlers["group"] = function(value){  
         if (value) {

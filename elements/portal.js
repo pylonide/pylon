@@ -222,7 +222,7 @@ apf.portal = function(struct, tagName){
         }
     }
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     //Handler for a plane list
     //#ifdef __WITH_KEYBOARD
@@ -242,7 +242,7 @@ apf.portal = function(struct, tagName){
     }, true);
     //#endif
 
-    /**** Databinding and Caching ****/
+    // *** Databinding and Caching *** //
 
     function cacheDocklet(docklet){
         var srcUrl = docklet.$srcUrl;
@@ -629,7 +629,7 @@ apf.portal = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin

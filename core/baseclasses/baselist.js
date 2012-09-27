@@ -123,7 +123,7 @@ apf.BaseList = function(){
     );
     //#endif
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = true; // This object can get the focus
     this.$isWindowContainer = -1;
@@ -183,7 +183,7 @@ apf.BaseList = function(){
     
     //#endif
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     // #ifdef __WITH_KEYBOARD
 
@@ -505,7 +505,7 @@ apf.BaseList = function(){
 
     // #endif
 
-    /**** Private databinding functions ****/
+    // *** Private databinding functions *** //
 
     this.$deInitNode   = function(xmlNode, htmlNode){
         if (!htmlNode) return;
@@ -903,7 +903,7 @@ apf.BaseList = function(){
         });
     };
 
-    /**** Selection ****/
+    // *** Selection *** //
 
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [],

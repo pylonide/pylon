@@ -79,7 +79,7 @@ apf.progressbar = function(struct, tagName){
 
     this.$focussable = false; // This object can get the focus
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.value = 0;
     this.min   = 0;
@@ -138,7 +138,7 @@ apf.progressbar = function(struct, tagName){
         this.max = parseFloat(value);
     }
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -233,7 +233,7 @@ apf.progressbar = function(struct, tagName){
         }, time || 500);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$step = function(){
         if (this.value == this.max) 
@@ -242,7 +242,7 @@ apf.progressbar = function(struct, tagName){
         this.setValue(this.value + 1);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin

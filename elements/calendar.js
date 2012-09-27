@@ -70,7 +70,7 @@
 apf.calendar = function(struct, tagName){
     this.$init(tagName || "calendar", apf.NODE_VISIBLE, struct);
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     this.$calVars = {
         days         : ["Sunday", "Monday", "Tuesday", "Wednesday",
                         "Thursday", "Friday", "Saturday"],
@@ -199,7 +199,7 @@ apf.calendar = function(struct, tagName){
         this.redraw(c.month, c.year);
     };
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -221,7 +221,7 @@ apf.calendar = function(struct, tagName){
     
     //#endif
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
@@ -645,7 +645,7 @@ apf.calendar = function(struct, tagName){
         this.setProperty("value", new Date().format(this.outputFormat));
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         //Build Main Skin

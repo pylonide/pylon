@@ -86,27 +86,27 @@ apf.__DRAGDROP__ = 1 << 5;
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  * @event  dragover Fires when the users drags over this aml element.
  *   cancelable: Prevents the possibility to drop.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  * @event  dragout  Fires when the user moves away from this aml element.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  * @event  dragdrop  Fires when the user drops an item on this aml element.
  *   cancelable: Prevents the possibility to drop.
  *   object:
  *   {XMLElement}  data      the data for the drag&drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
+ *   {apf.AmlElement}  host      the aml source element.
  *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
  *
  * @see element.drag
@@ -1277,7 +1277,7 @@ apf.DragServer = {
  * @private
  */
 apf.MultiselectDragDrop = function() {
-    /**** Drag & Drop ****/
+    // *** Drag & Drop *** //
     // #ifdef __WITH_DRAGDROP
     this.diffX        =
     this.diffY        = 0;

@@ -58,7 +58,7 @@ apf.button  = function(struct, tagName){
     this.$isLeechingSkin = false;
     this.$canLeechSkin   = true;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable  = apf.KEYBOARD; // This object can get the focus
     this.value        = null;
@@ -456,7 +456,7 @@ apf.button  = function(struct, tagName){
     };
     //#endif
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -502,7 +502,7 @@ apf.button  = function(struct, tagName){
     
     //#endif
 
-    /**** Private state methods ****/
+    // *** Private state methods *** //
 
     this.$setStateBehaviour = function(value){
         this.value     = value || false;
@@ -566,7 +566,7 @@ apf.button  = function(struct, tagName){
     };
     //#endif
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.addEventListener("$skinchange", function(e){
         if (this.tooltip)

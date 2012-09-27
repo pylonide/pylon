@@ -35,7 +35,7 @@
  */
 /** 
  * @event movefocus         Fires when the focus moves from one element to another.
- * @param {AMLElement} toElement The element that receives the focus.
+ * @param {apf.AmlElement} toElement The element that receives the focus.
  */
 /** 
  * @event exit              Fires when the application wants to exit.
@@ -56,7 +56,7 @@
  * @cancelable Prevents the container from scrolling
  * @param {Object} e An object containing the following properties:
  *  - {Object}      htmlEvent The HTML event object
- *  - {AMLElement} amlElement  The element which was clicked.
+ *  - {apf.AmlElement} amlElement  The element which was clicked.
  *  - {Number} delta The scroll impulse.
  */
 /** 
@@ -85,7 +85,7 @@
  * @event mousedown     Fires when the user presses a mouse button
  * @param {Object} e An object containing the following properties:
  *  - {Object}      htmlEvent The HTML event object
- *  - {AMLElement} amlElement  The element which was clicked.
+ *  - {apf.AmlElement} amlElement  The element which was clicked.
  */
 /** 
  * @event onbeforeprint Fires before the application prints.
@@ -899,7 +899,7 @@
     /**
      * Finds an AML element based on its unique id.
      * @param {Number} uniqueId The unique id to search on.
-     * @returns {AMLElement} The returned element.
+     * @returns {apf.AmlElement} The returned element.
      */
     lookup : function(uniqueId){
         return this.all[uniqueId];
@@ -910,7 +910,7 @@
      * AML element that is responsible for rendering a specific html
      * element.
      * @param {HTMLElement} oHtml The html context to start the search from.
-     * @returns {AMLElement} The parent HTML element
+     * @returns {apf.AmlElement} The parent HTML element
      */
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
@@ -929,7 +929,7 @@
     /**
      * Sets a reference to an object (by name) in the global JavaScript space.
      * @param {String} name The name of the reference.
-     * @param {mixed}  o    The reference to the object subject to the reference.
+     * @param {Mixed}  o    The reference to the object subject to the reference.
      */
     setReference : function(name, o){
         return self[name] && self[name].hasFeature
@@ -1265,7 +1265,7 @@
     /**
      * Formats an Ajax.org Platform error message.
      * @param {Number}      number      The number of the error. This can be used to look up more information about the error.
-     * @param {AMLElement}  control     The aml element that will throw the error.
+     * @param {apf.AmlElement}  control     The aml element that will throw the error.
      * @param {String}      process     The action that was being executed.
      * @param {String}      message     The actual error message.
      * @param {XMLElement}  amlContext  The XML relevant to the error. For instance, this could be a piece of Ajax.org Markup Language XML.

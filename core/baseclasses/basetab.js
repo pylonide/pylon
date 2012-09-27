@@ -64,7 +64,7 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {mixed}    page     the name of numer of the page which is made active.
+     * @param {Mixed}    page     the name of numer of the page which is made active.
      * @param {Function} callback the function called after setting the page. Especially handy when using the src attribute.
      */
     this.set = function(page, callback, noEvent){
@@ -80,7 +80,7 @@ apf.BaseTab = function(){
         this.setProperty("activepage", page);
     };
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("activepage", "activepagenr", "length",
         "src", "loading", "trans-in", "trans-out");
@@ -602,7 +602,7 @@ apf.BaseTab = function(){
     }
     //#endif
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __ENABLE_PAGE_TRANSITIONS
     this.transition = function(pageIn, animIn, pageOut, animOut){
@@ -801,7 +801,7 @@ apf.BaseTab = function(){
 
     /**
      * Retrieves a page element by it's name or child number
-     * @param {mixed} nameOrId the name or child number of the page element to retrieve.
+     * @param {Mixed} nameOrId the name or child number of the page element to retrieve.
      * @return {Page} the found page element.
      */
     this.getPage = function(nameOrId){
@@ -842,7 +842,7 @@ apf.BaseTab = function(){
      * of this page. To simple remove the page from the DOM tree use the
      * removeNode() method.
      *
-     * @param {mixed} nameOrId the name or child number of the page element to remove.
+     * @param {Mixed} nameOrId the name or child number of the page element to remove.
      * @return {Page} the removed page element.
      */
     this.remove = function(nameOrId, force, noAnimation){
@@ -1252,7 +1252,7 @@ apf.BaseTab = function(){
 
     // #endif
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         var amlNode = e.currentTarget;
@@ -1367,7 +1367,7 @@ apf.BaseTab = function(){
         //#endif
     });
 
-    /**** Private state handling functions ****/
+    // *** Private state handling functions *** //
 
     this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
@@ -1413,7 +1413,7 @@ apf.BaseTab = function(){
         }
     };
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     // #ifdef __WITH_KEYBOARD
 
@@ -1459,7 +1459,7 @@ apf.BaseTab = function(){
 
     // #endif
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$loadChildren = function(callback){
         var page  = false,

@@ -336,7 +336,7 @@ apf.textbox  = function(struct, tagName){
         return true;
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
@@ -593,7 +593,7 @@ apf.textbox  = function(struct, tagName){
         clearInterval(fTimer);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         var _self       = this,

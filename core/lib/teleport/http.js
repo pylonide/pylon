@@ -118,23 +118,33 @@ apf.http = function(){
 
     /**
      * Sets the timeout of http requests in milliseconds. Default is 10000ms (10s).
+     * @type {Number}
      */
     this.timeout   = this.timeout || 10000; //default 10 seconds
     
     /**
      * Sets whether this element routes traffic through a server proxy.
-     * Remarks:
+     *
+     * #### Remarks
+     *
      * This can also be set on a per call basis. See {@link teleport.http.method.get}.
+     *
+     * 
+     * @type {Boolean}
      */
     this.autoroute = this.autoroute || false;
     
     /**
-     * String specifying the url to the route script. 
-     * Remarks:
-     * The route script will receive the route information in 3 extra headers:
-     *   X-Route-Request     - Containing the destination url.<br />
-     *   X-Proxy-Request     - Containing the destination url.<br />
-     *   X-Compress-Response - Set to 'gzip'.<br />
+     * String specifying the URL to the route script. 
+     * 
+     * #### Remarks
+     *
+     * The route script will receive the route information in three extra headers:
+     *   - `X-Route-Request`     : Contains the destination URL
+     *   - `X-Proxy-Request`     : Contains the proxy URL
+     *   - `X-Compress-Response` : Set to 'gzip'
+     *
+     * @type {String}
      */
     this["route-server"] = this["route-server"] || null;
 
@@ -194,7 +204,7 @@ apf.http = function(){
      * @param {String}   url       The url that is accessed.
      * @param {Object}   options   The options for the HTTP request. It contains the following properties:
      *   - {Boolean} async          Specifies whether the request is sent asynchronously. Defaults to true.
-     *   - {mixed}   userdata       custom data that is available to the callback function.
+     *   - {Mixed}   userdata       custom data that is available to the callback function.
      *   - {String}  method         The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
      *   - {Boolean} nocache        Specifies whether browser caching is prevented.
      *   - {String}  data           the data sent in the body of the message.
@@ -224,7 +234,7 @@ apf.http = function(){
      * @param {String}   url       The URL that is accessed.
      * @param {Object}   options   The options for the HTTP request. It contains the following properties:
      *   - {Boolean} async          Specifies whether the request is sent asynchronously. Defaults to true.
-     *   - {mixed}   userdata       Custom data that is available to the callback function.
+     *   - {Mixed}   userdata       Custom data that is available to the callback function.
      *   - {String}  method         The request method (POST|GET|PUT|DELETE). Defaults to GET.
      *   - {Boolean} nocache        Specifies whether browser caching is prevented.
      *   - {String}  data           The data sent in the body of the message.
@@ -879,7 +889,7 @@ apf.http = function(){
      *   - `apf.TIMEOUT`:  the request has timed out.
      *   - `apf.ERROR`:    an error occurred while making the request.
      *   - `apf.OFFLINE`:  the request was made while the application was offline.
-     * @param {AmlNode} [amlNode]    The element receiving the error event.
+     * @param {apf.AmlNode} [amlNode]    The element receiving the error event.
      * @param {Error}   [oError]     The error to be thrown when the request is
      *                               not retried.
      * @param {Number}  [maxRetries] The number of retries that are done before

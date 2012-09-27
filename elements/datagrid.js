@@ -150,7 +150,7 @@ apf.datagrid = function(struct, tagName){
         o.scrollTop = (Q.offsetTop) - 21;
     }
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     // #ifdef __WITH_KEYBOARD
     /*function keyHandler(e){
@@ -430,7 +430,7 @@ apf.datagrid = function(struct, tagName){
     
     // #endif
     
-    /**** Focus ****/
+    // *** Focus *** //
     // Too slow for IE
     
     // #ifdef __WITH_RENAME
@@ -483,7 +483,7 @@ apf.datagrid = function(struct, tagName){
         hideEditor.call(this);
     };
     
-    /**** Databinding ****/
+    // *** Databinding *** //
     
     this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
         var rules = e.bindings["column"];
@@ -1071,7 +1071,7 @@ apf.datagrid = function(struct, tagName){
     };
     this.addEventListener("beforeselect", hideEditor);
     
-    /**** Column management ****/
+    // *** Column management *** //
 
     /**
      * Returns a column definition object based on the column number.
@@ -1129,7 +1129,7 @@ apf.datagrid = function(struct, tagName){
         h.move(to);
     }
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$drawBase();

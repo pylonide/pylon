@@ -68,7 +68,7 @@ apf.BaseTree = function(){
     );
     //#endif
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     //Options
     this.$isTreeArch   = true; // This element has a tree architecture.
@@ -96,7 +96,7 @@ apf.BaseTree = function(){
     this.$treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     this.$treeState[IS_ROOT]                         = "root";
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
      * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
@@ -125,7 +125,7 @@ apf.BaseTree = function(){
     this.prerender      = true;
     this.disableremove  = false;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Expands all items in the tree
@@ -203,7 +203,7 @@ apf.BaseTree = function(){
     /**
      * Loads a list of folders
      * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
-     * onFinished {function} Callback to be called when finished
+     * onFinished {Function} Callback to be called when finished
      */
     this.expandList = function (paths, onFinished) {
         var _self = this;
@@ -296,7 +296,7 @@ apf.BaseTree = function(){
      */
     this.selectPath = function(path){};
 
-    /**** Sliding functions ****/
+    // *** Sliding functions *** //
 
     /**
      * @private
@@ -514,7 +514,7 @@ apf.BaseTree = function(){
         });
     };
 
-    /**** Databinding Support ****/
+    // *** Databinding Support *** //
 
     this.$isStartCollapsed = function(xmlNode){
         return this.$hasBindRule("collapsed")
@@ -945,7 +945,7 @@ apf.BaseTree = function(){
 
     this.addEventListener("xmlupdate", xmlUpdateHandler);
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     // #ifdef __WITH_RENAME
     this.addEventListener("beforerename", function(){
@@ -1242,7 +1242,7 @@ apf.BaseTree = function(){
     }, true);
     // #endif
 
-    /**** Rename Support ****/
+    // *** Rename Support *** //
 
     // #ifdef __WITH_RENAME
     this.$getCaptionElement = function(){
@@ -1252,7 +1252,7 @@ apf.BaseTree = function(){
     };
     // #endif
 
-    /**** Selection Support ****/
+    // *** Selection Support *** //
     /*
         nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
                 ? this.xmlRoot.selectNodes(this.$isTreeArch
@@ -1349,7 +1349,7 @@ apf.BaseTree = function(){
         while(cNode);
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     /**
      * @event click Fires when the user presses a mousebutton while over this

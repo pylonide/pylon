@@ -45,7 +45,7 @@ apf.toc = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$supportedProperties.push("represent");
 
@@ -73,7 +73,7 @@ apf.toc = function(struct, tagName){
         });
     }
     
-    /**** Public methods ****/
+    // *** Public methods *** //
     
     /**
      * Navigates to a page of the represented element.
@@ -115,7 +115,7 @@ apf.toc = function(struct, tagName){
         //setTimeout("apf.lookup(" + this.$represent.$uniqueId + ").set(" + nr + ");", 1);
     };
     
-    /**** Private Methods ****/
+    // *** Private Methods *** //
     
     this.$setActivePage = function(active){
         //if (this.disabled) return false;
@@ -205,7 +205,7 @@ apf.toc = function(struct, tagName){
         //#endif
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

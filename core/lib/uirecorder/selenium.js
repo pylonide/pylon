@@ -171,7 +171,7 @@ function SeleniumPlayer(browser){
                     break;
             }
             
-            /**** Assertions ****/
+            // *** Assertions *** //
             
             function contextToExpression(def, nosel){
                 var res;

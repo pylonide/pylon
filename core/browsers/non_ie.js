@@ -31,7 +31,7 @@ apf.runNonIe = function (){
     };
 
     //#ifdef __WITH_UIRECORDER
-    /**** Event.cancelBubble ****/
+    // *** Event.cancelBubble *** //
     if (!apf.isOpera) {  // @todo, add solution for Opera
         if (MouseEvent.prototype.__defineSetter__) {
             //Event.cancelBubble
@@ -46,7 +46,7 @@ apf.runNonIe = function (){
     }
     //#endif
     
-    /**** XML Serialization ****/
+    // *** XML Serialization *** //
     if (XMLDocument.prototype.__defineGetter__) {
         //XMLDocument.xml
         XMLDocument.prototype.__defineGetter__("xml", function(){

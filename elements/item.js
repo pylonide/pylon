@@ -45,7 +45,7 @@
  * @event click Fires when a user presses the mouse button while over this element.
  *   object:
  *   {XMLElement} xmlContext the xml data node that was selected in the opener at the time of showing the context menu.
- *   {AMLElement} opener the element that was clicked upon when showing the context menu.
+ *   {apf.AmlElement} opener the element that was clicked upon when showing the context menu.
  */
 apf.item  = function(struct, tagName){
     this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
@@ -61,7 +61,7 @@ apf.item  = function(struct, tagName){
 
     this.implement(apf.ChildValue);
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -389,7 +389,7 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "", ["disabled"]);
     }
 
-    /**** Dom Hooks ****/
+    // *** Dom Hooks *** //
 
     //@todo apf3.0
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
@@ -402,7 +402,7 @@ apf.item  = function(struct, tagName){
         }
     });
 
-    /**** Events ****/
+    // *** Events *** //
 
     this.$down = function(){
 
@@ -553,7 +553,7 @@ apf.item  = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(isSkinSwitch){
         var p = this.parentNode;

@@ -90,7 +90,7 @@ apf.caldropdown = function(struct, tagName){
     this.$animSpeed       = 20;
     this.$itemSelectEvent = "onmouseup";
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.dragdrop      = false;
     this.reselectable  = true;
@@ -269,7 +269,7 @@ apf.caldropdown = function(struct, tagName){
     }
     //#endif
     
-    /**** Keyboard Handling ****/
+    // *** Keyboard Handling *** //
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e) {
@@ -349,7 +349,7 @@ apf.caldropdown = function(struct, tagName){
     }, true);
     //#endif
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     /**
      * Toggles the visibility of the container with the calendar. It opens
@@ -436,7 +436,7 @@ apf.caldropdown = function(struct, tagName){
         return false;
     };
 
-    /**** Private methods and event handlers ****/
+    // *** Private methods and event handlers *** //
 
     this.$setLabel = function(value) {
         this.oLabel.innerHTML = value || this["initial-message"] || "";
@@ -780,7 +780,7 @@ apf.caldropdown = function(struct, tagName){
         this.$propHandlers["value"].call(this, new Date().format(this.outputFormat));
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         this.$getNewContext("main");

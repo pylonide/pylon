@@ -62,7 +62,7 @@ apf.ActionRule = function(struct, tagName){
         delete this["c" + prop];
     }
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {

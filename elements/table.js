@@ -83,7 +83,7 @@ apf.table = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -395,7 +395,7 @@ apf.table = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)

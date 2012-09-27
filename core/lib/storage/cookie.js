@@ -38,7 +38,7 @@ apf.storage.modules.cookie = {
     /**
      * Stores a key value pair in a namespace.
      * @param {String} key       the identifier of the information.
-     * @param {mixed}  value     the information to store.
+     * @param {Mixed}  value     the information to store.
      * @param {String} namespace the named context into which to store the key value pair.
      */
     put: function(key, value, namespace){
@@ -71,7 +71,7 @@ apf.storage.modules.cookie = {
      * Retrieves a keys in a namespace.
      * @param {String} key       the identifier of the information.
      * @param {String} namespace the named context of the keys to retrieve.
-     * @return {mixed} the value that correspond to the key in the namespace.
+     * @return {Mixed} the value that correspond to the key in the namespace.
      */
     get: function(key, namespace){
         //#ifdef __DEBUG

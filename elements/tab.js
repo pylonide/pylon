@@ -77,7 +77,7 @@ apf.tab       = function(struct, tagName){
 (function(){
     this.$focussable = apf.KEYBOARD; // This object can get the focus from the keyboard
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(bSkinChange){
         //Build Main Skin

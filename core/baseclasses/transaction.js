@@ -258,7 +258,7 @@ apf.Transaction = function(){
      *   update the transaction is started to update an existing {@link term.datanode data node}.
      * @param {XMLElement} xmlNode 
      * @param {XMLElement} parentXmlNode 
-     * @param {AMLElement} dataParent 
+     * @param {apf.AmlElement} dataParent 
      */
     this.begin = function(strAction, xmlNode, parentXmlNode, dataParent){
         if (this.$inTransaction) {

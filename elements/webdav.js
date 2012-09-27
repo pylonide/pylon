@@ -134,8 +134,8 @@ apf.webdav = function(struct, tagName){
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
-     * @param {mixed}  value
-     * @type  {mixed}
+     * @param {Mixed}  value
+     * @type  {Mixed}
      * @private
      */
     this.$regVar = function(name, value) {
@@ -166,7 +166,7 @@ apf.webdav = function(struct, tagName){
      * space.
      *
      * @param {String} name
-     * @type  {mixed}
+     * @type  {Mixed}
      * @private
      */
     this.$getVar = function(name) {
