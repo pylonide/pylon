@@ -75,10 +75,7 @@
             }
 
             require(config, [apfLoc], function(){
-                if (typeof apf === "undefined")
-                    setTimeout(createSplash);
-                else
-                    apf.addEventListener("load", function() { createSplash(); });
+                setTimeout(createSplash);
 
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
