@@ -21,15 +21,31 @@
 // #ifdef __AMLHSPLITBOX || __AMLVSPLITBOX || __INC_ALL
 
 /**
+ * 
+ * A container that stacks two children vertically.
+ *
+ * @class apf.vsplitbox
  * @define vsplitbox Container that stacks two children vertically.
- * @see element.hsplitbox
- * @define hsplitbox Container that stacks two children horizontally.
  * @addnode elements
- * @constructor
+ * @inherits apf.hsplitbox
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       3.0
+ * @see element.hsplitbox
+ */
+/**
+ *
+ * A container that stacks two children horizontally.
+ *
+ * @class apf.hsplitbox
+ * @define hsplitbox 
+ * @addnode elements
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0\
+ * @see element.vsplitbox
  */
 apf.hsplitbox = function(struct, tagName){
     this.$init(tagName || "hsplitbox", apf.NODE_VISIBLE, struct);
@@ -54,8 +70,10 @@ apf.vsplitbox = function(struct, tagName){
     this.$layout     = true;
     
     /**
-     * @attribute {String}  padding      the space between each element. Defaults to 2.
-     * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
+     * @attribute {String}  padding="2"      Sets or gets the space between each element.
+     */
+    /**
+     * @attribute {String}  edge="5 5 5 5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      */
     this.$booleanProperties["splitter"] = true;
     this.$supportedProperties.push("padding", "edge", "splitter");

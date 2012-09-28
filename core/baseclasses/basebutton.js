@@ -53,7 +53,7 @@ apf.BaseButton = function(){
 
     /**
      * @attribute {String} background Sets or gets a multistate background. The arguments
-     * are seperated by pipes '|' and are in the order of:'imagefilename|mapdirection|nrofstates|imagesize'
+     * are seperated by pipes (`'|'`) and are in the order of:'imagefilename|mapdirection|nrofstates|imagesize'
      *
      * - The `mapdirection` argument may have the value of `'vertical'` or `'horizontal'`.
      * - The `nrofstates` argument specifies the number of states the iconfile contains:
@@ -63,7 +63,7 @@ apf.BaseButton = function(){
      *     - 4: normal, hover, down, disabled
      * - The `imagesize` argument specifies how high or wide each icon is inside the
      * map, depending on the `mapdirection` argument.
-     *
+     * {: #multiStateDoc}
      * 
      * #### Example
      * 

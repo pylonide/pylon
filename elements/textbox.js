@@ -24,16 +24,35 @@
 //@todo DOCUMENT the modules too
 
 /**
- * Element displaying a rectangular area wich allows a
- * user to type information. The information typed can be
- * restricted by using this.$masking. The information can also
- * be hidden from view when used in password mode. By adding an 
- * {@link element.autocomplete autocomplete element} as a child the 
+ * @class apf.secret
+ * @define secret
+ * @inheritdoc apf.input
+ */
+/**
+ * @class apf.textarea
+ * @define textarea
+ * @inheritdoc apf.input
+ */
+/**
+ * @class apf.textbox
+ * @define textbox
+ * @inheritdoc apf.input
+ */
+/**
+ * An element that displays a rectangular area which allows a
+ * user to type information. 
+ *
+ * The information typed can be
+ * restricted by using `this.$masking`. The information can also
+ * be hidden from view when used in password mode. 
+ *
+ * By adding an 
+ * {@link element.autocomplete autocomplete element} as a child, the 
  * value for the textbox can be looked up as you type. By setting the 
  * {@link element.textbox.attribute.mask mask atribute}, complex data input 
- * validation is done while the users types.
+ * validation is done while the user types.
  * 
- * @constructor
+ * @class apf.input
  * @define input, secret, textarea, textbox
  * @allowchild autocomplete, {smartbinding}
  * @addnode elements
@@ -45,31 +64,47 @@
  * @version     %I%, %G%
  * @since       0.1
  *
+ *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ *
  * Sets the value based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlTextbox">
  *      <data name="Lukasz"></data>
  *  </a:model>
  *  <a:textbox model="mdlTextbox" value="[@name]" />
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ * ```xml
  *  <a:model id="mdlTextbox">
  *      <data name="Lukasz"></data>
  *  </a:model>
  *  <a:textbox value="[mdlTextbox::@name]" />
- * </code>
+ * ```
  *
+ */
+/**
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ */
+/**
  * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
+ */
+/**
  * @event mousedown Fires when the user presses a mousebutton while over this element. 
+ */
+/**
  * @event keyup     Fires when the user lets go of a keyboard button while this element is focussed. 
- *   object:
- *   {Number}  keyCode   which key was pressed. This is an ascii number.
+ * @param {Object} e The standard event object. It contains the following property:
+ *  - keyCode ([[Number]]): which key was pressed. This is an ascii number.
+ */
+/**
  * @event clear     Fires when the content of this element is cleared. 
  */
 apf.input    = function(struct, tagName){
@@ -122,8 +157,8 @@ apf.textbox  = function(struct, tagName){
     this.multiline         = false;
 
     /**
-     * @attribute {Boolean} realtime whether the value of the bound data is
-     * updated as the user types it, or only when this element looses focus or
+     * @attribute {Boolean} realtime Defines whether the value of the bound data is
+     * updated as the user types it, or only when this element loses focus or
      * the user presses enter.
      */
     this.$booleanProperties["readonly"]    = true;
@@ -134,10 +169,11 @@ apf.textbox  = function(struct, tagName){
         "focusselect", "realtime", "type", "rows", "cols", "kbclear");
 
     /**
-     * @attribute {String} value the text of this element
-     * @todo apf3.0 check use of this.$propHandlers["value"].call
+     * @attribute {String} value Sets or gets the text of this element
+     * 
      */
     this.$propHandlers["value"] = function(value, prop, force, initial){
+    // @todo apf3.0 check use of this.$propHandlers["value"].call
         if (!this.$input || !initial && this.getValue() == value)
             return;
 
@@ -178,57 +214,76 @@ apf.textbox  = function(struct, tagName){
     });
 
     /**
-     * @attribute {String} mask a complex input pattern that the user should
-     * adhere to. This is a string which is a combination of special and normal
-     * characters. Then comma seperated it has two options. The first option
-     * specifies whether the non input characters (the chars not typed by the
+     * @attribute {String} mask Sets or gets a complex input pattern that the user should
+     * adhere to. 
+     * 
+     * This is a string which is a combination of special and normal
+     * characters. It is comma seperated, and thus has two options. The first option
+     * specifies whether the non-input characters (the chars not typed by the
      * user) are in the value of this element. The second option specifies the
      * character that is displayed when the user hasn't yet filled in a
      * character.
-     *   Characters:
-     *   0  Any digit
-     *   1  The number 1 or 2.
-     *   9  Any digit or a space.
-     *   #  User can enter a digit, space, plus or minus sign.
-     *   L  Any alpha character, case insensitive.
-     *   ?  Any alpha character, case insensitive or space.
-     *   A  Any alphanumeric character.
-     *   a  Any alphanumeric character or space.
-     *   X  Hexadecimal character, case insensitive.
-     *   x  Hexadecimal character, case insensitive or space.
-     *   &  Any whitespace.
-     *   C  Any character.
-     *   !  Causes the input mask to fill from left to right instead of from right to left.
-     *   '  The start or end of a literal part.
-     *   "  The start or end of a literal part.
-     *   >  Converts all characters that follow to uppercase.
-     *   <  Converts all characters that follow to lowercase.
-     *   \  Cancel the special meaning of a character.
-     * Example:
-     * An american style phone number.
-     * <code>
+     *
+     *  The following characters are possible:
+     *
+     *   - `0`: any digit
+     *   - `1`: the number 1 or 2.
+     *   - `9`: any digit or a space.
+     *   - `#`: user can enter a digit, space, plus or minus sign.
+     *   - `L`: any alpha character, case insensitive.
+     *   - `?`: any alpha character, case insensitive or space.
+     *   - `A`: any alphanumeric character.
+     *   - `a`: any alphanumeric character or space.
+     *   - `X`: hexadecimal character, case insensitive.
+     *   - `x`: hexadecimal character, case insensitive or space.
+     *   - `&`: any whitespace.
+     *   - `C`: any character.
+     *   - `!`: causes the input mask to fill from left to right instead of from right to left.
+     *   - `'`: the start or end of a literal part.
+     *   - `"`: the start or end of a literal part.
+     *   - `>`: converts all characters that follow to uppercase.
+     *   - `<`: converts all characters that follow to lowercase.
+     *   - `\`: cancel the special meaning of a character.
+     * 
+     * #### Example
+     *
+     * An American phone number:
+     *
+     * ```xml
      *  <a:textbox mask="(000)0000-0000;;_" />
-     * </code>
-     * Example:
-     * A dutch postal code
-     * <code>
+     * ```
+     * 
+     * #### Example
+     *
+     * A Dutch postal code:
+     *
+     * ```xml
      *  <a:textbox mask="0000 AA;;_" />
-     * </code>
-     * Example:
+     * ```
+     * 
+     * #### Example
+     *
      * A date
-     * <code>
+     * 
+     * ```xml
      *  <a:textbox mask="00-00-0000;;_" datatype="xsd:date" />
-     * </code>
-     * Example:
+     * ```
+     * 
+     * #### Example
+     *
      * A serial number
-     * <code>
+     * 
+     * ```xml
      *  <a:textbox mask="'WCS74'0000-00000;1;_" />
-     * </code>
-     * Example:
+     * ```
+     * 
+     * #### Example
+     *
      * A MAC address
-     * <code>
+     * 
+     * ```xml
      *  <a:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
-     * </code>
+     * ```
      */
     this.$propHandlers["mask"] = function(value){
         if (this.mask.toLowerCase() == "password")// || !apf.hasMsRangeObject)
@@ -254,9 +309,9 @@ apf.textbox  = function(struct, tagName){
     //};
 
     /**
-     * @attribute {String} initial-message the message displayed by this element
+     * @attribute {String} initial-message Sets or gets the message displayed by this element
      * when it doesn't have a value set. This property is inherited from parent
-     * nodes. When none is found it is looked for on the appsettings element.
+     * nodes. When none is found, it is looked for on the appsettings element.
      */
     this.$propHandlers["initial-message"] = function(value){
         if (value) {
@@ -278,7 +333,7 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} rows the row length for a text area
+     * @attribute {Number} rows Sets or gets the row length for a text area.
      */
     this.$propHandlers["rows"] = function(value){
         if (this.$input.tagName.toLowerCase() == "textarea" && value) {
@@ -290,7 +345,7 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} cols the column height for a text area
+     * @attribute {Number} cols Sets or gets the column height for a text area.
      */
     this.$propHandlers["cols"] = function(value){
         if (this.$input.tagName.toLowerCase() == "textarea" && value) {
@@ -302,7 +357,7 @@ apf.textbox  = function(struct, tagName){
     };
     
     /**
-     * @attribute {Boolean} focusselect whether the text in this element is
+     * @attribute {Boolean} focusselect Sets or gets whether the text in this element is
      * selected when this element receives focus.
      */
     this.$propHandlers["focusselect"] = function(value){
@@ -318,11 +373,11 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} type the type or function this element represents.
-     * This can be any arbitrary name. Although there are some special values.
-     *   Possible values:
-     *   username   this element is used to type in the name part of login credentials.
-     *   password   this element is used to type in the password part of login credentials.
+     * @attribute {String} type Sets or gets the type or function this element represents.
+     * This can be any arbitrary name, although there are some special values:
+     *   
+     *   - `"username"`: this element is used to type in the name part of login credentials.
+     *   - `"password"`: this element is used to type in the password part of login credentials.
      */
     this.$propHandlers["type"] = function(value){
         if (value && "password|username".indexOf(value) > -1
@@ -342,13 +397,16 @@ apf.textbox  = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         return this.setProperty("value", value, false, true);
     };
-    
+
+    /**
+     * Clears an element's value.
+     */    
     this.clear = function(){
         this.setProperty("value", "");
     }
@@ -369,7 +427,7 @@ apf.textbox  = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         var v;

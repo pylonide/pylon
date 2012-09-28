@@ -22,12 +22,14 @@
 // #ifdef __AMLTAB || __AMLPAGES || __AMLSWITCH || __INC_ALL
 
 /**
- * Element displaying a page and several buttons allowing a
+ * An element displaying a page and several buttons allowing a
  * user to switch between the pages. Each page can contain
- * arbitrary aml. Each page can render it's content during
- * startup of the application or when the page is activated.
- * Example:
- * <code>
+ * arbitrary AML. Each page can render its content during
+ * startup of the application, or when the page is activated.
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">
  *          <a:checkbox>Example</a:checkbox>
@@ -43,9 +45,9 @@
  *          <a:checkbox>This better?</a:checkbox>
  *      </a:page>
  *  </a:tab>
- * </code>
+ * ```
  *
- * @constructor
+ * @class tab
  * @define tab, pages, switch
  * @allowchild page
  * @addnode elements

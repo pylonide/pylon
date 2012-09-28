@@ -22,23 +22,18 @@
 // #ifdef __AMLSPLITBUTTON || __INC_ALL
 
 /**
- * Element displaying a skinnable rectangle which can contain other 
- * aml elements. This element is used by other elements such as the 
+ * An element displaying a skinnable rectangle which can contain other 
+ * AML elements. This element is used by other elements such as the 
  * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other aml elements.
- * Remarks:
- * This component is used in the accordion element to create its sections. In
- * the statusbar the panel element is an alias of bar.
+ * which in turn can contain other AML elements.
+ * 
+ * #### Remarks
  *
- * @constructor
+ * This component is used in the accordian element to create its sections. In
+ * the statusbar, the panel element is an alias of `bar`.
  *
+ * @class apf.splitbutton
  * @define bar, panel, menubar
- * @attribute {String} icon the url pointing to the icon image.
- * @attribute {Boolean} collapsed   collapse panel on load, default is false
- * Possible values:
- *     true    panel is collapsed
- *     false   panel is not collapsed
- * @attribute {String} title   describes content in panel
  * @allowchild button
  * @allowchild {elements}, {anyaml}
  * @addnode elements
@@ -46,6 +41,15 @@
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ */
+/**
+ * @attribute {String} icon Sets or gets the url pointing to the icon image.
+ */
+/**
+ * @attribute {Boolean} collapsed=false  Sets or gets collapse panel on load.
+ */
+/**
+ * @attribute {String} title   Describes the content in a panel
  */
 apf.splitbutton = function(struct, tagName){
     this.$init(tagName || "splitbutton", apf.NODE_VISIBLE, struct);

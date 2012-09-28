@@ -82,14 +82,19 @@ apf.StateServer = {
 }
 
 /**
- * Element that specifies a certain state of (a part of) the application. With
+ * An element that specifies a certain state of (a part of) the application. With
  * state we mean a collection of properties on objects that have a certain
- * value at one time. This element allows you to specify which properties on
+ * value at one time. 
+ * 
+ * This element allows you to specify which properties on
  * which elements should be set when a state is activated. This element can
  * belong to a state-group containing multiple elements with a default state.
- * Example:
+ * 
+ * #### Example
+ *
  * This example shows a log in window and four state elements in a state-group.
- * <code>
+ * 
+ * ```xml
  *   <a:appsettings>
  *       <a:auth 
  *         login         = "{comm.login(username, password)}" 
@@ -147,27 +152,31 @@ apf.StateServer = {
  *      <a:button action="login">Log in</a:button>
  *  </a:window>
  *  <a:button id="btnLogout" visible="false" action="logout">Log out</a:button>
- * </code>
- * Example:
+ * ```
+ *
+ * #### Example
+ *
  * This example shows a label using property binding to get it's caption
  * based on the current state.
- * <code>
+ * 
+ * ```xml
  *  <a:state group="stRole" id="stUser" caption="You are a user" active="true" />
  *  <a:state group="stRole" id="stAdmin" caption="You have super powers" />
  *
  *  <a:label value="{stRole.caption}" />
  *  <a:button onclick="stAdmin.activate()">Become admin</a:button>
- * </code>
- *
- * @event change Fires when the active property of this element changes.
- *
- * @constructor
+ * ```
+ * @class apf.state
  * @define state
  * @addnode global
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
+ */
+/**
+ * @event change Fires when the active property of this element changes.
+ *
  */
 apf.state = function(struct, tagName){
     this.$init(tagName || "state", apf.NODE_HIDDEN, struct);
@@ -257,7 +266,7 @@ apf.state = function(struct, tagName){
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * @param {String} value Sets the new value of this element
      */
     this.setValue = function(value){
         this.active = 9999;

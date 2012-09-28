@@ -33,9 +33,8 @@
  *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
  *   - {XMLElement}  [xmlContext] The subject of the xpath queries
  *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
- *
+ *   {: #saveDataOptions}
  */
- // @TODO Doc: This is screwing up docs above and below; need to explicitly call @method
 apf.saveData = 
 
 /**

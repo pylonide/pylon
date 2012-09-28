@@ -21,24 +21,34 @@
 //#ifdef __WITH_PRESENTATION || __INC_ALL
 
 /**
- * element specifying the skin of an application.
- * Example:
- * <code>
+ * An element specifying the skin of an application.
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:skin src="perspex.xml"
  *    name       = "perspex"
  *    media-path = "http://example.com/images"
  *    icon-path  = "http://icons.example.com" />
- * </code>
- * @attribute {String} name       the name of the skinset.
- * @attribute {String} src        the location of the skin definition.
- * @attribute {String} media-path the basepath for the images of the skin.
- * @attribute {String} icon-path  the basepath for the icons used in the elements using this skinset.
+ * ```
  * @allowchild  style, presentation
  * @addnode global, anyaml
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
- * @since       0.4
+ * @since  0.4
+ */
+/**
+ * @attribute {String} name       Sets or gets the name of the skinset.
+ */
+/**
+ * @attribute {String} src        Sets or gets the location of the skin definition.
+ */
+/**
+ * @attribute {String} media-path Sets or gets the basepath for the images of the skin.
+ */
+/**
+ * @attribute {String} icon-path  Sets or gets the basepath for the icons used in the elements using this skinset.
  */
 apf.skin = function(struct, tagName){
     this.$init(tagName || "skin", apf.NODE_HIDDEN, struct);

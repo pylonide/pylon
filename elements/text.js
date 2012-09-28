@@ -22,11 +22,12 @@
 // #ifdef __AMLTEXT || __INC_ALL
 
 /**
- * Element displaying a rectangle containing arbitrary (X)HTML.
- * This element can be databound and use databounding rules to
- * convert data into (X)HTML using for instance XSLT or JSLT.
+ * An element that displays a rectangle containing arbitrary (X)HTML.
  *
- * @constructor
+ * This element can be databound and use databounding rules to
+ * convert data into (X)HTML using--for instance--XSLT or JSLT.
+ *
+ * @class apf.text
  * @define text
  * @addnode elements
  *
@@ -35,8 +36,9 @@
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.1
- * @todo Please refactor this object
+ * 
  */
+// @todo Please refactor this object
 apf.text = function(struct, tagName){
     this.$init(tagName || "text", apf.NODE_VISIBLE, struct);
     
@@ -61,13 +63,16 @@ apf.text = function(struct, tagName){
     // *** Properties and Attributes *** //
 
     /**
-     * @attribute {Boolean} scrolldown  whether this elements viewport is always
+     * @attribute {Boolean} scrolldown  Sets or gets whether this element's viewport is always
      *                                  scrolled down. This is especially useful
      *                                  when this element is used to displayed
      *                                  streaming content such as a chat conversation.
-     * @attribute {Boolean} secure      whether the content loaded in this element
+     *
+     */
+    /**
+     * @attribute {Boolean} secure      Sets or gets whether the content loaded in this element
      *                                  should be filtered in order for it to not
-     *                                  be able to execute javascript. This is
+     *                                  be able to execute JavaScript. This is
      *                                  especially useful when the content does
      *                                  not come from a trusted source, like a
      *                                  web service or xmpp feed.
@@ -133,7 +138,7 @@ apf.text = function(struct, tagName){
     }*/
 
     /**
-     * @attribute {String} value the contents of this element. This can be text or html or xhtml.
+     * @attribute {String} value Sets or gets the contents of this element. This can be text, html, xhtml.
      */
     this.$propHandlers["value"] = function(value, prop, force, forceAdd){
         if (this.each)
@@ -201,8 +206,8 @@ apf.text = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -210,7 +215,7 @@ apf.text = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.$container.innerHTML;

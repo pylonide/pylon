@@ -21,20 +21,25 @@
 // #ifdef __AMLRADIOBUTTON || __INC_ALL
 
 /**
- * Element displaying a two state button which is one of a grouped set.
+ * An element displaying a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be selected at the same time.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:frame caption="Options">
  *      <a:radiobutton>Option 1</a:radiobutton>
  *      <a:radiobutton>Option 2</a:radiobutton>
  *      <a:radiobutton>Option 3</a:radiobutton>
  *      <a:radiobutton>Option 4</a:radiobutton>
  *  </a:frame>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * This example shows radio buttons with an explicit group set:
- * <code>
+ *
+ * ```xml
  *  <a:label>Options</a:label>
  *  <a:radiobutton group="g1">Option 1</a:radiobutton>
  *  <a:radiobutton group="g1">Option 2</a:radiobutton>
@@ -43,10 +48,10 @@
  *  <a:group id="g2" value="[mdlForm::choice]">
  *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
  *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
- *  </a:grou>
- * </code>
+ *  </a:group>
+ * ```
  *
- * @constructor
+ * @class apf.radiobutton
  * @define radiobutton
  * @allowchild {smartbinding}
  * @addnode elements
@@ -57,26 +62,34 @@
  * @version     %I%, %G%
  * @since       0.4
  *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ *
  * Sets the selection based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:radiobutton group="g2" bindings="bndExample" value="1">Choice 1</a:radiobutton>
  *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
  *
  *  <a:bindings id="bndExample">
  *      <a:value match="[@value]" />
  *  </a:bindings>
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ *
+ * ```xml
  *  <a:radiobutton group="g2" value="[@value]" value="1">Choice 1</a:radiobutton>
  *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
- * </code>
+ * ```
  *
- * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ */
+/**
+ * @event click Fires when the user presses a mousebutton while over this element and then lets the mousebutton go. 
  * @see baseclass.amlnode.event.afterchange
  */
 apf.radiobutton = function(struct, tagName){
@@ -108,9 +121,10 @@ apf.radiobutton = function(struct, tagName){
         "label", "selected", "tooltip", "icon");
 
     /**
-     * @attribute {String} group the name of the group to which this radio
+     * @attribute {String} group Sets or gets the name of the group to which this radio
      * button belongs. Only one item in the group can be selected at the same
-     * time. When no group is specified the parent container functions as the
+     * time. 
+     * When no group is specified the parent container functions as the
      * group; only one radiobutton within that parent can be selected.
      */
     this.$propHandlers["group"] = function(value){
@@ -151,14 +165,14 @@ apf.radiobutton = function(struct, tagName){
     };
     
     /**
-     * @attribute {String} tooltip the tooltip of this radio button.
+     * @attribute {String} tooltip Sets or gets the tooltip of this radio button.
      */
     this.$propHandlers["tooltip"] = function(value){
         this.$ext.setAttribute("title", value);
     };
 
     /**
-     * @attribute {String} icon the icon for this radiobutton
+     * @attribute {String} icon Sets or gets the icon for this radiobutton
      */
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
@@ -177,7 +191,7 @@ apf.radiobutton = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} label the label for this radiobutton
+     * @attribute {String} label Sets or gets the label for this radiobutton
      */
     this.$propHandlers["label"] = function(value){
         if (value)
@@ -190,7 +204,7 @@ apf.radiobutton = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} selected whether this radiobutton is the selected one in the group it belongs to.
+     * @attribute {Boolean} selected Sets or gets  whether this radiobutton is the selected one in the group it belongs to.
      */
     this.$propHandlers["selected"] = function(value){
         if (!this.$group)
@@ -208,23 +222,19 @@ apf.radiobutton = function(struct, tagName){
     });
 
     /**
-     * @attribute {string} background sets a multistate background. The arguments
-     * are seperated by pipes '|' and are in the order of:
-     * 'imagefilename|mapdirection|nrofstates|imagesize'
-     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
-     * The nrofstates argument specifies the number of states the iconfile contains:
-     * 1 - normal
-     * 2 - normal, hover
-     * 3 - normal, hover, down
-     * 4 - normal, hover, down, disabled
-     * The imagesize argument specifies how high or wide each icon is inside the
-     * map, depending of the mapdirection argument.
+     * @attribute {string} background Sets a multistate background. The arguments
+     * are seperated by pipes (`'|'`) and are in the order of: `'imagefilename|mapdirection|nrofstates|imagesize'`
+     * 
+     * {:multiStateDoc}
      *
-     * Example:
-     * A 3 state picture where each state is 16px high, vertically spaced
-     * <code>
+     * 
+     * #### Example
+     * 
+     * Here's a three state picture where each state is 16px high, vertically spaced:
+     * 
+     * ```xml
      * background="threestates.gif|vertical|3|16"
-     * </code>
+     * ```
      * @see baseclass.basebutton
      */
     this.$propHandlers["background"] = function(value){
@@ -249,8 +259,8 @@ apf.radiobutton = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -258,7 +268,7 @@ apf.radiobutton = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value
      */
     this.getValue = function(){
         return this.value;
@@ -278,7 +288,7 @@ apf.radiobutton = function(struct, tagName){
     
     //#endif
 
-    /**
+    /*
      * Sets the selected state and related value
      */
     this.$check = function(visually){
@@ -472,6 +482,28 @@ apf.radiobutton = function(struct, tagName){
 
 apf.aml.setElement("radiobutton", apf.radiobutton);
 
+/**
+ * An element that defines groups for radio buttons.
+ * 
+ * #### Example
+ *
+ * This example shows radio buttons with an explicit group set:
+ *
+ * ```xml
+ *  <a:label>Options</a:label>
+ *  <a:radiobutton group="g1">Option 1</a:radiobutton>
+ *  <a:radiobutton group="g1">Option 2</a:radiobutton>
+ *
+ *  <a:label>Choices</a:label>
+ *  <a:group id="g2" value="[mdlForm::choice]">
+ *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
+ *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
+ *  </a:group>
+ * ```
+ *
+ * @class apf.group
+ * @define group
+ */
 apf.$group = apf.group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
     
@@ -550,7 +582,7 @@ apf.$group = apf.group = function(struct, tagName){
     
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.value;

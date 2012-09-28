@@ -21,11 +21,13 @@
 // #ifdef __AMLTOOLBAR || __INC_ALL
 
 /**
- * Element displaying a bar containing buttons and other aml elements.
+ * An element displaying a bar containing buttons and other AML elements.
  * This element is usually positioned in the top of an application allowing
  * the user to choose from grouped buttons.
- * Example:
- * <code>
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:menu id="menu5">
  *      <a:item>About us</a:item>
  *      <a:item>Help</a:item>
@@ -53,9 +55,9 @@
  *          </a:menubar>
  *      </a:toolbar>
  *  </a:window>
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.toolbar
  * @define toolbar
  * @addnode elements
  * @allowchild bar, menubar

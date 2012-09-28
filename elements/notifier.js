@@ -21,10 +21,13 @@
 
 // #ifdef __AMLNOTIFIER || __INC_ALL
 /**
- * Notification element, which shows popups when events occur. Similar
- * to growl on the OSX platform.
- * Example:
- * <code>
+ * 
+ * A notification element, which shows popups when events occur. Similar in concept
+ * to [growl](http://growl.info/) on the OSX platform.
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:notifier position="bottom-right" margin="10 10">
  *      <a:event 
  *        when    = "{offline.onLine}"
@@ -43,62 +46,75 @@
  *        message = "Syncing done"
  *        icon    = "icoDone.gif" />
  *  </a:notifier>
- * </code>
- * Example:
- * Notifier with 4 notifications which appears and stays over the 3 seconds
- * begins to the top right corner and goes to the left. First notification will
- * be displayed when value in textbox will be bigger than 4. In next two cases 
- * notification will be shown when notifier's position or arrange attribute will 
- * be changed. In the last case notification will be shown when date 2008-12-24 
- * will be selected on calendar.
- * <code>
+ * ```
+ *
+ * #### Example:
+ *
+ * Notifier with four notifications which appears and stays over three seconds.
+ * It begins at the top-right corner and goes to the left. 
+ * 
+ * First, the notification will
+ * be displayed when value in textbox will be bigger than four. In the following two cases, 
+ * the notification will be shown when the notifier's `position` or `arrange` attribute is 
+ *  changed. In the last case the notification is shown when the date `2008-12-24` 
+ * is selected on calendar.
+ * 
+ * ```xml
  *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
  *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
  *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
  *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
  *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
  *  </a:notifier>
- * </code>
+ * ```
  * 
+ * @class apf.notifier
  * @define notifier
- * @attribute   {String}   position     Vertical and horizontal element's start
- *                                      position, it can be changed in any time,
- *                                      default is 'top-right'
- *     Possible values:
- *     top-right       element is placed in top-right corner of browser window
- *     top-left        element is placed in top-left corner of browser window
- *     bottom-right    element is placed in bottom-right corner of browser window
- *     bottom-left     element is placed in bottom-left corner of browser window
- *     center-center   element is placed in the middle of browser window
- *     right-top       element is placed in top-right corner of browser window
- *     left-top        element is placed in top-left corner of browser window
- *     right-bottom    element is placed in bottom-right corner of browser window
- *     left-bottom     element is placed in bottom-left corner of browser window
- *     center-center   element is placed in the middle of browser window
- * @attribute   {String}   margin       It's a free space around popup element,
- *                                      default is '10 10 10 10' pixels
- * @attribute   {String}   columnsize   Specify element width and col width where
- *                                      element will be displayed, default is 300 pixels
- * @attribute   {String}   arrange      popup elements can be displayed in rows
- *                                      or columns, default is 'vertical'
- *     Possible values:
- *     vertical     element will be displayed in rows
- *     horizontal   element will be displayed in columns
- * @attribute   {String}   timeout      After the timeout has passed the popup
- *                                      will dissapear automatically. When the
- *                                      mouse hovers over the popup it doesn't
- *                                      dissapear, default is 2 seconds
- * $attribute   {String}   onclick      It's an action executed after user click
- *                                      on notifier cloud
  * 
- * @constructor
- *
  * @inherits apf.Presentation
  * 
- * @author      
+ * @author   ???   
  * @version     %I%, %G% 
  * 
  * @allowchild event
+ *
+ */
+/**
+ * @attribute   {String}   position     Sets or gets the vertical and horizontal element's start
+ *                                      position. The possible values include:
+ *     - `"top-right"`:       the element is placed in top-right corner of browser window (this is the default)
+ *     - `"top-left"`:        the element is placed in top-left corner of browser window
+ *     - `"bottom-right"`:    the element is placed in bottom-right corner of browser window
+ *     - `"bottom-left"`:     the element is placed in bottom-left corner of browser window
+ *     - `"center-center"`:   the element is placed in the middle of browser window
+ *     - `"right-top"`:       the element is placed in top-right corner of browser window
+ *     - `"left-top"`:        the element is placed in top-left corner of browser window
+ *     - `"right-bottom"`:    the element is placed in bottom-right corner of browser window
+ *     - `"left-bottom"`:     the element is placed in bottom-left corner of browser window
+ *     - `"center-center"`:   the element is placed in the middle of browser window
+ */
+/**
+ * @attribute   {String}   margin       It's a free space around popup element,
+ *                                      default is '10 10 10 10' pixels
+ */
+/**
+ * @attribute   {String|Number}   columnsize=300   Specifies the element's width and col width, where the
+ *                                      element will be displayed.
+ */
+/**
+ * @attribute   {String}   arrange="vertical"      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
+ *                                      or columns (`"horizontal"`).
+ */
+/**
+ * @attribute   {String}   timeout=2     After the timeout has passed, the popup
+ *                                      disappears automatically. When the
+ *                                      mouse is hovering over the popup, it doesn't
+ *                                      disappears.
+ */
+/**
+ * @attribute   {String}   onclick      An action executed after a user clicks
+ *                                      on the notifier.
+ * 
  */
 apf.notifier = function(struct, tagName){
     this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
@@ -161,13 +177,11 @@ apf.notifier = function(struct, tagName){
     }
 
     /**
-     * Function creates new notifie popup element
+     * Creates a new notification popup.
      * 
-     * @param {String}  message  Message content displaing in popup element,
-     *                           default is [No message]
-     * @param {String}  icon     Path to icon file relative to "icon-path" which
-     *                           is set in skin declaration
-     * @param {Object}  ev       object representation of event
+     * @param {String}  message=""  The message content displayed in the popup element
+     * @param {String}  [icon]     The path to the icon file ,relative to "icon-path" which
+     *                           is set in the skin declaration
      * 
      */
     this.popup = function(message, icon, ev) {

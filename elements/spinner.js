@@ -20,31 +20,39 @@
 
 // #ifdef __AMLSPINNER || __INC_ALL
 /** 
- * This element is used to choosing number by plus/minus buttons.
- * When plus button is clicked longer, number growing up faster. The same
- * situation is for minus button. It's possible to increment and decrement
- * value by moving mouse cursor up or down with clicked input. Max and
- * min attributes define range with allowed values.
+ * This element is used to choose a number via plus/minus buttons.
+ *
+ * When the plus button is clicked/held longer, the number increments faster. The same
+ * situation occurs for the minus button. It's also possible to increment and decrement
+ * value by moving mouse cursor up or down with clicked input. 
  * 
- * Example:
- * Spinner element with start value equal 6 and allowed values from range
+ * Max and min attributes define the range of allowed values.
+ * 
+ * #### Example
+ *
+ * Here's a spinner element with  a start value equal to `6` and allowed values from range
  * (-100, 200)
- * <code>
- *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
- * </code>
  * 
- * Example:
- * Sets the value based on data loaded into this component.
- * <code>
+ * ```xml
+ *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
+ * ```
+ * 
+ * #### Example
+ *
+ * Setting the value based on data loaded into this component:
+ * 
+ * ```xml
  *  <a:model id="mdlSpinner">
  *      <data value="56"></data>
  *  </a:model>
  *  <a:spinner value="[@value]" model="mdlSpinner" />
- * </code>
-
- * Example:
- * Is showing usage of model in spinner connected with textbox
- * <code>
+ * ```
+ * 
+ * #### Example
+ *
+ * Showing the usage of a model in a spinner connected with a textbox:
+ * 
+ * ```xml
  *  <a:model id="mdlTest">
  *      <overview page="1" pages="50" />
  *  </a:model>
@@ -57,22 +65,29 @@
  *    caption = "[@page] of [@pages]">
  *  </a:spinner>
  *  <a:textbox value="{spinner.caption}"></a:textbox>
- * </code>
- * 
- * @attribute {Number}   max       maximal allowed value, default is 64000
- * @attribute {Number}   min       minimal allowed value, default is -64000
- * @attribute {Number}   value     actual value displayed in component
- * 
- * @classDescription     This class creates a new spinner
- * @return {Spinner}     Returns a new spinner
+ * ```
  *
- * @author      
+ * @class apf.spinner
+ * @define spinner
+ * @author      ???
  * @version     %I%, %G%
  * 
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  * @inherits apf.XForms
  *
+ */
+/**
+ * @attribute {Number}   max=64000       Sets or gets the maximum allowed value
+ */
+/**
+ * @attribute {Number}   min=-64000      Sets or gets the minimal allowed value
+ */
+/**
+ *  @attribute {Number}   value     Sets or gets the actual value displayed in component
+ * 
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  */
@@ -134,8 +149,8 @@ apf.spinner = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value) {
        this.setProperty("value", value, false, true);
@@ -143,16 +158,22 @@ apf.spinner = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current element value
      */
     this.getValue = function() {
         return this.value;
     };
-    
+
+    /**
+     * Increments the spinner by one.
+     */
     this.increment = function() {
         this.change(parseInt(this.oInput.value) + 1);
     };
-    
+
+    /**
+     * Decrements the spinner by one.
+     */    
     this.decrement = function() {
         this.change(parseInt(this.oInput.value) - 1);
     };
@@ -242,8 +263,12 @@ apf.spinner = function(struct, tagName){
     };
     
     /**
-     * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+     * @event click     Fires when the user presses a mousebutton while over this element and then lets the mousebutton go. 
+     */
+    /**
      * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
+     */
+    /**
      * @event mousedown Fires when the user presses a mousebutton while over this element. 
      */
     this.$draw = function() {
