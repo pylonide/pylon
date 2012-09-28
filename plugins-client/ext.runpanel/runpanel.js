@@ -74,7 +74,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 _self.stop();
             }
         });
-
+        
         this.nodes.push(
             this.mnuRunCfg = new apf.menu({
                 "id" : "mnuRunCfg",
@@ -99,7 +99,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
+                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -177,8 +177,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             ]);
 
             settings.setDefaults("auto/configurations", [
-                ["debug", "true"],
-                ["autohide", "true"]
+                ["debug", "false"],
+                ["autohide", "true"],
+                ["runmode", "true"]     // specifies the current mode "run", "debug" or "stop"
             ]);
 
             var runConfigs = e.model.queryNode("auto/configurations");
@@ -200,6 +201,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
             }
 
+            apf.xmldb.setAttribute(runConfigs, "runmode", "stop");
             _self.model.load(runConfigs);
         });
 
@@ -237,6 +239,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             /*var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             if (!bar.extended)
                 dock.hideBar(bar);*/
+                
+            _self.setSidePanelButtons("stop");
         });
         /*stProcessRunning.addEventListener("activate", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
@@ -375,7 +379,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             return;
         }
 
-        this.runConfig(node, this.shouldRunInDebugMode());
+        this.runConfig(node, typeof(debug) == "boolean" ? debug : this.shouldRunInDebugMode());
 
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
@@ -447,14 +451,43 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             debug,
             config.getAttribute("value")
         );
+        
+        var mode = debug ? "debug" : "run";
+        apf.xmldb.setAttribute(settings.model.queryNode('auto/configurations'), "runmode", mode);
+        
+        this.setSidePanelButtons(mode);
     },
 
     stop : function() {
         noderunner.stop();
 
+        apf.xmldb.setAttribute(settings.model.queryNode('auto/configurations'), "runmode", "stop");
+        
+        this.setSidePanelButtons("stop");
         //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
     },
-
+    
+    // set buttons states in Run & Debug sidepanel
+    setSidePanelButtons : function(mode) {
+        var runmode = mode || settings.model.queryValue('auto/configurations/@runmode');
+        switch (runmode) {
+            case "debug":
+                btnSidePanelDebug.setCaption("Stop Debug");
+                btnSidePanelRun.disable();
+                break;
+            case "run":
+                btnSidePanelDebug.disable();
+                btnSidePanelRun.setCaption("Stop Run");
+                break;
+            case "stop":
+                btnSidePanelDebug.setCaption("Debug");
+                btnSidePanelRun.setCaption("Run");
+                btnSidePanelDebug.enable();
+                btnSidePanelRun.enable();
+                break;
+        }
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable && item.enable();

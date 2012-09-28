@@ -59,10 +59,23 @@
         </a:menu>
       
         <a:vbox anchors="0 0 0 0">
-            <a:hbox>
-                <a:button caption="Run" flex="1"></a:button>
-                <a:button caption="Debug" flex="1"></a:button>
+            <a:hbox height="26">
+                <a:button
+                  id      = "btnSidePanelRun"
+                  skin    = "rundebug-button"
+                  onclick = "{this.caption == 'Run' ? require('ext/runpanel/runpanel').run(false) : require('ext/runpanel/runpanel').stop()}"
+                  class   = "{this.caption == 'Stop Run' ? 'stopbutton' : ''}"
+                  flex    = "1"
+                >Run</a:button>
+                <a:button 
+                  id      = "btnSidePanelDebug"
+                  skin    = "rundebug-button"
+                  onclick = "{this.caption == 'Debug' ? require('ext/runpanel/runpanel').run(true) : require('ext/runpanel/runpanel').stop()}"
+                  class   = "{this.caption == 'Stop Debug' ? 'stopbutton' : ''}"
+                  flex    = "1"
+                >Debug</a:button>
             </a:hbox>
+            
             <a:list id="lstRunCfg" 
               model   = "{require('ext/runpanel/runpanel').model}"
               border  = "0"

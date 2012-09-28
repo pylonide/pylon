@@ -3019,6 +3019,81 @@
         </a:main>
     </a:presentation>
 </a:button>
+<a:button name="rundebug-button">
+    <a:style><![CDATA[
+        .rundebug-button {
+            overflow            : hidden;
+            cursor              : default;
+            position            : relative;
+            border              : 1px solid #2b2b2b;
+            height              : 28px;
+            line-height         : 26px;
+            background          : #8f8f8f;
+            background          : linear-gradient(to bottom, #8f8f8f 0%,#7a7a7a 100%);
+            background          : -o-linear-gradient(top, #8f8f8f 0%,#7a7a7a 100%);
+            background          : -moz-linear-gradient(top, #8f8f8f 0%, #7a7a7a 100%);
+            background          : -webkit-linear-gradient(top, #8f8f8f 0%,#7a7a7a 100%);
+            background          : -ms-linear-gradient(top, #8f8f8f 0%,#7a7a7a 100%);
+            filter              : progid:DXImageTransform.Microsoft.gradient( startColorstr='#8f8f8f', endColorstr='#7a7a7a',GradientType=0 );
+            text-align          : center;
+        }
+
+        .rundebug-button .stopicon {
+            display: none;
+        }
+        
+        .rundebug-button.stopbutton, .rundebug-buttonDown  {
+            background          : #77a06b;
+            background          : linear-gradient(to bottom,  #77a06b 0%,#5d8d4f 100%);
+            background          : -o-linear-gradient(top,  #77a06b 0%,#5d8d4f 100%);
+            background          : -moz-linear-gradient(top,  #77a06b 0%, #5d8d4f 100%);
+            background          : -webkit-linear-gradient(top,  #77a06b 0%,#5d8d4f 100%);
+            background          : -ms-linear-gradient(top,  #77a06b 0%,#5d8d4f 100%);
+            filter              : progid:DXImageTransform.Microsoft.gradient( startColorstr='#77a06b', endColorstr='#5d8d4f',GradientType=0 );
+        }
+        
+        .rundebug-button.stopbutton .stopicon {
+            display             : inline-block;
+            height              : 16px;
+            width               : 23px;
+            background          : url("images/stopicon.png") no-repeat 0 1px;
+        }
+        
+        .rundebug-button u {
+            display             : inline-block;
+            position            : relative;
+            top                 : -2px;
+            height              : 16px;
+            color               : #ececec;
+            text-decoration     : none;
+            user-select         : none;
+        }
+        
+        .rundebug-buttonOver {
+            background          : #8e9f8a;
+            background          : linear-gradient(to bottom, #8e9f8a 0%,#798c74 100%);
+            background          : -o-linear-gradient(top,  #8e9f8a 0%,#798c74 100%);
+            background          : -moz-linear-gradient(top,  #8e9f8a 0%, #798c74 100%);
+            background          : -webkit-linear-gradient(top,  #8e9f8a 0%,#798c74 100%);
+            background          : -ms-linear-gradient(top,  #8e9f8a 0%,#798c74 100%);
+            filter              : progid:DXImageTransform.Microsoft.gradient( startColorstr='#8e9f8a', endColorstr='#798c74',GradientType=0 );
+        }
+        .rundebug-buttonDisabled {
+            cursor: default;
+        }
+        
+        .rundebug-button.stopbutton {
+            
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main caption="u" label="u" background="." icon="span" minwidth="18">
+            <div class="rundebug-button">
+                <span class="stopicon"></span><u></u>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:checkbox name="checkbox">
     <a:style><![CDATA[
         .cbcontainer {
@@ -6058,7 +6133,7 @@
         }
         
         .listRC .rcItem{
-            padding    : 2px 2px 2px 22px;
+            padding    : 1px 2px 3px 26px;
             position : relative;
         }
         
@@ -6083,8 +6158,8 @@
             background : url("images/radio-grey.png") no-repeat 0 0;
             display : block;
             position : absolute;
-            left : 2px;
-            top : 3px;
+            left : 5px;
+            top : 1px;
         }
 
         .listRC .rcItem .radiobutton:hover{
@@ -6097,6 +6172,16 @@
 
         .listRC .selected .radiobutton:active {
             background-position : 0 -51px !important;
+        }
+        
+        .listRC .selected {
+            border-top:1px solid #3a9bec;
+            border-bottom:1px solid #185f97;
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
+            background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
+            color: #E8E8E8;
         }
         
         .listRC .selected .radiobutton {
@@ -6119,20 +6204,13 @@
             width               : 14px;
             height              : 14px;
             position            : absolute;
-            right               : 2px;
-            top                 : 5px;
+            right               : 5px;
+            top                 : 3px;
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : -28px 0;
         }
         
-        .listRC .rcItem:hover .btnclose {
-        }
-
-        .listRC .rcItem:hover .btnclose {
-            display: block;
-        }
-
         .listRC .rcItem .btnclose:hover {
             background-position : -14px 0;
         }
@@ -6140,7 +6218,18 @@
         .listRC .rcItem .btnclose:active {
             background-position : -28px -14px;
         }
+        
+        .listRC .selected .btnclose {
+            background-position : -28px -14px;
+        }
+        
+        .listRC .selected .btnclose:hover {
+            background-position : -14px -14px;
+        }
 
+        .listRC .selected .btnclose:active {
+            background-position : -28px -14px;
+        }
     ]]></a:style>
 
     <a:presentation>
