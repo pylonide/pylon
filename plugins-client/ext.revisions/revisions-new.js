@@ -136,7 +136,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             );
         });
 
-
         // Declaration of event listeners
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
@@ -177,20 +176,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.defaultUser = { email: null };
-        this.offlineQueue = [];
-
-        // Contains the revisions that have been saved during Cloud9 being offline.
-        // Its items are not revision objects, but hold their own format (for
-        // example, they have a generated timestamp of the moment of saving).
-        if (localStorage.offlineQueue) {
-            try {
-                this.offlineQueue = JSON.parse(localStorage.offlineQueue);
-            }
-            catch(e) {
-                console.error("Error loading revisions from local storage", e);
-            }
-        }
-
         this.$initWorker();
     },
 
@@ -229,10 +214,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("init.ext/code/code", function(e) {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
-        });
-
-        apf.addEventListener("exit", function() {
-            localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
@@ -359,29 +340,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
 
-        var _self = this;
-        (data.doc.acedoc || data.doc).addEventListener("change", function(e) {
-            _self.onDocChange(e, data.doc);
-        });
+
     },
 
-    onDocChange: function(e, doc) {
-        if (!e.data || !e.data.delta || !e.data.delta[0])
-            return;
 
-        var _self = this;
-        setTimeout(function() {
-            var suffix = e.data.delta[0].suffix;
-            if (!suffix)
-                return;
-
-            var user = _self.getUser(suffix, doc);
-            if (!user)
-                return;
-
-            _self.addUserToDocChangeList(user, doc);
-        }, 50);
-    },
 
     onFileUpdate: function(data) {
         if (!data || !data.path || !data.newPath)
@@ -1350,23 +1312,24 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var model = page.$mdlRevisions;
-        if (model) {
-            if (lstRevisions && (lstRevisions.getModel() !== model)) {
-                lstRevisions.setModel(model);
-            }
+        if (!model)
+            return;
 
-            // If there is no revision object for the current doc, we should
-            // retrieve if it is not being retrieved right now. After retrieval,
-            // `populateModel` will take care of setting model.data.
-            var docPath = CoreUtil.getDocPath();
-            var currentDocRevision = this.rawRevisions[docPath];
-            if (!currentDocRevision && !this.waitingForRevisionHistory) {
-                this.getRevisionHistory({ path: docPath });
-            }
-            else {
-                this.populateModel(currentDocRevision, model);
-                this.$restoreSelection(page, model);
-            }
+        if (lstRevisions && (lstRevisions.getModel() !== model)) {
+            lstRevisions.setModel(model);
+        }
+
+        // If there is no revision object for the current doc, we should
+        // retrieve if it is not being retrieved right now. After retrieval,
+        // `populateModel` will take care of setting model.data.
+        var docPath = CoreUtil.getDocPath();
+        var currentDocRevision = this.rawRevisions[docPath];
+        if (!currentDocRevision && !this.waitingForRevisionHistory) {
+            this.getRevisionHistory({ path: docPath });
+        }
+        else {
+            this.populateModel(currentDocRevision, model);
+            this.$restoreSelection(page, model);
         }
     },
 

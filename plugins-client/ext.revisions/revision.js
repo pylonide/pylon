@@ -60,6 +60,16 @@ var RevisionedDoc = function(doc) {
             console.error("Error loading revisions from local storage", e);
         }
     }
+
+    apf.addEventListener("exit", function() {
+        localStorage.offlineQueue[self.path] = JSON.stringify(self.offlineQueue);
+    });
+
+    // TODO check that the doc doesn't have a function attached already?
+    var _self = this;
+    (this.doc.acedoc || this.doc).addEventListener("change", function(e) {
+        _self.onDocChange(e, _self.doc);
+    });
 };
 
 RevisionedDoc.prototype = {
@@ -108,6 +118,10 @@ RevisionedDoc.prototype = {
         this.worker.postMessage(o);
     },
 
+    getOfflineQueue: function() {
+        return JSON.stringify(self.offlineQueue);
+    },
+
     onRevisionSaved: function(data) {
         if (typeof data.ts !== "number")
             throw new Error("Expected number, but got " + typeof data.ts);
@@ -120,6 +134,24 @@ RevisionedDoc.prototype = {
                 break;
             }
         }
+    },
+
+    onDocChange: function(e, doc) {
+        if (!e.data || !e.data.delta || !e.data.delta[0])
+            return;
+
+        var _self = this;
+        setTimeout(function() {
+            var suffix = e.data.delta[0].suffix;
+            if (!suffix)
+                return;
+
+            var user = _self.getUser(suffix, doc);
+            if (!user)
+                return;
+
+            _self.addUserToDocChangeList(user, doc);
+        }, 50);
     },
 
     afterModelUpdate: function(e) {
