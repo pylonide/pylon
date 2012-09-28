@@ -70,7 +70,7 @@
             function createSplash() {
                 var loadingIde = document.createElement('div');
                 loadingIde.setAttribute("id", "loadingide");
-                loadingIde.setAttribute("style", "background:#000 url(images/loader.gif) no-repeat center center;height: 100%;width: 100%;position: fixed;z-index: 1000;left: 0;top: 0;");
+                loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>Dispatching war rocket &quot;Ajax&quot; to bring back his body</div>';
                 document.body.appendChild(loadingIde);
             }
 
@@ -155,7 +155,9 @@
                     "[%staticUrl%]/ext/main/style/images/cover-logo.png",
                     "[%staticUrl%]/ext/main/style/images/panelBg.png",
                     "[%staticUrl%]/ext/main/style/images/editor_tab.png",
-                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
+                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png",
+                    "[%staticUrl%]/ext/main/style/images/loading-your-editor.png",
+                    "[%staticUrl%]/ext/main/style/images/loaderide.gif"
                 ];
                 if (document.images) {
                     var img;
