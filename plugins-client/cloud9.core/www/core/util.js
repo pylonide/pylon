@@ -224,7 +224,9 @@ var contentTypes = {
     "sh": "application/x-sh",
     "bash": "application/x-sh",
 
-    "xq": "text/x-xquery"
+    "xq": "text/x-xquery",
+    
+    "terminal": "terminal"
 };
 
 exports.getFileIcon = function(xmlNode) {
@@ -241,7 +243,7 @@ exports.getFileIcon = function(xmlNode) {
 
 
 exports.getContentType = function(filename) {
-    var type = filename.split(".").pop().toLowerCase() || "";
+    var type = filename.split(".").pop().split("!").pop().toLowerCase() || "";
     return contentTypes[type] || "text/plain";
 };
 
