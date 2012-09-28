@@ -3564,7 +3564,7 @@
             box-shadow : 4px 4px 0px #e8e8e8 inset;
             width : 10px;
             height : 10px;
-            z-index : 10000;
+            z-index : 0;
         }
         
         .ace_scroller.horscroll {
