@@ -223,7 +223,7 @@ apf.MultiselectBinding = function(){
             delete this.getLastTraverseNode;
             delete this.getTraverseParent;
         }
-    }
+    };
 
     /**
      * Retrieves a node list containing the {@link term.datanode data nodes} which
@@ -408,13 +408,14 @@ apf.MultiselectBinding = function(){
         return x;
     };
 
-    /**
-     * Finds HTML presentation node in cache by ID.
-     *
-     * @param  {String} id  The id of the HTMLElement which is looked up.
-     * @return {HTMLElement} The HTMLElement found. When no element is found, `null` is returned.
-     */
     if (!this.$findHtmlNode) { //overwritten by apf.Cache
+        /**
+         * Finds HTML presentation node in cache by ID.
+         *
+         * @param  {String} id  The id of the HTMLElement which is looked up.
+         * @return {HTMLElement} The HTMLElement found. When no element is found, `null` is returned.
+         * @private
+         */
         this.$findHtmlNode = function(id){
             return this.$pHtmlDoc.getElementById(id);
         };

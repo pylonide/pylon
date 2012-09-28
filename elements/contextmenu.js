@@ -22,7 +22,7 @@
 // #ifdef __AMLCONTEXTMENU || __INC_ALL
 
 /**
- * Am lement specifying which menu is shown when a
+ * An element specifying which menu is shown when a
  * contextmenu is requested by a user for a AML node.
  * 
  * #### Example
@@ -38,6 +38,8 @@
  *  </a:list>
  * ```
  *
+ * @class apf.contextmenu
+ * @define contextmenu
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4

@@ -507,14 +507,14 @@ apf.button  = function(struct, tagName){
     this.showMenu = function(){
         if (this.submenu && !this.value)
             menuDown.call(this);
-    }
+    };
     /**
      * If this button is a submenu, this method hides it.
      */     
     this.hideMenu = function(){
         if (this.submenu && this.value)
             menuDown.call(this);
-    }
+    };
 
     /**
      * Sets the text displayed as a caption of this element.

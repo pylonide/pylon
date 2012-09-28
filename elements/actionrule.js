@@ -39,22 +39,23 @@
 /** 
  * @attribute {String} lock
  */
-/** 
+// @todo Doc ALL of these
+/*
  * @define update
  */
-/** 
+/* 
  * @attribute {String} get 
  */
-/** 
+/* 
  * @attribute {String} parent
  */
-/** 
+/* 
  * @define add
  */
-/** 
+/* 
  * @attribute {Boolean} get 
  */
-/** 
+/*
  * @attribute {Boolean} parent
  */
 apf.ActionRule = function(struct, tagName){

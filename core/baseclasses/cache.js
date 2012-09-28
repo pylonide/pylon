@@ -229,26 +229,26 @@ apf.Cache = function(){
         this.$setCurrentFragment(fragment);
 
         return true;
-    }
+    };
 
     /*
-     * Sets cache element and it's ID
+     * Sets cache element and its ID.
      *
-     * @param {String}           id        the id of the cache element to be stored.
-     * @param {DocumentFragment} fragment  the data to be stored.
+     * @param {String}           id        The id of the cache element to be stored.
+     * @param {DocumentFragment} fragment  The data to be stored.
      * @private
      */
     function setCache(id, fragment){
         if (!this.caching) return;
 
         this.cache[id] = fragment;
-    }
+    };
 
     /*
-     * Finds HTML presentation node in cache by ID
+     * Finds HTML presentation node in cache by ID.
      *
-     * @param  {String} id  the id of the HTMLElement which is looked up.
-     * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
+     * @param  {String} id  The id of the HTMLElement which is looked up.
+     * @return {HTMLElement} The HTMLElement found. When no element is found, `null` is returned.
      */
     this.$findHtmlNode = function(id){
         var node = this.$pHtmlDoc.getElementById(id);

@@ -22,7 +22,7 @@
 // #ifdef __AMLSCRIPT || __INC_ALL
 
 /**
- * AN element that loads JavaScript into the application,
+ * An element that loads JavaScript into the application,
  * either from its first child or from a file.
  * 
  * #### Example
@@ -40,6 +40,9 @@
  *      }
  *  //--></a:script>
  * ```
+ *
+ * @class apf.script
+ * @define script
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4

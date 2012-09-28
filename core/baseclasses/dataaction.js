@@ -78,7 +78,7 @@ apf.DataAction = function(){
      *
      */
     /**
-     *  event unlocksuccess Fires when an unlock request succeeds
+     * @event unlocksuccess Fires when an unlock request succeeds
      * @bubbles 
      * @param {Object} e The standard event object, with the following properties:
      *                   - state ([[Number]]): The return code of the unlock request

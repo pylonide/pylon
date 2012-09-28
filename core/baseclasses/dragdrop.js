@@ -85,13 +85,60 @@ apf.__DRAGDROP__ = 1 << 5;
  *      </a:actions>
  *  </a:smartbinding>
  * ```
- * 
+ *
+ * #### Example 
+ *
+ * This example shows a small mail application. The tree element displays a root
+ * node, accounts and folders in a tree. The datagrid contains the mails. This
+ * rule specifies which data nodes can be dropped where. Folders can be dropped 
+ * in folders and accounts. Mails can be dropped in folders.
+ *
+ * ```xml
+ *
+ *  <a:tree align="left" width="200">
+ *      <a:each match="[root|account|folder|mail]">
+ *          <a:caption match="[@name]" />
+ *          <a:drag match  = "[folder]" />
+ *          <a:drop match  = "[folder]" 
+ *                  target = "[folder|account]"
+ *                  action = "tree-append" />
+ *          <a:drop match  = "[mail]" 
+ *                  target = "[folder]"
+ *                  action = "tree-append" />
+ *      </a:each>
+ *      <a:model>
+ *          <data>
+ *              <root name="Root">
+ *                  <account name="Account 1">
+ *                      <folder name="Folder 1"></folder>
+ *                  </account>
+ *              </root>
+ *           </data>
+ *      </a:model>
+ *  </a:tree>
+ *  <a:datagrid align="right">
+ *      <a:each match="[mail]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@name]"
+ *            width   = "100%" /> 
+ *          <a:drag match="[mail]" />
+ *      </a:each>
+ *      <a:model>
+ *          <data>
+ *              <mail name="Mail 1"></mail>
+ *          </data>
+ *      </a:model>
+ *  </a:datagrid>
+ *```
  * @class apf.DragDrop
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
- * 
+ * @define dragdrop
+ * @allowchild drop, drag
+ * @define drag 
  */
 /**
  * @event  dragdata  Fires before a drag & drop operation is started to determine the data that is dragged.
@@ -140,59 +187,6 @@ apf.__DRAGDROP__ = 1 << 5;
  *
  */
 /**
- * @define dragdrop
- * @allowchild drop, drag
- * @define drag   Determines whether a {@link term.datanode data node} can 
- * be dragged from this element. 
- * 
- * #### Example 
- *
- * This example shows a small mail application. The tree element displays a root
- * node, accounts and folders in a tree. The datagrid contains the mails. This
- * rule specifies which data nodes can be dropped where. Folders can be dropped 
- * in folders and accounts. Mails can be dropped in folders.
- *
- * ```xml
- *
- *  <a:tree align="left" width="200">
- *      <a:each match="[root|account|folder|mail]">
- *          <a:caption match="[@name]" />
- *          <a:drag match  = "[folder]" />
- *          <a:drop match  = "[folder]" 
- *                  target = "[folder|account]"
- *                  action = "tree-append" />
- *          <a:drop match  = "[mail]" 
- *                  target = "[folder]"
- *                  action = "tree-append" />
- *      </a:each>
- *      <a:model>
- *          <data>
- *              <root name="Root">
- *                  <account name="Account 1">
- *                      <folder name="Folder 1"></folder>
- *                  </account>
- *              </root>
- *           </data>
- *      </a:model>
- *  </a:tree>
- *  <a:datagrid align="right">
- *      <a:each match="[mail]">
- *          <a:column 
- *            caption = "Name" 
- *            value   = "[@name]"
- *            width   = "100%" /> 
- *          <a:drag match="[mail]" />
- *      </a:each>
- *      <a:model>
- *          <data>
- *              <mail name="Mail 1"></mail>
- *          </data>
- *      </a:model>
- *  </a:datagrid>
- *```
- *
- */
-/**
  * @attribute {String} match           An XPath statement querying the
  *                                     {@link term.datanode data node} that is
  *                                     dragged. If the query matches a node it
@@ -205,11 +199,6 @@ apf.__DRAGDROP__ = 1 << 5;
  *                                     a move. Use event.ctrlKey to use the Ctrl
  *                                     key to determine whether the element is copied.
  *
- */
-/**
- * @define drop   Determines whether a {@link term.datanode data node} can 
- * be dropped on a data node bound to this element. 
- * 
  */
 /**
  * @attribute {String} match           An XPath statement querying the

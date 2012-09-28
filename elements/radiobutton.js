@@ -251,7 +251,7 @@ apf.radiobutton = function(struct, tagName){
             oNode.style.backgroundRepeat = "";
             this.$background = null;
         }
-    }
+    };
 
     // *** Public methods *** //
 
@@ -276,7 +276,7 @@ apf.radiobutton = function(struct, tagName){
     
     this.select = function(){
         this.setProperty("selected", true, false, true);
-    }
+    };
     
     /*this.uncheck = function(){
         this.setProperty("selected", false, false, true);
@@ -284,7 +284,7 @@ apf.radiobutton = function(struct, tagName){
     
     this.getGroup = function(){
         return this.$group;
-    }
+    };
     
     //#endif
 
@@ -571,7 +571,7 @@ apf.$group = apf.group = function(struct, tagName){
         
         if (rb.selectedItem == rb)
             this.setProperty("value", null);
-    }
+    };
 
     /**
      * Sets the current value of this element.
@@ -590,7 +590,7 @@ apf.$group = apf.group = function(struct, tagName){
 
     this.$draw = function(){
         this.$ext = this.$int = this.$pHtmlNode;
-    }
+    };
 };
 apf.$group.prototype = new apf.GuiElement();
 

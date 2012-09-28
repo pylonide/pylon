@@ -141,7 +141,7 @@ apf.progressbar = function(struct, tagName){
      */
     this.$propHandlers["min"] = function(value){
         this.min = parseFloat(value);
-    }
+    };
 
     /**
      * @attribute {Number} max Sets or gets the maximum value the progressbar may have. This is
@@ -149,7 +149,7 @@ apf.progressbar = function(struct, tagName){
      */
     this.$propHandlers["max"] = function(value){
         this.max = parseFloat(value);
-    }
+    };
 
     // *** Public Methods *** //
 
@@ -179,7 +179,7 @@ apf.progressbar = function(struct, tagName){
      */
     this.clear = function(){
         this.$clear();
-    }
+    };
 
     this.$clear = function(restart, restart_time){
         clearInterval(this.$timer);

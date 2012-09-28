@@ -183,7 +183,7 @@ apf.text = function(struct, tagName){
     this.$eachHandler = function(value) {
         this.$attrExcludePropBind = apf.extend({}, this.$attrExcludePropBind);
         this.$attrExcludePropBind.value = value ? 2 : 0;
-    }
+    };
     this.addEventListener("prop.each", this.$eachHandler);
     
     this.addEventListener("$clear", function(){
@@ -202,7 +202,7 @@ apf.text = function(struct, tagName){
     this.addValue = function(value){
         this.$propHandlers["value"].call(this, value, null, null, true);
         this.dispatchEvent("prop.value", {value: this.value});
-    }
+    };
 
     /**
      * Sets the value of this element. This should be one of the values

@@ -409,7 +409,7 @@ apf.textbox  = function(struct, tagName){
      */    
     this.clear = function(){
         this.setProperty("value", "");
-    }
+    };
     
     //@todo cleanup and put initial-message behaviour in one location
     this.$clear = function(noEvent){
@@ -423,7 +423,7 @@ apf.textbox  = function(struct, tagName){
         
         if (!noEvent)
             this.dispatchEvent("clear");//@todo this should work via value change
-    }
+    };
 
     /**
      * Returns the current value of this element.

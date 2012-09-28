@@ -113,11 +113,12 @@ apf.Rename = function(){
     this.$isContentEditable = function(e){
         if (this.renaming && this.autorename)
             return true;
-    }
+    };
     //#endif
 
     /**
      * Changes the data presented as the caption of a specified {@link term.datanode data node}.
+     * 
      * If none are specified, the indicated node is used.
      *
      * @action

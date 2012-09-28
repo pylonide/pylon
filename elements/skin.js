@@ -31,6 +31,9 @@
  *    media-path = "http://example.com/images"
  *    icon-path  = "http://icons.example.com" />
  * ```
+ * 
+ * @class apf.skin
+ * @define skin
  * @allowchild  style, presentation
  * @addnode global, anyaml
  *

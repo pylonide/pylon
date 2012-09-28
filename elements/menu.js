@@ -373,7 +373,7 @@ apf.menu = function(struct, tagName){
         }
 
         return false;
-    }
+    };
 
     /**
      * Selects an element within a radio group.

@@ -807,7 +807,7 @@ apf.BaseTab = function(){
             default:
                 throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
         }
-    }
+    };
     //#endif
 
     /**

@@ -49,7 +49,7 @@ apf.__DELAYEDRENDER__ = 1 << 11
  *      </a:page>
  *  </a:tab>
  * ```
- * @apf.DelayedRender
+ * @class apf.DelayedRender
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

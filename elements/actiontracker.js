@@ -45,15 +45,12 @@
  * will be synchronized to the data store when the application comes online.
  *
  * @class apf.actiontracker
+ * @define actiontracker
+ * @addnode smartbinding, global
  * @inherits apf.Class
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
- *
- */
-/**
- * @define actiontracker
- * @addnode smartbinding, global
  *
  */
 /**
@@ -232,7 +229,7 @@ apf.actiontracker = function(struct, tagName){
         //#endif
 
         this.dispatchEvent("afterchange", {action: "clear-redo"});
-    }
+    };
     //#endif
 
     /**
@@ -474,11 +471,11 @@ apf.actiontracker = function(struct, tagName){
                 }
             }
         }
-    }
+    };
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
         
-    }
+    };
 
     /**
      * Rolls back a transaction.
@@ -507,7 +504,7 @@ apf.actiontracker = function(struct, tagName){
             id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
 
         delete this.$transtack[id];
-    }
+    };
 
     /**
      * Commits a transaction.
@@ -551,7 +548,7 @@ apf.actiontracker = function(struct, tagName){
         }
 
         delete this.$transtack[id];
-    }
+    };
 
     this.pause = function(dataNode, bContinue){
         var id = dataNode && (dataNode.$regbase || dataNode.$regbase === 0)
@@ -578,7 +575,7 @@ apf.actiontracker = function(struct, tagName){
             dataNode.removeEventListener("DOMNodeInserted",          domNodeIns);
             dataNode.removeEventListener("DOMNodeRemoved",           domNodeRem);
         }
-    }
+    };
 
     /**
      * Executes a function as a single transaction.

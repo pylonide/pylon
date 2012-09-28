@@ -52,7 +52,7 @@ apf.page = function(struct, tagName){
             return false;
 
         return [this.parentNode.$getLayoutNode("button", "caption", this.$button), "caption"];
-    }
+    };
     //#endif
 
     //#ifdef __WITH_CONVENIENCE_API
