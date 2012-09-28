@@ -85,7 +85,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 var menu = dock.getButtons("ext/debugger/debugger", "dbInteractive")[0];
                 dock.layout.showMenu(menu.uniqueId);
                 dbInteractive.parentNode.set(dbInteractive);
-                
+
                 txtCode.focus();
                 var range = editor.getSelectionRange();
                 var val = range.isEmpty()
@@ -119,8 +119,6 @@ module.exports = ext.register("ext/debugger/debugger", {
             });
             return false;
         });
-
-       
 
         var name = "ext/debugger/debugger"; //this.name
 
@@ -187,10 +185,10 @@ module.exports = ext.register("ext/debugger/debugger", {
             ext.initExtension(_self);
             return pgDebugNav;
         });
-      
+
         breakpoints.hook();
         sources.hook();
-       
+
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
             primary : {
@@ -277,7 +275,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         sources.init();
         breakpoints.init();
     },
-    
+
     activate : function(){
         ext.initExtension(this);
 

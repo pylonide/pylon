@@ -47,6 +47,9 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
                 changed = true;
         });
         
+        if (node.getAttribute("deleted"))
+            return;
+        
         if (changed)
             return "You have unsaved changes. Your changes will be lost if you don't save them";
             

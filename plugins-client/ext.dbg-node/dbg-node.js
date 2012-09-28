@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var V8Debugger = require("v8debug/V8Debugger");
 var ide = require("core/ide");
+var util = require("core/util");
 var oop = require("ace/lib/oop");
 var DebuggerService = require("ext/dbg-node/service");
 var DebugHandler = require("ext/debugger/debug_handler");
@@ -16,7 +17,7 @@ var extDebugger = require("ext/debugger/debugger");
 /*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack */
 
 var v8DebugClient = module.exports = function() {
-    this.stripPrefix = ide.workspaceDir;
+    this.stripPrefix = ide.workspaceDir || "";
 };
 
 oop.inherits(v8DebugClient, DebugHandler);
@@ -150,30 +151,21 @@ oop.inherits(v8DebugClient, DebugHandler);
         "function": 4
     };
 
-    this.stripPrefix = "";
-
-    this.setStrip = function(stripPrefix) {
-        this.stripPrefix = stripPrefix;
-    };
-
     this.$strip = function(str) {
-        if (!this.stripPrefix)
-            return str;
-
         return str.lastIndexOf(this.stripPrefix, 0) === 0
             ? str.slice(this.stripPrefix.length + 1)
             : str;
     };
 
     this.$getScriptXml = function(script) {
-        return [
-            "<file scriptid='", script.id,
-            "' scriptname='", apf.escapeXML(script.name || "anonymous"),
-            "' path='", apf.escapeXML(this.getLocalScriptPath(script)),
-            "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
-            "' lineoffset='", script.lineOffset,
-            "' debug='true' />"
-        ].join("");
+        return util.toXmlTag("file", {
+            scriptid: script.id,
+            scriptname: script.name || "anonymous",
+            path: this.getLocalScriptPath(script),
+            text: this.$strip(script.text || "anonymous"),
+            lineoffset: script.lineOffset,
+            debug: "true"
+        });
     };
 
     function getId(frame){
@@ -198,7 +190,7 @@ oop.inherits(v8DebugClient, DebugHandler);
     };
 
     this.getScriptIdFromPath = function(path) {
-        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (!script)
             return;
         return script.getAttribute("scriptid");
@@ -207,7 +199,7 @@ oop.inherits(v8DebugClient, DebugHandler);
     this.getScriptnameFromPath = function(path) {
         if (!path)
             return;
-        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (script)
             return script.getAttribute("scriptname");
         // if script isn't added yet reconstruct it's name from ide.workspaceDir
@@ -273,15 +265,13 @@ oop.inherits(v8DebugClient, DebugHandler);
     };
 
     this.$serializeVariable = function(item, name) {
-        var str = [
-            "<item name='", apf.escapeXML(name || item.name),
-            "' value='", apf.escapeXML(this.$valueString(item.value)),
-            "' type='", item.value.type,
-            "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
-            hasChildren[item.value.type] ? "' children='true" : "",
-            "' />"
-        ];
-        return str.join("");
+        return util.toXmlTag("item", {
+            name: name || item.name,
+            value: this.$valueString(item.value),
+            type: item.value.type,
+            ref: typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
+            children: hasChildren[item.value.type] ? "true" : "false"
+        });
     };
 
     /**
@@ -320,18 +310,17 @@ oop.inherits(v8DebugClient, DebugHandler);
 
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
-        xml.push(
-            "<frame index='", frame.index,
-            "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
-            "' column='", frame.column,
-            "' id='", getId(frame),
-            "' ref='", frame.ref,
-            "' line='", frame.line,
-            "' script='", this.$strip(script.name),
-            "' scriptPath='", this.getLocalScriptPath(script),
-            "' scriptid='", frame.func.scriptId, //script.id,
-            "'>"
-        );
+        xml.push(util.toXmlTag("frame", {
+            index: frame.index,
+            name: apf.escapeXML(this.$frameToString(frame)), //dual escape???
+            column: frame.column,
+            id: getId(frame),
+            ref: frame.ref,
+            line: frame.line,
+            script: this.$strip(script.name),
+            scriptPath: this.getLocalScriptPath(script),
+            scriptid: frame.func.scriptId //script.id,
+        }, true));
         xml.push("<vars>");
 
         var receiver = {
@@ -356,7 +345,10 @@ oop.inherits(v8DebugClient, DebugHandler);
         var scopes = frame.scopes;
         for (j = 0, l = scopes.length; j < l; j++) {
             var scope = scopes[j];
-            xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
+            xml.push(util.toXmlTag("scope", {
+                index: scope.index,
+                type: scope.type
+            }));
         }
         xml.push("</scopes>");
 
@@ -399,7 +391,8 @@ oop.inherits(v8DebugClient, DebugHandler);
             if (xmlFrames.length && _self.$isSameFrameset(xmlFrames, frames)) {
                 for (i = 0, l = frames.length; i < l; i++)
                     _self.$updateFrame(xmlFrames[i], frames[i]);
-            } else {
+            }
+            else {
                 var xml = [];
                 if (frames) {
                     for (i = 0, l = frames.length; i < l; i++)
@@ -510,20 +503,26 @@ oop.inherits(v8DebugClient, DebugHandler);
             var str = [];
             var name = expression.trim();
             if (error) {
-                str.push("<item type='.error' name=\"", apf.escapeXML(name),
-                    "\" value=\"", apf.escapeXML(error.message), "\" />");
+                str.push(util.toXmlTag("item", {
+                    type: ".error",
+                    name: name,
+                    value: error.message
+                }));
             }
             else {
-                str.push(
-                    "<item name=\"", apf.escapeXML(name),
-                    "\" value='", apf.escapeXML(body.text), //body.value ||
-                    "' type='", body.type,
-                    "' ref='", body.handle,
-                    body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
-                    body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
-                    body.properties && body.properties.length ? "' children='true" : "",
-                    "' />"
-              );
+                var props = {
+                    name: name,
+                    value: body.text,
+                    type: body.type,
+                    ref: body.handle
+                };
+                if (body.constructorFunction)
+                    props.contructor = body.constructorFunction.ref;
+                if (body.prototypeObject)
+                    props.prototype = body.prototypeObject.ref;
+                if (body.properties && body.properties.length)
+                    props.children = "true";
+                str.push(util.toXmlTag("item", props));
             }
             callback(apf.getXml(str.join("")), body, refs, error);
         });
@@ -556,7 +555,8 @@ oop.inherits(v8DebugClient, DebugHandler);
             delete createdBreakpoints[bp.$location];
             if (oldBp && isEqual(oldBp, bp)) {
                 _self.$v8breakpoints[bp.$location] = oldBp;
-            } else {
+            }
+            else {
                 _self.$v8breakpoints[bp.$location] = bp;
                 addBp(bp);
             }

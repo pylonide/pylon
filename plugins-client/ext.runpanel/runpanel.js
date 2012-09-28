@@ -99,7 +99,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
+                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run it'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -177,7 +177,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             ]);
 
             settings.setDefaults("auto/configurations", [
-                ["debug", "true"],
+                ["debug", "false"],
                 ["autohide", "true"]
             ]);
 
