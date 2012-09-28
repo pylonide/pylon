@@ -9,21 +9,18 @@
 var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
 
-var IGNORE_TIMEOUT = 50;
-var ignoredPaths = {};
-var ignoreTimers = {};
-
-var name = "watcher";
-var DAV;
-var vfs;
-
 module.exports = function setup(options, imports, register) {
-    DAV = imports.dav.getServer();
+    var DAV = imports.dav.getServer();
+    var vfs = imports.vfs;
+    var name = "watcher";
+    
+    var IGNORE_TIMEOUT = 50;
+    var ignoredPaths = {};
+    var ignoreTimers = {};
+    
     imports.ide.register(name, WatcherPlugin, register);
-    vfs = imports.vfs;
-};
 
-var WatcherPlugin = function(ide, workspace) {
+function WatcherPlugin(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     DAV.plugins["watcher"] = function (handler) {
@@ -38,7 +35,7 @@ var WatcherPlugin = function(ide, workspace) {
     this.name = name;
     this.clients = {};
     this.basePath = ide.workspaceDir;
-};
+}
 
 util.inherits(WatcherPlugin, Plugin);
 
@@ -116,7 +113,7 @@ util.inherits(WatcherPlugin, Plugin);
             return;
         }
 
-        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime.getTime() === currStat.mtime.getTime())
+        if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime === currStat.mtime)
             return;
 
         if (!currStat) {
@@ -272,3 +269,5 @@ util.inherits(WatcherPlugin, Plugin);
     };
 
 }).call(WatcherPlugin.prototype);
+
+};
