@@ -57,7 +57,8 @@ oop.inherits(v8DebugClient, DebugHandler);
                         _self.$handleDebugBreak(e.breakpoints);
                     });
                 });
-                ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
+                if (_self.activeFrame)
+                    ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
                 _self.onChangeRunning();
             });
         });

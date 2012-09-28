@@ -139,7 +139,7 @@ module.exports = {
             column: parseInt(frame.getAttribute("column"), 10),
             text: frame.getAttribute("name"),
             path: frame.getAttribute("scriptPath")
-        })
+        });
     },
 
     showDebugFile: function(scriptId, row, column, text) {
