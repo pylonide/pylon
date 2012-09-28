@@ -55,7 +55,7 @@
                 <a:each match="[frame]">
                     <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
                     <a:column caption="Script" value="[@script]" width="40%" />
-                    <a:column caption="Ln" value="[@line]" width="30"/>
+                    <a:column caption="Ln" value="{parseInt([@line])+1}" width="30"/>
                     <a:column caption="Col" value="[@column]" width="30"/>
                 </a:each>
             </a:datagrid>
