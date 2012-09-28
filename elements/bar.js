@@ -64,7 +64,7 @@ apf.section = function(struct, tagName){
 
 /**
  * @class apf.menubar
- * @inheritsdoc apf.section
+ * @inheritdoc apf.section
  */
 apf.menubar = function(struct, tagName){
     this.$init(tagName || "menubar", apf.NODE_VISIBLE, struct);
@@ -72,7 +72,7 @@ apf.menubar = function(struct, tagName){
 
 /**
  * @class apf.bar
- * @inheritsdoc apf.section
+ * @inheritdoc apf.section
  */
 apf.bar     = function(struct, tagName){
     this.$init(tagName || "bar", apf.NODE_VISIBLE, struct);

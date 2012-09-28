@@ -1109,7 +1109,7 @@ apf.xmldb = new (function(){
             window.clearInterval(this.$gcInterval);
     };
 
-    /**
+    /*
      * @private
      * @todo xml doc leakage
      */

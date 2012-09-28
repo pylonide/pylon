@@ -89,13 +89,13 @@ apf.MultiselectBinding = function(){
      * @param {Object}  options  The new sort options. These are applied incrementally.
      *                           Any property that is not set is maintained unless the clear
      *                           parameter is set to `true`. The following properties are available:
-     *                  - {String}   order        see {@link baseclass.multiselectbinding.binding.each.attribute.order}
-     *                  - {String}   [xpath]      see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
-     *                  - {String}   [type]       see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
-     *                  - {String}   [method]     see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
-     *                  - {Function} [getNodes]   A function that retrieves a list of nodes.
-     *                  - {String}   [dateFormat] see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
-     *                  - {Function} [getValue]   A function that determines the string content based
+     *                  - order ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.order}
+     *                  - [xpath] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
+     *                  - [type] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
+     *                  - [method] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
+     *                  - [getNodes] ([[Function]]): A function that retrieves a list of nodes.
+     *                  - [dateFormat] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
+     *                  - [getValue] ([[Function]]): A function that determines the string content based
      *                                            on an XML node as it's first argument.
      * @param {Boolean} clear    Removes the current sort options.
      * @param {Boolean} noReload Specifies whether to reload the data of this component.
@@ -169,13 +169,13 @@ apf.MultiselectBinding = function(){
      * Retrieves the current sort options.
      *
      * @returns {Object}  The current sort options. The following properties are available:
-     *                     - {String}   order      see {@link baseclass.multiselectbinding.binding.each.attribute.order}
-     *                     - {String}   xpath      see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
-     *                     - {String}   type       see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
-     *                     - {String}   method     see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
-     *                     - {Function} getNodes   A function that retrieves a list of nodes.
-     *                     - {String}   dateFormat see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
-     *                     - {Function} getValue   A function that determines the string content based on
+     *                     - order ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.order}
+     *                     - xpath ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
+     *                     - type ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
+     *                     - method ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
+     *                     - getNodes ([[Function]]): A function that retrieves a list of nodes.
+     *                     - dateFormat ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
+     *                     - getValue ([[Function]]): A function that determines the string content based on
      *                                               an XML node as it's first argument.
      * @see    baseclass.multiselectbinding.binding.each
      */
@@ -586,7 +586,7 @@ apf.MultiselectBinding = function(){
     /**
      * @event xmlupdate Fires when XML of this element is updated.
      * @param {Object} e The standard event object. The following properties are available:
-     *                      - {String}     action   The action that was executed on the XML. The following values are possible:
+     *                      - action ([[String]]): The action that was executed on the XML. The following values are possible:
      *                            - `text`   :     A text node is set
      *                            - `attribute` :  An attribute is set
      *                            - `update`:      An XML node is updated
@@ -597,9 +597,9 @@ apf.MultiselectBinding = function(){
      *                            - `synchronize`:  An unknown update
      *                            - `move-away` :  An XML node is moved (parent not set)
      *                            - `move`        An XML node is moved (parent still set)
-     *                      - {XMLElement} xmlNode  The node that is subject to the update
-     *                      - {Mixed}      result   The result
-     *                      - {UndoObj}    UndoObj  The undo information
+     *                      - xmlNode ([[XMLElement]]): The node that is subject to the update
+     *                      - result ([[Mixed]]): The result
+     *                      - UndoObj ([[UndoObj]]): The undo information
      */
     /*
      * Loops through parents of a changed node to find the first

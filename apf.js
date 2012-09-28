@@ -45,47 +45,47 @@
  * @event keyup         Fires when the user stops pressing a key (by lifting up)
  * @cancelable Prevents the keypress.
  * @param {Object} e An object containing the following properties:
- *  - {Number}  keyCode   The character code of the pressed key.
- *  - {Boolean} ctrlKey   Whether the [[keys: Ctrl]] key was pressed.
- *  - {Boolean} shiftKey  Whether the [[keys: Shift]] key was pressed.
- *  - {Boolean} altKey    Whether the [[keys: Alt]] key was pressed.
- *  - {Object}  htmlEvent The html event object.
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
  */
 /** 
  * @event mousescroll   Fires when the user scrolls the mouse
  * @cancelable Prevents the container from scrolling
  * @param {Object} e An object containing the following properties:
- *  - {Object}      htmlEvent The HTML event object
- *  - {apf.AmlElement} amlElement  The element which was clicked.
- *  - {Number} delta The scroll impulse.
+ *  - htmlEvent ([[Object]]): The HTML event object
+ *  - amlElement ([[apf.AmlElement]]): The element which was clicked.
+ *  - delta ([[Number]]): The scroll impulse.
  */
 /** 
  * @event hotkey        Fires when the user presses a hotkey
  * @bubbles
  * @cancelable Prevents the default hotkey behavior.
  * @param {Object} e An object containing the following properties:
- *  - {Number}  keyCode   The character code of the pressed key.
- *  - {Boolean} ctrlKey   Whether the [[keys: Ctrl]] key was pressed.
- *  - {Boolean} shiftKey  Whether the [[keys: Shift]] key was pressed.
- *  - {Boolean} altKey    Whether the [[keys: Alt]] key was pressed.
- *  - {Object}  htmlEvent The html event object.
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
  */
 /** 
  * @event keydown       Fires when the user presses down on a key
  * @bubbles
  * @cancelable Prevents the default hotkey behavior.
  * @param {Object} e An object containing the following properties:
- *  - {Number}  keyCode   The character code of the pressed key.
- *  - {Boolean} ctrlKey   Whether the [[keys: Ctrl]] key was pressed.
- *  - {Boolean} shiftKey  Whether the [[keys: Shift]] key was pressed.
- *  - {Boolean} altKey    Whether the [[keys: Alt]] key was pressed.
- *  - {Object}  htmlEvent The html event object.
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
  */
 /** 
  * @event mousedown     Fires when the user presses a mouse button
  * @param {Object} e An object containing the following properties:
- *  - {Object}      htmlEvent The HTML event object
- *  - {apf.AmlElement} amlElement  The element which was clicked.
+ *  - htmlEvent ([[Object]]): The HTML event object
+ *  - amlElement ([[apf.AmlElement]]): The element which was clicked.
  */
 /** 
  * @event onbeforeprint Fires before the application prints.
@@ -101,18 +101,18 @@
  * @cancelable Prevents the error from being thrown.
  * @bubbles
  * @param {Object} e An object containing the following properties:
- *   - {Error}          error     The error object that is thrown when the event's callback doesn't return `false`.
- *   - {Number}         state     The state of the call. Possible values include:
- *     - `apf.SUCCESS`  The request was successful
- *     - `apf.TIMEOUT`  The request timed out
- *     - `apf.ERROR`    An error occurred while making the request
- *     - `apf.OFFLINE`  The request was made while the application was offline.
- *   - {Mixed}          userdata  Data that the caller made available in the callback of the HTTP request.
- *   - {XMLHttpRequest} http      The object that executed the actual http request
- *   - {String}         url       The url that was requested
- *   - {Http}           tpModule  The teleport module that is making the request
- *   - {Number}         id        The id of the request
- *   - {String}         message   The error message
+ *   - error ([[Error]]): The error object that is thrown when the event's callback doesn't return `false`.
+ *   - state ([[Number]]): The state of the call. Possible values include:
+ *     - `apf.SUCCESS` : The request was successful
+ *     - `apf.TIMEOUT`:  The request timed out
+ *     - `apf.ERROR`:    An error occurred while making the request
+ *     - `apf.OFFLINE`:  The request was made while the application was offline.
+ *   - userdata ([[Mixed]]): Data that the caller made available in the callback of the HTTP request.
+ *   - http ([[XMLHttpRequest]]): The object that executed the actual http request
+ *   - url ([[String]]): The url that was requested
+ *   - tpModule ([[Http]]): The teleport module that is making the request
+ *   - id ([[Number]]): The id of the request
+ *   - message ([[String]]): The error message
  * 
  */
  apf = {
@@ -620,17 +620,17 @@
      *
      * @param {String}   url       The url that is accessed.
      * @param {Object}   options   The options for the HTTP request. It has the following properties:
-     *   - {Boolean} async          Whether the request is sent asynchronously. Defaults to true.
-     *   - {Mixed}   userdata       Custom data that is available to the callback function.
-     *   - {String}  method         The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
-     *   - {Boolean} nocache        Specifies whether browser caching is prevented.
-     *   - {String}  data           The data sent in the body of the message.
-     *   - {Boolean} useXML         Specifies whether the result should be interpreted as xml.
-     *   - {Boolean} autoroute      Specifies whether the request can fallback to a server proxy.
-     *   - {Boolean} caching        Specifies whether the request should use internal caching.
-     *   - {Boolean} ignoreOffline  Specifies whether to ignore offline catching.
-     *   - {String}  contentType    The MIME type of the message
-     *   - {Function} callback      The handler that gets called whenever the
+     *   - async ([[Boolean]]): Whether the request is sent asynchronously. Defaults to true.
+     *   - userdata ([[Mixed]]): Custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): The data sent in the body of the message.
+     *   - useXML ([[Boolean]]): Specifies whether the result should be interpreted as xml.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - contentType ([[String]]): The MIME type of the message
+     *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully, with an error, or times out.
      */
     ajax : (function(){

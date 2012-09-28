@@ -448,7 +448,6 @@ apf.getHorBorders = function(oHtml){
  * Returns the distance between the border top and border bottom values of an element.
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
- * @see apf.getHeightDiff
  */
 apf.getVerBorders = function(oHtml){
     return Math.max(0,
@@ -477,7 +476,6 @@ apf.getWidthDiff = function(oHtml){
  * Returns the distance between the border top and border bottom values of an element, taking padding into consideration.
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
- * @see apf.getHeightDiff
  */
 apf.getVerBorders = function(oHtml){
     if (apf.hasFlexibleBox 

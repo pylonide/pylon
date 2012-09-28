@@ -47,7 +47,7 @@
 /**
  *  @event afterswitch   Fires after this element has switched to another page.
  *  @param {Object} e The standard event object. It contains the following properties:
- *   - previous ([[String | Number]]): The name or number of the previous page.
+ *   - previous ([[String]] or [[Number]]): The name or number of the previous page.
  *   - previousId ([[Number]]): The number of the previous page.
  *   - previousPage ([[apf.page]]): The previous page.
  *   - next ([[String | Number]]): The name or number of the current page.
@@ -69,7 +69,7 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {Stirng | Number}    page     The name of numer of the page which is made active.
+     * @param {String | Number}    page     The name of numer of the page which is made active.
      * @param {Function} callback The function called after setting the page. Especially handy when using the `src` attribute.
      */
     this.set = function(page, callback, noEvent){

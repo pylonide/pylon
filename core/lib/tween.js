@@ -22,7 +22,7 @@
 // #ifdef __WITH_TWEEN
 
 /**
- * The animation library that is used for the animations inside elements.
+ * The library that is used for the animations inside elements.
  *
  * @class apf.tween
  *
@@ -324,35 +324,35 @@ var ID        = "id",
      * @method single
      * @param {Element}  oHtml The object to animate.
      * @param {Object}   info  The animation settings. The following properties are available:
-     *   - {String}   type        The property to be animated. These are predefined
+     *   - type ([[String]]): The property to be animated. These are predefined
      *                          property handlers and can be added by adding a
      *                          method to `apf.tween` with the name of the property
      *                          modifier. There are several handlers available.
-     *      - `"left"`            Sets the left position
-     *      - `"right"`           Sets the right position
-     *      - `"top"`             Sets the top position
-     *      - `"bottom"`          Sets the bottom position
-     *      - `"width"`           Sets the horizontal size
-     *      - `"height"`          Sets the vertical size
-     *      - `"scrollTop"`       Sets the scoll position
-     *      - `"mwidth"`          Sets the width and the margin-left to width/2
-     *      - `"mheight"`         Sets the height ant the margin-top to height/2
-     *      - `"scrollwidth"`     Sets the width an sets the scroll to the maximum size
-     *      - `"scrollheight"`    Sets the height an sets the scroll to the maximum size
-     *      - `"scrolltop"`       Sets the height and the top as the negative height value
-     *      - `"fade"`            Sets the opacity property
-     *      - `"bgcolor"`         Sets the background color
-     *      - `"textcolor"`       Sets the text color
-     *   - {Number, String} from  The start value of the animation
-     *   - {Number, String} to    The end value of the animation
-     *   - {Number}   [steps]     The number of steps to divide the tween in
-     *   - {Number}   [interval]  The time between each step
-     *   - {Number}   [anim]      The distribution of change between the step over the entire animation.             
-     *   - {Boolean}  [color]     Specifies whether the specified values are colors
-     *   - {Mixed}    [userdata]  Any data you would like to have available in your callback methods
-     *   - {Function} [onfinish]  A function that is called at the end of the animation
-     *   - {Function} [oneach]    A function that is called at each step of the animation
-     *   - {Object}   [control]   An object that can stop the animation at any point
+     *      - `"left"`:            Sets the left position
+     *      - `"right"`:           Sets the right position
+     *      - `"top"`:            Sets the top position
+     *      - `"bottom"`:          Sets the bottom position
+     *      - `"width"` :          Sets the horizontal size
+     *      - `"height"`:          Sets the vertical size
+     *      - `"scrollTop"`:       Sets the scoll position
+     *      - `"mwidth"` :         Sets the width and the margin-left to width/2
+     *      - `"mheight"` :        Sets the height ant the margin-top to height/2
+     *      - `"scrollwidth"`:     Sets the width an sets the scroll to the maximum size
+     *      - `"scrollheight"`:    Sets the height an sets the scroll to the maximum size
+     *      - `"scrolltop"` :      Sets the height and the top as the negative height value
+     *      - `"fade"` :           Sets the opacity property
+     *      - `"bgcolor"`:         Sets the background color
+     *      - `"textcolor"`:       Sets the text color
+     *   - from ([[Number | String]]): The start value of the animation
+     *   - to ([[Number | String]]): The end value of the animation
+     *   - [steps] ([[Number]]): The number of steps to divide the tween in
+     *   - [interval] ([[Number]]): The time between each step
+     *   - [anim] ([[Number]]): The distribution of change between the step over the entire animation.             
+     *   - [color] ([[Boolean]]): Specifies whether the specified values are colors
+     *   - [userdata] ([[Mixed]]): Any data you would like to have available in your callback methods
+     *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
+     *   - [oneach] ([[Function]]): A function that is called at each step of the animation
+     *   - [control] ([[Object]]): An object that can stop the animation at any point
      *     Methods:
      *     stop                 set on the object passed .
      */
@@ -515,16 +515,16 @@ var ID        = "id",
      * @method multi
      * @param {Element}  oHtml The object to animate.
      * @param {Object} info The settings of the animation. It contains the following properties:
-     *   {Number}   [steps]     The number of steps to divide the tween in
-     *   {Number}   [interval]  The time between each step
-     *   {Number}   [anim]      The distribution of change between the step over
+     *   - [steps] ([[Number]]): The number of steps to divide the tween in
+     *   - [interval] ([[Number]]): The time between each step
+     *   - [anim] ([[Number]]): The distribution of change between the step over
      *                          the entire animation
-     *   {Function} [onfinish]  A function that is called at the end of the animation
-     *   {Function} [oneach]    A function that is called at each step of the animation
-     *   {HTMLElement} [oHtml]  Another HTML element to animate.
-     *   {Object}   [control]   An object that can stop the animation at any point. It contains the following properties:
-     *     - {Boolean} stop       Specifies whether the animation should stop.
-     *   {Array}    [tweens]    A collection of simple objects specifying the single
+     *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
+     *   - [oneach] ([[Function]]): A function that is called at each step of the animation
+     *   - [oHtml] ([[HTMLElement]]): Another HTML element to animate.
+     *   - [control] ([[Object]]): An object that can stop the animation at any point. It contains the following properties:
+     *     - stop ([[Boolean]]): Specifies whether the animation should stop.
+     *   - [tweens] ([[Array]]): A collection of simple objects specifying the single
      *                          value animations that are to be executed simultaneously.
      *                          (for the properties of these single tweens see the
      *                          [[apf.tween.single]] method).
@@ -689,15 +689,15 @@ var ID        = "id",
      * @method apf.tween.css
      * @param {Element}  oHtml The object to animate.
      * @param {String} className The class name that defines the CSS properties to be set or removed.
-     * @param {Object} info The settings of the animation.
+     * @param {Object} info The settings of the animation. The following properties are available:
      *   Properties:
-     *   {Number}   [steps]     The number of steps to divide the tween in
-     *   {Number}   [interval]  The time between each step
-     *   {Number}   [anim]      The distribution of change between the step over the entire animation
-     *   {Function} [onfinish]  A function that is called at the end of the animation
-     *   {Function} [oneach]    A function that is called at each step of the animation
-     *   {Object}   [control]   An object that can stop the animation at any point. It contains the following property:
-     *     - {Boolean} stop       Specifies whether the animation should stop.
+     *   - [steps] ([[Number]]): The number of steps to divide the tween in
+     *   - [interval] ([[Number]]): The time between each step
+     *   - [anim] ([[Number]]): The distribution of change between the step over the entire animation
+     *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
+     *   - [oneach] ([[Function]]): A function that is called at each step of the animation
+     *   - [control] ([[Object]]): An object that can stop the animation at any point. It contains the following property:
+     *     - stop ([[Boolean]]): Specifies whether the animation should stop.
      * @param {Boolean} remove Specifies whether the class is set or removed from the element
      */
     css = function(oHtml, className, info, remove){

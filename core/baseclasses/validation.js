@@ -292,45 +292,45 @@ apf.Validation = function(){
      */
     /**
      * @attribute  {String}   datatype     Sets or gets the datatype that the value of this element should adhere to. This can be any 
-     * of a set of predefined types, or a simple type created by an XML Schema definition. Some possible values include:
-     *   - {String} xsd:dateTime
-     *   - {String} xsd:time
-     *   - {String} xsd:date
-     *   - {String} xsd:gYearMonth
-     *   - {String} xsd:gYear
-     *   - {String} xsd:gMonthDay
-     *   - {String} xsd:gDay
-     *   - {String} xsd:gMonth
-     *   - {String} xsd:string
-     *   - {String} xsd:boolean
-     *   - {String} xsd:base64Binary
-     *   - {String} xsd:hexBinary
-     *   - {String} xsd:float
-     *   - {String} xsd:decimal
-     *   - {String} xsd:double
-     *   - {String} xsd:anyURI
-     *   - {String} xsd:integer
-     *   - {String} xsd:nonPositiveInteger
-     *   - {String} xsd:negativeInteger
-     *   - {String} xsd:long
-     *   - {String} xsd:int
-     *   - {String} xsd:short
-     *   - {String} xsd:byte
-     *   - {String} xsd:nonNegativeInteger
-     *   - {String} xsd:unsignedLong
-     *   - {String} xsd:unsignedInt
-     *   - {String} xsd:unsignedShort
-     *   - {String} xsd:unsignedByte
-     *   - {String} xsd:positiveInteger
-     *   - {String} apf:url
-     *   - {String} apf:website
-     *   - {String} apf:email
-     *   - {String} apf:creditcard
-     *   - {String} apf:expdate
-     *   - {String} apf:wechars
-     *   - {String} apf:phonenumber
-     *   - {String} apf:faxnumber
-     *   - {String} apf:mobile
+     * of a set of predefined types, or a simple type created by an XML Schema definition. Some possible values (all of which are [[String]]s) include:
+     *   - `xsd:dateTime`
+     *   - `xsd:time`
+     *   - `xsd:date`
+     *   - `xsd:gYearMonth`
+     *   - `xsd:gYear`
+     *   - `xsd:gMonthDay`
+     *   - `xsd:gDay`
+     *   - `xsd:gMonth`
+     *   - `xsd:string`
+     *   - `xsd:boolean`
+     *   - `xsd:base64Binary`
+     *   - `xsd:hexBinary`
+     *   - `xsd:float`
+     *   - `xsd:decimal`
+     *   - `xsd:double`
+     *   - `xsd:anyURI`
+     *   - `xsd:integer`
+     *   - `xsd:nonPositiveInteger`
+     *   - `xsd:negativeInteger`
+     *   - `xsd:long`
+     *   - `xsd:int`
+     *   - `xsd:short`
+     *   - `xsd:byte`
+     *   - `xsd:nonNegativeInteger`
+     *   - `xsd:unsignedLong`
+     *   - `xsd:unsignedInt`
+     *   - `xsd:unsignedShort`
+     *   - `xsd:unsignedByte`
+     *   - `xsd:positiveInteger`
+     *   - `apf:url`
+     *   - `apf:website`
+     *   - `apf:email`
+     *   - `apf:creditcard`
+     *   - `apf:expdate`
+     *   - `apf:wechars`
+     *   - `apf:phonenumber`
+     *   - `apf:faxnumber`
+     *   - `apf:mobile`
      */
     /**
      * @attribute  {Integer}  min          Sets or gets the minimal value for which the value of this element is valid.

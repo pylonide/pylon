@@ -182,12 +182,12 @@ apf.getChildNumber = function(node, fromList){
  * @param {XMLNode} xmlNode The data to merge.
  * @param {XMLNode} parent  The node to merge on.
  * @param {Object}  options An object with the following optional properties:
- *   - {Boolean} [copyAttributes] Whether the attributes of `xmlNode` are copied as well.
- *   - {Boolean} [clearContents]  Whether the contents of parent is cleared.
- *   - {Number}  [start]          This feature is used for the virtual viewport. More information will follow.
- *   - {Number}  [length]         This feature is used for the virtual viewport. More information will follow.
- *   - {Number}  [documentId]     This feature is used for the virtual viewport. More information will follow.
- *   - {XMLElement} [marker]      This feature is used for the virtual viewport. More information will follow.
+ *   - [copyAttributes] ([[Boolean]]): Whether the attributes of `xmlNode` are copied as well.
+ *   - [clearContents] ([[Boolean]]): Whether the contents of parent is cleared.
+ *   - [start] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [length] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [documentId] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [marker] ([[XMLElement]]): This feature is used for the virtual viewport. More information will follow.
  * @return  {XMLNode}  The created xml node
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){

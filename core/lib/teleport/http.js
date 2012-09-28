@@ -88,20 +88,20 @@
  * @bubbles
  * @cancelable  Prevents a communication error to be thrown.
  * @param {Object} e An object returned by the callback. It contains the following properties:
- *     - {Error}          error     The error object that is thrown when the event
+ *     - error ([[Error]]): The error object that is thrown when the event
  *                                callback doesn't return false.
- *     - {Number}         state     The state of the call. Possible values include:
- *       - `apf.SUCCESS`  The request was successfull
- *       - `apf.TIMEOUT`  The request has timed out.
- *       - `apf.ERROR`    An error has occurred while making the request.
- *       - `apf.OFFLINE`  The request was made while the application was offline.
- *     - {Mixed}          userdata  Data that the caller wanted to be available in
+ *     - state ([[Number]]): The state of the call. Possible values include:
+ *       - `apf.SUCCESS`:  The request was successfull
+ *       - `apf.TIMEOUT`:  The request has timed out.
+ *       - `apf.ERROR`:    An error has occurred while making the request.
+ *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *     - userdata ([[Mixed]]): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
- *     - {XMLHttpRequest} http      The object that executed the actual HTTP request.
- *     - {String}         url       The URL that was requested.
- *     - {Http}           tpModule  The teleport module that is making the request.
- *     - {Number}         id        The id of the request.
- *     - {String}         message   The error message.
+ *     - http ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
+ *     - url ([[String]]): The URL that was requested.
+ *     - tpModule ([[Http]]): The teleport module that is making the request.
+ *     - id ([[Number]]): The id of the request.
+ *     - message ([[String]]): The error message.
  *
  * @define http
  * @addnode teleport
@@ -203,15 +203,15 @@ apf.http = function(){
      * Makes an HTTP request that receives XML.
      * @param {String}   url       The url that is accessed.
      * @param {Object}   options   The options for the HTTP request. It contains the following properties:
-     *   - {Boolean} async          Specifies whether the request is sent asynchronously. Defaults to true.
-     *   - {Mixed}   userdata       custom data that is available to the callback function.
-     *   - {String}  method         The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
-     *   - {Boolean} nocache        Specifies whether browser caching is prevented.
-     *   - {String}  data           the data sent in the body of the message.
-     *   - {Boolean} autoroute      Specifies whether the request can fallback to a server proxy.
-     *   - {Boolean} caching        Specifies whether the request should use internal caching.
-     *   - {Boolean} ignoreOffline  Specifies whether to ignore offline catching.
-     *   - {Function} callback      The handler that gets called whenever the
+     *   - async ([[Boolean]]): Specifies whether the request is sent asynchronously. Defaults to true.
+     *   - userdata ([[Mixed]]): custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): the data sent in the body of the message.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */
@@ -233,17 +233,17 @@ apf.http = function(){
      * Makes an HTTP request.
      * @param {String}   url       The URL that is accessed.
      * @param {Object}   options   The options for the HTTP request. It contains the following properties:
-     *   - {Boolean} async          Specifies whether the request is sent asynchronously. Defaults to true.
-     *   - {Mixed}   userdata       Custom data that is available to the callback function.
-     *   - {String}  method         The request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   - {Boolean} nocache        Specifies whether browser caching is prevented.
-     *   - {String}  data           The data sent in the body of the message.
-     *   - {Boolean} useXML         Specifies whether the result should be interpreted as xml.
-     *   - {Boolean} autoroute      Specifies whether the request can fallback to a server proxy.
-     *   - {Boolean} caching        Specifies whether the request should use internal caching.
-     *   - {Boolean} ignoreOffline  Specifies whether to ignore offline catching.
-     *   - {String}  contentType    The mime type of the message
-     *   - {Function} callback      The handler that gets called whenever the
+     *   - async ([[Boolean]]): Specifies whether the request is sent asynchronously. Defaults to true.
+     *   - userdata ([[Mixed]]): Custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): The data sent in the body of the message.
+     *   - useXML ([[Boolean]]): Specifies whether the result should be interpreted as xml.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - contentType ([[String]]): The mime type of the message
+     *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */

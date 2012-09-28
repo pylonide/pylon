@@ -162,7 +162,7 @@ apf.Anchoring = function(){
 
 
     /**
-     * @attribute {Number, String} [left]   Sets or gets a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
+     * @attribute {Number | String} [left]   Sets or gets a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
      * 
      * #### Example
      *
@@ -171,7 +171,7 @@ apf.Anchoring = function(){
      * ```
      */
     /**
-     * @attribute {Number, String} [right]  Sets or gets a way to determine the amount of pixels from the right border of this element to the right edge of its parent's border.
+     * @attribute {Number | String} [right]  Sets or gets a way to determine the amount of pixels from the right border of this element to the right edge of its parent's border.
      *                                      This attribute can also contain percentages, arithmetic and even full expressions.
      * 
      * #### Example
@@ -181,7 +181,7 @@ apf.Anchoring = function(){
      * ```
      */
     /** 
-     * @attribute {Number, String} [width]  Sets or gets a way to determine the amount of pixels from the left border to the right border of this element.
+     * @attribute {Number | String} [width]  Sets or gets a way to determine the amount of pixels from the left border to the right border of this element.
      *                                      This attribute can also contain percentages, arithmetic and even full expressions.
      * 
      * #### Example
@@ -191,7 +191,7 @@ apf.Anchoring = function(){
      * ```
      */
     /** 
-     * @attribute {Number, String} [top]    Sets or gets a way to determine the amount of pixels from the top border of this element to the top edge of its parent's border.
+     * @attribute {Number | String} [top]    Sets or gets a way to determine the amount of pixels from the top border of this element to the top edge of its parent's border.
      *                                      This attribute can also contain percentages, arithmetic and even full expressions.
      * 
      * #### Example
@@ -201,7 +201,7 @@ apf.Anchoring = function(){
      * ```
      */
     /** 
-     * @attribute {Number, String} [bottom] Sets or gets a way to determine the amount of pixels from the bottom border of this element to the bottom edge of its parent's border.
+     * @attribute {Number | String} [bottom] Sets or gets a way to determine the amount of pixels from the bottom border of this element to the bottom edge of its parent's border.
      *                                      This attribute can also contain percentages, arithmetic and even full expressions.
      * 
      * #### Example
@@ -211,7 +211,7 @@ apf.Anchoring = function(){
      * ```
      */
     /** 
-     * @attribute {Number, String} [height] Sets or gets a way to determine the amount of pixels from the top border to the bottom border of this element.
+     * @attribute {Number | String} [height] Sets or gets a way to determine the amount of pixels from the top border to the bottom border of this element.
      *                                      This attribute can also contain percentages, arithmetic and even full expressions.
      * 
      * #### Example

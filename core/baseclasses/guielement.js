@@ -224,7 +224,7 @@ apf.GuiElement = function(){
      * pixels, a percentage, or an expression. 
      *
      * @chainable
-     * @param {Number, String} value The new width of this element.
+     * @param {Number | String} value The new width of this element.
      */
     this.setWidth = function(value){
         this.setProperty("width", value, false, true);
@@ -239,7 +239,7 @@ apf.GuiElement = function(){
      * pixels, a percentage or an expression.
      *
      * @chainable
-     * @param {Number, String} value the new height of this element.
+     * @param {Number | String} value the new height of this element.
      */
     this.setHeight = function(value){
         this.setProperty("height", value, false, true);
@@ -253,7 +253,7 @@ apf.GuiElement = function(){
      * a percentage or an expression.
      *
      * @chainable
-     * @param {Number, String} value The new left position of this element.
+     * @param {Number | String} value The new left position of this element.
      */
     this.setLeft   = function(value){
         this.setProperty("left", value, false, true);
@@ -267,7 +267,7 @@ apf.GuiElement = function(){
      * a percentage or an expression.
      *
      * @chainable
-     * @param {Number, String} value The new top position of this element.
+     * @param {Number | String} value The new top position of this element.
      */
     this.setTop    = function(value){
         this.setProperty("top", value, false, true);

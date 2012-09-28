@@ -530,7 +530,7 @@ apf.AmlNode = function(){
     /**
      * Removes a child from the node list of this element. Call-chaining is
      * supported.
-     * - {apf.AmlNode} childNode The child node to remove
+     * @param {apf.AmlNode} childNode The child node to remove
      */
     this.removeChild = function(childNode) {
         //#ifdef __DEBUG

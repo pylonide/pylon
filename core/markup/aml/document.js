@@ -120,9 +120,9 @@ apf.AmlDocument = function(){
      * Creates a new AML element.
      *
      * @param {Mixed} qualifiedName Information about the new node to create. Possible values include:
-     *                              - {String}     The tagName of the new element to create
-     *                              - {String}     The AML definition for a single or multiple elemnts
-     *                              - {XMLElement} The AML definition for a single or multiple elements
+     *                              - [[String]]:     The tag name of the new element to create
+     *                              - [[String]]:    The AML definition for a single or multiple elemnts
+     *                              - [[XMLElement]]: The AML definition for a single or multiple elements
      * @return {apf.AmlElement} The created AML element
      */
     this.createElement = function(qualifiedName){
@@ -135,9 +135,9 @@ apf.AmlDocument = function(){
      *
      * @param  {String}  namespaceURI  The namespace URI name to use
      * @param {Mixed} qualifiedName Information about the new node to create. Possible values include:
-     *                              - {String}     The tagName of the new element to create
-     *                              - {String}     The AML definition for a single or multiple elemnts
-     *                              - {XMLElement} The AML definition for a single or multiple elements
+     *                              - [[String]]:     The tag name of the new element to create
+     *                              - [[String]]:     The AML definition for a single or multiple elemnts
+     *                              - [[XMLElement]]: The AML definition for a single or multiple elements
      * @return {apf.AmlElement} The created AML element
      */        
     this.createElementNS = function(namespaceURI, qualifiedName){

@@ -454,8 +454,8 @@ apf.AmlElement = function(struct, tagName){
      * Inserts new AML into this element.
      * @param {Mixed}       amlDefNode  The AML to be loaded. This can be a string or a parsed piece of XML.
      * @param {Object}      options     Additional options to pass. It can include the following properties:
-     *                                  - {Function} callback A function to call once the insertion completes.
-     *                                  - {Boolean} clear If set, the AML has the attribute "clear" attached to it
+     *                                  - callback ([[Function]]): A function to call once the insertion completes.
+     *                                  - clear ([[Boolean]]): If set, the AML has the attribute "clear" attached to it
      */
     this.insertMarkup = function(amlDefNode, options){
         //#ifdef __DEBUG

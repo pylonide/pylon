@@ -849,23 +849,23 @@ apf.MultiSelect = function(){
     /**
      * @event  beforechoose  Fires before a choice is made.
      * @param {Object} e The standard event object. It contains the following properties:
-     *                   - {XMLElement} xmlNode   The {@link term.datanode data node} that was choosen
+     *                   - `xmlNode` ([[XMLElement]]):   The {@link term.datanode data node} that was choosen
      *
      */
     /**
      * @event  afterchoose   Fires after a choice is made.
      * @param {Object} e The standard event object. It contains the following properties:
-     *                   - {XMLElement} xmlNode   The {@link term.datanode data node} that was choosen
+     *                   - `xmlNode` ([[XMLElement]]):   The {@link term.datanode data node} that was choosen
      */
     /**
      * Chooses a selected item. This is done by double clicking on the item or
      * pressing the Enter key.
      *
      * @param {Mixed}   xmlNode      The identifier to determine the selection. It can be one of the following values: 
-     *                                - {XMLElement}:  The {@link term.datanode data node} to be choosen
-     *                                - {HTMLElement}: The HTML element node used as visual representation of {@link term.datanode data node}
+     *                                - [[XMLElement]]:  The {@link term.datanode data node} to be choosen
+     *                                - [[HTMLElement]]: The HTML element node used as visual representation of {@link term.datanode data node}
      *                                                 Used to determine the {@link term.datanode data node}
-     *                                - {String} :     The value of the {@link term.datanode data node} to be choosen
+     *                                - [[String]] :     The value of the {@link term.datanode data node} to be choosen
      *
      */
     this.choose = function(xmlNode, userAction){

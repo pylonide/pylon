@@ -28,11 +28,11 @@
  * @method saveData
  * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to store the data.
  * @param {Object}      [options]    The options for this instruction. Available properties include:
- *   - {Boolean} multicall    Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
- *   - {Mixed}   userdata     Any data that is useful to access in the callback function
- *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
- *   - {XMLElement}  [xmlContext] The subject of the xpath queries
- *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
+ *   - multicall ([[Boolean]]): Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
+ *   - userdata ([[Mixed]]): Any data that is useful to access in the callback function
+ *   - args ([[Array]]): The arguments of the call, overriding any specified in the data instruction
+ *   - [xmlContext] ([[XMLElement]]): The subject of the xpath queries
+ *   - [callback] ([[Function]]): The code that is executed when the call returns, either successfully or not
  *   {: #saveDataOptions}
  */
 apf.saveData = 
@@ -75,11 +75,11 @@ apf.saveData =
  * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data.
  * @param {XMLElement}  [xmlContext] The subject of the xpath queries
  * @param {Object}      [options]    The options for this instruction. Available properties include:
- *   - {Boolean} multicall    Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
- *   - {Mixed}   userdata     Any data that is useful to access in the callback function
- *   - {Array}   args         The arguments of the call, overriding any specified in the data instruction
- *   - {XMLElement}  [xmlContext] The subject of the xpath queries
- *   - {Function}    [callback]   The code that is executed when the call returns, either successfully or not
+ *   - multicall ([[Boolean]]): Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
+ *   - userdata ([[Mixed]]): Any data that is useful to access in the callback function
+ *   - args ([[Array]]): The arguments of the call, overriding any specified in the data instruction
+ *   - [xmlContext] ([[XMLElement]]): The subject of the xpath queries
+ *   - [callback] ([[Function]]): The code that is executed when the call returns, either successfully or not
  * @param {Function}    [callback]   The code that is executed when the call returns, either successfully or not
  */
 apf.getData = function(instruction, options){
