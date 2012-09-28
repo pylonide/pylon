@@ -21,11 +21,26 @@
 // #ifdef __AMLHBOX || __AMLVBOX || __INC_ALL
 
 /**
- * @define vbox Container that stacks it's children vertically.
+ * @class apf.vbox
+ * @define vbox A container that stacks its children vertically.
+ * 
+ * #### Example
+ * 
+ * {:hboxExample}
+ * 
  * @see element.hbox
- * @define hbox Container that stacks it's children horizontally.
- * Example:
- * <code>
+ * 
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ */
+/**
+ * @class apf.hbox
+ * @define hbox A container that stacks its children horizontally.
+ * 
+ * #### Example
+ * 
+ * ```xml
  *  <a:hbox height="500" width="600">
  *      <a:vbox height="500" width="500">
  *          <a:bar height="250" caption="Top bar" />
@@ -36,14 +51,19 @@
  *      </a:vbox>
  *      <a:bar width="100" caption="Right bar"/>
  *  </a:hbox>
- * </code>
- * Remarks:
+ * ```
+ * {#:hboxExample}
+ * 
+ * @see element.vbox
+ * 
+ * #### Remarks
+ * 
  * Firefox has some issues. 
  * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
  * height value.
  * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
+ * 
  * @addnode elements
- * @constructor
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -71,24 +91,39 @@ apf.vbox = function(struct, tagName){
     var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
-     * @attribute {String}  padding      the space between each element. Defaults to 2.
-     * @attribute {Boolean} reverse      whether the sequence of the elements is in reverse order.
-     * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
-     * Example:
-     * <code>
+     * @attribute {String}  padding=2      Sets or gets the space between each element.
+     */
+    /**
+     * @attribute {Boolean} reverse      Sets or gets whether the sequence of the elements is in reverse order.
+     */
+    /**
+     * @attribute {String}  edge="5,5,5,5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:vbox edge="10 10 40 10" />
-     * </code>
+     * ```
+     */
+    // @todo Doc
+    /**
      * @attribute {String} pack     
-     *   Possible values:
-     *   start
-     *   center
-     *   end
+     *   
+     *  Possible values include:
+     * 
+     *   - `"start"`:
+     *   - `"center"`:
+     *   - `"end"`:
+     */
+    /**
      * @attribute {Boolean} align
-     *   Possible values:
-     *   start
-     *   center
-     *   end
-     *   stretch
+     *   
+     *  Possible values include:
+     * 
+     *   - `"start"`:
+     *   - `"center"`:
+     *   - `"end"`:
+     *   - `"stretch"`:
      */
     this.$booleanProperties["splitters"] = true;
     this.$supportedProperties.push("padding", "reverse", "edge", "pack", "align", "splitters");

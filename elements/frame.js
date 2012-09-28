@@ -21,9 +21,19 @@
 
 // #ifdef __AMLFRAME || __INC_ALL
 
+/** 
+ *  
+ * @class apf.panel
+ * @inheritdoc apf.frame
+ */
+/** 
+ *  
+ * @class apf.fieldset
+ * @inheritdoc apf.frame
+ */ 
 /**
- * AN element displaying a frame with a caption, containing other elements. This
- * element is called a fieldset in html.
+ * An element displaying a frame with a caption, containing other elements. This
+ * element is called a "fieldset" in HTML.
  * 
  * #### Example
  * 
@@ -36,7 +46,7 @@
  *  </a:frame>
  * ```
  *
- * @constructor
+ * @class apf.frame
  * @define fieldset, frame
  * @allowchild {elements}, {anyaml}
  * @addnode elements:frame
@@ -71,7 +81,7 @@ apf.frame    = function(struct, tagName){
     // *** Properties and Attributes *** //
     
     /**
-     * @attribute {String} caption the text of the caption. 
+     * @attribute {String} caption Sets or gets the caption text. 
      */
     this.$supportedProperties.push("caption", "url");
     this.$propHandlers["caption"] = function(value){
@@ -84,7 +94,7 @@ apf.frame    = function(struct, tagName){
     };
     
     /**
-     * @attribute {String} icon the location of the image.
+     * @attribute {String} icon Sets or gets the location of the image.
      */
     this.$propHandlers["icon"] = function(value){
         var oIcon = this.$getLayoutNode("main", "icon", this.$ext);
@@ -94,7 +104,10 @@ apf.frame    = function(struct, tagName){
             oIcon.style.display = value ? "block" : "none";
         apf.skins.setIcon(oIcon, value, this.iconPath);
     };
-    
+
+    /**
+     * @attribute {String} icon Sets or gets the URL location (if this is an iframe).
+     */
     this.$propHandlers["url"] = function(value){
         var node = this.oCaption;
         if (node.tagName == "A" || node.nodeType != 1) 
@@ -107,8 +120,8 @@ apf.frame    = function(struct, tagName){
     };
     
     /** 
-     * Sets the text of the title of this element
-     * @param {String} value the text of the title.
+     * Sets the text of the title of this element.
+     * @param {String} value The text of the title.
      */
     this.setTitle = function(value){
         this.setProperty("title", value);

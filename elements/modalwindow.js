@@ -21,7 +21,7 @@
 
 // #ifdef __AMLMODALWINDOW || __INC_ALL
 
-/**
+/*
  * @private
  */
 apf.WinServer = {
@@ -93,12 +93,14 @@ apf.WinServer = {
 }
 
 /**
- * Element displaying a skinnable, draggable window with optionally
+ * An element displaying a skinnable, draggable window with optionally
  * a min, max, edit and close button. This element is also used
- * as a portal widget container. Furthermore this element supports
+ * as a portal widget container. Furthermore, this element supports
  * docking in an alignment layout.
- * Example:
- * <code>
+ * 
+ * #### Example
+ * 
+ * ```xml
  *  <a:window 
  *    id        = "winMail"
  *    modal     = "false"
@@ -112,10 +114,10 @@ apf.WinServer = {
  *    width     = "500"
  *    height    = "400">
  *  </a:window>
- * </code>
+ * ```
  *
- * @constructor
- * @define modalwindow
+ * @class apf.modalwindow 
+ * @define window
  * @allowchild {elements}, {smartbinding}, {anyaml}
  * @addnode elements
  *
@@ -125,19 +127,30 @@ apf.WinServer = {
  *
  * @inherits apf.Presentation
  * @inherits apf.Transaction
- *
+ */
+ /**
  * @event show          Fires when the window is opened.
+ */
+ /**
  * @event close         Fires when the window is closed.
+ */
+ /**
+ * 
  * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
- * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
- *   cancelable:   Prevents the edit panel from being closed.
+ */
+ /** 
+  * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
+ *  @cancelable   Prevents the edit panel from being closed.
+ */
+/**
  * @event statechange   Fires after the state of this window changed.
- *   object:
- *   {Boolean} minimized  whether the window is minimized.
- *   {Boolean} maximized  whether the window is maximized.
- *   {Boolean} normal     whether the window has it's normal size and position.
- *   {Boolean} edit       whether the window is in the edit state.
- *   {Boolean} closed     whether the window is closed.
+ * @param e {Object} The standard event object. The following properties are available:
+ * 
+ *   - `minimized` ([[Boolean]]):   Specifies whether the window is minimized.
+ *   - `maximized` ([[Boolean]]):   Specifies whether the window is maximized.
+ *   - `normal` ([[Boolean]]):      Specifies whether the window has it's normal size and position.
+ *   - `edit` ([[Boolean]]):        Specifies whether the window is in the edit state.
+ *   - `closed` ([[Boolean]]):      Specifies whether the window is closed.
  */
 apf.toolwindow  = function(struct, tagName){
     this.$init(tagName || "toolwindow", apf.NODE_VISIBLE, struct);
@@ -172,7 +185,7 @@ apf.AmlWindow = function(struct, tagName){
     /**
      * Sets the title of the window.
      * @chainable
-     * @param {String} caption the text of the title.
+     * @param {String} caption The text of the title.
      */
     this.setTitle = function(caption){
         this.setProperty("title", caption, false, true);
@@ -182,7 +195,7 @@ apf.AmlWindow = function(struct, tagName){
     /**
      * Sets the icon of the window.
      * @chainable
-     * @param {String} icon the location of the image.
+     * @param {String} icon The location of the image.
      */
     this.setIcon = function(icon){
         this.setProperty("icon", icon, false, true);
@@ -318,7 +331,7 @@ apf.AmlWindow = function(struct, tagName){
         "maxwidth", "maxheight", "showdragging", "transaction");
 
     /**
-     * @attribute {Boolean} modal whether the window prevents access to the
+     * @attribute {Boolean} modal Specifies whether the window prevents access to the
      * layout below it.
      */
     this.$propHandlers["modal"] = function(value){
@@ -337,7 +350,7 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * @attribute {Boolean} center centers the window relative to it's parent's
+     * @attribute {Boolean} center Centers the window relative to its parent's
      * containing rect when shown.
      */
     this.$propHandlers["center"] = function(value){
@@ -345,7 +358,7 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} title the text of the title.
+     * @attribute {String} title Specifies the text of the title.
      */
     this.$propHandlers["title"] = function(value){
         if (this.oTitle)
@@ -353,7 +366,7 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} icon the location of the image.
+     * @attribute {String} icon Specifies the location of the image.
      */
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;

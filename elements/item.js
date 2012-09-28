@@ -21,8 +21,11 @@
 // #ifdef __AMLITEM || __INC_ALL
 
 /**
- * Item of a menu displaying a clickable area.
- * Example:
+ * An item in a menu, displaying a clickable area.
+ * 
+ * #### Example
+ * 
+ * ```xml
  *  <a:iconmap 
  *    id     = "tbicons" 
  *    src    = "toolbar.icons.gif"
@@ -38,14 +41,17 @@
  *          <a:button submenu="menu1">File</a:button>
  *      </a:menubar>
  *  </a:toolbar>
- * </code>
+ * ```
+ * 
  * @define item
- * @constructor
+ * @class apf.item
  *
+ */
+/**
  * @event click Fires when a user presses the mouse button while over this element.
- *   object:
- *   {XMLElement} xmlContext the xml data node that was selected in the opener at the time of showing the context menu.
- *   {apf.AmlElement} opener the element that was clicked upon when showing the context menu.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *  - xmlContext ([[XMLElement]]): The XML data node that was selected in the opener at the time of showing the context menu.
+ *  - opener ([[apf.AmlElement]]): The element that was clicked upon when showing the context menu.
  */
 apf.item  = function(struct, tagName){
     this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
@@ -76,10 +82,12 @@ apf.item  = function(struct, tagName){
                                    "type", "values");
 
     /**
-     * @attribute {String} [submenu] the id of the menu that is shown
+     * @attribute {String} submenu Sets or gets the id of the menu that is shown
      * when the user hovers over this menu item.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:menu id="msub">
      *      <a:item icon="tbicons:12">test</a:item>
      *      <a:item icon="tbicons:14">test2</a:item>
@@ -94,23 +102,26 @@ apf.item  = function(struct, tagName){
      *          <a:button submenu="mmain">File</a:button>
      *      </a:menubar>
      *  </a:toolbar>
-     * </code>
+     * ```
      */
     this.$propHandlers["submenu"] = function(value){
         apf.setStyleClass(this.$ext, "submenu");
     }
     
     /**
-     * @attribute {String} value the value of this element.
+     * @attribute {String} value Sets or gets the value of this element.
      */
 
     /**
-     * @attribute {String} [select] the xpath statement which works on the
-     * xml context of the parent menu element to determine whether this
+     * @attribute {String} [select] Sets or gets the XPath statement which works on the
+     * XML context of the parent menu element to determine whether this
      * item is shown.
-     * Example:
-     * This example shows a list
-     * <code>
+     * 
+     * #### Example
+     * 
+     * This example shows a list:
+     * 
+     * ```xml
      *   <a:menu id="mnuTest">
      *       <a:item match="[person]" method="send">Send an E-mail</a:item>
      *       <a:item match="[phone]" method="call">Call Number</a:item>
@@ -148,7 +159,7 @@ apf.item  = function(struct, tagName){
      *       <a:contextmenu menu="mnuXY" match="[computer]" />
      *       <a:contextmenu menu="mnuTest" />
      *   </a:list>
-     * </code>
+     * ```
      */
     this.$propHandlers["select"] = function(value){
         this.select = value
@@ -157,17 +168,19 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} [group] the name of the group this item belongs
+     * @attribute {String} [group] Sets or gets the name of the group this item belongs
      * to.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:menu>
      *      <a:item type="radio" group="example">item 1</a:item>
      *      <a:item type="radio" group="example">item 2</a:item>
      *      <a:item type="radio" group="example">item 3</a:item>
      *      <a:item type="radio" group="example">item 4</a:item>
      *  </a:menu>
-     * </code>
+     * ```
      */
     this.$propHandlers["group"] = function(value){
         if (this.$group && this.$group.$removeRadio)
@@ -202,14 +215,16 @@ apf.item  = function(struct, tagName){
 
     //#ifdef __WITH_HOTKEY
     /**
-     * @attribute {String} hotkey the key combination a user can press
+     * @attribute {String} hotkey Sets or gets the key combination a user can press
      * to active the function of this element. Use any combination of
-     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * [[keys: Ctrl]], [[keys: Shift]], [[keys: Alt]], [[keys: F1]]-[[keys: F12]], and alphanumerical characters. Use a
      * space, a minus or plus sign as a seperator.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:item hotkey="Ctrl+Q">Quit</a:item>
-     * </code>
+     * ```
      */
     this.$propHandlers["hotkey"] = function(value){
         if (!this.$amlLoaded) {
@@ -260,7 +275,7 @@ apf.item  = function(struct, tagName){
     }
     //#endif
     /**
-     * @attribute {String} icon the url of the image used as an icon or
+     * @attribute {String} icon Sets or gets the URL of the image used as an icon or
      * a reference to an iconmap.
      */
     this.$propHandlers["icon"] = function(value){
@@ -269,7 +284,7 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} caption the text displayed on the item.
+     * @attribute {String} caption Sets or gets the text displayed on the item.
      */
     this.$propHandlers["caption"] = function(value){
         if (this.$caption)
@@ -277,11 +292,12 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} type the function of this item
-     * Possible values:
-     * item
-     * check
-     * radio
+     * @attribute {String} type Sets or gets the function of this item.
+     * 
+     * Possible values include:
+     * - `"item"`
+     * - `"check"`
+     * - `"radio"`
      */
     this.$propHandlers["type"] = function(value){
         apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
@@ -317,7 +333,7 @@ apf.item  = function(struct, tagName){
     };
     
     /**
-     * @attribute {Boolean} checked whether the item is checked.
+     * @attribute {Boolean} checked Sets or gets whether the item is checked.
      */
     this.$propHandlers["checked"] = function(value){
         if (this.type != "check")
@@ -363,7 +379,7 @@ apf.item  = function(struct, tagName){
     }
 
     /**
-     * @attribute {Boolean} selected whether the item is selected.
+     * @attribute {Boolean} selected Sets or gets whether the item is selected.
      */
     this.$propHandlers["selected"] = function(value){
         if (this.type != "radio")
@@ -380,7 +396,7 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {Boolean} disabled whether the item is active.
+     * @attribute {Boolean} disabled Sets or gets whether the item is active.
      */
     this.$propHandlers["disabled"] = function(value){
         if (apf.isTrue(value) || value == -1)
@@ -703,7 +719,7 @@ apf.item  = function(struct, tagName){
             this.$ext.parentNode.insertBefore(this.$ext, this.nextSibling.$ext);
     };
     
-    /**
+    /*
      * @private
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
