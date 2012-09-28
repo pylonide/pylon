@@ -231,9 +231,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             return false;
         }
+        
         var files = e.dataTransfer.files;
         // Dropped item is a folder, second condition is for FireFox
-        if (!files.length || !files[0].size) {
+        if (!files.length || !files[0].size || (files.length == 1 && files[0].type == "")) {
             ext.initExtension(this);
 
             winNoFolderSupport.show();
