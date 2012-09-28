@@ -406,6 +406,7 @@ module.exports = ext.register("ext/code/code", {
                 ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
+                ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
                 ["behaviors", ""],
                 ["softtabs", "true"],
@@ -449,8 +450,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         // Override ACE key bindings (conflict with goto definition)
-        commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Ctrl-Shift-R" };
-        commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Ctrl-Alt-R" };
+        commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Alt-Shift-R" };
+        commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Alt-R" };
         commands.addCommand(commands.commands.togglerecording);
         commands.addCommand(commands.commands.replaymacro);
 
@@ -545,8 +546,8 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Selection/Select to Line Start", "selecttolinestart"),
 
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-            addEditorMenu("Selection/Select to Document Start", "selecttostart"),
-            addEditorMenu("Selection/Select to Document End", "selecttoend")
+            addEditorMenu("Selection/Select to Document End", "selecttoend"),
+            addEditorMenu("Selection/Select to Document Start", "selecttostart")
         );
 
         c = 0;

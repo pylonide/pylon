@@ -98,9 +98,7 @@ User.VISITOR_PERMISSIONS = {
     };
 
     this.disconnectClients = function() {
-        console.log("disconnecting all connected clients");
-        for (var i = this.clients.length - 1; i >= 0; --i)
-            this.clients[i].disconnect();
+        this.clients = [];
     };
 
     this.onClientMessage = function(message, client) {
@@ -141,7 +139,7 @@ User.VISITOR_PERMISSIONS = {
 
         // pass a lambda to enable socket.io ACK
         if (client)
-            client.send(JSON.stringify(error), function() {});
+            client.send(error, function() {});
         else
             this.broadcast(error);
     };

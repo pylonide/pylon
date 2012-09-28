@@ -36,11 +36,11 @@
             <a href="http://c9.io/site/pricing/" target="_blank" class="nodecor-link">
                 <a:button skin="button-colorless" class="dark" onclick="" margin="0 10" width="65">Sign up</a:button>
             </a>
-            or
+            <span>or</span>
             <a:button skin="button-colorless" class="dark green" onclick="
                 ide.addEventListener('login', function() { location.reload(); });
                 winLogin.show();
-            " margin="0 10" width="115">Sign in to edit*</a:button>
+            " margin="0 10" width="115">Sign in to edit</a:button>
         </a:hbox>
     </a:hbox>
     <a:hbox id="view-mode-box-readonly" visible="false" height="35" class="view-mode-box" align="center" edge="0 10">
@@ -68,7 +68,7 @@
     </a:hbox>
 
     <a:vsplitbox anchors="0 0 0 0" id="vbMain">
-        <a:bar skin="c9-menu-bar" id="logobar" height="31">
+        <a:bar skin="c9-menu-bar" id="logobar" height="31" minwidth="900">
             <a:bar class="fakehbox aligncenter padding3" id="barTools" height="25" style="padding-top:1px">
                 <a:divider skin="c9-divider-double" style="margin-left:-1px" />
             </a:bar>
@@ -86,12 +86,14 @@
                         </a:hsplitbox>
                         <a:hsplitbox id="hboxMain" splitter="true">
                             <a:bar id="colLeft" width="1" minwidth="105" visible="false" />
-                            <a:vsplitbox id="colMiddle" padding="3" />
+                            <a:hsplitbox>
+                                <a:vsplitbox id="colMiddle" padding="3" />
+                                <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" pack="end"/>
+                            </a:hsplitbox>
                         </a:hsplitbox>
                     </a:vsplitbox>
                 </a:vsplitbox>
             </a:vsplitbox>
-            <a:hbox id="hboxDockPanel" class="hboxdockpanel" width="0" pack="end"/>
         </a:hsplitbox>
     </a:vsplitbox>
 </a:application>

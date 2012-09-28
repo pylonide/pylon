@@ -432,6 +432,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * Updates the notification element to visually reflect notCount
      */
     updateNotificationElement: function(btnObj, count, options){
+        if (!btnObj) {
+            return console.trace("dockpanel.updateNotificationElement requires btnObj not to be null");
+        }
+        
         var countInner = count === 0 ? "" : count;
         var notificationEl = btnObj.$ext.getElementsByClassName("dock_notification")[0];
         
