@@ -42,6 +42,7 @@
  * ```
  *
  * @class apf.script
+ * @inherits apf.AmlElement
  * @define script
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

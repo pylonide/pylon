@@ -64,6 +64,8 @@ apf.__PRESENTATION__ = 1 << 9;
  * skin items described on the pages of each widget.
  *
  * @class apf.Presentation
+ * @define presentation
+ * @inherits apf.GuiElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

@@ -49,6 +49,7 @@
  * ```
  *
  * @class apf.datagrid
+ * @include apf.BaseTree
  * @define datagrid
  * @addnode elements
  *

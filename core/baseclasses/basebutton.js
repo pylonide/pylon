@@ -30,7 +30,7 @@
  * @author      Abe Ginner
  * @version     %I%, %G%
  * @since       0.8
- *
+ * @inherits apf.StandardBinding
  */
 /**
  * @event click Fires when the user presses a mouse button while over this element...and then lets the mousebutton go. 

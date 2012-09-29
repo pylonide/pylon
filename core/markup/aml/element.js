@@ -23,7 +23,7 @@
  * Represents a single element within an AML node.
  *
  * @class apf.AmlElement
- * @OMGWTFBBQ call(apf.AmlElement.prototype = new apf.AmlNode());
+ * @inherits apf.AmlNode
  */
 
 // #ifdef __WITH_AMLELEMENT

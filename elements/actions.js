@@ -43,6 +43,7 @@
  * @allowchild {actions}
  * @addnode smartbinding, global
  * @class apf.actions
+ * @include apf.AmlElement
  * @define actions
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

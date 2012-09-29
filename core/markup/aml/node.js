@@ -86,6 +86,7 @@ apf.__AMLNODE__ = 1 << 14;
  * it's a good idea to search for tutorials online.
  *
  * @class apf.AmlNode
+ * @inherits apf.Class
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5

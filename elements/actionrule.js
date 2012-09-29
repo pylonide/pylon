@@ -25,6 +25,7 @@
  * Define some action rules.
  *
  * @class apf.ActionRule
+ * @include apf.AmlElement
  */
 // @todo Doc do all of these.
 /**

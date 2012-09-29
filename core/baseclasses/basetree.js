@@ -28,6 +28,7 @@
  * @class apf.BaseTree
  * @baseclass
  *
+ * @inherits apf.MultiSelect
  * @inherits apf.XForms
  * @inherits apf.Cache
  * @inherits apf.DataAction

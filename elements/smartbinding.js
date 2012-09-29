@@ -173,6 +173,7 @@
  *
  * @class apf.smartbinding
  * @apfclass
+ * @inherits apf.AmlElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

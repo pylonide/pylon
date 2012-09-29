@@ -33,6 +33,7 @@
  * ```
  * 
  * @class apf.skin
+ * @inherits apf.AmlElement
  * @define skin
  * @allowchild  style, presentation
  * @addnode global, anyaml

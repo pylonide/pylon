@@ -46,6 +46,7 @@
  *
  * @class apf.stateGroup
  * @define state-group
+ * @inherits apf.AmlElement
  * @addnode elements
  * @see element.state
  *

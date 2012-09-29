@@ -30,14 +30,6 @@ apf.__MULTISELECT__ = 1 << 8;
  * for dealing with multinode component are included like adding and removing 
  * {@link term.datanode data nodes}.
  *
- * @class apf.MultiSelect
- * @baseclass
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.5
- *
- * @inherits apf.MultiselectBinding
- *
  * #### Example
  *
  * In this example the tree contains nodes that have a disabled flag set. These nodes cannot be selected.
@@ -79,6 +71,16 @@ apf.__MULTISELECT__ = 1 << 8;
  *      </a:model>
  *  </a:dropdown>
  * ```
+ *
+ * @class apf.MultiSelect
+ * @inherits apf.MultiSelectBinding
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.5
+ *
+ * @inherits apf.MultiselectBinding
+ *
  */
 /**
  *

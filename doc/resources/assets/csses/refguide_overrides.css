@@ -4,7 +4,7 @@
 body {
     min-width: 1010px;
     color: #2D2D2D;
-    background: #EDF5FA url(../images/main_bg.png) 0 0 repeat;
+    background: #ffffff url(../images/main_bg.png) 0 0 repeat;
 }
 
 ul {
@@ -98,6 +98,10 @@ blockquote p{
     text-align:center;
 }
 
+.navbar-inner {
+    height: 40px;
+}
+
 #topSection {
     width: 1000px;
 }
@@ -111,11 +115,11 @@ blockquote p{
     margin-left: 0px;
 }
 .brand {
-    background: transparent url(../images/ace_logo_menu.png) no-repeat 13px 5px;
+    background: transparent url(../images/node_logo.png) no-repeat 13px 5px;
     width: 105px;
     outline: none;
     height: 40px;
-    padding: 0 10px !important;
+    padding: 0 10px !important; 
     border: none;
 }
 .brand.dropdown-toggle:after {
@@ -124,18 +128,19 @@ blockquote p{
     height: 40px;
     border: none;
 }
-
-.ace_logo {
-    position: absolute;
-    top: 45px;
-    z-index: 20000;
-    left: 210px;
+.open .brand,
+.brand:hover{
+  background: rgba(255, 255, 255, 0.05) url(../images/node_logo.png) no-repeat 13px 5px !important;
 }
 
 .headerTitle {
     position: relative;
     top: 100px;
     left: 250px;
+}
+
+a.brand {
+    cursor: pointer;
 }
 
 /*
@@ -165,7 +170,7 @@ ul.menu {
 
 /* need specificity to "beat" the above colors */
 .menu li .menu-item a.currentItem, .menuTwo li .menu-item  {
-    color: #0072bc;
+    color: #618100;
 }
 
 /*
@@ -227,7 +232,7 @@ ul.menu {
     position: fixed;
 }
 .shadow.members{
-    background: #edf8fd;
+    background: #FFF;
     box-shadow: 0 0.1em 1em rgba(0,0,0, 0.3);
     -moz-box-shadow: 0 0.1em 1em rgba(0,0,0, 0.3);
     -o-box-shadow: 0 0.1em 1em rgba(0,0,0, 0.3);
@@ -304,23 +309,12 @@ ul.menu {
     margin-bottom: 5px;
     position: absolute;
     padding-top: 4px;
-
+    
 }
-
+    
 .tabs a.menu:after, .tabs .dropdown-toggle:after {
     margin-top: 22px;
 }
-
-.dropdown .caret {
-    margin-top: 14px;
-    color: #6D8CA0;
-}
-
-li.dropdown {
-    color: #2D2D2D;
-    font-weight: bold;
-}
-
 
 .backToMDN, .editInC9 {
     font-size: 11px;
@@ -351,11 +345,6 @@ li.dropdown {
     background-color: white;
 }
 
-li.dropdown {
-    color: #2D2D2D;
-    font-weight: bold;
-}
-
 .members .tabs .dropdown a,
 .members .tabs a.menu:after, 
 .members .tabs .dropdown-toggle:after {
@@ -383,9 +372,6 @@ li.dropdown {
     background-color: #ffffff;
     color: #000000;
 }
-.dropdown-menu {
-    border-top: none;
-}
 
 .tabs a.menu:after, .tabs .dropdown-toggle:after {
     margin-top: 13px;
@@ -399,6 +385,10 @@ li.dropdown {
 #topSection .open .menu, #topSection .dropdown.open .menu, #topSection .open .dropdown-toggle, 
 #topSection .dropdown.open .dropdown-toggle  {
     color: #bfbfbf;
+}
+.nav .dropdown-menu {
+    margin-top: -1px;
+    background-color: #333;
 }
 
 .tabs > li {
@@ -423,7 +413,7 @@ li.dropdown {
 }
 .topbar .dropdown-menu a, .dropdown-menu a {
     font-size: 11px;
-/*    padding: 2px 12px;*/
+    color: #999;
     line-height: 14px;
 }
 .tabs .active > a, .tabs .active > a:hover {
@@ -440,8 +430,9 @@ li.dropdown {
 .srolled .tabs .menu-dropdown, .srolled .tabs .dropdown-menu {
     top: 32px;
 }
-.dropdown-toggle {
-    color: #6D8CA0;
+.dropdown.open  a.dropdown-toggle {
+    border: none;
+    color: #8a8a8a;
 }
 
 ul.tabs .double ul, ul.tabs .triple ul, ul.tabs .quad ul{
@@ -462,7 +453,7 @@ ul.tabs .double ul, ul.tabs .triple ul, ul.tabs .quad ul{
 */
 
 #nonFooter {
-    padding-top: 40px;
+    padding-top: 60px;
 }
 #wrapper {
     height: 100%;
@@ -484,8 +475,12 @@ header.filler {
 }
 
 .centerpiece {
-    background: url(../images/sidebar_border.png) repeat-y 230px 0;
+    background: url(../images/sidebar_border.png) repeat-y 90px 0;
     min-height: 100%;
+}
+
+.shortToc {
+    /*height: 100%;*/
 }
 
 /*
@@ -504,7 +499,7 @@ header.filler {
 #sidebarContainer {
     margin-right: 60px;
 }
-
+     
 #sidebar {
     margin-top: 9px;
     /*background: url(../images/sidebar-border.png) repeat-y right 0;*/
@@ -537,22 +532,25 @@ div#documentation article:last-child {
     padding-bottom: 40px;
 }
 #documentation article.article.methodToggleOpen {
-    background: rgba(255, 255, 255, 0.5);
+    background: url(../images/method_bg.png) repeat 0 0;
     padding: 20px;
     font-size: 13px;
     line-height: 24px;
-    margin: 0 0 10px 0;
+    margin : 0 0 10px 0;
 }
 
 #documentation article:first-child {
     border:none;
 }
 
-.site_logo {
-    display: block;  
-    margin-left: auto;   
-    margin-right: auto;
+#documentation .dropdown .caret {
+    margin-top: 14px;
 }
+
+#documentation .dropdown-menu {
+    background-color: white;
+}
+
 /*
     Edit in Cloud9, sucka
 */
@@ -664,7 +662,7 @@ li.signature {
 }
 
 .signature-call a {
-    color: #8e487e;
+    color: #859c59; 
 }
 
 .sigClassName {
@@ -677,6 +675,7 @@ li.signature {
 .eventListenerStart, .eventFunctionOpen, .eventFunctionClose {
     color: #999999;
 }
+
 .eventMember {
     padding-right: 0px;
 }
@@ -740,20 +739,15 @@ li.signature {
 .snip-container label {
     color: #ffffff;
 }
-.description h4 {
-    font-size: 18px;
-    margin: 20px 0 10px;
-    line-height : 18px;
-}
 
 .table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
-    background-color: #F9F9F9;
+    background-color: transparent;
 }
 .table-striped tbody tr:nth-child(even) td, .table-striped tbody tr:nth-child(even) th {
     background-color: #fbfbfb;
-} 
+}
 
-.argument-list {
+.argument-list{
     margin-bottom : 13px;
 }
 .argName {
@@ -846,8 +840,8 @@ h3.methodToggle.active {
 */
 
 #footer {
-    width:100%;
-    background: #101010 url(../images/dashed_back.png) repeat 0 0;
+    width: 100%;
+    background: #101010 url(../images/footer_bg.png) repeat 0 0;
     font-size: 12px;
     color: white;
     height: 40px;
@@ -857,21 +851,59 @@ h3.methodToggle.active {
     margin-left: auto;
     margin-right: auto;
     min-height: 40px;
+    /*background: url(../images/arrow-footer.png) no-repeat 588px -11px;*/
 }
 #footer .footer-text {
-    display: block;
     font-size: 12px;
-    float: right;
-}
-#footer div.footerInner div.footer-text p {
-    font-size: 12px;
-    font-family: Arial;
-    line-height: 18px;
-    margin: 10px 15px 0px 1px;
+    padding-right: 5px;
 }
 
-#footer a, #footer a:hover {
-    color: #8DD0FF;
+#footer .sponsors {
+    display: inline-block;
+    float: right;
+    margin-right: 5px;
+    margin-top: 8px;
+}
+
+#footer .sponsors .sponsor {
+    padding-right: 22px;
+}
+#footer .container
+#footer a {
+/*    color: #c3c3c3;
+    text-decoration: underline;*/
+}
+#footer .c9-logo {
+    width: 141px;
+    height: 20px;
+    background:  url(../images/c9-log-footer.png) no-repeat 0 0;
+    display: inline-block;
+    padding-right: 10px;
+}
+#footer .joyent-logo {
+    width: 70px;
+    height: 19px;
+    background:  url(../images/joyent-logo-footer.png) no-repeat 0 0;
+    display: inline-block;
+    padding-right: 10px;
+}
+#footer .mozilla-logo {
+    width: 78px;
+    height: 24px;
+    background:  url(../images/mozilla-logo-footer.png) no-repeat 0 0;
+    display: inline-block;
+    padding-right: 10px;
+}
+#footer .debuggable-logo {
+    width: 119px;
+    height: 25px;
+    background:  url(../images/debuggable-logo-footer.png) no-repeat 0 0;
+    display: inline-block;
+    padding-right: 0 !important;
+    margin-bottom : -3px;
+}
+#footer .span11 {
+    margin-left: 0;
 }
 
 .logoText, .logoImg {

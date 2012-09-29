@@ -35,8 +35,6 @@
  * @since       0.9
  */
 /**
- * @class apf.hbox
- * @define hbox A container that stacks its children horizontally.
  * 
  * #### Example
  * 
@@ -52,7 +50,7 @@
  *      <a:bar width="100" caption="Right bar"/>
  *  </a:hbox>
  * ```
- * {#:hboxExample}
+ * {: #hboxExample}
  * 
  * @see element.vbox
  * 
@@ -65,6 +63,10 @@
  * 
  * @addnode elements
  *
+ * @class apf.hbox
+ * @include apf.GuiElement
+ * @define hbox A container that stacks its children horizontally.
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9

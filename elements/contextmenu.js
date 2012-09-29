@@ -39,6 +39,7 @@
  * ```
  *
  * @class apf.contextmenu
+ * @include apf.AmlElement
  * @define contextmenu
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

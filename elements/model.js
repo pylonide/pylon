@@ -59,6 +59,7 @@
  * ```
  *
  * @class apf.model
+ * @inherits apf.AmlElement
  * @define model
  * @allowchild [cdata], instance, load, submission
  * @addnode smartbinding, global

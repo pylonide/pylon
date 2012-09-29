@@ -34,6 +34,7 @@
  * the [[apf.statusbar]], the panel element is an alias of [[apf.bar]].
  *
  * @class apf.section
+ * @include apf.Presentation
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4

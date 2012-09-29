@@ -29,6 +29,7 @@
  * 
  * @class apf.event
  * @define event
+ * @include apf.AmlElement
  *
  */
 /**

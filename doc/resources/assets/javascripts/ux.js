@@ -23,6 +23,10 @@ $(function () {
     if (window.addEventListener) window.addEventListener('load', loadCallback, true);
     else window.attachEvent('load', loadCallback, true);
 
+    if (pathName.indexOf("nodejs_ref_guide") >= 0) $('li#node_js_ref').addClass("active");
+    else if (pathName.indexOf("nodejs_dev_guide") >= 0) $('li#nodejs_dev_guide').addClass("active");
+    else if (pathName.indexOf("js_doc") >= 0) $('li#js_doc').addClass("active");
+    
     function loadCallback(evt) {
         var form = document.getElementById("searchbox");
         var input = form.query;
@@ -32,7 +36,7 @@ $(function () {
                 input.value = "";
                 input.blur();
                 var currentVersion = $('#currentVersion').text();
-                var url = "https://www.google.com/search?q=" + encodeURIComponent("site:ace.ajax.org/api" + " " + query);
+                var url = "https://www.google.com/search?q=" + encodeURIComponent("site:nodemanual.org/" + currentVersion + " " + query);
                 window.open(url);
             }
             return false;
@@ -86,6 +90,7 @@ $(document).ready(function () {
             min: $classContent.position().top - 35,
             max: $classContent.position().top + $classContent.height() - 35,
             onEnter: function (element, position) {
+                //$('#sidebarContainer').affix();
                 var $pagination = $(element);
                 var $paginationContent = $('.membersContent pos' + i);
                 var $tabs = $('.tabs pos' + i);
@@ -132,7 +137,7 @@ $(document).ready(function () {
             }
         });
     });
-    
+
     $('span.methodClicker, article.article, h3.methodClicker').each(function () {
         var a = $(this);
         var constructorPos = a.attr("id").indexOf("new ");

@@ -41,6 +41,7 @@
  * user when the area is clicked and then executes a command.
  *
  * @class apf.button
+ * @include apf.BaseButton
  * @define button, submit, trigger, reset
  * @addnode elements
  *
@@ -520,7 +521,7 @@ apf.button  = function(struct, tagName){
      * Sets the text displayed as a caption of this element.
      *
      * @param  {String}  value   The string to display.
-     * @see    baseclass.validation
+     * @see    apf.Validation
      */
     this.setCaption = function(value){
         this.setProperty("caption", value, false, true);

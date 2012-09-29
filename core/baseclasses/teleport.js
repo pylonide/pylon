@@ -133,6 +133,7 @@
  *
  * @class apf.Teleport
  * @define teleport
+ * @inherits apf.AmlElement
  * @addnode global
  * @allowchild {teleport}
  *

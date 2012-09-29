@@ -32,6 +32,7 @@ apf.__VALIDATION__ = 1 << 6;
  * @version     %I%, %G%
  * @since       0.4
  *
+ * @inherits apf.AmlElement
  * @inherits apf.Anchoring
  * @inherits apf.DelayedRender
  * @inherits apf.DragDrop
@@ -120,6 +121,7 @@ apf.__VALIDATION__ = 1 << 6;
  *                   - altKey ([[Boolean]]): Specifies whether the [[keys: Alt ]] key was pressed
  *                   - keyCode ([[Number]]): Indicates which key was pressed. This is an ascii number
  *                   - htmlEvent ([[Event]]): the HTML event object that triggered this event from being called
+ * 
  */
 apf.GuiElement = function(){
     this.$init(true);

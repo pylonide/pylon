@@ -45,6 +45,7 @@
  * 
  * @define item
  * @class apf.item
+ * @inherits apf.Presentation
  *
  */
 /**

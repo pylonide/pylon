@@ -32,6 +32,7 @@
  * @addnode elements
  *
  * @inherits apf.Cache
+ * @inherits apf.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

@@ -27,7 +27,7 @@
  * @class apf.vsplitbox
  * @define vsplitbox Container that stacks two children vertically.
  * @addnode elements
- * @inherits apf.hsplitbox
+ * @inheritDoc apf.hsplitbox
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -41,6 +41,7 @@
  * @class apf.hsplitbox
  * @define hsplitbox 
  * @addnode elements
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

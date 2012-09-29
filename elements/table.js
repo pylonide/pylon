@@ -74,6 +74,7 @@
  * @allowchild {elements}, {anyaml}
  * @addnode elements
  * @constructor
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

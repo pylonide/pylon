@@ -47,7 +47,7 @@
  *  </a:tab>
  * ```
  *
- * @class tab
+ * @class apf.tab
  * @define tab, pages, switch
  * @allowchild page
  * @addnode elements

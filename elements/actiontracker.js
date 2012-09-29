@@ -48,6 +48,7 @@
  * @define actiontracker
  * @addnode smartbinding, global
  * @inherits apf.Class
+ * @include apf.AmlElement
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
