@@ -4,7 +4,7 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define(function(require, exports, module) {
+define("ext/linereport_php/linereport_php_worker", ["require", "exports", "module"], function(require, exports, module) {
     
 var baseLanguageHandler = require("ext/linereport/linereport_base");
 var handler = module.exports = Object.create(baseLanguageHandler);
@@ -34,9 +34,10 @@ handler.init = function(callback) {
 handler.analyze = function(doc, fullAst, callback) {
     if (handler.disabled)
         return callback();
-    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, window.ide.workspaceDir) +
+    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, handler.workspaceDir) +
         " | sed -E '"+ POSTPROCESS + "'", callback);
 };
 
 });
+
 

@@ -49,6 +49,7 @@ worker: plugins-client/lib.ace/www/worker/worker-language.js
 
 plugins-client/lib.ace/www/worker/worker-language.js : $(wildcard plugins-client/ext.language/*) \
         $(wildcard plugins-client/ext.language/*/*) \
+        $(wildcard plugins-client/ext.linereport/*) \
         $(wildcard plugins-client/ext.codecomplete/*) \
         $(wildcard plugins-client/ext.codecomplete/*/*) \
         $(wildcard plugins-client/ext.jslanguage/*) \

@@ -36,13 +36,13 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onWorkerMessage : function(event) {
-        var doc = tabEditors.getPage().$doc;
+        var doc = window.tabEditors.getPage().$doc;
         var path = event.data.path;
         if (ext.disabled || !doc || (path && path !== doc.getNode().getAttribute("path")))
             return;
         function send() {
             window.ide.send(event.data.command);
-        };
+        }
         if (!path || !doc.getNode().getAttribute("changed") || doc.getNode().getAttribute("changed") == "0")
             send();
         else
@@ -58,11 +58,11 @@ module.exports = ext.register("ext/linereport/linereport", {
                 this.buffers[id] = (this.buffers[id] || "") + event.message.data;
                 break;
             case "npm-module-exit":
-                language.worker.emit("linereport_invoke_result", {
+                language.worker.emit("linereport_invoke_result", {data: {
                     id: id,
                     code: event.message.code,
                     output: this.buffers[id] || ""
-                });
+                }});
                 delete this.buffers[id];
                 break;
         }

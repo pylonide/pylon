@@ -20,11 +20,7 @@ var nextJob = {}; // map command to function
     
 worker.init = function() {
     worker.sender.on("linereport_invoke_result", function(event) {
-       // Note: invoked at least once for each linereport_base instance
-       if (!callbacks[event.id])
-           return; // already handled
-       callbacks[event.id](event.code, event.output);
-       delete callbacks[event.id];
+        worker.$onInvokeResult(event.data);
     });
 };
 
@@ -78,13 +74,21 @@ worker.$invoke = function(command, path, callback) {
         command: "sh",
         argv: ["sh", "-c", command],
         line: command,
-        cwd: window.ide.workspaceDir,
+        cwd: worker.workspaceDir,
         requireshandling: true,
         tracer_id: id,
         extra: { linereport_id: id }
     };
     callbacks[id] = callback;
     this.sender.emit("linereport_invoke", { command: command, path: path });
+};
+
+worker.$onInvokeResult = function(event) {
+   // Note: invoked at least once for each linereport_base instance
+   if (!callbacks[event.id])
+       return; // already handled
+   callbacks[event.id](event.code, event.output);
+   delete callbacks[event.id];
 };
 
 worker.parseOutput = function(output) {
