@@ -22,6 +22,7 @@ module.exports = ext.register("ext/linereport_php/linereport_php", {
     init : function() {
         language.registerLanguageHandler(
             'ext/linereport_php/linereport_php_worker',
+            language.isWorkerEnabled() &&
             require('ext/linereport_php/linereport_php_worker_wrapped')
         );
     },

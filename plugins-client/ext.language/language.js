@@ -122,6 +122,10 @@ module.exports = ext.register("ext/language/language", {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
+    isWorkerEnabled : function() {
+        return isWorkerEnabled();
+    },
+
     init : function() {
         var _self = this;
         var worker = this.worker;
