@@ -15,6 +15,7 @@ module.exports = {
     language: null,
     project: null,
     path: null,
+    workspaceDir: null,
     doc: null,
     
     // UTILITIES

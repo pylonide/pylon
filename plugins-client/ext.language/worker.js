@@ -272,7 +272,7 @@ function asyncParForEach(array, fn, callback) {
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
-    this.register = function(path) {
+    this.register = function(path, contents) {
         var _self = this;
         function onRegistered(handler) {
             handler.$source = path;
@@ -281,7 +281,17 @@ function asyncParForEach(array, fn, callback) {
             _self.$initHandler(handler, null, function() {
                 _self.handlers.push(handler);
             });    
-        } 
+        }
+        if (contents) {
+            // In the context of this worker, we can't use the standard
+            // require.js approach of using <script/> tags to load scripts,
+            // but need to load them from the local domain or from text
+            // instead. For now, we'll just load external plugins from text;
+            // the UI thread'll have to provide them in that format.
+            // Note that this indirect eval call evaluates in the (worker)
+            // global context.
+            eval.call(null, contents);
+        }
         try {
             var handler = require(path);
             onRegistered(handler);
@@ -698,7 +708,7 @@ function asyncParForEach(array, fn, callback) {
     };
     
     // TODO: BUG open an XML file and switch between, language doesn't update soon enough
-    this.switchFile = function(path, language, code) {
+    this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
         if (!this.$analyzeInterval) {
             this.$analyzeInterval = setInterval(function() {
@@ -709,6 +719,7 @@ function asyncParForEach(array, fn, callback) {
         code = code || "";
         this.$path = path;
         this.$language = language;
+        linereport.workspaceDir = this.$workspaceDir = workspaceDir;
         this.cachedAst = null;
         this.lastCurrentNode = null;
         this.lastCurrentPos = null;
@@ -723,6 +734,7 @@ function asyncParForEach(array, fn, callback) {
             return callback();
         handler.path = this.$path;
         handler.language = this.$language;
+        handler.workspaceDir = this.$workspaceDir;
         handler.doc = this.doc;
         handler.sender = this.sender;
         var _self = this;
