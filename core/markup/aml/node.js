@@ -133,6 +133,7 @@ apf.AmlNode = function(){
     
     /**
      * Number specifying the type of node within the document.
+     * @type {Number}
      */
     this.$regbase = this.$regbase | apf.__AMLNODE__;
     

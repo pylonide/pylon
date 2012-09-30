@@ -73,7 +73,6 @@ apf.__MULTISELECT__ = 1 << 8;
  * ```
  *
  * @class apf.MultiSelect
- * @inherits apf.MultiSelectBinding
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

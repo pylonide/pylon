@@ -138,7 +138,7 @@ apf.validator.validityState = function(){
  * ```
  * 
  * @class apf.Validation
- * @inherits apf.Class
+ * @inherits apf.AmlElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

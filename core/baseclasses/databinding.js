@@ -49,6 +49,7 @@ apf.__DATABINDING__ = 1 << 1;
  * ```
  *
  * @class apf.DataBinding
+ * @inherits apf.Presentation
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
