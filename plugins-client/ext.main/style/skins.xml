@@ -6157,7 +6157,7 @@
         .listRC .radiobutton {
             width      : 16px;
             height     : 17px;
-            background : url("images/radio-grey.png") no-repeat 0 0;
+            background : url("images/radio-blue.png") no-repeat 0 0;
             display : block;
             position : absolute;
             left : 5px;
