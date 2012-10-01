@@ -22,14 +22,6 @@
 
 //#ifdef __WITH_ASYNC
 
-/**
- * @author      Fabian Jakobs
- * @version     %I%, %G%
- * @since       1.0
- *
- * @namespace apf
- *
- */
 
 /**
  * Performs an async function in serial on each of the list items.

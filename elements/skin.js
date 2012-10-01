@@ -78,7 +78,7 @@ apf.aml.setElement("skin", apf.skin);
             this.$path = apf.getAbsolutePath(apf.hostPath, value) + "/index.xml";
             getSkin.call(this, this.$path);
         }
-    }
+    };
     
     /**
      * @private

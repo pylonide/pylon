@@ -39,8 +39,8 @@
  * @event propertychange Fires when a property changes.
  * @param {Object} e An object containing the following properties:
  * - name ([[String]]): The name of the changed property
- * - originalvalue ([[Mixed]]): The value it had before the change
- * - value ([[Mixed]]): The value it has after the change
+ * - originalvalue (`Mixed`): The value it had before the change
+ * - value (`Mixed`): The value it has after the change
  *
  */
 apf.Class = function(){};

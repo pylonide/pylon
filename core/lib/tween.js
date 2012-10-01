@@ -343,13 +343,13 @@ var ID        = "id",
      *      - `"fade"` :           Sets the opacity property
      *      - `"bgcolor"`:         Sets the background color
      *      - `"textcolor"`:       Sets the text color
-     *   - from ([[Number | String]]): The start value of the animation
-     *   - to ([[Number | String]]): The end value of the animation
+     *   - from ([[Number]] or [[String]]): The start value of the animation
+     *   - to ([[Number]] or [[String]]): The end value of the animation
      *   - [steps] ([[Number]]): The number of steps to divide the tween in
      *   - [interval] ([[Number]]): The time between each step
      *   - [anim] ([[Number]]): The distribution of change between the step over the entire animation.             
      *   - [color] ([[Boolean]]): Specifies whether the specified values are colors
-     *   - [userdata] ([[Mixed]]): Any data you would like to have available in your callback methods
+     *   - [userdata] (`Mixed`): Any data you would like to have available in your callback methods
      *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
      *   - [oneach] ([[Function]]): A function that is called at each step of the animation
      *   - [control] ([[Object]]): An object that can stop the animation at any point

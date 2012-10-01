@@ -130,7 +130,7 @@ apf.skins = {
      * Loads a stylesheet from a URL.
      * @param {String}    filename  The url to load the stylesheet from
      * @param {String}    [title]  Title of the stylesheet to load
-     * @method
+     * @method loadStylesheet
      */
     loadStylesheet: function(filename, title){
         var o;

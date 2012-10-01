@@ -31,7 +31,7 @@
  *
  */
 /**
- * @event domready      Fires when the browsers' dom is ready to be manipulated.
+ * @event domready      Fires when the browsers' DOM is ready to be manipulated.
  */
 /** 
  * @event movefocus         Fires when the focus moves from one element to another.
@@ -107,7 +107,7 @@
  *     - `apf.TIMEOUT`:  The request timed out
  *     - `apf.ERROR`:    An error occurred while making the request
  *     - `apf.OFFLINE`:  The request was made while the application was offline.
- *   - userdata ([[Mixed]]): Data that the caller made available in the callback of the HTTP request.
+ *   - userdata (`Mixed`): Data that the caller made available in the callback of the HTTP request.
  *   - http ([[XMLHttpRequest]]): The object that executed the actual http request
  *   - url ([[String]]): The url that was requested
  *   - tpModule ([[Http]]): The teleport module that is making the request
@@ -621,7 +621,7 @@
      * @param {String}   url       The url that is accessed.
      * @param {Object}   options   The options for the HTTP request. It has the following properties:
      *   - async ([[Boolean]]): Whether the request is sent asynchronously. Defaults to true.
-     *   - userdata ([[Mixed]]): Custom data that is available to the callback function.
+     *   - userdata (`Mixed`): Custom data that is available to the callback function.
      *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
      *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
      *   - data ([[String]]): The data sent in the body of the message.

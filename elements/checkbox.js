@@ -147,7 +147,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {String="true|false"}  values Sets or gets a pipe seperated list of two values which
+     * @attribute {String}  values Sets or gets a pipe seperated list of two values which
      * correspond to the two states of the checkbox. The first for the checked
      * state, the second for the unchecked state.
      */

@@ -1875,7 +1875,7 @@ apf.MultiSelect = function(){
 
 //#ifdef __WITH_MULTISELECT_COLLAPSE
 //@todo refactor below
-/**
+/*
  * @private
  */
 /*

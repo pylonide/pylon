@@ -68,7 +68,7 @@ apf.__DATABINDING__ = 1 << 1;
  *                                                - `apf.TIMEOUT`:  The request has timed out.
  *                                                - `apf.ERROR  `:  An error has occurred while making the request.
  *                                                - `apf.OFFLINE`:  The request was made while the application was offline.
- *                   - userdata ([[Mixed]]): Data that the caller wanted to be available in the callback of the http request.
+ *                   - userdata (`Mixed`): Data that the caller wanted to be available in the callback of the http request.
  *                   - http ([[XMLHttpRequest]]): The object that executed the actual http request.
  *                   - url ([[String]]): The url that was requested.
  *                   - tpModule ([[Http]]): The teleport module that is making the request.
@@ -458,7 +458,7 @@ apf.DataBinding = function(){
      *                           - [[xmlNode]] ([[XMLElement]]):   The {@link term.datanode data node} that provides
      *                                                       context to the data instruction.
      *                           - [callback] ([[Function]]): The code executed when the data request returns
-     *                           - [] ([[Mixed]]): Custom properties available in the data instruction
+     *                           - [] (`Mixed`): Custom properties available in the data instruction
      *                           - [cacheId] ([[String]]): The xml element to which the binding rules are applied
      *                           - [force] ([[Boolean]]): Specifies whether cache is checked before loading the data
      *                           - [noClearMsg] ([[Boolean]]): Specifies whether a message is set when clear is called
@@ -716,6 +716,8 @@ apf.DataBinding = function(){
         }
     };
     
+    //@todo this function is called way too much for a single load of a tree
+    //@todo should clear listener
     /*
      * Unloads data from this element and resets state displaying an empty message.
      * The empty message is set on the {@link apf.GuiElement.msg}.
@@ -725,8 +727,6 @@ apf.DataBinding = function(){
      * @see baseclass.databinding.method.load
      * @private
      */
-    //@todo this function is called way too much for a single load of a tree
-    //@todo should clear listener
     this.clear = function(nomsg, doEvent, fakeClear){
         if (!this.$container)
             return;//@todo apf3.0
@@ -779,10 +779,10 @@ apf.DataBinding = function(){
         this.clear("custom");
     };
 
+    //@todo optimize this
     /**
      * @private
      */
-    //@todo optimize this
     this.$setLoadStatus = function(xmlNode, state, remove){
         var group  = this.loadgroup || "default";
         var re     = new RegExp("\\|(\\w+)\\:" + group + ":(\\d+)\\|");

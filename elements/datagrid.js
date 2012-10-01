@@ -1273,10 +1273,10 @@ apf.aml.setElement("contents",    apf.BindingRule);
 //#endif
 
 // #ifdef __WITH_CONVERTIFRAME
+//@todo this is all broken. needs to be fixed before apf3.0
 /**
  * @private
  */
-//@todo this is all broken. needs to be fixed before apf3.0
 apf.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;

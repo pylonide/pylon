@@ -1,47 +1,28 @@
 $(function () {
     'use strict';
 
-   var pagePath = document.location.pathname.substring(document.location.pathname.lastIndexOf("/") + 1);
-
-   // select current page in sidenav and set up prev/next links if they exist
-   var $selNavLink = $('#sidebar').find('a[href="' + pagePath + '"]');
-   if ($selNavLink.length) {
-      //$selListItem = $selNavLink.closest('li');
-
-      $selNavLink.addClass('currentItem');
-   }
-
-    // init prettyprint
-    $('pre > code').addClass('prettyprint');
-    prettyPrint();
-
     var baseTitle = document.title,
         // base (general) part of title
         pathName = window.location.pathname,
         fileName = pathName.substring(window.location.pathname.lastIndexOf("/") + 1);
 
-    if (window.addEventListener) window.addEventListener('load', loadCallback, true);
-    else window.attachEvent('load', loadCallback, true);
 
-    if (pathName.indexOf("nodejs_ref_guide") >= 0) $('li#node_js_ref').addClass("active");
-    else if (pathName.indexOf("nodejs_dev_guide") >= 0) $('li#nodejs_dev_guide').addClass("active");
-    else if (pathName.indexOf("js_doc") >= 0) $('li#js_doc').addClass("active");
-    
-    function loadCallback(evt) {
-        var form = document.getElementById("searchbox");
-        var input = form.query;
-        form.onsubmit = function (evt) {
-            var query = input.value;
-            if (query) {
-                input.value = "";
-                input.blur();
-                var currentVersion = $('#currentVersion').text();
-                var url = "https://www.google.com/search?q=" + encodeURIComponent("site:nodemanual.org/" + currentVersion + " " + query);
-                window.open(url);
-            }
-            return false;
-        };
+    // sticky footer stuff
+    if ($('#mainContent').height() > $('#sidebarContainer').height()) {
+        $('#nonFooter').css( {
+            'min-height': '100%'
+        });
+        $('#nonFooter').height("auto");
     }
+
+    var fileNameRE = new RegExp("^" + fileName, "i");
+
+    $('a.menuLink').each(function (index) {
+        if ($(this).attr("href").match(fileNameRE)) {
+            $(this).addClass("currentItem");
+            return false;
+        }
+    });
 
     // init search
     $('#search')
@@ -49,6 +30,10 @@ $(function () {
     .on('submit', function () {
         return false;
     }).find('input');
+
+    // init prettyprint
+    $('pre > code').addClass('prettyprint');
+    prettyPrint();
 });
 
 $(document).ready(function () {
@@ -88,9 +73,8 @@ $(document).ready(function () {
         
         $(this).scrollspy({
             min: $classContent.position().top - 35,
-            max: $classContent.position().top + $classContent.height() - 35,
+            max: $classContent.position().top + $classContent.height(),
             onEnter: function (element, position) {
-                //$('#sidebarContainer').affix();
                 var $pagination = $(element);
                 var $paginationContent = $('.membersContent pos' + i);
                 var $tabs = $('.tabs pos' + i);

@@ -262,7 +262,7 @@ apf.AmlDocument = function(){
         var result = apf.XPath.selectNodes(sExpr,
             contextNode || this.documentElement);
 
-        /**
+        /*
          * @private
          */
         return {

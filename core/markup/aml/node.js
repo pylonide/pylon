@@ -259,12 +259,12 @@ apf.AmlNode = function(){
      */
     this.namespaceURI = "";
     
-    /**
+    /*
      * @todo
      */
     //this.baseURI = alsdjlasdj
     
-    /**
+    /*
      * @todo
      */
     //this.prefix = asdkljahqsdkh
@@ -281,7 +281,7 @@ apf.AmlNode = function(){
      * element. If the element was already a child of another element it is
      * removed from that parent before adding it this element.
      *
-     * @method apf.AmlNode.insertBefore
+     * @method insertBefore
      * @param  {apf.AmlNode}  amlNode     The element to insert as child of this element.
      * @param  {apf.AmlNode}  beforeNode  The element which determines the insertion position of the element.
      * @return  {apf.AmlNode}  The inserted node

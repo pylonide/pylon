@@ -600,7 +600,7 @@ apf.MultiselectBinding = function(){
      *                            - `move-away` :  An XML node is moved (parent not set)
      *                            - `move`        An XML node is moved (parent still set)
      *                      - xmlNode ([[XMLElement]]): The node that is subject to the update
-     *                      - result ([[Mixed]]): The result
+     *                      - result (`Mixed`): The result
      *                      - UndoObj ([[UndoObj]]): The undo information
      */
     /*
@@ -695,9 +695,8 @@ apf.MultiselectBinding = function(){
         //#endif
 
         // #ifdef __WITH_VIRTUALVIEWPORT
-        /**
-         * @todo Think about not having this code here
-         */
+        
+        // @todo Think about not having this code here
         if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) {
             if(!this.$isInViewport(xmlNode)) //xmlNode is a eachd node
                 return;
@@ -1172,7 +1171,7 @@ apf.MultiselectBinding = function(){
     };
 
     // #ifdef __WITH_INLINE_DATABINDING
-    /*
+    /**
      * @attribute {String} each Sets or gets the XPath statement that determines which
      * {@link term.datanode data nodes} are rendered by this element (also known
      * as {@link term.eachnode each nodes}. See
@@ -1199,6 +1198,7 @@ apf.MultiselectBinding = function(){
      *      </countries>
      *  </a:model>
      * ```
+     *
      * @see  baseclass.multiselectbinding.binding.each
      */
     this.$propHandlers["each"] =

@@ -1,0 +1,35 @@
+mixin menu_item(obj, level, parent)
+  if typeof obj === 'string'
+    obj = list[obj]
+
+  composite = (obj.type === 'section' || obj.type === 'utility' || obj.type === 'namespace' || obj.type === 'class' || obj.type === 'mixin')
+  hidden = !( level <= 1 || composite )
+  //-li(class=hidden ? 'hidden' : '')
+  li.menu-item
+    short = level === 0 || parent.type === 'section' || !composite
+    mixin link(obj, [obj.type.replace(/ /g, '-'), obj.deprecated && 'deprecated', obj.chainable && 'chainable', obj.internal && 'internal', obj.readonly && 'readonly'].filter(function(x){return !!x;}), short)
+    if obj.children.length
+      ul(class=hidden ? 'hidden' : '')
+        for child in obj.children.filter(function(x){return x.type === 'utility'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'constructor'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'namespace' || x.type === 'class' || x.type === 'mixin'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'event'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'class method'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'class property'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'instance method'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'instance property'})
+          mixin menu_item(child, level + 1, obj)
+        for child in obj.children.filter(function(x){return x.type === 'constant'})
+          mixin menu_item(child, level + 1, obj)
+
+ul.menu
+  for obj in tree.children
+    if (showInternals || !obj.internal)
+      mixin menu_item(obj, 0)

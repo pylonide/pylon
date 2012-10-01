@@ -50,7 +50,7 @@
  *   - previous ([[String]] or [[Number]]): The name or number of the previous page.
  *   - previousId ([[Number]]): The number of the previous page.
  *   - previousPage ([[apf.page]]): The previous page.
- *   - next ([[String | Number]]): The name or number of the current page.
+ *   - next ([[String]] or [[Number]]): The name or number of the current page.
  *   - nextId ([[Number]]): The number of the the current page.
  *   - nextPage ([[apf.page]]): The the current page.   
  */
@@ -69,7 +69,7 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {String | Number}    page     The name of numer of the page which is made active.
+     * @param {String | Number}    page     The name or number of the page which is made active.
      * @param {Function} callback The function called after setting the page. Especially handy when using the `src` attribute.
      */
     this.set = function(page, callback, noEvent){
@@ -90,16 +90,16 @@ apf.BaseTab = function(){
     this.$supportedProperties.push("activepage", "activepagenr", "length",
         "src", "loading", "trans-in", "trans-out");
 
-    /*
-     * @property [SCROLL_LEFT=1] The constant representing the "scroll left" button
+    /**
+     * @property {Number} [SCROLL_LEFT=1] The constant representing the "scroll left" button
      * @readonly
      */
-    /*
-     * @property [SCROLL_RIGHT=2] The constant representing the "scroll right" button
+    /**
+     * @property {Number} [SCROLL_RIGHT=2] The constant representing the "scroll right" button
      * @readonly
      */
-    /*
-     * @property [SCROLL_BOTH=4] The constant representing the "scroll left" and "scroll right" buttons
+    /**
+     * @property {Number} [SCROLL_BOTH=4] The constant representing the "scroll left" and "scroll right" buttons
      * @readonly
      */
     /**

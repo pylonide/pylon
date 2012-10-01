@@ -21,7 +21,7 @@
 
 // #ifdef __AMLBASETREE || __INC_ALL
 
-/*
+/**
  * Baseclass of elements that allows the user to select one or more items
  * from a tree based element.
  *
@@ -1366,7 +1366,7 @@ apf.BaseTree = function(){
 
     /**
      * @event click Fires when the user presses a mousebutton while over this
-     *              element, and then lets the mousebutton go.
+     *              element, and then lets the mousebutton go
      *
      */
     this.$drawBase = function(){

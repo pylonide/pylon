@@ -19,21 +19,7 @@
 	"RegExp" : "http://www.nodemanual.org/latest/js_doc/RegExp.html",
 	"String" : "http://www.nodemanual.org/latest/js_doc/String.html",
 
-
-
-	"apf.errorbox":  "http://www.google.com",
-	"baseclass.guielement.method.focus":  "http://www.google.com",
-	"term.datainstruction": "http://www.google.com",
-	"term.datanode": "http://www.google.com",
-	"term.baseclass": "http://www.google.com",
-	"term.propertybinding": "http://www.google.com",
-	"UndoObj": "http://www.google.com",
-	"element.teleport": "http://www.google.com",
-	"element.state": "http://www.google.com",
-	"teleport.http.method.clearqueueitem": "http://www.google.com",
-	"teleport.http.method.get": "http://www.google.com",
-	"core.storage": "http://www.google.com",
-
+	"XMLHttpRequest" : "https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest",
 	"XMLElement" : "https://developer.mozilla.org/en-US/docs/DOM/element",
 	"XMLNode" : "https://developer.mozilla.org/en-US/docs/DOM/element",
 	"DOMNode": "https://developer.mozilla.org/en-US/docs/DOM/Node",

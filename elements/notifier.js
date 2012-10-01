@@ -94,12 +94,12 @@
  *     - `"center-center"`:   the element is placed in the middle of browser window
  */
 /**
- * @attribute   {String}   margin       It's a free space around popup element,
- *                                      default is '10 10 10 10' pixels
+ * @attribute   {String}   margin       Defines the free space around a popup element.
+ *                                      Defaults to '10 10 10 10' pixels
  */
 /**
- * @attribute   {String|Number}   columnsize=300   Specifies the element's width and col width, where the
- *                                      element will be displayed.
+ * @attribute   {String|Number}   columnsize   Specifies the element's width and col width, where the
+ *                                      element will be displayed. Defaults to 300px.
  */
 /**
  * @attribute   {String}   arrange="vertical"      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)

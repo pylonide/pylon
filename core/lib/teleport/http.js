@@ -95,7 +95,7 @@
  *       - `apf.TIMEOUT`:  The request has timed out.
  *       - `apf.ERROR`:    An error has occurred while making the request.
  *       - `apf.OFFLINE`:  The request was made while the application was offline.
- *     - userdata ([[Mixed]]): Data that the caller wanted to be available in
+ *     - userdata (`Mixed`): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
  *     - http ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *     - url ([[String]]): The URL that was requested.
@@ -204,7 +204,7 @@ apf.http = function(){
      * @param {String}   url       The url that is accessed.
      * @param {Object}   options   The options for the HTTP request. It contains the following properties:
      *   - async ([[Boolean]]): Specifies whether the request is sent asynchronously. Defaults to true.
-     *   - userdata ([[Mixed]]): custom data that is available to the callback function.
+     *   - userdata (`Mixed`): custom data that is available to the callback function.
      *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
      *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
      *   - data ([[String]]): the data sent in the body of the message.
@@ -234,7 +234,7 @@ apf.http = function(){
      * @param {String}   url       The URL that is accessed.
      * @param {Object}   options   The options for the HTTP request. It contains the following properties:
      *   - async ([[Boolean]]): Specifies whether the request is sent asynchronously. Defaults to true.
-     *   - userdata ([[Mixed]]): Custom data that is available to the callback function.
+     *   - userdata (`Mixed`): Custom data that is available to the callback function.
      *   - method ([[String]]): The request method (POST|GET|PUT|DELETE). Defaults to GET.
      *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
      *   - data ([[String]]): The data sent in the body of the message.

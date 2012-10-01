@@ -75,7 +75,7 @@ apf.xmldb = new (function(){
           }, 60000)
         : null;
 
-    /**
+    /*
      * @private
      */
     this.getElementById = function(id, doc){
@@ -88,7 +88,7 @@ apf.xmldb = new (function(){
             + this.xmlIdTag + "='" + id + "']");
     };
 
-    /**
+    /*
      * @private
      */
     this.getNode = function(htmlNode){
@@ -99,7 +99,7 @@ apf.xmldb = new (function(){
             .split("\|", 2).join("|"));
     };
 
-    /**
+    /*
      * @private
      */
     this.getNodeById = function(id, doc){
@@ -108,14 +108,14 @@ apf.xmldb = new (function(){
         return this.getElementById(q.join("|"), doc);//id.split("\|", 2).join("|")
     };
 
-    /**
+    /*
      * @private
      */
     this.getDocumentById = function(id){
         return this.$xmlDocLut[id];
     };
 
-    /**
+    /*
      * @private
      */
     this.getDocument = function(node){
@@ -129,7 +129,7 @@ apf.xmldb = new (function(){
         return xmlNode.getAttribute(this.xmlIdTag) + "|" + o.$uniqueId;
     };
 
-    /**
+    /*
      * @private
      */
     this.getElement = function(parent, nr){
@@ -168,7 +168,7 @@ apf.xmldb = new (function(){
         //#endif
     };
 
-    /**
+    /*
      * @private
      */
     this.getXmlId = function(xmlNode){
@@ -245,7 +245,7 @@ apf.xmldb = new (function(){
 
     this.getXml = apf.getXml;
 
-    /**
+    /*
      * @private
      */
     this.nodeConnect = function(documentId, xmlNode, htmlNode, o){
@@ -272,7 +272,7 @@ apf.xmldb = new (function(){
     this.$listeners = [null];    
     // make sure that "0" is never a listener index    
     // @todo this is cleanup hell! Listeners should be completely rearchitected
-    /**
+    /*
      * @private
      * 
      */
@@ -786,7 +786,7 @@ apf.xmldb = new (function(){
         }
     };
 
-    /**
+    /*
      * Looks for this.$listeners and executes their $xmlUpdate methods.
      * @private
      */
@@ -944,7 +944,7 @@ apf.xmldb = new (function(){
         }
 
 
-    }
+    };
 
     /**
      * @private

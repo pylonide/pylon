@@ -389,11 +389,11 @@ apf.getRules = function(node){
 
 apf.isCoord = function (n){
     return n || n === 0;
-}
+};
 
 apf.getCoord = function (n, other){
     return n || n === 0 ? n : other;
-}
+};
 
 /**
  * @private

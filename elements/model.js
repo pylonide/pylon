@@ -133,7 +133,7 @@
  *     - `apf.TIMEOUT`:  the request has timed out.
  *     - `apf.ERROR`:  an error has occurred while making the request.
  *     - `apf.OFFLINE`:  the request was made while the application was offline.
- *   - `userdata` ([[Mixed]]): data that the caller wanted to be available in the callback of the HTTP request.
+ *   - `userdata` (`Mixed`): data that the caller wanted to be available in the callback of the HTTP request.
  *   - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *   - `url` ([[String]]): the URL that was requested.
  *   - `tpModule` ([[Http]]): the teleport module that is making the request.
@@ -665,7 +665,7 @@ apf.model = function(struct, tagName){
 
     //@todo refactor this to use .blah instead of getAttribute
     //@todo move this to propHandlers
-    /**
+    /*
      * @private
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
@@ -870,7 +870,7 @@ apf.model = function(struct, tagName){
      *   
      *   - `xmlNode` ([[XMLElement]]):   the {@link term.datanode data node} that provides context to the data instruction.
      *   - `callback` ([[Function]]): the code executed when the data request returns.
-     *   - `[]` ([[Mixed]]): custom properties available in the data instruction.
+     *   - `[]` (`Mixed`): custom properties available in the data instruction.
      *   - `[nocopy]` ([[Boolean]]): specifies whether the data loaded will not overwrite the reset point.
      */
     this.load = function(xmlNode, options){
@@ -1046,7 +1046,7 @@ apf.model = function(struct, tagName){
      *   - `clearContents` ([[Boolean]]): whether the contents of the insertPoint should be cleared before inserting the new children.
      *   - `copyAttributes` ([[Boolean]]): whether the attributes of the merged element are copied.
      *   - `callback` ([[Function]]): the code executed when the data request returns.
-     *   - `[]` ([[Mixed]]): custom properties available in the data instruction.
+     *   - `[]` (`Mixed`): custom properties available in the data instruction.
      */
     this.$insertFrom = function(instruction, options){
         if (!instruction) return false;
@@ -1116,7 +1116,7 @@ apf.model = function(struct, tagName){
      *   - `clearContents` ([[Boolean]]): specifies whether the contents of the `insertPoint` should be cleared before inserting the new children.
      *   - `copyAttributes` ([[Boolean]]): specifies whether the attributes of the merged element are copied.
      *   - `callback` ([[Function]]): the code executed when the data request returns.
-     *   - `[]` ([[Mixed]]): Custom properties available in the data instruction.
+     *   - `[]` (`Mixed`): Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {

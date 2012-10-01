@@ -1,0 +1,11 @@
+h2 Classes
+ ul.menu
+  for obj in fullTree.children.filter(function(x){return x.private !== true && x.type === 'class'})
+    li.menu-item
+      mixin link(obj)
+
+h2 Elements
+ ul.menu
+  for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined})
+      li.menu-item
+        mixin link(obj, ["isXML"])

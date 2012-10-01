@@ -1,35 +1,30 @@
-include ../../../common_layout
+include ../common_layout
 include lib
-
-mixin identifyBuild(tree)
 
 mixin doctype
 
 html(xmlns="http://www.w3.org/1999/xhtml")
   head
-    mixin head('./../../', tree.children[0].file)
+    mixin head
   
   body
-    mixin navBar(tree.children[0].file)
+    mixin navBar
     #nonFooter
       #wrapper
         .content
           .row.centerpiece
-            .span3(id="sidebarContainer", data-spy="affix", data-offset-top="200")
+            .span3#sidebarContainer
               #sidebar
-                if nodejsRef == 'true'
-                  include nodejs_ref_menu.jade
-                else
-                  include js_doc_menu.jade
+                include apf_menu.jade
             .span9#mainContent
               #documentation
                 -if (isIndex)
                   mixin markdown(indexContent)
                 -else
                   mixin api()
-        
-              div#disqus_thread
-       .push
+
+              div(id="disqus_thread")
+      .push
     mixin footer
   
     mixin endingScripts

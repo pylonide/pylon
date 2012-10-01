@@ -83,7 +83,7 @@
  *       - `apf.TIMEOUT`:  The request has timed out.
  *       - `apf.ERROR`:    An error has occurred while making the request.
  *       - `apf.OFFLINE`:  The request was made while the application was offline.
- *     - `userdata` ([[Mixed]]): Data that the caller wanted to be available in
+ *     - `userdata` (`Mixed`): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
  *     - `http` ([[XMLHttpRequest]]): the object that executed the actual HTTP request.
  *     - `url` ([[String]]): The URL that was requested.
@@ -101,7 +101,7 @@
  *       - `apf.TIMEOUT`:  The request has timed out.
  *       - `apf.ERROR`:    An error has occurred while making the request.
  *       - `apf.OFFLINE`:  The request was made while the application was offline.
- *     - `userdata` ([[Mixed]]): Data that the caller wanted to be available in
+ *     - `userdata` (`Mixed`): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
  *     - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *     - `url` ([[String]]): The URL that was requested.

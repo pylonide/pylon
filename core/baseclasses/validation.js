@@ -154,7 +154,7 @@ apf.Validation = function(){
     /**
      * Checks if this element's value is valid.
      *
-     * @param  {Boolean} [checkRequired] Specifies whether this check also adheres to the `'required'` ruled.
+     * @param  {Boolean} [checkRequired] Specifies whether this check also adheres to the `'required'` rule.
      * @returns  {Boolean} Specifies whether the value is valid
      * @see  baseclass.validationgroup
      * @see  element.submitform
@@ -202,8 +202,9 @@ apf.Validation = function(){
 
     // #ifdef __WITH_HTML5
     /**
-     * 
+     * @alias apf.Validation.validate
      * @inheritdoc apf.Validation.validate
+     * @method
      */
     this.checkValidity =
     //#endif
@@ -217,8 +218,7 @@ apf.Validation = function(){
      * @param  {Boolean} [nosetError] Specifies whether the error box is displayed if this component does not validate.
      * @param  {Boolean} [force]      Specifies whether this element is in the error state, and doesn't check if the element's value is invalid.
      * @return  {Boolean}  Indicates whether the value is valid
-     * @see  object.validationgroup
-     * @see  element.submitform
+     * @see  apf.ValidationGroup
      */
     this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
@@ -566,11 +566,10 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
  * 
  * ```javascript
  *  vgForm.validate();
- * `
+ * ```
  *
  * @class apf.ValidationGroup
  * @inherits apf.Class
- * @constructor
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -597,7 +596,7 @@ apf.ValidationGroup = function(name){
 (function(){
     /**
      * When set to true, only visible elements are validated.
-     * @type Boolean false
+     * @type Boolean
      */
     this.validateVisibleOnly = false;
     
@@ -697,14 +696,16 @@ apf.ValidationGroup = function(name){
     // #ifdef __WITH_HTML5
     /**
      * 
-     * @inheritDoc apf.validationGroup.isValid
+     * @inheritDoc apf.ValidationGroup.isValid
+     * @method
      */
     this.checkValidity =
     //#endif
     
     /**
      * 
-     * @inheritDoc apf.validationGroup.isValid
+     * @inheritDoc apf.ValidationGroup.isValid
+     * @method
      */
     this.validate =
     
@@ -713,7 +714,7 @@ apf.ValidationGroup = function(name){
      * valid. When an element is found with an invalid value, the error state can
      * be set for that element.
      *
-     * @method apf.Validation.isValid
+     * @method isValid
      * @param  {Boolean}    [ignoreReq]  Specifies whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  Specifies whether to not set the error state of the element with an invalid value
      * @param  {apf.AmlElement} [page]   The page for which the children will be checked. When not specified all elements of this validation group are checked.
