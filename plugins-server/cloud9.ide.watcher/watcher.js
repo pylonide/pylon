@@ -48,7 +48,8 @@ module.exports = function setup(options, imports, register) {
             var self = this;
     
             this.clients[clientId].fileWatchers[path] = {};
-    
+
+        console.log("watch file", path);
             vfs.watch(path, {file: true, persistent: false}, function (err, meta) {
                 if (err)
                     return console.error("can't add file watcher for " + path, err);
@@ -83,7 +84,7 @@ module.exports = function setup(options, imports, register) {
             var self = this;
     
             this.clients[clientId].directoryWatchers[path] = {};
-    
+    console.log("watch dir", path)
             vfs.watch(path, {file: false, persistent: false}, function (err, meta) {
                 if (err)
                     return console.error("can't add directory watcher for " + path, err);
@@ -104,6 +105,7 @@ module.exports = function setup(options, imports, register) {
         };
     
         this.onFileChange = function (clientId, path, currStat, prevStat, client) {
+            console.log("on file change", clientId, path, currStat, prevStat)
             if (ignoredPaths[path]) {
                 clearTimeout(ignoreTimers[path]);
                 ignoreTimers[path] = setTimeout(function() {
@@ -135,6 +137,7 @@ module.exports = function setup(options, imports, register) {
         };
     
         this.onDirectoryChange = function (clientId, path, event, filename, client) {
+            console.log("on dir change", clientId, path, event, filename)
             var self = this;
             vfs.stat(path, {}, function(err, stat) {
                 if (err)
