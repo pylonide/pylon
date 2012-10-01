@@ -141,7 +141,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var c = 0;
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
             caption  : "no run history",
-            disabled : true,
+            disabled : true
         }), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
@@ -277,6 +277,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     }
                 });
             });
+        });
+        
+        apf.addListener(document, "keyup", function(e){
+            if (e.keyCode == 27 && stProcessRunning.active) {
+                stProcessRunning.setProperty("active", false);
+            }
         });
     },
 
@@ -472,18 +478,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var runmode = mode || settings.model.queryValue('auto/configurations/@runmode');
         switch (runmode) {
             case "debug":
-                btnSidePanelDebug.setCaption("Stop Debug");
-                btnSidePanelRun.disable();
+                self["btnSidePanelDebug"] && btnSidePanelDebug.setCaption("Stop Debug");
+                self["btnSidePanelRun"] && btnSidePanelRun.disable();
                 break;
             case "run":
-                btnSidePanelDebug.disable();
-                btnSidePanelRun.setCaption("Stop Run");
+                self["btnSidePanelDebug"] && btnSidePanelDebug.disable();
+                self["btnSidePanelRun"] && btnSidePanelRun.setCaption("Stop Run");
                 break;
             case "stop":
-                btnSidePanelDebug.setCaption("Debug");
-                btnSidePanelRun.setCaption("Run");
-                btnSidePanelDebug.enable();
-                btnSidePanelRun.enable();
+                self["btnSidePanelDebug"] && btnSidePanelDebug.setCaption("Debug");
+                self["btnSidePanelRun"] && btnSidePanelRun.setCaption("Run");
+                self["btnSidePanelDebug"] && btnSidePanelDebug.enable();
+                self["btnSidePanelRun"] && btnSidePanelRun.enable();
                 break;
         }
     },
