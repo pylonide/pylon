@@ -393,7 +393,7 @@ panino.parse(files, options, function (err, ast) {
     }
   });
 
-  /*options.skin = "./resources/templates/xml_layout.jade";
+  options.skin = "./resources/templates/xml_layout.jade";
   options.keepOutDir = true;
   options.title = "AML";
   options.suffix = "-element";
@@ -405,5 +405,5 @@ panino.parse(files, options, function (err, ast) {
       console.error(err);
       process.exit(1);
     }
-  });*/
+  });
 });
