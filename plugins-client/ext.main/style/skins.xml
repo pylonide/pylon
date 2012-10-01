@@ -6133,8 +6133,10 @@
         }
         
         .listRC .rcItem{
-            padding    : 1px 2px 3px 26px;
-            position : relative;
+            padding    : 0 2px 0 26px;
+            position   : relative;
+            height     : 20px;
+            line-height: 17px;
         }
         
         .listRC .content{
