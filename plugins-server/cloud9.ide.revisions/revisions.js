@@ -12,7 +12,6 @@ var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Async = require("async");
 var fsnode = require("vfs-nodefs-adapter");
-var fs;
 
 /**
  *  FILE_SUFFIX = "c9save"
@@ -28,24 +27,20 @@ var FILE_SUFFIX = "c9save";
  */
 var REV_FOLDER_NAME = ".c9revisions";
 
-/** related to: Revisions#revisions
- *  PURGE_INTERVAL -> 1 hour
- *
- *  Revision cache will be purged every PURGE_INTERVAL to clear up unfreed memory.
- **/
 var Diff = new Diff_Match_Patch();
 var name = "revisions";
 
 module.exports = function setup(options, imports, register) {
+    var fs;
+    
     imports.sandbox.getProjectDir(function(err, projectDir) {
         if (err) return register(err);
 
         fs = fsnode(imports.vfs, projectDir);
         imports.ide.register(name, RevisionsPlugin, register);
     });
-};
 
-var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) {
+function RevisionsPlugin(ide, workspace) {
     Plugin.call(this, ide, workspace);
     var self = this;
     this.hooks = ["command"];
@@ -57,7 +52,7 @@ var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) 
             callback(err, revisionInfo);
         });
     }, 1);
-};
+}
 
 require("util").inherits(RevisionsPlugin, Plugin);
 
@@ -348,12 +343,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * Retrieves the previous contents of the given file.
      **/
     this.getPreviousRevisionContent = function(path, callback) {
+        var self = this;
         this.getRevisions(path, function(err, revObj) {
             if (err) {
                 return callback(err);
             }
 
-            this.retrieveRevisionContent(revObj, null, function(err, content) {
+            self.retrieveRevisionContent(revObj, null, function(err, content) {
                 if (err)
                     return callback(err);
 
@@ -507,3 +503,5 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }
     };
 }).call(RevisionsPlugin.prototype);
+
+};
