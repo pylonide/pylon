@@ -53,6 +53,7 @@ module.exports = function setup(options, imports, register) {
             });
         }, 1);
 
+
         this.command = function(user, message, client) {
             if (!message.command || message.command !== "revisions") {
                 return false;
@@ -124,16 +125,15 @@ module.exports = function setup(options, imports, register) {
                             if (err) {
                                 return _error("There was a problem reading the contents for the file " +
                                         message.path + ":\n" + err);
+                            }
 
-                              }
-
-                              user.broadcast(JSON.stringify({
-                                  type: "revision",
-                                  subtype: "getRealFileContents",
-                                  path: message.path,
-                                  nextAction: message.nextAction,
-                                  contents: data
-                              }));
+                            user.broadcast(JSON.stringify({
+                                type: "revision",
+                                subtype: "getRealFileContents",
+                                path: message.path,
+                                nextAction: message.nextAction,
+                                contents: data
+                            }));
                         });
                         break;
 
@@ -277,6 +277,7 @@ module.exports = function setup(options, imports, register) {
 
             // Path of the final backup file inside the workspace
             var absPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
+
             var self = this;
             // does the revisions file exists?
             fs.exists(absPath, function (exists) {
@@ -433,6 +434,7 @@ module.exports = function setup(options, imports, register) {
             if (!path) {
                 return callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
             }
+
             var absPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
             var revObj;
             fs.exists(absPath, function(exists) {
@@ -450,7 +452,7 @@ module.exports = function setup(options, imports, register) {
                             silentsave: true,
                             restoring: false,
                             patch: [Diff.patch_make("", data)],
-                            length: data.length,
+                            length: data.length
                         };
                         var revisionString = JSON.stringify(firstRevision);
                         revObj = {};
@@ -461,8 +463,7 @@ module.exports = function setup(options, imports, register) {
                 }
                 else if (revision) {
                     fs.readFile(absPath, "utf8", write);
-                }
-                else {
+                } else {
                      callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
                 }
             });
@@ -484,6 +485,7 @@ module.exports = function setup(options, imports, register) {
                         revision: revision.ts
                     };
                 }
+
                 fs.writeFile(absPath, content, "utf8", function(err) {
                     callback(err, returnValue);
                 });
@@ -497,7 +499,5 @@ module.exports = function setup(options, imports, register) {
             }
         };
     }
-
     require("util").inherits(RevisionsPlugin, Plugin);
 };
-
