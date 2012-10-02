@@ -91,6 +91,7 @@
  *
  * @class apf.dropdown
  * @define dropdown
+ * @form
  * @allowchild item, {smartbinding}
  * @addnode elements
  *

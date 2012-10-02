@@ -39,8 +39,11 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @define bar, panel, menubar
- *
+ * @define bar
+ * @container
+ * @allowchild button
+ * @allowchild {elements}, {anyaml}
+ * @addnode elements
  */
 /**
  * @attribute {String} icon Sets or gets the URL pointing to the icon image.
@@ -52,29 +55,14 @@
 /**
  * @attribute {String} title  Sets or gets the title string
  */
-/**
- * @allowchild button
- * @allowchild {elements}, {anyaml}
- * @addnode elements
- *
- *
- */
 apf.section = function(struct, tagName){
     this.$init(tagName || "section", apf.NODE_VISIBLE, struct);
 };
 
-/**
- * @class apf.menubar
- * @inheritdoc apf.section
- */
 apf.menubar = function(struct, tagName){
     this.$init(tagName || "menubar", apf.NODE_VISIBLE, struct);
 };
 
-/**
- * @class apf.bar
- * @inheritdoc apf.section
- */
 apf.bar     = function(struct, tagName){
     this.$init(tagName || "bar", apf.NODE_VISIBLE, struct);
 };

@@ -73,7 +73,7 @@
  * @define table
  * @allowchild {elements}, {anyaml}
  * @addnode elements
- * @constructor
+ * @container
  * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

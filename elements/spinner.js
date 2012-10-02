@@ -69,7 +69,7 @@
  *
  * @class apf.spinner
  * @define spinner
- * @author      ???
+ * @form
  * @version     %I%, %G%
  * 
  * @inherits apf.StandardBinding

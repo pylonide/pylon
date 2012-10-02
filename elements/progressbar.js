@@ -44,10 +44,10 @@
  * @define progress
  * @allowchild {smartbinding}
  * @addnode elements:progressbar
- *
+ * @form
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- *
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9

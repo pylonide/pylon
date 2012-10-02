@@ -26,8 +26,9 @@
  * useful for log messages.
  * 
  * @experimental
- * @todo test this
+ * 
  */
+// @todo test this
 apf.lineselect = function(struct, tagName){
     this.$init(tagName || "lineselect", apf.NODE_VISIBLE, struct);
 };

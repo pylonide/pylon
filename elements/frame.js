@@ -21,16 +21,6 @@
 
 // #ifdef __AMLFRAME || __INC_ALL
 
-/** 
- *  
- * @class apf.panel
- * @inheritdoc apf.frame
- */
-/** 
- *  
- * @class apf.fieldset
- * @inheritdoc apf.frame
- */ 
 /**
  * An element displaying a frame with a caption, containing other elements. This
  * element is called a "fieldset" in HTML.
@@ -48,6 +38,7 @@
  *
  * @class apf.frame
  * @define fieldset, frame
+ * @container
  * @allowchild {elements}, {anyaml}
  * @addnode elements:frame
  *

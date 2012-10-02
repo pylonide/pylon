@@ -49,15 +49,18 @@
  * ```
  *
  * @class apf.datagrid
- * @include apf.BaseTree
  * @define datagrid
+ * @selection
  * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.BaseTree
+ * @inherits apf.Cache
+ * @inherits apf.StandardBinding
+ * @inherits apf.Rename
+ * @inherits apf.Multiselect
  *
  */
 /**

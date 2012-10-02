@@ -37,7 +37,7 @@
  * @define label
  * @allowchild {smartbinding}
  * @addnode elements
- *
+ * @form 
  * @inherits apf.BaseSimple
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

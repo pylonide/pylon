@@ -22,11 +22,6 @@
 // #ifdef __AMLIMG || __INC_ALL
 
 /**
- * @class apf.preview
- * @inheritdoc apf.img
- */
- 
-/**
  * An element displaying a picture. This element can read databound resources.
  * 
  * #### Example
@@ -62,6 +57,7 @@
  *
  * @class apf.img
  * @define img
+ * @media
  * @allowchild {smartbinding}
  * @addnode elements
  *

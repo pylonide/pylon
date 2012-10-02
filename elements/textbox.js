@@ -23,21 +23,7 @@
 
 //@todo DOCUMENT the modules too
 
-/**
- * @class apf.secret
- * @define secret
- * @inheritdoc apf.input
- */
-/**
- * @class apf.textarea
- * @define textarea
- * @inheritdoc apf.input
- */
-/**
- * @class apf.textbox
- * @define textbox
- * @inheritdoc apf.input
- */
+
 /**
  * An element that displays a rectangular area which allows a
  * user to type information. 
@@ -52,11 +38,11 @@
  * {@link element.textbox.attribute.mask mask atribute}, complex data input 
  * validation is done while the user types.
  * 
- * @class apf.input
- * @define input, secret, textarea, textbox
+ * @class apf.textbox
+ * @define textbox
  * @allowchild autocomplete, {smartbinding}
  * @addnode elements
- *
+ * @form
  * @inherits apf.StandardBinding
  * @inherits apf.XForms
  *

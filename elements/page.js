@@ -26,6 +26,7 @@
  *
  * @class apf.page
  * @define  page
+ * @container
  * @inherits apf.Presentation
  * @allowchild  {elements}, {anyaml}
  * @addnode elements

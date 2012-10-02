@@ -21,8 +21,11 @@
 // #ifdef __AMLHBOX || __AMLVBOX || __INC_ALL
 
 /**
+ * A container that stacks its children vertically.
+ * 
  * @class apf.vbox
- * @define vbox A container that stacks its children vertically.
+ * @layout
+ * @define vbox 
  * 
  * #### Example
  * 
@@ -33,8 +36,10 @@
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
+ * @layout
  */
 /**
+ * A container that stacks its children horizontally.
  * 
  * #### Example
  * 
@@ -64,8 +69,9 @@
  * @addnode elements
  *
  * @class apf.hbox
- * @include apf.GuiElement
- * @define hbox A container that stacks its children horizontally.
+ * @inherits apf.GuiElement
+ * @define hbox
+ * @layout
  * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

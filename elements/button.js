@@ -48,7 +48,7 @@
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
- *
+ * @form
  * @inherits apf.BaseButton
  */
 apf.submit  = function(struct, tagName){

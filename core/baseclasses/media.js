@@ -23,7 +23,7 @@ apf.__MEDIA__ = 1 << 20;
 
 // #ifdef __WITH_MEDIA
 
-/**
+/*
  * All elements inheriting from this {@link term.baseclass baseclass} have media node features and dynamics.
  * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#media7
  *
@@ -34,7 +34,7 @@ apf.__MEDIA__ = 1 << 20;
  * @attribute {Number}  bufferedBytes
  * @attribute {Number}  totalBytes
  *
- * @constructor
+ * @class apf.Media
  * @baseclass
  * @author      Mike de Boer
  * @version     %I%, %G%

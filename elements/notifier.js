@@ -70,10 +70,9 @@
  * 
  * @class apf.notifier
  * @define notifier
- * 
+ * @media
  * @inherits apf.Presentation
  * 
- * @author   ???   
  * @version     %I%, %G% 
  * 
  * @allowchild event

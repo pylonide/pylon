@@ -54,7 +54,8 @@ apf.__ANCHORING__ = 1 << 13;
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.3
- * @OMGWTFBBQ alignment, grid ???
+ * @baseclass
+ * @layout
  */
 apf.Anchoring = function(){
     this.$regbase = this.$regbase | apf.__ANCHORING__;

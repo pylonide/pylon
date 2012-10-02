@@ -21,44 +21,17 @@
 //#ifdef __AMLACCORDION || __INC_ALL
 
 /**
- * The Accordion is component that allows you to provide multiple vertical or 
+ * The accordion is component that allows you to provide multiple vertical or 
  * horizontal panes. You can display them one or more at a time. Each bar has 
- * a title and its content. Content can contain other components.
+ * a title and some content. The content can contain other components.
  * 
- * @define accordion
  * 
- * @attribute {String} animtype   animation effect for slide in and slide out, default is "normal normal"
- * Possible values:
- *     normal    Linear tweening method
- *     easein    Ease-in tweening method
- *     easeout   Ease-out tweening method
- *     none      animation is disabled
- *        
- * @attribute {Number} animdelay   the time between each step of animation, default is 10 ms.
- * 
- * @attribute {Boolean} multiexpand   allows expanding one or more bars, default is true
- * Possible values:
- *     true    one or more bars can be expanded at a time
- *     false   only one bar can be expanded at a time
- * 
- * @attribute {String} expand   sets event which activate bar, default is click
- * Possible values:
- *     click   bar will be expanded when user click on it
- *     hover   bar will be expanded when user hover over it with mouse
- * 
- * @attribute {Boolean} startexpanded   expands all bars on load, default is false
- * Possible values:
- *     true    expands all bars
- *     false   only chosen bars will be expanded
- * @see bar expanded="true" 
- * 
- * @inherits apf.Presentation
- * 
- * Example:
- * Horizontal acccordion component with 5 bars. First and third bar will be 
+ * #### Example
+ *
+ * Here's a horizontal acccordion component with five bars. The first and third bar will be 
  * expanded on load.
  * 
- * <code>
+ * ```xml
  *  <a:accordion
  *    width           = "400"
  *    height          = "200"
@@ -100,13 +73,14 @@
  *          </ul>
  *      </a:bar>
  *  </a:accordion>
- * </code>
+ * ```
  * 
- * Example:
- * Vertical accordion component with 2 bars. Only one bar can be expanded
+ * #### Example
+ *
+ * Here, we create a vertical accordion component with two bars. Only one bar can be expanded
  * at a time. Both bars conatins APF components.
  * 
- * <code>
+ * ```xml
  *  <a:accordion
  *    width           = "400"
  *    left            = "200"
@@ -136,12 +110,48 @@
  *          <a:button>Vote</a:button><br />
  *      </a:bar>
  *  </a:accordion>
- * </code>
+ * ```
  *
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       2.2
+ * @define accordion
+ * @class apf.accordion
+ * @container
+ * @inherits apf.Presentation
  */
+/**
+ * @attribute {String} animtype   Sets or gets an animation effect for slide in and slide out.
+ * 
+ * Possible values include:
+ * 
+ *     - `"normal"`:    a inear tweening method (this is the default)
+ *     - `"easein "`:   an ease-in tweening method
+ *     - `"easeout"`:   an ease-out tweening method
+ *     - `"none"`:      the animation is disabled
+ *        
+ */
+/**
+ * @attribute {Number} [animdelay=10]   Sets or gets the time between each step of animation, in milliseconds.
+ * 
+ */
+/**
+ * @attribute {Boolean} [multiexpand=true]  Sets or gets whether you can expand one or more bars.
+ * 
+ */
+/**
+ * @attribute {String} expand   Sets or gets which mouse action activates the bar.
+ * 
+ * The possible values include:
+ * 
+ *     - `"click"`:   the bar is expanded when a user clicks on it (this is the default)
+ *     - `"hover"`:   the bar is expanded when a user hover over it with mouse
+ * 
+ */
+/**
+ * @attribute {Boolean} [startexpanded=false]   Sets or gets whether all the bars should expand on load. 
+ * 
+ */ 
 apf.accordion = function(struct, tagName){
     this.$init(tagName || "accordion", apf.NODE_VISIBLE, struct);
     
@@ -158,7 +168,7 @@ apf.accordion = function(struct, tagName){
     this.$animStep[apf.tween.EASEIN]  = 10;
     this.$animStep[apf.tween.EASEOUT] = 10;
     
-    /**
+    /*
      * Keeps all bars
      * 
      * bars[oTitle.id] = {
@@ -174,7 +184,7 @@ apf.accordion = function(struct, tagName){
 
     this.hoverTimer = null;
     
-    /**
+    /*
      * when "multiexpand" is false, only one bar with expanded="true"
      * can be opened
      */
@@ -191,7 +201,7 @@ apf.accordion = function(struct, tagName){
     
     this.lastOpened = [];
     
-    /**
+    /*
      * Only one opening action can be run in time
      */
     this.inprogress = false;
@@ -243,9 +253,9 @@ apf.accordion = function(struct, tagName){
     
     /**
      * Toggles the visibility of the container with content. Opens
-     * or closes container using a slide effect. 
+     * or closes the container using a slide effect. 
      * 
-     * @param {Mixed} id   id of title
+     * @param {Mixed} id   The id of the title
      */
     this.slideToggle = function(id) {
         if (!this.bars[id])
@@ -258,9 +268,9 @@ apf.accordion = function(struct, tagName){
     };
 
     /**
-     * Shows the container with content using a slide effect.
+     * Shows the container's content using a slide-down effect.
      * 
-     * @param {Mixed} id   id of title
+     * @param {Mixed} id   The id of the title
      */
     this.slideDown = function(id) {
         var id2 = null;
@@ -399,9 +409,9 @@ apf.accordion = function(struct, tagName){
     };
 
     /**
-     * Hides the container with content using a slide effect.
+     * Hides the container's content using a slide-up effect.
      * 
-     * @param {Mixed} id   id of title
+     * @param {Mixed} id   The id of the title
      */
     this.slideUp = function(id) {
         if (!this.bars[id] || this.inprogress) {
@@ -452,7 +462,7 @@ apf.accordion = function(struct, tagName){
         return false;
     };
     
-    /**
+    /*
      * Returns the id of title
      * 
      * @param {Number} number   number of title, 1 and more for counting 

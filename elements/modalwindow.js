@@ -118,6 +118,7 @@ apf.WinServer = {
  *
  * @class apf.modalwindow 
  * @define window
+ * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}
  * @addnode elements
  *
@@ -127,6 +128,7 @@ apf.WinServer = {
  *
  * @inherits apf.Presentation
  * @inherits apf.Transaction
+ * @inherits apf.Docking
  */
  /**
  * @event show          Fires when the window is opened.

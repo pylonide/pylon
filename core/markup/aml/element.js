@@ -23,6 +23,7 @@
  * Represents a single element within an AML node.
  *
  * @class apf.AmlElement
+ * @baseclass
  * @inherits apf.AmlNode
  */
 

@@ -45,6 +45,7 @@
  * @class apf.actions
  * @include apf.AmlElement
  * @define actions
+ * @logic
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

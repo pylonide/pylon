@@ -28,6 +28,7 @@
  * 
  * @class apf.menu
  * @define menu
+ * @selection
  * @allowchild item, divider, check, radio
  * @addnode elements
  *

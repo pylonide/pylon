@@ -169,6 +169,7 @@ apf.StateServer = {
  * @class apf.state
  * @define state
  * @addnode global
+ * @logic
  * @inherits apf.AmlElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

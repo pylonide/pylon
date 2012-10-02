@@ -21,11 +21,14 @@
 
 // #ifdef __AMLPAGER || __INC_ALL
 
-/**
+/*
  * This elements displays buttons which can be used to navigate between some
  * parts of data, for example between parts of article
  * 
+ * @class apf.pager
  * @define pager
+ * 
+ * @selection
  * @attribute {String} range      determines how much page buttons is displayed 
  * @attribute {String} previous   determines the caption of "go to previous page" button
  * @attribute {String} next       determines the caption of "go to next page" button
@@ -33,8 +36,7 @@
  * @inherits apf.Presentation
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * 
- * @author      
+ *     
  * @version     %I%, %G% 
  * 
  * @define bindings

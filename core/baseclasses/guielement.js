@@ -32,6 +32,7 @@ apf.__VALIDATION__ = 1 << 6;
  * @version     %I%, %G%
  * @since       0.4
  *
+ * @baseclass
  * @inherits apf.AmlElement
  * @inherits apf.Anchoring
  * @inherits apf.DelayedRender

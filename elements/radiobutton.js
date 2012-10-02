@@ -55,7 +55,7 @@
  * @define radiobutton
  * @allowchild {smartbinding}
  * @addnode elements
- *
+ * @form
  * @inherits apf.Presentation
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

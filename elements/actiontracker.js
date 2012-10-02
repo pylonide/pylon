@@ -46,6 +46,7 @@
  *
  * @class apf.actiontracker
  * @define actiontracker
+ * @logic
  * @addnode smartbinding, global
  * @inherits apf.Class
  * @include apf.AmlElement

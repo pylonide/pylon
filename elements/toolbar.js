@@ -59,6 +59,7 @@
  *
  * @class apf.toolbar
  * @define toolbar
+ * @container
  * @addnode elements
  * @allowchild bar, menubar
  *

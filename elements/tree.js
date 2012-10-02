@@ -74,6 +74,7 @@
  *
  * @class apf.tree
  * @define tree
+ * @selection
  * @allowchild {smartbinding}
  * @addnode elements
  * @inherits apf.BaseTree
