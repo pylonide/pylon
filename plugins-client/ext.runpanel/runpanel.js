@@ -20,6 +20,7 @@ var markup = require("text!ext/runpanel/runpanel.xml");
 var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
 var commands = require("ext/commands/commands");
+var Console = require("ext/console/console");
 
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",
@@ -278,6 +279,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.addListener(document, "keyup", function(e){
             if (e.keyCode == 27 && stProcessRunning.active) {
                 stProcessRunning.setProperty("active", false);
+                _self.stop();
             }
         });
     },
@@ -458,6 +460,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     stop : function() {
         noderunner.stop();
 
+        apf.xmldb.setAttribute(settings.model.queryNode('auto/configurations'), "runmode", "stop");
+        
+        this.setSidePanelButtons("stop");
+        Console.killProcess();
         //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
     },
     
