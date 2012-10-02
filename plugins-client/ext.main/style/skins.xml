@@ -6144,6 +6144,8 @@
             position   : relative;
             height     : 18px;
             line-height: 17px;
+            border-top:1px solid transparent;
+            border-bottom:1px solid transparent;
         }
         
         .listRC .content{
@@ -6214,30 +6216,30 @@
             height              : 14px;
             position            : absolute;
             right               : 5px;
-            top                 : 1px;
-            background-image    : url(images/close_tab_btn.png);
+            top                 : 2px;
+            background-image    : url(images/delete_btn2.png);
             background-repeat   : no-repeat;
-            background-position : -28px 0;
+            background-position : 0 0;
         }
         
         .listRC .rcItem .btnclose:hover {
-            background-position : -14px 0;
+            background-position : 0 -14px;
         }
 
         .listRC .rcItem .btnclose:active {
-            background-position : -28px -14px;
+            background-position : 0 -28px;
         }
         
         .listRC .selected .btnclose {
-            background-position : -28px -14px;
+            background-position : 0 0;
         }
         
         .listRC .selected .btnclose:hover {
-            background-position : -14px -14px;
+            background-position : 0 -14px;
         }
 
         .listRC .selected .btnclose:active {
-            background-position : -28px -14px;
+            background-position : 0 -28px;
         }
     ]]></a:style>
 
