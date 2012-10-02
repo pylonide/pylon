@@ -194,7 +194,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 }
 
                 var cfg = apf.n("<config />")
-                    .attr("name", " (active file)")
+                    /*.attr("name", " (active file)")*/
                     .attr("curfile", "1");
                 if (setLast)
                     cfg.attr("last", "true");
@@ -210,7 +210,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 var path = page.$model.data.getAttribute("path").replace(prefixRegex, "");
                 _self.model.setQueryValue("config[@curfile]/@path", path);
                 _self.model.setQueryValue("config[@curfile]/@name",
-                    path.split("/").pop() + " (active file)");
+                    path.split("/").pop());
             }
         }
 
@@ -305,7 +305,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.push(winRunPanel);
 
         lstRunCfg.addEventListener("click", function(e){
-            if (e.htmlEvent.target.tagName == "SPAN") {
+            if (e.htmlEvent.target.tagName == "STRONG") {
                 var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
                 this.remove(xmlNode);
             }
