@@ -139,7 +139,7 @@ module.exports = {
             column: parseInt(frame.getAttribute("column"), 10),
             text: frame.getAttribute("name"),
             path: frame.getAttribute("scriptPath")
-        })
+        });
     },
 
     showDebugFile: function(scriptId, row, column, text) {
@@ -199,7 +199,7 @@ module.exports = {
                     .attr("debug", "1")
                     .attr("lineoffset", "0").node();
 
-                dbg.main.loadScript(script, function(source) {
+                dbg.main.loadSource(script, function(source) {
                     var doc = ide.createDocument(node, source);
                     editors.jump({
                         node    : node,
