@@ -6214,7 +6214,7 @@
             height              : 14px;
             position            : absolute;
             right               : 5px;
-            top                 : 2px;
+            top                 : 1px;
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : -28px 0;

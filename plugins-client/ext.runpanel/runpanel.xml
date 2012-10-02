@@ -88,9 +88,8 @@
               class   = "openfile rundebug"
               autoselect    = "true"
               empty-message = "no run configurations"
-              onafterchoose2 = "
-                require('ext/runpanel/runpanel').run();
-              ">
+              contextmenu   = "mnuRunConfig"
+              onbeforeselect = "this.config = this.selected">
                 <a:css match="[@curfile]" value="curfile" />
             </a:list>
               
@@ -144,4 +143,13 @@
             </a:bar>
         </a:vbox>
     </a:window>
+    
+    <a:menu id="mnuRunConfig" render="runtime">
+        <a:item match="[config]" onclick="
+            require('ext/runpanel/runpanel').run();
+            if (!lstRunCfg.config) return;
+            lstRunCfg.select(lstRunCfg.config);
+            delete lstRunCfg.config;
+        ">Run this Configuration</a:item>
+    </a:menu>
 </a:application>
