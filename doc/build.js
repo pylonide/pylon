@@ -11,6 +11,7 @@ var options = {
   index          : "./index.md",
   splitFromNS    : true,
   disableTests   : true,
+  customTags     : ["baseclass", "allowchild"],
   linkFormat     : function (linkHtml, obj) {
                   if (linkHtml.classes && linkHtml.classes[0] == "isXML" && linkHtml.href !== undefined) {
                         linkHtml.href = linkHtml.href.replace(".html", "-element.html");
@@ -392,7 +393,7 @@ panino.parse(files, options, function (err, ast) {
       process.exit(1);
     }
   });
-
+/*
   options.skin = "./resources/templates/xml_layout.jade";
   options.keepOutDir = true;
   options.title = "AML";
@@ -405,5 +406,5 @@ panino.parse(files, options, function (err, ast) {
       console.error(err);
       process.exit(1);
     }
-  });
+  });*/
 });
