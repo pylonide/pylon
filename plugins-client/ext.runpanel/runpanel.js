@@ -74,7 +74,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 _self.stop();
             }
         });
-        
+
         this.nodes.push(
             this.mnuRunCfg = new apf.menu({
                 "id" : "mnuRunCfg",
@@ -178,8 +178,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
             settings.setDefaults("auto/configurations", [
                 ["debug", "false"],
-                ["autohide", "true"],
-                ["runmode", "true"]     // specifies the current mode "run", "debug" or "stop"
+                ["autohide", "true"]
             ]);
 
             var runConfigs = e.model.queryNode("auto/configurations");
@@ -201,7 +200,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
             }
 
-            apf.xmldb.setAttribute(runConfigs, "runmode", "stop");
             _self.model.load(runConfigs);
         });
 
@@ -239,8 +237,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             /*var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             if (!bar.extended)
                 dock.hideBar(bar);*/
-                
-            _self.setSidePanelButtons("stop");
         });
         /*stProcessRunning.addEventListener("activate", function(){
             if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
@@ -307,8 +303,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.push(winRunPanel);
 
         lstRunCfg.addEventListener("click", function(e){
-            if (e.htmlEvent.target.tagName == "STRONG") {
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
+            if (e.htmlEvent.target.tagName == "SPAN") {
+                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
                 this.remove(xmlNode);
             }
         });
@@ -385,7 +381,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             return;
         }
 
-        this.runConfig(node, typeof(debug) == "boolean" ? debug : this.shouldRunInDebugMode());
+        this.runConfig(node, this.shouldRunInDebugMode());
 
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
@@ -457,19 +453,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             debug,
             config.getAttribute("value")
         );
-        
-        var mode = debug ? "debug" : "run";
-        apf.xmldb.setAttribute(settings.model.queryNode('auto/configurations'), "runmode", mode);
-        
-        this.setSidePanelButtons(mode);
     },
 
     stop : function() {
         noderunner.stop();
 
-        apf.xmldb.setAttribute(settings.model.queryNode('auto/configurations'), "runmode", "stop");
-        
-        this.setSidePanelButtons("stop");
         //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
     },
     

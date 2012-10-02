@@ -6126,16 +6126,23 @@
         .listRC{
             overflow: hidden;
             position: relative;
-            background-color: #fafbfc;
             cursor: default;
-            padding    : 2px 2px 2px 2px;
             color      : #333;
+            
+            box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
+                        -1px 0 0 0 rgba(255,255,255,.9) inset; 
+            background-color: rgba(220, 220, 220, 0.9);
+            background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
+                    			url(images/c9-noise-light-10.png),
+                				url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png),
+                				url(images/c9-noise-light-10.png);
         }
         
         .listRC .rcItem{
             padding    : 0 2px 0 26px;
             position   : relative;
-            height     : 20px;
+            height     : 18px;
             line-height: 17px;
         }
         
@@ -6143,7 +6150,7 @@
             cursor : pointer;
             font-family : Arial, Tahoma;
             font-size : 12px;
-            padding : 2px 0 0 0;
+            padding : 0 0 0 0;
         }
         
         .listRC .content div{
@@ -6207,7 +6214,7 @@
             height              : 14px;
             position            : absolute;
             right               : 5px;
-            top                 : 3px;
+            top                 : 2px;
             background-image    : url(images/close_tab_btn.png);
             background-repeat   : no-repeat;
             background-position : -28px 0;

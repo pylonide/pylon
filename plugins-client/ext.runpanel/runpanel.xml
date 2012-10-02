@@ -12,7 +12,7 @@
         <a:bar skin="c9-header-bar" height="26" class="c9-header-divider">
             <a:hbox>
                 <a:button id="btnAddRunConf"
-                  class  = "c9-header-plus"
+                  class  = "c9-header-plus c9-header-divider"
                   onclick  = "require('ext/runpanel/runpanel').addConfig()"
                   skin     = "header-btn" />
                 <!--a:button 
