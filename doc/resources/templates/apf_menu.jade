@@ -1,6 +1,13 @@
-h2 Classes
- ul.menu
-  for obj in fullTree.children.filter(function(x){return x.private !== true && x.type === 'class'})
+h2 UI Elements
+ h3 Containers
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.container === true})
+    li.menu-item
+      mixin link(obj)
+
+ h3 Form
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.form === true})
     li.menu-item
       mixin link(obj)
 

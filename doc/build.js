@@ -1,4 +1,4 @@
-var panino = require("../../panino-docs/index.js");
+var panino = require("panino");
 
 var options = {
   title          : "APF API",
@@ -11,7 +11,7 @@ var options = {
   index          : "./index.md",
   splitFromNS    : true,
   disableTests   : true,
-  customTags     : ["baseclass", "allowchild"],
+  customTags     : ["baseclass", "allowchild", "container", "form"],
   linkFormat     : function (linkHtml, obj) {
                   if (linkHtml.classes && linkHtml.classes[0] == "isXML" && linkHtml.href !== undefined) {
                         linkHtml.href = linkHtml.href.replace(".html", "-element.html");
@@ -237,7 +237,7 @@ var files = ["../apf.js",
              "../core/parsers/url.js",
              //"../core/parsers/xpath.js",
              //"../elements/bindingrule.js",
-             //"../elements/accordion.js",
+             "../elements/accordion.js",
              "../elements/actionrule.js",
              "../elements/actions.js",
              "../elements/actiontracker.js",
@@ -393,18 +393,5 @@ panino.parse(files, options, function (err, ast) {
       process.exit(1);
     }
   });
-/*
-  options.skin = "./resources/templates/xml_layout.jade";
-  options.keepOutDir = true;
-  options.title = "AML";
-  options.suffix = "-element";
-  options.disableTests = false;
 
-  // for the xml
-  panino.render('html', ast, options, function (err) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
-  });*/
 });

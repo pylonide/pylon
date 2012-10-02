@@ -1,58 +1,5 @@
 
 
- @term propertybinding With property binding you can define the way a
- property is calculated. <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
- This statement is usually based on a javascript
- expression including one or more properties on other objects. The value of
- the property will always be kept up to date. This means that when one of the
- dependent properties changes, the property is recalculated. See the picture
- for a graphical explanation.
- Example:
- Let me give you an example to make it a bit straightforward. This example
- sets the visibility of the slider based on the state of the checkbox.
- <code>
-  <a:slider visible="{myCheckbox.value}" />
-  <a:checkbox id="myCheckbox">Toggle this</a:checkbox>
- </code>
-
- #### Expressions
- 
- The use of { and } tell Ajax.org Platform(APF) that the visible property will
- be bound. By specifying myCheckbox.value APF knows that the value of
- myCheckbox should be retrieved for this property. Whenever the checkbox
- changes, the slider will show or hide.
-
- #### Bidirectional
-
- Sometimes it's necessary to make a binding from one property to another one,
- and vice versa. Think of a slider that is connected to the position property
- of a video element. When the video plays, the value of the slider should be
- updated. When the slider is dragged the video should be updated. This works
- in the same way as above, but instead of using curly braces
- you use brackets: [ and ]. The next example keeps the state of a dropdown in
- sync with the state of the tab page.
- <code>
-  <a:tab activepage="[myDropdown.value]">
-     <a:page caption="Page 1" />
-     <!-- etc -->
-  </a:tab>
-  <a:dropdown id="myDropdown">
-     <a:item value="0">Page 1</a:item>
-     <!-- etc -->
-  </a:dropdown>
- </code>
-
- For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
-
- Internals:
- Property binding in apf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
- system. When a binding is established the element that receives the value sets
- a listener on the property of another element. There can be any number of
- elements referenced in a single expression. When any of the properties that
- are listened to change, the subscriber gets notified to update the value
- of it's property.
-/
-
 
  @term baseclass A baseclass in Ajax.org Platform (apf) is a class that
  adds properties, methods, attributes, bindings and actions to the class that
