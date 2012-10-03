@@ -119,7 +119,7 @@
                     </a:hbox>
                     <a:hbox>
                         <a:label width="100" skin="black_label">Cmd Line Args</a:label>
-                        <a:textbox skin = "black_textbox" flex="1" value="[{lstRunCfg.selected}::@args]" disabled="{!!!lstRunCfg.selected}"/>
+                        <a:textbox id="txtCmdArgs" skin="black_textbox" flex="1" value="[{lstRunCfg.selected}::@args]" disabled="{!lstRunCfg.selected}"/>
                     </a:hbox>
                 </a:vbox>
             </a:bar>
