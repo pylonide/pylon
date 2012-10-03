@@ -29,7 +29,7 @@ worker.initReporter = function(checkInstall, performInstall, callback) {
    worker.$invoke("if ! " + checkInstall + "\n then " + performInstall + "\n fi", null, callback);
 },
 
-worker.invokeReporter = function(command, callback) {
+worker.invokeReporter = function(command, processLine, callback) {
     var _self = this;
         
     resultCache[command] = resultCache[command] || {};
@@ -48,12 +48,12 @@ worker.invokeReporter = function(command, callback) {
         }, REPORTER_TIMEOUT);
         _self.$invoke(command, worker.path, function(code, output) {
             var doc = _self.doc.getValue();
-            var result = resultCache[command][doc] = _self.parseOutput(output);
+            var result = resultCache[command][doc] = _self.parseOutput(output, processLine);
             setTimeout(function() {
                 delete resultCache[command][doc];
             }, CACHE_TIMEOUT);
             if (result.length === 0 && code !== 0)
-                console.err("External tool produced an error:", output);
+                console.log("External tool produced an error that could not be parsed:", output);
             
             if (inProgress[command]) {
                 clearTimeout(inProgress[command]);
@@ -96,11 +96,14 @@ worker.$onInvokeResult = function(event) {
    delete callbacks[event.id];
 };
 
-worker.parseOutput = function(output) {
+worker.parseOutput = function(output, processLine) {
     var lines = output.split("\n");
     var results = [];
     for (var i = 0; i < lines.length; i++) {
-        var result = this.$parseOutputLine(lines[i]);
+        var line = lines[i];
+        if (processLine)
+            line = processLine(line);
+        var result = line.chatAt ? line : this.$parseOutputLine(line);
         if (result)
             results.push(result);
     }

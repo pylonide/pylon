@@ -9,11 +9,7 @@ define("ext/linereport_php/linereport_php_worker", ["require", "exports", "modul
 var baseLanguageHandler = require("ext/linereport/linereport_base");
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-/**
- * Postprocess PHP output to match the expected format
- * line:column: error message.
- */
-var POSTPROCESS = 's/(.*)on line ([0-9]+)/\\2:1: \\1/';
+
 
 handler.disabled = false;
 
@@ -34,8 +30,16 @@ handler.init = function(callback) {
 handler.analyze = function(doc, fullAst, callback) {
     if (handler.disabled)
         return callback();
-    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, handler.workspaceDir) +
-        " | sed -E '"+ POSTPROCESS + "'", callback);
+    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, handler.workspaceDir),
+        this.$postProcess, callback);
+};
+
+/**
+ * Postprocess PHP output to match the expected format
+ * line:column: error message.
+ */
+handler.$postProcess = function(line) {
+    return line.replace(/(.*) (in .*? )?on line ([0-9]+)$/, "$3:1: $1/");
 };
 
 });

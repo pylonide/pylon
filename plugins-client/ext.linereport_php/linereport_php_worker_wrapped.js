@@ -11,11 +11,7 @@ return '/**\n' +
 'var baseLanguageHandler = require("ext/linereport/linereport_base");\n' +
 'var handler = module.exports = Object.create(baseLanguageHandler);\n' +
 '\n' +
-'/**\n' +
-' * Postprocess PHP output to match the expected format\n' +
-' * line:column: error message.\n' +
-' */\n' +
-'var POSTPROCESS = \'s/(.*)on line ([0-9]+)/\\\\2:1: \\\\1/\';\n' +
+'\n' +
 '\n' +
 'handler.disabled = false;\n' +
 '\n' +
@@ -36,8 +32,16 @@ return '/**\n' +
 'handler.analyze = function(doc, fullAst, callback) {\n' +
 '    if (handler.disabled)\n' +
 '        return callback();\n' +
-'    handler.invokeReporter("php -l " + handler.path.replace(/^\\/workspace/, handler.workspaceDir) +\n' +
-'        " | sed -E \'"+ POSTPROCESS + "\'", callback);\n' +
+'    handler.invokeReporter("php -l " + handler.path.replace(/^\\/workspace/, handler.workspaceDir),\n' +
+'        this.$postProcess, callback);\n' +
+'};\n' +
+'\n' +
+'/**\n' +
+' * Postprocess PHP output to match the expected format\n' +
+' * line:column: error message.\n' +
+' */\n' +
+'handler.$postProcess = function(line) {\n' +
+'    return line.replace(/(.*) (in .*? )?on line ([0-9]+)$/, "$3:1: $1/");\n' +
 '};\n' +
 '\n' +
 '});\n' +
