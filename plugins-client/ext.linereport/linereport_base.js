@@ -35,9 +35,9 @@ worker.invokeReporter = function(command, callback) {
     var doc = this.doc.getValue();
     if (resultCache[command][doc])
         return callback(resultCache[command][doc]);
+    resultCache[command] = {};
     if (inProgress[command])
         return nextJob[command] = invoke;
-    resultCache[command] = {};
     
     invoke();
     
