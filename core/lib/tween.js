@@ -322,7 +322,7 @@ var ID        = "id",
      * ```
      *
      * @method single
-     * @param {Element}  oHtml The object to animate.
+     * @param {DOMNode}  oHtml The object to animate.
      * @param {Object}   info  The animation settings. The following properties are available:
      *   - type ([[String]]): The property to be animated. These are predefined
      *                          property handlers and can be added by adding a
@@ -513,7 +513,7 @@ var ID        = "id",
      * ```
      *
      * @method multi
-     * @param {Element}  oHtml The object to animate.
+     * @param {DOMNode}  oHtml The object to animate.
      * @param {Object} info The settings of the animation. It contains the following properties:
      *   - [steps] ([[Number]]): The number of steps to divide the tween in
      *   - [interval] ([[Number]]): The time between each step
@@ -687,7 +687,7 @@ var ID        = "id",
      * ```
      *
      * @method apf.tween.css
-     * @param {Element}  oHtml The object to animate.
+     * @param {DOMNode}  oHtml The object to animate.
      * @param {String} className The class name that defines the CSS properties to be set or removed.
      * @param {Object} info The settings of the animation. The following properties are available:
      *   Properties:

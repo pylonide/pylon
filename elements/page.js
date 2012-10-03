@@ -22,7 +22,7 @@
 // #ifdef __AMLPAGE || __INC_ALL
 
 /**
- * A page in a pageable element (_i.e._ a page in {@link element.tab}).
+ * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
  *
  * @class apf.page
  * @define  page

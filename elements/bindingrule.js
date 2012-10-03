@@ -44,7 +44,7 @@
  *    model    = "mdlList" 
  *    bindings = "bndFolders" />
  * </code>
- * @see element.smartbinding
+ * @see apf.smartbinding
  *
  * @baseclass
  *

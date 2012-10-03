@@ -71,7 +71,7 @@ apf.__DATABINDING__ = 1 << 1;
  *                   - userdata (`Mixed`): Data that the caller wanted to be available in the callback of the http request.
  *                   - http ([[XMLHttpRequest]]): The object that executed the actual http request.
  *                   - url ([[String]]): The url that was requested.
- *                   - tpModule ([[Http]]): The teleport module that is making the request.
+ *                   - tpModule ([[apf.http]]): The teleport module that is making the request.
  *                   - id ([[Number]]): The ID of the request.
  *                   - message ([[String]]): The error message.
  */
@@ -397,7 +397,7 @@ apf.DataBinding = function(){
      *
      * @param {Boolean} doRecur Specifies whether the model should be searched recursively up the data tree.
      * @returns  {apf.model}  The model this element is connected to.
-     * @see  element.smartbinding
+     * @see apf.smartbinding
      */
     this.getModel = function(doRecur){
         if (doRecur && !this.$model)
@@ -1064,13 +1064,11 @@ apf.DataBinding = function(){
      *
      * ### See Also
      *
-     * There are several ways to be less verbose in assigning certain rules.
+     * There are several ways to be less verbose in assigning certain rules. For more information, see:
      *
-     * * {@link baseclass.multiselectbinding.binding.each}</li>
-     * * {@link baseclass.dragdrop.attribute.drag}</li>
-     * * {@link element.bindings}</li>
-     * * {@link element.actions}</li>
-     * * {@link element.dragdrop}</li>
+     * * [[apf.bindings]]
+     * * [[apf.actions]]
+     * * [[apf.DragDrop]]
      * 
      */
     this.$propHandlers["smartbinding"] = 

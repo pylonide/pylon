@@ -33,9 +33,9 @@
  * be hidden from view when used in password mode. 
  *
  * By adding an 
- * {@link element.autocomplete autocomplete element} as a child, the 
+ * autocomplete element as a child, the 
  * value for the textbox can be looked up as you type. By setting the 
- * {@link element.textbox.attribute.mask mask atribute}, complex data input 
+ * {@link apf.textbox.mask mask atribute}, complex data input 
  * validation is done while the user types.
  * 
  * @class apf.textbox

@@ -29,8 +29,7 @@
  * cases it sends or receives **X**ml. It allows for easy HTTP 
  * communication from within the browser. 
  *
- * This object provides
- * {@link teleport.http.method.savecache caching} on top of
+ * This object provides caching on top of
  * the browser's cache. This enables you to optimize your application, because
  * this can be set on a per call basis. 
  *
@@ -99,7 +98,7 @@
  *                                the callback of the HTTP request.
  *     - http ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *     - url ([[String]]): The URL that was requested.
- *     - tpModule ([[Http]]): The teleport module that is making the request.
+ *     - tpModule ([[apf.http]]): The teleport module that is making the request.
  *     - id ([[Number]]): The id of the request.
  *     - message ([[String]]): The error message.
  *
@@ -126,7 +125,7 @@ apf.http = function(){
      *
      * #### Remarks
      *
-     * This can also be set on a per call basis. See {@link teleport.http.method.get}.
+     * This can also be set on a per call basis. See {@link apf.http.get}.
      *
      * 
      * @type {Boolean}
@@ -158,7 +157,7 @@ apf.http = function(){
     var namespace = apf.config.name + ".apf.http";
 
     /**
-     * Saves the apf http cache to the available {@link core.storage storage engine}.
+     * Saves the APF HTTP cache to the available storage engine.
      */
     this.saveCache = function(){
         // #ifdef __DEBUG
@@ -171,7 +170,7 @@ apf.http = function(){
     };
 
     /**
-     * Loads the apf http cache from the available {@link core.storage storage engine}.
+     * Loads the APF HTTP cache from the available storage engine.
      */
     this.loadCache = function(){
         var strResult = apf.storage.get("cache_" + this.name,
@@ -190,7 +189,7 @@ apf.http = function(){
     };
 
     /**
-     * Removes the stored HTTP cache from the available {@link core.storage storage engine}.
+     * Removes the stored HTTP cache from the available storage engine.
      */
     this.clearCache = function(){
         apf.storage.remove("cache_" + this.name,
@@ -986,7 +985,7 @@ apf.http = function(){
      * Cancels a call based on its id. The id of the call is found on the
      * `'extra'` object, the third argument of the callback.
      *
-     * @see {@link teleport.http.method.clearqueueitem}
+     * @see apf.http.clearQueueItem
      *
      * @param {Number} id The id of the call that should be canceled.
      */

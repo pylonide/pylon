@@ -601,7 +601,7 @@ apf.MultiselectBinding = function(){
      *                            - `move`        An XML node is moved (parent still set)
      *                      - xmlNode ([[XMLElement]]): The node that is subject to the update
      *                      - result (`Mixed`): The result
-     *                      - UndoObj ([[UndoObj]]): The undo information
+     *                      - UndoObj ([[apf.UndoData]]): The undo information
      */
     /*
      * Loops through parents of a changed node to find the first

@@ -28,8 +28,8 @@
  *
  * The {@link term.smartbinding smartbinding} element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
- * send to their original data source ({@link element.actions actions}) and
- * which {@link term.datanode data nodes} can be dragged and dropped ({@link element.dragdrop dragdrop}).
+ * send to their original data source ({@link apf.actions actions}) and
+ * which {@link term.datanode data nodes} can be dragged and dropped ({@link apf.DragDrop dragdrop}).
  * 
  * #### Remarks
  *
@@ -41,7 +41,7 @@
  * 
  * Smartbindings enable many other features in a Ajax.org Platform
  * application. Actions done by the user can be undone by calling 
- * {@link element.actiontracker.method.undo} of the element. The 
+ * {@link apf.actiontracker.undo} of the element. The 
  * Remote Databinding element can send changes on data to other clients.
  *
  * This element is created especially for reuse. Multiple elements can reference
@@ -78,7 +78,7 @@
  * This is an elaborate example showing how to create a filesystem tree with
  * files and folders in a tree. The smartbinding element describes how the
  * files and folders are transformed to tree elements and how actions within
- * the tree are sent to the data source. In this case {@link teleport.webdav WebDAV}
+ * the tree are sent to the data source; in this case, WebDAV.
  * is used. The drag and drop rules specify which elements can be dragged and
  * where they can be dropped.
  * 
@@ -335,7 +335,7 @@ apf.smartbinding = function(struct, tagName){
      * ```xml
      *  <a:smartbinding id="sbExample" actions="actExample" />
      * ```
-     * @see element.actions
+     * @see apf.actions
      * @see term.action
      * @see term.smartbinding
      *
@@ -348,7 +348,7 @@ apf.smartbinding = function(struct, tagName){
      * ```xml
      *  <a:smartbinding id="sbExample" bindings="bndExample" />
      * ```
-     * @see element.dragdrop
+     * @see apf.DragDrop
      * @see term.smartbinding
      *
      * @attribute {String} model    the id of the model element that provides 
@@ -376,7 +376,7 @@ apf.smartbinding = function(struct, tagName){
      *
      *  <a:tree bindings="bndFolders" />
      * ```
-     * @see element.smartbinding
+     * @see apf.smartbinding
      * @allowchild {bindings}
      *
      *

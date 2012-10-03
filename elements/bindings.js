@@ -47,7 +47,7 @@
  *    bindings = "bndFolders" />
  * ```
  *
- * @see element.smartbinding
+ * @see apf.smartbinding
  *
  * @class apf.bindings
  * @inherits apf.AmlElement

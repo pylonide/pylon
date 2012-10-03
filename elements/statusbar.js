@@ -39,7 +39,7 @@
  *  </a:statusbar>
  * ```
  *
- * @constructor
+ * @class apf.statusbar
  * @define statusbar
  * @container
  * @allowchild bar

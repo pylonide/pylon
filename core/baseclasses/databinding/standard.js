@@ -22,9 +22,12 @@
 // #ifdef __WITH_DATABINDING
 
 /**
- * @constructor
+ * The baseclass for all standard data binding rules.
+ *
+ * @class apf.StandardBinding
  * @private
  * @baseclass
+ * @inherits apf.DataBinding
  */
 apf.StandardBinding = function(){
     this.$init(true);
@@ -168,10 +171,10 @@ apf.StandardBinding = function(){
         });
     };
 
-    /**
-     * Clears the data loaded into this element resetting it's value.
-     */
     //@todo apf3.0 this is wrong
+    /**
+     * @event $clear Clears the data loaded into this element resetting it's value.
+     */
     this.addEventListener("$clear", function(nomsg, do_event){
         if (this.$propHandlers && this.$propHandlers["value"]) {
             this.value = -99999; //force resetting

@@ -22,7 +22,7 @@
 
 /**
  * Baseclass of a simple element. These are usually displaying elements 
- * (_i.e._ {@link element.label}, {@link element.picture})
+ * (_i.e._ {@link apf.label}, {@link apf.img})
  *
  * @class apf.BaseSimple
  * @baseclass

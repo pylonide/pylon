@@ -181,9 +181,6 @@ apf.__DRAGDROP__ = 1 << 5;
  *   {apf.AmlElement}  host      The AML source element.
  *   {Boolean}     candrop   Specifies whether the data can be inserted at the point hovered over by the user
  *
- * @see element.drag
- * @see element.drop
- * @see element.dragdrop
  *
  */
 /**
@@ -299,10 +296,7 @@ apf.DragDrop = function(){
     
     /**
      * Determines whether the user is allowed to drag the passed 
-     * {@link term.datanode data node}. The decision is made based on the 
-     * {@link element.drag drag} and {@link element.drag drag} 
-     * rules. These elements determine when a data node can be dropped on 
-     * another data node. 
+     * {@link term.datanode data node}. 
      *
      * For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
@@ -311,7 +305,7 @@ apf.DragDrop = function(){
      *
      * @param  {XMLElement} dataNode The {@link term.datanode data node} subject to the test.
      * @return {Boolean} The result of the test
-     * @see baseclass.dragdrop.method.isDragAllowed
+     * @see apf.DragDrop.isDragAllowed
      */
     this.isDragAllowed = function(x, data){
         //#ifdef __WITH_OFFLINE
@@ -352,10 +346,7 @@ apf.DragDrop = function(){
 
     /**
      * Determines whether the user is allowed to drop the passed 
-     * {@link term.datanode data node}. The decision is made based on the 
-     * {@link element.drag drag} and {@link element.drag drag} 
-     * rules. These elements determine when a data node can be dropped on 
-     * another data node. 
+     * {@link term.datanode data node}. 
      * 
      * For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
@@ -367,7 +358,7 @@ apf.DragDrop = function(){
      * @param  {XMLElement} target   The {@link term.datanode data node} on which
      *                               the dragged data node is dropped.
      * @return {Boolean} The result of the test
-     * @see baseclass.dragdrop.method.isDragAllowed
+     * @see apf.DragDrop.isDragAllowed
      */
     this.isDropAllowed = function(x, target){
         //#ifdef __WITH_OFFLINE

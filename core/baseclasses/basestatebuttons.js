@@ -48,7 +48,7 @@ apf.BaseStateButtons = function(){
     this.$supportedProperties.push("buttons", "animate", "state");
     
     /**
-     * Close the window. It can be reopened by using {@link baseclass.guielement.method.show}
+     * Close the window. It can be reopened by using {@link apf.GuiElement.show}
      * @chainable
      */
     this.close = function(){ // @todo show should unset closed

@@ -10,7 +10,6 @@ var options = {
   globalNS       : "apf",
   index          : "./index.md",
   splitFromNS    : true,
-  disableTests   : true,
   customTags     : ["baseclass", 
                         // XML stuff for Jade
                         "define", "allowchild", "action",
@@ -22,6 +21,13 @@ var options = {
                         linkHtml.title = linkHtml.title.replace("class", "element");
                         linkHtml.text = "&lt;a:" + linkHtml.text.replace("apf.", "") + ">";
                   }
+
+                  // fixes problem where tab links for apf global object are defined across files; keep them just in apf.html
+                  if (obj && obj.name_prefix === "apf." && obj.file !== "../apf.js" 
+                          && linkHtml.classes[0] && (linkHtml.classes[0] == "tabLink" || linkHtml.classes[0] == "relatedToLink")) {
+                        linkHtml.href = linkHtml.href.substring(linkHtml.href.indexOf("#"));
+                  }
+
                   return linkHtml;
                   }
 };
@@ -185,7 +191,7 @@ var files = ["../apf.js",
              "../core/baseclasses/validation.js",
              "../core/baseclasses/databinding.js",
              "../core/baseclasses/databinding/multiselect.js",
-             //"../core/baseclasses/databinding/standard.js",
+             "../core/baseclasses/databinding/standard.js",
              "../core/baseclasses/multiselect.js",
              //"../core/baseclasses/childvalue.js",
              "../core/baseclasses/dataaction.js",
@@ -328,7 +334,7 @@ var files = ["../apf.js",
              //"../elements/splitter.js",
              "../elements/state-group.js",
              "../elements/state.js",
-             //"../elements/statusbar.js",
+             "../elements/statusbar.js",
              //"../elements/style.js",
              //"../elements/submitform.js",
              "../elements/tab.js",

@@ -49,7 +49,7 @@
  * @logic
  * @inherits apf.AmlElement
  *
- * @see element.state
+ * @see apf.state
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

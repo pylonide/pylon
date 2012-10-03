@@ -90,7 +90,7 @@
  */
 /**
  * @event click Fires when the user presses a mousebutton while over this element and then lets the mousebutton go. 
- * @see baseclass.amlnode.event.afterchange
+ * @see apf.AmlNode@afterchange
  */
 apf.radiobutton = function(struct, tagName){
     this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);

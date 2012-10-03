@@ -637,7 +637,7 @@ apf.AmlNode = function(){
      * Queries the AML DOM using the W3C xPath query language and returns a node
      * list. This is not an official API call, but can be useful in certain cases.
      *
-     * For more information, see {@link core.documentimplementation.method.evaluate evaluate on the `apf.document`}
+     * For more information, see [[apf.AmlDocument.evaluate]].
      * @param {String}  sExpr          The xpath expression to query the AML DOM tree with.
      * @param {apf.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} List of found nodes.
@@ -655,7 +655,7 @@ apf.AmlNode = function(){
      * Queries the AML dom using the W3C xPath query language and returns a single
      * node. This is not an official API call, but can be useful in certain cases.
      * 
-     * For more information, see {@link core.documentimplementation.method.evaluate evaluate on the `apf.document`}
+     * For more information, see [[apf.AmlDocument.evaluate]].
      * @param {String}  sExpr          The xpath expression to query the AML DOM tree with.
      * @param {apf.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
      * @returns {apf.AmlNode} The first node that matches the query.

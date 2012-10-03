@@ -23,7 +23,7 @@
 
 /**
  * Baseclass of an element that has one or two states and can be clicked on to
- * trigger an action (_i.e._ {@link element.button} or {@link element.checkbox}).
+ * trigger an action (_i.e._ {@link apf.button} or {@link apf.checkbox}).
  *
  * @class apf.BaseButton
  * @baseclass

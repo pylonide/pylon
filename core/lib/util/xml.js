@@ -301,7 +301,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
  *                                   When an element node is passed the first text node is set.
  * @param {String}     nodeValue     The value to set.
  * @param {Boolean}    applyChanges  Whether the changes are propagated to the databound elements.
- * @param {UndoObj}    undoObj       The undo object that is responsible for archiving the changes.
+ * @param {apf.UndoData}    undoObj       The undo object that is responsible for archiving the changes.
  */
 apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
     if (!xmlNode)
@@ -636,7 +636,7 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     return newNode;
 };
 
-/**
+/*
  * @private
  * @class apf.convertMethods
  */
@@ -818,9 +818,9 @@ apf.convertMethods = {
  *
  * @param {XMLElement} xml  The [[term.datanode data node]] to convert.
  * @param {String}     to   The format to convert the XML to. It can be one of the following values:
- *   - json:       converts to a json string
- *   - cgivars:    converts to cgi string
- *   - cgiobjects: converts to cgi object
+ *   - `"json"`:       converts to a json string
+ *   - `"cgivars"`:    converts to cgi string
+ *   - `"cgiobjects"`: converts to cgi object
  * @return {String} The result of the conversion.
  */
 apf.convertXml = function(xml, to){

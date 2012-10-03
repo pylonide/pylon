@@ -131,8 +131,8 @@ mixin article(obj, parents)
                             if obj.related_to
                               li
                                 span.label.related-to
-                                  | Related to
-                                  mixin link(obj.related_to)  
+                                  | Related to 
+                                  mixin link(obj.related_to, ["relatedToLink"])  
                                     
             div.sideToggler
 
@@ -230,7 +230,7 @@ mixin api()
                           ul.dropdown-menu
                             for m in members
                               li(data-id='#{m.id}', class='memberLink')
-                                mixin link(m, [], true)
+                                mixin link(m, ["tabLink"], true)
          -pos++
          -methodSection = constructorSection = propertySection = eventSection = false;
          mixin article(obj, [])

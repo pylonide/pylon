@@ -110,7 +110,7 @@
  *   - userdata (`Mixed`): Data that the caller made available in the callback of the HTTP request.
  *   - http ([[XMLHttpRequest]]): The object that executed the actual http request
  *   - url ([[String]]): The url that was requested
- *   - tpModule ([[Http]]): The teleport module that is making the request
+ *   - tpModule ([[apf.http]]): The teleport module that is making the request
  *   - id ([[Number]]): The id of the request
  *   - message ([[String]]): The error message
  * 
@@ -153,13 +153,13 @@
     /**
      * A constant for specifying that a widget is using only the keyboard to receive focus.
      * @type {Number}
-     * @see baseclass.guielement.method.focus
+     * @see apf.GuiElement@focus
      */
     KEYBOARD       : 2,
     /**
      * A constant for specifying that a widget is using the keyboard or the mouse to receive focus.
      * @type {Boolean}
-     * @see baseclass.guielement.method.focus
+     * @see apf.GuiElement@focus
      */
     KEYBOARD_MOUSE : true,
     /**
@@ -171,25 +171,21 @@
     /**
      * A constant for specifying success.
      * @type {Number}
-     * @see element.teleport
      */
     SUCCESS : 1,
     /**
      * A constant for specifying a timeout.
      * @type {Number}
-     * @see element.teleport
      */
     TIMEOUT : 2,
     /**
      * A constant for specifying an error.
      * @type {Number}
-     * @see element.teleport
      */
     ERROR   : 3,
     /**
      * A constant for specifying the application is offline.
      * @type {Number}
-     * @see element.teleport
      */
     OFFLINE : 4,
 

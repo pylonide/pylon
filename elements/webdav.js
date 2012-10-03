@@ -21,7 +21,7 @@
 
 // #ifdef __TP_WEBDAV
 
-/**
+/*
  * Element implementing WebDAV remote filesystem protocol.
  * WebDAV stands for "Web-based Distributed Authoring and Versioning". It is a
  * set of extensions to the HTTP protocol which allows users to collaboratively

@@ -48,7 +48,7 @@
  * @attribute {String}  default-page            the name of the default page if none is specified using the #. Defaults to "home". See {object.history}.
  * @see element.history
  * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
- * @see element.actiontracker
+ * @see apf.actiontracker
  * @attribute {String | Boolean} outline         whether an outline of an element is shown while dragging or resizing.
  * @see baseclass.interactive
  * @attribute {String | Boolean} drag-outline    whether an outline of an element is shown while dragging.
@@ -75,7 +75,7 @@
  * @attribute {String}  storage                 the {@link core.storage storage provider} to be used for key/value storage.
  * @see core.storage
  * @attribute {String}  offline                 the {@link core.storage storage provider} to be used for offline support.
- * @see element.offline
+ * @see apf.offline
  * @attribute {String}  login                   the {@link term.datainstruction data instruction} which logs a user into the application.
  * @see element.auth
  * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.

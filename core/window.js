@@ -55,7 +55,7 @@ apf.window = function(){
     };
     
     /**
-     * Retrieves the primary {@link element.actiontracker action tracker} of the application.
+     * Retrieves the primary {@link apf.actiontracker action tracker} of the application.
      */
     this.getActionTracker = function(){
         return this.$at

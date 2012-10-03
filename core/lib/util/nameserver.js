@@ -121,11 +121,10 @@ apf.nameserver = {
  *
  * This object's primary purpose is to provide a way to serialize the state
  * of all the custom state you introduce when building the application. This way
- * you can use {@link element.offline apf.offline} to start the application in 
+ * you can use apf.offline to start the application in 
  * the exact state it was when your user closed the app.
  *
  * @class apf.registry
- * @see core.storage
  */
 apf.registry = apf.extend({
     /**

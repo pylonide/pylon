@@ -128,7 +128,7 @@ apf.WinServer = {
  *
  * @inherits apf.Presentation
  * @inherits apf.Transaction
- * @inherits apf.Docking
+ *
  */
  /**
  * @event show          Fires when the window is opened.

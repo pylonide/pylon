@@ -27,7 +27,7 @@
  * submitted using data instructions in a similar way to html form posts. 
  *
  * The modal can be reset to its original state. It has support for offline use and
- * {@link element.remove synchronization between multiple clients}.
+ * synchronization between multiple clients.
  * 
  * #### Example
  *
@@ -87,7 +87,7 @@
  * @attribute  {Boolean} enablereset  Sets or gets whether to save the original state of the data. This enables the use of the reset() call.
  */
 /**
- * @attribute  {String}  remote       Sets or gets the id of the {@link element.remote} element to use for data synchronization between multiple clients.
+ * @attribute  {String}  remote       Sets or gets the id of the remote element to use for data synchronization between multiple clients.
  */
 /**
  * @event beforeretrieve    Fires before a request is made to retrieve data.
@@ -137,7 +137,7 @@
  *   - `userdata` (`Mixed`): data that the caller wanted to be available in the callback of the HTTP request.
  *   - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *   - `url` ([[String]]): the URL that was requested.
- *   - `tpModule` ([[Http]]): the teleport module that is making the request.
+ *   - `tpModule` ([[apf.http]]): the teleport module that is making the request.
  *   - `id` ([[Number]]): the id of the request.
  *   - `message` ([[String]]): the error message.
  *

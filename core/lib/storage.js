@@ -21,22 +21,24 @@
 
 // #ifdef __WITH_STORAGE
 /**
- * Stores javascript structures based on a name and a namespace. This object
- * is used by {@link element.offline apf offline support} as well as the 
- * {@link core.registry registry} and the {@link teleport.http http object} for 
+ * Stores JavaScript structures based on a name and a namespace. This object
+ * is used by {@link apf.offline APF offline support} as well as the 
+ * {@link apf.registry registry} and the {@link apf.http HTTP object} for 
  * caching. All but the memory storage provider, provide persistent storage. 
- * This means the data is kept between browser sessions. This allows apf to
+ * This means the data is kept between browser sessions. This allows APF to
  * have inter-session communication. For instance offline support uses it to
  * store data that could not be send to the server. When the application does 
  * go online (and this could be several sessions later), the data is send to the
  * server.
  *
- * Remarks:
+ * #### Remarks
+ *
  * The HTML5 specification advices an interface for local persistent storage.
  * Not all browsers have implemented this yet. There are several plugins and/or
  * browser containers that provide solutions for this. Among them are google 
  * gears and adobe's flash. Storage providers for these and others are available.
  *
+ * @class apf.storage
  * @default_private
  */
 apf.storage = {
@@ -44,15 +46,16 @@ apf.storage = {
 
     /**
      * Initializes the main storage engine based on the specified provider.
-     * @param {String} name the name of the provider that will provider storage
-     *   Possible values:
-     *   memory     data is stored in memory and is lost when the application exits.
-     *   air        data is stored in the air name/value storage.
-     *   air.file   data is stored in the air file based storage.
-     *   air.sql    data is stored in the air sqlite storage.
-     *   flash      data is stored in a small flash container.
-     *   gears      data is stored using the sqlite interface of gears.
-     *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
+     * @param {String} name The name of the provider that will provider storage
+     *   
+     * The possible values include:
+     *   * `"memory"`-     data is stored in memory and is lost when the application exits.
+     *   * `"air"`-        data is stored in the air name/value storage.
+     *   * `"air.file"`-   data is stored in the air file based storage.
+     *   * `"air.sql"`-    data is stored in the air sqlite storage.
+     *   * `"flash"`-      data is stored in a small flash container.
+     *   * `"gears"`-      data is stored using the sqlite interface of gears.
+     *   * `"html5"`-      data is stored in a local storage object specified by the WHATWG html5 standard.
      */
     init : function(name){
         if (!name || name == "autodetect") name = this.autodetect();

@@ -410,8 +410,8 @@ apf.actiontracker = function(struct, tagName){
      * immediately and reverted on rollback.
      *
      *
-     * For more information, see {@link element.actiontracker.method.commit} and
-     * {@link element.actiontracker.method.rollback}
+     * For more information, see {@link apf.actiontracker.commit} and
+     * {@link apf.actiontracker.rollback}
      */
     this.begin = function(dataNode, bClear){
         var id;

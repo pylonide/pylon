@@ -28,7 +28,7 @@
  *
  * #### Example
  *
- * Here's an example of the {@link teleport.cgi rpc module with the cgi protocol}.
+ * Here's an example of the RPC module with the CGI protocol.
  * 
  * ```xml
  *  <a:rpc id="comm" protocol="cgi">
@@ -61,7 +61,7 @@
  * 
  * #### Example
  *
- * Example of the {@link teleport.soap rpc module with the soap protocol}.
+ * Example of the RPC module with the SOAP protocol.
  * 
  * ```xml
  *  <a:rpc id="comm" 

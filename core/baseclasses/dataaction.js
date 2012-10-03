@@ -35,7 +35,7 @@ apf.DataAction = function(){
      * Gets the ActionTracker this element communicates with.
      *
      * @return {ActionTracker}
-     * @see  element.smartbinding
+     * @see apf.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
         if (!apf.AmlNode)
@@ -256,7 +256,7 @@ apf.DataAction = function(){
     };
 
     /*
-     * Executes an action using action rules set in the {@link element.actions actions element}.
+     * Executes an action using action rules set in the {@link apf.actions actions element}.
      *
      * @param {String}      atAction      The name of the action to be performed by the [[ActionTracker]]. Possible values include:
      *                                 - `"setTextNode"`:   Sets the first text node of an XML element. For more information, see {@link core.xmldb.method.setTextNode}
@@ -284,7 +284,7 @@ apf.DataAction = function(){
      *                                    (such as RPC calls). Usually the same
      *                                    as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
-     * @see  element.smartbinding
+     * @see apf.smartbinding
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         //#ifdef __WITH_OFFLINE
