@@ -12,11 +12,6 @@ var ext = require("core/ext");
 var markup = require("text!ext/main/main.xml");
 var skin = require("text!ext/main/style/skins.xml");
 
-//Clear Body
-var nodes = document.body.childNodes;
-for (var i = nodes.length - 1; i >= 0; i--)
-    nodes[i].parentNode.removeChild(nodes[i]);
-
 document.documentElement.style.display = "block";
 document.body.style.display = "block"; //might wanna make this variable based on layout loading...
 
