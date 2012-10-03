@@ -111,7 +111,7 @@ worker.parseOutput = function(output, processLine) {
 };
 
 worker.$parseOutputLine = function(line) {
-    var match = line.match(/^\s*(\d+):\s*(\d+):\s*(.*)/);
+    var match = line.match(/^\s*(\d+):(?:\s*(\d+):)?\s*(.*)/);
     if (!match)
         return;
     var warningMatch = match[3].match(/^\s.?warning.?:?\s*(.*)/i);
