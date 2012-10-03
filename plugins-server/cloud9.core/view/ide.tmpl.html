@@ -68,9 +68,30 @@
             var config = <%requirejsConfig%>; 
 
             function createSplash() {
+                var loadingMsgs = ["Cloning weapon",
+                    "Red 2 standing by",
+                    "Witnessing the firepower of this fully ARMED and OPERATIONAL battle station",
+                    "Making sure all systems are opperational",
+                    "Turning you to the dark side - we have cookies",
+                    "Assembling the allience",
+                    "Copy, Gold Leader. We are already on our way out",
+                    "Dispatching war rocket Ajax to bring back his body",
+                    "Making you strong with the force we are",
+                    "Chewie? Chewie, is that you pal?",
+                    "The Shield is down! Commencing attack on the Death star's main reactor.",
+                    "Your precious awaits",
+                    "One IDE to rule them all",
+                    "I am Gandalf the White. And I come back to you now… at the turn of the tide.",
+                    "A day may come when the courage of men fails… but it is not THIS day."];
                 var loadingIde = document.createElement('div');
                 loadingIde.setAttribute("id", "loadingide");
-                loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>Dispatching war rocket &quot;Ajax&quot; to bring back his body</div>';
+                var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
+
+                // CSS positioning workaround
+                while (msg.length < 60)
+                    msg = " " + msg + " ";
+                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;").replace(/ {2}/g, " &nbsp;");
+                loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>' + msg + '</div>';
                 document.body.appendChild(loadingIde);
             }
 
