@@ -11,6 +11,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var worker = module.exports = Object.create(baseLanguageHandler);
 
 var REPORTER_TIMEOUT = 60000;
+var CACHE_TIMEOUT = 60000;
 
 var commandId = 1;
 var callbacks = {};
@@ -46,7 +47,11 @@ worker.invokeReporter = function(command, callback) {
             delete inProgress[command];
         }, REPORTER_TIMEOUT);
         _self.$invoke(command, worker.path, function(code, output) {
-            var result = resultCache[command][_self.doc.getValue()] = _self.parseOutput(output);
+            var doc = _self.doc.getValue();
+            var result = resultCache[command][doc] = _self.parseOutput(output);
+            setTimeout(function() {
+                delete resultCache[command][doc];
+            }, CACHE_TIMEOUT);
             if (result.length === 0 && code !== 0)
                 console.err("External tool produced an error:", output);
             
