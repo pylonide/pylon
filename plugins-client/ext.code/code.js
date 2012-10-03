@@ -75,6 +75,7 @@ var SupportedModes = {
     svg: ["SVG", "svg", "image/svg+xml"],
     text: ["Text", "txt", "text/plain", "hidden"],
     textile: ["Textile", "textile", "text/x-web-textile"],
+    typescript: ["Typescript", "ts|str", "text/x-typescript"],
     xml: ["XML", "xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl", "application/xml"],
     xquery: ["XQuery", "xq", "text/x-xquery"],
     yaml: ["YAML", "yaml", "text/x-yaml"]

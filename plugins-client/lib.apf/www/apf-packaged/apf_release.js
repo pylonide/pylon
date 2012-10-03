@@ -3494,72 +3494,25 @@ apf.xmlEntityMap = {
 /**
  * Escapes "&amp;", greater than, less than signs, quotation marks and others into
  * the proper XML entities.
- *
+ * 
  * @param {String} str the xml string to escape.
- * @param {Boolean} strictMode by default, this function attempts to NOT double-escape XML entities, this flag turns that behavior off.
  * @return {String} the escaped string.
  */
-apf.escapeXML = function(str, strictMode) {
+apf.escapeXML = function(str) {
     if (typeof str != "string")
         return str;
-    if (strictMode)
-        str = (str || "").replace(/&/g, "&#38;");
-    else
-        str = (str || "").replace(/&(?!#[0-9]{2,5};|[a-zA-Z]{2,};)/g, "&#38;");
-    var map = apf.xmlEntityMap;
-    var isArray = apf.isArray;
-    return str
+    return (str || "")
+        .replace(/&/g, "&#38;")
         .replace(/"/g, "&#34;")
         .replace(/</g, "&#60;")
         .replace(/>/g, "&#62;")
         .replace(/'/g, "&#39;")
-        .replace(/&([a-zA-Z]+);/gi, function(a, m) {
-            var x = map[m.toLowerCase()];
+        .replace(/&([a-z]+);/gi, function(a, m) {
+            var x = apf.xmlEntityMap[m.toLowerCase()];
             if (x)
-                return "&#" + (isArray(x) ? x[0] : x) + ";";
+                return "&#" + (apf.isArray(x) ? x[0] : x) + ";";
             return a;
         });
-};
-
-/**
- * Unescapes "&#38;" and other similar XML entities into HTML entities and then replaces
- * 'special' ones (`&apos;`, `&gt;`, `&lt;`, `&quot;`, `&amp;`) into characters
- * (`'`, `>`, `<`, `"`, `&`).
- *
- * @param {String} str the xml string to unescape.
- * @return {String} the unescaped string.
- */
-apf.unescapeXML = function(str) {
-    if (typeof str != "string")
-        return str;
-    var map = apf.xmlEntityMapReverse;
-    var isArray = apf.isArray;
-    if (!map) {
-        map = apf.xmlEntityMapReverse = {};
-        var origMap = apf.xmlEntityMap;
-        var keys = Object.keys(origMap);
-        for (var val, j, l2, i = 0, l = keys.length; i < l; ++i) {
-            val = origMap[keys[i]];
-            if (isArray(val)) {
-                for (j = 0, l2 = val.length; j < l2; ++j)
-                    map[val[j]] = keys[i];
-            }
-            else
-                map[val] = keys[i];
-        }
-    }
-    return str
-        .replace(/&#([0-9]{2,5});/g, function(a, m) {
-            var x = map[m];
-            if (x)
-                return "&" + x + ";";
-            return a;
-        })
-        .replace(/&apos;/gi, "'")
-        .replace(/&gt;/gi, ">")
-        .replace(/&lt;/gi, "<")
-        .replace(/&quot;/gi, "\"")
-        .replace(/&amp;/gi, "&");
 };
 
 /**
@@ -3666,7 +3619,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
         //Start of marker
         if (marker.getAttribute("start") - options.start == 0) {
             marker.setAttribute("start", options.start + options.length);
-            reserved = parseInt(marker.getAttribute("reserved"), 10);
+            reserved = parseInt(marker.getAttribute("reserved"));
             marker.setAttribute("reserved", reserved + options.length);
             beforeNode = marker;
         }
@@ -3674,15 +3627,15 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
         else if (options.start + options.length == marker.getAttribute("end")) {
             marker.setAttribute("end", options.start + options.length);
             beforeNode = marker.nextSibling;
-            reserved = parseInt(marker.getAttribute("reserved"), 10) +
-                parseInt(marker.getAttribute("end"), 10) - options.length;
+            reserved = parseInt(marker.getAttribute("reserved"))
+                + parseInt(marker.getAttribute("end")) - options.length;
         }
         //Middle of marker
         else {
             var m2 = marker.parentNode.insertBefore(marker.cloneNode(true), marker);
             m2.setAttribute("end", options.start - 1);
             marker.setAttribute("start", options.start + options.length);
-            reserved = parseInt(marker.getAttribute("reserved"), 10);
+            reserved = parseInt(marker.getAttribute("reserved"));
             marker.setAttribute("reserved", reserved + options.length);
             beforeNode = marker;
         }
@@ -3708,7 +3661,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
-
+        
         if (options.filter)
             nodes = options.filter(parentNode, nodes);
 
@@ -3778,8 +3731,8 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             nodeValue = nodeValue.replace(/&/g, "&amp;");
 
         var oldValue      = xmlNode.nodeValue;
-        xmlNode.nodeValue = nodeValue === undefined || nodeValue === null ||
-            nodeValue == NaN ? "" : String(nodeValue);
+        xmlNode.nodeValue = nodeValue == undefined || nodeValue == null 
+                              || nodeValue == NaN ? "" : String(nodeValue);
 
         if (undoObj) {
             undoObj.name = xmlNode.nodeName;
@@ -3789,10 +3742,10 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         if (xmlNode.$triggerUpdate)
             xmlNode.$triggerUpdate(null, oldValue);
 
-        if (applyChanges) {
-            apf.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode ||
-                xmlNode.ownerElement || xmlNode.selectSingleNode(".."), undoObj);
-        }
+        if (applyChanges)
+            apf.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode
+                || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
+                undoObj);
     }
 
     
@@ -3914,7 +3867,7 @@ apf.queryNodes = function(contextNode, sExpr){
     //if (contextNode.ownerDocument != document)
     //    return contextNode.selectNodes(sExpr);
 
-    return apf.XPath.selectNodes(sExpr, contextNode);
+    return apf.XPath.selectNodes(sExpr, contextNode)
 };
 
 /**
@@ -3960,7 +3913,7 @@ apf.getInheritedAttribute = function(xml, attr, func){
       || func && func(xml)))) {
         xml = xml.parentNode;
     }
-    if (avalue === "")
+    if (avalue == "")
         return "";
 
     return !result && attr && apf.config
@@ -4400,16 +4353,16 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
     }
 
     var id;//, pfx = "";
-    while (lNode && lNode.nodeType == 1) {
+    while(lNode && lNode.nodeType == 1) {
         if (lNode == xmlContext) {
             //str.unshift("/");//pfx = "//";
             break;
         }
-        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") +
-            "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
+        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()")
+            + "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                 ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1)) +
-            "]");
+                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1))
+             + "]");
         lNode = lNode.parentNode;
     };
 
@@ -4430,15 +4383,12 @@ apf.xpathToXml = function(xpath, xmlNode){
 
 apf.n = function(xml, xpath){
     return new apf.xmlset(xml, xpath, true);
-};
-
+}
 apf.b = function(xml, xpath){
     return new apf.xmlset(xml, xpath);
-};
-
+}
 apf.b.$queue = [];
 apf.b.$state = 0;
-
 /**
  * Naive jQuery like set implementation
  * @todo add dirty flags
@@ -4446,25 +4396,24 @@ apf.b.$state = 0;
  * @todo rewrite to use arrays
  */
 apf.xmlset = function(xml, xpath, local, previous){
-    if (typeof xml == "string")
+    if (typeof(xml) == "string")
         xml = apf.getXml(xml);
 
     this.$xml = xml;
     if (xml)
         this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
-    this.$xpath = xpath || ".";
+    this.$xpath = xpath || "."
     this.$local = local;
     this.$previous = previous;
 };
 
 (function(){
-    this.add = function(){}; //@todo not implemented
+    this.add = function(){} //@todo not implemented
 
     this.begin = function(){
         apf.b.$state = 1;
         return this;
-    };
-
+    }
     this.commit = function(at, rmt, uri){
         if (apf.b.$queue.length) {
             if (rmt) {
@@ -4489,17 +4438,15 @@ apf.xmlset = function(xml, xpath, local, previous){
         apf.b.$queue = [];
         apf.b.$state = 0;
         return this;
-    };
-
+    }
     this.rollback = function(){
         apf.b.$queue = [];
         apf.b.$state = 0;
         return this;
-    };
-
+    }
     this.getRDBMessage = function(){
         return this.rdbstack || [];
-    };
+    }
 
     this.before = function(el){
         el = typeof el == "function" ? el(i) : el;
@@ -4512,7 +4459,7 @@ apf.xmlset = function(xml, xpath, local, previous){
                 apf.xmldb.appendChild(node.parentNode, el, node);
         }
         return this;
-    };
+    }
 
     this.after = function(el){
         el = typeof el == "function" ? el(i) : el;
@@ -4526,9 +4473,9 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    };
+    }
 
-    this.andSelf = function(){};
+    this.andSelf = function(){}
 
     this.append = function(el){
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
@@ -4548,35 +4495,31 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    };
-
+    }
     this.appendTo = function(target){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             target.appendChild(this.$nodes[i]);
         }
         return this;
-    };
-
-    this.prepend = function(el){
+    }
+    this.prepend = function(content){
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
             node.insertBefore(typeof el == "function" ? el(i, node) : el, node.firstChild);
         }
 
         return this;
-    };
-
-    this.prependTo = function(target){
+    }
+    this.prependTo = function(content){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             target.insertBefore(this.$nodes[i], target.firstChild);
         }
         return this;
-    };
+    }
 
     this.attr = function(attrName, value){
-        if (arguments.length === 1) {
+        if (value === undefined)
             return this.$nodes && this.$nodes[0] && this.$nodes[0].getAttribute(attrName) || "";
-        }
         else {
             for (var i = 0, l = this.$nodes.length; i < l; i++) {
                 if (apf.b.$state)
@@ -4592,7 +4535,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    };
+    }
 
     this.removeAttr = function(attrName){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
@@ -4608,7 +4551,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    };
+    }
 
     this.xml = function(){
         var str = [];
@@ -4616,66 +4559,56 @@ apf.xmlset = function(xml, xpath, local, previous){
             str.push(this.$nodes[i].xml);
         }
         return str.join("\n");
-    };
+    }
 
     this.get   =
     this.index = function(idx){
-        idx = idx || 0;
-        return apf.getChildNumber(this.$nodes[idx], this.$nodes[idx].parentNode.getElementsByTagName("*"))
-    };
+        if (idx == undefined)
+            return apf.getChildNumber(this.$nodes[0], this.$nodes[0].parentNode.getElementsByTagName("*"))
+    }
 
-    this.eq = function(index){
+    this.eq    = function(index){
         return index < 0 ? this.$nodes[this.$nodes.length - index] : this.$nodes[index];
-    };
+    }
 
     this.size   =
     this.length = function(){
         return this.$nodes.length;
-    };
-
+    }
     this.load = function(url){
 
-    };
+    }
 
     this.next = function(selector){
-        if (!selector)
-            selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
-            ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    };
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    }
 
     this.nextAll = function(selector){
-        if (!selector)
-            selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
-            ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    };
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    }
 
-    this.nextUntil = function(){};
+    this.nextUntil = function(){}
 
     this.prev = function(selector){
-        if (!selector)
-            selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
-            ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    };
-
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    }
     this.prevAll = function(selector){
-        if (!selector)
-            selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
-            ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    };
+        if (!selector) selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    }
 
-    this.not = function(){};
+    this.not = function(){}
 
     this.parent = function(selector){
         return new apf.xmlset(this.$xml.parentNode, this.$local, this);
-    };
+    }
 
-    this.parents = function(selector){};
-    this.pushStack = function(){};
-    this.replaceAll = function(){};
+    this.parents = function(selector){}
+    this.pushStack = function(){}
+    this.replaceAll = function(){}
     this.replaceWith = function(el){
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
@@ -4694,16 +4627,16 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    };
+    }
 
     this.siblings = function(selector){
         //preceding-sibling::
         //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]");
-    };
+    }
 
     this.text = function(){
 
-    };
+    }
 
     this.toArray = function(){
         var arr = [];
@@ -4711,7 +4644,7 @@ apf.xmlset = function(xml, xpath, local, previous){
             arr.push(this.$nodes[i]);
         }
         return arr;
-    };
+    }
 
     this.detach = function(selector){
         var items = [];
@@ -4735,7 +4668,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return new apf.xmlset(items, "", this.$local, this);
-    };
+    }
 
     this.remove = function(selector){
         for (var node, n = this.$nodes, i = n.length - 1; i >= 0; i--) {
@@ -4755,34 +4688,31 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    };
+    }
 
     this.children = function(selector){
         var nodes = [];
-        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
+        for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
             var list = (node = this.$nodes[i]).selectNodes(selector);
             for (var j = 0, jl = list.length; j < jl; j++) {
                 nodes.push(list[j]);
             }
         }
         return new apf.xmlset(nodes, null, this.$local, this);
-    };
+    }
 
     this.children2 = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" +
-            selector.split("|").join("|self::") + "]", this.$local, this);
-    };
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    }
 
     this.has  =
     this.find = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" +
-            path.split("|").join("|self::"), this.$local, this);
-    };
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("|self::"), this.$local, this);
+    }
 
     this.query = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" +
-            path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);
-    };
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" + path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);
+    }
 
     this.filter = function(filter){
         var newList = [];
@@ -4791,44 +4721,44 @@ apf.xmlset = function(xml, xpath, local, previous){
                 newList.push(this.$nodes[i]);
         }
         return new apf.xmlset(newList, null, this.$local, this);
-    };
+    }
 
     this.end = function(){
         return this.$previous || this;
-    };
+    }
 
     this.is = function(selector) {
         return this.filter(selector) ? true : false;
-    };
+    }
 
     this.contents = function(){
         return this.children("node()");
-    };
+    }
 
     this.has = function(){
         //return this.children(
-    };
+    }
 
     this.val = function(value){
-        if (arguments.length) {
+        if (value !== undefined) {
             apf.setQueryValue(this.$xml, this.$xpath, value);
             return this;
         }
         else
             return apf.queryValue(this.$xml, this.$xpath);
-    };
+    }
 
     this.vals = function(){
         return apf.queryValues(this.$xml, this.$xpath);
-    };
+    }
 
     this.node = function(){
         return apf.queryNode(this.$xml, this.$xpath);
-    };
+    }
 
     this.nodes = function(){
         return apf.queryNodes(this.$xml, this.$xpath);
-    };
+    }
 
     this.clone = function(deep){
         if (this.$nodes.length == 1)
@@ -4840,32 +4770,32 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return new apf.xmlset(nodes, "", this.$local, this);
-    };
+    }
 
     this.context = function(){
         return this.$xml;
-    };
+    }
 
     this.data = function(data){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             apf.setQueryValue(this.$nodes[i], ".", data);
         }
         return this;
-    };
+    }
 
     this.each = function(func){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             func.call(this.$nodes[i], i);
         }
         return this;
-    };
+    }
 
     this.eachrev = function(func){
         for (var i = this.$nodes.length - 1; i >= 0; i--) {
             func.call(this.$nodes[i], i);
         }
         return this;
-    };
+    }
 
     this.map = function(callback){
         var values = [];
@@ -4873,20 +4803,20 @@ apf.xmlset = function(xml, xpath, local, previous){
             values.push(callback(this.$nodes[i]));
         }
         return new apf.xmlset(values, "", this.$local, this); //blrghhh
-    };
+    }
 
     this.empty  = function(){
         this.children().detach();
         return this;
-    };
+    }
 
     this.first = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]", this.$local, this);
-    };
+    }
 
     this.last = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]", this.$local, this);
-    };
+    }
 }).call(apf.xmlset.prototype);
 
 
@@ -5973,16 +5903,17 @@ Function.prototype.dataType = apf.FUNCTION;
  * @see core.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
-    var prop, vars = [];
+    var vars = [];
 
     function recur(o, stack) {
+        var prop;
         if (apf.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
-        }
+        } 
         else if (typeof o == "object") {
             for (prop in o) {
-                if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
+                if (apf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
                     continue;
 
                 if (typeof o[prop] == "function")
@@ -5998,8 +5929,7 @@ apf.getCgiString = function(args, multicall, mcallname){
         vars.push("func=" + mcallname);
         for (var i = 0; i < args[0].length; i++)
             recur(args[0][i], "f%5B" + i + "%5D");
-    }
-    else {
+    } else {
         for (prop in args) {
             if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                 continue;
@@ -6075,7 +6005,7 @@ Function.prototype.extend = function() {
  * @see apf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
-    var __method = this,
+    var __method = this, 
         args     = Array.prototype.slice.call(arguments),
         o        = args.shift(),
         ev       = args.shift();
@@ -6090,31 +6020,31 @@ Function.prototype.bindWithEvent = function() {
 
 /**
  * The bind function creates a new function (a bound function) that calls the
- * function that is its this value (the bound function's target function) with
- * a specified this parameter, which cannot be overridden. bind also accepts
- * leading default arguments to provide to the target function when the bound
- * function is called.  A bound function may also be constructed using the new
- * operator: doing so acts as though the target function had instead been
- * constructed.  The provided this value is ignored, while prepended arguments
+ * function that is its this value (the bound function's target function) with 
+ * a specified this parameter, which cannot be overridden. bind also accepts 
+ * leading default arguments to provide to the target function when the bound 
+ * function is called.  A bound function may also be constructed using the new 
+ * operator: doing so acts as though the target function had instead been 
+ * constructed.  The provided this value is ignored, while prepended arguments 
  * are provided to the emulated function.
- *
+ * 
  * @param {Object} context The 'this' context of the bound function
  * @type Function
  */
-if (!Function.prototype.bind)
-    Function.prototype.bind = function(context /*, arg1, arg2... */) {
-        if (typeof this !== 'function') throw new TypeError();
-        var _arguments = Array.prototype.slice.call(arguments, 1),
-            _this = this,
-            _concat = Array.prototype.concat,
-            _function = function() {
-                return _this.apply(this instanceof _dummy ? this : context,
-                    _concat.apply(_arguments, arguments));
-            },
-            _dummy = function() {};
-        _dummy.prototype = _this.prototype;
-        _function.prototype = new _dummy();
-        return _function;
+if (!Function.prototype.bind)  
+    Function.prototype.bind = function(context /*, arg1, arg2... */) {  
+        if (typeof this !== 'function') throw new TypeError();  
+        var _arguments = Array.prototype.slice.call(arguments, 1),  
+            _this = this,  
+            _concat = Array.prototype.concat,  
+            _function = function() {  
+                return _this.apply(this instanceof _dummy ? this : context,  
+                    _concat.apply(_arguments, arguments));  
+            },  
+            _dummy = function() {};  
+        _dummy.prototype = _this.prototype;  
+        _function.prototype = new _dummy();  
+        return _function;  
 };
 
 /**
@@ -6179,120 +6109,21 @@ Array.prototype.equals = function(obj){
 
 /**
  * Make sure that an array instance contains only unique values (NO duplicates).
- * Elaborate implementation to allow for O(n) time complexity compared to O(n^2)
- * time complexity when using Array.prototype.indexOf.
- * @see http://bbenvie.com/articles/2012-06-10/Array-prototype-unique-in-O-n-time-complexity
- * @see http://jsperf.com/array-unique2/9
  *
  * @type {Array}
  */
-var uniqueBenvie = function(){
-    var hasOwn = {}.hasOwnProperty,
-        uids = {};
+Array.prototype.makeUnique = function(){
+    var i, length, newArr = [];
+    for (i = 0, length = this.length; i < length; i++)
+        if (newArr.indexOf(this[i]) == -1)
+            newArr.push(this[i]);
 
-    // use hash for primitives and tagging for objects
-    function uid(){
-        var chars = [], i = 20, num;
-        while (i--) {
-            num = Math.random() * 52 | 0;
-            chars[i] = String.fromCharCode(num + (num >= 26 ? 71 : 65));
-        }
-        chars = chars.join("");
+    this.length = 0;
+    for (i = 0, length = newArr.length; i < length; i++)
+        this.push(newArr[i]);
 
-        if (chars in uids)
-            return uid();
-
-        uids[chars] = true;
-        return chars;
-    }
-
-    function unique(array){
-        var strings = {}, numbers = {}, others = {},
-            tagged = [], failed = [],
-            count = 0, i = array.length,
-            item, type;
-
-        var id = uid();
-
-        while (i--) {
-            item = array[i];
-            type = typeof item;
-            if (item === null || type !== "object" && type !== "function") {
-                // primitive
-                switch (type) {
-                    case "string":
-                        strings[item] = true;
-                        break;
-                    case "number":
-                        numbers[item] = true;
-                        break;
-                    default:
-                        others[item] = item;
-                        break;
-                }
-            }
-            else {
-                // object
-                if (!hasOwn.call(item, id)) {
-                    try {
-                        item[id] = true;
-                        tagged[count++] = item;
-                    }
-                    catch (e){
-                        if (failed.indexOf(item) === -1)
-                            failed[failed.length] = item;
-                    }
-                }
-            }
-        }
-
-        // remove the tags
-        while (count--)
-            delete tagged[count][id];
-
-        tagged = tagged.concat(failed);
-        count = tagged.length;
-
-        // append primitives to results
-        for (i in strings)
-            if (hasOwn.call(strings, i))
-                tagged[count++] = i;
-
-        for (i in numbers)
-            if (hasOwn.call(numbers, i))
-                tagged[count++] = +i;
-
-        for (i in others)
-            if (hasOwn.call(others, i))
-                tagged[count++] = others[i];
-
-        return tagged;
-    }
-
-    return unique;
-}();
-
-if (typeof Set !== "undefined") {
-    Array.prototype.makeUnique = function(){
-        var out = [],
-            seen = new Set,
-            i = this.length;
-
-        while (i--) {
-            if (!seen.has(this[i])) {
-                out[out.length] = this[i];
-                seen.add(this[i]);
-            }
-        }
-
-        return out;
-    }
-}
-else {
-    Array.prototype.makeUnique = function(){
-        return uniqueBenvie(this);
-    };
-}
+    return this;
+};
 
 /**
  * Check if this array instance contains a value 'obj'.
@@ -6629,7 +6460,7 @@ String.prototype.toXml = function(){
 };
 
 
-if (typeof window != "undefined" && typeof window.document != "undefined"
+if (typeof window != "undefined" && typeof window.document != "undefined" 
   && typeof window.document.createElement == "function") {
     /**
      * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
@@ -6783,9 +6614,9 @@ String.prototype.sprintf = function() {
 };
 
 /**
- * The now method returns the milliseconds elapsed since
+ * The now method returns the milliseconds elapsed since 
  * 1 January 1970 00:00:00 UTC up until now as a number.
- *
+ * 
  * @type {Number}
  */
 if (!Date.now) {
@@ -7767,31 +7598,6 @@ apf.hotkeys = {};
     });
 }).call(apf.hotkeys);
 
-
-
-
-
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
 
 
 
@@ -14089,13 +13895,13 @@ apf.setModel = function(instruction, amlNode){
 
 
 /**
- * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously
- * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most
- * cases it sends or receives <strong>X</strong>ml. It allows for easy http
+ * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 
+ * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most 
+ * cases it sends or receives <strong>X</strong>ml. It allows for easy http 
  * communication from within the browser. This object provides
  * {@link teleport.http.method.savecache caching} on top of
  * the browser's cache. This enables you to optimize your application, because
- * this can be set on a per call basis.
+ * this can be set on a per call basis. 
  * Example:
  * Retrieving content over http synchronously:
  * <code>
@@ -14175,16 +13981,16 @@ apf.http = function(){
      * Sets the timeout of http requests in milliseconds. Default is 10000ms (10s).
      */
     this.timeout   = this.timeout || 10000; //default 10 seconds
-
+    
     /**
      * Sets whether this element routes traffic through a server proxy.
      * Remarks:
      * This can also be set on a per call basis. See {@link teleport.http.method.get}.
      */
     this.autoroute = this.autoroute || false;
-
+    
     /**
-     * String specifying the url to the route script.
+     * String specifying the url to the route script. 
      * Remarks:
      * The route script will receive the route information in 3 extra headers:
      *   X-Route-Request     - Containing the destination url.<br />
@@ -14225,7 +14031,7 @@ apf.http = function(){
         options.callback = callback;
         return this.get(url, options);
     };
-
+    
     this.getJSON = function(url, callback, options){
         if (!options) options = {};
         options.callback = callback;
@@ -14259,11 +14065,11 @@ apf.http = function(){
         var _self = this;
         var id    = options.id;
         
-
+        
         
 
         var binary = apf.hasXhrBinary && options.binary;
-        var async = options.async = (options.async || binary
+        var async = options.async = (options.async || binary 
             || typeof options.async == "undefined" || apf.isOpera || false);
 
         
@@ -14315,7 +14121,7 @@ apf.http = function(){
 
         
         var headers = [];
-
+        
         function setRequestHeader(name, value){
             
             http.setRequestHeader(name, value);
@@ -14327,24 +14133,11 @@ apf.http = function(){
                 httpUrl = apf.getNoCacheUrl(httpUrl);
 
             
-
+            
             var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
             if (requestedWithParam) {
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") +
-                    encodeURIComponent(requestedWithParam) + "=1";
-            }
-            // global support for protection against Cross Site Request Forgery
-            // attacks by supplying a token to the global APF config object. This
-            // token will be appended to the URL and sent for each XHR.
-            // Warning: if you are doing CORS, be sure to use a different method!
-            var CSRFHeader = apf.config ? apf.config["csrf-header"] : null;
-            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
-            if (CSRFHeader) {
-                setRequestHeader("X-CSRF-Token", CSRFHeader);
-            }
-            else if (CSRFToken) {
-                CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
+                    + requestedWithParam + "=1";
             }
 
             http.open(this.method || options.method || "GET", httpUrl, async);
@@ -14367,7 +14160,7 @@ apf.http = function(){
                 setRequestHeader("X-Proxy-Request", url);
                 setRequestHeader("X-Compress-Response", "gzip");
             }
-
+            
             if (binary) {
                 setRequestHeader("Cache-Control", "no-cache");
                 setRequestHeader("X-File-Name", binary.filename);
@@ -14418,7 +14211,7 @@ apf.http = function(){
             for (var name in options.headers)
                 setRequestHeader(name, options.headers[name]);
         }
-
+        
         
 
         function handleError(){
@@ -14459,7 +14252,7 @@ apf.http = function(){
                     }
                     else {
                         window.onerror = oldWinOnerror;
-
+                        
                         if (oldWinOnerror)
                             return oldWinOnerror.apply(window, arguments);
                     }
@@ -14513,7 +14306,7 @@ apf.http = function(){
             return id;
         }
     };
-
+    
     
     /**
      * Method that all async objects should implement
@@ -14523,27 +14316,27 @@ apf.http = function(){
         this.exec = function(method, args, callback, options){
             if (!options)
                 options = {};
-
+            
             var url = args[0], query = "";
             if (!options.method)
                 options.method = method.toUpperCase();
             if (!options.callback)
                 options.callback = callback;
-
+            
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(
-                apf.getAbsolutePath(apf.config.baseurl, url),
-                options.method == "GET"
-                    ? options
+                apf.getAbsolutePath(apf.config.baseurl, url), 
+                options.method == "GET" 
+                    ? options 
                     : apf.extend({data : query}, options)
             );
         }
     }
     
-
+    
     /**
-     * Sends the binary blob to server and multipart encodes it if needed this code
-     * will only be executed on Gecko since it's currently the only browser that
+     * Sends the binary blob to server and multipart encodes it if needed this code 
+     * will only be executed on Gecko since it's currently the only browser that 
      * supports direct file access
      * @private
      */
@@ -14604,7 +14397,7 @@ apf.http = function(){
                 }, 10);
             }
         }
-
+        
         
 
         //Gonna check for validity of the http response
@@ -14626,11 +14419,11 @@ apf.http = function(){
         if (http.status > 600)
             return this.$timeout(id);
 
-        extra.data = qItem.options.useJSON
-            ? eval("(" + http.responseText + ")")
+        extra.data = qItem.options.useJSON 
+            ? eval("(" + http.responseText + ")") 
             : http.responseText; //Can this error?
 
-        if (http.status >= 400 && http.status < 600 || http.status < 10
+        if (http.status >= 400 && http.status < 600 || http.status < 10 
           && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
             
             //@todo This should probably have an RPC specific handler
@@ -14737,9 +14530,9 @@ apf.http = function(){
             message : "HTTP Call timed out",
             retries : qItem.retries || 0
         }) : false;
-
         
-
+        
+        
         if (!noClear)
             this.clearQueueItem(id);
     };
@@ -20113,7 +19906,6 @@ apf.Anchoring = function(){
             }
             else if (hasWidth && typeof this.maxwidth == "number" && typeof this.minwidth == "number") {
                 if (parseInt(width) != width) {
-                    this.width = width = (this.width || "").replace(/--(\d+)/, "-(-$1)");
                     width = setPercentage(width, "pWidth");
                     rules.push("oHtml.style.width = Math.max(" 
                         + (this.minwidth - this.$hordiff)
@@ -24882,7 +24674,7 @@ apf.MultiselectBinding = function(){
         if (this.signalXmlUpdate && actionFeature[action] & 16) {
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
-                if (parseInt(uniqueId, 10) != uniqueId) continue; //safari_old stuff
+                if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
 
                 var o = apf.lookup(uniqueId);
                 if (!this.selected) continue;
@@ -24911,7 +24703,7 @@ apf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
         
 
-        var htmlNode, lastNode, loopNode;
+        var htmlNode, lastNode;
         isChild          = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);
@@ -40797,7 +40589,7 @@ apf.lm = new (function(){
             "foreachrev": "_nods(_n,",
             "eachrev"   : "_nods(_n,",
             "xabs"      : "_valst(_n,",
-           // "edit"      : "_argwrap(_n,",
+           // "edit"      : "_argwrap(_n,", 
            // "edit"      : "_val(_n,", // toggled by liveedit
             "local"     : "_nod(_n,",
             "tagName"   : "_nod(_n,",
@@ -40900,7 +40692,7 @@ apf.lm = new (function(){
     macro_c.edit        = ")",
     macro_o.xabs        = "  (  ",
     macro_c.xabs        = "  )  ",
-
+    
     macro_o.localName   = "_localName(_n",
     macro_c.localName   = ")",
     macro_o.output      = "_o.join(''",
@@ -41011,7 +40803,7 @@ apf.lm = new (function(){
             u = scope-1; // scan for our root expression block to switch to block
         else
             for (v = sl - 2, u = 0; v >= 0 && o[u=(s[v] & 0xfffffff) - 1] != "{{"; v -=2 ){};
-
+        
         if (!no_output && ol > u + 1)  // inject auto output unless no output or nothing to output in buffer
             o[u] = cf_block_o + cf_str_output
         else
@@ -41081,7 +40873,7 @@ apf.lm = new (function(){
                                         o[ol++] = tok;
                                         // lets scan in reverse to see if we have an output or a non-output
 
-                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  "
+                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
                                             || o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
 
                                         if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
@@ -41090,7 +40882,7 @@ apf.lm = new (function(){
                                                 while (is_out_space[o[ol]])
                                                     ol--;
                                                 w = last_tok;
-                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot),
+                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
                                                 o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
                                                 o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
                                                 s[sl++] = ""; // notabene, this stored item is checked everywhere
@@ -41331,7 +41123,7 @@ apf.lm = new (function(){
 
                         if (u && !s[sl-1]) // close = macro
                             o[ol-1]=="\n"&&(o[ol-1]=""),o[ol++]=")", o[ol++]="\n",v = 1,sl -=2;
-
+                        
                         if (v && parse_mode) // inject output
                             o[ol++] = (nesting?cf_str_output:cf_mode_output), last_type = 0;
 
@@ -41376,7 +41168,7 @@ apf.lm = new (function(){
                                     else { // its a obj.prop() type call
                                         if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
                                             o_props[last_tok.slice(0,last_dot)] = 1;
-
+                                            
                                         s[sl++] = scope, s[sl++] = o[ol++] = tok,
                                         scope = segment = ol;
                                     }
@@ -41469,7 +41261,7 @@ apf.lm = new (function(){
                             o[ol] = (ol++ == scope) ? "\"" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath]
+                            o[ol++] = tok = '$';// fix word$[xpath] 
                         }else o[ol++] = tok;
                         break;
                     case 5: // -------- stringquotes --------
@@ -41535,7 +41327,7 @@ apf.lm = new (function(){
                         line_no++, last_line = pos;
                         break;
                     case 2: // -------- misc --------
-                        if (tok == ":" && last_tok == ":" && !xpath_axes[w = o[ol - 2]]
+                        if (tok == ":" && last_tok == ":" && !xpath_axes[w = o[ol - 2]] 
                           && ((v = s[sl - 2]) >> 28) != 6) { // found model::xpath split
                             if (o[ol - 2] == '+"') // model is calculated
                                 o[ol - 2] = o[ol - 1] = "", last_model = "#";
@@ -41579,10 +41371,10 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";                 
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath]
+                            o[ol++] = tok = '$';// fix word$[xpath] 
                         }else o[ol++] = tok;
                         break
                     case 5: // -------- stringquotes --------
@@ -41615,7 +41407,7 @@ apf.lm = new (function(){
                         break;
                     case 9: // -------- [ --------
                         // lets see if we are an xpath
-                        if (s[sl - 1] == "'" || s[sl - 1] == '"' ||
+                        if (s[sl - 1] == "'" || s[sl - 1] == '"' || 
                             ((last_type != 3 || last_tok=='$') && last_tok != ")" && last_tok != "]") ) {
                             if (last_model)
                                 o_xpathpairs.push(last_model, "#"), o_models++;
@@ -41685,7 +41477,7 @@ apf.lm = new (function(){
                                         v = "#";
                                         if (c_injectself)// inject dyn self if dyn xpath
                                             o[scope - 1] = u + "_injself(", o[ol++] = ")";
-                                    }
+                                    } 
                                     else
                                         v = "";
                                 }
@@ -41768,12 +41560,12 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol++] = "+\"";
+                            o[ol++] = "+\"";        
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath]
+                            o[ol++] = tok = '$';// fix word$[xpath] 
                         }else o[ol++] = tok;
-                        break
+                        break                       
                     case 5: // -------- stringquotes --------
                         if (ol == segment)
                             o[ol++] = "+\"";
@@ -41846,7 +41638,7 @@ apf.lm = new (function(){
                                     ol --;
                                 else
                                     v = xpath_macro[c_elemxpath];
-
+                                    
                                 s[sl++] = scope | 0x40000000
                             }
                             else {
@@ -41858,7 +41650,7 @@ apf.lm = new (function(){
                                 }
                                 else
                                     v = xpath_macro[last_ns ? c_statexpath : 8];
-
+                                
                                 if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
                                     o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
                             }
@@ -41911,12 +41703,12 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "" : "+\"";
+                            o[ol] = (ol++ == scope) ? "" : "+\"";       
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath]
+                            o[ol++] = tok = '$';// fix word$[xpath] 
                         }else o[ol++] = tok;
-                        break
+                        break                           
                     case 5: // -------- stringquotes --------
                         if (s[sl - 1] == tok) { // closed by matching quote
                             if (scope != segment) // string is segmented, output )
@@ -42017,7 +41809,7 @@ apf.lm = new (function(){
                             type = last_type = last_cmt_type;
                         break;
                     case 6: // -------- comment --------
-                        if ((start_tok == "/*" && tok == "*/")
+                        if ((start_tok == "/*" && tok == "*/") 
                           || (start_tok == "<!--" && tok == "-->")) {
                             parse_mode = last_cmt_mode,
                             tok = last_tok = last_cmt_tok,
@@ -42033,11 +41825,11 @@ apf.lm = new (function(){
                         } else {
                             parse_mode = last_cmt_mode,
                             tok = last_tok = last_cmt_tok,
-                            type = last_type = last_cmt_type;
+                            type = last_type = last_cmt_type;                        
                             if (sl && !s[sl - 1]) { // close = macro
                                 o[ol - 1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
                                 o[ol++] = "\n", v = 1, sl -= 2;
-                            }
+                            }  
                         };
                         break;
                 }
@@ -42065,7 +41857,7 @@ apf.lm = new (function(){
         else {
             throw new Error(apf.formatErrorString(0, null,
                 "Compiling live markup function on line " + linenr,
-                "Error whilst compiling: " + e.message
+                "Error whilst compiling: " + e.message 
                 //+ "\nStack Trace:\n" + e.stack
                 + "\nInput:\n" + str
                 + "\nGenerated:\n" + apf.lm.lastCode()));
@@ -42143,16 +41935,16 @@ apf.lm = new (function(){
             alert("ERROR, undefined live markup cache marker found:"+istr);
             return {type:2,str:istr};
         }
-
+            
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.liveedit && 0x400)| (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
-
+                
         if (c = cache[key])
             return c;
 
-
+            
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = 0;
         c_export = cfg.funcglobal?"self":(cfg.withopt?"_w":null);
@@ -42160,7 +41952,7 @@ apf.lm = new (function(){
 
         xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
         macro_o.edit     = cfg.liveedit ? macro_o._editlm : macro_o._editnormal;
-
+        
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
         o_props = {}, o_xpathpairs = [], s = [], o = ["","","",""], str = istr,
@@ -42187,7 +41979,7 @@ apf.lm = new (function(){
                 return null;
             }
         }
-
+        
         if (cfg.parsecode) {
             if (nesting || s[sl - 1].length == 1)
                 handleError({
@@ -42199,7 +41991,7 @@ apf.lm = new (function(){
         }else if( (ol==7 || ol==8) && o_segs == 1){
             is_single_prop = 0;
             for(c in o_props)is_single_prop++;
-            if(is_single_prop!=1)is_single_prop = 0;
+            if(is_single_prop!=1)is_single_prop = 0;  
         }
         if ((!cfg.nostring && !cfg.event)&& (parse_mode == 2 && segment == 4 || ol == 4)) {
             return {
@@ -42217,7 +42009,7 @@ apf.lm = new (function(){
             else if (c_xpathmode) { // object return
                 if (parse_mode == 1) {
                     o[3]    = (o[3] != cf_block_o) ? cc_o_blk_o : cc_o_blk_ob,
-                    o[ol++] = cc_o_blk_cb;
+                    o[ol++] = cc_o_blk_cb; 
                 }
                 else
                     o[3] = cc_o_cb_o, o[ol++] = cc_o_cb_c;
@@ -42229,8 +42021,8 @@ apf.lm = new (function(){
                 else
                     o[3] = cc_v_cb_o, o[ol++] = cc_v_cb_c;
             }
-
-            if (o_asyncs) {
+            
+            if (o_asyncs) { 
                 // for parse_mode == 1 we can squeeze in before [3] and cb close
                 // else we put var _r= in 3 and put our ending last and put
                 // the cb at the end
@@ -42250,8 +42042,8 @@ apf.lm = new (function(){
 
             if (cfg.withopt)
                 o[1] = cc_opt_o, o[ol++] = cc_opt_c;
-
-            o[0] = cfg.event
+                
+            o[0] = cfg.event 
                 ? cc_fe_async_o
                 : ((c_xpathmode == 1 || c_xpathmode == 3) ? cc_fc_async_o : cc_f_async_o);
             o[ol++] = cc_f_c;
@@ -42342,7 +42134,7 @@ apf.lm = new (function(){
      *   {Number}  asyncs       description
      *   {String]  str          optional, returned with type 2
      */
-
+    
     this.compileMatch = function(strarray, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -42401,7 +42193,7 @@ apf.lm = new (function(){
                 if(cfg.node)
                     c_xpathmode = 2;
                 parse_mode = 2, c_injectself = 0;
-
+                
                 if (cfg.nothrow) {
                     str.replace(parserx, parser);
                 }
@@ -42417,7 +42209,7 @@ apf.lm = new (function(){
 
                 if (o_asyncs)
                     handleError({t:"Asynchronous calls not supported in match/value"});
-
+                
                 if(cfg.node){
                     if (parse_mode == 2 && segment == ob || ol == ob)
                         o[ob-1] = cc_m_n_string;
@@ -42440,12 +42232,12 @@ apf.lm = new (function(){
                     handleError({t:"Both match and value are empty"});
 
                 if(cfg.node)
-                    o[ol++] = cc_m_n_ret;
+                    o[ol++] = cc_m_n_ret;               
                 else
-                    o[ol++] = cc_m_v_ret;
-
+                    o[ol++] = cc_m_v_ret;               
+                
                 c_xpathmode = 2;
-
+                    
                 o[ol++] = cc_m_c;
             }
         }
@@ -42473,7 +42265,7 @@ apf.lm = new (function(){
     this.setWarnLevel = function(lvl){
         apf.lm_exec.setWarnLevel(lvl);
     };
-
+    
     this.parseExpression = function(istr, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -42485,7 +42277,7 @@ apf.lm = new (function(){
         c_xpathmode = c_injectself = last_tok = sl = line_no = o_segs = o_xpaths =
         last_type = o_asyncs = last_line = 0;
         parse_mode = 2;
-
+        
         if (cfg.nothrow) {
             str.replace(parserx, parser);
         }
@@ -42501,7 +42293,7 @@ apf.lm = new (function(){
         return o.join('');
     }
 
-
+    
 })();
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
@@ -42542,9 +42334,9 @@ apf.lm_exec = new (function(){
     function __val(n, x){
         if (!n)
             return ("")
-        return apf.escapeXML((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
+        return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || (""));
+          && n.nodeValue || ("");
     }
 
     var __valattrrx = /(["'])/g;
@@ -42554,12 +42346,12 @@ apf.lm_exec = new (function(){
     function __valattr(n, x){
         if (!n)
             return ("")
-        return apf.escapeXML((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (""));
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || ("");
     }
 
-
+    
     // value of model node by xpath
     function __valm(m, x){
         var n;
@@ -42567,7 +42359,7 @@ apf.lm_exec = new (function(){
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return ("");
-        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           && n.nodeValue || ("");
     }
@@ -42629,7 +42421,7 @@ apf.lm_exec = new (function(){
             m = apf.xmldb.findModel(m);
             x = apf.xmlToXpath(node, m.data) + "/" + x;
         }
-
+        
         return {
             model:    m,
             xpath:    x,
@@ -42757,80 +42549,80 @@ apf.lm_exec = new (function(){
 
     function __lng(x,x2){           // the language macro
 
-        return "$["+x+"]";
+        return "$["+x+"]"; 
 
     }
 
     function _lnged(x,x2){          // editable language macro
 
-        return "$["+x+"]";
+        return "$["+x+"]"; 
 
     }
-
+    
     function _(n, m, x){   // wrap a value with editable div
-        return '<span class="liveEdit" xpath="' + (n
-            ? (m.substr(0,1) != "/"
-                ? apf.xmlToXpath(n, null, false)
-                : "") + "/" + m
+        return '<span class="liveEdit" xpath="' + (n 
+            ? (m.substr(0,1) != "/" 
+                ? apf.xmlToXpath(n, null, false) 
+                : "") + "/" + m 
             : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&#32;") + '</span>';
     }
 
 //    function _edit(n, opts){
-//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
+//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';        
 //    }
-
+    
     function _argwrap(n,x){
         return [n,x];
     }
-
+    
     function _argwrapm(m,x){
         return [0,m,x];
     }
-
+    
     function _valedx(editMode, args, opt){   // wrap a value with editable div
         args[3] = opt;
         args[4] = editMode;
         return _valed.apply(this, args);
     }
-
+    
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
 
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
-
+        
         if (editMode !== false) {
             var value = res || options && options.initial || "&#32;";
-            if (!options || !options.richtext)
+            if (!options || !options.richtext) 
                 value = apf.htmlentities(value);
             if (options && options.multiline)
                 value = value
                     .replace(/&lt;br ?\/?&gt;/g, "<br />")
                     .replace(/&lt;(\/?div)&gt;/g, "<$1>");
 
-            return '<div'
-              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n
-                ? ((m.substr(0,1) != "/"
-                    ? apf.xmlToXpath(n, null, false)
+            return '<div' 
+              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
+                ? ((m.substr(0,1) != "/" 
+                    ? apf.xmlToXpath(n, null, false) 
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
-                : (self[m]
+                : (self[m] 
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
-                    : "")) + '"'
+                    : "")) + '"' 
               + (options
                 ? ' options="' + JSON.stringify(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + value
+                : "") + '>' + value 
               + '</div>';
         }
         else {
             return res;
         }
     }
-
+    
     var selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g; // inject self regexp
-
+    
     function _injself(s){           // self inject helper func
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
@@ -42853,7 +42645,7 @@ apf.lm_exec = new (function(){
         var cb = function(data, state, extra){
             if (_w)
                 delete _w._pc;
-
+            
             if (state != apf.SUCCESS){
                 _c(null, state, extra);
             }
@@ -42914,7 +42706,7 @@ apf.lm_exec = new (function(){
         s.set(options);
         return s.apply(apf.getArrayFromNodelist(set));
     }
-
+    
     function _cthex(c){
         var t;
         if((t=typeof(c))=='string'){
@@ -42930,14 +42722,14 @@ apf.lm_exec = new (function(){
                             (((t=c[4])<0?0:(t>255?255:parseInt(t))));
                 } else { // hsv
                     var h=parseFloat(c[2]),s=parseFloat(c[3]),v=parseFloat(c[4]),
-                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i)));
+                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i))); 
                     switch(i){
-                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);
-                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff);
-                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff);
-                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff);
-                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff);
-                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff);
+                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);  
+                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff); 
+                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff); 
+                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff); 
+                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff); 
+                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff); 
                     }
                 }
             }
@@ -42953,12 +42745,12 @@ apf.lm_exec = new (function(){
                    ((fa&0xff)*f+(fb&0xff)*fm)&0xff;
         return f*fa+fm*fb;
     }
-
+    
     var abs = Math.abs, acos = Math.acos, asin = Math.asin,
        atan = Math.atan, atan2 = Math.atan2, ceil = Math.ceil,
        cos = Math.cos, exp = Math.exp, floor = Math.floor,
        log = Math.log, max = Math.max, min = Math.min,
-       pow = Math.pow, random = Math.random, round = Math.round,
+       pow = Math.pow, random = Math.random, round = Math.round, 
        sin = Math.sin, sqrt = Math.sqrt, tan = Math.tan, linear = lin;
 
     function tsin(x){ return 0.5*sin(x)+0.5;}
@@ -42967,24 +42759,24 @@ apf.lm_exec = new (function(){
     function ucos(x){ return 0.5-0.5*cos(x);}
     function snap(a,b){ return round(a/b)*b; }
     function clamp(a,b,c){ return a<b?b:(a>c?c:a); }
-
+    
     this.compile = function(code){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
 
         eval(code);
-
+        
         return _f;
     }
-
+    
     this.compileWith = function(code, withs){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
 
         eval(code);
-
+        
         return _f;
     }
 
@@ -42995,11 +42787,11 @@ apf.lm_exec = new (function(){
     this.c342 = function(_n,_a,_w){
         ..cached LM function..
     }
-    this.c342.type = 2;
-    this.c342.xpaths = {...};
+    this.c342.type = 2; 
+    this.c342.xpaths = {...}; 
     this.c342.props = {...};
     this.c723 = function(....){
-
+    
     }
     // replace
     d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");

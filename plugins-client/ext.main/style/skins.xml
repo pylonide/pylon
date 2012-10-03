@@ -8604,7 +8604,7 @@
             overflow: visible;
         }
         .btnRun .main:after {
-            background-position: -397px -424px; 
+            background-position: -397px -457px; 
             content: "";
             display: block;
             left: 100%;
@@ -8618,7 +8618,7 @@
         }
         .btnRun .main .c9-icon {
             left: 3px;
-            top: 3px;
+            top: 2px;
         }
         .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -397px -457px; 

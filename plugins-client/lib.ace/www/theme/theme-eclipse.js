@@ -1,37 +1,30 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Fabian Jakobs <fabian AT ajax DOT org>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -39,23 +32,19 @@ define('ace/theme/eclipse', ['require', 'exports', 'module', 'ace/lib/dom'], fun
 
 
 exports.isDark = false;
-exports.cssText = ".ace-eclipse .ace_editor {\
-  border: 2px solid rgb(159, 159, 159);\
-}\
-\
-.ace-eclipse .ace_editor.ace_focus {\
-  border: 2px solid #327fbd;\
-}\
-\
-.ace-eclipse .ace_gutter {\
+exports.cssText = ".ace-eclipse .ace_gutter {\
   background: #ebebeb;\
   border-right: 1px solid rgb(159, 159, 159);\
   color: rgb(136, 136, 136);\
 }\
 \
-.ace-eclipse .ace_print_margin {\
+.ace-eclipse .ace_print-margin {\
   width: 1px;\
   background: #ebebeb;\
+}\
+\
+.ace-eclipse .ace_scroller {\
+  background-color: #FFFFFF;\
 }\
 \
 .ace-eclipse .ace_fold {\
@@ -114,7 +103,7 @@ exports.cssText = ".ace-eclipse .ace_editor {\
   color: rgb(127, 0, 127);\
 }\
 \
-.ace-eclipse .ace_line .ace_xml_pe {\
+.ace-eclipse .ace_line .ace_xml-pe {\
   color: rgb(104, 104, 91);\
 }\
 \
@@ -138,8 +127,16 @@ exports.cssText = ".ace-eclipse .ace_editor {\
   background: rgb(255, 255, 0);\
 }\
 \
-.ace-eclipse .ace_marker-layer .ace_active_line {\
+.ace-eclipse .ace_marker-layer .ace_active-line {\
   background: rgb(232, 242, 254);\
+}\
+\
+.ace-eclipse .ace_marker-layer .ace_selected-word {\
+  border: 1px solid rgb(181, 213, 255);\
+}\
+\
+.ace-eclipse .ace_indent-guide {\
+  background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }";
 
 exports.cssClass = "ace-eclipse";
