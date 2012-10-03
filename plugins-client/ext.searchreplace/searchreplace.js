@@ -46,9 +46,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = searchRow;
-        
+
         commands.addCommand({
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
@@ -415,16 +415,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             var toHeight = 38;//winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight + 4;
-            
+
             if (animate) {
                 anims.animateSplitBoxNode(winSearchReplace, {
-                    height: toHeight + "px", 
+                    height: toHeight + "px",
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)",
                     duration : 0.2
                 }, function() {
                     if (stateChange && !isReplace && wasVisible)
                         _self.setupDialog(isReplace);
-                    
+
                     winSearchReplace.$ext.style.height = "";
 
                     divSearchCount.$ext.style.visibility = "";
@@ -463,10 +463,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     winSearchReplace.visible = true;
                     winSearchReplace.hide();
                     winSearchReplace.parentNode.removeChild(winSearchReplace);
-                    
+
                     if (!noselect)
                         editor.ceEditor.focus();
-                    
+
                     setTimeout(function(){
                         callback
                             ? callback()
@@ -728,10 +728,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
+        var ceEditor = editor.amlEditor;
         return ceEditor.$editor;
     },
 

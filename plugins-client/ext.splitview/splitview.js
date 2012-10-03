@@ -295,7 +295,7 @@ module.exports = ext.register("ext/splitview/splitview", {
 
             // find the settings node that corresponds with the clone view
             // that is being constructed right now
-            var settings, pages, indices, idx;
+            var settings, indices, idx;
             if (Settings.model.data) {
                 var nodes = Settings.model.data.selectNodes("splits/split");
                 for (i = 0, l = nodes.length; i < l; ++i) {
@@ -421,7 +421,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
         // pass in null to mutate the active split view
         Splits.mutate(null, pages[idx]);
-        Splits.update();
+        Splits.update(Splits.getActive());
         this.save();
         return false;
     },
@@ -461,7 +461,6 @@ module.exports = ext.register("ext/splitview/splitview", {
         var splits = Splits.get(page);
         for (var i = 0, l = splits.length; i < l; ++i)
             Splits.mutate(splits[i], page);
-        Splits.update();
         this.save();
     },
 

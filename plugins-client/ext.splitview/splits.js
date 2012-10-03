@@ -178,13 +178,13 @@ exports.hide = function(split, notGrid) {
 };
 
 exports.update = function(split, gridLayout) {
-    split = split || ActiveSplit;
     if (!split)
         return;
     gridLayout = Grids.init(gridLayout || split.gridLayout);
 
     var page = split.pairs[0].page;
     var amlPage = page.fake ? page.relPage : page;
+    var isActive = (split === ActiveSplit);
     split.gridLayout = gridLayout;
 
     // destroy the split view if it contains NOT more than 1 editor.
@@ -202,15 +202,16 @@ exports.update = function(split, gridLayout) {
         editor.removeAttribute("model");
         editor.removeAttribute("actiontracker");
         amlPage.appendChild(editor);
-        editor.show();
 
         split.zManager.clear(editor.$ext);
 
         clearSplitViewStyles(page);
         Grids.hide(split.gridLayout);
 
-        if (ActiveSplit === split)
+        if (isActive) {
+            editor.show();
             ActiveSplit = null;
+        }
         Splits.remove(split);
         //console.log("split removed",Splits);
         // split removed, use the escape hatch...
@@ -218,12 +219,14 @@ exports.update = function(split, gridLayout) {
     }
 
     // make sure current grid is the only one visible.
-    Grids.show(gridLayout);
+    if (isActive)
+        Grids.show(gridLayout);
 
     // sort the editors and pages before being added to the grid
     sortEditorsAndPages(split);
 
-    Grids.update(gridLayout, split);
+    if (isActive)
+        Grids.update(gridLayout, split);
     // make sure visual styles are OK
     setSplitViewStyles(split);
     split.zManager.resetAll(split.pairs.map(function(pair) {
@@ -233,7 +236,7 @@ exports.update = function(split, gridLayout) {
     exports.setActivePage(split);
 
     // make sure the buttons of the pages in the active split are highlighted
-    if (split === ActiveSplit) {
+    if (isActive) {
         for (var i = 0, l = split.pairs.length; i < l; ++i) {
             split.pairs[i].page.$activateButton();
             exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
@@ -244,7 +247,7 @@ exports.update = function(split, gridLayout) {
 };
 
 exports.mutate = function(split, page, type) {
-    split = split || split === null ? ActiveSplit : null;
+    split = split || (split === null ? ActiveSplit : null);
     type = type || "default";
     var tabs = tabEditors;
     var activePage = tabs.getPage();
@@ -268,7 +271,7 @@ exports.mutate = function(split, page, type) {
         clearSplitViewStyles(page);
         editor.hide();
         split.zManager.clear(editor.$ext);
-        if (tabs.getPage() !== split.pairs[0].page)
+        if (split === ActiveSplit && tabs.getPage() !== split.pairs[0].page)
             tabs.set(split.pairs[0].page);
 
         this.update(split);
@@ -363,7 +366,6 @@ exports.getActive = function() {
 };
 
 exports.setActivePage = function(split, page) {
-    split = split || ActiveSplit;
     if (!split)
         return;
 
@@ -376,10 +378,12 @@ exports.setActivePage = function(split, page) {
     if (idx == -1)
         return;
 
-    var pair = split.pairs[idx] ? split.pairs[idx] : split.pairs[0];
-    pair.editor.focus();
-    if (idx !== old)
-        ide.dispatchEvent("pageswitch", { page: pair.page });
+    if (split === ActiveSplit) {
+        var pair = split.pairs[idx] ? split.pairs[idx] : split.pairs[0];
+        pair.editor.focus();
+        if (idx !== old)
+            ide.dispatchEvent("pageswitch", { page: pair.page });
+    }
 };
 
 exports.indexOf = function(split, obj) {
@@ -481,7 +485,6 @@ function createEditorClones(editor) {
 
     return EditorClones[id];
 }
-
 
 exports.getEditorSession = function(page) {
     var doc = page.$doc;
