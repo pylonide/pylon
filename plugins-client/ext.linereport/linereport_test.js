@@ -13,8 +13,8 @@ module.exports = {
     "test parse line" : function(next) {
         var results = report.parseOutput("1:2: 3");
         console.log(results[0]);
-        assert.equal(results[0].pos.sl, 1);
-        assert.equal(results[0].pos.sc, 2);
+        assert.equal(results[0].pos.sl, 0);
+        assert.equal(results[0].pos.sc, 1);
         assert.equal(results[0].message, "3");
         next();
     },
