@@ -87,10 +87,7 @@
                 loadingIde.setAttribute("id", "loadingide");
                 var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
 
-                // CSS positioning workaround
-                while (msg.length < 60)
-                    msg = " " + msg + " ";
-                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;").replace(/ {2}/g, " &nbsp;");
+                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
                 loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>' + msg + '</div>';
                 document.body.appendChild(loadingIde);
             }
