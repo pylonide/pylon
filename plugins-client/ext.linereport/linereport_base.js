@@ -118,14 +118,15 @@ worker.$parseOutputLine = function(line) {
     var errorMatch = match[3].match(/^\.?error.?:?\s*(.*)/i);
     var infoMatch = match[3].match(/^\.?info.?:?\s*(.*)/i);
     return {
-        pos: { sl: parseInt(match[1], 10), sc: parseInt(match[2], 10) },
+        // Change from 1-indexed rows / cols to Ace 0-indexed rows / cols
+        pos: { sl: parseInt(match[1], 10)-1, sc: parseInt(match[2], 10)-1 },
         type: 'unused',
         level: warningMatch ? 'warning' : infoMatch ? 'info' : 'error',
         message: warningMatch ? warningMatch[1] :
                  infoMatch ? infoMatch[1] :
                  errorMatch ? errorMatch[1] :
                  match[3]
-    };   
+    };
 };
 
 });
