@@ -28,7 +28,7 @@
  * @constructor
  * @define palette
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.XForms
  * @inherits apf.StandardBinding

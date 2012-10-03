@@ -31,7 +31,7 @@
  *
  * @constructor
  * @define toc
- * @addnode elements
+ *
  *
  * @inherits apf.Presentation
  * @todo test if this element still works with the refactored basetab

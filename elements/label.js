@@ -36,7 +36,7 @@
  * @class apf.label
  * @define label
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  * @form 
  * @inherits apf.BaseSimple
  *

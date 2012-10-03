@@ -37,7 +37,7 @@
  * </code>
  *
  * @constructor
- * @addnode elements:editor
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

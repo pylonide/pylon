@@ -51,7 +51,7 @@
  * @class apf.datagrid
  * @define datagrid
  * @selection
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

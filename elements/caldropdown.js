@@ -38,7 +38,7 @@
  * 
  * @constructor
  * @define caldropdown
- * @addnode elements
+ *
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%

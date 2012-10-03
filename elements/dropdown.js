@@ -93,7 +93,7 @@
  * @define dropdown
  * @form
  * @allowchild item, {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseList
  *

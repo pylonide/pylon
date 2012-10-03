@@ -124,7 +124,7 @@
  *
  * @constructor
  * @alias upload
- * @addnode elements
+ *
  *
  * @inherits apf.StandardBinding
  *

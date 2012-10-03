@@ -36,7 +36,7 @@
  * @define bar, panel, menubar
  * @allowchild button
  * @allowchild {elements}, {anyaml}
- * @addnode elements
+ *
  * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

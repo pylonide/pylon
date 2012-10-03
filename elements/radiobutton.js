@@ -54,7 +54,7 @@
  * @class apf.radiobutton
  * @define radiobutton
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  * @form
  * @inherits apf.Presentation
  *

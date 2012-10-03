@@ -41,9 +41,9 @@
  * user when the area is clicked and then executes a command.
  *
  * @class apf.button
- * @include apf.BaseButton
+ * @inherits apf.BaseButton
  * @define button, submit, trigger, reset
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

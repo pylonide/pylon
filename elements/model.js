@@ -63,7 +63,7 @@
  * @define model
  * @logic
  * @allowchild [cdata], instance, load, submission
- * @addnode smartbinding, global
+ *
  * 
  * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)

@@ -76,7 +76,7 @@
  * @define tree
  * @selection
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  * @inherits apf.BaseTree
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

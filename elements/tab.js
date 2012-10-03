@@ -51,7 +51,7 @@
  * @define tab, pages, switch
  * @container
  * @allowchild page
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

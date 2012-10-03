@@ -169,7 +169,7 @@
  * 
  * @define smartbinding
  * @allowchild bindings, actions, ref, action, dragdrop, model
- * @addnode smartbinding, global
+ *
  *
  * @class apf.smartbinding
  * @apfclass
@@ -378,8 +378,8 @@ apf.smartbinding = function(struct, tagName){
      * ```
      * @see element.smartbinding
      * @allowchild {bindings}
-     * @addnode smartbinding, global
-     * @addnode smartbinding, global
+     *
+     *
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode.hasFeature(apf.__DATABINDING__))

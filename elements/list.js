@@ -78,7 +78,7 @@
  * @class apf.list
  * @define list, select, select1, thumbnail
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  * @selection
  * @inherits apf.BaseList
  * @inherits apf.Rename

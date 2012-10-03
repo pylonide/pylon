@@ -83,7 +83,7 @@
  * @define errorbox
  * 
  * @allowchild {anyxhtml}
- * @addnode elements
+ *
  *
  * @inherits apf.Presentation
  *

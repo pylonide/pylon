@@ -104,7 +104,6 @@
  *     - message ([[String]]): The error message.
  *
  * @define http
- * @addnode teleport
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

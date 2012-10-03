@@ -85,7 +85,7 @@
  *                                the RDB implementation can grok
  *
  * @define xmpp
- * @addnode teleport
+ *
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%

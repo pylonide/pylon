@@ -29,7 +29,7 @@
  *
  * @class apf.text
  * @define text
- * @addnode elements
+ *
  * @form
  * @inherits apf.Cache
  * @inherits apf.StandardBinding

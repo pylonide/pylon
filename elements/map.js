@@ -26,7 +26,7 @@
  *
  * @constructor
  * @define map
- * @addnode elements
+ *
  *
  * @author      Mike de Boer (mike AT ajax DOT org)
  * @version     %I%, %G%

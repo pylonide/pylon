@@ -39,7 +39,7 @@
  * ```
  *
  * @class apf.contextmenu
- * @include apf.AmlElement
+ * @inherits apf.AmlElement
  * @define contextmenu
  * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)

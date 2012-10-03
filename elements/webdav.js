@@ -88,7 +88,7 @@
  *      {String}       data       the ASCI representation of the file content-body
  *
  * @define webdav
- * @addnode teleport
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

@@ -48,7 +48,7 @@
  * @define state-group
  * @logic
  * @inherits apf.AmlElement
- * @addnode elements
+ *
  * @see element.state
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

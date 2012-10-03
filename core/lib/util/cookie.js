@@ -30,11 +30,11 @@
  * @param {String}  name     The cookie name
  * @param {String}  value    The cookie value
  * @param {Date}    expire   The expiration date representing the number of milliseconds
- *                           since 1 January 1970 00:00:00 UTC.
+ *                            since 1 January 1970 00:00:00 UTC.
  * @param {String}  path     The path name
  * @param {String}  domain   The domain name
  * @param {Boolean} secure   If true, the secure attribute of the cookie will be set and 
-                              the cookie transmission will require a secure protocol (like HTTPS)
+ *                            the cookie transmission will require a secure protocol (like HTTPS)
  * @return {String} Returns the cookie name.
  */
 apf.setcookie = function(name, value, expire, path, domain, secure) {

@@ -77,7 +77,7 @@
  *
  * @constructor
  * @allowchild {smartbinding}
- * @addnode elements:portal
+ *
  *
  * @inherits apf.MultiSelect
  * @inherits apf.DataAction

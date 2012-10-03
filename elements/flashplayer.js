@@ -26,7 +26,7 @@
  * @constructor
  * @define flashplayer
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseSimple
  *

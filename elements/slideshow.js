@@ -95,7 +95,7 @@
  * @version     %I%, %G% 
  *
  * @define slideshow
- * @addnode elements
+ *
  * 
  * @define bindings
  * @allowchild src, title, thumb

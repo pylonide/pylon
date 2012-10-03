@@ -50,7 +50,7 @@
  * @see element.smartbinding
  *
  * @class apf.bindings
- * @include apf.AmlElement
+ * @inherits apf.AmlElement
  * @apfclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

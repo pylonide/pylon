@@ -43,7 +43,7 @@
  * @class apf.progress
  * @define progress
  * @allowchild {smartbinding}
- * @addnode elements:progressbar
+ *
  * @form
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction

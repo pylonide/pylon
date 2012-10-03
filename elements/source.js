@@ -27,7 +27,7 @@
  * @constructor
  *
  * @define source
- * @addnode audio, video
+ *
  *
  * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%

@@ -33,7 +33,7 @@
  *   <a:include src="bindings.aml" />
  * </code>
  * @attribute {String} src the location of the aml file to include in this application.
- * @addnode global, anyaml
+ *
  */
 apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);

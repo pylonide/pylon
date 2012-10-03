@@ -72,7 +72,7 @@
  * @class apf.table
  * @define table
  * @allowchild {elements}, {anyaml}
- * @addnode elements
+ *
  * @container
  * @inherits apf.GuiElement
  *

@@ -40,7 +40,7 @@
  * @define fieldset, frame
  * @container
  * @allowchild {elements}, {anyaml}
- * @addnode elements:frame
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

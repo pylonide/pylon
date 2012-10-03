@@ -66,7 +66,7 @@
  * height value.
  * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
  * 
- * @addnode elements
+ *
  *
  * @class apf.hbox
  * @inherits apf.GuiElement

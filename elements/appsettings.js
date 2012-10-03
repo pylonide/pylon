@@ -24,7 +24,7 @@
 /**
  * Element specifying the settings of the application.
  * @define appsettings
- * @addnode global
+ *
  * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
  * @see core.apf.object.debugwin
  * @see core.apf.object.console

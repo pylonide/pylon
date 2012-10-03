@@ -120,7 +120,7 @@ apf.WinServer = {
  * @define window
  * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

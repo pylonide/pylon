@@ -75,7 +75,7 @@ apf.__DELAYEDRENDER__ = 1 << 11
  *  @attribute {Boolean} use-render-delay Sets or gets whether there's a short delay between showing this element and rendering its contents.
  *  
  * If `true`, the elements are rendered immediately. Otherwise, there is a delay between showing this element and the actual rendering,
- *  allowing the browsers' render engine to draw (for instance, a loader).
+ * allowing the browsers' render engine to draw (for instance, a loader).
  *
  */
 apf.DelayedRender = function(){

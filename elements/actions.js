@@ -41,9 +41,9 @@
  * ```
  *
  * @allowchild {actions}
- * @addnode smartbinding, global
+ *
  * @class apf.actions
- * @include apf.AmlElement
+ * @inherits apf.AmlElement
  * @define actions
  * @logic
  *

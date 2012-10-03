@@ -92,7 +92,7 @@
  *
  * @constructor
  * @define socket
- * @addnode teleport
+ *
  * @default_private
  *
  * @author      Mike de Boer (mike AT ajax DOT org)

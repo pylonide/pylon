@@ -27,7 +27,7 @@
  *
  * @constructor
  * @define colorpicker
- * @addnode elements
+ *
  *
  * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%

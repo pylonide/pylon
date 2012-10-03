@@ -59,7 +59,7 @@
  * @define img
  * @media
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseSimple
  *

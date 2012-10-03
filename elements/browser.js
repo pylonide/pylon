@@ -25,7 +25,7 @@
  * Element displaying the rendered contents of an URL.
  *
  * @constructor
- * @addnode elements:browser
+ *
  * @define browser
  *
  * @inherits apf.XForms

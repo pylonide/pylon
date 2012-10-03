@@ -41,7 +41,7 @@
  * @class apf.textbox
  * @define textbox
  * @allowchild autocomplete, {smartbinding}
- * @addnode elements
+ *
  * @form
  * @inherits apf.StandardBinding
  * @inherits apf.XForms

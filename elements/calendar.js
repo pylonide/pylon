@@ -49,7 +49,7 @@
  * 
  * @constructor
  * @define calendar
- * @addnode elements
+ *
  *
  * @attribute {String}   output-format    the format of the returned value. See {@link term.dateformat more about the date format}.
  * @attribute {String}   default          the default date set when the calendar is opened.

@@ -60,7 +60,7 @@
  * @class apf.toolbar
  * @define toolbar
  * @container
- * @addnode elements
+ *
  * @allowchild bar, menubar
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

@@ -53,7 +53,7 @@
  * @constructor
  * @define repeat
  * @allowchild {anyaml}
- * @addnode elements
+ *
  *
  * @inherits apf.DataAction
  *

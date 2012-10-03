@@ -37,7 +37,7 @@
  * @define skin
  * @layout
  * @allowchild  style, presentation
- * @addnode global, anyaml
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

@@ -1,4 +1,4 @@
-var panino = require("panino");
+var panino = require("../../panino-docs/index.js");
 
 var options = {
   title          : "APF API",
@@ -11,7 +11,11 @@ var options = {
   index          : "./index.md",
   splitFromNS    : true,
   disableTests   : true,
-  customTags     : ["baseclass", "allowchild", "container", "form"],
+  customTags     : ["baseclass", 
+                        // XML stuff for Jade
+                        "define", "allowchild", "action",
+                        // TOC forms
+                        "container", "form", "layout", "selection", "logic", "media", "parser", "apfclass"],
   linkFormat     : function (linkHtml, obj) {
                   if (linkHtml.classes && linkHtml.classes[0] == "isXML" && linkHtml.href !== undefined) {
                         linkHtml.href = linkHtml.href.replace(".html", "-element.html");
@@ -387,7 +391,7 @@ panino.parse(files, options, function (err, ast) {
   }
 
   // for the javascript
-  panino.render('json', ast, options, function (err) {
+  panino.render('html', ast, options, function (err) {
     if (err) {
       console.error(err);
       process.exit(1);

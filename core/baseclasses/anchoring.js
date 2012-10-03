@@ -328,7 +328,10 @@ apf.Anchoring = function(){
     }
 
     /**
-     * @macro
+     * Sets the anchoring percentage.
+     * @param {String} expr An expression that's converted to a string
+     * @param {Number} An integer value that's used to convert to a percentage; for example, 50 becomes .5
+     * @returns {String} The anchor percentage
      */
     function setPercentage(expr, value){
         return String(expr).replace(apf.percentageMatch, "((" + value + " * $1)/100)");

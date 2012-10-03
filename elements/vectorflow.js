@@ -27,7 +27,7 @@
  * 
  * @constructor
  * @define vectorflow
- * @addnode elements
+ *
  *
  * @author      Linh Nguyen (linh AT javeline DOT com)
  * @version     %I%, %G%

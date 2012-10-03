@@ -87,7 +87,7 @@ apf.isCharacter = function(charCode){
  * @class apf.randomGenerator
  * @author David N. Smith of IBM's T. J. Watson Research Center.
  * @author Mike de Boer (mike AT c9 DOT io)
- * @OMGWTFBBQ
+ * 
  */
 apf.randomGenerator = {
     d: new Date(),

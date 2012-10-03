@@ -52,7 +52,7 @@
  */
 /**
  * @attribute {String} src the location of the script file.
- * @addnode global, anyaml
+ *
  *
  */
 apf.script = function(){

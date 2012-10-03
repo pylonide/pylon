@@ -34,7 +34,7 @@
  * @class apf.checkbox
  *
  * @define checkbox
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

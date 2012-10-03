@@ -29,7 +29,7 @@
  * @type {Chart}
  * @constructor
  * @allowchild {elements}, {anyaml}
- * @addnode elements:chart
+ *
  *
  * @author      Rik Arends
  * @version     %I%, %G%

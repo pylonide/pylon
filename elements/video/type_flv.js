@@ -27,7 +27,7 @@
  * @return {TypeFlv} Returns a new Flash video player
  * @type {TypeFlv}
  * @constructor
- * @addnode elements:video
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

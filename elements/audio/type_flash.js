@@ -27,7 +27,7 @@
  * @return {TypeFlash} Returns a new Flash audio player
  * @type {TypeFlash}
  * @constructor
- * @addnode elements:audio
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

@@ -35,7 +35,7 @@
  * @class apf.xforms
  * @define submitform, xforms
  * @allowchild page, {elements}, {anyaml}
- * @addnode elements
+ *
  *
  * @inherits apf.StandardBinding
  * @inherits apf.BaseTab

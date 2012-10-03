@@ -41,7 +41,7 @@
  *
  * @constructor
  * @allowchild {smartbinding}
- * @addnode elements:loadindicator
+ *
  *
  *
  * @author      Giannis Panagiotou (bone.jp AT gmail DOT com)

@@ -99,7 +99,7 @@
  *
  * @define remote
  * @allowchild unique, {any}
- * @addnode elements
+ *
  *
  * @define unique Element defining what is unique about a set of data elements.
  * This enables remote databindings to point to xml data in  the same way on all
