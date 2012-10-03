@@ -1,4 +1,4 @@
-var panino = require("../../panino-docs/index.js");
+var panino = require("panino");
 
 var options = {
   title          : "APF API",
