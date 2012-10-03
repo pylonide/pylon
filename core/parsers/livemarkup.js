@@ -151,7 +151,7 @@ apf.lm = new (function(){
             "foreachrev": "_nods(_n,",
             "eachrev"   : "_nods(_n,",
             "xabs"      : "_valst(_n,",
-           // "edit"      : "_argwrap(_n,", 
+           // "edit"      : "_argwrap(_n,",
            // "edit"      : "_val(_n,", // toggled by liveedit
             "local"     : "_nod(_n,",
             "tagName"   : "_nod(_n,",
@@ -254,7 +254,7 @@ apf.lm = new (function(){
     macro_c.edit        = ")",
     macro_o.xabs        = "  (  ",
     macro_c.xabs        = "  )  ",
-    
+
     macro_o.localName   = "_localName(_n",
     macro_c.localName   = ")",
     macro_o.output      = "_o.join(''",
@@ -365,7 +365,7 @@ apf.lm = new (function(){
             u = scope-1; // scan for our root expression block to switch to block
         else
             for (v = sl - 2, u = 0; v >= 0 && o[u=(s[v] & 0xfffffff) - 1] != "{{"; v -=2 ){};
-        
+
         if (!no_output && ol > u + 1)  // inject auto output unless no output or nothing to output in buffer
             o[u] = cf_block_o + cf_str_output
         else
@@ -435,7 +435,7 @@ apf.lm = new (function(){
                                         o[ol++] = tok;
                                         // lets scan in reverse to see if we have an output or a non-output
 
-                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
+                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  "
                                             || o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
 
                                         if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
@@ -444,7 +444,7 @@ apf.lm = new (function(){
                                                 while (is_out_space[o[ol]])
                                                     ol--;
                                                 w = last_tok;
-                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
+                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot),
                                                 o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
                                                 o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
                                                 s[sl++] = ""; // notabene, this stored item is checked everywhere
@@ -685,7 +685,7 @@ apf.lm = new (function(){
 
                         if (u && !s[sl-1]) // close = macro
                             o[ol-1]=="\n"&&(o[ol-1]=""),o[ol++]=")", o[ol++]="\n",v = 1,sl -=2;
-                        
+
                         if (v && parse_mode) // inject output
                             o[ol++] = (nesting?cf_str_output:cf_mode_output), last_type = 0;
 
@@ -730,7 +730,7 @@ apf.lm = new (function(){
                                     else { // its a obj.prop() type call
                                         if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
                                             o_props[last_tok.slice(0,last_dot)] = 1;
-                                            
+
                                         s[sl++] = scope, s[sl++] = o[ol++] = tok,
                                         scope = segment = ol;
                                     }
@@ -823,7 +823,7 @@ apf.lm = new (function(){
                             o[ol] = (ol++ == scope) ? "\"" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
                         break;
                     case 5: // -------- stringquotes --------
@@ -889,7 +889,7 @@ apf.lm = new (function(){
                         line_no++, last_line = pos;
                         break;
                     case 2: // -------- misc --------
-                        if (tok == ":" && last_tok == ":" && !xpath_axes[w = o[ol - 2]] 
+                        if (tok == ":" && last_tok == ":" && !xpath_axes[w = o[ol - 2]]
                           && ((v = s[sl - 2]) >> 28) != 6) { // found model::xpath split
                             if (o[ol - 2] == '+"') // model is calculated
                                 o[ol - 2] = o[ol - 1] = "", last_model = "#";
@@ -933,10 +933,10 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "\"" : "+\"";                 
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
                         break
                     case 5: // -------- stringquotes --------
@@ -969,7 +969,7 @@ apf.lm = new (function(){
                         break;
                     case 9: // -------- [ --------
                         // lets see if we are an xpath
-                        if (s[sl - 1] == "'" || s[sl - 1] == '"' || 
+                        if (s[sl - 1] == "'" || s[sl - 1] == '"' ||
                             ((last_type != 3 || last_tok=='$') && last_tok != ")" && last_tok != "]") ) {
                             if (last_model)
                                 o_xpathpairs.push(last_model, "#"), o_models++;
@@ -1039,7 +1039,7 @@ apf.lm = new (function(){
                                         v = "#";
                                         if (c_injectself)// inject dyn self if dyn xpath
                                             o[scope - 1] = u + "_injself(", o[ol++] = ")";
-                                    } 
+                                    }
                                     else
                                         v = "";
                                 }
@@ -1122,12 +1122,12 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol++] = "+\"";        
+                            o[ol++] = "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
-                        break                       
+                        break
                     case 5: // -------- stringquotes --------
                         if (ol == segment)
                             o[ol++] = "+\"";
@@ -1200,7 +1200,7 @@ apf.lm = new (function(){
                                     ol --;
                                 else
                                     v = xpath_macro[c_elemxpath];
-                                    
+
                                 s[sl++] = scope | 0x40000000
                             }
                             else {
@@ -1212,7 +1212,7 @@ apf.lm = new (function(){
                                 }
                                 else
                                     v = xpath_macro[last_ns ? c_statexpath : 8];
-                                
+
                                 if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
                                     o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
                             }
@@ -1265,12 +1265,12 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "" : "+\"";       
+                            o[ol] = (ol++ == scope) ? "" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
-                        break                           
+                        break
                     case 5: // -------- stringquotes --------
                         if (s[sl - 1] == tok) { // closed by matching quote
                             if (scope != segment) // string is segmented, output )
@@ -1371,7 +1371,7 @@ apf.lm = new (function(){
                             type = last_type = last_cmt_type;
                         break;
                     case 6: // -------- comment --------
-                        if ((start_tok == "/*" && tok == "*/") 
+                        if ((start_tok == "/*" && tok == "*/")
                           || (start_tok == "<!--" && tok == "-->")) {
                             parse_mode = last_cmt_mode,
                             tok = last_tok = last_cmt_tok,
@@ -1387,11 +1387,11 @@ apf.lm = new (function(){
                         } else {
                             parse_mode = last_cmt_mode,
                             tok = last_tok = last_cmt_tok,
-                            type = last_type = last_cmt_type;                        
+                            type = last_type = last_cmt_type;
                             if (sl && !s[sl - 1]) { // close = macro
                                 o[ol - 1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
                                 o[ol++] = "\n", v = 1, sl -= 2;
-                            }  
+                            }
                         };
                         break;
                 }
@@ -1419,7 +1419,7 @@ apf.lm = new (function(){
         else {
             throw new Error(apf.formatErrorString(0, null,
                 "Compiling live markup function on line " + linenr,
-                "Error whilst compiling: " + e.message 
+                "Error whilst compiling: " + e.message
                 //+ "\nStack Trace:\n" + e.stack
                 + "\nInput:\n" + str
                 + "\nGenerated:\n" + apf.lm.lastCode()));
@@ -1497,16 +1497,16 @@ apf.lm = new (function(){
             alert("ERROR, undefined live markup cache marker found:"+istr);
             return {type:2,str:istr};
         }
-            
+
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.liveedit && 0x400)| (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
-                
+
         if (c = cache[key])
             return c;
 
-            
+
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = 0;
         c_export = cfg.funcglobal?"self":(cfg.withopt?"_w":null);
@@ -1514,7 +1514,7 @@ apf.lm = new (function(){
 
         xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
         macro_o.edit     = cfg.liveedit ? macro_o._editlm : macro_o._editnormal;
-        
+
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
         o_props = {}, o_xpathpairs = [], s = [], o = ["","","",""], str = istr,
@@ -1541,7 +1541,7 @@ apf.lm = new (function(){
                 return null;
             }
         }
-        
+
         if (cfg.parsecode) {
             if (nesting || s[sl - 1].length == 1)
                 handleError({
@@ -1553,7 +1553,7 @@ apf.lm = new (function(){
         }else if( (ol==7 || ol==8) && o_segs == 1){
             is_single_prop = 0;
             for(c in o_props)is_single_prop++;
-            if(is_single_prop!=1)is_single_prop = 0;  
+            if(is_single_prop!=1)is_single_prop = 0;
         }
         if ((!cfg.nostring && !cfg.event)&& (parse_mode == 2 && segment == 4 || ol == 4)) {
             return {
@@ -1571,7 +1571,7 @@ apf.lm = new (function(){
             else if (c_xpathmode) { // object return
                 if (parse_mode == 1) {
                     o[3]    = (o[3] != cf_block_o) ? cc_o_blk_o : cc_o_blk_ob,
-                    o[ol++] = cc_o_blk_cb; 
+                    o[ol++] = cc_o_blk_cb;
                 }
                 else
                     o[3] = cc_o_cb_o, o[ol++] = cc_o_cb_c;
@@ -1583,8 +1583,8 @@ apf.lm = new (function(){
                 else
                     o[3] = cc_v_cb_o, o[ol++] = cc_v_cb_c;
             }
-            
-            if (o_asyncs) { 
+
+            if (o_asyncs) {
                 // for parse_mode == 1 we can squeeze in before [3] and cb close
                 // else we put var _r= in 3 and put our ending last and put
                 // the cb at the end
@@ -1604,8 +1604,8 @@ apf.lm = new (function(){
 
             if (cfg.withopt)
                 o[1] = cc_opt_o, o[ol++] = cc_opt_c;
-                
-            o[0] = cfg.event 
+
+            o[0] = cfg.event
                 ? cc_fe_async_o
                 : ((c_xpathmode == 1 || c_xpathmode == 3) ? cc_fc_async_o : cc_f_async_o);
             o[ol++] = cc_f_c;
@@ -1696,7 +1696,7 @@ apf.lm = new (function(){
      *   {Number}  asyncs       description
      *   {String]  str          optional, returned with type 2
      */
-    
+
     this.compileMatch = function(strarray, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -1755,7 +1755,7 @@ apf.lm = new (function(){
                 if(cfg.node)
                     c_xpathmode = 2;
                 parse_mode = 2, c_injectself = 0;
-                
+
                 if (cfg.nothrow) {
                     str.replace(parserx, parser);
                 }
@@ -1771,7 +1771,7 @@ apf.lm = new (function(){
 
                 if (o_asyncs)
                     handleError({t:"Asynchronous calls not supported in match/value"});
-                
+
                 if(cfg.node){
                     if (parse_mode == 2 && segment == ob || ol == ob)
                         o[ob-1] = cc_m_n_string;
@@ -1794,12 +1794,12 @@ apf.lm = new (function(){
                     handleError({t:"Both match and value are empty"});
 
                 if(cfg.node)
-                    o[ol++] = cc_m_n_ret;               
+                    o[ol++] = cc_m_n_ret;
                 else
-                    o[ol++] = cc_m_v_ret;               
-                
+                    o[ol++] = cc_m_v_ret;
+
                 c_xpathmode = 2;
-                    
+
                 o[ol++] = cc_m_c;
             }
         }
@@ -1827,7 +1827,7 @@ apf.lm = new (function(){
     this.setWarnLevel = function(lvl){
         apf.lm_exec.setWarnLevel(lvl);
     };
-    
+
     this.parseExpression = function(istr, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -1839,7 +1839,7 @@ apf.lm = new (function(){
         c_xpathmode = c_injectself = last_tok = sl = line_no = o_segs = o_xpaths =
         last_type = o_asyncs = last_line = 0;
         parse_mode = 2;
-        
+
         if (cfg.nothrow) {
             str.replace(parserx, parser);
         }
@@ -1855,7 +1855,7 @@ apf.lm = new (function(){
         return o.join('');
     }
 
-    
+
 })();
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
@@ -1896,9 +1896,9 @@ apf.lm_exec = new (function(){
     function __val(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
-        return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
+        return apf.escapeXML((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
+          && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/""));
     }
 
     var __valattrrx = /(["'])/g;
@@ -1908,12 +1908,12 @@ apf.lm_exec = new (function(){
     function __valattr(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
-        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+        return apf.escapeXML((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/"");
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/""));
     }
 
-    
+
     // value of model node by xpath
     function __valm(m, x){
         var n;
@@ -1921,7 +1921,7 @@ apf.lm_exec = new (function(){
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return (/*#ifdef __DEBUG*/wlvl > 0 && wmodel(m, x, "_valm"),/*#endif*/"");
-        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x),/*#endif*/"");
     }
@@ -1983,7 +1983,7 @@ apf.lm_exec = new (function(){
             m = apf.xmldb.findModel(m);
             x = apf.xmlToXpath(node, m.data) + "/" + x;
         }
-        
+
         return {
             model:    m,
             xpath:    x,
@@ -2102,7 +2102,7 @@ apf.lm_exec = new (function(){
     }
 
     // Language processing
-//#ifdef __WITH_MULTI_LANG    
+//#ifdef __WITH_MULTI_LANG
     var langrx = /(\\*)\$\[(.*?)\]/g;
     var lang = apf.language;
 
@@ -2114,98 +2114,98 @@ apf.lm_exec = new (function(){
             return "$["+x+"]";
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lngrx"),/*#endif*/"");
     }
-//#endif            
+//#endif
 
     function __ret(r){          // return function, translates $[lang] things in data
-//#ifdef __WITH_MULTI_LANG    
+//#ifdef __WITH_MULTI_LANG
         if(r && r.indexOf && r.indexOf("$[")!=-1)
             return r.replace(langrx, _lngrx);
-//#endif            
+//#endif
         return r;
     }
 
     function __lng(x,x2){           // the language macro
-//#ifdef __WITH_MULTI_LANG    
+//#ifdef __WITH_MULTI_LANG
         apf.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lng"),/*#endif*/"");
 /*#else
-        return "$["+x+"]"; 
-#endif*/        
+        return "$["+x+"]";
+#endif*/
     }
 
     function _lnged(x,x2){          // editable language macro
-//#ifdef __WITH_MULTI_LANG    
+//#ifdef __WITH_MULTI_LANG
         apf.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lnged"),/*#endif*/"");
 /*#else
-        return "$["+x+"]"; 
-#endif*/        
+        return "$["+x+"]";
+#endif*/
     }
-    
+
     function _(n, m, x){   // wrap a value with editable div
-        return '<span class="liveEdit" xpath="' + (n 
-            ? (m.substr(0,1) != "/" 
-                ? apf.xmlToXpath(n, null, false) 
-                : "") + "/" + m 
+        return '<span class="liveEdit" xpath="' + (n
+            ? (m.substr(0,1) != "/"
+                ? apf.xmlToXpath(n, null, false)
+                : "") + "/" + m
             : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&#32;") + '</span>';
     }
 
 //    function _edit(n, opts){
-//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';        
+//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
 //    }
-    
+
     function _argwrap(n,x){
         return [n,x];
     }
-    
+
     function _argwrapm(m,x){
         return [0,m,x];
     }
-    
+
     function _valedx(editMode, args, opt){   // wrap a value with editable div
         args[3] = opt;
         args[4] = editMode;
         return _valed.apply(this, args);
     }
-    
+
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
 
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
-        
+
         if (editMode !== false) {
             var value = res || options && options.initial || "&#32;";
-            if (!options || !options.richtext) 
+            if (!options || !options.richtext)
                 value = apf.htmlentities(value);
             if (options && options.multiline)
                 value = value
                     .replace(/&lt;br ?\/?&gt;/g, "<br />")
                     .replace(/&lt;(\/?div)&gt;/g, "<$1>");
 
-            return '<div' 
-              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
-                ? ((m.substr(0,1) != "/" 
-                    ? apf.xmlToXpath(n, null, false) 
+            return '<div'
+              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n
+                ? ((m.substr(0,1) != "/"
+                    ? apf.xmlToXpath(n, null, false)
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
-                : (self[m] 
+                : (self[m]
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
-                    : "")) + '"' 
+                    : "")) + '"'
               + (options
                 ? ' options="' + JSON.stringify(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + value 
+                : "") + '>' + value
               + '</div>';
         }
         else {
             return res;
         }
     }
-    
+
     var selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g; // inject self regexp
-    
+
     function _injself(s){           // self inject helper func
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
@@ -2228,7 +2228,7 @@ apf.lm_exec = new (function(){
         var cb = function(data, state, extra){
             if (_w)
                 delete _w._pc;
-            
+
             if (state != apf.SUCCESS){
                 _c(null, state, extra);
             }
@@ -2289,7 +2289,7 @@ apf.lm_exec = new (function(){
         s.set(options);
         return s.apply(apf.getArrayFromNodelist(set));
     }
-    
+
     function _cthex(c){
         var t;
         if((t=typeof(c))=='string'){
@@ -2305,14 +2305,14 @@ apf.lm_exec = new (function(){
                             (((t=c[4])<0?0:(t>255?255:parseInt(t))));
                 } else { // hsv
                     var h=parseFloat(c[2]),s=parseFloat(c[3]),v=parseFloat(c[4]),
-                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i))); 
+                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i)));
                     switch(i){
-                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);  
-                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff); 
-                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff); 
-                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff); 
-                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff); 
-                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff); 
+                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);
+                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff);
+                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff);
+                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff);
+                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff);
+                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff);
                     }
                 }
             }
@@ -2328,12 +2328,12 @@ apf.lm_exec = new (function(){
                    ((fa&0xff)*f+(fb&0xff)*fm)&0xff;
         return f*fa+fm*fb;
     }
-    
+
     var abs = Math.abs, acos = Math.acos, asin = Math.asin,
        atan = Math.atan, atan2 = Math.atan2, ceil = Math.ceil,
        cos = Math.cos, exp = Math.exp, floor = Math.floor,
        log = Math.log, max = Math.max, min = Math.min,
-       pow = Math.pow, random = Math.random, round = Math.round, 
+       pow = Math.pow, random = Math.random, round = Math.round,
        sin = Math.sin, sqrt = Math.sqrt, tan = Math.tan, linear = lin;
 
     function tsin(x){ return 0.5*sin(x)+0.5;}
@@ -2342,24 +2342,24 @@ apf.lm_exec = new (function(){
     function ucos(x){ return 0.5-0.5*cos(x);}
     function snap(a,b){ return round(a/b)*b; }
     function clamp(a,b,c){ return a<b?b:(a>c?c:a); }
-    
+
     this.compile = function(code){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
 
         eval(code);
-        
+
         return _f;
     }
-    
+
     this.compileWith = function(code, withs){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
 
         eval(code);
-        
+
         return _f;
     }
 
@@ -2370,11 +2370,11 @@ apf.lm_exec = new (function(){
     this.c342 = function(_n,_a,_w){
         ..cached LM function..
     }
-    this.c342.type = 2; 
-    this.c342.xpaths = {...}; 
+    this.c342.type = 2;
+    this.c342.xpaths = {...};
     this.c342.props = {...};
     this.c723 = function(....){
-    
+
     }
     // replace
     d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");
