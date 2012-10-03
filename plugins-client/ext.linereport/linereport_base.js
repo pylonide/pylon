@@ -26,7 +26,14 @@ worker.init = function() {
 };
 
 worker.initReporter = function(checkInstall, performInstall, callback) {
-   worker.$invoke("if ! " + checkInstall + "\n then " + performInstall + "\n fi", null, callback);
+   worker.$invoke(checkInstall, null, function(code, output) {
+       if (code !== 0) {
+           console.log(performInstall);
+           worker.$invoke(performInstall, null, callback);
+       } else {
+           callback();
+       }
+   });
 },
 
 worker.invokeReporter = function(command, processLine, callback) {
@@ -50,7 +57,8 @@ worker.invokeReporter = function(command, processLine, callback) {
             var doc = _self.doc.getValue();
             var result = resultCache[command][doc] = _self.parseOutput(output, processLine);
             setTimeout(function() {
-                delete resultCache[command][doc];
+                if (resultCache[command][doc])
+                    delete resultCache[command][doc];
             }, CACHE_TIMEOUT);
             if (result.length === 0 && code !== 0)
                 console.log("External tool produced an error that could not be parsed:", output);

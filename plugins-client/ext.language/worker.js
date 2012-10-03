@@ -738,9 +738,14 @@ function asyncParForEach(array, fn, callback) {
         handler.doc = this.doc;
         handler.sender = this.sender;
         var _self = this;
-        handler.init(function() {
+        if (!handler.$isInited) {
+            handler.$isInited = true;
+            handler.init(function() {
+                handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
+            });
+        } else {
             handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
-        });
+        }
     };
     
     this.documentClose = function(event) {
