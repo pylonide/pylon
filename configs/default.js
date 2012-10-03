@@ -47,7 +47,8 @@ var config = [
     "./../plugins-client/lib.requirejs",
     {
         packagePath: "smith.io/server-plugin",
-        messagePath: "/smith.io/server"
+        messagePath: "/smith.io/server",
+        debug: true
     },
     // server plugins
     {

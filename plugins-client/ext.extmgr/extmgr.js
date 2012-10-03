@@ -16,7 +16,7 @@ var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
 
 /*global dgExt dgExtUser tbModuleName tabExtMgr btnUserExtEnable
-  btnDefaultExtEnable winExt btnAdd*/
+  btnDefaultExtEnable winExt btnAdd winQuestion*/
 
 var LOAD_TIMEOUT_REMOTE = 30 * 1000;
 var LOAD_TIMEOUT_LOCAL = 5 * 1000;
@@ -95,7 +95,6 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
 
     addExtension : function() {
-        var _self = this;
         var path = this.canonicalizePath(tbModuleName.value);
         tbModuleName.setValue(path);
         if (this.requireFailed) {
@@ -136,7 +135,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var timer = setTimeout(function() {
             if (extNode) {
                 path = extNode.getAttribute("path");
-                util.question("Extension Manager", "Extension '" + path + "' failed to load.",
+                util.question("Extension Manager", "Extension '" + path +
+                    "' failed to load. Check your browser's error log.",
                     "Would you like to remove it?",
                     function() {
                         winQuestion.hide();
@@ -148,11 +148,12 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                     function() {
                         winQuestion.hide();
                         _self.$reportBadInput(path, "Please reload Cloud9.");
-                    })
+                    });
                 return;
             }
             _self.requireFailed = true;
-            _self.$reportBadInput(path, "Please reload Cloud9 to add another extension.");
+            _self.$reportBadInput(path, "Check your browser's error log. " + 
+                "Please reload Cloud9 to add another extension.");
             _self.$enableInput();
         }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
         var _self = this;
@@ -166,6 +167,10 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 btnAdd.enable();
                 return;
             }
+            ide.dispatchEvent("track_action", {
+                type: "extmgr",
+                path: path
+            });
             apf.xmldb.setAttribute(extNode, "userext", "1");
             apf.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();

@@ -1,4 +1,4 @@
-/*global btnSave:true, tabEditors:true, saveStatus:true*/
+/*global btnSave:true, tabEditors:true */
 /*
  * Autosave Module for the Cloud9 IDE
  *
@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Util = require("core/util");
+var Util = require("core/util"); 
 
 var Save = require("ext/save/save");
 var settings = require("ext/settings/settings");
@@ -27,24 +27,30 @@ module.exports = ext.register("ext/autosave/autosave", {
     alone: true,
     type: ext.GENERAL,
     offline: true,
-    nodes: [],
-
+    nodes: [ ],
+    
     docChangeTimeout: null,
     docChangeListeners: {},
 
     hook: function() {
-        var self = this;
+        var _self = this;
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || self.tempEnableAutoSave;
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
+        });
+
+        // when we're back online we'll trigger an autosave if enabled
+        ide.addEventListener("afteronline", function() {
+            // the autosave thing will update the UI
+            _self.doAutoSave();
         });
 
         btnSave.setAttribute("caption", "");
@@ -70,8 +76,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
-        
-        this.setSaveButtonCaption();
     },
 
     /////////////////////
@@ -106,19 +110,13 @@ module.exports = ext.register("ext/autosave/autosave", {
             };
         }
 
-        if (!Util.isNewPage(page)) {
-            this.setSaveButtonCaption();
-        }
-
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
     },
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
             btnSave.hide();
-        else
-            this.setSaveButtonCaption(e.page);
-        
+
         this.save(e.page);
     },
 
@@ -127,44 +125,9 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (page && this.isAutoSaveEnabled && !Util.isNewPage(page)) {
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
-                self.setSaveButtonCaption();
                 stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
-        }
-    },
-
-    setSaveButtonCaption: function(page) {
-        if (!self.btnSave)
-            return;
-
-        var SAVING = 0;
-        var SAVED = 1;
-
-        btnSave.show();
-        var page = page || tabEditors.getPage();
-        if (page && !ide.readonly) {
-            var hasChanged = Util.pageHasChanged(page);
-            if (this.isAutoSaveEnabled && hasChanged) {
-                if (btnSave.currentState !== SAVING) {
-                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                    apf.setStyleClass(saveStatus, "saving", ["saved"]);
-                    btnSave.currentState = SAVING;
-                    btnSave.setCaption("Saving");
-                }
-            }
-            else if (!hasChanged) {
-                if (btnSave.currentState !== SAVED) {
-                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                    apf.setStyleClass(saveStatus, "saved", ["saving"]);
-                    btnSave.currentState = SAVED;
-                    btnSave.setCaption("Changes saved");
-                }
-            }
-        }
-        else {
-            btnSave.setCaption("");
-            btnSave.hide();
         }
     },
 
@@ -179,7 +142,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         this.save(tabEditors.getPage());
     },
 
-
     /**
      * Autosave#save([page])
      * - page(Object): Page that contains the document to be saved. In case it is
@@ -188,6 +150,8 @@ module.exports = ext.register("ext/autosave/autosave", {
      * Prompts a save of the desired document.
      **/
     save: function(page, forceSave) {
+        var _self = this;
+        
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
@@ -196,15 +160,19 @@ module.exports = ext.register("ext/autosave/autosave", {
 
         if ((forceSave !== true) && (!Util.pageHasChanged(page) || !Util.pageIsCode(page)))
             return;
+            
+        // not online? then we're not going to save it
+        if (ide.onLine === false) {
+            Save.setUiStateOffline();
+            return;
+        }
 
         var node = page.$doc.getNode();
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        var _self = this;
         Save.quicksave(page, function() {
             stripws.enable();
-            _self.setSaveButtonCaption(page);
         }, true);
     },
 
@@ -251,7 +219,6 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     disable: function() {
-        this.hide();
         this.nodes.each(function(item){
             item.disable();
         });

@@ -2057,6 +2057,10 @@
             background-color: #85C410;
             right: 10px;
         }
+        .c9-toolbarbutton-glossy.error .c9-icon {
+            background-color: red;
+            right: 10px;
+        }
         .c9-toolbarbutton-glossy.save .c9-icon {
             background-color: #D01616;
             right: 10px;
@@ -8600,7 +8604,7 @@
             overflow: visible;
         }
         .btnRun .main:after {
-            background-position: -397px -424px; 
+            background-position: -397px -457px; 
             content: "";
             display: block;
             left: 100%;
@@ -8614,7 +8618,7 @@
         }
         .btnRun .main .c9-icon {
             left: 3px;
-            top: 3px;
+            top: 2px;
         }
         .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -397px -457px; 

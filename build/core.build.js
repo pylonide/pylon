@@ -17,8 +17,8 @@
     packages: [
         {
             "name": "engine.io",
-            "location": "node_modules/smith.io/node_modules/engine.io-client/dist",
-            "main": "engine.io.js"
+            "location": "node_modules/smith.io/node_modules/engine.io/node_modules/engine.io-client/dist",
+            "main": "engine.io-dev.js"
         },
         {
             "name": "smith.io",
