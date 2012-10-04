@@ -160,14 +160,12 @@ module.exports = ext.register("ext/editors/editors", {
                 }),
 
                 btnMenu = new apf.button({
+                    id : "btnEditorTabsBehavior",
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
-                    onmousedown : function(){
-                        apf.setStyleClass(window[menus.getMenuId('View/Tabs')].$ext, 'tabsContextMenu');
-                    },
                     skin : "btn_icon_only",
-                    "class" : "tabmenubtn",
+                    "class" : "tabmenubtn"
                 }) /*,
                 new apf.hbox({
                     id      : "barButtons",
