@@ -125,7 +125,7 @@ function asyncReplaceText(editor, prefix, match) {
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
         isInvokeScheduled = true;
-    }   
+    }
     
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
@@ -298,7 +298,7 @@ module.exports = {
             
             var docHead;
             if (match.type) {
-                var shortType = _self.$guidToShortString(match.type)
+                var shortType = _self.$guidToShortString(match.type);
                 if (shortType) {
                     match.meta = shortType;
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
@@ -323,7 +323,7 @@ module.exports = {
                 match.doc = '<p>' + match.doc + '</p>';
                 
             if (match.icon || match.type)
-                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "")
+                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "");
                 
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
@@ -384,10 +384,12 @@ module.exports = {
             this.docElement.innerHTML += selected.doc + '</span>';
         }
         else {
-            txtCompleterDoc.parentNode.hide();   
+            txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
-            this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
+            this.docElement.innerHTML += '<p><a' +
+                ' onclick="require(\'ext/preview/preview\').preview(\'' + selected.docUrl + '\'); return false;"' +
+                ' href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
         this.docElement.innerHTML += '</span>';
     },
 
@@ -464,7 +466,7 @@ module.exports = {
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.selectedIdx <= 0)
-                    return; 
+                    return;
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
@@ -531,7 +533,7 @@ module.exports = {
                 matches.splice(i, 1);
                 i--;
             }
-        }        
+        }
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0]);

@@ -1,41 +1,74 @@
 /**
- * HTML Editor for the Cloud9 IDE
+ * App or HTML previewer in Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
+var markup = require("text!ext/preview/preview.xml");
+var editors = require("ext/editors/editors");
 
-module.exports = ext.register("ext/html/html", {
-    name  : "HTML Editor",
-    dev   : "Ajax.org",
-    type  : ext.GENERAL,
-    alone : true,
-    deps  : [code],
-    nodes : [],
+module.exports = ext.register("ext/preview/preview", {
+    name    : "Preview",
+    dev     : "Ajax.org",
+    fileExtensions : [ "#!preview" ],
+    type    : ext.EDITOR,
+    alone   : true,
+    markup  : markup,
+    deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
-    
-    init : function(){
+
+    counter : 0,
+    nodes : [],
+    popups: [],
+    page: null,
+
+    setDocument : function(doc, actiontracker) {
+        var node = doc.getNode();
+        var page = this.page = doc.$page;
+        doc.editor = this;
+        var path = node.getAttribute("path");
+        node.setAttribute("name", node.getAttribute("name").split(".#!preview")[0]);
+        var url = path.substring(0, path.length - 10);
+        if (frmPreview.$ext.src !== url) {
+            // onload is fired when the url changes
+            page.setAttribute("class", "loading_active");
+            frmPreview.$ext.src = url;
+            txtPreviewURL.setValue(url);
+        }
+        if (!doc.preview)
+            doc.preview = {fd: ++this.counter};
+        var editor = barPreview;
+        editor.show();
+    },
+
+    onLoad: function () {
+        if (this.page)
+            this.page.setAttribute("class", "");
+    },
+
+    hook : function() {
         var _self = this;
-        
+
         this.nodes.push(
             menus.$insertByIndex(barTools, new apf.button({
                 skin : "c9-toolbarbutton-glossy",
-                //icon : "preview.png" ,
+                //icon : "preview.png",
                 "class" : "preview",
                 tooltip : "Preview in browser",
                 caption : "Preview",
                 disabled : true,
                 onclick : function(){
-                    var file = tabEditors.getPage().$model.data;
-                    window.open(location.protocol + "//" 
-                        + location.host + file.getAttribute("path"), "_blank");
+                    var page = tabEditors.getPage();
+                    if (page.$editor === _self)
+                        return;
+                    var file = page.$model.data;
+                    var url = location.protocol + "//" + location.host + file.getAttribute("path");
+                    _self.preview(url);
                 }
             }), 10)
         );
@@ -50,7 +83,49 @@ module.exports = ext.register("ext/html/html", {
             });
         });
 
+        ide.addEventListener("afterfilesave", function(e) {
+            if (!_self.popups.length)
+                return;
+            // var path = e.node.getAttribute("path");
+            _self.popups = _self.popups.filter(function (popup) {
+                return !! popup.Array;
+            });
+            _self.popups.forEach(function(popup) {
+                    popup.location.reload();
+            });
+        });
+    },
+
+    preview : function (url) {
+        // window.open(url, "_blank");
+        editors.gotoDocument({
+            path: url + ".#!preview",
+            type: "nofile"
+        });
+    },
+
+    popup: function (url) {
+        url = url || txtPreviewURL.getValue();
+        var w = window.open(url);
+        this.popups.push(w);
+    },
+
+    init : function(){
+        var _self = this;
+        var editor = barPreview;
         this.enabled = false;
+    },
+
+    getState : function(doc){
+        if (!doc.preview)
+            return;
+
+        return {
+            "fd": doc.preview.fd,
+            "width": barPreview.lastWidth || barPreview.getWidth(),
+            "height": barPreview.lastHeight || barPreview.getHeight(),
+            "type": "nofile"
+        };
     },
 
     enable : function() {
@@ -80,4 +155,5 @@ module.exports = ext.register("ext/html/html", {
         this.nodes = [];
     }
 });
+
 });
