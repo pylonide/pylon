@@ -91,17 +91,16 @@ apf.MultiselectBinding = function(){
      * @param {Object}  options  The new sort options. These are applied incrementally.
      *                           Any property that is not set is maintained unless the clear
      *                           parameter is set to `true`. The following properties are available:
-     *                  - order ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.order}
-     *                  - [xpath] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
-     *                  - [type] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
-     *                  - [method] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
+     *                  - order ([[String]])
+     *                  - [xpath] ([[String]])
+     *                  - [type] ([[String]])
+     *                  - [method] ([[String]])
      *                  - [getNodes] ([[Function]]): A function that retrieves a list of nodes.
-     *                  - [dateFormat] ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
+     *                  - [dateFormat] ([[String]])
      *                  - [getValue] ([[Function]]): A function that determines the string content based
      *                                            on an XML node as it's first argument.
      * @param {Boolean} clear    Removes the current sort options.
      * @param {Boolean} noReload Specifies whether to reload the data of this component.
-     * @see   apf.multiselectbinding.binding.each
      */
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
@@ -171,15 +170,15 @@ apf.MultiselectBinding = function(){
      * Retrieves the current sort options.
      *
      * @returns {Object}  The current sort options. The following properties are available:
-     *                     - order ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.order}
-     *                     - xpath ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
-     *                     - type ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
-     *                     - method ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
+     *                     - order ([[String]])
+     *                     - xpath ([[String]])
+     *                     - type ([[String]])
+     *                     - method ([[String]])
      *                     - getNodes ([[Function]]): A function that retrieves a list of nodes.
-     *                     - dateFormat ([[String]]): see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
+     *                     - dateFormat ([[String]])
      *                     - getValue ([[Function]]): A function that determines the string content based on
      *                                               an XML node as it's first argument.
-     * @see    baseclass.multiselectbinding.binding.each
+     * 
      */
     this.getSortSettings = function(){
         return this.$sort.get();
@@ -229,7 +228,7 @@ apf.MultiselectBinding = function(){
 
     /**
      * Retrieves a node list containing the {@link term.datanode data nodes} which
-     * are rendered by this element. For more information, see {@link baseclass.multiselectbinding.binding.each}).
+     * are rendered by this element.
      *
      * @param {XMLElement} [xmlNode] The parent element on which each query is applied.
      * @return {NodeList} The node list containing the data nodes
@@ -254,7 +253,7 @@ apf.MultiselectBinding = function(){
 
     /**
      * Retrieves the first {@link term.datanode data node} which gets representation
-     * in this element. For more information, see {@link baseclass.multiselectbinding.binding.each}).
+     * in this element. 
      *
      * @param {XMLElement} [xmlNode] The parent element on which the each query is executed.
      * @return {apf.AmlNode} The first represented {@link term.datanode data node}
@@ -272,11 +271,11 @@ apf.MultiselectBinding = function(){
 
     /**
      * Retrieves the last {@link term.datanode data node} which gets representation
-     * in this element. For more information, see {@link baseclass.multiselectbinding.binding.each}).
+     * in this element. 
      *
      * @param {XMLElement} [xmlNode] the parent element on which the each query is executed.
      * @return {XMLElement} The last represented {@link term.datanode data node}
-     * @see    baseclass.multiselectbinding.binding.each
+     * 
      */
     this.getLastTraverseNode = function(xmlNode){
         var nodes = this.getTraverseNodes(xmlNode || this.xmlRoot);
@@ -284,12 +283,11 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Determines whether a {@link term.datanode data node} is an each node. For 
-     * more information, see {@link baseclass.multiselectbinding.binding.each}).
+     * Determines whether a {@link term.datanode data node} is an each node. 
      *
      * @param {XMLElement} [xmlNode] The parent element on which the each query is executed.
      * @return  {Boolean}  Identifies whether the XML element is a each node.
-     * @see  baseclass.multiselectbinding.binding.each
+     * 
      */
     this.isTraverseNode = function(xmlNode){
         /*
@@ -307,14 +305,13 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the next `each` node to be selected from a given `each` node. For more information, see 
-     * {@link baseclass.multiselectbinding.binding.each}). 
+     * Retrieves the next `each` node to be selected from a given `each` node. 
      *
      * The method can do this in either direction and also return the Nth node for this algorithm.
      *
      * @param {XMLElement}  xmlNode  The starting point for determining the next selection.
      * @param {Boolean}     [up=false]     The direction of the selection.
-     * @param {Integer}     [count=1]  The distance in number of nodes.
+     * @param {Number}     [count=1]  The distance in number of nodes.
      * @return  {XMLElement} The {@link term.datanode data node} to be selected next.
      */
     this.getNextTraverseSelected = function(xmlNode, up, count){
@@ -339,13 +336,13 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the next `each` node. For more information, see {@link baseclass.multiselectbinding.binding.each}). 
+     * Retrieves the next `each` node. 
      * 
      * The method can do this in either direction and also return the Nth next node.
      *
      * @param {XMLElement}  xmlNode  The starting point for determining the next selection.
      * @param {Boolean}     [up=false]     The direction of the selection.
-     * @param {Integer}     [count=1]  The distance in number of nodes.
+     * @param {Number}     [count=1]  The distance in number of nodes.
      * @return  {XMLElement} The {@link term.datanode data node} to be selected next.
      */
     this.getNextTraverse = function(xmlNode, up, count){
@@ -364,7 +361,7 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the parent each node. For more information, see {@link baseclass.multiselectbinding.binding.each}). 
+     * Retrieves the parent each node. 
      *
      * In some cases the each rules has a complex form like 'children/item'. In
      * those cases, the generated tree has a different structure from that of the XML
@@ -1174,8 +1171,7 @@ apf.MultiselectBinding = function(){
     /**
      * @attribute {String} each Sets or gets the XPath statement that determines which
      * {@link term.datanode data nodes} are rendered by this element (also known
-     * as {@link term.eachnode each nodes}. See
-     * {@link baseclass.multiselectbinding.binding.each} for more information.
+     * as {@link term.eachnode each nodes}. 
      * 
      *
      * #### Example
@@ -1199,7 +1195,7 @@ apf.MultiselectBinding = function(){
      *  </a:model>
      * ```
      *
-     * @see  baseclass.multiselectbinding.binding.each
+     * 
      */
     this.$propHandlers["each"] =
 

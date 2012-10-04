@@ -395,7 +395,7 @@ apf.VirtualViewport = function(){
     
     /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
-     * this element (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
+     * this element.
      *
      * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
      */

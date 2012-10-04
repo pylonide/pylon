@@ -511,7 +511,7 @@ apf.model = function(struct, tagName){
      *
      * @param  {String}  xpath  The xpath used to select a the nodeset.
      * @param  {String}  value  The value to set.
-     * @return  {XMLNodeSet}  The changed XMLNodeSet
+     * @return  {NodeList}  The changed XMLNodeSet
      */
     this.setQueryValues = function(xpath, value){
         if (!this.data)
@@ -554,7 +554,7 @@ apf.model = function(struct, tagName){
      * Executes an XPath statement on the data of this model
      *
      * @param  {String}   xpath    The XPath used to select the XMLNode(s).
-     * @return  {XMLNode | NodeList} The result of the selection
+     * @return  {Mixed} The result of the selection, either an [[XMLNode]] or a [[NodeList]]
      */
     this.queryNode = function(xpath){
         if (!this.data)
@@ -567,7 +567,7 @@ apf.model = function(struct, tagName){
      * Executes XPath statements on the data of this model
      *
      * @param  {String}   xpath    The XPath used to select the XMLNode(s).
-     * @return  {XMLNode | NodeList}  The result of the selection
+     * @return  {Mixed} The result of the selection, either an [[XMLNode]] or a [[NodeList]]
      */
     this.queryNodes = function(xpath){
         if (!this.data)
@@ -717,7 +717,7 @@ apf.model = function(struct, tagName){
     //callback here is private
     /**
      * Loads the initial data into this model.
-     * @see element.model.attribute.init
+     * @see apf.model.init
      */
     this.init = function(callback){
         if (this.session) {

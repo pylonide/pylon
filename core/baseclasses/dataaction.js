@@ -34,7 +34,7 @@ apf.DataAction = function(){
     /**
      * Gets the ActionTracker this element communicates with.
      *
-     * @return {ActionTracker}
+     * @return {apf.actiontracker}
      * @see apf.smartbinding
      */
     this.getActionTracker = function(ignoreMe){

@@ -543,7 +543,7 @@ apf.MultiSelect = function(){
          * selection is cleared.
          *
          * @param  {String}  value  The new value for this element.
-         * @see baseclass.multiselect.method.getValue
+         * @see apf.MultiSelect.getValue
          */
         this.setValue = function(value, disable_event){
             // @todo apf3.0 what does noEvent do? in this scope it's useless and
@@ -576,7 +576,7 @@ apf.MultiSelect = function(){
     };
 
     if (!this.getValue) {
-        /*
+        /**
          * Retrieves the value of this element. This is the value of the
          * first selected {@link term.datanode data node}.
          * 
@@ -615,14 +615,14 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * @event  beforeselect  Fires before a {@link baseclass.multiselect.method.select selection} is made
+     * @event  beforeselect  Fires before a {@link apf.MultiSelect.select selection} is made
      * @param {Object} e The standard event object. It contains the following properties:
      *                     - `selected` ([[XMLElement]]): The {@link term.datanode data node} that will be selected
      *                     - `selection` ([[Array]]): An array of {@link term.datanode data nodes} that will be selected
      *                     - `htmlNode` ([[HTMLElement]]): The HTML element that visually represents the {@link term.datanode data node} 
      */
     /**
-     * @event  afterselect  Fires after a {@link baseclass.multiselect.method.select selection} is made
+     * @event  afterselect  Fires after a {@link apf.MultiSelect.select selection} is made
      * @param {Object} e The standard event object. It contains the following properties:
      *                     - `selected` ([[XMLElement]]):    the {@link term.datanode data node} that was selected
      *                     - `selection` ([[Array]]():       an array of {@link term.datanode data node} that are selected

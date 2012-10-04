@@ -333,13 +333,13 @@ apf.Validation = function(){
      *   - `apf:mobile`
      */
     /**
-     * @attribute  {Integer}  min          Sets or gets the minimal value for which the value of this element is valid.
+     * @attribute  {Number}  min          Sets or gets the minimal value for which the value of this element is valid.
     /**
-     * @attribute  {Integer}  max          Sets or gets the maximum value for which the value of this element is valid.
+     * @attribute  {Number}  max          Sets or gets the maximum value for which the value of this element is valid.
     /**
-     * @attribute  {Integer}  minlength    Sets or gets the minimal length allowed for the value of this element.
+     * @attribute  {Number}  minlength    Sets or gets the minimal length allowed for the value of this element.
     /**
-     * @attribute  {Integer}  maxlength    Sets or gets the maximum length allowed for the value of this element.
+     * @attribute  {Number}  maxlength    Sets or gets the maximum length allowed for the value of this element.
     /**
      * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. Same as {@link baseclass.validation.attribute.required}, but this rule is checked realtime when the element loses the focus, instead of at specific request (for instance, when leaving a form page).
     /**
@@ -637,7 +637,7 @@ apf.ValidationGroup = function(name){
      *
      * @param  {apf.AmlNode}  o An AMLNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link apf.ValidationGroup.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
-     * @return  {Errorbox}  The found (or created) Errorbox
+     * @return  {apf.errorbox}  The found (or created) Errorbox
      */
     this.getErrorBox = function(o, no_create){
         if (this.allowMultipleErrors || !errbox && !no_create) {

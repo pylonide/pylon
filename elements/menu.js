@@ -71,7 +71,7 @@
  *    center      = "true">
  *  </a:window>
  * ```
- * @see baseclass.guielement.event.contextmenu
+ * @see apf.GuiElement@contextmenu
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -227,7 +227,7 @@ apf.menu = function(struct, tagName){
      * @param {Boolean}    noanim   Whether to animate the showing of this menu.
      * @param {apf.AmlElement} opener   The element that is the context of this menu.
      * @param {XMLElement} xmlNode  The {@link term.datanode data node} that provides data context to the menu child nodes.
-     * @see baseclass.guielement.event.contextmenu
+     * @see apf.GuiElement@contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
@@ -360,7 +360,7 @@ apf.menu = function(struct, tagName){
     /**
      * Retrieves the selected element from a group of radio elements.
      * @param {String} group The name of the group.
-     * @return {radio} The selected radio element.
+     * @return {apf.radiobutton} The selected radio element.
      */
     this.getSelected = function(group){
         var nodes = this.childNodes;

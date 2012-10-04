@@ -250,7 +250,7 @@ apf.importStylesheet = function (def, win, stylesheet) {
 /**
  * This method constructs a stylesheet.
  * @param {Object}  [win] A reference to a window
- * @returns {CSSStyleSheet} The created CSS stylesheet
+ * @returns {String} The created CSS stylesheet
  */ 
 apf.createStylesheet = function(win){
     var doc = (win || window).document;

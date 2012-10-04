@@ -25,12 +25,15 @@
 	"DOMNode": "https://developer.mozilla.org/en-US/docs/DOM/Node",
 	"HTMLElement": "https://developer.mozilla.org/en-US/docs/DOM/HTMLElement",
 	"WindowImplementation": "https://developer.mozilla.org/en-US/docs/DOM/window",
-
+	"Event" : "https://developer.mozilla.org/en-US/docs/DOM/event",
+	"NodeList" : "https://developer.mozilla.org/en-US/docs/DOM/NodeList",
+	
 	"term.datanode" : "http://www.google.com",
 	"term.baseclass" : "http://www.google.com",
 	"term.datainstruction": "http://www.google.com",
 	"term.smartbinding": "http://www.google.com",
 	"term.eachnode": "http://www.google.com",
 	"term.caret": "http://www.google.com",
-	"term.propertybinding": "http://www.google.com"
+	"term.propertybinding": "http://www.google.com",
+	"term.locking": "http://www.google.com"
 }

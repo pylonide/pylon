@@ -867,10 +867,10 @@ apf.BaseTab = function(){
     /**
      * Removes a page element from this element. This function destroys ALL children
      * of this page. To simple remove the page from the DOM tree, use the
-     * [[apf.page.removeNode]] method.
+     * [[apf.AmlNode.removeNode]] method.
      *
      * @param {Mixed} nameOrId The name or child number of the page element to remove
-     * @return {Page} The removed page element
+     * @return {apf.page} The removed page element
      */
     this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
@@ -1039,7 +1039,7 @@ apf.BaseTab = function(){
      * can be scrolled to. The tabs cannot scroll any further than these boundaries
      *
      * @param {Number} dir        Determines which boundary side to look at, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
-     * @param {Boolan} [useCache] Used only when tabs are draggable. Not implemented.
+     * @param {Boolean} [useCache] Used only when tabs are draggable. Not implemented.
      * @returns  {Number}
      */
     function getAnimationBoundary(dir, useCache) {
@@ -1214,7 +1214,7 @@ apf.BaseTab = function(){
      * If a tab page is outside of the user's view, this function scrolls that
      * tabpage into view smoothly.
      *
-     * @param {page} oPage The page to scroll into view
+     * @param {apf.page} oPage The page to scroll into view
      * 
      */
     this.scrollIntoView = function(oPage) {

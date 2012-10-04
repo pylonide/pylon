@@ -168,7 +168,7 @@ apf.DataBinding = function(){
      *                         - `"selected"`:    The selected data anode of this element.
      *                         - `"xmlRoot"`:   The root data node that this element is bound on.
      *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
-     * @return  {XMLNode | NodeList}  An XMLNode or NodeList with the result of the selection
+     * @return  {Mixed}  An [[XMLNode]] or [[NodeList]] with the result of the selection
      */
     this.queryNode = function(xpath, type){
         var n = this[type||'xmlRoot'];
@@ -183,7 +183,7 @@ apf.DataBinding = function(){
      *                         - `"selected"`:    The selected data anode of this element.
      *                         - `"xmlRoot"`:   The root data node that this element is bound on.
      *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
-     * @return  {XMLNode | NodeList}  An XMLNode or NodeList with the result of the selection
+     * @return  {Mixed}  An [[XMLNode]] or [[NodeList]] with the result of the selection
      */
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
@@ -450,15 +450,15 @@ apf.DataBinding = function(){
      *  --></a:script>
      * ```
      *
-     * @param {XMLElement | String | null}  [xmlNode] The content to load into this element. It can be one of the following values:
+     * @param {XMLElement | String}  [xmlNode] The content to load into this element. It can be one of the following values:
      *                                                - {XMLElement}: An XML element that's loaded into this element
      *                                                - {String}: Either an XML string, or, an instruction to load the data from a remote source
-     *                                                - `null`: Clears this element from its data (just like {@link baseclass.cache.method.clear})
+     *                                                - `null`: Clears this element from its data (just like {@link apf.Cache.clear})
      * @param {Object} [options] Set of additional options to pass. Properties include:
      *                           - [[xmlNode]] ([[XMLElement]]):   The {@link term.datanode data node} that provides
      *                                                       context to the data instruction.
      *                           - [callback] ([[Function]]): The code executed when the data request returns
-     *                           - [] (`Mixed`): Custom properties available in the data instruction
+     *                           - [properties] (`Mixed`): Custom properties available in the data instruction
      *                           - [cacheId] ([[String]]): The xml element to which the binding rules are applied
      *                           - [force] ([[Boolean]]): Specifies whether cache is checked before loading the data
      *                           - [noClearMsg] ([[Boolean]]): Specifies whether a message is set when clear is called

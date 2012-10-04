@@ -28,6 +28,10 @@ var options = {
                         linkHtml.href = linkHtml.href.substring(linkHtml.href.indexOf("#"));
                   }
 
+                  // lame hack to fix broken link...
+                  if (linkHtml.href === "data.html#apf.saveData")
+                        linkHtml.href = linkHtml.href.replace("data.html", "apf.html");
+
                   return linkHtml;
                   }
 };

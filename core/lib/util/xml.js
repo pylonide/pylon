@@ -26,7 +26,6 @@
  * @param {DOMNode} pNode      The potential parent element.
  * @param {DOMNode} childnode  The potential child node.
  * @param {Boolean} [orItself] Whether the method also returns `true` when `pNode` is the `childnode`.
- * @return {Number} The child position of the node 
  * @return {Boolean} `false` if the second argument is not a child of the first.
  */
 apf.isChildOf = function(pNode, childnode, orItself){
@@ -490,7 +489,7 @@ apf.queryValue = function (xmlNode, xpath){
  * Queries an xml node using xpath for multiple string value.
  * @param {XMLElement} xmlNode The xml element to query
  * @param {String}     xpath   The xpath query
- * @return {Arary} A list of values resulting from the query
+ * @return {Array} A list of values resulting from the query
  */
 apf.queryValues = function(xmlNode, xpath){
     var out = [];

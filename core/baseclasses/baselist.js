@@ -850,8 +850,7 @@ apf.BaseList = function(){
      * Adds a new item to the list, and lets the users type in the new name.
      *
      * This functionality is especially useful in the interface when
-     * {@link element.list.attribute.mode} is set to `check` or `radio`--for instance in a form.
-     * @see element.list.attribute.more
+     * the list mode is set to `check` or `radio`--for instance in a form.
      */
     this.startMore = function(o, userAction){
         if (userAction && this.disabled)

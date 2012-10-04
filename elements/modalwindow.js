@@ -138,10 +138,10 @@ apf.WinServer = {
  */
  /**
  * 
- * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
+ * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the portal.
  */
  /** 
-  * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
+  * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the portal.
  *  @cancelable   Prevents the edit panel from being closed.
  */
 /**

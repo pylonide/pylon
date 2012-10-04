@@ -278,7 +278,7 @@ apf.select1   = function(struct, tagName){
     /**
      * @attribute {String} more Adds a new item to the list and lets the users 
      * type in the new name. This is especially useful in the interface when 
-     * {@link element.list.attribute.mode} is set to check or radio--for instance in a form.
+     * the mode is set to check or radio--for instance in a form.
      * 
      * #### Example
      * 

@@ -106,16 +106,12 @@
  *                                  which is subject to the sorting algorithm.
  */
 /**
- * @attribute {String} data-type    Sets or gets the way sorting is executed. See
- *                                  {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
- *                                  for how to specify a custom sort method.
+ * @attribute {String} data-type    Sets or gets the way sorting is executed. 
  *   The possible values include:
  *
  *   - `string`:  Sorts alphabetically
  *   - `number`:  Sorts based on numerical value (_i.e._, 9 is lower than 10).
  *   - `date`:    Sorts based on the date sequence (`21-6-1980` is lower than `1-1-2000`).
- *           See {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
- *           for how to specify the date format.
  */
 /**
  * @attribute {String} date-format  Sets or gets the format of the date on which is sorted.

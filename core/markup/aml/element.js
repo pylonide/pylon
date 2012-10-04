@@ -51,11 +51,11 @@ apf.AmlElement = function(struct, tagName){
         this.$events            = {};
         this.$inheritProperties = {};
         
-        /**
+        /*
          * A node list containing all the attributes. This is implemented according to the
          * W3C specification.
          * 
-         * For more information, see [[AmlDom.getAttribute]] and [[AmlDom.setAttribute]].
+         * For more information, see [[apf.AmlElement.getAttribute]] and [[apf.AmlElement.setAttribute]].
          *
          * #### Example
          * 

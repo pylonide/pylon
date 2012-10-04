@@ -66,10 +66,10 @@
  * @param {Object} e The standard event object. It contains the following property:
  *   - `action` ([[String]]): The action to be executed
  *   - `args` ([[Array]]): The arguments for the action
- *   - `[xmlActionNode]` ([[XmlNode]]): The rules to synchronize the changes to the server
+ *   - `[xmlActionNode]` ([[XMLNode]]): The rules to synchronize the changes to the server
  *                              for both execution and undo.
  *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
- *   - `[selNode]` ([[XmlNode]]):        The relevant {@link term.datanode data node} to
+ *   - `[selNode]` ([[XMLNode]]):        The relevant {@link term.datanode data node} to
  *                              which the action node works on
  *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
  */
@@ -246,7 +246,7 @@ apf.actiontracker = function(struct, tagName){
 
     /**
      * Searches for the action tracker that functions as a parent for this one.
-     * @return {apf.ActionTracker} Returns the parent action tracker
+     * @return {apf.actiontracker} Returns the parent action tracker
      */
     this.getParent = function(){
         return this.parentNode && this.parentNode.getActionTracker
@@ -283,10 +283,10 @@ apf.actiontracker = function(struct, tagName){
      *   Properties:
      *   - `action` ([[String]]): The action to be executed
      *   - `args` ([[Array]]): The arguments for the action
-     *   - `[xmlActionNode]` ([[XmlNode]]): The rules to synchronize the changes to the
+     *   - `[xmlActionNode]` ([[XMLNode]]): The rules to synchronize the changes to the
      *                              server for both execution and undo.
      *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
-     *   - `[selNode]` ([[XmlNode]]):      The relevant {@link term.datanode data node}
+     *   - `[selNode]` ([[XMLNode]]):      The relevant {@link term.datanode data node}
      *                              to which the action node works on
      *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
      *   - `[annotator]` ([[String]]): The name or identifier of the entity that is
