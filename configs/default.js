@@ -47,7 +47,8 @@ var config = [
     "./../plugins-client/lib.requirejs",
     {
         packagePath: "smith.io/server-plugin",
-        messagePath: "/smith.io/server"
+        messagePath: "/smith.io/server",
+        debug: true
     },
     // server plugins
     {
@@ -95,6 +96,7 @@ var config = [
             "ext/preview/preview",
             "ext/log/log",
             "ext/help/help",
+            "ext/linereport/linereport",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
@@ -139,7 +141,7 @@ var config = [
             "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
-            "ext/language/liveinspect"
+            "ext/language/liveinspect",
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"

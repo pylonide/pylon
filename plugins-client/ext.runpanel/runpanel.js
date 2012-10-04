@@ -99,7 +99,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run it'}",
+                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -419,7 +419,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (self.lstRunCfg)
                     lstRunCfg.select(this.node);
             }
-        }), divider)
+        }), divider);
     },
 
     runConfig : function(config, debug) {
@@ -437,13 +437,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             apf.xmldb.removeAttribute(lastNode, "last");
         apf.xmldb.setAttribute(config, "last", "true");
 
+        self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations
         // will vary over time
         ide.dispatchEvent("beforeRunning");
-
+        var args = config.getAttribute("args");
         noderunner.run(
             config.getAttribute("path"),
-            (config.getAttribute("args") || "").split(" "),
+            args ? args.split(" ") : [],
             debug,
             config.getAttribute("value")
         );

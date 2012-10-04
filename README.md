@@ -165,11 +165,11 @@ Cloud9 wouldn't be where it is now without contributions. Feel free to fork and 
 
 If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email.
 
-Email: info@ajax.org
+Email: cla@c9.io
 
 Fax: +31 (0) 206388953
 
-Address: Ajax.org B.V.
+Address: Cloud9 IDE
   Keizersgracht 241
   1016 EA, Amsterdam
   the Netherlands
