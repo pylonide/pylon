@@ -120,6 +120,7 @@ module.exports = ext.register("ext/code/code", {
 
     fileExtensions : Object.keys(fileExtensions),
     supportedModes : Object.keys(SupportedModes),
+    prevSelection : null,
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -688,7 +689,13 @@ module.exports = ext.register("ext/code/code", {
                 group : grpSyntax
             }), c += 100),
 
-            menus.addItemByPath("View/Syntax/Other", new apf.item(), c + 90000),
+            otherGrpSyntax = new apf.group({
+                type : ""
+            }),
+
+            menus.addItemByPath("View/Syntax/Other", new apf.item({
+                group : otherGrpSyntax
+            }), c + 90000),
 
             menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
         );
@@ -702,7 +709,18 @@ module.exports = ext.register("ext/code/code", {
                 menus.addItemByPath("View/Syntax/" + (otherMode[mode] ? "Other/" + mode : mode), new apf.item({
                     type: "radio",
                     value: ModesCaption[mode],
-                    group : grpSyntax
+                    group : otherMode[mode] ? otherGrpSyntax : grpSyntax,
+                    onclick : function (e) {
+                        if (_self.prevSelection == null)
+                            _self.prevSelection = this;
+                        else {
+                            _self.prevSelection.uncheck();
+                            if (_self.prevSelection.group.selectedItem.caption == "Other") {
+                                _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu")
+                            }
+                            _self.prevSelection = this;
+                        }
+                    }
                 }), c += 100)
             );
         }

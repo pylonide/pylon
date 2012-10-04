@@ -64,6 +64,12 @@ module.exports = ext.register("ext/themes/themes", {
                                 _self.set(_self.currTheme);
                             }, 200);
                         }
+                    },
+
+                    onclick : function(e) {
+                        var path = e.currentTarget.value;
+                        _self.set(path);
+                        ide.dispatchEvent("track_action", {type: "theme change", theme: path});
                     }
                 }));
             }
@@ -195,11 +201,6 @@ module.exports = ext.register("ext/themes/themes", {
                       settings.model.queryValue("editors/code/@theme")
                         || _self.defaultTheme);
                 }
-            },
-            "onitemclick" : function(e){
-                var path = e.relatedNode.value;
-                _self.set(path);
-                ide.dispatchEvent("track_action", {type: "theme change", theme: path});
             }
         }), 350000);
 
