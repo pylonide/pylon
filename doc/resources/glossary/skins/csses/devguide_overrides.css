@@ -1,0 +1,27 @@
+#content > h3 {
+    font-size: 30px;
+    line-height: 36px;
+    border-bottom: 1px solid #848484;
+    margin-bottom: 15px;
+    margin-top: 0;
+    padding-bottom: 5px;
+}
+
+.title h1 {
+    margin-bottom : 0;
+    line-height : 30px;
+}
+.title {
+    margin-top : 3px;
+    margin-bottom : 18px;
+    border-bottom : 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.cite {
+	color: #666;
+}
+
+.dev_guide {
+	font-size: 13px;
+}

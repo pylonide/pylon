@@ -1,6 +1,7 @@
-var panino = require("../../panino-docs/index.js");
+var panino = require("panino");
+var panda = require("panda-docs");
 
-var options = {
+var buildOptions = {
   title          : "APF API",
   output         : './out',
   skin           : "./resources/templates/layout.jade",
@@ -10,6 +11,7 @@ var options = {
   globalNS       : "apf",
   index          : "./index.md",
   splitFromNS    : true,
+  disableTests   : true,
   customTags     : ["baseclass", 
                         // XML stuff for Jade
                         "define", "allowchild", "action",
@@ -394,18 +396,31 @@ var files = ["../apf.js",
              //"../loader2.js"
             ];
 
-panino.parse(files, options, function (err, ast) {
+panino.parse(files, buildOptions, function (err, ast) {
   if (err) {
     console.error(err);
     process.exit(1);
   }
 
   // for the javascript
-  panino.render('json', ast, options, function (err) {
+  panino.render('html', ast, buildOptions, function (err) {
     if (err) {
       console.error(err);
       process.exit(1);
     }
   });
 
+  buildOptions.keepOutDir = true;
+  buildOptions.disableTests = false;
+
+  buildOptions.template = "./resources/glossary/layout.jade";
+  buildOptions.assets = "./resources/glossary/skins";
+  buildOptions.title = "Glossary";
+
+  /*panda.make("./manifest.json", buildOptions, function(err) {
+    if (err) {
+        console.error(err);
+        process.exit(1);
+    }
+  });*/
 });

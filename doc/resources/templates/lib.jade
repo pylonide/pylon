@@ -6,6 +6,14 @@
   else
     span #{title} (#{count})
 
+mixin hierarchyTree(hierarchyItem)
+  mixin link(hierarchyItem.id)
+  -if (hierarchyItem.parents)
+    for p in hierarchyItem.parents
+      ul
+        li
+          mixin hierarchyTree(p)
+
 mixin makeTag(obj, attributes)
   -xmlBlobs = "<a:" + obj.define + "     "; 
 
@@ -192,6 +200,17 @@ mixin api()
             if obj.stability
               mixin markdown(">" + obj.stability)
 
+            if obj.hierarchy
+              div#inheritance
+                h6 Inheritance
+                ul#hierarchyTree
+                  li
+                    strong #{obj.id}
+                  ul
+                    for h in obj.hierarchy
+                      li 
+                        mixin hierarchyTree(h)
+
             if obj.define && obj.children
               div.xmlBlob
                mixin makeTag(obj)
@@ -200,22 +219,6 @@ mixin api()
               .section.description
                 .memberContent
                   mixin markdown(obj.description)
-
-            if obj.type === 'class'
-
-              if obj.superclass
-                .section.superclass
-                  // h3 
-                    Superclass
-                    .memberContent
-                      mixin link(obj.superclass)
-
-              if obj.subclasses.length
-                .section.subclasses
-                  // h3 
-                    Subclasses
-                    .memberContent
-                      mixin links(obj.subclasses)
           
               mixin article(obj, obj.children.filter(function(x){return x.type === 'class method'}), obj.children.filter(function(x){return x.type === 'events'}), obj.children.filter(function(x){return x.type === 'class property'}))
 

@@ -37,13 +37,13 @@ h2 UI Elements
 
  h3 Parsing
   ul.menu
-   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.parser === true})
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.parser === true})
     li.menu-item
       mixin link(obj, ["parser"])
 
  h3 Base Classes
   ul.menu
-   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.baseclass === true})
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.baseclass === true})
     li.menu-item
       mixin link(obj, ["baseclass"])
 

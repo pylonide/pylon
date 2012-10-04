@@ -6,7 +6,8 @@
     "node": "~0.6.0"
   },
   "dependencies": {
-    "panino": ""
+    "panino": "",
+    "panda-docs": ""
   },
   "devDependencies": {}
 }
