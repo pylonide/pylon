@@ -22,24 +22,37 @@
 // #ifdef __AMLCONTEXTMENU || __INC_ALL
 
 /**
- * element specifying which menu is shown when a
- * contextmenu is requested by a user for a aml node.
- * Example:
+ * An element specifying which menu is shown when a
+ * contextmenu is requested by a user for a AML node.
+ * 
+ * #### Example
+ *
  * This example shows a list that shows the mnuRoot menu when the user
- * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
+ * right clicks on the root {@link term.datanode data node}. Otherwise the `mnuItem` menu is
  * shown.
- * <code>
+ *
+ * ```xml
  *  <a:list>
  *      <a:contextmenu menu="mnuRoot" match="[root]" />
  *      <a:contextmenu menu="mnuItem" />
  *  </a:list>
- * </code>
- * @attribute {String} menu   the id of the menu element.
- * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
+ * ```
  *
+ * @class apf.contextmenu
+ * @inherits apf.AmlElement
+ * @define contextmenu
+ * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ */
+/**
+ * @attribute {String} menu  Sets or gets the id of the menu element.
+ */
+/**
+ * @attribute {String} select Sets or gets the XPath executed on the selected element of the databound element which determines whether this context menu is shown.
+ *
+ * 
  */
 apf.contextmenu = function(){
     this.$init("contextmenu", apf.NODE_HIDDEN);

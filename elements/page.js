@@ -22,12 +22,14 @@
 // #ifdef __AMLPAGE || __INC_ALL
 
 /**
- * A page in a pageable element. (i.e. a page in {@link element.tab})
+ * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
  *
- * @constructor
+ * @class apf.page
  * @define  page
+ * @container
+ * @inherits apf.Presentation
  * @allowchild  {elements}, {anyaml}
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -52,13 +54,13 @@ apf.page = function(struct, tagName){
             return false;
 
         return [this.parentNode.$getLayoutNode("button", "caption", this.$button), "caption"];
-    }
+    };
     //#endif
 
     //#ifdef __WITH_CONVENIENCE_API
     /**
      * Sets the caption of the button of this element.
-     * @param {String} caption the text displayed on the button of this element.
+     * @param {String} caption The text displayed on the button of this element.
      */
     this.setCaption = function(caption){
         this.setProperty("caption", caption, false, true);
@@ -66,14 +68,14 @@ apf.page = function(struct, tagName){
 
     /**
      * Sets the icon of the button of this element.
-     * @param {String} icon the icon displayed on the button of this element.
+     * @param {String} icon The icon displayed on the button of this element.
      */
     this.setIcon = function(icon) {
         this.setProperty("icon", icon, false, true);
     };
     //#endif
 
-    /**** Delayed Render Support ****/
+    // *** Delayed Render Support *** //
 
     // #ifdef __WITH_DELAYEDRENDER
     //Hack
@@ -90,7 +92,7 @@ apf.page = function(struct, tagName){
     });
      // #endif
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
@@ -101,7 +103,7 @@ apf.page = function(struct, tagName){
 
     //#ifdef __ENABLE_TAB_CLOSEBTN
     /**
-     * @attribute {Boolean} closebtn whether this page's button shows a close button inside it.
+     * @attribute {Boolean} closebtn Sets or gets whether this page's button shows a close button inside it.
      */
     this.$propHandlers["closebtn"] = function(value){
         //if (!this.$amlLoaded || !this.parentNode.$hasButtons)
@@ -139,7 +141,7 @@ apf.page = function(struct, tagName){
     //#endif
 
     /**
-     * @attribute {String} caption the text displayed on the button of this element.
+     * @attribute {String} caption Sets or gets the text displayed on the button of this element.
      */
     this.$propHandlers["tooltip"] = function(value){
         if (!this.parentNode)
@@ -152,7 +154,7 @@ apf.page = function(struct, tagName){
     }
 
     /**
-     * @attribute {String} caption the text displayed on the button of this element.
+     * @attribute {String} caption Sets or gets the text displayed on the button of this element.
      */
     this.$propHandlers["caption"] = function(value){
         if (!this.parentNode)
@@ -230,7 +232,7 @@ apf.page = function(struct, tagName){
     };
 
     /**
-     * @attribute {Boolean} fake whether this page actually contains elements or
+     * @attribute {Boolean} fake Sets or gets whether this page actually contains elements or
      * only provides a button in the pageable parent element.
      */
     this.$propHandlers["fake"] = function(value){
@@ -251,7 +253,7 @@ apf.page = function(struct, tagName){
             this.$activate();
     };
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e && e.currentTarget != this)
@@ -294,7 +296,7 @@ apf.page = function(struct, tagName){
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);
 
-    /**** Private state functions ****/
+    // *** Private state functions *** //
 
     this.$position = 0;
     this.$first = function(remove){
@@ -675,7 +677,7 @@ apf.page = function(struct, tagName){
         this.$btnPressed     = false;
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$canLeechSkin = true;
     

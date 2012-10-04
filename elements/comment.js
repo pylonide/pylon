@@ -22,8 +22,10 @@
 // #ifdef __AMLCOMMENT || __INC_ALL
 
 /**
- * all elements within the comment tag are ignored by the parser.
+ * All elements within the comment tag are ignored by the parser.
  *
+ * @class apf.comment
+ * @define comment
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4

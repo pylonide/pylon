@@ -24,13 +24,15 @@ apf.__DATABINDING__ = 1 << 1;
 // #ifdef __WITH_DATABINDING
 
 /**
- * Baseclass adding data binding features to this element. Databinding takes
- * care of automatically going from data to representation and establishing a
+ * This is a baseclass that adds data binding features to this element. 
+ * Databinding takes care of automatically going from data to representation and establishing a
  * permanent link between the two. In this way data that is changed will
  * change the representation as well. Furthermore, actions that are executed on
  * the representation will change the underlying data.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:list>
  *      <a:model>
  *          <data>
@@ -44,43 +46,48 @@ apf.__DATABINDING__ = 1 << 1;
  *          <a:each match="[item]" />
  *      </a:bindings>
  *  </a:list>
- * </code>
+ * ```
  *
- * @event error             Fires when a communication error has occured while
- *                          making a request for this element.
- *   cancelable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event
- *                              callback doesn't return false.
- *   {Number}         state     the state of the call
- *     cancellable: Prevents the error from being thrown.
- *     Possible values:
- *     apf.SUCCESS  the request was successfull
- *     apf.TIMEOUT  the request has timed out.
- *     apf.ERROR    an error has occurred while making the request.
- *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in
- *                              the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
- * @event beforeretrieve    Fires before a request is made to retrieve data.
- *   cancelable: Prevents the data from being retrieved.
- * @event afterretrieve     Fires when the request to retrieve data returns both
- *                          on success and failure.
- * @event receive           Fires when data is successfully retrieved
- *   object:
- *   {String} data  the retrieved data
- *
- * @constructor
+ * @class apf.DataBinding
+ * @inherits apf.Presentation
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  * @default_private
+ */
+/**
+ * @event error             Fires when a communication error has occured while
+ *                          making a request for this element.
+ * @cancelable Prevents the error from being thrown.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following properties:
+ *                   - error ([[Error]]): the error object that is thrown when the event callback doesn't return false.
+ *                   - state ([[Number]]): the state of the call
+ *                                                - `apf.SUCCESS`:  The request was successfull
+ *                                                - `apf.TIMEOUT`:  The request has timed out.
+ *                                                - `apf.ERROR  `:  An error has occurred while making the request.
+ *                                                - `apf.OFFLINE`:  The request was made while the application was offline.
+ *                   - userdata (`Mixed`): Data that the caller wanted to be available in the callback of the http request.
+ *                   - http ([[XMLHttpRequest]]): The object that executed the actual http request.
+ *                   - url ([[String]]): The url that was requested.
+ *                   - tpModule ([[apf.http]]): The teleport module that is making the request.
+ *                   - id ([[Number]]): The ID of the request.
+ *                   - message ([[String]]): The error message.
+ */
+/** 
+ * @event beforeretrieve    Fires before a request is made to retrieve data.
+ * @cancelable Prevents the data from being retrieved.
+ */
+/**
+ * @event afterretrieve     Fires when the request to retrieve data returns both
+ *                          on success and failure.
+ */
+/**
+ * @event receive           Fires when data is successfully retrieved
+ * @param {Object} e The standard event object. It contains the following properties:
+ *                   - data ([[String]]): the retrieved data
+ *
  */
 apf.DataBinding = function(){
     this.$init(true);
@@ -101,14 +108,14 @@ apf.DataBinding = function(){
         //eachvalue : 1 //disabled because of line 1743 valueRule = in multiselect.js
     }, this.$attrExcludePropBind);
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @param  {String}  value  the value to set.
-     * @return  {XMLNode}  the changed XMLNode
+     * @param  {String}  xpath  The xpath used to select a XMLNode
+     * @param  {String}  value  The value to set
+     * @return  {XMLNode}  The changed XMLNode
      */
     this.setQueryValue = function(xpath, value, type){
         var node = apf.createNodeFromXpath(this[type || 'xmlRoot'], xpath);
@@ -123,46 +130,45 @@ apf.DataBinding = function(){
     /**
      * Queries the bound data for a string value
      *
-     * @param {String} xpath  the xpath statement which queries on the data this element is bound on.
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return {String} value of the selected XML Node
-     * @todo
+     * @param {String} xpath  The XPath statement which queries on the data this element is bound on.
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return {String}       The value of the selected XML Node
+     * 
+     */
+    this.queryValue = function(xpath, type){
+     /*   @todo
      *  lstRev.query('revision/text()', 'selected');
      *  lstRev.query('revision/text()', 'xmlRoot');
      *  lstRev.query('revision/text()', 'indicator');
      */
-    this.queryValue = function(xpath, type){
         return apf.queryValue(this[type || 'xmlRoot'], xpath );
     };
 	/**
      * Queries the bound data for an array of string values
      *
-     * @param {String} xpath the xpath statement which queries on the data this element is bound on.
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return {String} value of the selected XML Node
+     * @param {String} xpath The XPath statement which queries on the data this element is bound on.
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return {String}       The value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
         return apf.queryValues(this[type || 'xmlRoot'], xpath );
     };
 	
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes an XPath statement on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param {String} xpath The XPath statement which queries on the data this element is bound on.
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return  {Mixed}  An [[XMLNode]] or [[NodeList]] with the result of the selection
      */
     this.queryNode = function(xpath, type){
         var n = this[type||'xmlRoot'];
@@ -170,15 +176,14 @@ apf.DataBinding = function(){
     };
 
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes an XPath statement on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param  {String}   xpath    The XPath used to select the XMLNode(s)
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return  {Mixed}  An [[XMLNode]] or [[NodeList]] with the result of the selection
      */
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
@@ -373,25 +378,26 @@ apf.DataBinding = function(){
            && this.$bindings.getDataNode(name, xmlNode, createNode, ruleList, multiple);
     };
     
+    //#ifdef __WITH_CONVENIENCE_API
     /**
-     * Sets the model of the specified element
+     * Sets the model of the specified element. 
+     * The model acts as a datasource for this element.
      *
-     * @param  {Model}  The model this element is going to connect to.
+     * @param  {apf.model}  The model this element is going to connect to.
      * 
      */
-    //#ifdef __WITH_CONVENIENCE_API
     this.setModel = function(model){
         this.setAttribute("model", model, false, true);
     };
     //#endif
     
     /**
-     * Gets the model to which this element is connected.
-     * This is the model which acts as a datasource for this element.
+     * Gets the model which this element is connected to.
+     * The model acts as a datasource for this element.
      *
-     * @param {Boolean} doRecur whether the model should be searched recursively up the data tree.
-     * @returns  {Model}  The model this element is connected to.
-     * @see  element.smartbinding
+     * @param {Boolean} doRecur Specifies whether the model should be searched recursively up the data tree.
+     * @returns  {apf.model}  The model this element is connected to.
+     * @see apf.smartbinding
      */
     this.getModel = function(doRecur){
         if (doRecur && !this.$model)
@@ -402,17 +408,29 @@ apf.DataBinding = function(){
     
     /**
      * Reloads the data in this element.
-     *
+     * @method 
      */
     this.reload = this.reload || function(){
         this.load(this.xmlRoot, {cacheId: this.cacheId, force: true});
     };
-    
+
     /**
-     * Loads data in to this element using binding rules to transform the
-     * data in to a presentation.
-     * Example:
-     * <code>
+     * @event beforeload  Fires before loading data in this element.
+     * @cancelable Prevents the data from being loaded.
+     * @param {XMLElement} xmlNode The node that is loaded as the root {@link term.datanode data node}.
+     *   
+     */
+    /** 
+     * @event afterload   Fires after loading data in this element.
+     * @param {XMLElement} xmlNode The node that is loaded as the root {@link term.datanode data node}.
+     */
+    /**
+     * Loads data into this element using binding rules to transform the
+     * data into a presentation.
+     * 
+     * #### Example
+     * 
+     * ```xml 
      *  <a:list id="lstExample">
      *      <a:bindings>
      *          <a:caption match="[text()]" />
@@ -430,33 +448,20 @@ apf.DataBinding = function(){
      *          </images>');
      *      }
      *  --></a:script>
-     * </code>
+     * ```
      *
-     * @param {mixed}  [xmlNode]
-     *   Possible Values:
-     *   {XMLElement}  an xml element loaded in to this element.
-     *   {String}      an xml string which is loaded in this element.
-     *   {String}      an instruction to load data from a remote source.
-     *   {Null}        null clears this element from it's data {@link baseclass.cache.method.clear}.
-     * @param {Object} [options]
-     *   Properties:
-     *   {XMLElement} [xmlNode]    the {@link term.datanode data node} that provides
-     *                             context to the data instruction.
-     *   {Function}   [callback]   the code executed when the data request returns.
-     *   {mixed}      []           Custom properties available in the data instruction.
-     *   {String}     [cacheId]    the xml element to which the binding rules are applied.
-     *   {Boolean}    [force]      whether cache is checked before loading the data.
-     *   {Boolean}    [noClearMsg] wether a message is set when clear is called.
-     *
-     * @event beforeload  Fires before loading data in this element.
-     *   cancelable: Prevents the data from being loaded.
-     *   object:
-     *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
-     * @event afterload   Fires after loading data in this element.
-     *   object:
-     *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
-     * @see  element.smartbinding
-     * @see  baseclass.cache.method.clear
+     * @param {XMLElement | String}  [xmlNode] The content to load into this element. It can be one of the following values:
+     *                                                - {XMLElement}: An XML element that's loaded into this element
+     *                                                - {String}: Either an XML string, or, an instruction to load the data from a remote source
+     *                                                - `null`: Clears this element from its data (just like {@link apf.Cache.clear})
+     * @param {Object} [options] Set of additional options to pass. Properties include:
+     *                           - [[xmlNode]] ([[XMLElement]]):   The {@link term.datanode data node} that provides
+     *                                                       context to the data instruction.
+     *                           - [callback] ([[Function]]): The code executed when the data request returns
+     *                           - [properties] (`Mixed`): Custom properties available in the data instruction
+     *                           - [cacheId] ([[String]]): The xml element to which the binding rules are applied
+     *                           - [force] ([[Boolean]]): Specifies whether cache is checked before loading the data
+     *                           - [noClearMsg] ([[Boolean]]): Specifies whether a message is set when clear is called
      */
     this.load = function(xmlNode, options){
         if (options) {
@@ -615,14 +620,18 @@ apf.DataBinding = function(){
         this.dispatchEvent('afterload', {xmlNode : xmlNode});
     };
     
-    /**
+    // @todo Doc
+    /*
      * @binding load Determines how new data is loaded data is loaded into this
      * element. Usually this is only the root node containing no children.
-     * Example:
+     * 
+     * #### Example
+     * 
      * This example shows a load rule in a text element. It gets its data from
      * a list. When a selection is made on the list the data is loaded into the
      * text element.
-     * <code>
+     * 
+     * ```xml
      *  <a:list id="lstExample" width="200" height="200">
      *      <a:bindings>
      *          <a:caption match="[text()]" />
@@ -643,10 +652,13 @@ apf.DataBinding = function(){
      *          <a:contents match="[message/text()]" />
      *      </a:bindings>
      *  </a:text>
-     * </code>
-     * @attribute {string} get the {@link term.datainstruction data instruction}
-     *                     that is used to load data into the xmlRoot of this component.
+     * ```
+     *
      */
+     /**
+      * @attribute {string} Gets the {@link term.datainstruction data instruction}
+      *                     that is used to load data into the xml root of this component.
+      */
     this.$loadSubData = function(xmlRootNode){
         if (this.$hasLoadStatus(xmlRootNode) && !this.$hasLoadStatus(xmlRootNode, "potential")) 
             return;
@@ -704,17 +716,17 @@ apf.DataBinding = function(){
         }
     };
     
-    /**
+    //@todo this function is called way too much for a single load of a tree
+    //@todo should clear listener
+    /*
      * Unloads data from this element and resets state displaying an empty message.
-     * Empty message is set on the {@link baseclass.guielement.property.msg}.
+     * The empty message is set on the {@link apf.GuiElement.msg}.
      *
-     * @param {Boolean} [nomsg]   whether to display the empty message.
-     * @param {Boolean} [doEvent] whether to sent select events.
+     * @param {Boolean} [nomsg]   Specifies whether to display the empty message.
+     * @param {Boolean} [doEvent] Specifies whether to send select events.
      * @see baseclass.databinding.method.load
      * @private
      */
-    //@todo this function is called way too much for a single load of a tree
-    //@todo should clear listener
     this.clear = function(nomsg, doEvent, fakeClear){
         if (!this.$container)
             return;//@todo apf3.0
@@ -767,10 +779,10 @@ apf.DataBinding = function(){
         this.clear("custom");
     };
 
+    //@todo optimize this
     /**
      * @private
      */
-    //@todo optimize this
     this.$setLoadStatus = function(xmlNode, state, remove){
         var group  = this.loadgroup || "default";
         var re     = new RegExp("\\|(\\w+)\\:" + group + ":(\\d+)\\|");
@@ -812,10 +824,11 @@ apf.DataBinding = function(){
 
     /**
      * @event beforeinsert Fires before data is inserted.
-     *   cancelable: Prevents the data from being inserted.
-     *   object:
-     *   {XMLElement} xmlParentNode the parent in which the new data is inserted
-     * @event afterinsert Fires after data is inserted.
+     * @cancelable Prevents the data from being inserted.
+     * @param {XMLElement} xmlParentNode The parent in which the new data is inserted
+     */
+     /**
+      * @event afterinsert Fires after data is inserted.
      */
 
     /**
@@ -882,11 +895,14 @@ apf.DataBinding = function(){
     };
     
     /**
-     * @attribute {Boolean} render-root whether the xml element loaded into this
-     * element is rendered as well. Default is false.
-     * Example:
+     * @attribute {Boolean} render-root Sets or gets whether the XML element loaded into this
+     * element is rendered as well. The default is false.
+     *
+     * #### Example
+     *
      * This example shows a tree which also renders the root element.
-     * <code>
+     * 
+     * ```xml
      *  <a:tree render-root="true">
      *      <a:model>
      *          <root name="My Computer">
@@ -901,7 +917,7 @@ apf.DataBinding = function(){
      *          <a:each match="[root|drive|folder]"></a:each>
      *      </a:bindings>
      *  </a:tree>
-     * </code>
+     * ```
      */
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("empty-message", "loading-message",
@@ -909,7 +925,7 @@ apf.DataBinding = function(){
         "bindings", "actions");
 
     /**
-     * @attribute {Boolean} render-root wether the root node of the data loaded
+     * @attribute {Boolean} render-root Sets or gets whether the root node of the data loaded
      * into this element is rendered as well. 
      * @see element.tree
      */
@@ -918,9 +934,9 @@ apf.DataBinding = function(){
     };
     
     /**
-     * @attribute {String} empty-message the message displayed by this element
+     * @attribute {String} empty-message Sets or gets the message displayed by this element
      * when it contains no data. This property is inherited from parent nodes.
-     * When none is found it is looked for on the appsettings element. Otherwise
+     * When none is found, it is looked for on the appsettings element. Otherwise
      * it defaults to the string "No items".
      */
     this.$propHandlers["empty-message"] = function(value){
@@ -931,33 +947,39 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} loading-message  the message displayed by this
+     * @attribute {String} loading-message Sets or gets the message displayed by this
      * element when it's loading. This property is inherited from parent nodes.
-     * When none is found it is looked for on the appsettings element. Otherwise
+     * When none is found, it is looked for on the appsettings element. Otherwise
      * it defaults to the string "Loading...".
-     * Example:
-     * This example uses property binding to update the loading message. The
+     *
+     * #### Example
+     *
+     * This example uses property bindings to update the loading message. The
      * position of the progressbar should be updated by the script taking care
      * of loading the data.
-     * <code>
+     *
+     * ```xml
      *  <a:list loading-message="{'Loading ' + Math.round(progress1.value*100) + '%'}" />
      *  <a:progressbar id="progress1" />
-     * </code>
-     * Remarks:
-     * Usually a static loading message is displayed for only 100 milliseconds
-     * or so, whilst loading the data from the server. This is done for instance
-     * when the load binding rule is used. In the code example below a list
+     * ```
+     *
+     * #### Remarks
+     *
+     * Usually, a static loading message is displayed for only 100 milliseconds
+     * or so, whilst loading the data from the server. For instance, this is done
+     * when the load binding rule is used. In the code example below, a list
      * binds on the selection of a tree displaying folders. When the selection
      * changes, the list loads new data by extending the model. During the load
-     * of this new data the loading message is displayed.
-     * <code>
+     * of this new data, the loading message is displayed.
+     * 
+     * ```xml
      *  <a:list model="[trFolders::element]">
      *      <a:bindings>
      *          ...
      *          <a:load get="{comm.getFiles([@path])}" />
      *      </bindings>
      *  </a:list>
-     * </code>
+     * ```
      */
     this.$propHandlers["loading-message"] = function(value){
         this["loading-message"] = value;
@@ -967,7 +989,7 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} offline-message  the message displayed by this
+     * @attribute {String} offline-message Sets or gets the message displayed by this
      * element when it can't load data because the application is offline.
      * This property is inherited from parent nodes. When none is found it is
      * looked for on the appsettings element. Otherwise it defaults to the
@@ -981,17 +1003,20 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} smartbinding  the name of the SmartBinding for this
+     * @attribute {String} smartbinding Sets or gets the name of the SmartBinding for this
      * element. A smartbinding is a collection of rules which define how data
      * is transformed into representation, how actions on the representation are
      * propagated to the data and it's original source, how drag&drop actions
      * change the data and where the data is loaded from. Each of these are
      * optionally defined in the smartbinding set and can exist independently
      * of the smartbinding object.
-     * Example:
-     * This example shows a fully specified smartbinding. Usually only parts
+     * 
+     * #### Example
+     *
+     * This example shows a fully specified smartbinding. Usually, only parts
      * are used. This example shows a tree with files and folders.
-     * <code>
+     * 
+     * ```xml
      *  <a:tree smartbinding="sbExample" />
      * 
      *  <a:smartbinding id="sbExample">
@@ -1021,11 +1046,14 @@ apf.DataBinding = function(){
      *      </a:actions>
      *      <a:model src="xml/filesystem.xml" />
      *  </a:smartbinding>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
+     *
      * The smartbinding parts can also be assigned to an element by adding them
      * directly as a child in aml.
-     * <code>
+     * 
+     * ```xml
      *  <a:tree>
      *      <a:bindings>
      *          ...
@@ -1034,24 +1062,24 @@ apf.DataBinding = function(){
      *  </a:tree>
      * </code>
      *
-     * See:
-     * There are several ways to be less verbose in assigning certain rules.
-     * <ul>
-     *  <li>{@link baseclass.multiselectbinding.binding.each}</li>
-     *  <li>{@link baseclass.dragdrop.attribute.drag}</li>
-     *  <li>{@link element.bindings}</li>
-     *  <li>{@link element.actions}</li>
-     *  <li>{@link element.dragdrop}</li>
-     * </ul>
+     * ### See Also
+     *
+     * There are several ways to be less verbose in assigning certain rules. For more information, see:
+     *
+     * * [[apf.bindings]]
+     * * [[apf.actions]]
+     * * [[apf.DragDrop]]
+     * 
      */
     this.$propHandlers["smartbinding"] = 
     
     /**
-     * @attribute {String} actions the id of the actions element which
+     * @attribute {String} actions Sets or gets the id of the actions element which
      * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
-     * Example:
-     * <code>
+     * #### Example
+     *
+     * ```xml
      *  <a:tree 
      *    id             = "tree" 
      *    height         = "200" 
@@ -1080,19 +1108,22 @@ apf.DataBinding = function(){
      *    top     = "10"
      *    onclick = "tree.startRename()" />
      *  <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
-     * </code>
+     * ```
      */
     this.$propHandlers["actions"] = 
 
     /**
-     * @attribute {String} bindings the id of the bindings element which
+     * @attribute {String} bindings Sets or gets the id of the bindings element which
      * provides the binding rules for this element.
-     * Example:
+     * 
+     * #### Example
+     *
      * This example shows a set of binding rules that transform data into the
      * representation of a list. In this case it displays the names of
      * several email accounts, with after each account name the number of unread
      * mails in that account. It uses JSLT to transform the caption.
-     * <code>
+     * 
+     * ```xml
      *  <a:model id="mdlExample">
      *      <data>
      *          <account icon="application.png">Account 1
@@ -1110,21 +1141,24 @@ apf.DataBinding = function(){
      *      <a:icon match="[@icon]" />
      *      <a:each match="[account]" sort="[text()]" />
      *  </a:bindings>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
+     *
      * Bindings can also be assigned directly by putting the bindings tag as a
      * child of this element.
      *
      * If the rule only contains a select attribute, it can be written in a
      * short way by adding an attribute with the name of the rule to the
      * element itself:
-     * <code>
+     * 
+     * ```xml
      *  <a:list 
      *    caption = "[text()] (#[mail[@read != 'true']])"
      *    icon    = "[@icon]"
      *    each    = "[account]"
      *    sort    = "[text()]" />
-     * </code>
+     * ```
      */
     this.$propHandlers["bindings"] = function(value, prop){
         var local = "$" + prop + "Element";
@@ -1317,10 +1351,12 @@ apf.DataBinding = function(){
     // #endif
 
     /**
-     * @attribute {String} model the name of the model to load data from or a
+     * @attribute {String} model Sets or gets the name of the model to load data from, or a
      * datainstruction to load data.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:model id="mdlExample" src="filesystem.xml" />
      *   <a:tree 
      *     height         = "200" 
@@ -1331,9 +1367,13 @@ apf.DataBinding = function(){
      *           <a:icon value="Famfolder.gif" />
      *       </a:each>
      *   </a:tree>
-     * </code>
-     * Example:
-     * <code>
+     * ```
+     * 
+     * #### Example
+     *
+     * Here's an example loading from an XML source:
+     *
+     * ```xml
      *  <a:tree 
      *    height         = "200" 
      *    width          = "250" 
@@ -1343,9 +1383,11 @@ apf.DataBinding = function(){
      *          <a:icon value="Famfolder.gif" />
      *      </a:each>
      *  </a:tree>
-     * </code>
-     * Example:
-     * <code>
+     * ```
+     * 
+     * #### Example
+     *
+     * ```xml
      *  <a:tree 
      *     id             = "tree"
      *     height         = "200" 
@@ -1361,34 +1403,18 @@ apf.DataBinding = function(){
      *     value  = "[@caption]" 
      *     width  = "250" 
      *     height = "100" />
-     * </code>
-     * Remarks:
-     * This attribute is inherited from a parent when not set. You can use this
-     * to tell sets of elements to use the same model.
-     * <code>
-     *  <a:bar model="mdlForm">
-     *      <a:label>Name</a:label>
-     *      <a:textbox value="[name]" />
+     * ```
      * 
-     *      <a:label>Happiness</a:label>
-     *      <a:slider value="[happiness]" min="0" max="10" />
-     *  </a:bar>
-     * 
-     *  <a:model id="mdlForm">
-     *      <data />
-     *  </a:model>
-     * </code>
-     * When no model is specified the default model is chosen. The default
-     * model is the first model that is found without a name, or if all models
-     * have a name, the first model found.
-     * Example:
+     * #### Example
+     *
      * This example shows a dropdown from which the user can select a country.
      * The list of countries is loaded from a model. Usually this would be loaded
      * from a separate url, but for clarity it's inlined. When the user selects
      * a country in the dropdown the value of the item is stored in the second
      * model (mdlForm) at the position specified by the ref attribute. In this
      * case this is the country element.
-     * <code>
+     * 
+     * ```xml
      *  <a:label>Name</a:label>
      *  <a:textbox value="[name]" model="mdlForm" />
      * 
@@ -1413,7 +1439,31 @@ apf.DataBinding = function(){
      *          <country />
      *      </data>
      *  </a:model>
-     * </code>
+     * ```
+     *
+     * #### Remarks
+     *
+     * This attribute is inherited from a parent when not set. You can use this
+     * to tell sets of elements to use the same model.
+     * 
+     * ```xml
+     *  <a:bar model="mdlForm">
+     *      <a:label>Name</a:label>
+     *      <a:textbox value="[name]" />
+     * 
+     *      <a:label>Happiness</a:label>
+     *      <a:slider value="[happiness]" min="0" max="10" />
+     *  </a:bar>
+     * 
+     *  <a:model id="mdlForm">
+     *      <data />
+     *  </a:model>
+     * ```
+     *
+     * When no model is specified the default model is chosen. The default
+     * model is the first model that is found without a name, or if all models
+     * have a name, the first model found.
+     * 
      * @see baseclass.databinding.attribute.model
      */
     this.$propHandlers["model"] = function(value){
@@ -1554,10 +1604,9 @@ apf.DataBinding = function(){
 
     // #ifdef __WITH_VIRTUALVIEWPORT
     /**
-     * @attribute {String} viewport the way this element renders its data.
-     * Possible values:
-     * virtual  this element only renders data that it needs to display.
-     * normal   this element renders all data at startup.
+     * @attribute {String} viewport Sets or gets the way this element renders its data. Possible values include:
+     *                              - `"virtual"`:  this element only renders data that it needs to display.
+     *                              - `"normal`"`:  this element renders all data at startup.
      * @experimental
      */
     this.$propHandlers["viewport"] = function(value){

@@ -53,7 +53,7 @@
  * @constructor
  * @define repeat
  * @allowchild {anyaml}
- * @addnode elements
+ *
  *
  * @inherits apf.DataAction
  *
@@ -84,7 +84,7 @@ apf.repeat = function(struct, tagName){
         this.each = value;
     };
     
-    /**** Private methods ****/
+    // *** Private methods *** //
     
     /**
      * @private
@@ -145,7 +145,7 @@ apf.repeat = function(struct, tagName){
         }
     };
     
-    /**** Databinding ****/
+    // *** Databinding *** //
     
     /**
      * @private 
@@ -225,7 +225,7 @@ apf.repeat = function(struct, tagName){
         }
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$ext = this.$pHtmlNode.appendChild(this.$ext 

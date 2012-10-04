@@ -26,7 +26,7 @@
  *
  * @constructor
  * @define map
- * @addnode elements
+ *
  *
  * @author      Mike de Boer (mike AT ajax DOT org)
  * @version     %I%, %G%
@@ -38,19 +38,19 @@
  *
  * @attribute {Number}  latitude          geographical coordinate
  * @attribute {Number}  longitude         geographical coordinate
- * @attribute {mixed}   maptypecontrol    defines the if a MapType control should
+ * @attribute {Mixed}   maptypecontrol    defines the if a MapType control should
  *                                        be visible and what its position and style should be.
  *                                        The value may be either 'false' (no control)
  *                                        or of the following form:
  *                                        'position:bottom-left,style:dropdown'
  *                                        Style options: 'dropdown', 'bar'
- * @attribute {mixed}   navigationcontrol defines the if a Navigation control should
+ * @attribute {Mixed}   navigationcontrol defines the if a Navigation control should
  *                                        be visible and what its position and style should be.
  *                                        The value may be either 'false' (no control)
  *                                        or of the following form:
  *                                        'position:bottom-left,style:zoompan'
  *                                        Style options: 'android', 'small' or 'zoompan'
- * @attribute {mixed}   scalecontrol      defines the if a Navigation control should
+ * @attribute {Mixed}   scalecontrol      defines the if a Navigation control should
  *                                        be visible and what its position and style should be.
  *                                        The value may be either 'false' (no control)
  *                                        or of the following form:

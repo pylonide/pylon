@@ -21,7 +21,9 @@
 // #ifdef __AMLBASESTATEBUTTONS || __INC_ALL
 
 /**
- * @constructor
+ * The base class for state buttons.
+ *
+ * @class apf.BaseStateButtons
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -46,11 +48,10 @@ apf.BaseStateButtons = function(){
     this.$supportedProperties.push("buttons", "animate", "state");
     
     /**
-     * Close the window. It can be reopened by using {@link baseclass.guielement.method.show}
-     * Call-chaining is supported.
-     * @todo show should unset closed
+     * Close the window. It can be reopened by using {@link apf.GuiElement.show}
+     * @chainable
      */
-    this.close = function(){
+    this.close = function(){ // @todo show should unset closed
         this.setProperty("state", this.state.split("|")
             .pushUnique("closed").join("|"), false, true);
         return this;
@@ -58,8 +59,8 @@ apf.BaseStateButtons = function(){
 
     /**
      * Minimize the window. The window will become the height of the title of
-     * the window.
-     * Call-chaining is supported.
+     * the parent window.
+     * @chainable
      */
     this.minimize = function(){
         this.setProperty("state", this.state.split("|")
@@ -72,7 +73,7 @@ apf.BaseStateButtons = function(){
     /**
      * Maximize the window. The window will become the width and height of the
      * browser window.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.maximize = function(){
         this.setProperty("state", this.state.split("|")
@@ -85,7 +86,7 @@ apf.BaseStateButtons = function(){
     /**
      * Restore the size of the window. The window will become the width and
      * height it had before it was minimized or maximized.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.restore = function(){
         this.setProperty("state", this.state.split("|")
@@ -97,7 +98,7 @@ apf.BaseStateButtons = function(){
     
      /**
      * Set the window into edit state. The configuration panel is shown.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.edit = function(value){
         this.setProperty("state", this.state.split("|")
@@ -107,7 +108,7 @@ apf.BaseStateButtons = function(){
 
     /**
      * Removes the edit state of this window. The configuration panel is hidden.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.closeedit = function(value){
         this.setProperty("state", this.state.split("|")
@@ -131,14 +132,16 @@ apf.BaseStateButtons = function(){
     }
     
     /**
-     * @attribute {String} state the state of the window. The state can be a
-     * combination of multiple states seperated by a pipe '|' character.
-     *   Possible values:
-     *   normal     The window has it's normal size and position. Default value.
-     *   minimized  The window is minimized.
-     *   maximized  The window is maximized.
-     *   edit       The window is in the edit state.
-     *   closed     The window is closed.
+     * @attribute {String} state Sets or gets the state of the window. The state can be a
+     * combination of multiple states, seperated by a pipe (`'|'`) character.
+     *   
+     * The possible values include:
+     *
+     *   `"normal"`:     The window has its normal size and position. This is the default value.
+     *   `"minimized"`:  The window is minimized.
+     *   `"maximized"`:  The window is maximized.
+     *   `"edit"`:       The window is in the edit state.
+     *   `"closed"`:     The window is closed.
      */
     this.$propHandlers["state"] = function(value, prop, force, reenter, noanim){
         var _self = this;
@@ -545,13 +548,15 @@ apf.BaseStateButtons = function(){
 
     var marginBox, hordiff, verdiff, oButtons = {}
     /**
-     * @attribute {String} buttons the buttons that the window displays. This
-     * can be multiple values seperated by a pipe '|' character.
-     *   Possible values:
-     *   min    The button that minimizes the window.
-     *   max    The button that maximizes the window.
-     *   close  The button that closes the window.
-     *   edit   The button that puts the window into the edit state.
+     * @attribute {String} buttons Sets or gets the buttons that the window displays. This
+     * can be multiple values seperated by a pipe (`'|'`) character.
+     *   
+     * The possible values include:
+     *
+     *   `"min"`:    The button that minimizes the window.
+     *   `"max"`:    The button that maximizes the window.
+     *   `"close"`:  The button that closes the window.
+     *   `"edit"`:   The button that puts the window into the edit state.
      */
     this.$propHandlers["buttons"] = function(value){
         //#ifdef __SUPPORT_IPHONE

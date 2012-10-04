@@ -27,7 +27,7 @@
  * @return {TypeNative} Returns a new &lt;audio&gt; element
  * @type {TypeNative}
  * @constructor
- * @addnode elements:audio
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

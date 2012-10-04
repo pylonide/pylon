@@ -21,16 +21,42 @@
  
 //#ifdef __WITH_DATABINDING
 
+/** 
+ * Define some action rules.
+ *
+ * @class apf.ActionRule
+ * @inherits apf.AmlElement
+ */
+// @todo Doc do all of these.
 /**
  * @attribute {String} match
+ */
+/** 
  * @attribute {String} set
+ */
+/** 
  * @attribute {String} undo
+ */
+/** 
  * @attribute {String} lock
+ */
+// @todo Doc ALL of these
+/*
  * @define update
+ */
+/* 
  * @attribute {String} get 
+ */
+/* 
  * @attribute {String} parent
+ */
+/* 
  * @define add
+ */
+/* 
  * @attribute {Boolean} get 
+ */
+/*
  * @attribute {Boolean} parent
  */
 apf.ActionRule = function(struct, tagName){
@@ -62,7 +88,7 @@ apf.ActionRule = function(struct, tagName){
         delete this["c" + prop];
     }
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {

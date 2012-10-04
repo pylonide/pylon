@@ -27,7 +27,7 @@
  * @return {TypeNative} Returns a new &lt;video&gt; element
  * @type {TypeNative}
  * @constructor
- * @addnode elements:video
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

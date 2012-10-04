@@ -21,11 +21,20 @@
 // #ifdef __AMLMENU || __INC_ALL
 
 /**
- * Element displaying a skinnable menu of items which can be choosen.
+ * An element displaying a skinnable menu of items which can be choosen.
+ * 
  * Based on the context of the menu, items can be shown and hidden. That's
  * why this element is often called a contextmenu.
- * Example:
- * <code>
+ * 
+ * @class apf.menu
+ * @define menu
+ * @selection
+ * @allowchild item, divider, check, radio
+ *
+ *
+ * #### Example
+ * 
+ * ```xml
  *  <a:iconmap 
  *    id     = "tbicons" 
  *    src    = "toolbar.icons.gif"
@@ -61,24 +70,23 @@
  *    contextmenu = "mmain"
  *    center      = "true">
  *  </a:window>
- * </code>
- * @see baseclass.guielement.event.contextmenu
- *
- * @event display   Fires when the contextmenu is shown.
- * @event itemclick Fires when a user presses the mouse button while over a child of this element.
- *   object:
- *   {String} value the value of the clicked element.
- *
- * @constructor
- * @define menu
- * @allowchild item, divider, check, radio
- * @addnode elements
+ * ```
+ * @see apf.GuiElement@contextmenu
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @inherits apf.Presentation
+ */
+/**
+ * @event display   Fires when the contextmenu is shown.
+ */
+/**
+ * @event itemclick Fires when a user presses the mouse button while over a child of this element.
+ * @param {Object} e The standard event object. The following property is available:
+ *   - `value` ([[String]]): the value of the clicked element.
+ *
  */
 apf.menu = function(struct, tagName){
     this.$init(tagName || "menu", apf.NODE_VISIBLE, struct);
@@ -92,7 +100,7 @@ apf.menu = function(struct, tagName){
     //var _self         = this;
     //var blurring      = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //this.zindex    = 10000000;
     this.visible   = false;
@@ -208,18 +216,18 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     var lastFocus;
 
     /**
      * Shows the menu, optionally within a certain context.
-     * @param {Number}     x        the left position of the menu.
-     * @param {Number}     y        the top position of the menu.
-     * @param {Boolean}    noanim   whether to animate the showing of this menu.
-     * @param {AMLElement} opener   the element that is the context of this menu.
-     * @param {XMLElement} xmlNode  the {@link term.datanode data node} that provides data context to the menu child nodes.
-     * @see baseclass.guielement.event.contextmenu
+     * @param {Number}     x        The left position of the menu.
+     * @param {Number}     y        The top position of the menu.
+     * @param {Boolean}    noanim   Whether to animate the showing of this menu.
+     * @param {apf.AmlElement} opener   The element that is the context of this menu.
+     * @param {XMLElement} xmlNode  The {@link term.datanode data node} that provides data context to the menu child nodes.
+     * @see apf.GuiElement@contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
@@ -342,8 +350,8 @@ apf.menu = function(struct, tagName){
     };
 
     /**
-     * Returns the current value of this element.
-     * @return {String}
+     * Returns the current group value of this element.
+     * @return {String} The current selected value.
      */
     this.getValue = function(group){
         return this.getSelected(group).value || "";
@@ -351,8 +359,8 @@ apf.menu = function(struct, tagName){
 
     /**
      * Retrieves the selected element from a group of radio elements.
-     * @param {String} group the name of the group.
-     * @return {radio} the selected radio element.
+     * @param {String} group The name of the group.
+     * @return {apf.radiobutton} The selected radio element.
      */
     this.getSelected = function(group){
         var nodes = this.childNodes;
@@ -366,12 +374,12 @@ apf.menu = function(struct, tagName){
         }
 
         return false;
-    }
+    };
 
     /**
      * Selects an element within a radio group.
-     * @param {String} group  the name of the group.
-     * @param {String} value  the value of the item to select.
+     * @param {String} group  The name of the group.
+     * @param {String} value  The value of the item to select.
      */
     this.select = function(group, value){
         var nodes = this.childNodes;
@@ -389,7 +397,7 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Events ****/
+    // *** Events *** //
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -550,7 +558,7 @@ apf.menu = function(struct, tagName){
     this.addEventListener("blur", forceHide);
     this.addEventListener("popuphide", forceHide);
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$pHtmlNode = document.body;

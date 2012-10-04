@@ -21,7 +21,8 @@
 
 //#ifdef __WITH_DATABINDING
 
-/**
+// @todo doc
+/*
  * @attribute {String} formula 
  * @attribute {Number} length
  * @attribute {String} delimiter

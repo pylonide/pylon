@@ -58,7 +58,7 @@ apf.setNamespace("", apf.html5);
  *   submit     provides a way to submit data.
  *   image      provides a way to submit data displaying an image instead of a button.
  *   reset      provides a way to reset entered data.
- * @addnode elements
+ *
  */
 /**
  * @private

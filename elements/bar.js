@@ -23,29 +23,38 @@
 
 /**
  * Element displaying a skinnable rectangle which can contain other 
- * aml elements. This element is used by other elements such as the 
- * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other aml elements.
- * Remarks:
+ * AML elements. 
+ *
+ * This element is used by other elements such as the 
+ * [[apf.toolbar]] and [[apf.statusbar]] elements to specify sections within those elements
+ * which in turn can contain other AML elements.
+ *
+ * #### Remarks
+ *
  * This component is used in the accordion element to create its sections. In
- * the statusbar the panel element is an alias of bar.
+ * the [[apf.statusbar]], the panel element is an alias of [[apf.bar]].
  *
- * @constructor
- *
- * @define bar, panel, menubar
- * @attribute {String} icon the url pointing to the icon image.
- * @attribute {Boolean} collapsed   collapse panel on load, default is false
- * Possible values:
- *     true    panel is collapsed
- *     false   panel is not collapsed
- * @attribute {String} title   describes content in panel
- * @allowchild button
- * @allowchild {elements}, {anyaml}
- * @addnode elements
- *
+ * @class apf.bar
+ * @inherits apf.Presentation
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @define bar
+ * @container
+ * @allowchild button
+ * @allowchild {elements}, {anyaml}
+ *
+ */
+/**
+ * @attribute {String} icon Sets or gets the URL pointing to the icon image.
+ */
+/**
+ *  @attribute {Boolean} collapsed=false  Sets or gets the collapse panel on load
+ * 
+ */
+/**
+ * @attribute {String} title  Sets or gets the title string
  */
 apf.section = function(struct, tagName){
     this.$init(tagName || "section", apf.NODE_VISIBLE, struct);

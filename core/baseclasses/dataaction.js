@@ -23,18 +23,19 @@ apf.__DATAACTION__ = 1 << 25;
 
 // #ifdef __WITH_DATAACTION
 /**
- * Baseclass adding data action features to this element.
+ * A [[term.baseclass baseclass]] that adds data action features to this element.
+ * @class apf.DataAction
  */
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Gets the ActionTracker this element communicates with.
      *
-     * @return {ActionTracker}
-     * @see  element.smartbinding
+     * @return {apf.actiontracker}
+     * @see apf.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
         if (!apf.AmlNode)
@@ -63,93 +64,41 @@ apf.DataAction = function(){
     this.$actions    = false;
 
     /**
-     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock}
-     * is a mechanism for enforcing limits on access to a resource in a
-     * multi-user environment. Locks are one way of enforcing concurrency
-     * control policies. Ajax.org Platform (apf) has support for locking in
-     * combination with {@link term.action action rules}. There are two
-     * types of locks; pessimistic and optimistic locks. Descriptions below are
-     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}.
+     * @event locksuccess   Fires when a lock request succeeds
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the lock request
      *
-     * Optimistic:
-     * This allows multiple concurrent users access to the database whilst the
-     * system keeps a copy of the initial-read made by each user. When a user
-     * wants to update a record, the application determines whether another user
-     * has changed the record since it was last read. The application does this
-     * by comparing the initial-read held in memory to the database record to
-     * verify any changes made to the record. Any discrepancies between the
-     * initial-read and the database record violates concurrency rules and hence
-     * causes the system to disregard any update request. An error message is
-     * generated and the user is asked to start the update process again.
-     * It improves database performance by reducing the amount of locking
-     * required, thereby reducing the load on the database server. It works
-     * efficiently with tables that require limited updates since no users are
-     * locked out. However, some updates may fail. The downside is constant
-     * update failures due to high volumes of update requests from multiple
-     * concurrent users - it can be frustrating for users.
-     *
-     * For optimistic locking apf can run as if there would be no locking.
-     * Changed data is sent to the server and is either successfully saved or
-     * not. When the action isn't changed and the server returns an error code
-     * the {@link element.actiontracker actiontracker} <strong>automatically
-     * reverts the change</strong>.
-     *
-     * Pessimistic:
-     * This is whereby a user who reads a record with the intention of updating
-     * it, places an exclusive lock on the record to prevent other users from
-     * manipulating it. This means no one else can manipulate that record until
-     * the user releases the lock. The downside is that users can be locked out
-     * for a long time thereby causing frustration.
-     *
-     * For pessimistic locking add the locking attribute to the {@link term.action action rules}
-     * that need it. The following example shows a lock request for a rename
-     * action on a file browser tree.
-     * <code>
-     *  <a:rename set="..." lock="{comm.lockFile([@path], unlock)}" />
-     * </code>
-     * The unlock variable is true when the lock needs to be released. This is
-     * done when the action was cancelled after getting a lock. For instance
-     * when the user presses escape while renaming.
-     *
-     * MultiUser:
-     * In multi user environments it can be handy
-     * to be signalled of changes by others within the application. For more
-     * information on this please look at {@link element.remote}.
-     *
-     * Remarks:
-     * During offline works pessimistic locks will always fail. If the application
-     * does not use {@link element.remote remote smart bindings} the developer
-     * should reload the part of the content for which the lock failed. See
-     * {@link baseclass.databinding.event.lockfailed}.
-     *
-     * Note: APF understands the status codes specified in RFC4918 for the locking implementation
-     *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
-
     /**
-     *  Start the specified action, does optional locking and can be offline aware
+     * @event lockfailed    Fires when a lock request failes
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the lock request
+     *
+     */
+    /**
+     * @event unlocksuccess Fires when an unlock request succeeds
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the unlock request
+     *
+     */
+    /**
+     * @event unlockfailed  Fires when an unlock request fails
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the unlock request
+     *
+     */
+    /*
+     *  Starts the specified action, does optional locking and can be offline aware
      *  - or for optimistic locking it will record the timestamp (a setting
      *    <a:appsettings locking="optimistic"/>)
      *  - During offline work, optimistic locks will be handled by taking the
      *    timestamp of going offline
      *  - This method is always optional! The server should not expect locking to exist.
      *
-     * @event locksuccess   Fires when a lock request succeeds
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the lock request
-     * @event lockfailed    Fires when a lock request failes
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the lock request
-     * @event unlocksuccess Fires when an unlock request succeeds
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the unlock request
-     * @event unlockfailed  Fires when an unlock request fails
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the unlock request
      */
     this.$startAction = function(name, xmlContext, fRollback){
         if (this.disabled || this.liveedit && name != "edit")
@@ -306,26 +255,25 @@ apf.DataAction = function(){
         //#endif
     };
 
-    /**
-     * Executes an action using action rules set in the {@link element.actions actions element}.
+    /*
+     * Executes an action using action rules set in the {@link apf.actions actions element}.
      *
-     * @param {String}      atAction      the name of the action to be performed by the ActionTracker.
-     *   Possible values:
-     *   setTextNode        sets the first text node of an xml element. {@link core.xmldb.method.setTextNode}
-     *   setAttribute       sets the attribute of an xml element. {@link core.xmldb.method.setAttribute}
-     *   removeAttribute    removes an attribute from an xml element. {@link core.xmldb.method.removeAttribute}
-     *   setAttributes      sets multiple attribute on an xml element. Arguments are [xmlNode, Array]
-     *   replaceNode        replaces an xml child with another one. {@link core.xmldb.method.replaceNode}
-     *   addChildNode       adds a new xml node to a parent node. {@link core.xmldb.method.addChildNode}
-     *   appendChild        appends an xml node to a parent node. {@link core.xmldb.method.appendChild}
-     *   moveNode           moves an xml node from one parent to another. {@link core.xmldb.method.moveNode}
-     *   removeNode         removes a node from it's parent. {@link core.xmldb.method.removeNode}
-     *   removeNodeList     removes multiple nodes from their parent. {@link core.xmldb.method.removeNodeList}
-     *   setValueByXpath    sets the nodeValue of an xml node whiche is selected
-     *                      by an xpath statement. Arguments are [xmlNode, xpath, value]
-     *   multicall          calls multiple of these actions. Arguments is an array
-     *                      of argument arrays for these actions each with a func
-     *                      property which is the name of the action.
+     * @param {String}      atAction      The name of the action to be performed by the [[ActionTracker]]. Possible values include:
+     *                                 - `"setTextNode"`:   Sets the first text node of an XML element. For more information, see {@link core.xmldb.method.setTextNode}
+     *                                 - `"setAttribute"`:  Sets the attribute of an XML element. For more information, see {@link core.xmldb.method.setAttribute}
+     *                                 - `"removeAttribute"`:   Removes an attribute from an XML element. For more information, see {@link core.xmldb.method.removeAttribute}
+     *                                 - `"setAttributes"`:   Sets multiple attribute on an XML element. The arguments are in the form of `xmlNode, Array`
+     *                                 - `"replaceNode"`:   Replaces an XML child with another one. For more information, see {@link core.xmldb.method.replaceNode}
+     *                                 - `"addChildNode"`:   Adds a new XML node to a parent node. For more information, see {@link core.xmldb.method.addChildNode}
+     *                                 - `"appendChild"`:   Appends an XML node to a parent node. For more information, see {@link core.xmldb.method.appendChild}
+     *                                 - `"moveNode"` :  Moves an XML node from one parent to another. For more information, see {@link core.xmldb.method.moveNode}
+     *                                 - `"removeNode"`:   Removes a node from it's parent. For more information, see {@link core.xmldb.method.removeNode}
+     *                                 - `" removeNodeList"`:    Removes multiple nodes from their parent. For more information, see {@link core.xmldb.method.removeNodeList}
+     *                                 - `"setValueByXpath"`:   Sets the nodeValue of an XML node which is selected
+     *                                                           by an xpath statement. The arguments are in the form of `xmlNode, xpath, value`
+     *                                 - `"multicall"`:          Calls multiple of the above actions. The argument`s are an array
+     *                                                           of argument arrays for these actions each with a func`
+     *                                                           property, which is the name of the action.
      * @param {Array}       args          the arguments to the function specified
      *                                    in <code>atAction</code>.
      * @param {String}      action        the name of the action rule defined in
@@ -336,7 +284,7 @@ apf.DataAction = function(){
      *                                    (such as RPC calls). Usually the same
      *                                    as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
-     * @see  element.smartbinding
+     * @see apf.smartbinding
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         //#ifdef __WITH_OFFLINE
@@ -421,7 +369,7 @@ apf.DataAction = function(){
         return UndoObj;
     };
 
-    /**
+    /*
      * Executes an action based on the set name and the new value
      * @param {String}      atName   the name of the action rule defined in actions for this element.
      * @param {String}      setName  the name of the binding rule defined in bindings for this element.
@@ -567,11 +515,10 @@ apf.DataAction = function(){
     /**
      * Changes the value of this element.
      * @action
-     * @param  {String} [string] the new value of this element.
-     * @todo apf3.0 maybe not for multiselect?? - why is clearError handling not
-     *       in setProperty for value
+     * @param  {String} [string] The new value of this element.
+     * 
      */
-    this.change = function(value, force){
+    this.change = function(value, force){ // @todo apf3.0 maybe not for multiselect?? - why is clearError handling not in setProperty for value
         // #ifdef __WITH_VALIDATION
         if (this.errBox && this.errBox.visible && this.isValid && this.isValid())
             this.clearError();
@@ -619,16 +566,19 @@ apf.DataAction = function(){
     this.$supportedProperties.push("create-model", "actions");
 
     /**
-     * @attribute {Boolean} create-model whether the model this element connects
+     * @attribute {Boolean} create-model Sets or gets whether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
-     * Example:
-     * In this example a model is extended when the user enters information in
-     * the form elements. Because no model is specified for the form elements
-     * the first available model is chosen. At the start it doesn't have any
-     * data, this changes when for instance the name is filled in. A root node
-     * is created and under that a 'name' element with a textnode containing
+     * 
+     * #### Example
+     *
+     * In this example, a model is extended when the user enters information in
+     * the form elements. Because no model is specified for the form elements,
+     * the first available model is chosen. At the start, it doesn't have any
+     * data; this changes when (for instance) the name is filled in. A root node
+     * is created, and under that a 'name' element with a textnode containing
      * the entered text.
-     * <code>
+     * 
+     * ```xml
      *  <a:bar>
      *      <a:label>Name</a:label>
      *      <a:textbox value="[name]" required="true" />
@@ -644,7 +594,7 @@ apf.DataAction = function(){
      *        caption = "[@name]" />
      *      <a:button action="submit">Submit</a:button>
      *  </a:bar>
-     * </code>
+     * ```
      */
     this.$propHandlers["create-model"] = function(value){
         this.$createModel = value;

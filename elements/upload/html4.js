@@ -27,7 +27,7 @@
  * @return {html4} Returns a new HTML4 uploader
  * @type {html4}
  * @constructor
- * @addnode elements:upload
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

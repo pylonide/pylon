@@ -409,7 +409,7 @@ apf.LiveEdit.richtext = function(){
      * Issue a command to the editable area.
      *
      * @param {String} name
-     * @param {mixed}  param
+     * @param {Mixed}  param
      * @type  {void}
      */
     this.$execCommand = function(name, param) {
@@ -561,7 +561,7 @@ apf.LiveEdit.richtext = function(){
      *
      * @param {String} name
      * @param {String} hook
-     * @type  {mixed}
+     * @type  {Mixed}
      */
     this.$notifyPlugin = function(name, hook) {
         var item = this.$plugins[name];
@@ -1438,8 +1438,8 @@ apf.LiveEdit.plugin = function(sName, fExec) {
          * contents of sNode and appended to oParent.
          *
          * @param {String}  sNode
-         * @param {AmlNode} oParent
-         * @type  {AmlNode}
+         * @param {apf.AmlNode} oParent
+         * @type  {apf.AmlNode}
          */
         this.appendAmlNode = function(sNode, oParent) {
             if (!sNode) return null;

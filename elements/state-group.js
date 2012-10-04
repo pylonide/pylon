@@ -21,10 +21,12 @@
 //#ifdef __AMLSTATEGROUP || __INC_ALL
 
 /**
- * Element that groups state elements together and
+ * An element that groups state elements together and
  * provides a way to set a default state.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:state-group
  *    loginMsg.visible  = "false"
  *    winLogin.disabled = "false">
@@ -40,9 +42,14 @@
  *          winLogin.disabled = "true" />
  *      <a:state id="stIdle" />
  *  </a:state-group>
- * </code>
- * @addnode elements
- * @see element.state
+ * ```
+ *
+ * @class apf.stateGroup
+ * @define state-group
+ * @logic
+ * @inherits apf.AmlElement
+ *
+ * @see apf.state
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

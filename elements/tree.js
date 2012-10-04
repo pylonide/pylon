@@ -22,13 +22,19 @@
 // #ifdef __AMLTREE || __INC_ALL
 
 /**
- * Element displaying data in a list where each item in the list can contain
- * such a list. This element gives the user the ability to walk through this
+ * An element displaying data in a list, where each item in the list can contain
+ * such a list. 
+ *
+ * This element gives the user the ability to walk through this
  * tree of data by clicking open elements to show more elements. The tree
  * can grow by fetching more data when the user requests it.
- * Example:
- * A tree with inline items.
- * <code>
+ *
+ *
+ * #### Example
+ *
+ * A tree with inline items:
+ *
+ * ```xml
  *  <a:tree id="tree" align="right">
  *      <a:item caption="root" icon="icoUsers.gif">
  *          <a:item icon="icoUsers.gif" caption="test">
@@ -41,44 +47,57 @@
  *          <a:item icon="icoUsers.gif" caption="test" />
  *      </a:item>
  *  </a:tree>
- * </code>
- * Example:
- * <code>
+ * ```
+ *
+ * #### Example
+ *
+ * A tree using a model:
+ *
+ * ```xml
  *  <a:tree model="filesystem.xml">
  *      <a:caption match="[@caption]" />
  *      <a:caption match="[@filename]" />
  *      <a:icon match="[@icon]" />
  *      <a:each match="[drive|file|folder]" />
  *  </a:tree>
- * </code>
- * Example:
- * Inline tree description that draws the same as the above example:
- * <code>
+ * ```
+ *
+ * An inline tree description that draws the same as the above example:
+ *
+ * ```xml
  *  <a:tree 
  *    model   = "filesystem.xml"
  *    caption = "[@caption|@filename]"
  *    icon    = "[@icon]"
  *    each    = "[drive|file|folder]" />
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.tree
  * @define tree
+ * @selection
  * @allowchild {smartbinding}
- * @addnode elements
+ *
+ * @inherits apf.BaseTree
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
+ *
+ */
+/**
  * @binding insert Determines how new data is loaded when the user expands 
  * an item. For instance by clicking on the + button. This way only the root nodes
  * need to be loaded at the start of the application. All other children are
  * received on demand when the user requests it by navigating throught the tree.
- * Example:
+ *
+ * #### Example
+ *
  * This example shows an insert rule that only works on folder elements. It will
  * read the directory contents using webdav and insert it under the selected 
  * tree node.
- * <code>
+ *
+ * ```xml
  *  <a:tree model="filesystem.xml">
  *      <a:bindings>
  *          <a:caption match="[@caption|@filename]" />
@@ -86,14 +105,28 @@
  *          <a:each match="[drive|file|folder]" />
  *      </a:bindings>
  *  </a:tree>
- * </code>
- * @attribute {String} get the {@link term.datainstruction data instruction} that is used to load the new data.
+ * ```
+ *
+ */
+/**
+ * @attribute {String} Sets or gets the {@link term.datainstruction data instruction} that is used to load the new data.
+ *
+ */
+/**
  * @binding caption  Determines the caption of a tree node.
+ */
+/**
  * @binding icon     Determines the icon of a tree node.
+ */
+/**
  * @binding css      Determines a css class for a tree node.
- * Example:
+ *
+ * #### Example
+ *
  * In this example a node is bold when the folder contains unread messages:
- * <code>
+ *
+ * ```xml
+ *
  *  <a:tree model="messages.xml">
  *      <a:caption match="[@caption]" />
  *      <a:css match="[folder/message[@unread]]" value="highlighUnread" />
@@ -101,13 +134,20 @@
  *      <a:icon match="[folder]" value="icoDir.png" />
  *      <a:each match="[folder|message]" />
  *  </a:tree>
- * </code>
+ * ```
+ */
+/**
  * @binding tooltip  Determines the tooltip of a tree node.
+ */
+/**
  * @binding empty    Determines the empty message of a node.
- * Example:
- * This example shows a gouped contact list, that displays a message under 
+ *
+ * #### Example
+ *
+ * This example shows a grouped contact list that displays a message under 
  * empty groups.
- * <code>
+ *
+ * ```xml
  *  <a:tree model="xml/contacts.xml">
  *      <a:caption match="[@caption]" />
  *      <a:icon match="[contact]" value="icoContact.png" />
@@ -115,7 +155,7 @@
  *      <a:empty match="[group]" value="Drag a contact to this group." />
  *      <a:each match="[group|contact]" />
  *  </a:tree>
- * </code>
+ * ```
  */
 apf.tree = function(struct, tagName){
     this.$init(tagName || "tree", apf.NODE_VISIBLE, struct);
@@ -128,15 +168,16 @@ apf.tree = function(struct, tagName){
         IS_ROOT   = 1 << 4,
         treeState = this.$treeState;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     // #ifdef __WITH_MULTICHECK
     
     /**
      * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     *   
+     * The possible values are:
+     *   - `"check"`:  the user can select a single item from this element. The selected item is indicated.
+     *   - `"radio"`:  the user can select multiple items from this element. Each selected item is indicated.
      */
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
@@ -413,7 +454,7 @@ apf.tree = function(struct, tagName){
         // #endif
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$drawBase();

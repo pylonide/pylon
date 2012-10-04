@@ -22,12 +22,14 @@
 // #ifdef __AMLSTATUSBAR || __INC_ALL
 
 /**
- * Element displaying a bar consisting of bars containing other text, icons
- * and more aml. This element is usually placed in the bottom of the screen to 
+ * An element displaying a bar consisting of bars containing other text, icons
+ * and more AML. This element is usually placed in the bottom of the screen to 
  * display context sensitive and other information about the state of the 
  * application.
- * Example:
- * <code>
+ * 
+ * #### Example:
+ * 
+ * ```xml
  *  <a:statusbar>
  *      <a:section icon="application.png">Ajax.org</a:section>
  *      <a:section>Some status information</a:section>
@@ -35,13 +37,14 @@
  *          <a:progressbar anchors="6 5 5 5" autostart="true" />
  *      </a:section>
  *  </a:statusbar>
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.statusbar
  * @define statusbar
+ * @container
  * @allowchild bar
  * @allowchild progressbar
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -54,7 +57,7 @@ apf.statusbar = function(struct, tagName){
 (function(){
     this.$focussable     = false;
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     var insertChild;
     
     this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin){
@@ -91,7 +94,7 @@ apf.statusbar = function(struct, tagName){
     });
     
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

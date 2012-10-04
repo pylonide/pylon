@@ -21,31 +21,42 @@
 // #ifdef __AMLLIST || __AMLSELECT || __AMLSELECT1 || __INC_ALL
 
 /**
- * Element displaying a skinnable list of options which can be selected.
- * Selection of multiple items can be allowed. Items can be renamed
+ * An element displaying a skinnable list of options which can be selected.
+ * 
+ * Selection of multiple items is allowed. Items can be renamed
  * and removed. The list can be used as a collection of checkboxes or 
  * radiobuttons. This is especially useful for use in forms.
+ * 
  * This element is one of the most often used elements. It can display lists
- * of items in a cms style interface or display a list of search results in 
+ * of items in a CMS-style interface, or display a list of search results in 
  * a more website like interface.
- * Example:
+ * 
+ * #### Example
+ * 
  * A simple list with inline items.
- * <code>
+ * 
+ * ```xml
  *  <a:list multimatch="[false]">
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
  *      <a:item>United Kingdom</a:item>
  *      ...
  *  </a:list>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ * 
  * A databound list with items loaded from an xml file.
- * <code>
+ * 
+ * ```xml
  *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ * 
  * A databound list using the bindings element
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -61,15 +72,14 @@
  *          <a:each match="[item[not(@deleted='1')]]" />
  *      </a:bindings>
  *  </a:list>
- * </code>
+ * ```
  *
- * @event click Fires when a user presses a mouse button while over this element.
- *
- * @constructor
+ * 
+ * @class apf.list
  * @define list, select, select1, thumbnail
  * @allowchild {smartbinding}
- * @addnode elements
  *
+ * @selection
  * @inherits apf.BaseList
  * @inherits apf.Rename
  *
@@ -77,14 +87,22 @@
  * @version     %I%, %G%
  * @since       0.4
  */
+/**
+ * @event click Fires when a user presses a mouse button while over this element.
+ */
+
 apf.list      = function(struct, tagName){
     this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
 };
 
 /**
- * Example:
+ * @class apf.thumbnail
+ * @inheritdoc apf.list
+ * 
+ * #### Example
  * A small product search application using a list to display results.
- * <code>
+ * 
+ * ```xml
  *  <a:bar>
  *      <h1>Search for a product</h1>
  *      <a:textbox id="txtSearch" selectfocus="true" />
@@ -117,16 +135,25 @@ apf.list      = function(struct, tagName){
  *          mdlSearch.$loadFrom("http://localhost/search.php?keyword=" + txtSearch.getValue());
  *      }
  *  </a:script>
- * </code>
+ * ```
  */
 apf.thumbnail = function(struct, tagName){
     this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
 };
 
+/**
+ * @class apf.select
+ * @inheritdoc apf.list
+ * 
+ */
 apf.select    = function(struct, tagName){
     this.$init(tagName || "select", apf.NODE_VISIBLE, struct);
 };
 
+/**
+ * @class apf.select1
+ * @inheritdoc apf.list
+ */
 apf.select1   = function(struct, tagName){
     this.$init(tagName || "selectl", apf.NODE_VISIBLE, struct);
 };
@@ -207,7 +234,7 @@ apf.select1   = function(struct, tagName){
     });
     // #endif
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$supportedProperties.push("appearance", "mode", "more", "thumbsize", "morepos");
     
@@ -233,13 +260,15 @@ apf.select1   = function(struct, tagName){
     
     
     /**
-     * @attribute {String} appearance the type of select this element is. 
-     * This is an xforms property and only available if apf is compiled 
-     * with __WITH_XFORMS set to 1.
-     *   Possible values:
-     *   full     depending on the tagName this element is either a list of radio options or of checked options.
-     *   compact  this elements functions like a list with multiselect off.
-     *   minimal  this element functions as a dropdown element.
+     * @attribute {String} appearance Sets or gets the type of select this element is. 
+     * This is an xforms property and only available if APF is compiled 
+     * with `__WITH_XFORMS` set to `1`.
+     *   
+     * Possible values include:
+     * 
+     *   - `"full"` :    depending on the tagName this element is either a list of radio options or of checked options.
+     *   - `"compact"`:  this elements functions like a list with multiselect off.
+     *   - `"minimal"`:  this element functions as a dropdown element.
      */
     this.$propHandlers["appearance"] = function(value){
         
@@ -249,12 +278,15 @@ apf.select1   = function(struct, tagName){
     /**
      * @attribute {String} more Adds a new item to the list and lets the users 
      * type in the new name. This is especially useful in the interface when 
-     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
-     * Example:
+     * the mode is set to check or radio--for instance in a form.
+     * 
+     * #### Example
+     * 
      * This example shows a list in form offering the user several options. The
      * user can add a new option. A server script could remember the addition
      * and present it to all new users of the form.
-     * <code>
+     * 
+     * ```xml
      *  <a:model id="mdlSuggestions">
      *      <suggestions>
      *          <question key="krant">
@@ -280,7 +312,7 @@ apf.select1   = function(struct, tagName){
      *         </a:add>
      *     </a:actions>
      *  </a:list>
-     * </code>
+     * ```
      */
     this.$propHandlers["more"] = function(value){
         if (value) {
@@ -347,13 +379,13 @@ apf.select1   = function(struct, tagName){
     }*/
     //#endif
     
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", this.$keyHandler, true);
     //#endif
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.appearance = this.getAttribute("appearance") || "compact";

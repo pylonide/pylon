@@ -22,36 +22,45 @@
 // #ifdef __WITH_HISTORY
 
 /**
- * Implementation of hash change listener. The 'hash' is the part of the
+ * @class apf.history
+ *
+ * Implements a hash change listener. The 'hash' is the part of the
  * location string in your browser that takes care of pointing to a section
  * within the current application.
- * Example:
- * <code>
+ * 
+ * #### Example
+ * ```
  *  www.example.com/index.php#products
- * </code>
- * Remarks:
- * In future browsers (> 2009) the location hash can be set by script and
- * {@link element.history.event.hashchange} is called when it's changed by using the back or forward
+ * ```
+ * 
+ * #### Remarks
+ * 
+ * In modern browsers (after 2009) the location hash can be set by script and
+ * {@link apf.history@hashchange} is called when it's changed by using the back or forward
  * button of the browsers. In most of the current (2009) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.
  *
- * Note on Internet Explorer 8. When switching between the IE7 compatibility mode
- * and IE8 mode the history navigation will break. A browser restart is then 
+ * Note: For Internet Explorer 8, when switching between the IE7 compatibility mode
+ * and IE8 mode the history navigation breaks. A browser restart is then 
  * required to fix it. Individually history navigation works fine in each mode.
  *
+ */
+/**
  * @event hashchange Fires when the hash changes. This can be either by setting
  * a new hash value or when a user uses the back or forward button. Typing a
  * new hash value in the location bar will also trigger this function.
- * Example:
- * <code>
+ *
+ * #### Example
+ *
+ * ```javascript
  *  apf.addEventListener("hashchange", function(e){
  *      var info = e.page.split(":");
  *
  *      switch(info[0]) {
  *          case "product": //hash is for instance 'product:23849'
  *              //Sets the application state to display product info
- *              //For more information see {@link element.state}
+ *              //For more information see apf.state
  *              stProduct.activate(); 
  *              //Loads a product by id
  *              loadProduct(info[1]); 
@@ -61,7 +70,7 @@
  *              break;
  *      }
  *  });
- * </code>
+ * ```
  *
  * @default_private
  */
@@ -168,9 +177,10 @@ apf.history = {
     /**
      * Sets the hash value of the location bar in the browser. This is used
      * to represent the state of the application for use by the back and forward
-     * buttons as well as for use when bookmarking or sharing url's.
-     * @param {String}  name    the new hash value.
-     * @param {Boolean} timed   whether to add a delay to setting the value.
+     * buttons, as well as for use when bookmarking or sharing URLs.
+     * @param {String}  name    The new hash value
+     * @param {Boolean} timed   Whether to add a delay to setting the value
+     * @param {Boolean} force   Forces the change to overwrite any existing value
      */
     setHash : function(name, timed, force){
         if (this.changing || this.page == name || !force

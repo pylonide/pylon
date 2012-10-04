@@ -395,7 +395,7 @@ apf.video.TypeQTCompat = (function(){
  * @return {TypeQT} Returns a new Quicktime video player
  * @type {TypeQT}
  * @constructor
- * @addnode elements:video
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

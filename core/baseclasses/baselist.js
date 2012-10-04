@@ -22,10 +22,10 @@
 // #ifdef __AMLBASELIST || __INC_ALL
 
 /**
- * Baseclass of elements that allows the user to select one or more items
+ * The baseclass of elements that allows the user to select one or more items
  * out of a list.
  *
- * @constructor
+ * @class apf.BaseList
  * @baseclass
  *
  * @inherits apf.MultiSelect
@@ -38,16 +38,29 @@
  * @since       0.8
  * @default_private
  *
+ */
+/**
  * @binding caption  Determines the caption of a node.
- * @binding icon     Determines the icon of a node. This binding rule is used
+ */
+/**
+ * @binding icon     Determines the icon of a node. 
+*
+ * This binding rule is used
  * to determine the icon displayed when using a list skin. The {@link baseclass.baselist.binding.image image binding}
  * is used to determine the image in the thumbnail skin.
- * @binding image    Determines the image of a node. This binding rule is used
+ */
+/**
+ * @binding image    Determines the image of a node. 
+ * 
+ * This binding rule is used
  * to determine the image displayed when using a thumbnail skin. The {@link baseclass.baselist.binding.icon icon binding}
  * is used to determine the icon in the list skin.
- * Example:
- * In this example the image url is read from the thumbnail attribute of the data node.
- * <code>
+ *
+ * #### Example
+ *
+ * In this example, the image URL is read from the thumbnail attribute of the data node.
+ *
+ * ```xml
  *  <a:thumbnail>
  *      <a:model>
  *          <data>
@@ -63,11 +76,17 @@
  *          <a:each match="[image]" />
  *      </a:bindings>
  *  </a:thumbnail>
- * </code>
- * @binding css      Determines a css class for a node.
- * Example:
+ * ```
+ *
+ */
+/**
+ * @binding css      Determines a CSS class for a node.
+ *
+ * #### Example
+ *
  * In this example a node is bold when the folder contains unread messages:
- * <code>
+ *
+ * ```xml
  *  <a:tree>
  *      <a:model>
  *          <data>
@@ -91,11 +110,16 @@
  *          <a:each match="[folder|message]" />
  *      </a:bindings>
  *  </a:tree>
- * </code>
- * @binding tooltip  Determines the tooltip of a node.
- * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.
- *   object:
- *   {String} value the value that was entered.
+ * ```
+ *
+ */
+/**
+ * @binding tooltip  Determines the tooltip of a node. 
+ */
+/**
+ * @event notunique Fires when the `more` attribute is set and an item is added that has a caption that already exists in the list.
+ * @param {Object} e The standard event object, with the following properties:
+ *                    - value ([[String]]): The value that was entered
  */
 apf.BaseList = function(){
     this.$init(true);
@@ -123,7 +147,7 @@ apf.BaseList = function(){
     );
     //#endif
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = true; // This object can get the focus
     this.$isWindowContainer = -1;
@@ -131,17 +155,21 @@ apf.BaseList = function(){
     this.multiselect = true; // Initially Disable MultiSelect
 
     /**
-     * @attribute {String} fill the set of items that should be loaded into this
-     * element. A start and an end seperated by a -.
-     * Example:
-     * This example loads a list with items starting at 1980 and ending at 2050.
-     * <code>
+     * @attribute {String} fill Sets or gets the set of items that should be loaded into this
+     * element. Items are seperated by a comma (`,`). Ranges are specified by a start and end value seperated by a dash (`-`).
+     *
+     * #### Example
+     *
+     * This example loads a list with items starting at 1980 and ending at 2050. It also loads several other items and ranges.
+     *
+     * ```xml
      *  <a:dropdown fill="1980-2050" />
      *  <a:dropdown fill="red,green,blue,white" />
-     *  <a:dropdown fill="None,100-110,1000-1100" />
-     *  <a:dropdown fill="01-10" />
-     *  <a:dropdown fill="1-10" />
-     * </code>
+     *  <a:dropdown fill="None,100-110,1000-1100" /> <!-- 101, 102...110, 1000,1001, e.t.c. -->
+     *  <a:dropdown fill="01-10" /> <!-- 01, 02, 03, 04, e.t.c. -->
+     *  <a:dropdown fill="1-10" /> <!-- // 1 2 3 4 e.t.c. -->
+
+     * ```
      */
     this.$propHandlers["fill"] = function(value){
         if (value)
@@ -153,10 +181,12 @@ apf.BaseList = function(){
     // #ifdef __WITH_MULTICHECK
     
     /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     * @attribute {String} mode Sets or gets the way this element interacts with the user.
+     *  
+     * The following values are possible:
+     *
+     *   - `check`: the user can select a single item from this element. The selected item is indicated.
+     *   - `radio`: the user can select multiple items from this element. Each selected item is indicated.
      */
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
@@ -183,7 +213,7 @@ apf.BaseList = function(){
     
     //#endif
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     // #ifdef __WITH_KEYBOARD
 
@@ -505,7 +535,7 @@ apf.BaseList = function(){
 
     // #endif
 
-    /**** Private databinding functions ****/
+    // *** Private databinding functions *** //
 
     this.$deInitNode   = function(xmlNode, htmlNode){
         if (!htmlNode) return;
@@ -817,10 +847,10 @@ apf.BaseList = function(){
     };
 
     /**
-     * Adds a new item to the list and lets the users type in the new name.
+     * Adds a new item to the list, and lets the users type in the new name.
+     *
      * This functionality is especially useful in the interface when
-     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
-     * @see element.list.attribute.more
+     * the list mode is set to `check` or `radio`--for instance in a form.
      */
     this.startMore = function(o, userAction){
         if (userAction && this.disabled)
@@ -903,7 +933,7 @@ apf.BaseList = function(){
         });
     };
 
-    /**** Selection ****/
+    // *** Selection *** //
 
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [],
@@ -941,16 +971,19 @@ apf.BaseList = function(){
 
     /**
      * Generates a list of items based on a string.
-     * @param {String} str the description of the items. Items are seperated by a comma (,). Ranges are specified by a start and end value seperated by a dash (-).
-     * Example:
+     * @param {String} str The description of the items. Items are seperated by a comma (`,`). Ranges are specified by a start and end value seperated by a dash (`-`).
+     *
+     * #### Example
+     *
      * This example loads a list with items starting at 1980 and ending at 2050.
-     * <code>
+     *
+     * #### ```xml
      *  lst.loadFillData("1980-2050");
      *  lst.loadFillData("red,green,blue,white");
-     *  lst.loadFillData("None,100-110,1000-1100");
-     *  lst.loadFillData("1-10"); // 1 2 3 4 etc
-     *  lst.loadFillData("01-10"); //01, 02, 03, 04, etc
-     * </code>
+     *  lst.loadFillData("None,100-110,1000-1100"); // 101, 102...110, 1000,1001, e.t.c.
+     *  lst.loadFillData("1-10"); // 1 2 3 4 e.t.c.
+     *  lst.loadFillData("01-10"); //01, 02, 03, 04, e.t.c.
+     * ```
      */
     this.loadFillData = function(str){
         var len, start, end, parts = str.splitSafe(","), data = [];

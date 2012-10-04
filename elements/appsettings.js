@@ -24,7 +24,7 @@
 /**
  * Element specifying the settings of the application.
  * @define appsettings
- * @addnode global
+ *
  * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
  * @see core.apf.object.debugwin
  * @see core.apf.object.console
@@ -48,12 +48,12 @@
  * @attribute {String}  default-page            the name of the default page if none is specified using the #. Defaults to "home". See {object.history}.
  * @see element.history
  * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
- * @see element.actiontracker
- * @attribute {String, Boolean} outline         whether an outline of an element is shown while dragging or resizing.
+ * @see apf.actiontracker
+ * @attribute {String | Boolean} outline         whether an outline of an element is shown while dragging or resizing.
  * @see baseclass.interactive
- * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging.
+ * @attribute {String | Boolean} drag-outline    whether an outline of an element is shown while dragging.
  * @see baseclass.interactive
- * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
+ * @attribute {String | Boolean} resize-outline  whether an outline of an element is shown while resizing.
  * @see baseclass.interactive
  * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instruction}.
  * @see teleport.http
@@ -75,7 +75,7 @@
  * @attribute {String}  storage                 the {@link core.storage storage provider} to be used for key/value storage.
  * @see core.storage
  * @attribute {String}  offline                 the {@link core.storage storage provider} to be used for offline support.
- * @see element.offline
+ * @see apf.offline
  * @attribute {String}  login                   the {@link term.datainstruction data instruction} which logs a user into the application.
  * @see element.auth
  * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.

@@ -228,7 +228,7 @@ apf.xml2json = function (xml, noattrs) {
  * Reliably determines whether a variable is a string of JSON.
  * @see http://json.org/
  *
- * @param {mixed}   value The variable to check
+ * @param {Mixed}   value The variable to check
  * @type  {Boolean}
  */
 apf.isJson = (function() {
@@ -733,7 +733,7 @@ if (!this.JSON) {
 
 /**
  * Creates a json string from a javascript object.
- * @param  {mixed}  o the javascript object to serialize.
+ * @param  {Mixed}  o the javascript object to serialize.
  * @return {String} the json string representation of the object.
  * @todo allow for XML serialization
  */

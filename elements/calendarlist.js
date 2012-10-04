@@ -92,7 +92,7 @@ apf.calendarlist      = function(struct, tagName){
     });
     // #endif
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$supportedProperties.push("appearance", "mode", "range", "date", "date-format", "interval");
 
@@ -142,13 +142,13 @@ apf.calendarlist      = function(struct, tagName){
         
     }
     
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
     
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", this.$keyHandler, true);
     //#endif
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function() {
         //Build Main Skin

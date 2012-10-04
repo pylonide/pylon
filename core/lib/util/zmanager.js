@@ -22,12 +22,13 @@
 //#ifdef __WITH_ZMANAGER
 /**
  * Manages the z-index of all elements in the UI. It takes care of different
- * regions in the z dimension preserved for certain common UI scenarios.
+ * regions in the z-dimension preserved for certain common UI scenarios.
  *
- * Remarks:
+ * #### Remarks
+ * 
  *  The following regions are defined:
  *  From:         To:           For:
- *            10        10000  Common Elements (each element a unique z index)
+ *           10        10000  Common Elements (each element a unique z index)
  *       100000       110000  Plane (Modal Windows / Maximized Panels) (latest shown highest)
  *       200000       210000  Popup (Menus / Dropdown Containers) (latest shown highest)
  *       300000       310000  Notifiers

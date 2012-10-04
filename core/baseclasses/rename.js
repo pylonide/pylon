@@ -29,10 +29,13 @@ apf.__RENAME__ = 1 << 10;
  * will show an input element in place where the user can change the name of the
  * item to a new one. When the caption is changed the {@link term.datanode data node} is
  * changed accordingly.
- * Example:
+ * 
+ * #### Example
+ *
  * This example shows a list containing products. Only products that have the
  * editable attribute set to 1 can be renamed by the user.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlTest">
  *      <data>
  *          <product name="TV" />
@@ -53,15 +56,17 @@ apf.__RENAME__ = 1 << 10;
  *  <a:button
  *    caption = "Rename"
  *    onclick = "list.startRename()" />
- * </code>
+ * ```
  *
- * @event stoprename Fires when a rename action is cancelled.
- *
- * @constructor
+ * @class apf.Rename
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
+ */
+/**
+ * @event stoprename Fires when a rename action is cancelled.
+ *
  */
 apf.Rename = function(){
     this.$regbase       = this.$regbase|apf.__RENAME__;
@@ -72,7 +77,7 @@ apf.Rename = function(){
     this.lastCursor     = null;
     
     /**
-     * @attribute  {Boolean}  rename  whether the user can start renaming rendered nodes in this element.
+     * @attribute  {Boolean}  rename  Sets or gets whether the user can start renaming rendered nodes in this element.
      */
     this.$booleanProperties["canrename"]  = true;
     this.$booleanProperties["autorename"] = true;
@@ -108,16 +113,17 @@ apf.Rename = function(){
     this.$isContentEditable = function(e){
         if (this.renaming && this.autorename)
             return true;
-    }
+    };
     //#endif
 
     /**
      * Changes the data presented as the caption of a specified {@link term.datanode data node}.
-     * If none is specified the indicated node is used.
+     * 
+     * If none are specified, the indicated node is used.
      *
      * @action
-     * @param  {XMLElement} xmlNode the element to change the caption of.
-     * @param  {String}     value   the value to set as the caption of the {@link term.datanode data node}.
+     * @param  {XMLElement} xmlNode The element to change the caption of.
+     * @param  {String}     value   The value to set as the caption of the {@link term.datanode data node}.
      */
     this.rename = function(xmlNode, value){
         if (!xmlNode)
@@ -128,6 +134,7 @@ apf.Rename = function(){
         return this.$executeSingleValue("rename", "caption", xmlNode, value);
     };
 
+    // @todo Doc params
     /**
      * Starts the rename process with a delay, allowing for cancellation when
      * necesary. Cancellation is necesary for instance, when double click was
@@ -145,6 +152,7 @@ apf.Rename = function(){
             + this.$uniqueId + ').startRename()', time || 400);
     };
     
+    // @todo Doc params
     /**
      * Starts the rename process by displaying an input box at the position
      * of the item that can be renamed by the user.
@@ -226,8 +234,9 @@ apf.Rename = function(){
         else $setTimeout(f);
     };
 
+    // @todo Doc params
     /**
-     * Stop renaming process and change the data according to the set value.
+     * Stops the renaming process and changes the data according to the set value.
      * Cancel the renaming process without changing data.
      *
      */

@@ -29,7 +29,7 @@
  * @type {Chart}
  * @constructor
  * @allowchild {elements}, {anyaml}
- * @addnode elements:chart
+ *
  *
  * @author      Rik Arends
  * @version     %I%, %G%
@@ -394,7 +394,7 @@ apf.aml.setElement("graph", apf.Graph);
 			this.$redraw();
         }
     }
-    /**** Databinding ****/
+    // *** Databinding *** //
     this.$load = function(XMLRoot){
 	
         //Add listener to XMLRoot Node
@@ -573,7 +573,7 @@ addEventListener("DOMNodeInsertedIntoDocument", function( e ){
         }
     }
     
-    /**** Selection ****/
+    // *** Selection *** //
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.$parentAxis = this.parentNode;
         this.$parentChart = this.$parentAxis.parentNode;

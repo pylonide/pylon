@@ -67,7 +67,7 @@ apf.window = function(){
             apf.include(url);//, this.document);
     };
 
-    /**** Set Window Events ****/
+    // *** Set Window Events *** //
 
     /*apf.addListener(window, "beforeunload", function(){
         return apf.dispatchEvent("exit");

@@ -23,10 +23,10 @@
 /**
  * Determines whether a node is a child of another node.
  *
- * @param {DOMNode} pNode      the potential parent element.
- * @param {DOMNode} childnode  the potential child node.
- * @param {Boolean} [orItself] whether the method also returns true when pNode is the childnode.
- * @return  {Number} the child position of the node. Or false if it's not a child.
+ * @param {DOMNode} pNode      The potential parent element.
+ * @param {DOMNode} childnode  The potential child node.
+ * @param {Boolean} [orItself] Whether the method also returns `true` when `pNode` is the `childnode`.
+ * @return {Boolean} `false` if the second argument is not a child of the first.
  */
 apf.isChildOf = function(pNode, childnode, orItself){
     if (!pNode || !childnode)
@@ -99,12 +99,12 @@ apf.xmlEntityMap = {
 };
 
 /**
- * Escapes "&amp;", greater than, less than signs, quotation marks and others into
+ * Escapes "&amp;", greater than, less than signs, quotation marks, and others into
  * the proper XML entities.
- *
- * @param {String} str the xml string to escape.
- * @param {Boolean} strictMode by default, this function attempts to NOT double-escape XML entities, this flag turns that behavior off.
- * @return {String} the escaped string.
+ * 
+ * @param {String} str The XML string to escape.
+ * @param {Boolean} strictMode By default, this function attempts to NOT double-escape XML entities. This flag turns that behavior off when set to `true`.
+ * @return {String} The escaped string
  */
 apf.escapeXML = function(str, strictMode) {
     if (typeof str != "string")
@@ -129,12 +129,12 @@ apf.escapeXML = function(str, strictMode) {
 };
 
 /**
- * Unescapes "&#38;" and other similar XML entities into HTML entities and then replaces
+ * Unescapes `"&#38;"` and other similar XML entities into HTML entities, and then replaces
  * 'special' ones (`&apos;`, `&gt;`, `&lt;`, `&quot;`, `&amp;`) into characters
  * (`'`, `>`, `<`, `"`, `&`).
  *
- * @param {String} str the xml string to unescape.
- * @return {String} the unescaped string.
+ * @param {String} str The XML string to unescape
+ * @return {String} The unescaped string
  */
 apf.unescapeXML = function(str) {
     if (typeof str != "string")
@@ -170,10 +170,10 @@ apf.unescapeXML = function(str) {
 };
 
 /**
- * Determines whether a node is it's parent's only child.
- * @param {DOMNode} node     the potential only child.
- * @param {Array}   nodeType list of the node types that this child can be.
- * @returns {Boolean} whether the node is only child and optionally of one of the specified nodeTypes.
+ * Determines whether a node is its parent's only child.
+ * @param {DOMNode} node     The potential only child.
+ * @param {Array}   nodeType List of the node types that this child can be.
+ * @returns {Boolean} Whether the node is the only child and of one of the specified node types.
  */
 apf.isOnlyChild = function(node, nodeType){
     if (!node || !node.parentNode || nodeType && nodeType.indexOf(node.nodeType) == -1)
@@ -192,11 +192,11 @@ apf.isOnlyChild = function(node, nodeType){
 };
 
 /**
- * Gets the position of a dom node within the list of child nodes of it's
+ * Gets the position of a DOM node within the list of child nodes of its
  * parent.
  *
- * @param {DOMNode} node the node for which the child position is determined.
- * @return {Number} the child position of the node.
+ * @param {DOMNode} node The node for which the child position is being determined.
+ * @return {Number} The child position of the node.
  */
 apf.getChildNumber = function(node, fromList){
     if (!node) return -1;
@@ -219,21 +219,22 @@ apf.getChildNumber = function(node, fromList){
     return -1;
 };
 
+
+ // @todo More information will follow....when?
 /**
- * Integrates nodes as children of a parent. Optionally attributes are
+ * Integrates nodes as children of a parent. Optionally, attributes are
  * copied as well.
  *
- * @param {XMLNode} xmlNode the data to merge.
- * @param {XMLNode} parent  the node to merge on.
- * @param {Object}  options
- *   Properties:
- *   {Boolean} [copyAttributes] whether the attributes of xmlNode are copied as well.
- *   {Boolean} [clearContents]  whether the contents of parent is cleared.
- *   {Number}  [start]          This feature is used for the virtual viewport. More information will follow.
- *   {Number}  [length]         This feature is used for the virtual viewport. More information will follow.
- *   {Number}  [documentId]     This feature is used for the virtual viewport. More information will follow.
- *   {XMLElement} [marker]      This feature is used for the virtual viewport. More information will follow.
- * @return  {XMLNode}  the created xml node
+ * @param {XMLNode} xmlNode The data to merge.
+ * @param {XMLNode} parent  The node to merge on.
+ * @param {Object}  options An object with the following optional properties:
+ *   - [copyAttributes] ([[Boolean]]): Whether the attributes of `xmlNode` are copied as well.
+ *   - [clearContents] ([[Boolean]]): Whether the contents of parent is cleared.
+ *   - [start] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [length] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [documentId] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [marker] ([[XMLElement]]): This feature is used for the virtual viewport. More information will follow.
+ * @return  {XMLNode}  The created xml node
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){
     if (typeof parentNode != "object")
@@ -315,7 +316,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
-
+        
         if (options.filter)
             nodes = options.filter(parentNode, nodes);
 
@@ -340,13 +341,13 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
 };
 
 /**
- * Sets the nodeValue of a dom node.
+ * Sets the node value of a DOM node.
  *
- * @param {XMLElement} xmlNode       the xml node that should receive the nodeValue.
+ * @param {XMLElement} xmlNode       The XML node that should receive the node value.
  *                                   When an element node is passed the first text node is set.
- * @param {String}     nodeValue     the value to set.
- * @param {Boolean}    applyChanges  whether the changes are propagated to the databound elements.
- * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
+ * @param {String}     nodeValue     The value to set.
+ * @param {Boolean}    applyChanges  Whether the changes are propagated to the databound elements.
+ * @param {apf.UndoData}    undoObj       The undo object that is responsible for archiving the changes.
  */
 apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
     if (!xmlNode)
@@ -424,13 +425,13 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 };
 
 /**
- * Sets a value of an XMLNode based on an xpath statement executed on a reference XMLNode.
+ * Sets a value of an XML node based on an xpath statement executed on a referenced XMLNode.
  *
- * @param  {XMLNode}  xmlNode  the reference xml node.
- * @param  {String}  xpath  the xpath used to select a XMLNode.
- * @param  {String}  value  the value to set.
- * @param  {Boolean}  local  whether the call updates databound UI.
- * @return  {XMLNode}  the changed XMLNode
+ * @param  {XMLNode}  xmlNode  The reference XML node.
+ * @param  {String}  xpath  The xpath used to select a XML node.
+ * @param  {String}  value  The value to set.
+ * @param  {Boolean}  local  Whether the call updates databound UI.
+ * @return  {XMLNode}  The changed XML node
  */
 apf.setQueryValue = function(xmlNode, xpath, value, local){
     var node = apf.createNodeFromXpath(xmlNode, xpath);
@@ -443,11 +444,11 @@ apf.setQueryValue = function(xmlNode, xpath, value, local){
 };
 
 /**
- * Removed an XMLNode based on an xpath statement executed on a reference XMLNode.
+ * Removes an XML node based on an xpath statement executed on a referenced XML node.
  *
- * @param  {XMLNode}  xmlNode  the reference xml node.
- * @param  {String}  xpath  the xpath used to select a XMLNode.
- * @return  {XMLNode}  the changed XMLNode
+ * @param  {XMLNode}  xmlNode  The reference XML node.
+ * @param  {String}  xpath  The xpath used to select a XML node.
+ * @return  {XMLNode}  The changed XML node
  */
 apf.removeQueryNode = function(xmlNode, xpath, local){
     var node = apf.queryNode(xmlNode, xpath);
@@ -463,10 +464,10 @@ apf.removeQueryNode = function(xmlNode, xpath, local){
 };
 
 /**
- * Queries an xml node using xpath for a string value.
- * @param {XMLElement} xmlNode the xml element to query.
- * @param {String}     xpath   the xpath query.
- * @return {String} the value of the query result or empty string.
+ * Queries an XML node using xpath for a single string value.
+ * @param {XMLElement} xmlNode The XML element to query
+ * @param {String}     xpath   The xpath query
+ * @return {String} The value of the query result or empty string
  */
 apf.queryValue = function (xmlNode, xpath){
     if (!xmlNode)
@@ -485,10 +486,10 @@ apf.queryValue = function (xmlNode, xpath){
 };
 
 /**
- * Queries an xml node using xpath for a string value.
- * @param {XMLElement} xmlNode the xml element to query.
- * @param {String}     xpath   the xpath query.
- * @return {Arary} list of values which are a result of the query.
+ * Queries an xml node using xpath for multiple string value.
+ * @param {XMLElement} xmlNode The xml element to query
+ * @param {String}     xpath   The xpath query
+ * @return {Array} A list of values resulting from the query
  */
 apf.queryValues = function(xmlNode, xpath){
     var out = [];
@@ -507,13 +508,13 @@ apf.queryValues = function(xmlNode, xpath){
 };
 
 /**
- * Executes an xpath expression on any dom node. This is especially useful
- * for dom nodes that don't have a good native xpath processor such as html
- * in some versions of internet explorer and xml in webkit.
+ * Executes an xpath expression on any DOM node. This is especially useful
+ * for DOM nodes that don't have a good native xpath processor, such as HTML
+ * in some versions of Internet Explorer and XML in Webkit.
  *
- * @param {DOMNode} contextNode  the xml node that is subject to the query.
- * @param {String}  sExpr        the xpath expression.
- * @returns {Array} list of xml nodes found. The list can be empty.
+ * @param {DOMNode} contextNode  The XML node that is subject to the query
+ * @param {String}  sExpr        The xpath expression
+ * @returns {Array} A list of found XML nodes. The list can be empty
  */
 apf.queryNodes = function(contextNode, sExpr){
     if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
@@ -525,14 +526,14 @@ apf.queryNodes = function(contextNode, sExpr){
 };
 
 /**
- * Executes an xpath expression on any dom node. This is especially useful
- * for dom nodes that don't have a good native xpath processor such as html
- * in some versions of internet explorer and xml in webkit. This function
- * Only returns the first node found.
+ * Executes an xpath expression on any DOM node. 
+ * This is especially useful for DOM nodes that don't have a good native 
+ * xpath processor such as html in some versions of internet explorer and XML in
+ * webkit. This function only returns the first node found.
  *
- * @param {DOMNode} contextNode  the dom node that is subject to the query.
- * @param {String}  sExpr        the xpath expression.
- * @returns {XMLNode} the dom node found or null if none was found.
+ * @param {DOMNode} contextNode  The DOM node that is subject to the query.
+ * @param {String}  sExpr        The xpath expression.
+ * @returns {XMLNode} The DOM node, or `null` if none was found.
  */
 apf.queryNode = function(contextNode, sExpr){
     if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
@@ -546,14 +547,14 @@ apf.queryNode = function(contextNode, sExpr){
 };
 
 /**
- * Retrieves the attribute of an xml node or the first parent node that has
- * that attribute set. If no attribute is set the value is looked for on
+ * Retrieves the attribute of an XML node, or the first parent node that has
+ * that attribute set. If no attribute is set, the value is searched for on
  * the appsettings element.
  *
- * @param {XMLElement} xml    the xml node that is the starting point of the search.
- * @param {String}     attr   the name of the attribute.
- * @param {Function}   [func] callback that is run for every node that is searched.
- * @return {String} the found value, or empty string if none was found.
+ * @param {XMLElement} xml    The XML node that is the starting point of the search.
+ * @param {String}     attr   The name of the attribute.
+ * @param {Function}   [func] A callback that is run for every node that is searched.
+ * @return {String} The found value, or empty string if none was found.
  */
 apf.getInheritedAttribute = function(xml, attr, func){
     var result, avalue;
@@ -575,17 +576,18 @@ apf.getInheritedAttribute = function(xml, attr, func){
         : result;
 };
 
+
 /**
- * Creates an xml node based on an xpath statement.
+ * Creates an XML node based on an xpath statement.
  *
- * @param {DOMNode} contextNode  the dom node that is subject to the query.
- * @param {String}  xPath        the xpath query.
- * @param {Array}   [addedNodes] this array is filled with the nodes added.
- * @param {Boolean} [forceNew]   whether a new node is always created.
- * @return {DOMNode} the last element found.
- * @todo generalize this to include attributes in if format []
+ * @param {DOMNode} contextNode  The DOM node that is subject to the query
+ * @param {String}  xPath        The xpath query
+ * @param {Array}   [addedNodes] An array that is filled with the added nodes
+ * @param {Boolean} [forceNew]   Defines whether a new node is always created
+ * @return {DOMNode} The last element found
  */
 apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
+    // @todo generalize this to include attributes in if format []
     var xmlNode, foundpath = "", paths = xPath.replace(/('.*?')|(".*?")|\|/g, function(m, m1, m2){
         if (m1 || m2) return m1 || m2;
         return "-%-|-%-";
@@ -680,8 +682,9 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     return newNode;
 };
 
-/**
+/*
  * @private
+ * @class apf.convertMethods
  */
 apf.convertMethods = {
     /**
@@ -857,25 +860,24 @@ apf.convertMethods = {
 };
 
 /**
- * Converts xml to another format.
+ * Converts XML to another format.
  *
- * @param {XMLElement} xml  the {@link term.datanode data node} to convert.
- * @param {String}     to   the format to convert the xml to.
- *   Possible values:
- *   json       converts to a json string
- *   cgivars    converts to cgi string.
- *   cgiobjects converts to cgi objects
- * @return {String} the result of the conversion.
+ * @param {XMLElement} xml  The [[term.datanode data node]] to convert.
+ * @param {String}     to   The format to convert the XML to. It can be one of the following values:
+ *   - `"json"`:       converts to a json string
+ *   - `"cgivars"`:    converts to cgi string
+ *   - `"cgiobjects"`: converts to cgi object
+ * @return {String} The result of the conversion.
  */
 apf.convertXml = function(xml, to){
     return apf.convertMethods[to](xml);
 };
 
 /**
- * Returns the first text or cdata child of an {@link term.datanode data node}.
+ * Returns the first text or cdata child of a [[term.datanode data node]].
  *
- * @param {XMLElement} x the xml node to search.
- * @return {XMLNode} the found xml node, or null.
+ * @param {XMLElement} x The XML node to search.
+ * @return {XMLNode} The found XML node, or `null`.
  */
 apf.getTextNode = function(x){
     for (var i = 0, l = x.childNodes.length; i < l; ++i) {
@@ -906,6 +908,12 @@ apf.getArrayFromNodelist = function(nodelist){
     return nodes;
 };
 
+/**
+ * Serializes the children of a node into a string.
+ *
+ * @param {XMLElement} xmlNode The XML node to serialize.
+ * @return {String} The children as a string
+ */
 apf.serializeChildren = function(xmlNode){
     var node,
         s     = [],
@@ -918,13 +926,13 @@ apf.serializeChildren = function(xmlNode){
             : (node.nodeType == 8 ? "" : node.nodeValue);
     }
     return s.join("");
-}
+};
 
 /**
  * Returns a string version of the {@link term.datanode data node}.
  *
- * @param {XMLElement} xmlNode the {@link term.datanode data node} to serialize.
- * @return {String} the serilized version of the {@link term.datanode data node}.
+ * @param {XMLElement} xmlNode The {@link term.datanode data node} to serialize.
+ * @return {String} The serialized version of the {@link term.datanode data node}.
  */
 apf.getXmlString = function(xmlNode){
     var xml = apf.xmldb.cleanNode(xmlNode.cloneNode(true));
@@ -932,23 +940,23 @@ apf.getXmlString = function(xmlNode){
 };
 
 /**
- * Creates xml nodes from an xml string recursively.
+ * Creates XML nodes from an XML string recursively.
  *
- * @param {String}  strXml     the xml definition.
- * @param {Boolean} [noError]  whether an exception should be thrown by the parser
- *                             when the xml is not valid.
- * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between
+ * @param {String}  strXml     The XML definition
+ * @param {Boolean} [noError]  Whether an exception should be thrown by the parser
+ *                             when the XML is not valid
+ * @param {Boolean} [preserveWhiteSpace]  Whether whitespace that is present between
  *                                        XML elements should be preserved
- * @return {XMLNode} the created xml node.
+ * @return {XMLNode} The created XML node
  */
 apf.getXml = function(strXml, noError, preserveWhiteSpace){
     return apf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
 };
 
 /**
- * Formats an xml string with good indentation. Also known as pretty printing.
- * @param {String} strXml the xml to format.
- * @return {String} the formatted string.
+ * Formats an XML string with proper indentation. Also known as pretty printing.
+ * @param {String} strXml The XML string to format.
+ * @return {String} The formatted string.
  */
 apf.formatXml = function(strXml){
     strXml = strXml.trim();
@@ -1023,7 +1031,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
     }
 
     var id;//, pfx = "";
-    while (lNode && lNode.nodeType == 1) {
+    while(lNode && lNode.nodeType == 1) {
         if (lNode == xmlContext) {
             //str.unshift("/");//pfx = "//";
             break;
@@ -1067,7 +1075,7 @@ apf.b = function(xml, xpath){
 apf.b.$queue = [];
 apf.b.$state = 0;
 
-/**
+/*
  * Naive jQuery like set implementation
  * @todo add dirty flags
  * @todo add query queue
@@ -1252,7 +1260,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         return apf.getChildNumber(this.$nodes[idx], this.$nodes[idx].parentNode.getElementsByTagName("*"))
     };
 
-    this.eq = function(index){
+    this.eq    = function(index){
         return index < 0 ? this.$nodes[this.$nodes.length - index] : this.$nodes[index];
     };
 

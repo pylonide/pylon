@@ -21,9 +21,10 @@
 // #ifdef __AMLDIVIDER || __INC_ALL
 
 /**
- * Element displaying a divider. For use in toolbars, menu's and such.
+ * Element displaying a divider. For use in toolbars, menus, and such.
+ * @class apf.divider
  * @define divider
- * @constructor
+ * @inherits apf.Presentation
  */
 apf.divider = function(struct, tagName){
     this.$init(tagName || "divider", apf.NODE_VISIBLE, struct);

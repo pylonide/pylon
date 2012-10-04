@@ -22,11 +22,12 @@
 // #ifdef __WITH_STYLE
 
 /**
- * This method sets a single css rule
- * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
- * @param {String} type         the css property to change.
- * @param {String} value        the css value of the property.
- * @param {String} [stylesheet] the name of the stylesheet to change.
+ * This method sets a single CSS rule.
+ * @param {String} name         The CSS name of the rule (i.e. `.cls` or `#id`).
+ * @param {String} type         The CSS property to change.
+ * @param {String} value        The CSS value of the property.
+ * @param {String} [stylesheet] The name of the stylesheet to change.
+ * @param {Object} [win]        A reference to a window
  */
 apf.setStyleRule = function(name, type, value, stylesheet, win){
     name = name.toLowerCase();
@@ -67,10 +68,11 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
 };
 
 /**
- * This method gets a single css rule
- * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
- * @param {String} type         the css property to change.
- * @param {String} [stylesheet] the name of the stylesheet to change.
+ * This method gets a single CSS rule.
+ * @param {String} name         The CSS name of the rule (i.e. `.cls` or `#id`).
+ * @param {String} type         The CSS property to change.
+ * @param {String} [stylesheet] The name of the stylesheet to change.
+ * @param {Object} [win]        A reference to a window
  */
 apf.getStyleRule = function(name, type, stylesheet, win){
     name = name.toLowerCase();
@@ -99,14 +101,14 @@ apf.getStyleRule = function(name, type, stylesheet, win){
     }
     
     return false;
-}
+};
 
 /**
- * This method adds one class name to an HTMLElement and removes none or more.
- * @param {HTMLElement} oHtml        the HTMLElement to apply the css class to.
- * @param {String}      className    the name of the css class to apply.
- * @param {Array}       [exclusion]  a list of strings specifying names of css classes to remove.
- * @returns {HTMLElement}
+ * This method adds one class name to an HTMLElement. It can also remove classes.
+ * @param {HTMLElement} oHtml        The HTMLElement to apply the CSS class to.
+ * @param {String}      className    The name of the CSS class to apply.
+ * @param {Array}       [exclusion]  A list of strings specifying names of CSS classes to remove.
+ * @returns {HTMLElement} The modified `oHtml` element.
  */
 apf.setStyleClass = function(oHtml, className, exclusion, userAction){
     if (!oHtml || userAction && this.disabled)
@@ -142,10 +144,10 @@ apf.setStyleClass = function(oHtml, className, exclusion, userAction){
 };
 
 /**
- * This method imports a css stylesheet from a string
- * @param {String} cssString  the css definition
- * @param {Object} [doc]      the reference to the document where the css is applied on
- * @param {String} [media]    the media to which this css applies (i.e. 'print' or 'screen')
+ * This method imports a CSS stylesheet from a string.
+ * @param {String} cssString  The CSS definition
+ * @param {Object} [doc]      The reference to the document where the CSS is applied on
+ * @param {String} [media]    The media to which this CSS applies (_i.e._ `print` or `screen`)
  */
 apf.importCssString = function(cssString, doc, media){
     doc = doc || document;
@@ -181,11 +183,11 @@ apf.importCssString = function(cssString, doc, media){
 
 /**
  * This method retrieves the current value of a property on a HTML element
- * recursively. If the style isn't found on the element itself, it's parent is
+ * recursively. If the style isn't found on the element itself, its parent is
  * checked.
- * @param {HTMLElement} el    the element to read the property from
- * @param {String}      prop  the property to read
- * @returns {String}
+ * @param {HTMLElement} el    The element to read the property from
+ * @param {String}      prop  The property to read
+ * @returns {String} The retrieved value
  */
 apf.getStyleRecur = function(el, prop) {
     var value = apf.hasComputedStyle
@@ -202,9 +204,9 @@ apf.getStyleRecur = function(el, prop) {
 };
 
 /**
- * This method imports a stylesheet defined in a multidimensional array 
- * @param {Array}    def Required Multidimensional array specifying 
- * @param {Object}    win Optional Reference to a window
+ * This method imports a stylesheet defined by a multidimensional array. 
+ * @param {Array}    def  A multidimensional array specifying stylesheets to import
+ * @param {Object}   [win] A reference to a window
  * @method
  * @deprecated
  */    
@@ -243,8 +245,13 @@ apf.importStylesheet = function (def, win, stylesheet) {
             }
         }
     }
-}
+};
 
+/**
+ * This method constructs a stylesheet.
+ * @param {Object}  [win] A reference to a window
+ * @returns {String} The created CSS stylesheet
+ */ 
 apf.createStylesheet = function(win){
     var doc = (win || window).document;
     
@@ -256,14 +263,14 @@ apf.createStylesheet = function(win){
         doc.getElementsByTagName("head")[0].appendChild(elem);
         return elem.sheet;
     }
-}
+};
 
 /**
  * This method determines if specified coordinates are within the HTMLElement.
- * @param {HTMLElement} el  the element to check
- * @param {Number}      x   the x coordinate in pixels
- * @param {Number}      y   the y coordinate in pixels
- * @returns {Boolean}
+ * @param {HTMLElement} el  The element to check
+ * @param {Number}      x   The x-coordinate in pixels
+ * @param {Number}      y   The y-coordinate in pixels
+ * @returns {Boolean} `true` if the coordinates are within the element.
  */
 apf.isInRect = function(oHtml, x, y){
     var pos = this.getAbsolutePosition(oHtml);
@@ -274,11 +281,11 @@ apf.isInRect = function(oHtml, x, y){
 };
 
 /**
- * Retrieves the parent which provides the rectangle to which the HTMLElement is
- * bound and cannot escape. In css this is accomplished by having the overflow
- * property set to hidden or auto.
- * @param {HTMLElement} o  the element to check
- * @returns {HTMLElement}
+ * Retrieves the parent providing the rectangle to which the HTMLElement is
+ * bound and cannot escape. In CSS, this is accomplished by having the overflow
+ * property set to `"hidden"` or `"auto"`.
+ * @param {HTMLElement} o  The element to check
+ * @returns {HTMLElement} The parent element
  */
 apf.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
@@ -292,10 +299,10 @@ apf.getOverflowParent = function(o){
 };
 
 /**
- * Retrieves the first parent element which has a position absolute or
- * relative set.
- * @param {HTMLElement} o  the element to check
- * @returns {HTMLElement}
+ * Retrieves the first parent element which has a position `absolute` or
+ * `relative` set.
+ * @param {HTMLElement} o  The element to check
+ * @returns {HTMLElement} The parent element
  */
 apf.getPositionedParent = function(o){
     o = o.offsetParent;
@@ -307,12 +314,12 @@ apf.getPositionedParent = function(o){
 };
 
 /**
- * Retrieves the absolute x and y coordinates, relative to the browsers
- * drawing area or the specified refParent.
- * @param {HTMLElement} o           the element to check
- * @param {HTMLElement} [refParent] the reference parent
- * @param {Boolean}     [inclSelf]  whether to include the position of the element to check in the return value.
- * @returns {Array} the x and y coordinate of oHtml.
+ * Retrieves the absolute x- and y-coordinates, relative to the browser's
+ * drawing area or the specified `refParent`.
+ * @param {HTMLElement} o           The element to check
+ * @param {HTMLElement} [refParent] The reference parent
+ * @param {Boolean}     [inclSelf]  Whether to include the position of the element to check in the return value.
+ * @returns {Array} The x- and y-coordinates of `oHtml`.
  */
 apf.getAbsolutePosition = function(o, refParent, inclSelf){
     if ("getBoundingClientRect" in document.documentElement) { 
@@ -425,18 +432,35 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
 };
 
 //@todo its much faster to move these to browser specific files and eliminate apf.getStyle()
+/**
+ * Returns the distance between the border left and border right values of an element.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ * @see apf.getWidthDiff
+ */
 apf.getHorBorders = function(oHtml){
     return Math.max(0,
           (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
+/**
+ * Returns the distance between the border top and border bottom values of an element.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ */
 apf.getVerBorders = function(oHtml){
     return Math.max(0,
           (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
+/**
+ * Returns the distance between the border left and border right values of an element, taking padding into consideration.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ * @see apf.getHorBorders
+ */
 apf.getWidthDiff = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
@@ -448,7 +472,12 @@ apf.getWidthDiff = function(oHtml){
         + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
-apf.getHeightDiff = function(oHtml){
+/**
+ * Returns the distance between the border top and border bottom values of an element, taking padding into consideration.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ */
+apf.getVerBorders = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
         return 0;
@@ -459,6 +488,12 @@ apf.getHeightDiff = function(oHtml){
         + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
+/**
+ * Returns an array with two elements. The first is the distance between the border top and border bottom values of an element, taking padding into consideration; 
+ * the second is the distance between the border top and border bottom values of an element, taking padding into consideration.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {[Number]} An array containing the differences
+ */
 apf.getDiff = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
@@ -474,6 +509,12 @@ apf.getDiff = function(oHtml){
         + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))];
 };
 
+/**
+ * Returns an array with two elements. The first is the distance between the margin left and margin right values of an element; 
+ * the second is the distance between the margin top top and margin bottom values of an element.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {[Number]} An array containing the differences
+ */
 apf.getMargin = function(oHtml) {
     return [(parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
         + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0),
@@ -481,12 +522,22 @@ apf.getMargin = function(oHtml) {
         + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)]
 };
 
+/**
+ * Returns the difference between an element's `offsetWidth`, with its border left and border right widths removed. 
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation
+ */
 apf.getHtmlInnerWidth = function(oHtml){
     return (oHtml.offsetWidth
         - (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
         - (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
+/**
+ * Returns the difference between an element's `offsetWidth`, with its border top and border bottom widths removed. 
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation
+ */
 apf.getHtmlInnerHeight = function(oHtml){
     return (oHtml.offsetHeight
         - (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
@@ -494,11 +545,10 @@ apf.getHtmlInnerHeight = function(oHtml){
 };
 
 /**
- * Returns the viewport of the a window.
+ * Returns the viewport of a window.
  *
  * @param  {WindowImplementation} [win] The window to take the measurements of.
- * @return {Object}                     Viewport object with fields x, y, w and h.
- * @type   {Object}
+ * @returns {Object}                    Viewport object with  x, y, w, and h properties.
  */
 apf.getViewPort = function(win) {
     win = win || window;

@@ -21,7 +21,7 @@
 
 // #ifdef __TP_WEBDAV
 
-/**
+/*
  * Element implementing WebDAV remote filesystem protocol.
  * WebDAV stands for "Web-based Distributed Authoring and Versioning". It is a
  * set of extensions to the HTTP protocol which allows users to collaboratively
@@ -88,7 +88,7 @@
  *      {String}       data       the ASCI representation of the file content-body
  *
  * @define webdav
- * @addnode teleport
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -134,8 +134,8 @@ apf.webdav = function(struct, tagName){
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
-     * @param {mixed}  value
-     * @type  {mixed}
+     * @param {Mixed}  value
+     * @type  {Mixed}
      * @private
      */
     this.$regVar = function(name, value) {
@@ -166,7 +166,7 @@ apf.webdav = function(struct, tagName){
      * space.
      *
      * @param {String} name
-     * @type  {mixed}
+     * @type  {Mixed}
      * @private
      */
     this.$getVar = function(name) {

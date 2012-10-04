@@ -51,7 +51,7 @@
  * @attribute {String} width  the width of an icon in pixels.
  * @attribute {String} height the height of an icon in pixels.
  * @attribute {String} offset the distance from the calculated grid point that has to be added. This value consists of two numbers seperated by a comma. Defaults to 0,0.
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

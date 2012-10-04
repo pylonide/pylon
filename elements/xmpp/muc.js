@@ -78,7 +78,7 @@ apf.xmpp_muc = function(){
      *
      * @param {XMLDocument} oXml    Document that may contain <status> nodes
      * @param {Number}      iStatus Expected status code
-     * @type  {mixed}
+     * @type  {Mixed}
      */
     this.$getStatusCode = function(oXml, iStatus) {
         var aStatuses = oXml.getElementsByTagName("status");

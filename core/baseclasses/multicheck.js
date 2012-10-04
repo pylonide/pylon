@@ -26,37 +26,45 @@ apf.__MULTICHECK__ = 1 << 22;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
  *
- * @constructor
+ * @class apf.MultiCheck
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       3.0
  *
- * @todo type detection, errors (see functions in multiselect)
+ *
  */
+// @todo type detection, errors (see functions in multiselect)
 apf.MultiCheck = function(){
     this.$regbase    = this.$regbase | apf.__MULTICHECK__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.multicheck  = true;
     this.checklength = 0;
     this.$checkedList = [];
 
-    /**** Public Methods ****/
-    
+    // *** Public Methods *** //
+
     /**
-     * Checks a single, or set of.
-     * The checking can be visually represented in this element.
-     * The element can be checked, partialy checked or unchecked
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could not be made
-     *
      * @event  beforecheck  Fires before a check is made
-     *
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that will be checked.
+     */
+    /**
      * @event  aftercheck  Fires after a check is made
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that was checked.
      *
+     */    
+    /**
+     * Checks a single, or a set of, elements.
+     *
+     * The checking can be visually represented in this element.
+     * The element can be checked, partialy checked, or unchecked
+     *
+     * @param {Mixed}   xmlNode      The identifier to determine the selection.
+     * @return  {Boolean}  Indicates whether the selection could not be made (`false`)
      */
     this.check = function(xmlNode, userAction){
         if (userAction && this.disabled 
@@ -116,17 +124,24 @@ apf.MultiCheck = function(){
             xmlNode     : xmlNode
         });
     };
-    
+
     /**
-     * Unchecks a single, or set of.
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could be made
-     *
      * @event  beforeuncheck  Fires before a uncheck is made
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that will be unchecked.
      *
+     */
+    /**
      * @event  afteruncheck  Fires after a uncheck is made
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that was unchecked.
      *
+     */     
+    /**
+     * Unchecks a single, or set of, elements.
+     *
+     * @param {Mixed}   xmlNode      The identifier to determine the selection.
+     * @return  {Boolean}  Indicates if the selection could be made (`false`)
      */
     this.uncheck = function(xmlNode, userAction){
         if (userAction && this.disabled 
@@ -158,9 +173,9 @@ apf.MultiCheck = function(){
     };
 
     /**
-     * Toggles between check and uncheck a single, or set of.
+     * Toggles between a check and uncheck of a single, or set of, elements.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode    The identifier to determine the selection.
      *
      */
     this.checkToggle = function(xmlNode, userAction){
@@ -183,15 +198,15 @@ apf.MultiCheck = function(){
     };
     
     /**
-     * Checks a set of items
+     * Checks a set of items.
      *
-     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
-     * @param {boolean} uncheck
-     * @param {boolean} noClear
-     * @param {boolean} noEvent whether to not call any events
+     * @param {Array} xmlNodeList The {@link term.datanode data nodes} that will be selected.
+     * @param {Boolean} uncheck If `true`, checks the items
+     * @param {Boolean} noClear If `true`, does not also clears the selection
+     * @param {Boolean} noEvent Indicates whether to call any events
      * @event  beforecheck  Fires before a check is made
      *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
+     *   
      * @event  aftercheck   Fires after a check is made
      *   object:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
@@ -334,14 +349,7 @@ apf.MultiCheck = function(){
     /**
      * Removes the selection of one or more checked nodes.
      *
-     * @param {Boolean} [singleNode] whether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    whether to not call any events
-     * @event  beforeuncheck  Fires before a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
-     * @event  afteruncheck   Fires after a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
+     * @param {Boolean} [noEvent]    Indicates whether to call any events
      */
     this.clearChecked = function(noEvent){
         if (!noEvent && this.dispatchEvent("beforeuncheck", {
@@ -367,7 +375,7 @@ apf.MultiCheck = function(){
      * Determines whether a node is checked.
      *
      * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
-     * @return  {Boolean} whether the element is selected.
+     * @return  {Boolean} Whether the element is selected.
      */
     this.isChecked = function(xmlNode){
         return this.$checkedList.indexOf(xmlNode) > -1;
@@ -377,8 +385,8 @@ apf.MultiCheck = function(){
      * Retrieves an array or a document fragment containing all the checked
      * {@link term.datanode data nodes} from this element.
      *
-     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @param {Boolean} [xmldoc] Specifies whether the method should return a document fragment.
+     * @return {Mixed} The selection of this element.
      */
     this.getChecked = function(xmldoc){
         var i, r;

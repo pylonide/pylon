@@ -27,7 +27,7 @@
  * @return {flash} Returns a new Flash uploader
  * @type {flash}
  * @constructor
- * @addnode elements:upload
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

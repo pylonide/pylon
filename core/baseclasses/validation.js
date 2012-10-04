@@ -72,7 +72,7 @@ apf.validator = {
         s.push("};validityState.valid = valid; return validityState;");
         return new Function('value', 'checkRequired', 'validityState', s.join(""));
     }
-}
+};
 
 /**
  * Object containing information about the validation state. It contains
@@ -116,8 +116,10 @@ apf.validator.validityState = function(){
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have validation support.
- * Example:
- * <code>
+ *
+ * #### Example
+ * 
+ * ```xml
  *  <a:bar validgroup="vgExample">
  *      <a:label>Number</a:label>
  *      <a:textbox required="true" min="3" max="10" 
@@ -133,24 +135,27 @@ apf.validator.validityState = function(){
  *          Validate
  *      </a:button>
  *  </a:bar>
- * </code>
- *
- * @event invalid    Fires when this component goes into an invalid state.
- *
- * @constructor
+ * ```
+ * 
+ * @class apf.Validation
+ * @inherits apf.AmlElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  */
+ /**
+  * @event invalid    Fires when this component goes into an invalid state.
+  *
+  */
 apf.Validation = function(){
     this.$regbase = this.$regbase | apf.__VALIDATION__;
 
     /**
      * Checks if this element's value is valid.
      *
-     * @param  {Boolean} [checkRequired] whether this check also adheres to the 'required' ruled.
-     * @return  {Boolean} specifying whether the value is valid
+     * @param  {Boolean} [checkRequired] Specifies whether this check also adheres to the `'required'` rule.
+     * @returns  {Boolean} Specifies whether the value is valid
      * @see  baseclass.validationgroup
      * @see  element.submitform
      */
@@ -175,14 +180,14 @@ apf.Validation = function(){
         return valid;
     };
 
-    /**
+    /*
      * @private
      */
     this.setCustomValidity = function(message){
         //do stuff
     }
 
-    /**
+    /*
      * @private
      * @todo This method should also scroll the element into view
      */
@@ -195,19 +200,12 @@ apf.Validation = function(){
         }
     };
 
+    // #ifdef __WITH_HTML5
     /**
-     * Puts this element in the error state, optionally showing the
-     * error box if this element's is invalid.
-     *
-     * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
-     * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
-     * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
-     * @return  {Boolean}  boolean specifying whether the value is valid
-     * @see  object.validationgroup
-     * @see  element.submitform
+     * @alias apf.Validation.validate
+     * @inheritdoc apf.Validation.validate
      * @method
      */
-    // #ifdef __WITH_HTML5
     this.checkValidity =
     //#endif
     
@@ -215,13 +213,12 @@ apf.Validation = function(){
      * Puts this element in the error state, optionally showing the
      * error box if this element is invalid.
      *
-     * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
-     * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
-     * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
-     * @return  {Boolean}  boolean specifying whether the value is valid
-     * @see  object.validationgroup
-     * @see  element.submitform
-     * @method
+     * @method apf.Validation.validate
+     * @param  {Boolean} [ignoreReq]  Specifies whether this element required check is turned on.
+     * @param  {Boolean} [nosetError] Specifies whether the error box is displayed if this component does not validate.
+     * @param  {Boolean} [force]      Specifies whether this element is in the error state, and doesn't check if the element's value is invalid.
+     * @return  {Boolean}  Indicates whether the value is valid
+     * @see  apf.ValidationGroup
      */
     this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
@@ -236,7 +233,7 @@ apf.Validation = function(){
         }
     };
 
-    /**
+    /*
      *    @private
      */
     this.setError = function(value){
@@ -265,7 +262,7 @@ apf.Validation = function(){
             this.focus(null, {mouse:true}); //arguable...
     };
 
-    /**
+    /*
      *    @private
      */
     this.clearError = function(value){
@@ -288,71 +285,87 @@ apf.Validation = function(){
 
     /**
      *
-     * @attribute  {Boolean}  required     whether a valid value for this element is required.
-     * @attribute  {RegExp}   pattern      the pattern tested against the value of this element to determine it's validity.
-     * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any 
-     * of a set of predefined types, or a simple type created by an XML Schema definition.
-     *   Possible values:
-     *   {String} xsd:dateTime
-     *   {String} xsd:time
-     *   {String} xsd:date
-     *   {String} xsd:gYearMonth
-     *   {String} xsd:gYear
-     *   {String} xsd:gMonthDay
-     *   {String} xsd:gDay
-     *   {String} xsd:gMonth
-     *   {String} xsd:string
-     *   {String} xsd:boolean
-     *   {String} xsd:base64Binary
-     *   {String} xsd:hexBinary
-     *   {String} xsd:float
-     *   {String} xsd:decimal
-     *   {String} xsd:double
-     *   {String} xsd:anyURI
-     *   {String} xsd:integer
-     *   {String} xsd:nonPositiveInteger
-     *   {String} xsd:negativeInteger
-     *   {String} xsd:long
-     *   {String} xsd:int
-     *   {String} xsd:short
-     *   {String} xsd:byte
-     *   {String} xsd:nonNegativeInteger
-     *   {String} xsd:unsignedLong
-     *   {String} xsd:unsignedInt
-     *   {String} xsd:unsignedShort
-     *   {String} xsd:unsignedByte
-     *   {String} xsd:positiveInteger
-     *   {String} apf:url
-     *   {String} apf:website
-     *   {String} apf:email
-     *   {String} apf:creditcard
-     *   {String} apf:expdate
-     *   {String} apf:wechars
-     *   {String} apf:phonenumber
-     *   {String} apf:faxnumber
-     *   {String} apf:mobile
-     * @attribute  {Integer}  min          the minimal value for which the value of this element is valid.
-     * @attribute  {Integer}  max          the maximum value for which the value of this element is valid.
-     * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
-     * @attribute  {Integer}  maxlength    the maximum length allowed for the value of this element.
-     * @attribute  {Boolean}  notnull      whether the value is filled. Same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
-     * @attribute  {String}   checkequal   the id of the element to check if it has the same value as this element.
-     * @attribute  {String}   invalidmsg   the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
-     * @attribute  {String}   validgroup   the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
-     * @attribute  {String}   validtest    the instruction on how to test for success. This attribute is generally used to check the value on the server.
-     * Example:
-     * This example shows how to check the username on the server. In this case
-     * comm.loginCheck is an async rpc function that checks the availability of the
-     * username. If it exists it will return 0, otherwise 1. The value variable
+     * @attribute  {Boolean}  required     Sets or gets whether a valid value for this element is required.
+     */
+    /** 
+     * @attribute  {RegExp}   pattern      Sets or gets the pattern tested against the value of this element to determine it's validity.
+     */
+    /**
+     * @attribute  {String}   datatype     Sets or gets the datatype that the value of this element should adhere to. This can be any 
+     * of a set of predefined types, or a simple type created by an XML Schema definition. Some possible values (all of which are [[String]]s) include:
+     *   - `xsd:dateTime`
+     *   - `xsd:time`
+     *   - `xsd:date`
+     *   - `xsd:gYearMonth`
+     *   - `xsd:gYear`
+     *   - `xsd:gMonthDay`
+     *   - `xsd:gDay`
+     *   - `xsd:gMonth`
+     *   - `xsd:string`
+     *   - `xsd:boolean`
+     *   - `xsd:base64Binary`
+     *   - `xsd:hexBinary`
+     *   - `xsd:float`
+     *   - `xsd:decimal`
+     *   - `xsd:double`
+     *   - `xsd:anyURI`
+     *   - `xsd:integer`
+     *   - `xsd:nonPositiveInteger`
+     *   - `xsd:negativeInteger`
+     *   - `xsd:long`
+     *   - `xsd:int`
+     *   - `xsd:short`
+     *   - `xsd:byte`
+     *   - `xsd:nonNegativeInteger`
+     *   - `xsd:unsignedLong`
+     *   - `xsd:unsignedInt`
+     *   - `xsd:unsignedShort`
+     *   - `xsd:unsignedByte`
+     *   - `xsd:positiveInteger`
+     *   - `apf:url`
+     *   - `apf:website`
+     *   - `apf:email`
+     *   - `apf:creditcard`
+     *   - `apf:expdate`
+     *   - `apf:wechars`
+     *   - `apf:phonenumber`
+     *   - `apf:faxnumber`
+     *   - `apf:mobile`
+     */
+    /**
+     * @attribute  {Number}  min          Sets or gets the minimal value for which the value of this element is valid.
+    /**
+     * @attribute  {Number}  max          Sets or gets the maximum value for which the value of this element is valid.
+    /**
+     * @attribute  {Number}  minlength    Sets or gets the minimal length allowed for the value of this element.
+    /**
+     * @attribute  {Number}  maxlength    Sets or gets the maximum length allowed for the value of this element.
+    /**
+     * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. Same as {@link baseclass.validation.attribute.required}, but this rule is checked realtime when the element loses the focus, instead of at specific request (for instance, when leaving a form page).
+    /**
+     * @attribute  {String}   checkequal   Sets or gets the id of the element to check if it has the same value as this element.
+    /**
+     * @attribute  {String}   invalidmsg   Sets or gets the message displayed when this element has an invalid value. Use a `;` character to seperate the title from the message.
+    /**
+     * @attribute  {String}   validgroup   Sets or gets the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
+    /**
+     * @attribute  {String}   validtest    Sets or gets the instruction on how to test for success. This attribute is generally used to check the value on the server.
+     * 
+     * #### Example
+     *
+     * This example shows how to check the username on the server. In this case,
+     * `comm.loginCheck` is an async RPC function that checks the availability of the
+     * username. If it exists, it will return `0`--otherwise, it's `1`. The value variable
      * contains the current value of the element (in this case the textbox). It
      * can be used as a convenience variable.
-     * <pre class="code">
+     *
+     * ```xml
      *  <a:label>Username</a:label>
      *  <a:textbox
      *    validtest  = "{comm.loginCheck(value) == 1}"
      *    pattern    = "/^[a-zA-Z0-9_\-. ]{3,20}$/"
      *    invalidmsg = "Invalid username;Please enter a valid username." />
-     * </pre>
+     * ```
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //this.addEventListener(this.hasFeature(apf.__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
@@ -513,10 +526,12 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
 }
 
 /**
- * Object allowing for a set of AML elements to be validated, an element that 
- * is not valid shows the errorbox.
- * Example:
- * <code>
+ * This object allows for a set of AML elements to be validated. An element that 
+ * is not valid shows an errorbox.
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:bar validgroup="vgForm">
  *      <a:label>Phone number</a:label>
  *      <a:textbox id="txtPhone"
@@ -531,34 +546,38 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
  *        minlength  = "4"
  *        invalidmsg = "Please enter a password of at least four characters" />
  *  </a:bar>
- * </code>
+ * ```
  *
  * To check if the element has valid information entered, leaving the textbox
- * (focussing another element) will trigger a check. Programmatically a check
+ * (focussing another element) will trigger a check. Programmatically, a check
  * can be done using the following code:
- * <code>
+ *
+ * 
+ * ```javascript
  *  txtPhone.validate();
  *
- *  //Or use the html5 syntax
+ *  // Or, use the html5 syntax
  *  txtPhone.checkValidity();
- * </code>
+ * ```
  *
- * To check for the entire group of elements use the validation group. For only
+ * To check for the entire group of elements, use the validation group. For only
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <code>
+ * 
+ * ```javascript
  *  vgForm.validate();
- * </code>
+ * ```
  *
- * @event validation Fires when the validation group isn't validated.
- *
+ * @class apf.ValidationGroup
  * @inherits apf.Class
- * @constructor
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
+ */
+/**
+ * @event validation Fires when the validation group isn't validated.
  */
 apf.ValidationGroup = function(name){
     this.$init();
@@ -576,19 +595,20 @@ apf.ValidationGroup = function(name){
 
 (function(){
     /**
-     * When set to true, only visible elements are validated. Default is false.
+     * When set to true, only visible elements are validated.
      * @type Boolean
      */
     this.validateVisibleOnly = false;
     
     /**
-     * When set to true, validation doesn't stop at the first invalid element. Default is false.
+     * When set to true, validation doesn't stop at the first invalid element.
      * @type Boolean
      */
     this.allowMultipleErrors = false;
 
     /**
-     * Adds a aml element to this validation group.
+     * Adds an AML element to this validation group.
+     * @param o {apf.AmlElement} The AML element to add
      */
     this.register   = function(o){ 
         if (o.hasFeature(apf.__VALIDATION__)) 
@@ -596,7 +616,8 @@ apf.ValidationGroup = function(name){
     };
     
     /**
-     * Removes a aml element from this validation group.
+     * Removes a AML element from this validation group.
+     * @param o {apf.AmlElement} The AML element to remove
      */
     this.unregister = function(o){
         this.childNodes.remove(o); 
@@ -612,11 +633,11 @@ apf.ValidationGroup = function(name){
     //Shared among all validationgroups
     var errbox;
     /**
-     * Retrieves {@link element.errorbox} used for a specified element.
+     * Retrieves the {@link apf.errorbox} used for a specified element.
      *
-     * @param  {AmlNode}  o  required  AmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
+     * @param  {apf.AmlNode}  o An AMLNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link apf.ValidationGroup.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
-     * @return  {Errorbox}  the found or created Errorbox;
+     * @return  {apf.errorbox}  The found (or created) Errorbox
      */
     this.getErrorBox = function(o, no_create){
         if (this.allowMultipleErrors || !errbox && !no_create) {
@@ -672,44 +693,32 @@ apf.ValidationGroup = function(name){
         return found;
     }
 
-    /**
-     * Checks if (part of) the set of element's registered to this element are
-     * valid. When an element is found with an invalid value the error state can
-     * be set for that element.
-     *
-     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying whether the checked elements are valid.
-     * @method isValid, validate, checkValidity
-     */
     // #ifdef __WITH_HTML5
+    /**
+     * 
+     * @inheritDoc apf.ValidationGroup.isValid
+     * @method
+     */
     this.checkValidity =
     //#endif
     
     /**
-     * Checks if (part of) the set of element's registered to this element are
-     * valid. When an element is found with an invalid value the error state can
-     * be set for that element.
-     *
-     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying whether the checked elements are valid.
-     * @method isValid, validate, checkValidity
+     * 
+     * @inheritDoc apf.ValidationGroup.isValid
+     * @method
      */
     this.validate =
     
     /**
      * Checks if (part of) the set of element's registered to this element are
-     * valid. When an element is found with an invalid value the error state can
+     * valid. When an element is found with an invalid value, the error state can
      * be set for that element.
      *
-     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying whether the checked elements are valid.
-     * @method isValid, validate, checkValidity
+     * @method isValid
+     * @param  {Boolean}    [ignoreReq]  Specifies whether to adhere to the 'required' check.
+     * @param  {Boolean}    [nosetError  Specifies whether to not set the error state of the element with an invalid value
+     * @param  {apf.AmlElement} [page]   The page for which the children will be checked. When not specified all elements of this validation group are checked.
+     * @return  {Boolean}  Specifies whether the checked elements are valid.
      */
     this.isValid = function(ignoreReq, nosetError, page){
         var found = checkValidChildren.call(this, page || this, ignoreReq,

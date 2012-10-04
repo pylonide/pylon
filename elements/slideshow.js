@@ -95,7 +95,7 @@
  * @version     %I%, %G% 
  *
  * @define slideshow
- * @addnode elements
+ *
  * 
  * @define bindings
  * @allowchild src, title, thumb
@@ -630,7 +630,7 @@ apf.slideshow = function(struct, tagName){
         });
     };
     
-    /**** Init ****/
+    // *** Init *** //
 
     /**
      * Display next image from imagelist

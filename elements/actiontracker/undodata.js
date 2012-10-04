@@ -23,10 +23,10 @@
 
 /**
  * UndoData is the command object for the actiontracker. Each instance of this class
- * contains information about a single event in the application. It can be undone
+ * contains information about a single event in the application. It can be undone,
  * and it knows how to synchronize the change to a (remote) data source.
  *
- * @constructor
+ * @class apf.UndoData
  * @default_private
  */
 apf.UndoData = function(settings, at){
@@ -270,7 +270,7 @@ apf.UndoData = function(settings, at){
 
     /**
      * Save the change to a data source.
-     * @param {Boolean} undo whether the change is undone.
+     * @param {Boolean} undo Specifies whether the change is undone.
      */
     this.saveChange = function(undo, at, callback){
         //Grouped undo/redo support

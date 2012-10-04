@@ -151,7 +151,7 @@ apf.video.TypeWmpCompat = (function() {
  * @return {TypeWmp} Returns a new Windows Media Player video player
  * @type {TypeWmp}
  * @constructor
- * @addnode elements:video
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

@@ -476,7 +476,7 @@ apf.flash = (function(){
     /**
      * Directs a call from a JS object to an embedded SWF
      *
-     * @param {mixed}  o  DOM reference of the Flash movie (or its ID as a string)
+     * @param {Mixed}  o  DOM reference of the Flash movie (or its ID as a string)
      * @param {String} fn Name of the function to be called on the Flash movie, exposed by ExternalInterface
      * @type {void}
      */

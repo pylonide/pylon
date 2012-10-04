@@ -38,7 +38,7 @@
  * @inherits apf.Media
  * @constructor
  * @allowchild {text}
- * @addnode elements:audio
+ *
  *
  * @link http://www.whatwg.org/specs/web-apps/current-work/#audio
  *

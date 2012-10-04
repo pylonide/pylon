@@ -436,7 +436,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         });
     },
     
-    /**** UTIL Functions ****/
+    // *** UTIL Functions *** //
     
     shouldIgnoreEvent : function(eventName, amlNode){
         if ((amlNode.root && amlNode.isIE != undefined) 
@@ -575,7 +575,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         return o;
     },
     
-    /**** UTIL STREAM Functions ****/
+    // *** UTIL STREAM Functions *** //
     
     createStream : function(){
         var stream = {
@@ -590,7 +590,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         return (this.lastStream = stream);
     },
     
-    /**** OUTPUT Functions ****/
+    // *** OUTPUT Functions *** //
 
     toXml : function(){
         var xml = apf.getXml("<recording />");

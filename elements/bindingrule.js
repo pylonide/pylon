@@ -44,7 +44,7 @@
  *    model    = "mdlList" 
  *    bindings = "bndFolders" />
  * </code>
- * @see element.smartbinding
+ * @see apf.smartbinding
  *
  * @baseclass
  *
@@ -104,7 +104,7 @@ apf.BindingRule = function(struct, tagName){
         }
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     /*this.addEventListener("DOMAttrModified", function(e){
         

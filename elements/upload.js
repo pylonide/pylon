@@ -124,7 +124,7 @@
  *
  * @constructor
  * @alias upload
- * @addnode elements
+ *
  *
  * @inherits apf.StandardBinding
  *
@@ -419,7 +419,7 @@ apf.upload.ERROR_CODES = {
         }
     }
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     this.$buildUrl = function(url, items) {
         var query = "";

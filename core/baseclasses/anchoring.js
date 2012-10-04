@@ -25,14 +25,18 @@ apf.__ANCHORING__ = 1 << 13;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have anchoring features. Each side of the
- * element can be attached at a certain distance to it's parent's rectangle.
- * When the parent is resized the anchored side of the element stays
- * at the specified distance at all times. If both sides are anchored the
+ * element can be attached at a certain distance to its parent's rectangle.
+ *
+ * When the parent is resized, the anchored side of the element stays
+ * at the specified distance at all times. If both sides are anchored, the
  * element size is changed to make sure the specified distance is maintained.
- * Example:
- * This example shows a bar that has 10% as a margin around it and contains a
+ *
+ * #### Example
+ *
+ * This example shows a bar that has a 10% margin around it, and contains a
  * frame that is displayed using different calculations and settings.
- * <code>
+ *
+ * ```xml
  *  <a:bar width="80%" height="80%" top="10%" left="10%">
  *      <a:frame 
  *        caption = "Example" 
@@ -41,17 +45,17 @@ apf.__ANCHORING__ = 1 << 13;
  *        right   = "10%"
  *        bottom  = "Math.round(0.232*100)" />
  *  </a:bar>
- * </code>
- * Remarks:
- * This is one of three positioning methods.
- * See {@link baseclass.alignment}
- * See {@link element.grid}
+ * ```
  *
- * @constructor
- * @baseclass
+ * ### Remarks
+ *
+ * This is one of three positioning methods. The other two are Alignment and Grid.
+ *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.3
+ * @baseclass
+ * @layout
  */
 apf.Anchoring = function(){
     this.$regbase = this.$regbase | apf.__ANCHORING__;
@@ -157,37 +161,77 @@ apf.Anchoring = function(){
         this.$anchoringEnabled = false; //isn't this redundant?
     };
 
+
     /**
-     * Enables anchoring based on attributes set in the AML of this element
+     * @attribute {Number | String} [left]   Sets or gets a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar left="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /**
+     * @attribute {Number | String} [right]  Sets or gets a way to determine the amount of pixels from the right border of this element to the right edge of its parent's border.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar right="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [width]  Sets or gets a way to determine the amount of pixels from the left border to the right border of this element.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar width="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [top]    Sets or gets a way to determine the amount of pixels from the top border of this element to the top edge of its parent's border.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar top="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [bottom] Sets or gets a way to determine the amount of pixels from the bottom border of this element to the bottom edge of its parent's border.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar bottom="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [height] Sets or gets a way to determine the amount of pixels from the top border to the bottom border of this element.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar height="(20% + 10) * SOME_JS_VAR" />
+     * ```
      */
     /*
-     * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar left="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [right]  a way to determine the amount of pixels from the right border of this element to the right edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar right="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [width]  a way to determine the amount of pixels from the left border to the right border of this element.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar width="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [top]    a way to determine the amount of pixels from the top border of this element to the top edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar top="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [bottom] a way to determine the amount of pixels from the bottom border of this element to the bottom edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar bottom="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [height] a way to determine the amount of pixels from the top border to the bottom border of this element.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar height="(20% + 10) * SOME_JS_VAR" />
+     * Enables anchoring based on attributes set in the AML of this element
      */
     this.$enableAnchoring = function(){
         if (this.$inited) //@todo add code to reenable anchoring rules (when showing)
             return;
 
-        /**** Properties and Attributes ****/
+        // *** Properties and Attributes *** //
         apf.extend(this.$propHandlers, propHandlers);
 
-        /**** Event handlers ****/
+        // *** Event handlers *** //
         this.addEventListener("DOMNodeRemoved", remove); 
         this.addEventListener("DOMNodeInserted", reparent); 
         this.addEventListener("prop.visible", visibleHandler);
@@ -284,7 +328,10 @@ apf.Anchoring = function(){
     }
 
     /**
-     * @macro
+     * Sets the anchoring percentage.
+     * @param {String} expr An expression that's converted to a string
+     * @param {Number} An integer value that's used to convert to a percentage; for example, 50 becomes .5
+     * @returns {String} The anchor percentage
      */
     function setPercentage(expr, value){
         return String(expr).replace(apf.percentageMatch, "((" + value + " * $1)/100)");

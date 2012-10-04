@@ -28,14 +28,14 @@
  * This element also offers form paging, including validation across pages.
  * Buttons placed inside this element can contain an action
  * attribute specifying whether they behave as next, previous or finish(submit)
- * buttons. This element is <u>not</u> necesary for simple forms, like the
- * normal html webforms (see {@link baseclass.validation}). This element should
+ * buttons. This element is *not<* neccesary for simple forms, like the
+ * normal HTML webforms (see {@link apf.Validation}). This element should
  * be used when multi page forms are required, or a wizard style form.
  *
- * @constructor
+ * @class apf.xforms
  * @define submitform, xforms
  * @allowchild page, {elements}, {anyaml}
- * @addnode elements
+ *
  *
  * @inherits apf.StandardBinding
  * @inherits apf.BaseTab
@@ -47,9 +47,9 @@
  *
  * @default_private
  *
- * @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
+ * 
  */
-
+// @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
 apf.xforms     = function(struct, tagName){
     this.$init(tagName || "xforms", apf.NODE_VISIBLE, struct);
 };

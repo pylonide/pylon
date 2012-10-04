@@ -27,7 +27,7 @@
  * @return {html5} Returns a new HTML5 uploader
  * @type {html5}
  * @constructor
- * @addnode elements:upload
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

@@ -33,7 +33,7 @@ var HAS_CHILD = 1 << 1,
  * @todo see if it's possible to create a tree baseclass
  * @constructor
  * @allowchild {smartbinding}
- * @addnode elements:markupedit
+ *
  *
  * @inherits apf.XForms
  * @inherits apf.MultiSelect

@@ -21,6 +21,14 @@
 
 apf.__FOCUSSABLE__ = 1 << 26;
 
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have focussable
+ * features
+ * 
+ * @class apf.Focussable
+ * @baseclass
+ * 
+ */
 //#ifdef __WITH_FOCUS
 apf.Focussable = function(){
     this.$regbase = this.$regbase | apf.__FOCUSSABLE__;
@@ -30,8 +38,8 @@ apf.Focussable = function(){
     /**
      * Sets the position in the list that determines the sequence
      * of elements when using the tab key to move between them.
-     * Call-chaining is supported.
-     * @param {Number} tabindex the position in the list
+     * @chainable
+     * @param {Number} tabindex The position in the list
      */
     this.setTabIndex = function(tabindex){
         apf.window.$removeFocus(this);
@@ -41,7 +49,8 @@ apf.Focussable = function(){
 
     /**
      * Gives this element the focus. This means that keyboard events
-     * are send to this element.
+     * are sent to this element.
+     * @chainable
      */
     this.focus = function(noset, e, nofix){
         if (!noset) {
@@ -71,7 +80,7 @@ apf.Focussable = function(){
 
     /**
      * Removes the focus from this element.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.blur = function(noset, e){
         //#ifdef __WITH_POPUP
@@ -93,7 +102,7 @@ apf.Focussable = function(){
 
     /**
      * Determines whether this element has the focus
-     * @returns {Boolean} indicating whether this element has the focus
+     * @returns {Boolean} Indicates whether this element has the focus
      */
     this.hasFocus = function(){
         return apf.document.activeElement == this || this.$isWindowContainer

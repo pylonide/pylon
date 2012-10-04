@@ -22,18 +22,24 @@
 //#ifdef __WITH_MODEL
 
 /**
- * Element functioning as the central access point for xml data. Data can be
+ * An element functioning as the central access point for XML data. Data can be
  * retrieved from any data source using data instructions. Data can be
- * submitted using data instructions in a similar way to html form posts. The
- * modal can be reset to it's original state. It has support for offline use and
- * {@link element.remove synchronization between multiple clients}.
- * Example:
- * <code>
+ * submitted using data instructions in a similar way to html form posts. 
+ *
+ * The modal can be reset to its original state. It has support for offline use and
+ * synchronization between multiple clients.
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:model src="products.xml" />
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * A small form where the bound data is submitted to a server using a model.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlForm" submission="save_form.asp">
  *      <data name="Lukasz" address="Poland"></data>
  *  </a:model>
@@ -50,56 +56,91 @@
  *        default = "true" 
  *        action  = "submit">Submit</a:button>
  *  </a:frame>
- * </code>
+ * ```
  *
- * @event beforeretrieve    Fires before a request is made to retrieve data.
- *   cancelable: Prevents the data from being retrieved.
- * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
- * @event receive           Fires when data is successfully retrieved
- *   object:
- *   {String} data  the retrieved data
- * @event beforeload        Fires before data is loaded into the model.
- *   cancelable:
- * @event afterload         Fires after data is loaded into the model.
- * @event beforesubmit      Fires before data is submitted.
- *   cancelable: Prevents the submit.
- *   object:
- *   {String} instruction The data instruction used to store the data.
- * @event submiterror       Fires when submitting data has failed.
- * @event submitsuccess     Fires when submitting data was successfull.
- * @event aftersubmit       Fires after submitting data.
- * @event error             Fires when a communication error has occured while making a request for this element.
- *   cancelable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
- *   {Number}         state     the state of the call
- *     Possible values:
- *     apf.SUCCESS  the request was successfull
- *     apf.TIMEOUT  the request has timed out.
- *     apf.ERROR    an error has occurred while making the request.
- *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
- *
- * @constructor
+ * @class apf.model
+ * @inherits apf.AmlElement
  * @define model
+ * @logic
  * @allowchild [cdata], instance, load, submission
- * @addnode smartbinding, global
- * @attribute  {String}  src          the data instruction on how to load data from the data source into this model.
- * @attribute  {String}  submission   the data instruction on how to record the data from the data source from this model.
- * @attribute  {String}  session      the data instruction on how to store the session data from this model.
- * @attribute  {Boolean} autoinit     whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
- * @attribute  {Boolean} enablereset  whether to save the original state of the data. This enables the use of the reset() call.
- * @attribute  {String}  remote       the id of the {@link element.remote} element to use for data synchronization between multiple clients.
  *
+ * 
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ * 
+ */
+/**
+ * @attribute  {String}  src          Sets or gets the data instruction on how to load data from the data source into this model.
+ */
+/**
+ * @attribute  {String}  submission   Sets or gets the data instruction on how to record the data from the data source from this model.
+ */
+/**
+ * @attribute  {String}  session      Sets or gets the data instruction on how to store the session data from this model.
+ */
+/**
+ * @attribute  {Boolean} autoinit     Sets or gets whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
+ */
+/**
+ * @attribute  {Boolean} enablereset  Sets or gets whether to save the original state of the data. This enables the use of the reset() call.
+ */
+/**
+ * @attribute  {String}  remote       Sets or gets the id of the remote element to use for data synchronization between multiple clients.
+ */
+/**
+ * @event beforeretrieve    Fires before a request is made to retrieve data.
+ * @cancelable Prevents the data from being retrieved.
+ */
+/**
+ * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
+ */
+/**
+ * @event receive           Fires when data is successfully retrieved
+ * @param {Object} e The standard event object. It contains the following property:
+ *  - `data` (([String])):  the retrieved data
+ */
+/**
+ * @event beforeload        Fires before data is loaded into the model.
+ * @cancelable
+ */
+/**
+ * @event afterload         Fires after data is loaded into the model.
+ */
+/**
+ * @event beforesubmit      Fires before data is submitted.
+ * @cancelable Prevents the submit.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - `instruction` ([[String]]):  the data instruction used to store the data.
+ */
+/**
+ * @event submiterror       Fires when submitting data has failed.
+ */
+/**
+ * @event submitsuccess     Fires when submitting data was successfull.
+ */
+/**
+ * @event aftersubmit       Fires after submitting data.
+ */
+/**
+ * @event error             Fires when a communication error has occured while making a request for this element.
+ * @cancelable Prevents the error from being thrown.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - `error` ([[Error]]): the error object that is thrown when the event callback doesn't return false.
+ *   - `state` ([[Number]]): the state of the call. Possible values include:
+ *     - `apf.SUCCESS`:  the request was successfull
+ *     - `apf.TIMEOUT`:  the request has timed out.
+ *     - `apf.ERROR`:  an error has occurred while making the request.
+ *     - `apf.OFFLINE`:  the request was made while the application was offline.
+ *   - `userdata` (`Mixed`): data that the caller wanted to be available in the callback of the HTTP request.
+ *   - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
+ *   - `url` ([[String]]): the URL that was requested.
+ *   - `tpModule` ([[apf.http]]): the teleport module that is making the request.
+ *   - `id` ([[Number]]): the id of the request.
+ *   - `message` ([[String]]): the error message.
+ *
  */
 apf.model = function(struct, tagName){
     this.$init(tagName || "model", apf.NODE_HIDDEN, struct);
@@ -191,14 +232,14 @@ apf.model = function(struct, tagName){
     //#endif
 
     /**
-     * Registers a aml element to this model in order for the aml element to
+     * Registers an AML element to this model in order for the AML element to
      * receive data loaded in this model.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be registered.
-     * @param  {String}      [xpath]  the xpath query which is executed on the
+     * @param  {apf.AmlElement}  amlNode  The AML element to be registered.
+     * @param  {String}      [xpath]  The XPath query which is executed on the
      *                                data of the model to select the node to be
-     *                                loaded in the <code>amlNode</code>.
-     * @return  {Model}  this model
+     *                                loaded in the `amlNode`.
+     * @return  {apf.model}  This model
      * @private
      */
     this.register = function(amlNode, xpath){
@@ -211,7 +252,7 @@ apf.model = function(struct, tagName){
         if (amlNode.$model && !isReloading)
             amlNode.$model.unregister(amlNode);
 
-        //Register the aml node
+        //Register the AML node
         var item = this.$amlNodes[amlNode.$uniqueId] = {
             amlNode : amlNode, 
             xpath   : xpath
@@ -262,12 +303,12 @@ apf.model = function(struct, tagName){
         this.$amlNodes[amlNode.$uniqueId].xpath = xpath;
     };
 
-    /**
-     * Removes a aml element from the group of registered aml elements.
-     * The aml element will not receive any updates from this model, however
-     * the data loaded in the aml element is not unloaded.
+    /*
+     * Removes an AML element from the group of registered AML elements.
+     * The AML element will not receive any updates from this model, however
+     * the data loaded in the AML element is not unloaded.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be unregistered.
+     * @param  {apf.AmlElement}  amlNode  The AML element to be unregistered.
      * @private
      */
     this.unregister = function(amlNode){
@@ -280,7 +321,7 @@ apf.model = function(struct, tagName){
         amlNode.dispatchEvent("unloadmodel");
     };
 
-    /**
+    /*
      * @private
      */
     this.getXpathByAmlNode = function(amlNode){
@@ -291,7 +332,7 @@ apf.model = function(struct, tagName){
         return n.xpath;
     };
     
-    /**
+    /*
      * @private
      */
     this.$loadInAmlNode = function(item){
@@ -434,9 +475,10 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Gets a copy of current state of the xml of this model.
+     * Gets a copy of current state of the XML of this model.
      *
-     * @return  {XMLNode}  context of this model
+     * @return  {XMLNode}  The context of this model, or `false` if there's no data
+     * 
      */
     this.getXml = function(){
         return this.data
@@ -445,11 +487,11 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
+     * Sets a value of an XMLNode based on an XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @param  {String}  value  the value to set.
-     * @return  {XMLNode}  the changed XMLNode
+     * @param  {String}  xpath  The xpath used to select a XMLNode.
+     * @param  {String}  value  The value to set.
+     * @return  {XMLNode}  The changed XMLNode
      */
     this.setQueryValue = function(xpath, value){
         if (!this.data)
@@ -465,11 +507,11 @@ apf.model = function(struct, tagName){
     };
     
     /**
-     * Sets a value of a set of xml nodes based on an xpath statement executed on the data of this model.
+     * Sets a value of a set of XML nodes based on an XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a the nodeset.
-     * @param  {String}  value  the value to set.
-     * @return  {XMLNodeSet}  the changed XMLNodeSet
+     * @param  {String}  xpath  The xpath used to select a the nodeset.
+     * @param  {String}  value  The value to set.
+     * @return  {NodeList}  The changed XMLNodeSet
      */
     this.setQueryValues = function(xpath, value){
         if (!this.data)
@@ -483,10 +525,10 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
+     * Gets the value of an XMLNode based on a XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @return  {String}  value of the XMLNode
+     * @param  {String}  xpath  The XPath used to select a XMLNode.
+     * @return  {String}  The value of the XMLNode
      */
     this.queryValue = function(xpath){
         if (!this.data)
@@ -496,10 +538,10 @@ apf.model = function(struct, tagName){
     };
 	
     /**
-     * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
+     * Gets the values of an XMLNode based on a XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @return  {String}  value of the XMLNode
+     * @param  {String}  xpath  The xpath used to select a XMLNode.
+     * @return  {[String]}  The values of the XMLNode
      */	
     this.queryValues = function(xpath){
         if (!this.data)
@@ -509,10 +551,10 @@ apf.model = function(struct, tagName){
     };
 	
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes an XPath statement on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param  {String}   xpath    The XPath used to select the XMLNode(s).
+     * @return  {Mixed} The result of the selection, either an [[XMLNode]] or a [[NodeList]]
      */
     this.queryNode = function(xpath){
         if (!this.data)
@@ -522,10 +564,10 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes XPath statements on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param  {String}   xpath    The XPath used to select the XMLNode(s).
+     * @return  {Mixed} The result of the selection, either an [[XMLNode]] or a [[NodeList]]
      */
     this.queryNodes = function(xpath){
         if (!this.data)
@@ -535,8 +577,11 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Appends a copy of the xmlNode or model to this model as a child
-     * of it's root node
+     * Appends a copy of the `xmlNode` or model to this model as a child
+     * of its root node
+     * @param {XMLNode} xmlNode The XML node to append
+     * @param {String} [xpath] The path to a node to append to
+     * @returns {XMLNode} The appended node
      */
     this.appendXml = function(xmlNode, xpath){
         var insertNode = xpath
@@ -559,7 +604,7 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Removes xmlNode from this model 
+     * Removes an XML node from this model.
      */
     this.removeXml = function(xmlNode){
         if (!this.data) return;
@@ -599,7 +644,7 @@ apf.model = function(struct, tagName){
 
     /**
      * Sets a new saved point based on the current state of the data in this
-     * model. The reset() method returns the model to this point.
+     * model. The `reset()` method returns the model to this point.
      */
     this.savePoint = function(){
         this.$copy = apf.xmldb.getCleanCopy(this.data);
@@ -619,11 +664,11 @@ apf.model = function(struct, tagName){
         item.amlNode.load(xmlNode);
     };
 
-    /**
-     * @private
-     */
     //@todo refactor this to use .blah instead of getAttribute
     //@todo move this to propHandlers
+    /*
+     * @private
+     */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var x = this.$aml;
         if (this.parentNode && this.parentNode.hasFeature(apf.__DATABINDING__)) {
@@ -669,11 +714,11 @@ apf.model = function(struct, tagName){
         return this;
     });
 
+    //callback here is private
     /**
      * Loads the initial data into this model.
-     * @see element.model.attribute.init
+     * @see apf.model.init
      */
-    //callback here is private
     this.init = function(callback){
         if (this.session) {
             this.$loadFrom(this.session, {isSession: true});
@@ -702,14 +747,14 @@ apf.model = function(struct, tagName){
 
     /* *********** LOADING ****************/
 
-    /**
+    /*
      * Loads data into this model using a data instruction.
-     * @param {String}     instruction  the data instrution how to retrieve the data.
+     * @param {String}     instruction  The data instrution how to retrieve the data.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
      *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Mixed}      []        Custom properties available in the data instruction.
      */
     this.$loadFrom = function(instruction, options){
         //#ifdef __WITH_RDB
@@ -806,7 +851,7 @@ apf.model = function(struct, tagName){
     };
     
     /**
-     * Loads the data from the datasource specified for init.
+     * Loads the data from the datasource specified for [[apf.model.init]].
      */
     this.reload = function(){
         if (!this.data)
@@ -819,15 +864,15 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Loads data in this model
+     * Loads data into this model.
      *
-     * @param  {mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
-     * @param {Object}     options
-     *   Properties:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
-     *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
-     *   {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
+     * @param  {Mixed} [xmlNode]  The data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an XML string. `null` will clear the data from this model.
+     * @param {Object} [options] Additional options to pass. This can contain the following properties:
+     *   
+     *   - `xmlNode` ([[XMLElement]]):   the {@link term.datanode data node} that provides context to the data instruction.
+     *   - `callback` ([[Function]]): the code executed when the data request returns.
+     *   - `[]` (`Mixed`): custom properties available in the data instruction.
+     *   - `[nocopy]` ([[Boolean]]): specifies whether the data loaded will not overwrite the reset point.
      */
     this.load = function(xmlNode, options){
         if (typeof xmlNode == "string") {
@@ -991,18 +1036,18 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("update", {xmlNode: xmlNode, action: action, undoObj: UndoObj});
     };
 
-    /**** INSERT ****/
+    // *** INSERT *** //
 
-    /**
+    /*
      * Inserts data into the data of this model using a data instruction.
-     * @param {String}     instruction  the data instrution how to retrieve the data.
-     * @param {Object}     options
-     *   Properties:
-     *   {XMLElement} insertPoint  the parent element for the inserted data.
-     *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
-     *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
-     *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     * @param {String}     instruction  The data instrution indicating how to retrieve the data.
+     * @param {Object}     options      Additional options to pass. This can contain the following properties:
+     *   
+     *   - `insertPoint` ([[XMLElement]]): the parent element for the inserted data.
+     *   - `clearContents` ([[Boolean]]): whether the contents of the insertPoint should be cleared before inserting the new children.
+     *   - `copyAttributes` ([[Boolean]]): whether the attributes of the merged element are copied.
+     *   - `callback` ([[Function]]): the code executed when the data request returns.
+     *   - `[]` (`Mixed`): custom properties available in the data instruction.
      */
     this.$insertFrom = function(instruction, options){
         if (!instruction) return false;
@@ -1065,14 +1110,14 @@ apf.model = function(struct, tagName){
     /**
      * Inserts data in this model as a child of the currently loaded data.
      *
-     * @param  {XMLElement} XMLRoot         the {@link term.datanode data node} to insert into this model.
-     * @param {Object}     options
-     *   Properties:
-     *   {XMLElement} insertPoint  the parent element for the inserted data.
-     *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
-     *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
-     *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     * @param  {XMLElement} XMLRoot         The {@link term.datanode data node} to insert into this model.
+     * @param {Object}     options Additional options to pass. This can contain the following properties:
+     *   
+     *   - `insertPoint` ([[XMLElement]]): the parent element for the inserted data.
+     *   - `clearContents` ([[Boolean]]): specifies whether the contents of the `insertPoint` should be cleared before inserting the new children.
+     *   - `copyAttributes` ([[Boolean]]): specifies whether the attributes of the merged element are copied.
+     *   - `callback` ([[Function]]): the code executed when the data request returns.
+     *   - `[]` (`Mixed`): Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
@@ -1126,9 +1171,13 @@ apf.model = function(struct, tagName){
     /* *********** SUBMISSION ****************/
 
     /**
-     * Serialize the full XML DOM to a format specified by 'type'
+     * Serialize the full XML DOM to a format specified by 'type'.
      * 
-     * @param {String} type  how to serialize the data
+     * @param {String} type  Indicates how to serialize the data. Possible values include:
+     *   - `xml`, for `application/xml`
+     *   - `form`, for `application/x-www-form-urlencoded`
+     *   - `json`, for `application/json`
+     * @returns {String} The serialized XML.
      */
     this.convertXml = function(type) {
         if (!type)
@@ -1139,16 +1188,16 @@ apf.model = function(struct, tagName){
 
     /**
      * Submit the data of the model to a data source.
-     * @param {String} instruction  the instruction for sending the data, or the url to send the data to.
-     * @param {String} type         how to serialize the data.
-     *   Possible values:
-     *   xml, application/xml
-     *   form, application/x-www-form-urlencoded
-     *   json, application/json
-     * @param {XMLElement} xmlNode  the data node to send to the server.
+     * @param {String} instruction  The instruction for sending the data, or the URL to send the data to.
+     * @param {String} [type]         Indicates how to serialize the data. Possible values include:
+     *   - `xml`, for `application/xml`
+     *   - `form`, for `application/x-www-form-urlencoded` (the default)
+     *   - `json`, for `application/json`
+     * @param {XMLElement} [xmlNode]  The data node to send to the server.
+     * @param {Object} [options] A list of additional options to pass; these are the same as [[apf.saveData]]. Available properties include:
+     *                           {:saveDataOptions}
      */
-     //@todo rewrite this for apf3.0
-    this.submit = function(instruction, type, xmlNode, options){
+    this.submit = function(instruction, type, xmlNode, options){ //@todo rewrite this for apf3.0
         if (!instruction)
             instruction = this.submission;
         

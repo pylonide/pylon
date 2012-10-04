@@ -54,7 +54,7 @@
  *                                the RDB implementation can grok
  *
  * @define persist
- * @addnode teleport
+ *
  * 
  * @author      Ruben Daniels
  * @version     %I%, %G%

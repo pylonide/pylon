@@ -854,7 +854,7 @@ apf.ViewPortAml = function(amlNode){
         }
     }
     
-    /**** Private ****/
+    // *** Private *** //
     
     this.$getHtmlHost = function(){
         var htmlNode = this.amlNode.$int || this.amlNode.$container;
@@ -896,13 +896,13 @@ apf.ViewPortAml = function(amlNode){
 }).call(apf.ViewPortAml.prototype);
 
 apf.ViewPortHtml = function(htmlNode){
-    /**** Private ****/
+    // *** Private *** //
     
     this.$getHtmlHost = function(){
         return htmlNode;
     }
     
-    /**** Init ****/
+    // *** Init *** //
     
     var _self = this;
     

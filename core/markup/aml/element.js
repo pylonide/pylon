@@ -19,6 +19,14 @@
  *
  */
 
+/**
+ * Represents a single element within an AML node.
+ *
+ * @class apf.AmlElement
+ * @baseclass
+ * @inherits apf.AmlNode
+ */
+
 // #ifdef __WITH_AMLELEMENT
 apf.AmlElement = function(struct, tagName){
     var $init = this.$init;
@@ -43,30 +51,34 @@ apf.AmlElement = function(struct, tagName){
         this.$events            = {};
         this.$inheritProperties = {};
         
-        /**
-         * Nodelist containing all attributes. This is implemented according to the
+        /*
+         * A node list containing all the attributes. This is implemented according to the
          * W3C specification.
-         * Example:
-         * <code>
+         * 
+         * For more information, see [[apf.AmlElement.getAttribute]] and [[apf.AmlElement.setAttribute]].
+         *
+         * #### Example
+         * 
+         * ```javascript
          *  for (var i = 0; i < obj.attributes.length; i++) {
          *      alert(obj.attributes.item(i));
          *  }
-         * </code>
-         * @see baseclass.amldom.method.getAttribute
-         * @see baseclass.amldom.method.setAttribute
+         * ```
+         * @type {apf.AmlNamedNodeMap}
          */
         this.attributes = new apf.AmlNamedNodeMap(this); //@todo apf3.0 move to init?
         
         /**
-         * The purpose of this element
-         * Possible values:
-         * apf.NODE_VISIBLE     this element has a gui representation
-         * apf.NODE_HIDDEN      this element does not display a gui
+         * Defines the purpose of this element. Possible values include:
+         * - `apf.NODE_VISIBLE`:  This element has a GUI representation
+         * - `apf.NODE_HIDDEN`:   This element does not display a GUI
+         * @type {Number}
          */
         this.nodeFunc = nodeFunc;
         
         /**
          * The local name of this element
+         * @type {String}
          */
         this.localName = tagName; //@todo
         
@@ -125,24 +137,26 @@ apf.AmlElement = function(struct, tagName){
 
 (function(){
     /**
-     * Number specifying the type of node within the document.
+     * A number specifying the type of node within the document.
+     * @type {Number}
      */
     this.nodeType = this.NODE_ELEMENT;
     this.canHaveChildren = true;
     
     this.$propHandlers = {
         /**
-         * @attribute {String} id the identifier of this element. When set this
-         * identifier is the name of the variable in javascript to access this
+         * @attribute {String} id The identifier of this element. When set, this
+         * identifier is the name of the variable in JavaScript to access this
          * element directly. This identifier is also the way to get a reference to
-         * this element using apf.document.getElementById.
-         * Example:
-         * <code>
+         * this element using `apf.document.getElementById()`.
+         * 
+         * #### Example
+         *
+         * ```xml
          *  <a:bar id="barExample" />
          *  <a:script>
          *      alert(barExample);
          *  </a:script>
-         * </code>
          */
         "id": function(value){
             //#ifdef __DEBUG
@@ -205,12 +219,13 @@ apf.AmlElement = function(struct, tagName){
     
     /**
      * Returns a list of elements with the given tag name.
+     *
      * The subtree below the specified element is searched, excluding the
      * element itself.
      *
-     * @method
-     * @param  {String}  tagName  the tag name to look for. The special string "*" represents any tag name.
-     * @return  {NodeList}  containing any node matching the search string
+     * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
+     * @param {Boolean} [norecur] If specified, defines whether or not to check recursively
+     * @return  {NodeList}  Contains any nodes matching the search string
      */
     this.getElementsByTagName = function(tagName, norecur){
         tagName = tagName.toLowerCase();
@@ -230,7 +245,18 @@ apf.AmlElement = function(struct, tagName){
         
         return result;
     };
-    
+
+    /**
+     * Returns a list of elements with the given tag name and the specified namespace URI.
+     *
+     * The subtree below the specified element is searched, excluding the
+     * element itself.
+     *
+     * @param  {String}  namespaceURI  The namespace URI name to look for.
+     * @param  {String}  localName  The tag name to look for. The special string "*" represents any tag name.
+     * @param {Boolean} [norecur] If specified, defines whether or not to check recursively
+     * @return  {NodeList}  Contains any nodes matching the search string
+     */    
     this.getElementsByTagNameNS = function(namespaceURI, localName, norecur){
         localName = localName.toLowerCase();
         var node, i, l,
@@ -251,9 +277,12 @@ apf.AmlElement = function(struct, tagName){
     };
 
     /**
-     * Sets an attribute on this element. Call-chaining is supported.
-     * @param {String} name the name of the attribute to which the value is set
-     * @param {String} value the new value of the attribute.
+     * Sets an attribute on this element.
+     * @chainable
+     * @param {String} name The name of the attribute to which the value is set
+     * @param {String} value The new value of the attribute.
+     * @param {Boolean} [noTrigger] If specified, does not emit events 
+     * [[apf.AmlNode@DOMNodeInsertedIntoDocument]] and [[apf.AmlNode@DOMNodeInserted]].
      */
     this.setAttribute = function(name, value, noTrigger) {
         name = name.toLowerCase();
@@ -313,11 +342,12 @@ apf.AmlElement = function(struct, tagName){
     };
     
     /**
-     * Removes an attribute from this element. Call-chaining is supported.
-     * @param {String} name the name of the attribute to remove.
+     * Removes an attribute from this element. 
+     * @chainable
+     * @param {String} name The name of the attribute to remove.
+     * @returns {apf.AmlElement} The modified element.
      */
-    //@todo apf3.0 domattr
-    this.removeAttribute = function(name){
+    this.removeAttribute = function(name){ //@todo apf3.0 domattr
         this.attributes.removeNamedItem(name);
         return this;
     };
@@ -333,11 +363,11 @@ apf.AmlElement = function(struct, tagName){
     };
 
     /**
-     * Retrieves the value of an attribute of this element
-     * @param  {String}  name       the name of the attribute for which to return the value.
-     * @param  {Boolean} [inherited]
-     * @return {String} the value of the attribute or null if none was found with the name specified.
-     * @method
+     * Retrieves the value of an attribute of this element.
+     *
+     * @param  {String}  name       The name of the attribute for which to return the value.
+     * @param  {Boolean} [inherited] if specified, takes into consideration that the attribute is inherited
+     * @return {String} The value of the attribute, or `null` if none was found with the name specified.
      */
     this.getAttribute = function(name, inherited){
         var item = this.attributes.getNamedItem(name);
@@ -348,8 +378,9 @@ apf.AmlElement = function(struct, tagName){
     
     /**
      * Retrieves the attribute node for a given name
-     * @param {String} name the name of the attribute to find.
-     * @return {AmlNode} the attribute node or null if none was found with the name specified.
+     *
+     * @param {String} name The name of the attribute to find.
+     * @return {apf.AmlNode} The attribute node, or `null` if none was found with the name specified.
      */
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
@@ -375,9 +406,9 @@ apf.AmlElement = function(struct, tagName){
     };
     
     /**
-     * Replaces the child aml elements with new aml.
-     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {HTMLElement} oInt        the html parent of the created aml elements.
+     * Replaces the child AML elements with new AML.
+     * @param {Mixed}       amlDefNode  The AML to be loaded. This can be a string or a parsed piece of XML.
+     * @param {HTMLElement} oInt        The HTML parent of the created AML elements.
      */
     this.replaceMarkup = function(amlDefNode, options) {
         //#ifdef __DEBUG
@@ -421,12 +452,11 @@ apf.AmlElement = function(struct, tagName){
     };
 
     /**
-     * Inserts new aml into this element.
-     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {Object}      options     
-     *    Properties:
-     *    callback
-     *    clear
+     * Inserts new AML into this element.
+     * @param {Mixed}       amlDefNode  The AML to be loaded. This can be a string or a parsed piece of XML.
+     * @param {Object}      options     Additional options to pass. It can include the following properties:
+     *                                  - callback ([[Function]]): A function to call once the insertion completes.
+     *                                  - clear ([[Boolean]]): If set, the AML has the attribute "clear" attached to it
      */
     this.insertMarkup = function(amlDefNode, options){
         //#ifdef __DEBUG

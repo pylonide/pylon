@@ -27,7 +27,7 @@
  *
  * @constructor
  * @define colorpicker
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

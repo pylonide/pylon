@@ -24,8 +24,10 @@
 /**
  * @define bindings element containing all the binding rules for the data 
  * bound elements referencing this element.
- * Example:
- * <code>
+ * 
+ * #### Example:
+ *
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -43,10 +45,12 @@
  *    height   = "200" 
  *    model    = "mdlList" 
  *    bindings = "bndFolders" />
- * </code>
- * @see element.smartbinding
+ * ```
  *
- * @constructor
+ * @see apf.smartbinding
+ *
+ * @class apf.bindings
+ * @inherits apf.AmlElement
  * @apfclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -119,7 +123,7 @@ apf.bindings = function(struct, tagName){
         }
     }
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;

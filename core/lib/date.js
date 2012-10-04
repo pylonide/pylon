@@ -185,7 +185,6 @@
     /**
      * Resets the time of this Date object to 12:00 AM (00:00), which is the 
      * start of the day.
-     * @param {Boolean}  .clone() this date instance before clearing Time
      * @return {Date}    this
      */
     $P.clearTime = function() {

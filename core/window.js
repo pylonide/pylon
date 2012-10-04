@@ -22,21 +22,26 @@
 // #ifdef __WITH_WINDOW
 
 /**
- * Object representing the window of the aml application. The semantic is
+ * Object representing the window of the AML application. The semantic is
  * similar to that of a window in the browser, except that this window is not
- * the same as the javascript global object. It handles the focussing within
+ * the same as the JavaScript global object. It handles the focussing within
  * the document and several other events such as exit and the keyboard events.
  *
- * @event blur              Fires when the browser window looses focus.
- * @event focus             Fires when the browser window receives focus.
- *
- * @constructor
+ * @class apf.window
  * @inherits apf.Class
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ */
+/**
+ * @event blur              Fires when the browser window loses focus.
+ */
+/**
+ * @event focus             Fires when the browser window receives focus.
+ *
+ *
  */
 apf.window = function(){
     this.$uniqueId = apf.all.push(this);
@@ -50,13 +55,13 @@ apf.window = function(){
     };
     
     /**
-     * Retrieves the primary {@link element.actiontracker action tracker} of the application.
+     * Retrieves the primary {@link apf.actiontracker action tracker} of the application.
      */
     this.getActionTracker = function(){
         return this.$at
     };
 
-    /**
+    /*
      * @private
      */
     this.loadCodeFile = function(url){
@@ -182,7 +187,7 @@ apf.window = function(){
 
     /**
      * Set the icon of the browser window.
-     * @param {String} url the location of the .ico file.
+     * @param {String} url The location of the _.ico_ file.
      */
     this.setIcon = function(url){
         if (apf.isDeskrun)
@@ -191,7 +196,7 @@ apf.window = function(){
 
     /**
      * Set the title of the browser window.
-     * @param {String} value the new title of the window.
+     * @param {String} value The new title of the window.
      */
     this.setTitle = function(value){
         this.title = value || "";
@@ -202,7 +207,7 @@ apf.window = function(){
             document.title = (value || "");
     };
 
-    /**
+    /*
      * @private
      */
     this.loadAml = function(x){
@@ -217,7 +222,7 @@ apf.window = function(){
     var jdwin   = apf.isDeskrun ? window.external : null,
         jdshell = apf.isDeskrun ? jdwin.shell     : null;
 
-    /**
+    /*
      * @private
      */
     this.loadDeskRun = function(q){
@@ -290,7 +295,7 @@ apf.window = function(){
     };
     //#endif
 
-    /**** Focus Internals ****/
+    // *** Focus Internals *** //
 
     //#ifdef __WITH_VISIBILITYMANAGER
     this.vManager = new apf.visibilitymanager();
@@ -613,18 +618,18 @@ apf.window = function(){
         //this.$focusParent = null; //@experimental to not execute this
     }
 
-    /**** Focus API ****/
+    // *** Focus API *** //
 
     /**
-     * Determines whether a given aml element has the focus.
-     * @param {AMLElement} the element to check
-     * @returns {Boolean} whether the element has focus.
+     * Determines whether a given AML element has the focus.
+     * @param {apf.AmlElement} The element to check
+     * @returns {Boolean} Indicates whether the element has focus.
      */
     this.hasFocus = function(amlNode){
         return this.activeElement == amlNode;
     };
 
-    /**
+    /*
      * @private
      */
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
@@ -708,7 +713,7 @@ apf.window = function(){
         //#endif
     };
 
-    /**
+    /*
      * @private
      */
     this.focusDefault = function(){
@@ -748,7 +753,7 @@ apf.window = function(){
 
     //#endif
 
-    /**** Set Window Events ****/
+    // *** Set Window Events *** //
 
     apf.addListener(window, "beforeunload", function(){
         return apf.dispatchEvent("exit");
@@ -877,7 +882,7 @@ apf.window = function(){
 
     //#endif
 
-    /**** Keyboard and Focus Handling ****/
+    // *** Keyboard and Focus Handling *** //
 
     apf.addListener(document, "contextmenu", function(e){
         if (!e)
@@ -1511,7 +1516,7 @@ apf.window = function(){
     }
     //#endif
 
-    /**
+    /*
      * @private
      */
     this.destroy = function(){
@@ -1557,7 +1562,7 @@ apf.window.prototype = new apf.Class().$init();
 apf.window = new apf.window();
 
 //#ifdef __WITH_WINDOW_FOCUS
-/**
+/*
  * @private
  */
 apf.sanitizeTextbox = function(oTxt){

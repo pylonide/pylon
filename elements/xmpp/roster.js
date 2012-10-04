@@ -85,7 +85,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      * @param {String}  [host]
      * @param {String}  [resource]
      * @param {Boolean} [bRoom]
-     * @type  {mixed}
+     * @type  {Mixed}
      */
     this.getEntity = function(node, host, resource, bRoom) {
         if (typeof node == "undefined") return null;

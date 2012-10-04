@@ -1,0 +1,136 @@
+- var attributeSection;
+
+mixin makeTag(obj)
+  -xmlBlobs = "<a:" + obj.name + "     \n"; 
+
+  -obj.children.forEach(function(k) {
+    -if (k.type == "attribute") {
+          -xmlBlobs += "\n     " + k.name + "=";
+          -types = [];
+          -k.signatures[0].returns.forEach(function (r) {
+                -if (r.type == "Boolean")
+                      -types.push('"' + 'true | false' + '"')
+                -else
+                      -types.push('"' + r.type + '"')
+             -xmlBlobs += types.join("|");
+          -})
+      -}
+  -})
+
+  != markdown("```xml\n" + xmlBlobs + ">" + "\n```");
+
+mixin article(obj, parents)
+  if typeof obj === 'string'
+    obj = list[obj]
+
+  if (obj.private !== true)
+    title = obj.id + (obj.type ? ' (' + obj.type + ')' : '')
+    article.article(id=obj.path, data-title=title)
+      if obj.type === 'class' 
+
+        if obj.define && obj.children
+          div.xmlBlob
+           mixin makeTag(obj)
+
+        if obj.stability
+          mixin markdown(">" + obj.stability)
+
+        if obj.description
+          .section.description
+            .memberContent
+              mixin markdown(obj.description)
+
+      else
+
+        .section.method
+          .memberContent
+            if obj.signatures
+              div.title
+                ul.signatures
+                  -var loops = 0;
+                  for sig in obj.signatures
+                    li.signature
+                      ul
+                        li.signature-call!= signature(obj, sig, ["methodClicker"])
+                          if sig.returns
+                            li.signature-returns
+                              ul.argument-types
+                                for ret in sig.returns
+                                  li.argument-type!= returnLink(obj, ret, [])
+                        ul.metaInfo
+                            if obj.inheritedFrom
+                              li
+                                span.label.inheritedFrom
+                                  | Inherited from: 
+                                  != link(obj.inheritedFrom)
+                      
+                                    
+            div.sideToggler
+
+              div(id='ellipsis_#{obj.id}', class='ellipsis_description')
+                mixin markdown(obj.short_description)
+
+              h3(id='#{obj.id}', class='methodToggle methodClicker inactive')
+                &nbsp;&nbsp;&nbsp;
+              div.description
+
+                mixin markdown(obj.description)
+
+                
+    for child in obj.children.filter(function(x){return x.type === 'attribute'})
+      - if (!attributeSection)
+        - attributeSection = true
+        h3.sectionHeader Attributes
+      mixin article(child, parents.concat(obj))
+
+
+mixin xml_api()
+  -pos = 0
+  for obj in tree.children
+    -if (obj.private !== false && obj.define !== undefined)
+      .classContent
+        .membersBackground
+        div(class=' members pos#{pos}')
+          div(class=' membersContent pos#{pos}')
+              h1.memberHeader
+                -var heading = obj.path.replace("apf.", "&lt;a:") + ">"
+                span.name #{heading}
+              
+              -if (true || obj.filename.indexOf("index") < 0)
+                ul(class='nav tabs pos#{pos}', data-tabs='tabs')
+                  for selector, title in {'Attributes': ['attribute']}
+                    members = obj.children.filter(function(x){return x.type === selector[0]})
+                      li(class="dropdown", data-dropdown="dropdown")
+                        if members.length
+                           a(href="\#", class="dropdown-toggle", data-toggle="dropdown")
+                              | Attributes (#{members.length})
+                              b.caret
+                          ul.dropdown-menu
+                            for m in members
+                              li(data-id='#{m.id}', class='memberLink')
+                                mixin link(m, [], true)
+         -pos++
+         attributeSection = false;
+         mixin article(obj, [])
+
+
+mixin short_description_list(collection)
+  ul.method-details-list
+    for obj in collection
+      if typeof obj === 'string'
+        obj = list[obj]
+      li.method-description
+        h4
+          mixin link(obj)
+        if obj.short_description
+          mixin markdown(obj.short_description)
+
+mixin link(obj, classes, short)
+  l = link(obj, classes, short)
+  != l
+
+mixin links(collection)
+  ul.method-list
+    for obj in collection
+      li
+        mixin link(obj)

@@ -23,14 +23,17 @@
 /**
  * Any child element of this element is placed in a table. The size of the 
  * columns and rows of the table can be set by attributes. Child elements can
- * span multiple columns. Using '*' as a size indicator will use the remaining
+ * span multiple columns. Using `'*' `as a size indicator will use the remaining
  * size for that column or row, when the table's size is set.
- * Example:
+ * 
+ * #### Example
+ *
  * This example shows a window with a table and two buttons that change the 
- * orientation of the table runtime. The textarea and it's label have a span set
- * to '*'. This means they will span the entire width of all columns, no matter
+ * orientation of the table runtime. The textarea and its label have a span set
+ * to `'*'`. This means they will span the entire width of all columns, no matter
  * how many columns there are.
- * <code>
+ * 
+ * ```xml
  *  <a:window visible="true" width="500" height="400">
  *      <a:table id="tableTest" 
  *        columns = "80, *"
@@ -63,16 +66,15 @@
  *        caption = "Four Columns"
  *        onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
  *  </a:window>
- * </code>
- * Remarks:
- * This is one of three positioning methods.
- * See {@link baseclass.alignment}
- * See {@link baseclass.anchoring}
+ * ```
  *
+ *
+ * @class apf.table
  * @define table
  * @allowchild {elements}, {anyaml}
- * @addnode elements
- * @constructor
+ *
+ * @container
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -83,7 +85,7 @@ apf.table = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -95,17 +97,28 @@ apf.table = function(struct, tagName){
     this.cellheight = 19;
     
     /**
-     * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
-     * Example:
-     * <code>
+     * @attribute {Number | String} columns      Sets or gets a comma seperated list of column sizes. 
+     *                                  A column size can be specified in a number (size in pixels), or using a number and a `"%"` sign to indicate a percentage. 
+     *                                  A `'*'` indicates the column spans the rest space. There can be only one `'*'` in the column string.
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:table columns="150, *, 20%" />
-     * </code>
-     * @attribute {String} padding      the space between each element. Defaults to 2.
-     * @attribute {String} edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
-     * Example:
-     * <code>
+     * ```
+     *
+     */
+    /**
+     * @attribute {String} padding=2     Sets or gets the space between each element.
+     */
+    /**
+     * @attribute {String} edge="5 5 5 5"        Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:table edge="10 10 40 10" />
-     * </code>
+     * ````
      */
     this.$supportedProperties.push("columns", "padding", "edge", 
         "cellheight", "span");
@@ -395,7 +408,7 @@ apf.table = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)

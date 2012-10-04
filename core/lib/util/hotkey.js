@@ -114,14 +114,15 @@ apf.hotkeys = {};
 
     /**
      * Registers a hotkey handler to a key combination.
-     * Example:
-     * <code>
+     * 
+     * #### Example:
+     * ```javascript
      *   apf.registerHotkey('Ctrl-Z', undoHandler);
-     * </code>
-     * @param {String}   hotkey  the key combination to user. This is a
-     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
+     * ```
+     * @param {String}   hotkey  The key combination to user. This is a
+     * combination of [[keys: Ctrl]], [[keys: Alt]], [[keys: Shift]] and a normal key to press. Use `+` to
      * seperate the keys.
-     * @param {Function} handler the code to be executed when the key
+     * @param {Function} handler The code to be executed when the key
      * combination is pressed.
      */
     apf.registerHotkey = this.register = function(hotkey, handler){
@@ -156,7 +157,9 @@ apf.hotkeys = {};
 
     /**
      * Removes a registered hotkey.
-     * @param {String} hotkey the hotkey combination.
+     * @param {String} hotkey The hotkey combination to remove
+     * @param {Function} handler The code to be executed when the key
+     * combination is pressed.
      */
     apf.removeHotkey = this.remove = this.unregister = function(hotkey, handler) {
         var parts = hotkey.split("|"),

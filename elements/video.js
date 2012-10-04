@@ -57,7 +57,7 @@
  * @inherits apf.Media
  * @constructor
  * @allowchild text, source, nomedia
- * @addnode elements:video
+ *
  * @link http://www.whatwg.org/specs/web-apps/current-work/#video
  *
  * @author      Mike de Boer
@@ -179,7 +179,7 @@ apf.video = function(struct, tagName){
         }
     };
 
-    /**** Event listeners ****/
+    // *** Event listeners *** //
 
     // #ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){

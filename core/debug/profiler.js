@@ -243,7 +243,7 @@ apf.profiler = {
     /**
      * Stop the current cycle of the Profiler and output the result.
      * 
-     * @type {mixed}
+     * @type {Mixed}
      */
     stop: function() {
         if (this.isRunning) this.runs++;
@@ -268,7 +268,7 @@ apf.profiler = {
      * to the report builder.
      * 
      * @see Profiler#buildReport
-     * @type {mixed}
+     * @type {Mixed}
      */
     report: function() {
         var i, j, dur, stack, trace, callsNo;
@@ -521,8 +521,8 @@ apf.profiler = {
     /**
      * Provide the ascending sorting order to the report generator
      *
-     * @param {mixed} a Variable to be compared
-     * @param {mixed} b Variable next in line to be compared
+     * @param {Mixed} a Variable to be compared
+     * @param {Mixed} b Variable next in line to be compared
      * @type  {Number}
      */
     sortingHelperAsc: function(a, b) {
@@ -537,8 +537,8 @@ apf.profiler = {
     /**
      * Provide the descending sorting order to the report generator
      * 
-     * @param {mixed} a Variable to be compared
-     * @param {mixed} b Variable next in line to be compared
+     * @param {Mixed} a Variable to be compared
+     * @param {Mixed} b Variable next in line to be compared
      * @type  {Number}
      */
     sortingHelperDesc: function(a, b) {

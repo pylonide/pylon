@@ -26,8 +26,9 @@
  * useful for log messages.
  * 
  * @experimental
- * @todo test this
+ * 
  */
+// @todo test this
 apf.lineselect = function(struct, tagName){
     this.$init(tagName || "lineselect", apf.NODE_VISIBLE, struct);
 };
@@ -125,7 +126,7 @@ apf.lineselect = function(struct, tagName){
     }, true);
     //#endif
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(clear, parentNode){
         this.$ext = this.$getExternal();

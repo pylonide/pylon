@@ -47,8 +47,14 @@ RegExp.prototype.dataType   = apf.REGEXP;
 Function.prototype.dataType = apf.FUNCTION;
 
 /**
- * Converts a javascript object to a cgi string.
- * @see core.convertXml
+ * Converts a JavaScript object to a CGI string.
+ *
+ * @param {Object} args The object to convert
+ * @param {Boolean} [multicall] Indicates if there will be a function call name
+ * @param {Function} [mcallname] A name to append to the CGI string, prefixed with `func=`
+ * @returns {Object} The converted object, joined with `"&"`
+ *
+ * @see apf.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
     var prop, vars = [];
@@ -87,11 +93,15 @@ apf.getCgiString = function(args, multicall, mcallname){
     }
 
     return vars.join("&");
-}
+};
 
 /**
- * Converts a cgi string to a javascript object.
- * @see core.convertXml
+ * Converts a CGI string to a JavaScript object.
+ *
+ * @param {String} args The argument string to convert, separated by `"&"`
+ * @returns {Object} The converted object
+ *
+ * @see apf.convertXml
  */
 apf.fromCgiString = function(args) {
     if (!args)
@@ -136,11 +146,11 @@ Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, a
 //#endif
 
 
-/**
+/*
  * Extends a Function object with properties from other objects, specified as
  * arguments.
  *
- * @param {mixed} obj1, obj2, obj3, etc.
+ * @param {Mixed} obj1, obj2, obj3, etc.
  * @type Function
  * @see apf.extend
  */
@@ -149,14 +159,14 @@ Function.prototype.extend = function() {
     return this;
 };
 
-/**
+/*
  * Attach a Function object to an event as handler method. If apf.AbstractEvent
  * is available, the active event is extended with convinience accessors as
  * declared in apf.AbstractEvent
  *
  * @param {Object} The context the execute the Function within
  * @param {Boolean} Whether the passed event object should be extended with AbstractEvent
- * @param {mixed}  param1, param2, param3, etc.
+ * @param {Mixed}  param1, param2, param3, etc.
  * @type Function
  * @see apf.AbstractEvent
  */
@@ -177,7 +187,7 @@ Function.prototype.bindWithEvent = function() {
     }
 };
 
-/**
+/*
  * The bind function creates a new function (a bound function) that calls the
  * function that is its this value (the bound function's target function) with
  * a specified this parameter, which cannot be overridden. bind also accepts
@@ -206,7 +216,7 @@ if (!Function.prototype.bind)
         return _function;
 };
 
-/**
+/*
  * Copy an array, like this statement would: 'this.concat([])', but then do it
  * recursively.
  */
@@ -218,7 +228,7 @@ Array.prototype.copy = function(){
     return ar;
 };
 
-/**
+/*
  * Concatenate the current Array instance with one (or more) other Arrays, like
  * Array.concat(), but return the current Array instead of a new one that
  * results from the merge.
@@ -234,7 +244,7 @@ Array.prototype.merge = function(){
     }
 };
 
-/**
+/*
  * Add the values of one or more arrays to the current instance by using the
  * '+=' operand on each value.
  *
@@ -253,10 +263,10 @@ Array.prototype.arrayAdd = function(){
     return s;
 };
 
-/**
+/*
  * Check if an object is contained within the current Array instance.
  *
- * @param {mixed}   obj The value to check for inside the Array
+ * @param {Mixed}   obj The value to check for inside the Array
  * @type  {Boolean}
  */
 Array.prototype.equals = function(obj){
@@ -266,7 +276,7 @@ Array.prototype.equals = function(obj){
     return true;
 };
 
-/**
+/*
  * Make sure that an array instance contains only unique values (NO duplicates).
  * Elaborate implementation to allow for O(n) time complexity compared to O(n^2)
  * time complexity when using Array.prototype.indexOf.
@@ -383,10 +393,10 @@ else {
     };
 }
 
-/**
+/*
  * Check if this array instance contains a value 'obj'.
  *
- * @param {mixed}  obj    The value to check for inside the array
+ * @param {Mixed}  obj    The value to check for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Boolean}
  * @see Array.indexOf
@@ -395,12 +405,12 @@ Array.prototype.contains = function(obj, from){
     return this.indexOf(obj, from) != -1;
 };
 
-/**
+/*
  * Search for the index of the first occurence of a value 'obj' inside an array
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -413,11 +423,11 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
     return -1;
 };
 
-/**
+/*
  * Search for the index of the last occurence of a value 'obj' inside an array
  * instance.
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -431,11 +441,11 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
     return -1;
 };
 
-/**
+/*
  * Like Array.push, but only invoked when the value 'item' is already present
  * inside the array instance.
  *
- * @param {mixed} item, item, ...
+ * @param {Mixed} item, item, ...
  * @type  {Array}
  */
 Array.prototype.pushUnique = function(){
@@ -450,7 +460,7 @@ Array.prototype.pushUnique = function(){
     return this;
 };
 
-/**
+/*
  * @todo: Ruben: could you please comment on this function? Seems to serve a very
  * specific purpose...
  *
@@ -469,7 +479,7 @@ Array.prototype.search = function(){
     }
 };
 
-/**
+/*
  * Iterate through each value of an array instance from left to right (front to
  * back) and execute a callback Function for each value.
  *
@@ -484,10 +494,10 @@ Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     return this;
 }
 
-/**
+/*
  * Search for a value 'obj' inside an array instance and remove it when found.
  *
- * @type {mixed} obj
+ * @type {Mixed} obj
  * @type {Array}
  */
 Array.prototype.remove = function(obj){
@@ -501,21 +511,21 @@ Array.prototype.remove = function(obj){
     return this;
 };
 
-/**
+/*
  * Remove an item from an array instance which can be identified with key 'i'
  *
  * @param  {Number} i
- * @return {mixed}  The removed item
+ * @return {Mixed}  The removed item
  */
 Array.prototype.removeIndex = function(i){
     if (!this.length) return null;
     return this.splice(i, 1);
 };
 
-/**
+/*
  * Insert a new value at a specific object; alias for Array.splice.
  *
- * @param {mixed}  obj Value to insert
+ * @param {Mixed}  obj Value to insert
  * @param {Number} i   Index to insert 'obj' at
  * @type  {Number}
  */
@@ -523,7 +533,7 @@ Array.prototype.insertIndex = function(obj, i){
     this.splice(i, 0, obj);
 };
 
-/**
+/*
  * Reverses the order of the elements of an array; the first becomes the last,
  * and the last becomes the first.
  *
@@ -548,11 +558,11 @@ Array.prototype.reverse = Array.prototype.reverse || function(){
     doesn't support them? I don't think so. Lets opt for
     removal
 */
-/**
+/*
  * Adds one or more elements to the end of an array and returns the new length
  * of the array.
  *
- * @param {mixed} value1, value2, value3, etc.
+ * @param {Mixed} value1, value2, value3, etc.
  * @type  {Number}
  */
 Array.prototype.push = Array.prototype.push || function(){
@@ -561,10 +571,10 @@ Array.prototype.push = Array.prototype.push || function(){
     return this.length;
 };
 
-/**
+/*
  * Removes the last element from an array and returns that element.
  *
- * @type {mixed}
+ * @type {Mixed}
  */
 Array.prototype.pop = Array.prototype.pop || function(){
     var item = this[this.length - 1];
@@ -573,10 +583,10 @@ Array.prototype.pop = Array.prototype.pop || function(){
     return item;
 };
 
-/**
+/*
  * Removes the first element from an array and returns that element.
  *
- * @type {mixed}
+ * @type {Mixed}
  */
 Array.prototype.shift = Array.prototype.shift || function(){
     var item = this[0];
@@ -586,7 +596,7 @@ Array.prototype.shift = Array.prototype.shift || function(){
     return item;
 };
 
-/**
+/*
  * Joins all elements of an array into a string.
  *
  * @param {String} connect
@@ -606,7 +616,7 @@ Array.prototype.join = Array.prototype.join || function(connect){
  * @link http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array
  */
 
-/**
+/*
  * Creates a new array with all of the elements of this array for which the
  * provided filtering function returns true.
  *
@@ -623,7 +633,7 @@ Array.prototype.filter = Array.prototype.filter || function(fn, bind){
     return results;
 };
 
-/**
+/*
  * Returns true if every element in this array satisfies the provided testing
  * function.
  *
@@ -639,7 +649,7 @@ Array.prototype.every = Array.prototype.every || function(fn, bind){
     return true;
 };
 
-/**
+/*
  * Creates a new array with the results of calling a provided function on every
  * element in this array.
  *
@@ -654,7 +664,7 @@ Array.prototype.map = Array.prototype.map || function(fn, bind){
     return results;
 };
 
-/**
+/*
  * Tests whether some element in the array passes the test implemented by the
  * provided function.
  *
@@ -671,7 +681,7 @@ Array.prototype.some = Array.prototype.some || function(fn, bind){
 };
 
 // #ifdef __WITH_UUID
-/**
+/*
  * Generate a random uuid. Usage: Math.uuid(length, radix)
  *
  * EXAMPLES:
@@ -731,7 +741,7 @@ Math.uuid.CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy
 
 // #endif
 
-/**
+/*
  * Transform a number to a string and pad it with a zero digit its length is one.
  *
  * @type {String}
@@ -749,7 +759,7 @@ RegExp.prototype.getNativeFlags = function() {
            (this.sticky     ? "y" : "");
 };
 
-/**
+/*
  * Accepts flags; returns a new XRegExp object generated by recompiling
  * the regex with the additional flags (may include non-native flags).
  * the original regex object is not altered.
@@ -758,7 +768,7 @@ RegExp.prototype.addFlags = function(flags){
     return new RegExp(this.source, (flags || "") + this.getNativeFlags());
 };
 
-/**
+/*
  * Casts the first character in a string to uppercase.
  *
  * @type {String}
@@ -767,7 +777,7 @@ String.prototype.uCaseFirst = function(){
     return this.substr(0, 1).toUpperCase() + this.substr(1)
 };
 
-/**
+/*
  * Removes spaces and other space-like characters from the left and right ends
  * of a string
  *
@@ -777,7 +787,7 @@ String.prototype.trim = function(){
     return this.replace(/[\s\n\r]*$/, "").replace(/^[\s\n\r]*/, "");
 };
 
-/**
+/*
  * Concatenate a string with itself n-times.
  *
  * @param {Number} times Number of times to repeat the String concatenation
@@ -787,7 +797,7 @@ String.prototype.repeat = function(times){
     return Array(times + 1).join(this);
 };
 
-/**
+/*
  * Count the number of occurences of substring 'str' inside a string
  *
  * @param {String} str
@@ -797,7 +807,7 @@ String.prototype.count = function(str){
     return this.split(str).length - 1;
 };
 
-/**
+/*
  * Remove HTML or any XML-like tags from a string
  *
  * @type {String}
@@ -806,7 +816,7 @@ String.prototype.stripTags = function() {
     return this.replace(/<\/?[^>]+>/gi, "");
 };
 
-/**
+/*
  * Wrapper for the global 'escape' function for strings
  *
  * @type {String}
@@ -815,7 +825,7 @@ String.prototype.escape = function() {
     return escape(this);
 };
 
-/**
+/*
  * Returns an xml document
  * @type {XMLElement}
  */
@@ -836,7 +846,7 @@ String.prototype.toXml = function(){
 
 if (typeof window != "undefined" && typeof window.document != "undefined"
   && typeof window.document.createElement == "function") {
-    /**
+    /*
      * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
      * and '&lt;' to '&amp;lt;'.
      *
@@ -848,7 +858,7 @@ if (typeof window != "undefined" && typeof window.document != "undefined"
         return this.escapeHTML.div.innerHTML;
     };
 
-    /**
+    /*
      * Decode HTML equivalent entities to characters, like '&amp;amp;' to '&amp;'
      * and '&amp;lt;' to '&lt;'.
      *
@@ -893,7 +903,7 @@ if (!String.prototype.unescapeHTML) {
     };
 }
 
-/**
+/*
  * Trim a string down to a specific number of characters. Optionally, append an
  * ellipsis ('...') as a suffix.
  *
@@ -907,7 +917,7 @@ String.prototype.truncate = function(nr, ellipsis){
         : this;
 };
 
-/**
+/*
  * Pad a string at the right or left end with a string 'pad' to a specific
  * number of characters. Highly optimized version for speed, not readability.
  *
@@ -924,7 +934,7 @@ String.prototype.pad = function(len, pad, dir) {
 apf.PAD_LEFT  = false;
 apf.PAD_RIGHT = true;
 
-/**
+/*
  * Special String.split; optionally lowercase a string and trim all results from
  * the left and right.
  *
@@ -939,7 +949,7 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
         .split(new RegExp("[\\s ]*" + separator + "[\\s ]*", "g"), limit || 999);
 };
 
-/**
+/*
  * Appends a random number with a specified length to this String instance.
  *
  * @see randomGenerator
@@ -953,7 +963,7 @@ String.prototype.appendRandomNumber = function(length) {
     return this.toString() + arr.join("");
 };
 
-/**
+/*
  * Prepends a random number with a specified length to this String instance.
  *
  * @see randomGenerator
@@ -967,7 +977,7 @@ String.prototype.prependRandomNumber = function(length) {
     return arr.join("") + this.toString();
 };
 
-/**
+/*
  * Returns a string produced according to the formatting string. It replaces
  * all <i>%s</i> occurrences with the arguments provided.
  *
@@ -987,7 +997,7 @@ String.prototype.sprintf = function() {
     return str;
 };
 
-/**
+/*
  * The now method returns the milliseconds elapsed since
  * 1 January 1970 00:00:00 UTC up until now as a number.
  *

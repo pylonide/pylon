@@ -28,7 +28,7 @@
  * @return {TypeSilverlight} Returns a new Silverlight video player
  * @type {TypeSilverlight}
  * @constructor
- * @addnode elements:video
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

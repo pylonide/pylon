@@ -24,7 +24,7 @@
 /**
  * Returns a string giving information on a javascript object.
  *
- * @param {mixed} obj the object to investigate
+ * @param {Mixed} obj the object to investigate
  */
 apf.dump =
 apf.vardump = function(obj, o, depth, stack){
@@ -136,7 +136,7 @@ if (apf.isOpera) {
 /**
  * Returns a string giving more detailed informations on a javascript object.
  *
- * @param {mixed} obj the object to investigate
+ * @param {Mixed} obj the object to investigate
  */
 apf.dump2 =
 apf.vardump2 = function (obj, depth, recur, stack){
@@ -186,7 +186,7 @@ String.prototype.s = function(){
  * Alerts string giving information on a javascript object.
  * This is older version of this function
  *
- * @param {mixed} obj the object to investigate
+ * @param {Mixed} obj the object to investigate
  */
 apf.alert_r = function(obj, recur){
     alert(apf.vardump(obj, null, recur));
@@ -195,7 +195,7 @@ apf.alert_r = function(obj, recur){
 /**
  * Alerts string giving information on a javascript object.
  *
- * @param {mixed} obj the object to investigate
+ * @param {Mixed} obj the object to investigate
  */
 apf.alert_r2 = function(obj, recur){
     alert(apf.vardump2(obj, null, !recur));

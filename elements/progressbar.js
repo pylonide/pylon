@@ -22,48 +22,59 @@
 // #ifdef __AMLPROGRESSBAR || __INC_ALL
 
 /**
- * Element graphically representing a percentage value which increases
- * automatically with time. This element is most often used to show the progress
+ * An element that graphically represents a percentage value which increases
+ * automatically with time. 
+ *
+ * This element is most often used to show the progress
  * of a process. The progress can be either indicative or exact.
- * Example:
+ * 
+ * #### Example
+ * 
  * This example shows a progress bar that is only visible when an application is
  * synchronizing it's offline changes. When in this process it shows the exact
  * progress of the sync process.
- * <code>
+ * 
+ * ```xml
  *  <a:progressbar
  *    value   = "{apf.offline.progress}"
  *    visible = "{apf.offline.syncing}" />
- *  </code>
+ * ```
  *
- * @constructor
+ * @class apf.progress
+ * @define progress
  * @allowchild {smartbinding}
- * @addnode elements:progressbar
  *
+ * @form
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- *
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
- *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ * 
  * Sets the progress position based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model>
  *      <data progress="50"></data>
  *  </a:model>
  *  <a:progressbar min="0" max="100" value="[@progress]" />
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlProgress">
  *      <data progress="50"></data>
  *  </a:model>
  *  <a:progressbar value="[mdlProgress::@progress]" />
- * </code>
+ * ```
  */
 apf.progress    = function(struct, tagName){
     this.$init(tagName || "progress", apf.NODE_VISIBLE, struct);
@@ -79,7 +90,7 @@ apf.progressbar = function(struct, tagName){
 
     this.$focussable = false; // This object can get the focus
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.value = 0;
     this.min   = 0;
@@ -89,8 +100,10 @@ apf.progressbar = function(struct, tagName){
     this.$timer;
 
     /**
-     * @attribute {Boolean} autostart whether the progressbar starts automatically.
-     * @attribute {Boolean} autohide  whether the progressbar hides when the progress is at 100%. Setting this to true will hide the progressbar at start when autostart is not set to true.
+     * @attribute {Boolean} autostart Sets or gets whether the progressbar starts automatically.
+     */
+    /**
+     * @attribute {Boolean} autohide  Sets or gets whether the progressbar hides when the progress is at 100%. Setting this to `true` hides the progressbar at start when autostart is not set to `true`.
      */
     this.$booleanProperties["autostart"] = true;
     this.$booleanProperties["autohide"] = true;
@@ -98,7 +111,7 @@ apf.progressbar = function(struct, tagName){
     this.$supportedProperties.push("value", "min", "max", "autostart", "autohide");
     
     /**
-     * @attribute {String} value the position of the progressbar stated between 
+     * @attribute {String} value Sets or gets the position of the progressbar stated between 
      * the min and max value.
      */
     this.$propHandlers["value"] = function(value){
@@ -123,29 +136,29 @@ apf.progressbar = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} min the minimum value the progressbar may have. This is
-     * the value that the progressbar has when it's at its start position.
+     * @attribute {Number} min Sets or gets the minimum value the progressbar may have. This is
+     * the value that the progressbar has when it is at its start position.
      */
     this.$propHandlers["min"] = function(value){
         this.min = parseFloat(value);
-    }
+    };
 
     /**
-     * @attribute {Number} max the maximum value the progressbar may have. This is
-     * the value that the progressbar has when it's at its end position.
+     * @attribute {Number} max Sets or gets the maximum value the progressbar may have. This is
+     * the value that the progressbar has when it is at its end position.
      */
     this.$propHandlers["max"] = function(value){
         this.max = parseFloat(value);
-    }
+    };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -153,7 +166,7 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.value;
@@ -163,11 +176,10 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Resets the progress indicator.
-     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
      */
     this.clear = function(){
         this.$clear();
-    }
+    };
 
     this.$clear = function(restart, restart_time){
         clearInterval(this.$timer);
@@ -190,7 +202,7 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Starts the progress indicator.
-     * @param {Number} start the time between each step in milliseconds.
+     * @param {Number} start Sets or gets the time between each step in milliseconds.
      */
     this.start = function(time){
         if (this.autohide)
@@ -221,7 +233,9 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Stops the progress indicator from moving.
-     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
+     * @param {Boolean} restart Specifies whether a `this.$timer` should start with a new indicative progress indicator.
+     * @param {Number} time=500 The internal (in milliseconds)
+     * @param {Number} [restart_time] The time for the next restart to occur
      */
     this.stop = function(restart, time, restart_time){
         clearInterval(this.$timer);
@@ -233,7 +247,7 @@ apf.progressbar = function(struct, tagName){
         }, time || 500);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$step = function(){
         if (this.value == this.max) 
@@ -242,7 +256,7 @@ apf.progressbar = function(struct, tagName){
         this.setValue(this.value + 1);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin

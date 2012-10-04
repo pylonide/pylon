@@ -22,74 +22,98 @@
 //#ifndef __WITH_O3
 
 /**
- * Ajax.org Platform
+ * @class apf
+ * The Ajax.org Platform.
  *
  * @author    Ruben Daniels (ruben AT ajax DOT org)
  * @version   3.0
- * @url       http://www.ajax.org
- *
- * @event domready      Fires when the browsers' dom is ready to be manipulated.
- * @event movefocus         Fires when the focus moves from one element to another.
- *   object:
- *   {AMLElement} toElement the element that will receive the focus.
- * @event exit              Fires when the application wants to exit.
- *   cancelable:  Prevents the application from exiting. The returnValue of the
- *   event object is displayed in a popup which asks the user for permission.
- * @event keyup         Fires when the user stops pressing a key.
- *   cancelable: Prevents the behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event mousescroll   Fires when the user scrolls the mouse
- *   cancelable: Prevents the container to scroll
- *   object:
- *   {Number} delta the scroll impulse.
- * @event hotkey        Fires when the user presses a hotkey
- *   bubbles: yes
- *   cancelable: Prevents the default hotkey behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event keydown       Fires when the user presses a key
- *   bubbles: yes
- *   cancelable: Prevents the behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event mousedown     Fires when the user presses a mouse button
- *   object:
- *   {Event}      htmlEvent the char code of the pressed key.
- *   {AMLElement} amlNode   the element on which is clicked.
- * @event onbeforeprint Fires before the application will print.
- * @event onafterprint  Fires after the application has printed.
- * @event load          Fires after the application is loaded.
- * @event error         Fires when a communication error has occured while making a request for this element.
- *   cancelable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
- *   {Number}         state     the state of the call
- *     Possible values:
- *     apf.SUCCESS  the request was successfull
- *     apf.TIMEOUT  the request has timed out.
- *     apf.ERROR    an error has occurred while making the request.
- *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
  * @default_private
+ *
+ */
+/**
+ * @event domready      Fires when the browsers' DOM is ready to be manipulated.
+ */
+/** 
+ * @event movefocus         Fires when the focus moves from one element to another.
+ * @param {apf.AmlElement} toElement The element that receives the focus.
+ */
+/** 
+ * @event exit              Fires when the application wants to exit.
+ * @cancelable  Prevents the application from exiting. The return value of the event object is displayed in a popup, asking the user for permission.
+ */
+/** 
+ * @event keyup         Fires when the user stops pressing a key (by lifting up)
+ * @cancelable Prevents the keypress.
+ * @param {Object} e An object containing the following properties:
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
+ */
+/** 
+ * @event mousescroll   Fires when the user scrolls the mouse
+ * @cancelable Prevents the container from scrolling
+ * @param {Object} e An object containing the following properties:
+ *  - htmlEvent ([[Object]]): The HTML event object
+ *  - amlElement ([[apf.AmlElement]]): The element which was clicked.
+ *  - delta ([[Number]]): The scroll impulse.
+ */
+/** 
+ * @event hotkey        Fires when the user presses a hotkey
+ * @bubbles
+ * @cancelable Prevents the default hotkey behavior.
+ * @param {Object} e An object containing the following properties:
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
+ */
+/** 
+ * @event keydown       Fires when the user presses down on a key
+ * @bubbles
+ * @cancelable Prevents the default hotkey behavior.
+ * @param {Object} e An object containing the following properties:
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
+ */
+/** 
+ * @event mousedown     Fires when the user presses a mouse button
+ * @param {Object} e An object containing the following properties:
+ *  - htmlEvent ([[Object]]): The HTML event object
+ *  - amlElement ([[apf.AmlElement]]): The element which was clicked.
+ */
+/** 
+ * @event onbeforeprint Fires before the application prints.
+ */
+/** 
+ * @event onafterprint  Fires after the application prints.
+ */
+/** 
+ * @event load          Fires after the application is loaded.
+ */
+/** 
+ * @event error         Fires when a communication error has occured while making a request for this element.
+ * @cancelable Prevents the error from being thrown.
+ * @bubbles
+ * @param {Object} e An object containing the following properties:
+ *   - error ([[Error]]): The error object that is thrown when the event's callback doesn't return `false`.
+ *   - state ([[Number]]): The state of the call. Possible values include:
+ *     - `apf.SUCCESS` : The request was successful
+ *     - `apf.TIMEOUT`:  The request timed out
+ *     - `apf.ERROR`:    An error occurred while making the request
+ *     - `apf.OFFLINE`:  The request was made while the application was offline.
+ *   - userdata (`Mixed`): Data that the caller made available in the callback of the HTTP request.
+ *   - http ([[XMLHttpRequest]]): The object that executed the actual http request
+ *   - url ([[String]]): The url that was requested
+ *   - tpModule ([[apf.http]]): The teleport module that is making the request
+ *   - id ([[Number]]): The id of the request
+ *   - message ([[String]]): The error message
+ * 
  */
  apf = {
     // Content Distribution Network URL:
@@ -104,67 +128,64 @@
     #endif */
 
     /**
-     * Boolean specifying whether apf is ready for dom operations.
+     * Specifies whether apf is ready for DOM operations.
      * @type {Boolean}
      */
     READY          : false,
 
     //AML nodeFunc constants
     /**
-     * Constant for a hidden aml element.
+     * A constant for the hidden AML element.
      * @type {Number}
      */
     NODE_HIDDEN    : 101,
     /**
-     * Constant for a visible aml element.
+     * A constant for a visible AML element.
      * @type {Number}
      */
     NODE_VISIBLE   : 102,
     /**
-     * Constant for an o3 widget.
+     * A constant for an o3 widget.
      * @type {Number}
      */
     NODE_O3 : 103,
 
     /**
-     * Constant for specifying that a widget is using only the keyboard to receive focus.
+     * A constant for specifying that a widget is using only the keyboard to receive focus.
      * @type {Number}
-     * @see baseclass.guielement.method.focus
+     * @see apf.GuiElement@focus
      */
     KEYBOARD       : 2,
     /**
-     * Constant for specifying that a widget is using the keyboard or the mouse to receive focus.
+     * A constant for specifying that a widget is using the keyboard or the mouse to receive focus.
      * @type {Boolean}
-     * @see baseclass.guielement.method.focus
+     * @see apf.GuiElement@focus
      */
     KEYBOARD_MOUSE : true,
     /**
-     * Constant for specifying that a widget is a menu
+     * A constant for specifying that a widget is a menu
+     * @type {Number}
      */
     MENU           : 3,
 
     /**
-     * Constant for specifying success.
+     * A constant for specifying success.
      * @type {Number}
-     * @see element.teleport
      */
     SUCCESS : 1,
     /**
-     * Constant for specifying a timeout.
+     * A constant for specifying a timeout.
      * @type {Number}
-     * @see element.teleport
      */
     TIMEOUT : 2,
     /**
-     * Constant for specifying an error.
+     * A constant for specifying an error.
      * @type {Number}
-     * @see element.teleport
      */
     ERROR   : 3,
     /**
-     * Constant for specifying the application is offline.
+     * A constant for specifying the application is offline.
      * @type {Number}
-     * @see element.teleport
      */
     OFFLINE : 4,
 
@@ -181,17 +202,18 @@
     AppModules    : [],
     
     /**
-     * Boolean specifying whether apf tries to load a skin from skins.xml when no skin element is specified.
+     * Specifies whether APF tries to load a skin from skins.xml when no skin element is specified.
      * @type {Boolean}
      */
     autoLoadSkin  : false,
     /**
-     * Boolean specifying whether apf has started loading scripts and started the init process.
+     * Specifies whether APF has started loading scripts and started the init process.
      * @type {Boolean}
      */
     started       : false,
     /**
-     * Namespace for all crypto libraries included with Ajax.org Platform.
+     * The namespace for all crypto libraries included with Ajax.org Platform.
+     * @type {Object}
      */
     crypto        : {}, //namespace
     config        : {},
@@ -199,14 +221,15 @@
     $asyncObjects : {"apf.oHttp" : 1, "apf.ajax": 1},
     
     /**
-     * String specifying the basepath for loading apf from seperate files.
+     * A string specifying the basepath for loading APF from seperate files.
      * @type {String}
      */
     basePath      : "",
 
     //#ifdef __PARSER_AML
     /**
-     * {Object} contains several known and often used namespace URI's.
+     * Contains several known and often used namespace URI's.
+     * @type {Object}
      * @private
      */
     ns : {
@@ -247,7 +270,7 @@
         if (this.$bdetect)
             return;
         
-        /** Browser -  platform and feature detection, based on prototype's and mootools 1.3.
+        /* Browser -  platform and feature detection, based on prototype's and mootools 1.3.
          *
          * Major browser/engines flags
          *
@@ -325,18 +348,18 @@
         this.isIphone      = Browser.Platform.ios || UA.indexOf("aspen simulator") != -1;
         this.isAIR         = Browser.Features.air;
         
-        /** @deprecated, cleanup in apf modules */
+        // @deprecated, cleanup in apf modules 
         this.versionWebkit = this.isWebkit ? Browser.version : null;
         this.versionGecko  = this.isGecko ? Browser.version : null;
-        /** @deprecated, cleanup in apf modules */
+        // @deprecated, cleanup in apf modules 
         this.isGecko3      = Browser.firefox3;
         this.isGecko35     = this.isGecko3 && Browser.version >= 3.5;
-        /** @deprecated, cleanup in apf modules */
+        // @deprecated, cleanup in apf modules 
         this.versionFF     = this.isGecko ? Browser.version : null;
         this.versionSafari = this.isSafari ? Browser.version : null;
         this.versionChrome = this.isChrome ? Browser.version : null;
         this.versionOpera  = this.isOpera ? Browser.version : null;
-        /** bad logic, needs review among apf modules */
+        // bad logic, needs review among apf modules 
         this.isIE6         = this.isIE && Browser.ie6;
         this.isIE7         = this.isIE && Browser.ie7;
         this.isIE8         = this.isIE && Browser.ie8;
@@ -346,7 +369,7 @@
         /*#ifdef __SUPPORT_GWT
         this.isGWT       = true;
         #endif*/
-
+        
         //#ifdef __DESKRUN
         try {
             //this.isDeskrun = window.external.shell.runtime == 2;
@@ -531,17 +554,17 @@
      */
     reboot : function(){
         apf.console.info("Restarting application...");
-
+    
         location.href = location.href;
     },
     //#endif
 
     /**
-     * Extends an object with one or more other objects by copying all their
+     * Extends an object with one or more other objects by copying all of its
      * properties.
-     * @param {Object} dest the destination object.
-     * @param {Object} src the object that is copies from.
-     * @return {Object} the destination object.
+     * @param {Object} dest The destination object
+     * @param {Object} src The object that is copied from
+     * @return {Object} The destination object
      */
     extend : function(dest, src){
         var prop, i, x = !dest.notNull;
@@ -573,8 +596,10 @@
     // #ifdef __TP_HTTP
     /**
      * Sends and retrieves data from remote locations over http.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```javascript
      *  var content = apf.ajax("http://www.ajax.org", {
      *      method   : "POST",
      *      data     : "<data />",
@@ -587,24 +612,22 @@
      *      }
      *  });
      *  alert(content);
-     * </code>
+     * ```
      *
-     * @param {String}   url       the url that is accessed.
-     * @param {Object}   options   the options for the http request
-     *   Properties:
-     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
-     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   {Boolean} nocache        whether browser caching is prevented.
-     *   {String}  data           the data sent in the body of the message.
-     *   {Boolean} useXML         whether the result should be interpreted as xml.
-     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-     *   {Boolean} caching        whether the request should use internal caching.
-     *   {Boolean} ignoreOffline  whether to ignore offline catching.
-     *   {String}  contentType    the mime type of the message
-     *   {Function} callback      the handler that gets called whenever the
-     *                            request completes succesfully or with an error,
-     *                            or when the request times out.
+     * @param {String}   url       The url that is accessed.
+     * @param {Object}   options   The options for the HTTP request. It has the following properties:
+     *   - async ([[Boolean]]): Whether the request is sent asynchronously. Defaults to true.
+     *   - userdata (`Mixed`): Custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): The data sent in the body of the message.
+     *   - useXML ([[Boolean]]): Specifies whether the result should be interpreted as xml.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - contentType ([[String]]): The MIME type of the message
+     *   - callback ([[Function]]): The handler that gets called whenever the
+     *                            request completes succesfully, with an error, or times out.
      */
     ajax : (function(){
         var f = function(){
@@ -672,7 +695,7 @@
             apf.runGecko();
             //this.importClass(apf.runGecko, true, self);
         // #endif
-
+        
         //#ifdef __PARSE_GET_VARS
         for (var i, l2, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++) {
             if (m = p[k].match(/(.*?)(\..*?|\[.*?\])?=([^#]*)/)) {
@@ -697,7 +720,7 @@
         // Start HTTP object
         this.oHttp = new this.http();
         //#endif
-
+        
         // #ifndef __SUPPORT_GWT
         // Load user defined includes
         this.Init.addConditional(this.parseAppMarkup, apf, ["body"]);
@@ -813,8 +836,8 @@
     all : [],
 
     /**
-    * This method implements all properties and methods to this object from another class
-    * @param {Function}    classRef    Class reference
+    * This method implements all the properties and methods to this object from another class
+    * @param {Function}    classRef    The class reference to implement
     * @private
     */
     implement : function(classRef) {
@@ -852,7 +875,7 @@
     uniqueHtmlIds : 0,
 
     /**
-     * Adds a unique id attribute to an html element.
+     * Adds a unique id attribute to an HTML element.
      * @param {HTMLElement} oHtml the object getting the attribute.
      */
     setUniqueHtmlId : function(oHtml){
@@ -863,23 +886,27 @@
 
     /**
      * Retrieves a new unique id
+     * @returns {Number} A number representing the new ID.
      */
     getUniqueId : function(){
         return this.uniqueHtmlIds++;
     },
 
     /**
-     * Finds a aml element based on it's uniqueId
+     * Finds an AML element based on its unique id.
+     * @param {Number} uniqueId The unique id to search on.
+     * @returns {apf.AmlElement} The returned element.
      */
     lookup : function(uniqueId){
         return this.all[uniqueId];
     },
 
     /**
-     * Searches in the html tree from a certain point to find the
-     * aml element that is responsible for rendering the specified html
+     * Searches in the HTML tree from a certain point to find the
+     * AML element that is responsible for rendering a specific html
      * element.
-     * @param {HTMLElement} oHtml the html context to start the search from.
+     * @param {HTMLElement} oHtml The html context to start the search from.
+     * @returns {apf.AmlElement} The parent HTML element
      */
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
@@ -896,9 +923,9 @@
     },
 
     /**
-     * Sets a reference to an object by name in the global javascript space.
-     * @param {String} name the name of the reference.
-     * @param {mixed}  o    the reference to the object subject to the reference.
+     * Sets a reference to an object (by name) in the global JavaScript space.
+     * @param {String} name The name of the reference.
+     * @param {Mixed}  o    The reference to the object subject to the reference.
      */
     setReference : function(name, o){
         return self[name] && self[name].hasFeature
@@ -906,7 +933,7 @@
             : (self[name] = o);
     },
 
-    /**
+    /*
      * The console outputs to the debug screen and offers differents ways to do
      * this.
      */
@@ -919,7 +946,7 @@
             time  : {
                 messages : {}
             },
-
+        
             log   : {
                 messages : {}
             },
@@ -1105,9 +1132,9 @@
 
         /**
          * Writes a message to the console.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         debug : function(msg, subtype, data){
             //#ifdef __DEBUG
@@ -1117,9 +1144,9 @@
 
         /**
          * Writes a message to the console with the time icon next to it.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         time : function(msg, subtype, data){
             //#ifdef __DEBUG
@@ -1129,9 +1156,9 @@
 
         /**
          * Writes a message to the console.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         log : function(msg, subtype, data){
             //#ifdef __DEBUG
@@ -1142,9 +1169,9 @@
         /**
          * Writes a message to the console with the visual "info" icon and color
          * coding.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
@@ -1155,9 +1182,9 @@
         /**
          * Writes a message to the console with the visual "warning" icon and
          * color coding.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         warn : function(msg, subtype, data){
             //#ifdef __DEBUG
@@ -1168,9 +1195,9 @@
         /**
          * Writes a message to the console with the visual "error" icon and
          * color coding.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
@@ -1180,7 +1207,7 @@
 
         /**
          * Prints a listing of all properties of the object.
-         * @param {mixed} obj the object for which the properties are displayed.
+         * @param {Mixed} obj The object whose properties you want displayed.
          */
         dir : function(obj){
             var s = apf.$debugwin.$serializeObject(obj, "Inspected via apf.console.dir");
@@ -1224,7 +1251,7 @@
                         : apf.basePath + "core/debug/resources/"));
             }
         }
-
+        
         //#endif
     },
 
@@ -1232,12 +1259,12 @@
     htmlentities : function(s){return s},
 
     /**
-     * Formats a Ajax.org Platform error message.
-     * @param {Number}      number      the number of the error. This can be used to look up more information about the error.
-     * @param {AMLElement}  control     the aml element that will throw the error.
-     * @param {String}      process     the action that was being executed.
-     * @param {String}      message     the actual error message.
-     * @param {XMLElement}  amlContext  the xml relevant to the error. For instance a piece of Ajax.org Markup Language xml.
+     * Formats an Ajax.org Platform error message.
+     * @param {Number}      number      The number of the error. This can be used to look up more information about the error.
+     * @param {apf.AmlElement}  control     The aml element that will throw the error.
+     * @param {String}      process     The action that was being executed.
+     * @param {String}      message     The actual error message.
+     * @param {XMLElement}  amlContext  The XML relevant to the error. For instance, this could be a piece of Ajax.org Markup Language XML.
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
@@ -1278,7 +1305,7 @@
             else if(amlContext.ownerDocument 
               && amlContext.ownerDocument.documentElement.tagName == "html")
                 linenr += apf.lineBodyStart;
-
+        
             //Grmbl line numbers are wrong when \n's in attribute space
 
             //Set file and line number
@@ -1312,9 +1339,9 @@
     /* Init */
 
     /**
-     * Returns the directory portion of a url
-     * @param {String} url the url to retrieve from.
-     * @return {String} the directory portion of a url.
+     * Returns the directory portion of a URL.
+     * @param {String} url The URL to retrieve from
+     * @returns {String} The directory portion of a URL
      */
     getDirname : function(url){
         //(?:\w+\:\/\/)?
@@ -1322,9 +1349,9 @@
     },
     
     /**
-     * Returns the file portion of a url
-     * @param {String} url the url to retrieve from.
-     * @return {String} the file portion of a url.
+     * Returns the file portion of a URL.
+     * @param {String} url The URL to retrieve from.
+     * @return {String} The file portion of a URL.
      */
     getFilename : function(url){
         return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
@@ -1332,9 +1359,9 @@
     
     /**
      * Returns an absolute url based on url.
-     * @param {String} base the start of the url to which relative url's work.
-     * @param {String} url  the url to transform.
-     * @return {String} the absolute url.
+     * @param {String} base The start of the URL where relative URLs work.
+     * @param {String} url  The URL to transform.
+     * @return {String} The absolute URL.
      */
     getAbsolutePath : function(base, url){
         return url && url.charAt(0) == "/"
@@ -1347,12 +1374,14 @@
     },
 
     /**
-     * Loads javascript from a url.
+     * Loads Javascript from a specific URL.
      * 
-     * @param {String}  sourceFile the url where the javascript is located.
-     * @param {Boolean} [doBase]   check for basePath, otherwise prepend it
-     * @param {String}  [type]     set the type of a script tag, for later use
-     * @type  {void}
+     * @param {String}    sourceFile The URL where the JavaScript is located.
+     * @param {Boolean}   [doBase]   Checks for a base path via [[apf.getAbsolutePath]]
+     * @param {String}    [type]     Sets the type of a script tag, for later use
+     * @param {String}    [text]     
+     * @param {Function}  [callback] Calls this function after the script is loaded
+     * @returns {String} The constructed script tag    
      */
     include : function(sourceFile, doBase, type, text, callback){
         //#ifdef __DEBUG
@@ -1367,11 +1396,11 @@
         if (type)
             elScript.setAttribute("_apf_type", type);
         if (text) {
-			if (apf.isIE)
-				window.execScript(text);
-			else
-				elScript.text = text;
-		}
+            if (apf.isIE)
+                window.execScript(text);
+            else
+                elScript.text = text;
+        }
         else 
             elScript.src   = sSrc;
         head.appendChild(elScript);
@@ -1468,14 +1497,15 @@
     //#endif
 
     /**
-     * Determines the way apf tries to render this application. Set this value
-     * before apf is starts parsing.
-     *   Possible values:
-     *   0    auto
-     *   1    partial
-     *   11   partial from a comment
-     *   2    full from serialized document or file fallback
-     *   21   full from file
+     * Determines the way APF tries to render this application. Set this value
+     * before APF is starts parsing.
+     *   
+     * Possible values include:
+     *   - 0    Auto (The default)
+     *   - 1    Partial
+     *   - 11   Partial from a comment
+     *   - 2    Full from serialized document or file fallback
+     *   - 21   Full from file
      * @type {Number}
      */
     parseStrategy : 0,
@@ -1585,7 +1615,7 @@
         while (node) {
             isPrefix = node.nodeType == 1
                 && node.tagName.substr(0,2) == prefix;
-
+    
             if (isPrefix) {
                 findAml(cnode = node);
 
@@ -1893,7 +1923,7 @@
                     apf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
                         .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     //#endif
-
+        
                     //@todo apf3.0 rewrite this flow
                     var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
                       .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ") //should be html2xmlentity conversion
@@ -1903,7 +1933,7 @@
 
                     if (self.ERROR_HAS_OCCURRED)
                         return;
-
+        
                     //Clear Body
                     if (apf.isIE)
                         document.body.innerHTML ="";
@@ -1917,7 +1947,7 @@
                     document.documentElement.style.display = "block";
                     document.body.style.display = "block"; //might wanna make this variable based on layout loading...
                     // #endif
-
+        
                     apf.initialize(str);
 
                 }, ignoreOffline: true});
@@ -1927,7 +1957,7 @@
             //might wanna make this variable based on layout loading...
             document.body.style.display = "block";
             // #endif
-
+        
             if (!self.ERROR_HAS_OCCURRED)
                 apf.initialize(docElement.outerHTML || docElement.xml);
         }
@@ -1948,7 +1978,7 @@
         if (apf.initialized) return;
         apf.initialized = true;
         // #endif
-
+        
         /*#ifdef __SUPPORT_GWT
         document.body.style.display = "block"; //might wanna make this variable based on layout loading...
         #endif*/
@@ -2050,7 +2080,7 @@
               
             xmlNode.setAttribute("media-path", apf.CDN + apf.VERSION + "/images/")
             xmlNode.setAttribute("icon-path", apf.CDN + apf.VERSION + "/icons/")
-            
+        
             apf.skins.Init(xmlNode);
         }
         //#endif
@@ -2100,7 +2130,7 @@
                 }
                 loop = next;
             }
-
+        
             //#ifdef __WITH_LAYOUT
             $setTimeout("apf.layout.forceResize();");
             // #endif

@@ -26,7 +26,7 @@
  * @constructor
  * @define flashplayer
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseSimple
  *
@@ -58,7 +58,7 @@ apf.flashplayer = function(struct, tagName){
         apf.StandardBinding
     );
     
-    /**** Public methods ****/
+    // *** Public methods *** //
     
     //#ifdef __WITH_CONVENIENCE_API
     
@@ -71,7 +71,7 @@ apf.flashplayer = function(struct, tagName){
     
     //#endif
     
-    /**** Properties and attributes ****/
+    // *** Properties and attributes *** //
     
     this.$supportedProperties.push("value", "allowfullscreen", "flashvars");
     this.$propHandlers["src"] = function(value){
@@ -96,7 +96,7 @@ apf.flashplayer = function(struct, tagName){
 //        this.$ext.getElementsByTagName("embed")[0].setAttribute("wmode", value);
     }
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

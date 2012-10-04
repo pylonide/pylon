@@ -21,44 +21,52 @@
 // #ifdef __AMLLABEL || __INC_ALL
 
 /**
- * Element displaying a text in the user interface, usually specifying
+ * An element displaying a text in the user interface, usually specifying
  * a description of another element. When the user clicks on the label it 
- * can set the focus to the connected aml element.
- * Example:
- * This example uses the for attribute to connect the label to the form element.
- * <code>
+ * can set the focus to the connected AML element.
+ * 
+ * #### Example
+ * This example uses the `for` attribute to connect the label to the form element.
+ * 
+ * ```xml
  *  <a:label for="txtAddress">Address</a:label>
  *  <a:textbox id="txtAddress" value="Some text" />
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.label
+ * @define label
  * @allowchild {smartbinding}
- * @addnode elements
  *
+ * @form 
  * @inherits apf.BaseSimple
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
- *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ * 
  * Sets the label text based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlLabel">
  *      <data text="Some text"></data>
  *  </a:model>
  *  <a:label model="mdlLabel" value="[@text]" />
- * </code>
- * Example:
+ * ```
+ * 
  * A shorter way to write this is:
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlLabel">
  *      <data text="Some text"></data>
  *  </a:model>
  *  <a:label value="[mdlLabel::@text]" />
- * </code>
+ * ```
  */
 apf.label = function(struct, tagName){
     this.$init(tagName || "label", apf.NODE_VISIBLE, struct);
@@ -82,7 +90,7 @@ apf.label = function(struct, tagName){
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -90,7 +98,7 @@ apf.label = function(struct, tagName){
     
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value
      */
     this.getValue = function(){
         return this.value;
@@ -99,12 +107,17 @@ apf.label = function(struct, tagName){
     //#endif
     
     /** 
-     * @attribute {String} caption the text displayed in the area defined by this 
+     * @attribute {String} caption Sets or gets the text displayed in the area defined by this 
      * element. Using the value attribute provides an alternative to using
      * the text using a text node.
      *
-     * @attribute {String} for the id of the element that receives the focus 
+     */
+    /**
+     * @attribute {String} for Sets or gets the id of the element that receives the focus 
      * when the label is clicked on.
+     */
+    /**
+     * @attribute {String} textalign Sets or gets the text alignment value for the label.
      */
     this.$supportedProperties.push("caption", "for", "textalign");
     this.$propHandlers["caption"] = function(value){

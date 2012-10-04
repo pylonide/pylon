@@ -23,17 +23,21 @@ apf.__XFORMS__ = 1 << 17;
 
 //#ifdef __WITH_XFORMS
 
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} have xforms support.
+/*
  *
- * @constructor
  * @todo possible ideas on how to extend xpath
  *  Firefox: http://mcc.id.au/xpathjs/
  *  IE:
  *  
  *  XSLT extension
  *  IE: http://msdn.microsoft.com/msdnmag/issues/02/03/xml/
+ */
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have xforms support.
  *
+ *
+ * @class apf.XForms
  * @experimental
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

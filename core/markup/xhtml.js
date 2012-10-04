@@ -21,8 +21,8 @@
 
 //#ifdef __PARSER_XHTML
 
-/**
- * Object creating the XHTML namespace for the aml parser.
+/*
+ * An object creating the XHTML namespace for the aml parser.
  *
  * @constructor
  * @parser

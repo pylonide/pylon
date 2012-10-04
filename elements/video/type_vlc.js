@@ -107,7 +107,7 @@ apf.video.TypeVlcCompat = (function() {
  * @return {TypeVlc} Returns a new VLC video player
  * @type {TypeVlc}
  * @constructor
- * @addnode elements:video
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%

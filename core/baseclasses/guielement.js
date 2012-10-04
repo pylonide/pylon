@@ -25,14 +25,15 @@ apf.__VALIDATION__ = 1 << 6;
 // #ifdef __WITH_GUIELEMENT
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.
+ * All elements inheriting from this {@link term.baseclass baseclass} are an AML component.
  *
- * @constructor
- * @baseclass
+ * @class apf.GuiElement
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
+ * @baseclass
+ * @inherits apf.AmlElement
  * @inherits apf.Anchoring
  * @inherits apf.DelayedRender
  * @inherits apf.DragDrop
@@ -41,61 +42,87 @@ apf.__VALIDATION__ = 1 << 6;
  * @inherits apf.Transaction
  * @inherits apf.Validation
  *
- * @attribute {String} span     the number of columns this element spans. Only used inside a table element.
+ */
+/**
+ * @attribute {String} span     Sets or gets the number of columns that this element spans. Only used inside a table element.
+ */
+/**
  * @attribute {String} margin   
- * @todo attribute align
+ */
+/**
+ * @attribute align
  *
- * @attribute {mixed} left the left position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} left Sets or gets the left position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} top the top position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} top Sets or gets the top position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} right the right position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} right Sets or gets the right position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} bottom the bottom position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} bottom Sets or gets the bottom position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} width the different between the left edge and the
+ */
+/**
+ * @attribute {Mixed} width Sets or gets the different between the left edge and the
  * right edge of this element. Depending on the choosen layout method the
  * unit can be pixels, a percentage or an expression.
- * Remarks:
+ * 
+ * #### Remarks
+ *
  * When used as a child of a grid element the width can also be set as '*'. 
  * This will fill the rest space.
- *
- * @attribute {mixed} height the different between the top edge and the
+ */
+/**
+ * @attribute {Mixed} height Sets or gets the different between the top edge and the
  * bottom edge of this element. Depending on the choosen layout method the
  * unit can be pixels, a percentage or an expression.
- * Remarks:
+ * 
+ * #### Remarks
+ *
  * When used as a child of a grid element the height can also be set as '*'. 
  * This will fill the rest space.
- *
+ */
+/**
  * @event resize Fires when the element changes width or height. 
- * 
- * @event contextmenu Fires when the user requests a context menu. Either
+ */
+/** 
+ * @event contextmenu Fires when the user requests a context menu, either
  * using the keyboard or mouse.
- *   bubbles: yes
- *   cancelable:  Prevents the default contextmenu from appearing.
- *   object:
- *   {Number} x         the x coordinate where the contextmenu is requested on.
- *   {Number} y         the y coordinate where the contextmenu is requested on.
- *   {Event}  htmlEvent the html event object that triggered this event from being called.
+ * @bubbles
+ * @cancelable Prevents the default context menu from appearing.
+ * @param {Object} e The standard event object. Contains the following properties:
+ *                   - x ([[Number]]): The x coordinate where the contextmenu is requested on
+ *                   - y ([[Number]]): The y coordinate where the contextmenu is requested on
+ *                   - htmlEvent ([[Event]]): The HTML event object that triggered this event from being called
+ */
+/**  
  * @event focus       Fires when this element receives focus.
+ */
+/** 
  * @event blur        Fires when this element loses focus.
+ */
+/**  
  * @event keydown     Fires when this element has focus and the user presses a key on the keyboard.
- *   cancelable: Prevents the default key action.
- *   bubbles:
- *   object:
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Number}  keyCode   which key was pressed. This is an ascii number.
- *   {Event}   htmlEvent the html event object that triggered this event from being called.
+ * @bubbles
+ * @cancelable Prevents the default key action.
+ * @param {Object} e The standard event object. Contains the following properties:
+ *                   - ctrlKey ([[Boolean]]): Specifies whether the [[keys: Ctrl]] key was pressed
+ *                   - shiftKey ([[Boolean]]): Specifies whether the [[keys: Shift]] key was pressed
+ *                   - altKey ([[Boolean]]): Specifies whether the [[keys: Alt ]] key was pressed
+ *                   - keyCode ([[Number]]): Indicates which key was pressed. This is an ascii number
+ *                   - htmlEvent ([[Event]]): the HTML event object that triggered this event from being called
+ * 
  */
 apf.GuiElement = function(){
     this.$init(true);
@@ -186,18 +213,21 @@ apf.GuiElement = function(){
         //#endif
     );
     
-    /**** Convenience functions for gui nodes ****/
+    // **** Convenience functions for gui nodes **** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
-    /**** Geometry ****/
+    // *** Geometry *** //
 
     /**
-     * Sets the different between the left edge and the right edge of this
-     * element. Depending on the choosen layout method the unit can be
-     * pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new width of this element.
+     * Sets the difference between the left edge and the right edge of this
+     * element. 
+     *
+     * Depending on the choosen layout method, the unit can be
+     * pixels, a percentage, or an expression. 
+     *
+     * @chainable
+     * @param {Number | String} value The new width of this element.
      */
     this.setWidth = function(value){
         this.setProperty("width", value, false, true);
@@ -206,10 +236,13 @@ apf.GuiElement = function(){
 
     /**
      * Sets the different between the top edge and the bottom edge of this
-     * element. Depending on the choosen layout method the unit can be
+     * element. 
+     *
+     * Depending on the choosen layout method the unit can be
      * pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new height of this element.
+     *
+     * @chainable
+     * @param {Number | String} value the new height of this element.
      */
     this.setHeight = function(value){
         this.setProperty("height", value, false, true);
@@ -217,10 +250,13 @@ apf.GuiElement = function(){
     };
 
     /**
-     * Sets the left position of this element. Depending on the choosen
-     * layout method the unit can be pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new left position of this element.
+     * Sets the left position of this element. 
+     *
+     * Depending on the choosen layout method the unit can be pixels, 
+     * a percentage or an expression.
+     *
+     * @chainable
+     * @param {Number | String} value The new left position of this element.
      */
     this.setLeft   = function(value){
         this.setProperty("left", value, false, true);
@@ -228,10 +264,13 @@ apf.GuiElement = function(){
     };
 
     /**
-     * Sets the top position of this element. Depending on the choosen
-     * layout method the unit can be pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new top position of this element.
+     * Sets the top position of this element. 
+     *
+     * Depending on the choosen layout method the unit can be pixels, 
+     * a percentage or an expression.
+     *
+     * @chainable
+     * @param {Number | String} value The new top position of this element.
      */
     this.setTop    = function(value){
         this.setProperty("top", value, false, true);
@@ -240,7 +279,8 @@ apf.GuiElement = function(){
 
     if (!this.show) {
         /**
-         * Makes the elements visible. Call-chaining is supported.
+         * Makes the elements visible. 
+         * @chainable
          */
         this.show = function(){
             this.setProperty("visible", true, false, true);
@@ -250,7 +290,8 @@ apf.GuiElement = function(){
 
     if (!this.hide) {
         /**
-         * Makes the elements invisible. Call-chaining is supported.
+         * Makes the elements invisible. 
+         * @chainable
          */
         this.hide = function(){
             this.setProperty("visible", false, false, true);
@@ -259,21 +300,21 @@ apf.GuiElement = function(){
     }
 
     /**
-     * Retrieves the calculated width in pixels for this element
+     * Retrieves the calculated width in pixels for this element.
      */
     this.getWidth  = function(){
         return (this.$ext || {}).offsetWidth;
     };
 
     /**
-     * Retrieves the calculated height in pixels for this element
+     * Retrieves the calculated height in pixels for this element.
      */
     this.getHeight = function(){
         return (this.$ext || {}).offsetHeight;
     };
 
     /**
-     * Retrieves the calculated left position in pixels for this element
+     * Retrieves the calculated left position in pixels for this element,
      * relative to the offsetParent.
      */
     this.getLeft   = function(){
@@ -281,17 +322,18 @@ apf.GuiElement = function(){
     };
 
     /**
-     * Retrieves the calculated top position in pixels for this element
+     * Retrieves the calculated top position in pixels for this element,
      * relative to the offsetParent.
      */
     this.getTop    = function(){
         return (this.$ext || {}).offsetTop;
     };
 
-    /**** Disabling ****/
+    // *** Disabling *** //
 
     /**
-     * Activates the functions of this element. Call-chaining is supported.
+     * Activates the functions of this element. 
+     * @chainable
      */
     this.enable  = function(){
         this.setProperty("disabled", false, false, true);
@@ -300,18 +342,18 @@ apf.GuiElement = function(){
 
     /**
      * Deactivates the functions of this element.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.disable = function(){
         this.setProperty("disabled", true, false, true);
         return this;
     };
 
-    /**** z-Index ****/
+    // *** z-Index *** //
 
     /**
      * Moves this element to the lowest z ordered level.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.sendToBack = function(){
         this.setProperty("zindex", 0, false, true);
@@ -320,7 +362,7 @@ apf.GuiElement = function(){
 
     /**
      * Moves this element to the highest z ordered level.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.bringToFront  = function(){
         this.setProperty("zindex", apf.all.length + 1, false, true);
@@ -329,7 +371,7 @@ apf.GuiElement = function(){
 
     /**
      * Moves this element one z order level deeper.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.sendBackwards = function(){
         this.setProperty("zindex", this.zindex - 1, false, true);
@@ -338,7 +380,7 @@ apf.GuiElement = function(){
 
     /**
      * Moves this element one z order level higher.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.bringForward  = function(){
         this.setProperty("zindex", this.zindex + 1, false, true);
@@ -545,11 +587,23 @@ apf.GuiElement = function(){
     //#endif
 }).call(apf.GuiElement.prototype = new apf.AmlElement());
 
-/**
+/*
  * @for apf.amlNode
  * @private
  */
 apf.GuiElement.propHandlers = {
+    /**
+     * @attribute {Number} minwidth Sets or gets the minimum width for this element.
+     */
+    /**
+     * @attribute {Number} maxwidth Sets or gets the maximum width for this element.
+     */
+    /**
+     * @attribute {Number} minheight Sets or gets the minimum height for this element.
+     */
+    /**
+     * @attribute {Number} maxheight Sets or gets the maximum height for this element.
+     */
     "minwidth": function(value){ this.$ext.style.minWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
     "minheight": function(value){ this.$ext.style.minHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
     "maxwidth": function(value){ this.$ext.style.maxWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
@@ -557,8 +611,8 @@ apf.GuiElement.propHandlers = {
     
     //#ifdef __WITH_FOCUS
     /**
-     * @attribute {Boolean} focussable whether this element can receive the focus.
-     * The focussed element receives keyboard event.s
+     * @attribute {Boolean} focussable Sets or gets whether this element can receive the focus.
+     * The focused element receives keyboard event.
      */
     "focussable": function(value){
         this.focussable = typeof value == "undefined" || value;
@@ -583,7 +637,10 @@ apf.GuiElement.propHandlers = {
             apf.window.$removeFocus(this);
         }
     },
-    
+
+    /**
+     * @attribute {Number} tabindex Sets or gets the tab index for this element.
+     */    
     "tabindex": function(value){
         if (!this.hasFeature(apf.__FOCUSSABLE__)) 
             return;
@@ -593,7 +650,7 @@ apf.GuiElement.propHandlers = {
     //#endif
 
     /**
-     * @attribute {Number} zindex the z ordered layer in which this element is
+     * @attribute {Number} zindex Sets or gets the z ordered layer in which this element is
      * drawn.
      */
     "zindex": function(value){
@@ -601,7 +658,7 @@ apf.GuiElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} visible whether this element is shown.
+     * @attribute {Boolean} visible Sets or gets whether this element is shown.
      */
     "visible": function(value){
         if (apf.isFalse(value) || typeof value == "undefined") {
@@ -635,9 +692,9 @@ apf.GuiElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} disabled whether this element's functions are active.
-     * For elements that can contain other apf.NODE_VISIBLE elements this
-     * attribute applies to all it's children.
+     * @attribute {Boolean} disabled Sets or gets whether this element's functions are active.
+     * For elements that can contain other `apf.NODE_VISIBLE` elements, this
+     * attribute applies to all its children.
      */
     "disabled": function(value){
         if (!this.$drawn) {
@@ -733,16 +790,16 @@ apf.GuiElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} enables whether this element's functions are active.
-     * For elements that can contain other apf.NODE_VISIBLE elements this
-     * attribute applies to all it's children.
+     * @attribute {Boolean} enables Sets or gets whether this element's functions are active.
+     * For elements that can contain other `apf.NODE_VISIBLE` elements, this
+     * attribute applies to all its children.
      */
     "enabled" : function(value){
        this.setProperty("disabled", !value);
     },
 
     /**
-     * @attribute {Boolean} disable-keyboard whether this element receives
+     * @attribute {Boolean} disable-keyboard Sets or gets whether this element receives
      * keyboard input. This allows you to disable keyboard independently from
      * focus handling.
      */
@@ -751,7 +808,7 @@ apf.GuiElement.propHandlers = {
     },
     
     /**
-     * @attribute {String}  tooltip  the text displayed when a user hovers with 
+     * @attribute {String}  tooltip  Sets or gets the text displayed when a user hovers with 
      * the mouse over the element.
      */
     "tooltip" : function(value){
@@ -761,11 +818,13 @@ apf.GuiElement.propHandlers = {
     
     //#ifdef __AMLCONTEXTMENU
     /**
-     * @attribute {String} contextmenu the name of the menu element that will
+     * @attribute {String} contextmenu Sets or gets the name of the menu element that will
      * be shown when the user right clicks or uses the context menu keyboard
      * shortcut.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     * 
+     * ```xml
      *  <a:menu id="mnuExample">
      *      <a:item>test</a:item>
      *      <a:item>test2</a:item>
@@ -779,7 +838,7 @@ apf.GuiElement.propHandlers = {
      *    contextmenu = "mnuExample" 
      *    width       = "200" 
      *    height      = "150" />
-     * </code>
+     * ```
      */
     "contextmenu": function(value){
         this.contextmenus = [value];
@@ -788,21 +847,24 @@ apf.GuiElement.propHandlers = {
 
     //#ifdef __WITH_DATABINDING
     /**
-     * @attribute {String} actiontracker the name of the actiontracker that
-     * is used for this element and it's children. If the actiontracker doesn't
-     * exist yet it is created.
-     * Example:
-     * In this example the list uses a different actiontracker than the two
+     * @attribute {String} actiontracker Sets or gets the name of the [[apf.actiontracker action tracker]] that
+     * is used for this element and its children. If the actiontracker doesn't
+     * exist yet, it is created.
+     *
+     * #### Example
+     *
+     * In this example, the list uses a different action tracker than the two
      * textboxes which determine their actiontracker based on the one that
      * is defined on the bar.
-     * <code>
+     * 
+     * ```xml
      *  <a:list actiontracker="newAT" />
      *
      *  <a:bar actiontracker="someAT">
      *      <a:textbox />
      *      <a:textbox />
      *  </a:bar>
-     * </code>
+     * ```
      */
     "actiontracker": function(value){
         if (!value) {
@@ -828,17 +890,18 @@ apf.GuiElement.propHandlers = {
     
     //Load subAML
     /**
-     * @attribute {String} aml the {@link term.datainstruction data instruction} 
-     * that loads new aml as children of this element.
+     * @attribute {String} aml Sets or gets  the {@link term.datainstruction data instruction} 
+     * that loads new AML as children of this element.
      */
     "aml": function(value){
         this.replaceMarkup(value);
     }
 
-    /**
+    /*
      * @attribute {String} sets this aml element to be editable
      * that loads new aml as children of this element.
      */
+    // @todo Doc WTF?
     //#ifdef __WITH_CONTENTEDITABLE
     /*"editable": function(value){
         this.implement(apf.ContentEditable);
@@ -848,10 +911,10 @@ apf.GuiElement.propHandlers = {
    
     //#ifdef __WITH_ALIAS
     /**
-     * @attribute {String} alias the alternative name for this element. The 
-     * alias attribute can be set on another element. Only one element can have
-     * the alias at one time. This way it's easy to use different elements in
-     * the same function (for instance a thumbail and a datagrid) while keeping
+     * @attribute {String} alias Sets or gets an alternative name for this element. The 
+     * `alias` attribute can be set on another element. Only one element can have
+     * the alias at one time. This way, it's easy to use different elements in
+     * the same function (for instance, a thumbail and a datagrid) while keeping
      * all the binding rules and events on the active element.
      * @experimental
      */

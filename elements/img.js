@@ -22,11 +22,14 @@
 // #ifdef __AMLIMG || __INC_ALL
 
 /**
- * Element displaying a picture. This element can read databound resources.
- * Example:
+ * An element displaying a picture. This element can read databound resources.
+ * 
+ * #### Example
+ * 
  * This example shows a list with pictures. When one is selected its displayed
- * in the img element.
- * <code>
+ * in the `img` element.
+ * 
+ * ```xml
  *  <a:model id="mdlPictures"> 
  *      <pictures> 
  *          <picture title="Landscape" src="img1.jpg" />
@@ -50,12 +53,13 @@
  *    value  = "path/to/image/[@src]" 
  *    width  = "200" 
  *    height = "200" />
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.img
  * @define img
+ * @media
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseSimple
  *
@@ -63,13 +67,20 @@
  * @version     %I%, %G%
  * @since       0.4
  *
+ */
+/**
  * @event click Fires when a user presses a mouse button while over this element.
  *
- * @binding value  Determines the way the value for the element is retrieved 
+ */
+/**
+ *  @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ * 
  * Sets the image source based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlPictures"> 
  *      <data src="path/to/image.jpg" /> 
  *  </a:model>
@@ -78,7 +89,7 @@
  *    value  = "[@src]" 
  *    width  = "300" 
  *    height = "300" />
- * </code>
+ * ```
  */
 apf.img = function(struct, tagName){
     this.$init(tagName || "img", apf.NODE_VISIBLE, struct);
@@ -93,8 +104,8 @@ apf.preview = function(struct, tagName){
     
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -102,7 +113,7 @@ apf.preview = function(struct, tagName){
     
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current image
      */
     this.getValue = function(value){
         return this.value;
@@ -112,7 +123,7 @@ apf.preview = function(struct, tagName){
     
     this.$supportedProperties.push("value", "src");
     /**
-     * @attribute {String} value the url location of the image displayed.
+     * @attribute {String} value Sets or gets the url location of the image displayed.
      */
     this.$propHandlers["src"] = 
     this.$propHandlers["value"] = function(value){
@@ -162,7 +173,7 @@ apf.preview = function(struct, tagName){
             this.oImg.style.display = "none";
     });
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin

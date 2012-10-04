@@ -22,19 +22,20 @@
 //#ifdef __PARSER_URL
 
 /**
- * Object that represents a URI, broken down to its parts, according to RFC3986.
- * All parts are publicly accessible after parsing like 'url.port' or 'url.host'.
- * Example:
- * <code>
+ * Object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
+ *
+ * All parts are publicly accessible after parsing, like 'url.port' or 'url.host'.
+ * 
+ * #### Example
+ *
+ * ```javascript
  *   var url = new apf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
  *   alert(url.port); //will show '81'
  *   alert(url.host); //will show 'www.test.com'
  *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
+ * ```
  *
- * </code>
- *
- * @see http://tools.ietf.org/html/rfc3986
- * @constructor
+ * @class apf.url
  * @parser
  * @default_private
  *
@@ -69,10 +70,9 @@ apf.url = function(str) {
     });
 
     /**
-     * Checks if the same origin policy is in effect for this URI.
-     * @see http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript
+     * Checks if the [same origin policy](http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript) is in effect for this URI.
      *
-     * @returns {Boolean}
+     * @returns {Boolean} `true` if it's the same.
      */
     this.isSameLocation = function(){
         // filter out anchors

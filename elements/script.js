@@ -22,26 +22,38 @@
 // #ifdef __AMLSCRIPT || __INC_ALL
 
 /**
- * element that loads javascript into the application
- * either from it's first child or from a file.
- * Example:
- * <code>
+ * An element that loads JavaScript into the application,
+ * either from its first child or from a file.
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:script src="code.js" />
- * </code>
- * Example:
- * <code>
+ * ```
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:script>//<!-- 
  *      for (var i = 0; i < 2; i++) {
  *          alert(i);
  *      }
  *  //--></a:script>
- * </code>
- * @attribute {String} src the location of the script file.
- * @addnode global, anyaml
+ * ```
  *
+ * @class apf.script
+ * @inherits apf.AmlElement
+ * @define script
+ * @logic
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ *
+ */
+/**
+ * @attribute {String} src the location of the script file.
+ *
+ *
  */
 apf.script = function(){
     this.$init("script", apf.NODE_HIDDEN);

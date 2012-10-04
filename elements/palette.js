@@ -28,7 +28,7 @@
  * @constructor
  * @define palette
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.XForms
  * @inherits apf.StandardBinding
@@ -69,7 +69,7 @@ apf.palette = function(struct, tagName){
         //,apf.XForms
         //#endif
     );
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$focussable = true; // This object can get the focus
     this.value       = "ff0000";
@@ -83,7 +83,7 @@ apf.palette = function(struct, tagName){
         this.oViewer.style.backgroundColor = value;
     };
     
-    /**** Public methods ****/
+    // *** Public methods *** //
     
     //#ifdef __WITH_CONVENIENCE_API
     
@@ -106,7 +106,7 @@ apf.palette = function(struct, tagName){
     
     //#endif
     
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
     
     this.$addColor = function(clr, oContainer){
         if (!oContainer) 

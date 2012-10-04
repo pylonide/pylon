@@ -22,21 +22,24 @@
 // #ifdef __AMLTEXT || __INC_ALL
 
 /**
- * Element displaying a rectangle containing arbitrary (X)HTML.
+ * An element that displays a rectangle containing arbitrary (X)HTML.
+ *
  * This element can be databound and use databounding rules to
- * convert data into (X)HTML using for instance XSLT or JSLT.
+ * convert data into (X)HTML using--for instance--XSLT or JSLT.
  *
- * @constructor
+ * @class apf.text
  * @define text
- * @addnode elements
  *
+ * @form
  * @inherits apf.Cache
+ * @inherits apf.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.1
- * @todo Please refactor this object
+ * 
  */
+// @todo Please refactor this object
 apf.text = function(struct, tagName){
     this.$init(tagName || "text", apf.NODE_VISIBLE, struct);
     
@@ -58,16 +61,19 @@ apf.text = function(struct, tagName){
 
     this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
-     * @attribute {Boolean} scrolldown  whether this elements viewport is always
+     * @attribute {Boolean} scrolldown  Sets or gets whether this element's viewport is always
      *                                  scrolled down. This is especially useful
      *                                  when this element is used to displayed
      *                                  streaming content such as a chat conversation.
-     * @attribute {Boolean} secure      whether the content loaded in this element
+     *
+     */
+    /**
+     * @attribute {Boolean} secure      Sets or gets whether the content loaded in this element
      *                                  should be filtered in order for it to not
-     *                                  be able to execute javascript. This is
+     *                                  be able to execute JavaScript. This is
      *                                  especially useful when the content does
      *                                  not come from a trusted source, like a
      *                                  web service or xmpp feed.
@@ -133,7 +139,7 @@ apf.text = function(struct, tagName){
     }*/
 
     /**
-     * @attribute {String} value the contents of this element. This can be text or html or xhtml.
+     * @attribute {String} value Sets or gets the contents of this element. This can be text, html, xhtml.
      */
     this.$propHandlers["value"] = function(value, prop, force, forceAdd){
         if (this.each)
@@ -178,7 +184,7 @@ apf.text = function(struct, tagName){
     this.$eachHandler = function(value) {
         this.$attrExcludePropBind = apf.extend({}, this.$attrExcludePropBind);
         this.$attrExcludePropBind.value = value ? 2 : 0;
-    }
+    };
     this.addEventListener("prop.each", this.$eachHandler);
     
     this.addEventListener("$clear", function(){
@@ -190,19 +196,19 @@ apf.text = function(struct, tagName){
     // @todo replace this stub with something that does something
     this.$moveNode = function() {};
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     //#ifdef __WITH_CONVENIENCE_API
 
     this.addValue = function(value){
         this.$propHandlers["value"].call(this, value, null, null, true);
         this.dispatchEvent("prop.value", {value: this.value});
-    }
+    };
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -210,7 +216,7 @@ apf.text = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.$container.innerHTML;
@@ -218,7 +224,7 @@ apf.text = function(struct, tagName){
     
     //#endif
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     //#ifdef __WITH_KEYBOARD
     this.addEventListener("keydown", function(e){
@@ -255,7 +261,7 @@ apf.text = function(struct, tagName){
     }, true);
     //#endif
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$canLoadData = function(){
         return this.$attrBindings.value ? true : false;
@@ -293,7 +299,7 @@ apf.text = function(struct, tagName){
     this.$updateNode =
     this.$moveNode   = apf.K;
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$ext = this.$getExternal();

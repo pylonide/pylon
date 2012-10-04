@@ -21,7 +21,7 @@
 
 //#ifdef __WITH_DATABINDING
 
-/**
+/*
  * @todo docs
  */
 apf.BindingQuicksandRule = function(struct, tagName){

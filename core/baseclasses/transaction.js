@@ -27,16 +27,18 @@ apf.__TRANSACTION__ = 1 << 3;
  * All elements inheriting from this {@link term.baseclass baseclass} have transaction support. A transaction is a 
  * set of changes to data which are treated as one change. When one of the 
  * changes in the set fails, all the changes will be cancelled. In the case of
- * a gui this is mostly relevant when a user decides to cancel after 
+ * a GUI, this is mostly relevant when a user decides to cancel after 
  * making several changes. A good example are the well known property windows 
- * with an ok, cancel and apply button. 
+ * with ok, cancel and apply buttons. 
  *
  * When a user edits data, for instance user information, all the changes are
- * seen as one edit and put on the undo stack as a single action. Thus clicking
+ * seen as one edit and put on the undo stack as a single action. Thus, clicking
  * undo will undo the entire transaction, not just the last change done by that
- * user in the edit window. Transaction support both optimistic and pessimistic 
- * locking. For more information on the latter see the first example below.
- * Example:
+ * user in the edit window. Transaction supports both optimistic and pessimistic 
+ * locking. For more information on the latter, see the first example below.
+ * 
+ * #### Example
+ *
  * This example shows a list with one item. When double clicked on the item
  * a window shows that allows the user to edit the properties of this item.
  * When the window is closed the changes are committed to the xml data. If the
@@ -46,9 +48,10 @@ apf.__TRANSACTION__ = 1 << 3;
  * rpc calls. When the user starts editing an existing item a lock is requested.
  * This is not necesary for transaction support, but this example shows that it
  * is possible. When the lock fails the window will close. By hooking the
- * 'lockfail' event the user can be notified of the reason. For more information 
+ * 'lockfail' event the user can be notified of the reason. For more information, 
  * see {@link term.locking}.
- * <code>
+ *
+ * ```xml
  *  <a:list 
  *    id            = "lstItems" 
  *    onafterchoose = "winEdit.show()" 
@@ -95,19 +98,23 @@ apf.__TRANSACTION__ = 1 << 3;
  *      <a:button action="cancel">Cancel</a:button>
  *      <a:button action="apply" disabled="{!winEdit.undolength}">Apply</a:button>
  *   </a:window>
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.Transaction
  * @baseclass
  *
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  * 
- * @event transactionconflict Fires when data in a transaction is being updated by an external process.
- *
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8.9
+ */
+/**
+ * @event transactionconflict Fires when data in a transaction is being updated by an external process.
+ *
+ *
  */
 apf.Transaction = function(){
     this.$regbase = this.$regbase | apf.__TRANSACTION__;
@@ -126,13 +133,12 @@ apf.Transaction = function(){
      */
     this.$booleanProperties["autoshow"] = true;
 
+    // @todo  check what's up with actiontracker usage... 
+    //@bug  when a commit is cancelled using the onbeforecommit event, the state of the element becomes undefined.
     /**
-     * Commits a started transaction. This will trigger an update or add action.
+     * Commits a started transaction. This triggers an update or add action.
      * forked copy of template data.
      *
-     * @todo  check what's up with actiontracker usage... 
-     * @bug  when a commit is cancelled using the onbeforecommit event, the 
-     * state of the element becomes undefined.
      */
     this.commit = function(repeat){
         if (!this.$inTransaction)
@@ -252,13 +258,16 @@ apf.Transaction = function(){
 
     /**
      * Starts a transaction for this element. This is either an add or update.
-     * @param {String}     strAction the type of transaction to start
-     *   Possible values:
-     *   add    the transaction is started to add a new {@link term.datanode data node}.
-     *   update the transaction is started to update an existing {@link term.datanode data node}.
-     * @param {XMLElement} xmlNode 
-     * @param {XMLElement} parentXmlNode 
-     * @param {AMLElement} dataParent 
+     *
+     * @param {String}     strAction Specifies the type of transaction to start
+     *   
+     * The possible values include:
+     *   - `"add"`:    the transaction is started to add a new {@link term.datanode data node}.
+     *   - `"update"`: the transaction is started to update an existing {@link term.datanode data node}.
+     *
+     * @param {XMLElement} xmlNode  The node to add or update to
+     * @param {XMLElement} parentXmlNode The parent node to add or udpate to
+     * @param {apf.AmlElement} dataParent Determines the actiontracker to integrate the grouped action into
      */
     this.begin = function(strAction, xmlNode, parentXmlNode, dataParent){
         if (this.$inTransaction) {
@@ -581,9 +590,9 @@ apf.Transaction = function(){
 }
 
 /**
- * @attribute {Boolean} transaction Whether this element provides transaction
- * support for all it's children.
- * @see baseclass.transaction
+ * @attribute {Boolean} transaction Sets or gets whether this element provides transaction
+ * support for all its children.
+ * 
  */
 apf.GuiElement.propHandlers["transaction"] = function(value){
     if (!(this.transaction = apf.isTrue(value)))

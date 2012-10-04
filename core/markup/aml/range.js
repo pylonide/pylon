@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLRANGE
-/**
+/*
  * HTML5 Range object
  * @todo copy docs from http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
  */

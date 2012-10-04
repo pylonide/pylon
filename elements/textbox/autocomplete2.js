@@ -234,7 +234,7 @@ this.addEventListener("popuphide", function(){
         this.stopRename();
 });
 
-    /**** Lookup ****/
+    // *** Lookup *** //
 
     /*
         <prop match="[author]" descfield="name" datatype="lookupkey" 

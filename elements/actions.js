@@ -21,11 +21,14 @@
 
 //#ifdef __WITH_DATABINDING
 
+
 /**
-* @define actions  element containing all the action rules for the data 
+ * Defines some rules containing all the action rules for the data 
  * bound elements referencing this element.
- * Example:
- * <code>
+ * 
+ * #### Example 
+ *
+ * ```xml
  *  <a:actions id="actPerson" >
  *      <a:add set="{comm.addPerson([.])}">
  *          <person name="New person" />
@@ -35,12 +38,14 @@
  *  </a:actions>
  *
  *  <a:tree actions="actPerson" />
- * </code>
- * @allowchild {actions}
- * @addnode smartbinding, global
+ * ```
  *
- * @constructor
- * @apfclass
+ * @allowchild {actions}
+ *
+ * @class apf.actions
+ * @inherits apf.AmlElement
+ * @define actions
+ * @logic
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -81,7 +86,7 @@ apf.actions = function(struct, tagName){
         amlNode.dispatchEvent("actionsunload", {bindings: this});
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;

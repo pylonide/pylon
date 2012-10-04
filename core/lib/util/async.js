@@ -22,21 +22,13 @@
 
 //#ifdef __WITH_ASYNC
 
-/**
- * @author      Fabian Jakobs
- * @version     %I%, %G%
- * @since       1.0
- *
- * @namespace apf
- *
- */
 
 /**
- * Perform an async function in serial on each of the list items
+ * Performs an async function in serial on each of the list items.
  * 
- * @param {Array} list
- * @param {Function} async async function of the form function(item, callback)
- * @param {Function} callback function of the form function(error), which is
+ * @param {Array} list A list of elements to iterate over asynchronously
+ * @param {Function} async An ssync function of the form `function(item, callback)`
+ * @param {Function} callback A function of the form `function(error)`, which is
  *      called after all items have been processed
  */
 apf.asyncForEach = function(list, async, callback) {
@@ -58,13 +50,13 @@ apf.asyncForEach = function(list, async, callback) {
 };
 
 /**
- * Perform an async function in serial while the function 'condition' (first 
+ * Performs an async function in serial, as long as the function 'condition' (first 
  * argument) evaluates to true.
  * 
- * @param {Function} condition function that returns a Boolean, which determines
+ * @param {Function} condition A function that returns a [Boolean], which determines
  *                             if the loop should continue
- * @param {Function} async     async function of the form function(iteration_no, callback)
- * @param {Function} callback  function of the form function(error), which is
+ * @param {Function} async     async A function of the form `function(iteration_no, callback)`
+ * @param {Function} callback  A function of the form `function(error)`, which is
  *                             called after all items have been processed
  */
 apf.asyncWhile = function(condition, async, callback) {
@@ -82,16 +74,18 @@ apf.asyncWhile = function(condition, async, callback) {
 };
 
 /**
- * Map each element from the list to the result returned by the async mapper
- * function. The mapper takes an element from the list and a callback as arguments.
- * After completion the mapper has to call the callback with an (optional) error
- * object as first and the result of the map as second argument. After all
- * list elements have been processed the last callback is called with the mapped
+ * Maps each element from the list to the result returned by the async mapper
+ * function. 
+ *
+ * The mapper takes an element from the list and a callback as arguments.
+ * After completion, the mapper has to call the callback with an (optional) error
+ * object as the first argument, and the result of the map as second argument. After all
+ * list elements have been processed, the last callback is called with the mapped
  * array as second argument.
  * 
- * @param {Array} list
- * @param {Function} mapper function of the form function(item, next)
- * @param {Function} callback function of the form function(error, result)
+ * @param {Array} list A list of elements to iterate over asynchronously
+ * @param {Function}  mapper A function of the form `function(item, next)`
+ * @param {Function} callback A function of the form `function(error, result)`
  */
 apf.asyncMap = function(list, mapper, callback) {
     var i = 0;
@@ -116,12 +110,14 @@ apf.asyncMap = function(list, mapper, callback) {
 
 
 /**
- * Chains an array of functions. Each of the functions except the last one must
- * have excatly one 'callback' argument, which has to be called after the functions has
- * finished. If the callback fails if has to pass a non null error object as
+ * Chains an array of functions. 
+ *
+ * Each of the functions (except the last one) must
+ * have exactly one `callback` argument, which must be called after the functions has
+ * finished. If the callback fails, it must pass a non-null error object as the
  * first argument to the callback.
  * 
- * @param {Array} funcs
+ * @param {Array} funcs An array of functions to chain together.
  */
 apf.asyncChain = function(funcs) {
     var i = 0;

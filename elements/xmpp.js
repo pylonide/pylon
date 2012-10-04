@@ -85,7 +85,7 @@
  *                                the RDB implementation can grok
  *
  * @define xmpp
- * @addnode teleport
+ *
  * 
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -1023,7 +1023,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @param {Object} oXml
      * @param {Number} state
-     * @param {mixed}  extra
+     * @param {Mixed}  extra
      * @type  {void}
      * @private
      */
@@ -1632,7 +1632,7 @@ apf.xmpp = function(struct, tagName){
      * (hence the 'setTimeout' call).
      *
      * @see teleport.xmpp.methodlisten
-     * @param {mixed}  data
+     * @param {Mixed}  data
      * @param {Number} state
      * @param {Object} extra
      * @type {void}
@@ -2050,7 +2050,7 @@ apf.xmpp = function(struct, tagName){
      * Provides the ability to request the presence of a contact from a users
      * roster.
      * 
-     * @param {mixed} from Contact to get the presence data from (object or JID string)
+     * @param {Mixed} from Contact to get the presence data from (object or JID string)
      * @type  {void}
      */
     this.requestPresence = function(from) {
