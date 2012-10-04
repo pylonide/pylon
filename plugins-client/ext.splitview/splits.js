@@ -640,33 +640,38 @@ function correctQuickSearchDialog(e) {
 }
 
 function correctGotoLineDialog(e) {
+    if (!gotoLineWindow && self["winGotoLine"])
+        gotoLineWindow = self["winGotoLine"];
+
+    if (!gotoLineWindow)
+        return;
+
     var editor = Editors.currentEditor.amlEditor;
     var pos = !ActiveSplit ? -1 : exports.indexOf(ActiveSplit, editor);
     if (pos == -1)
         return;
 
+    var ace = editor.$editor;
+    var aceHtml = editor.$ext;
+    var cursor = ace.getCursorPosition();
+
+    //Determine the position of the window
     var parent = editor.parentNode;
+    var cursorPos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
     var editorPos = apf.getAbsolutePosition(editor.$ext, parent.$ext);
     var editorDims = {
-        width: editor.$ext.offsetWidth,
-        height: editor.$ext.offsetHeight
+        width: aceHtml.offsetWidth,
+        height: aceHtml.offsetHeight
     };
 
-    if (!gotoLineWindow && self["winGotoLine"])
-        gotoLineWindow = self["winGotoLine"];
-
-    if (gotoLineWindow) {
-        var left = editorPos[0];
-        var to = Math.max(left, 0);
-        var maxTop = editorPos[1] + editorDims.height - 100;
-        var top = e.pos ? Math.min(maxTop, e.pos.pageY - 70) : undefined;
-        return {
-            top: top,
-            zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
-            from: e.anim == "out" ? to - 60 : 0,
-            to: e.anim == "out" ? to + (to === 0 ? 2 : -1) : (to - 60)
-        };
-    }
+    var left = Math.max(editorPos[0], 0);
+    var maxTop = editorPos[1] + editorDims.height - 100;
+    var top = Math.max(0, Math.min(maxTop, cursorPos.pageY - editorPos[1] - 5));
+    return {
+        top: top,
+        zIndex: parseInt(editor.$ext.style.zIndex, 10) + 1,
+        left: Math.ceil(e.anim == "out" ? left + (left === 0 ? 0 : -1) : (left - 60))
+    };
 }
 
 function correctVimMode(e) {
