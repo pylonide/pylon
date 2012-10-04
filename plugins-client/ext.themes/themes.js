@@ -32,17 +32,20 @@ module.exports = ext.register("ext/themes/themes", {
         var timer;
 
         for (var name in themes) {
-            if (themes[name] instanceof Array)
+            if (themes[name] instanceof Array) {
+                menus.addItemByPath("View/Themes/" + name, new apf.item());
                 themes[name].forEach(function (n) {
-                    themeMenuCreator(name, name + "/" + n)
+                    var themeprop = Object.keys(n)[0];
+                    themeMenuCreator(name + "/" + themeprop, n[themeprop])
                 });
+            }
             else
                 themeMenuCreator(name);
 
             function themeMenuCreator(name, path) {
-                menus.addItemByPath("View/Themes/" + (path || name), new apf.item({
+                menus.addItemByPath("View/Themes/" + name, new apf.item({
                     type    : "radio",
-                    value   : themes[name],
+                    value   : path || themes[name],
 
                     onmouseover: function(e) {
                         var value = this.value;
