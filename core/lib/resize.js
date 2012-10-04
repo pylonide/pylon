@@ -64,7 +64,7 @@ apf.resize = function() {
         gridH     : 48
     };
 
-    /**
+    /*
      * html representation of resized block element
      */
     this.htmlElement;
@@ -388,6 +388,6 @@ apf.resize.square = function(posY, posX, objResize) {
             }
         };
     };
-}
+};
 
 //#endif

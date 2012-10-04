@@ -132,6 +132,6 @@ apf.asyncChain = function(funcs) {
     }
     
     next();
-}
+};
 
 //#endif __WITH_ASYNC

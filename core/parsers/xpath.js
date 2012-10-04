@@ -623,5 +623,5 @@ apf.CodeCompilation = function(code){
     };
 };
 
-}
+};
 //#endif

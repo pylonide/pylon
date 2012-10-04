@@ -217,9 +217,9 @@ var files = ["../apf.js",
              //"../core/baseclasses/media.js",
              "../core/baseclasses/multicheck.js",
              "../core/baseclasses/teleport.js",
-             //"../core/baseclasses/transaction.js",
+             "../core/baseclasses/transaction.js",
              //"../core/baseclasses/virtualviewport.js",
-             //"../core/baseclasses/xforms.js",
+             "../core/baseclasses/xforms.js",
              //"../core/baseclasses/contenteditable/clipboard.js",
              //"../core/baseclasses/contenteditable/commands.js",
              //"../core/baseclasses/contenteditable/interactive.js",
@@ -395,7 +395,7 @@ var files = ["../apf.js",
              //"../loader.js",
              //"../loader2.js"
             ];
-
+//files = ["./apf_release.js"];
 panino.parse(files, buildOptions, function (err, ast) {
   if (err) {
     console.error(err);

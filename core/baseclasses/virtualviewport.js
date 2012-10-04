@@ -391,7 +391,7 @@ apf.VirtualViewport = function(){
             this.$cachedTraverseList = (xmlNode || this.xmlRoot).selectNodes(this.each);
             this.$cachedTraverseList.name = this.each;
         }
-    }
+    };
     
     /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
@@ -745,7 +745,7 @@ apf.$viewportVirtual = function(amlNode){
             
             j++;
         }
-    }
+    };
     
     /**
      * @note This function only supports single dimension items (also no grid, like thumbnails)
@@ -777,7 +777,7 @@ apf.$viewportVirtual = function(amlNode){
         
         if (updateScrollbar && this.sb)
             this.sb.$update(this.$container);
-    }
+    };
     
     this.$findNewLimit = function(){
         if (!this.amlNode.xmlRoot || !this.amlNode.$ext.offsetHeight)
@@ -792,7 +792,7 @@ apf.$viewportVirtual = function(amlNode){
             this.resize(limit);
             this.redraw();
         }
-    }
+    };
     
     /**
      *  @todo   This method should be optimized by checking if there is
@@ -921,7 +921,7 @@ apf.$viewportVirtual = function(amlNode){
         var htmlNode = this.$getHtmlHost();
         var itemHeight = this.$getItemHeight();
         htmlNode.scrollTop = scrollTop - (this.offset * itemHeight);
-    }
+    };
 }).call(apf.$viewportVirtual.prototype);
 
 // #endif

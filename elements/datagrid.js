@@ -60,7 +60,7 @@
  * @inherits apf.Cache
  * @inherits apf.StandardBinding
  * @inherits apf.Rename
- * @inherits apf.Multiselect
+ * @inherits apf.MultiselectBinding
  *
  */
 /**

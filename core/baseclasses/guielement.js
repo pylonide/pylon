@@ -39,7 +39,6 @@ apf.__VALIDATION__ = 1 << 6;
  * @inherits apf.DragDrop
  * @inherits apf.Focussable
  * @inherits apf.Interactive
- * @inherits apf.Transaction
  * @inherits apf.Validation
  *
  */

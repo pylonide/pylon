@@ -19,7 +19,7 @@
  *
  */
 
-/**
+/*
  * Bootloader for Ajax.org Platform
  *
  * Include apf.js, then just go about it as you would with the 
