@@ -60,31 +60,33 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
     init : function() {
         var _self = this;
+        var list = lstLineNumber;
+        var text = txtLineNr;
 
-        lstLineNumber.addEventListener("afterchoose", function() {
-            if (lstLineNumber.selected) {
-                _self.execGotoLine(parseInt(lstLineNumber.selected.getAttribute("nr"), 10));
+        list.addEventListener("afterchoose", function() {
+            if (list.selected) {
+                _self.execGotoLine(parseInt(list.selected.getAttribute("nr"), 10));
             }
             else {
                 _self.execGotoLine();
             }
         });
-        lstLineNumber.addEventListener("afterselect", function() {
+        list.addEventListener("afterselect", function() {
             if (!this.selected)
                 return;
 
-            txtLineNr.setValue(this.selected.getAttribute("nr"));
+            text.setValue(this.selected.getAttribute("nr"));
             _self.execGotoLine(null, null, true);
         });
 
         var restricted = [38, 40, 36, 35];
-        lstLineNumber.addEventListener("keydown", function(e) {
+        list.addEventListener("keydown", function(e) {
             if (e.keyCode == 13 && this.selected){
                 return false;
             }
             else if (e.keyCode == 38) {
                 if (this.selected == this.getFirstTraverseNode()) {
-                    txtLineNr.focus();
+                    text.focus();
                     this.clearSelection();
                 }
             }
@@ -93,10 +95,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 editors.currentEditor.amlEditor.focus();
             }
             else if (restricted.indexOf(e.keyCode) == -1)
-                txtLineNr.focus();
+                text.focus();
         }, true);
 
-        txtLineNr.addEventListener("keydown", function(e) {
+        text.addEventListener("keydown", function(e) {
             if (e.keyCode == 13){
                 _self.execGotoLine();
                 return false;
@@ -115,11 +117,11 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 return false;
             }
             else if (e.keyCode == 40) {
-                var first = lstLineNumber.getFirstTraverseNode();
+                var first = list.getFirstTraverseNode();
                 if (first) {
-                    lstLineNumber.select(first);
-                    lstLineNumber.$container.scrollTop = 0;
-                    lstLineNumber.focus();
+                    list.select(first);
+                    list.$container.scrollTop = 0;
+                    list.focus();
                 }
             }
             else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
@@ -137,7 +139,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 _self.hide();
         });
 
-        txtLineNr.addEventListener("blur", function(e){
+        text.addEventListener("blur", function(e){
             if (!apf.isChildOf(winGotoLine, e.toElement))
                 _self.hide();
         });

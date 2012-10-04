@@ -50,14 +50,11 @@ module.exports = ext.register("ext/anims/anims", {
         if (shouldAnimate) {
             Firmin.animate(aNode.$ext || aNode, options, options && options.duration || 0.2, function() {
                 (aNode.$ext || aNode).style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                //apf.layout.forceResize();
-
                 finish && finish(); //setTimeout(finish, 30);
             });
         }
         else {
             //@todo set value
-
             finish && finish();
         }
     },
@@ -76,16 +73,16 @@ module.exports = ext.register("ext/anims/anims", {
         if (pNode.$vbox) {
             to2 = { timingFunction : options.timingFunction };
             if (isFirst)
-                to2.top = (parseInt(options.height) + pNode.$edge[0] + pNode.padding) + "px";
+                to2.top = (parseInt(options.height, 10) + pNode.$edge[0] + pNode.padding) + "px";
             else
-                to2.bottom = (parseInt(options.height) + pNode.$edge[2] + pNode.padding) + "px";
+                to2.bottom = (parseInt(options.height, 10) + pNode.$edge[2] + pNode.padding) + "px";
         }
         else {
             to2 = { timingFunction : options.timingFunction };
             if (isFirst)
-                to2.left = (parseInt(options.width) + pNode.$edge[3] + pNode.padding) + "px";
+                to2.left = (parseInt(options.width, 10) + pNode.$edge[3] + pNode.padding) + "px";
             else
-                to2.right = (parseInt(options.width) + pNode.$edge[1] + pNode.padding) + "px";
+                to2.right = (parseInt(options.width, 10) + pNode.$edge[1] + pNode.padding) + "px";
         }
 
         if (shouldAnimate && !options.immediate) {
@@ -99,18 +96,15 @@ module.exports = ext.register("ext/anims/anims", {
 
             Firmin.animate(aNode.$ext, options, options.duration || 0.2, function() {
                 aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                //apf.layout.forceResize();
             });
             Firmin.animate(oNode.$ext, to2, options.duration || 0.2, function() {
                 oNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                //apf.layout.forceResize();
-
 
                 if (aNode.parentNode) {
                     if (pNode.$vbox)
-                        aNode.setHeight(parseInt(options.height));
+                        aNode.setHeight(parseInt(options.height, 10));
                     else
-                        aNode.setWidth(parseInt(options.width));
+                        aNode.setWidth(parseInt(options.width, 10));
                 }
 
                 finish && finish(); //setTimeout(finish, 30);

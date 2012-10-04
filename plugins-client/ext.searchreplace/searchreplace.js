@@ -329,10 +329,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     if (lines[i + j].search(re[j]) == -1)
                         return 0;
                 return 1;
-            }
+            };
         }
 
-        var count = function () {
+        var count = function() {
             var chunk = Math.min(len, startI + 500);
             for (var i = startI; i < chunk; i++) {
                 if (i == row)
@@ -342,12 +342,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (i == len) {
                 callback && callback(matchTotal, matchPos);
                 _self.$matchCountTimer = null;
-            } else {
+            }
+            else {
                 startI = chunk;
                 _self.$matchCountTimer = setTimeout(count, 100);
                 progress && progress(matchTotal, matchPos, startI/len);
             }
-        }
+        };
         count();
     },
 
@@ -640,7 +641,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             this.$crtSearch = searchTxt;
         } else {
             this.updateCounter(!reverseBackwards != !options.backwards,
-				null, reverseBackwards ? -1 : 1);
+                null, reverseBackwards ? -1 : 1);
         }
 
         if (chkHighlightMatches.checked)

@@ -15,6 +15,8 @@ module.exports = {
     language: null,
     project: null,
     path: null,
+    workspaceDir: null,
+    doc: null,
     
     // UTILITIES
     
@@ -29,7 +31,7 @@ module.exports = {
 
     /**
      * Returns whether this language handler should be enabled for the given file
-     * @param path the file path of the file
+     * @param language to check the handler against
      */
     handlesLanguage: function(language) {
         return false;
@@ -82,6 +84,13 @@ module.exports = {
     },
 
     // OTHER CALLBACKS
+    
+    /**
+     * Initialize this language handler.
+     */
+    init: function(callback) {
+        callback();
+    },
     
     /**
      * Invoked when the document has been updated (possibly after a certain interval)

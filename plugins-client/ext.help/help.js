@@ -46,7 +46,7 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/About", new apf.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
             menus.addItemByPath("Help/IDE Status", new apf.item({ onclick : function(){window.open('http://status.c9.io'); }}), c += 100);
             var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/') }}), c += 100);
-            
+
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
             menus.addItemByPath("Help/Documentation", new apf.item({ onclick : function(){ window.open('https://docs.c9.io') }}), c += 100);
             ide.addEventListener("hook.ext/keybindings_default/keybindings_default", function(c, e) {
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
                 menus.addItemByPath("Help/Take a Guided Tour", new apf.item({ onclick : function(){ e.ext.launchGT(); }}), c);
             }.bind(this, c += 100));
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
-            
+
             menus.addItemByPath("Help/Support/", null, c += 100);
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
             menus.addItemByPath("Help/Learning/", null, c += 100);
@@ -118,7 +118,7 @@ define(function(require, exports, module) {
             ext.initExtension(this);
 
             aboutDialog.show();
-            document.getElementById("c9Version").innerHTML = "Version " + window.cloud9config.version;
+            document.getElementById("c9Version").innerHTML = apf.escapeXML("Version " + window.cloud9config.version);
         },
 
         launchTwitter: function() {

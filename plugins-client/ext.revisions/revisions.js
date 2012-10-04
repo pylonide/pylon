@@ -265,14 +265,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && window.lstRevisions && !CoreUtil.isNewPage(page)) {
-            var selection = lstRevisions.selection;
-            var node = model.data.firstChild;
-            if (selection && selection.length === 0 && page.$selectedRevision) {
-                node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
-            }
-            lstRevisions.select(node);
-        }
+        if (page.$showRevisions !== true || !window.lstRevisions || CoreUtil.isNewPage(page))
+            return;
+
+        var selection = lstRevisions.selection;
+        var node = model.data.firstChild;
+
+        if (selection && selection.length === 0 && page.$selectedRevision)
+            node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
+
+        lstRevisions.select(node);
     },
 
     $getRevisionObject: function(path) {
@@ -282,6 +284,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revObj.useCompactList = true;
             revObj.groupedRevisionIds = [];
             revObj.previewCache = {};
+            revObj.usersChanged = [];
         }
         return revObj;
     },
@@ -346,6 +349,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         var doc = data.doc;
+        if (!doc.acedoc)
+            return;
+            
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
@@ -356,6 +362,29 @@ module.exports = ext.register("ext/revisions/revisions", {
                 path: CoreUtil.getDocPath(page)
             });
         }
+
+        var _self = this;
+        (doc.acedoc || doc).addEventListener("change", function(e) {
+            _self.onDocChange(e, doc);
+        });
+    },
+
+    onDocChange: function(e, doc) {
+        if (!e.data || !e.data.delta || !e.data.delta[0])
+            return;
+
+        var _self = this;
+        setTimeout(function() {
+            var suffix = e.data.delta[0].suffix;
+            if (!suffix)
+                return;
+
+            var user = _self.getUser(suffix, doc);
+            if (!user)
+                return;
+
+            _self.addUserToDocChangeList(user, doc);
+        }, 50);
     },
 
     onFileUpdate: function(data) {
@@ -837,17 +866,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revision) { return; }
 
         var contributorToXml = function(c) {
-            return "<contributor email='" + c + "' />";
+            return apf.n("<contributor />").attr("email", c).node().xml;
         };
 
         var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
         var restoring = revision.restoring || "";
 
-        var xmlString = "<revision " +
-                "id='" + revision.ts + "' " +
-                "name='" + friendlyDate + "' " +
-                "silentsave='" + revision.silentsave + "' " +
-                "restoring='" + restoring + "'>";
+        var xmlString = CoreUtil.toXmlTag("revision", {
+            id: revision.ts,
+            name: friendlyDate,
+            silentsave: revision.silentsave,
+            restoring: restoring
+        }, true);
 
         var contributors = "";
         if (revision.contributors && revision.contributors.length) {
@@ -875,15 +905,14 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     /**
      * Revisions#iAmMaster(path) -> Boolean
-     * - path(String): Path for the document to be checked
+     * - fullPath(String): Path for the document to be checked
      *
      * Returns true if the current user is the "master" document in a collab
      * session. That means that the contents of his document will be the ones
      * saved in the collab session.
      **/
-    iAmMaster: function(path) {
-        // Has to be implemented.
-        return true;
+    isMaster: function(fullPath) {
+        return this.getConcorde().isMaster(fullPath);
     },
 
     getRevision: function(id, content) {
@@ -1174,7 +1203,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.offlineQueue.push(data);
         }
         else {
-            if (this.isCollab() && !this.iAmMaster(docPath)) {
+            if (this.isCollab() && !this.isMaster(page.name)) {
                 // We are not master, so we want to tell the server to tell
                 // master to save for us. For now, since the master is saving
                 // every .5 seconds and auto-save is mandatory, we are not
@@ -1216,14 +1245,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (user && doc) {
             var path = CoreUtil.getDocPath(doc.$page);
             var stack = this.rawRevisions[path];
-            if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
-                stack.usersChanged.push(user.user.email);
+            if (stack && (stack.usersChanged.indexOf(user.email) === -1)) {
+                stack.usersChanged.push(user.email);
             }
         }
     },
 
     getCollab: function() {
-        return require("core/ext").extLut["ext/collab/collab"];
+        return require("core/ext").extLut["ext/collaborate/collaborate"];
+    },
+
+    getConcorde: function() {
+        return require("core/ext").extLut["ext/concorde/concorde"];
     },
 
     getUser: function(suffix, doc) {
@@ -1237,14 +1270,17 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     getUserColorByEmail: function(email) {
-        var color;
         var collab = this.getCollab();
-        if(!collab)
+        if (!collab)
             return;
+
+        var color;
         var user = collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
+
+        return color;
     },
 
     /**
