@@ -100,6 +100,58 @@ module.exports = {
         next();
     },
 
+    "test getRevisions with a valid path": function(next) {
+        var file = ".c9revisions/" + Path.basename(__filename) + ".c9save";
+        try {
+            Fs.mkdirSync(".c9revisions");
+            Fs.writeFileSync(file, "", "utf8");
+        } catch(e) { assert(false, e); }
+
+        var R = this.revisionsPlugin;
+        R.getAllRevisions = function() {
+            assert(true);
+            next();
+        };
+
+        R.getRevisions(Path.basename(__filename), function() {}); // good path
+    },
+
+    "test getRevisions with a non-valid path": function(next) {
+        var R = this.revisionsPlugin;
+        R.saveSingleRevision = function() {
+            assert(true);
+            next();
+        };
+
+        R.getRevisions("fake", function() {}); // bad path
+    },
+
+    "test getAllRevisions with a non-valid path": function(next) {
+        var R = this.revisionsPlugin;
+
+        R.getAllRevisions("very/fake/path", function(err) {
+            assert.ok(!!err);
+            next();
+        });
+    },
+
+    "test getAllRevisions with an empty file": function(next) {
+        var R = this.revisionsPlugin;
+        var filename = Path.normalize(__dirname + "/test1.js");
+
+        Fs.writeFile(filename, "", "utf8", function() {
+            R.getAllRevisions("test1.js", function(err, revObj) {
+                assert.ok(!err, err);
+                assert.ok(typeof revObj === "object");
+                assert.ok(Object.keys(revObj).length === 0);
+
+                Fs.unlink(filename, function() {
+                    next();
+                });
+            });
+        });
+    },
+
     "!test getRevisionsPath": function(next) {
         var path1 = PathUtils.getSessionStylePath.call(this.revisionsPlugin, "lib/test1.js");
         assert.equal("sergi/node_chat/lib/test1.js", path1);

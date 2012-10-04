@@ -247,7 +247,7 @@ module.exports = function setup(options, imports, register) {
                 var lineCount = 0;
                 var lines = data.toString().split("\n");
                 if (!lines.length)
-                    return;
+                    return callback(null, revObj);
 
                 Async.whilst(
                     function () {
@@ -300,19 +300,16 @@ module.exports = function setup(options, imports, register) {
                 return callback(new Error(
                     "Can't retrieve the path to the user's workspace\n" + this.workspace));
             }
-
             // Path of the final backup file inside the workspace
             var absPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
             var self = this;
             // does the revisions file exists?
             fs.exists(absPath, function(exists) {
-                if (exists) {
+                if (exists)
                     self.getAllRevisions(absPath, callback);
-                }
-                else {
+                else
                     // create new file
                     self.saveSingleRevision(filePath, null, callback);
-                }
             });
         };
 
