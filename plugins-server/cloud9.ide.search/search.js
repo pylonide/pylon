@@ -16,7 +16,6 @@ var name = "search";
 var ProcessManager;
 var EventBus;
 
-
 module.exports = function setup(options, imports, register) {
     grepCmd = options.grepCmd || "grep";
     findCmd = options.findCmd || "find";
@@ -61,7 +60,8 @@ util.inherits(SearchPlugin, Plugin);
                 self.filecount = 0;
                 self.count = 0;
                 self.prevFile = null;
-            } else if (msg.type == "shell-exit") {
+            }
+            else if (msg.type == "shell-exit") {
                 self.processCount -= 1;
             }
 
@@ -72,30 +72,29 @@ util.inherits(SearchPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        if (message.command != "search")
+        if (message.command !== "search")
             return false;
 
         var path = message.path;
         var type = message.type;
 
-        if (message.path == null)
+        if (message.path === null)
             return true;
 
         message.uri = path;
         message.path = this.basePath + (path ? "/" + path : "");
 
-
-        if (type == "codesearch")
-            var args = this.assembleSearchCommand(message);
-        else if (type == "filelist")
-            var args = this.assembleFileListCommand(message);
+        var args;
+        if (type === "codesearch")
+            args = this.assembleSearchCommand(message);
+        else if (type === "filelist")
+            args = this.assembleFileListCommand(message);
 
         if (!args)
             return false;
 
+        this.options = message;
         var self = this;
-        self.options = message;
-        
         this.pm.spawn("shell", {
             command: args.command,
             args: args,
@@ -111,15 +110,17 @@ util.inherits(SearchPlugin, Plugin);
     };
 
     this.assembleSearchCommand = function(options) {
-        var cmd = grepCmd + " -P -s -r --color=never --binary-files=without-match -n " + ( !options.casesensitive ? "-i" : "" );
         var include = "";
+        var cmd = grepCmd + " -P -s -r --color=never --binary-files=without-match -n " +
+            (!options.casesensitive ? "-i" : "");
 
         if (options.pattern) { // handles grep peculiarities with --include
             if (options.pattern.split(",").length > 1)
                 include = "{" + options.pattern + "}";
             else
                 include = options.pattern;
-        } else {
+        }
+        else {
             include = "\\*{" + PATTERN_EXT + "}";
         }
 
@@ -131,6 +132,7 @@ util.inherits(SearchPlugin, Plugin);
         var query = options.query;
         if (!query)
             return;
+
         // grep has a funny way of handling new lines (that is to say, it's non-existent)
         // if we're not doing a regex search, then we must split everything between the
         // new lines, escape the content, and then smush it back together; due to
@@ -163,46 +165,60 @@ util.inherits(SearchPlugin, Plugin);
             // print the grep result to STDOUT (to arrange in parseSearchResult())
             " -pi -e 'print STDOUT \"$ARGV:$.:$_\""     +
             // do the actual replace
-            " if s/" + query + "/" + options.replacement + "/mg" + ( options.casesensitive ? "" : "i" ) + ";'"
+            " if s/" + query + "/" + options.replacement + "/mg" + ( options.casesensitive ? "" : "i" ) + ";'";
         }
 
         var args = ["-c", cmd];
         args.command = "bash";
         return args;
-    }
+    };
 
     this.parseSearchResult = function(msg) {
         if (msg.type == "shell-exit") {
-            msg.data = {count: this.count, filecount: this.filecount};
+            msg.data = {
+                count: this.count,
+                filecount: this.filecount
+            };
             return msg;
         }
 
         var data = msg.data;
-        if (typeof data != "string" || data.indexOf("\n") == -1)
+        if (typeof data !== "string" || data.indexOf("\n") === -1)
             return;
+
         var parts, file, lineno, result = "";
         var aLines = data.split(/([\n\r]+)/g);
         var count = 0;
 
-        for (var i = 0, l = aLines.length; i < l; ++i) {
-            parts = aLines[i].split(":");
-            if (parts.length < 3) continue;
+        if (this.options) {
+            for (var i = 0, l = aLines.length; i < l; ++i) {
+                parts = aLines[i].split(":");
 
-            file = encodeURI(this.options.uri + parts.shift().replace(this.options.path, "").trimRight(), "/");
+                if (parts.length < 3)
+                    continue;
 
-            lineno = parseInt(parts.shift(), 10);
-            if (!lineno) continue;
+                var _path = parts.shift().replace(this.options.path, "").trimRight();
+                file = encodeURI(this.options.uri + _path, "/");
 
-            ++count;
-            if (file !== this.prevFile) {
-                this.filecount++;
-                if (this.prevFile)
-                    result += "\n \n";
-                result += file + ":";
-                this.prevFile = file;
+                lineno = parseInt(parts.shift(), 10);
+                if (!lineno)
+                    continue;
+
+                count += 1;
+                if (file !== this.prevFile) {
+                    this.filecount += 1;
+                    if (this.prevFile)
+                        result += "\n \n";
+
+                    result += file + ":";
+                    this.prevFile = file;
+                }
+
+                result += "\n\t" + lineno + ": " + parts.join(":");
             }
-
-            result += "\n\t" + lineno + ": " + parts.join(":");
+        }
+        else {
+            console.error("this.options object doesn't exist", msg);
         }
 
         this.count += count;
@@ -211,13 +227,12 @@ util.inherits(SearchPlugin, Plugin);
         return msg;
     };
 
-
     this.assembleFileListCommand = function(options) {
         var excludeExtensions = [
             "\\.gz", "\\.bzr", "\\.cdv", "\\.dep", "\\.dot", "\\.nib",
             "\\.plst", "_darcs", "_sgbak", "autom4te\\.cache", "cover_db",
             "_build", "\\.tmp"
-        ]
+        ];
 
         var excludeDirectories = [
             "\\.c9revisions", "\\.architect", "\\.sourcemint",
@@ -277,12 +292,11 @@ var escapeRegExp = function(str) {
 // taken from http://xregexp.com/
 var grepEscapeRegExp = function(str) {
     return str.replace(/[[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
-}
+};
 
 var escapeShell = function(str) {
     return str.replace(/([\\"'`$\s\(\)<>])/g, "\\$1");
 };
-
 
 // file types
 
@@ -380,3 +394,4 @@ for (type in IGNORE_DIRS) {
 dirs = makeUnique(dirs);
 var PATTERN_DIR  = escapeRegExp(dirs.join("|"));
 var PATTERN_EDIR = dirs.join(",");
+

@@ -143,6 +143,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuContext = this.menu = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
         );
         
+        this.mnuTabs.addEventListener("prop.visible", function(e) {
+            if (btnEditorTabsBehavior.value)
+                apf.setStyleClass(_self.mnuTabs.$ext, "tabsContextMenu");
+            else
+                apf.setStyleClass(_self.mnuTabs.$ext, "", ["tabsContextMenu"]);
+        });
+        
         mnuContext.addEventListener("prop.visible", function(e) {
             if (e.value && window.event) {
                 this.$page = apf.findHost(document.elementFromPoint(

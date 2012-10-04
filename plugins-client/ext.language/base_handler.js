@@ -29,7 +29,7 @@ module.exports = {
 
     /**
      * Returns whether this language handler should be enabled for the given file
-     * @param path the file path of the file
+     * @param language to check the handler against
      */
     handlesLanguage: function(language) {
         return false;
