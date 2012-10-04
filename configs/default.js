@@ -28,10 +28,6 @@ var config = [
         port: port,
         host: host
     }, {
-        packagePath: "./cloud9.sourcemint",
-        prefix: "/static/bundles",
-        plugins: clientExtensions
-    }, {
         packagePath: "connect-architect/connect.static",
         prefix: "/static"
     },
@@ -105,7 +101,7 @@ var config = [
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
-            "ext/dbg-node/dbg-node", 
+            "ext/dbg-node/dbg-node",
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
             "ext/consolehints/consolehints",

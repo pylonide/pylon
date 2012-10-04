@@ -14,15 +14,12 @@
     "dependencies": {
         "connect": "1.8.7",
 
-        "sourcemint-loader-js": "0.x",
-        "sourcemint-platform-nodejs": "0.x",
         "http-error": "0.0.1",
         "simple-template": "0.0.1",
 
         "optimist": "0.3.4",
         "dryice": "0.4.2",
 
-        "mappings": "0.1.x",
         "amd-loader": "0.0.4",
         "async": "0.1.21",
         "netutil": "0.0.1",
