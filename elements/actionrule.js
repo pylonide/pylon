@@ -28,16 +28,16 @@
  * @inherits apf.AmlElement
  */
 // @todo Doc do all of these.
-/**
+/*
  * @attribute {String} match
  */
-/** 
+/* 
  * @attribute {String} set
  */
-/** 
+/* 
  * @attribute {String} undo
  */
-/** 
+/* 
  * @attribute {String} lock
  */
 // @todo Doc ALL of these

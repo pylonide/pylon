@@ -47,11 +47,17 @@ apf.__VALIDATION__ = 1 << 6;
  * @attribute {String} span     Sets or gets the number of columns that this element spans. Only used inside a table element.
  */
 /**
- * @attribute {String} margin   
+ * @attribute {String | Number} margin  Sets or gets margin values. 
+ *
+ * Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off margins.
  */
 /**
- * @attribute align
+ * @attribute {String} align Sets or gets the edge of the parent to which this
+ *                                  element aligns. 
  *
+ * The possible values are a combination of "left", "middle", "right", "top", "bottom" and "slider" ,and optionally a size. 
+ * Combinations are combined with the pipe (`"|"`) character.
+ * 
  */
 /**
  * @attribute {Mixed} left Sets or gets the left position of this element. Depending

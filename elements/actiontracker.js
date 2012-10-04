@@ -146,8 +146,8 @@ apf.actiontracker = function(struct, tagName){
      *                                  attribute to.
      */
     /** 
-     *  @attribute {Number}  position    Sets or gets the position within the total length (the same
-     *                                  value as [[apf.undolength]]). Use this attribute
+     *  @attribute {Number}  position   Sets or gets the position within the total length (the same
+     *                                  value as [[apf.actiontracker.undolength]]). Use this attribute
      *                                  to bind a slider's value attribute to.
      */
     /** 

@@ -341,7 +341,7 @@ apf.Validation = function(){
     /**
      * @attribute  {Number}  maxlength    Sets or gets the maximum length allowed for the value of this element.
     /**
-     * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. Same as {@link baseclass.validation.attribute.required}, but this rule is checked realtime when the element loses the focus, instead of at specific request (for instance, when leaving a form page).
+     * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. Same as {@link apf.ValidationGroup.required}, but this rule is checked realtime when the element loses the focus, instead of at specific request (for instance, when leaving a form page).
     /**
      * @attribute  {String}   checkequal   Sets or gets the id of the element to check if it has the same value as this element.
     /**

@@ -18,7 +18,7 @@ mixin head
   -if (isIndex)
     title #{title}
   -else
-    title #{title} - #{fileName}
+    title #{title} - #{classId}
 
   meta(name="generator", content="panino-doc-build")
   meta(name="author", content="Garen J. Torikian")
@@ -38,6 +38,7 @@ mixin head
   script(src="./assets/javascripts/jquery.collapse.js")
   script(src="./assets/javascripts/jquery.cookie.js")
   script(src="./assets/javascripts/bootstrap-dropdown.js")
+  script(src="./assets/javascripts/bootstrap-tab.js")
   script(src="./assets/javascripts/jquery-scrollspy.js")
   script(src="./assets/javascripts/prettify-extension.js")
   

@@ -76,7 +76,7 @@
  *
  * 
  * @class apf.list
- * @define list, select, select1, thumbnail
+ * @define list
  * @allowchild {smartbinding}
  *
  * @selection
@@ -95,7 +95,7 @@ apf.list      = function(struct, tagName){
     this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
 };
 
-/**
+/*
  * @class apf.thumbnail
  * @inheritdoc apf.list
  * 

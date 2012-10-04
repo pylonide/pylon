@@ -664,6 +664,16 @@ li.signature {
     position: relative;
 }
 
+.incomplete, .experimental {
+    background-color: #B94A48;
+    color: #ffffff;
+}
+
+.inheritedFrom {
+    background-color: #F89406;
+    color: #ffffff;
+}
+
 .chainable {
     background-color: #0072bc;
     color: #ffffff;
@@ -687,7 +697,7 @@ li.signature {
     text-transform: capitalize;
 }
 
-.alias a, .related-to a {
+.inheritedFrom a, .alias a, .related-to a {
     color: #ffffff;
     /* text-decoration: underline; */ 
 }

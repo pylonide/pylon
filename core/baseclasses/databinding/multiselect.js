@@ -1219,7 +1219,7 @@ apf.MultiselectBinding = function(){
      * ```xml
      *  <a:list value="[@value]" each="[item]" />
      * ```
-     * @see  baseclass.multiselect.binding.value
+     * 
      */
     this.$propHandlers["eachvalue"]  =
 
@@ -1256,7 +1256,7 @@ apf.MultiselectBinding = function(){
      * ```xml
      *  <a:list sort="[@name]" each="[person]" />
      * ```
-     * @see  element.each.attribute.sort
+     * 
      */
     this.$propHandlers["sort"] = function(value){
         if (value) {
@@ -1280,7 +1280,7 @@ apf.MultiselectBinding = function(){
      * ```xml
      *  <a:list match="{[@disabled] != 1}" each="[item]" />
      * ```
-     * @see  baseclass.multiselect.binding.select
+     * 
      */
     //this.$propHandlers["select"]   =
     //#endif

@@ -35,5 +35,6 @@
 	"term.eachnode": "http://www.google.com",
 	"term.caret": "http://www.google.com",
 	"term.propertybinding": "http://www.google.com",
-	"term.locking": "http://www.google.com"
+	"term.locking": "http://www.google.com",
+	"term.expression": "http://www.google.com"
 }

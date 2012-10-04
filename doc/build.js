@@ -1,4 +1,4 @@
-var panino = require("panino");
+var panino = require("../../panino-docs/index.js");
 
 var options = {
   title          : "APF API",
@@ -401,7 +401,7 @@ panino.parse(files, options, function (err, ast) {
   }
 
   // for the javascript
-  panino.render('html', ast, options, function (err) {
+  panino.render('json', ast, options, function (err) {
     if (err) {
       console.error(err);
       process.exit(1);
