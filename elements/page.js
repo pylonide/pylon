@@ -621,7 +621,11 @@ apf.page = function(struct, tagName){
                             oHtml.style.left     = "";
                             
                             var reorder = _self.nextSibling != aml;
-                            _self.parentNode.insertBefore(_self, aml);
+                            var lastNode;
+                            if (!(lastNode = apf.findHost(_self.$button.nextSibling)) || lastNode === _self.parentNode.lastChild)
+                                _self.parentNode.appendChild(_self);
+                            else
+                                _self.parentNode.insertBefore(_self, aml);
                             div.parentNode.removeChild(div);
                             if (reorder) {
                                 _self.parentNode.dispatchEvent("reorder", {
