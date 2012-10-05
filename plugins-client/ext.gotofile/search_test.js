@@ -35,7 +35,7 @@ module.exports = {
             "/blah/code/me.jpg" //included but no prio
         ];
 
-        assert.deepEqual(search.fileSearch(fileList, "code"), ["/etc/code", "/etc/code.xml", "/etc/code_test.xml", "/blah/code/others.png", "/blah/code/me.jpg"]);
+        assert.deepEqual(search.fileSearch(fileList, "code"), ["/etc/code", "/etc/code.xml", "/etc/code_test.xml", "/blah/code/me.jpg", "/blah/code/others.png"]);
         assert.deepEqual(search.fileSearch(fileList, "etc.xml"), ["/etc/code.xml", "/etc/code_test.xml"]);
         next();
     },
@@ -46,6 +46,25 @@ module.exports = {
         assert.equal(matches.map(function (m) { return m.val; }).join(""), "etc/code_test.xml");
         assert.equal(matches.map(function (m) { return m.match && m.val; }).join(""), "etc/xml");
         next();
+    },
+
+    "test measure": function (next) {
+        var spawn = require("child_process").spawn;
+        var process = spawn("find", [".", "-type", "f"],
+            {cwd: __dirname+"/../../"});
+        var stdout = [];
+        process.stdout.on("data", function (data) {
+            stdout.push(data.toString());
+        });
+        process.on("exit", function (code) {
+            var fileList = stdout.join("").split("\n");
+            console.log("Num:", fileList.length);
+            fileList.splice(fileList.length-1, 1);
+            var sd = new Date();
+            var result = search.fileSearch(fileList, "noderunner");
+            console.log("took: " + (new Date() - sd));
+            next();
+        });
     }
 };
 

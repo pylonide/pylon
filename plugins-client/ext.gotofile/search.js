@@ -7,6 +7,8 @@
 
 define(function(require, exports, module) {
 
+var Heap = require("./heap");
+
 var fileTypes = {
     "js": 1, "json": 11, "css": 5, "less": 5, "scss": 5, "sass": 5, "xml": 11, 
     "rdf": 15, "rss": 15, "svg": 5, "wsdl": 11, "xslt": 5, "atom": 5, 
@@ -52,7 +54,7 @@ module.exports.fileSearch = function(filelist, keyword) {
         return this[type];
     };
 
-    var name, res = [], value, ext;
+    var name, res = new Heap(), value, ext;
     for (var i = 0, l = filelist.length, s, j, k, q, p, m, n; i < l; i++) {
         name = filelist[i];
 
@@ -63,7 +65,6 @@ module.exports.fileSearch = function(filelist, keyword) {
                 res.push(name);
                 continue;
             }
-
             // We prioritize ones that have the name in the filename
             if (j > (q = name.lastIndexOf("/"))) {
                 k = name.lastIndexOf("/" + keyword);
@@ -94,7 +95,7 @@ module.exports.fileSearch = function(filelist, keyword) {
         }
         // Check for spatial matches
         else {
-            if (klen < 3)
+            if (klen < 3 || name.split("/").length > 5)
                 continue;
             var path = "";
             var result;
@@ -119,25 +120,21 @@ module.exports.fileSearch = function(filelist, keyword) {
             else
                 value -= 20;
 
-            res.push({
-                toString : toS,
-                value : 2000000 - value,
-                //name  : value + ", " + name
-                name  : name
-            });
+            if (res.size() === 100 && value > res.min().value)
+                res.pop();
+            if (res.size() < 100)
+                res.push({
+                    toString : toS,
+                    value : value,
+                    name  : name
+                });
         }
     }
+    var ret = [];
+    while (res.size())
+        ret.unshift(res.pop().name);
 
-    if (klen < 3)
-        return res;
-
-    if (klen > 2)
-        res.sort();
-
-    var type = "name";
-    res = res.join("\n").split("\n");
-
-    return res;
+    return ret;
 };
 
 var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensitive, results, head) {

@@ -278,7 +278,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
         else {
             dgGoToFile.$viewport.setScrollTop(0);
-            this.arraySearchResults = openFiles.concat(search.fileSearch(this.arrayCache, keyword));
+            this.arraySearchResults = search.fileSearch(this.arrayCache, keyword);
         }
 
         this.lastSearch = keyword;
