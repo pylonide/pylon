@@ -183,7 +183,43 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         this.nodes.push(winGoToFile);
     },
+    
+    windowVisible : function(winValue, data){
+        var _self = this;
+        if (winValue) {
+            var search = _self.lastSearch;
+            _self.lastSearch = null; //invalidate cache
 
+            var sel = [];
+            dgGoToFile.getSelection().forEach(function(node){
+                var i = node.firstChild.nodeValue;
+                sel.push(_self.arraySearchResults[i]);
+            })
+
+            var state = {
+                sel : sel, //store previous selection
+                caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
+                scrollTop : dgGoToFile.$viewport.getScrollTop()
+            };
+
+            _self.model.load(data);
+            _self.filter(search, state.sel.length);
+
+            if (state.sel.length && state.sel.length < 100) {
+                var list = [], sel = state.sel;
+                for (var i = 0, l = sel.length; i < l; i++) {
+                    list.push(dgGoToFile.queryNode("//d:href[text()='"
+                        + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                }
+                dgGoToFile.selectList(list);
+                if (state.caret)
+                    dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='"
+                        + _self.arraySearchResults.indexOf(state.caret) + "']"));
+                dgGoToFile.$viewport.setScrollTop(state.scrollTop);
+            }
+        }
+    },
+    
     updateFileCache : function(isDirty){
         var _self = this;
 
@@ -208,42 +244,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.arrayCache = array;
 
             if (self.winGoToFile && _self.lastSearch) {
-                winGoToFile.addEventListener("prop.visible", function(e){
-                    if (e.value) {
-                        var search = _self.lastSearch;
-                        _self.lastSearch = null; //invalidate cache
+                if (!winGoToFile.visible) {
+                    winGoToFile.addEventListener("prop.visible", function(e){
+                        _self.windowVisible(e.value, data)
 
-                        var sel = [];
-                        dgGoToFile.getSelection().forEach(function(node){
-                            var i = node.firstChild.nodeValue;
-                            sel.push(_self.arraySearchResults[i]);
-                        })
-
-                        var state = {
-                            sel : sel, //store previous selection
-                            caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
-                            scrollTop : dgGoToFile.$viewport.getScrollTop()
-                        };
-
-                        _self.model.load(data);
-                        _self.filter(search, state.sel.length);
-
-                        if (state.sel.length && state.sel.length < 100) {
-                            var list = [], sel = state.sel;
-                            for (var i = 0, l = sel.length; i < l; i++) {
-                                list.push(dgGoToFile.queryNode("//d:href[text()='"
-                                    + _self.arraySearchResults.indexOf(sel[i]) + "']"));
-                            }
-                            dgGoToFile.selectList(list);
-                            if (state.caret)
-                                dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='"
-                                    + _self.arraySearchResults.indexOf(state.caret) + "']"));
-                            dgGoToFile.$viewport.setScrollTop(state.scrollTop);
-                        }
-                    }
-
-                    winGoToFile.removeEventListener("prop.visible", arguments.callee);
-                });
+                        winGoToFile.removeEventListener("prop.visible", arguments.callee);
+                    });
+                 }
+                 else {
+                     _self.windowVisible(true, data);
+                 }
             }
             else {
                 _self.arraySearchResults = array;
@@ -297,6 +307,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
 
         var nodes = dgGoToFile.getTraverseNodes();
+        if (!nodes)
+            return;
+        
         for (var i = Math.max(dgGoToFile.$viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
             if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
                 dgGoToFile.select(nodes[i]);
@@ -335,7 +348,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         if (!this.arraySearchResults.length) {
             if (init || !txtGoToFile.value) {
-                dgGoToFile.clear("loading")
+                dgGoToFile.clear("loading");
                 this.filter("");
             }
             else {
