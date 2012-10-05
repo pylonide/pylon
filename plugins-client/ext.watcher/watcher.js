@@ -162,7 +162,9 @@ module.exports = ext.register("ext/watcher/watcher", {
             // allow another plugin to change the watcher behavior
             var eventData = {
                 path: path,
-                message: message
+                message: message,
+                action: message.subtype,
+                isFolder: message.subtype === "directorychange"
             };
 
             if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
@@ -231,7 +233,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
-    
+
     sendWatchDirectory : function(path) {
         ide.send({
             "command"     : "watcher",
@@ -239,7 +241,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
-    
+
     sendUnwatchDirectory : function(path) {
         ide.send({
             "command"     : "watcher",
@@ -260,7 +262,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         this.disabled = false;
 
         var _self = this;
-        
+
         var pages = tabEditors.getPages();
         pages.forEach(function(page) {
             if (page.$model) {
