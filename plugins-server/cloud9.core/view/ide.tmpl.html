@@ -152,7 +152,7 @@
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
                 console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
-                if (localStorage)
+                if (window.localStorage)
                     localStorage.lastLoadTime = cloud9config.totalTime;
 
                 var loadingDiv = document.getElementById("loadingide");
