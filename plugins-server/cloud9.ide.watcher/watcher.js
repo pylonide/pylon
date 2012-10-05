@@ -8,21 +8,22 @@
 
 var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
+require("colors");
 
 module.exports = function setup(options, imports, register) {
     var DAV = imports.dav.getServer();
     var vfs = imports.vfs;
     var name = "watcher";
-    
+
     var IGNORE_TIMEOUT = 50;
     var ignoredPaths = {};
     var ignoreTimers = {};
-    
+
     imports.ide.register(name, WatcherPlugin, register);
 
     function WatcherPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
-    
+
         DAV.plugins["watcher"] = function (handler) {
             handler.addEventListener("beforeWriteContent", function (e, uri) {
                 var path = handler.server.tree.basePath + "/" + uri;
@@ -30,40 +31,40 @@ module.exports = function setup(options, imports, register) {
                 e.next();
             });
         };
-    
+
         this.hooks = ["disconnect", "command"];
         this.name = name;
         this.clients = {};
         this.basePath = ide.workspaceDir;
     }
-    
+
     util.inherits(WatcherPlugin, Plugin);
-    
+
     (function() {
-    
+
         this.addFileWatcher = function(clientId, path, client) {
             if (this.clients[clientId].fileWatchers[path])
                 return;
-    
+
             var self = this;
-    
+
             this.clients[clientId].fileWatchers[path] = {};
 
-        console.log("watch file", path);
+        console.log("watch file".yellow, path);
             vfs.watch(path, {file: true, persistent: false}, function (err, meta) {
                 if (err)
                     return console.error("can't add file watcher for " + path, err);
                 self.addVFSFileWatcher(clientId, path, client, meta.watcher);
             });
         };
-        
+
         this.addVFSFileWatcher = function(clientId, path, client, watcher) {
             if (!this.clients[clientId].fileWatchers[path]) {
                 if (watcher)
                     watcher.close();
                 return;
             }
-    
+
             var self = this;
             watcher.on("change", function (currStat, prevStat) {
                 self.onFileChange(clientId, path, currStat, prevStat, client);
@@ -73,39 +74,39 @@ module.exports = function setup(options, imports, register) {
                     self.addFileWatcher(clientId, path, client);
                 }
             });
-    
+
             this.clients[clientId].fileWatchers[path].watcher = watcher;
         };
-    
+
         this.addDirectoryWatcher = function(clientId, path, client) {
             if (this.clients[clientId].directoryWatchers[path])
                 return;
-    
+
             var self = this;
-    
+
             this.clients[clientId].directoryWatchers[path] = {};
-    console.log("watch dir", path)
+    console.log("watch dir".yellow, path)
             vfs.watch(path, {file: false, persistent: false}, function (err, meta) {
                 if (err)
                     return console.error("can't add directory watcher for " + path, err);
-    
+
                 var watcher = meta.watcher;
                 if (!self.clients[clientId].directoryWatchers[path]) {
                     if (watcher)
                         watcher.close();
                     return;
                 }
-    
+
                 watcher.on("change", function (event, filename) {
                     self.onDirectoryChange(clientId, path, event, filename, client);
                 });
-    
+
                 self.clients[clientId].directoryWatchers[path].watcher = watcher;
             });
         };
-    
+
         this.onFileChange = function (clientId, path, currStat, prevStat, client) {
-            console.log("on file change", clientId, path, currStat, prevStat)
+            console.log("on file change".green, clientId, path, currStat, prevStat)
             if (ignoredPaths[path]) {
                 clearTimeout(ignoreTimers[path]);
                 ignoreTimers[path] = setTimeout(function() {
@@ -114,12 +115,13 @@ module.exports = function setup(options, imports, register) {
                 }, IGNORE_TIMEOUT);
                 return;
             }
-    
+
             if (prevStat && prevStat.mtime && currStat && currStat.mtime && prevStat.mtime === currStat.mtime)
                 return;
-    
+
             if (!currStat) {
                 this.removeFileWatcher(clientId, path);
+                console.log("send remove".blue, path);
                 client.send(JSON.stringify({
                     "type"    : "watcher",
                     "subtype" : "remove",
@@ -127,7 +129,8 @@ module.exports = function setup(options, imports, register) {
                 }));
                 return;
             }
-    
+
+            console.log("send change".blue, path);
             client.send(JSON.stringify({
                 "type"    : "watcher",
                 "subtype" : "change",
@@ -135,16 +138,17 @@ module.exports = function setup(options, imports, register) {
                 "lastmod" : currStat.mtime
             }));
         };
-    
+
         this.onDirectoryChange = function (clientId, path, event, filename, client) {
-            console.log("on dir change", clientId, path, event, filename)
+            console.log("on dir change".yellow, clientId, path, event, filename)
             var self = this;
             vfs.stat(path, {}, function(err, stat) {
                 if (err)
                     return;
-    
+
                 if (!stat) {
                     self.removeDirectoryWatcher(clientId, path);
+                    console.log("send dir remove".blue, path);
                     client.send(JSON.stringify({
                         "type"    : "watcher",
                         "subtype" : "remove",
@@ -153,24 +157,24 @@ module.exports = function setup(options, imports, register) {
                     }));
                     return;
                 }
-    
+
                 var files = {};
                 vfs.readdir(path, {encoding: null}, function(err, meta) {
                     if (err)
                         return console.error(err);
-    
+
                     var stream = meta.stream;
-    
+
                     stream.on("data", function(stat) {
                         if (!stat || !stat.mime || !stat.name)
                             return;
-    
+
                         files[stat.name] = {
                             type : stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
                             name : stat.name
                         };
                     });
-    
+
                     var called;
                     stream.on("error", function(err) {
                         if (called)
@@ -178,11 +182,12 @@ module.exports = function setup(options, imports, register) {
                         called = true;
                         console.error(err);
                     });
-    
+
                     stream.on("end", function() {
                     if (called)
                         return;
                         called = true;
+                        console.log("send dir change".blue, path, files);
                         client.send(JSON.stringify({
                             "type"    : "watcher",
                             "subtype" : "directorychange",
@@ -194,7 +199,7 @@ module.exports = function setup(options, imports, register) {
                 });
             });
         };
-    
+
         this.removeFileWatcher = function(clientId, path) {
             var watchers = this.clients[clientId].fileWatchers;
             if (watchers[path]) {
@@ -203,7 +208,7 @@ module.exports = function setup(options, imports, register) {
                 delete watchers[path];
             }
         };
-    
+
         this.removeDirectoryWatcher = function(clientId, path) {
             var watchers = this.clients[clientId].directoryWatchers;
             if (watchers[path]) {
@@ -212,22 +217,22 @@ module.exports = function setup(options, imports, register) {
                 delete watchers[path];
             }
         };
-    
+
         this.command = function(user, message, client) {
             if (!message || message.command !== "watcher")
                 return false;
-    
+
             var clientId = client.id;
-    
+
             if (!this.clients[clientId]) {
                 this.clients[clientId] = {
                     fileWatchers : {},
                     directoryWatchers : {}
                 };
             }
-    
+
             var path = this.basePath + (message.path ? "/" + message.path : "");
-    
+
             switch (message.type) {
                 case "watchFile":
                     this.addFileWatcher(clientId, path, client);
@@ -243,7 +248,7 @@ module.exports = function setup(options, imports, register) {
                     return false;
             }
         };
-    
+
         /**
          * A client has disconnected
          */
@@ -251,26 +256,26 @@ module.exports = function setup(options, imports, register) {
             var clientId = client.id;
             if (!this.clients[clientId])
                 return;
-    
+
             for (var filePath in this.clients[clientId].fileWatchers)
                 this.removeFileWatcher(clientId, filePath);
             for (var dirPath in this.clients[clientId].directoryWatchers)
                 this.removeDirectoryWatcher(clientId, dirPath);
             delete this.clients[clientId];
         };
-    
+
         this.dispose = function(callback) {
             for (var clientId in this.clients) {
                 for (var filePath in this.clients[clientId].fileWatchers)
                     this.removeFileWatcher(clientId, filePath);
-    
+
                 for (var dirPath in this.clients[clientId].directoryWatchers)
                     this.removeDirectoryWatcher(clientId, dirPath);
             }
-    
+
             callback();
         };
-    
+
     }).call(WatcherPlugin.prototype);
 
 };
