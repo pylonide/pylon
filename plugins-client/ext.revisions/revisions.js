@@ -901,7 +901,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc.$isTree;
+        return doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
     /**
