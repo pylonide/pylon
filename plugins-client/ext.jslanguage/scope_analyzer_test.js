@@ -155,6 +155,32 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "function g(err){this};");
+    },
+    "test missing return in err handler" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) callback(err); }); }");
+    },
+    "test not reporting error when there is a return in err handler" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 0);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) return callback(err); }); }");
     }
 };
 
