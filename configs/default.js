@@ -142,7 +142,7 @@ var config = [
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
             "ext/language/liveinspect",
-            //"ext/splitview/splitview"
+            "ext/splitview/splitview"
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"
         ]
