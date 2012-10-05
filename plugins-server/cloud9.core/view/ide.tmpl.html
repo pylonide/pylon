@@ -90,7 +90,9 @@
             }
 
             require(config, [apfLoc], function(){
-                setTimeout(createSplash);
+                if (!window.localStorage || !localStorage.lastLoadTime ||
+                    parseInt(localStorage.lastLoadTime, 10) > 4000)
+                    setTimeout(createSplash);
 
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
@@ -150,6 +152,8 @@
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
                 console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
+                if (localStorage)
+                    localStorage.lastLoadTime = cloud9config.totalTime;
 
                 var loadingDiv = document.getElementById("loadingide");
                 if (loadingDiv)
