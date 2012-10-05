@@ -52,6 +52,7 @@ module.exports = ext.register("ext/themes_default/themes_default", {
                         {"Tomorrow Night Eighties" : "ace/theme/tomorrow_night_eighties"}
                      ],
         "Twilight" : "ace/theme/twilight",
+        "Vibrant Ink" : "ace/theme/vibrant_ink",
         "Xcode" : "ace/theme/xcode"
     },
 
