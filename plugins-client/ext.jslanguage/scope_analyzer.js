@@ -512,10 +512,10 @@ handler.analyze = function(doc, ast, callback) {
                  * which in 99% of cases is wrong: a return should be added:
                  * if(err) return callback(err);
                  */
-                'If(Var("err"), Call(fun, []), None())', function(b, node) {
+                'If(Var("err"), Call(fn, _), None())', function(b, node) {
                     // This usually is a bad thing to do, you're handling an error, but don't return immediately.
                     markers.push({
-                        pos: b.fun.getPos(),
+                        pos: b.fn.getPos(),
                         type: 'warning',
                         level: 'warning',
                         message: "Did you forget a 'return' here?"
