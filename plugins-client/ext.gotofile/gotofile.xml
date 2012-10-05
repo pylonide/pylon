@@ -15,7 +15,7 @@
               class           = "searchresults noscrollbar"
               skin            = "lineselect"
               maxheight       = "350"
-              model           = "{require('ext/gotofile/gotofile').model}"
+              model2           = "{require('ext/gotofile/gotofile').model}"
               scrollbar       = "sbShared 32 7 7"
               viewport        = "virtual"
               multiselect     = "true"
