@@ -514,7 +514,7 @@ handler.analyze = function(doc, ast, callback) {
                  */
                 'If(Var("err"), Call(fn, args), None())', function(b, node) {
                     // Check if the `err` variable is used somewhere in the function arguments.
-                    if(b.args.collectTopDown('Var("err")').length === 1)
+                    if(b.args.collectTopDown('Var("err")').length > 0)
                         markers.push({
                             pos: b.fn.getPos(),
                             type: 'warning',
