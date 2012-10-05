@@ -93,7 +93,7 @@
             }
 
             require(config, [apfLoc], function(){
-                if (!localStorage || !localStorage.lastLoadTime ||
+                if (!window.localStorage || !localStorage.lastLoadTime ||
                     parseInt(localStorage.lastLoadTime) > 4000)
                     setTimeout(createSplash);
 
