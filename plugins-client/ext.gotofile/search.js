@@ -54,7 +54,7 @@ module.exports.fileSearch = function(filelist, keyword) {
         return this[type];
     };
 
-    var name, res = new Heap(), value, ext;
+    var name, res = klen < 3 ? [] : new Heap(), value, ext;
     for (var i = 0, l = filelist.length, s, j, k, q, p, m, n; i < l; i++) {
         name = filelist[i];
 
@@ -95,7 +95,7 @@ module.exports.fileSearch = function(filelist, keyword) {
         }
         // Check for spatial matches
         else {
-            if (klen < 3 || name.split("/").length > 5)
+            if (klen < 4 || name.split("/").length > 5)
                 continue;
             var path = "";
             var result;
@@ -130,6 +130,10 @@ module.exports.fileSearch = function(filelist, keyword) {
                 });
         }
     }
+
+    if (klen < 3)
+        return res;
+
     var ret = [];
     while (res.size())
         ret.unshift(res.pop().name);
