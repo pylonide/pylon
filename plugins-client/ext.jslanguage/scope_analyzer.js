@@ -512,14 +512,15 @@ handler.analyze = function(doc, ast, callback) {
                  * which in 99% of cases is wrong: a return should be added:
                  * if(err) return callback(err);
                  */
-                'If(Var("err"), Call(fn, _), None())', function(b, node) {
-                    // This usually is a bad thing to do, you're handling an error, but don't return immediately.
-                    markers.push({
-                        pos: b.fn.getPos(),
-                        type: 'warning',
-                        level: 'warning',
-                        message: "Did you forget a 'return' here?"
-                    });
+                'If(Var("err"), Call(fn, args), None())', function(b, node) {
+                    // Check if the `err` variable is used somewhere in the function arguments.
+                    if(b.args.collectTopDown('Var("err")').length === 1)
+                        markers.push({
+                            pos: b.fn.getPos(),
+                            type: 'warning',
+                            level: 'warning',
+                            message: "Did you forget a 'return' here?"
+                        });
                 },
                 'PropAccess(_, "lenght")', function(b, node) {
                     markers.push({
