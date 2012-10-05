@@ -1,9 +1,12 @@
-if (typeof process !== "undefined")
-    require("amd-loader");
+/*
+ * @copyright Copyright(c) 2011 Ajax.org B.V. <info AT ajax.org>
+ * @author Mostafa Eweda <mostafa AT c9 DOT io>
+ */
 
 define(function(require, exports, module) {
+"use strict";
 
- function Heap(param) {
+function Heap(param) {
     var pq;
     if (Array.isArray(param)) {
         pq = param.slice();
@@ -77,18 +80,4 @@ define(function(require, exports, module) {
 
 module.exports = Heap;
 
-/*
-var h = new Heap();
-h.push(1250); h.push(410);
-h.push(150);
-console.log(h.pq);
-h.push(400);
-h.push(150);
-console.log(h.pq);
-console.log(h.pop());
-console.log(h.pop());
-console.log(h.pop());
-console.log(h.pop());
-console.log(h.pop());
-*/
 });
