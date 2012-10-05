@@ -135,7 +135,7 @@ exports.show = function(split) {
     this.update(split);
     Grids.show(split.gridLayout);
 
-    var i, l;
+    var i, l, editor;
     // maintain page button styles
     Splits.forEach(function(aSplit) {
         if (aSplit === split)
@@ -143,15 +143,20 @@ exports.show = function(split) {
         for (i = 0, l = aSplit.pairs.length; i < l; ++i)
             aSplit.pairs[i].page.$deactivateButton();
     });
+    console.log("showing all editors");
     for (i = 0, l = split.pairs.length; i < l; ++i) {
         split.pairs[i].page.$activateButton();
-        split.pairs[i].editor.show();
-        if (split.pairs[i].editor.$editor.onScrollLeftChange)
-            split.pairs[i].editor.$editor.onScrollLeftChange();
-        exports.consolidateEditorSession(split.pairs[i].page, split.pairs[i].editor);
+        editor = split.pairs[i].editor;
+        editor.show();
+        if (editor.$editor && editor.$editor.onScrollLeftChange)
+            editor.$editor.onScrollLeftChange();
+        exports.consolidateEditorSession(split.pairs[i].page, editor);
     }
 
     ActiveSplit = split;
+
+    var _self  = this;
+    setTimeout(function() { _self.update(split); });
 
     return this;
 };
@@ -252,6 +257,7 @@ exports.mutate = function(split, page, type) {
     var tabs = tabEditors;
     var activePage = tabs.getPage();
     var pairIdx = split ? exports.indexOf(split, page) : -1;
+    var action = "add";
 
     // Remove an editor from the split view
     if (pairIdx > -1) {
@@ -275,6 +281,8 @@ exports.mutate = function(split, page, type) {
             tabs.set(split.pairs[0].page);
 
         this.update(split);
+
+        action = "remove";
     }
     // Add an editor to the split view
     else if (!split || split.pairs.length < 3) {
@@ -308,6 +316,12 @@ exports.mutate = function(split, page, type) {
 
         this.show(split);
     }
+
+    ide.dispatchEvent("splits.mutate", {
+        split: split,
+        page: page,
+        action: action
+    });
 
     return true;
 };
@@ -380,7 +394,8 @@ exports.setActivePage = function(split, page) {
 
     if (split === ActiveSplit) {
         var pair = split.pairs[idx] ? split.pairs[idx] : split.pairs[0];
-        pair.editor.focus();
+        if (pair.editor.hasFeature(apf.__FOCUSSABLE__))
+            pair.editor.focus();
         if (idx !== old)
             ide.dispatchEvent("pageswitch", { page: pair.page });
     }
@@ -393,6 +408,13 @@ exports.indexOf = function(split, obj) {
             return i;
     }
     return -1;
+};
+
+exports.supportsCloning = function(amlEditor) {
+    // only code editors support cloning at the moment.
+    // cloning is necessary to show different editor instances next to each other.
+    var id = amlEditor.localName;
+    return id.indexOf("codeeditor") > -1;
 };
 
 exports.isClone = function(split, page) {
@@ -423,6 +445,12 @@ function sortEditorsAndPages(split) {
 
 function createEditorClones(editor) {
     var id = editor.localName;
+    if (!exports.supportsCloning(editor)) {
+        EditorClones[id] = [editor];
+        EditorClones[id].original = editor;
+        return EditorClones[id];
+    }
+
     var isCodeEditor = id.indexOf("codeeditor") > -1;
 
     if (!EditorClones.cloneEditor && isCodeEditor) {

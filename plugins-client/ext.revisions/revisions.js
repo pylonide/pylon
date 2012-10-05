@@ -351,7 +351,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var doc = data.doc;
         if (!doc.acedoc)
             return;
-            
+
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
@@ -900,7 +900,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc.$isTree;
+        return !!doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
     /**

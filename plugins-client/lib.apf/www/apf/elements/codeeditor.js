@@ -252,7 +252,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
     };
-    
+
     this.$propHandlers["showindentguides"] = function(value, prop, initial) {
         this.$editor.setDisplayIndentGuides(value);
     };
@@ -504,7 +504,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.scrollspeed = ed.getScrollSpeed();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
-        
+
         //@todo this is a workaround for a bug in handling boolean properties in apf.$setDynamicProperty
         this.activeline = ed.getHighlightActiveLine();//true;
         this.gutterline = ed.getHighlightGutterLine();//true;
@@ -513,7 +513,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
         this.highlightselectedword = ed.getHighlightSelectedWord();
         this.behaviors = !ed.getBehavioursEnabled();
-            
+
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
         if (this.showinvisibles === undefined)
@@ -578,19 +578,19 @@ apf.codebox = function(struct, tagName) {
 
         this.$input.style.textShadow = "none";
         var ace = this.createSingleLineAceEditor(this.$input);
-        
+
         // disable unneded commands
         ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline", "findnext", "findprevious"]);
         // todo is there a property for these?
         ace.commands.removeCommands(["indent", "outdent"])
-        
+
         this.$editor = this.ace = ace;
         ace.renderer.setPadding(0);
         this.ace.codebox = this;
-        
+
         ace.on("focus", function() {
             dom.removeCssClass(ace.codebox.$ext, "tb_textboxInitial");
-            
+
             if (ace.renderer.initialMessageNode) {
                 ace.renderer.scroller.removeChild(ace.renderer.initialMessageNode);
                 ace.renderer.initialMessageNode = null;
@@ -601,7 +601,7 @@ apf.codebox = function(struct, tagName) {
             if (ace.$isFocused || ace.session.getValue())
                 return;
             dom.addCssClass(ace.codebox.$ext, "tb_textboxInitial");
-            
+
             if (ace.renderer.initialMessageNode)
                 return;
             ace.renderer.initialMessageNode = document.createTextNode(ace.codebox["initial-message"]);
@@ -642,14 +642,14 @@ apf.codebox = function(struct, tagName) {
         this.ace.commands.exec(command, this.ace);
     };
 
-    this.createSingleLineAceEditor = function(el) {        
+    this.createSingleLineAceEditor = function(el) {
         var renderer = new VirtualRenderer(el);
         el.style.overflow = "hidden";
         renderer.scrollBar.element.style.top = "0";
         renderer.scrollBar.element.style.display = "none";
         renderer.scrollBar.orginalWidth = renderer.scrollBar.width;
         renderer.scrollBar.width = 0;
-        renderer.content.style.height = "auto"; 
+        renderer.content.style.height = "auto";
 
         renderer.screenToTextCoordinates = function(x, y) {
             var pos = this.pixelToScreenCoordinates(x, y);
@@ -658,7 +658,7 @@ apf.codebox = function(struct, tagName) {
                 Math.max(pos.column, 0)
             );
         };
-        
+
         renderer.maxLines = 4;
         renderer.$computeLayerConfigWithScroll = renderer.$computeLayerConfig;
         renderer.$computeLayerConfig = function() {
@@ -666,11 +666,11 @@ apf.codebox = function(struct, tagName) {
             var height = this.session.getScreenLength() * this.lineHeight;
             if (config.height != height) {
                 var vScroll = height > this.maxLines * this.lineHeight;
-                
+
                 if (vScroll != this.$vScroll) {
                     if (vScroll) {
                         this.scrollBar.element.style.display = "";
-                        this.scrollBar.width = this.scrollBar.orginalWidth; 
+                        this.scrollBar.width = this.scrollBar.orginalWidth;
                         this.container.style.height = config.height + "px";
                         height = config.height;
                         this.scrollTop = height - this.maxLines * this.lineHeight;
@@ -678,24 +678,24 @@ apf.codebox = function(struct, tagName) {
                         this.scrollBar.element.style.display = "none";
                         this.scrollBar.width = 0;
                     }
-                    
+
                     this.onResize();
                     this.$vScroll = vScroll;
-                }                
-                
+                }
+
                 if (this.$vScroll)
                     return renderer.$computeLayerConfigWithScroll();
-                
+
                 this.container.style.height = height + "px";
                 this.scroller.style.height = height + "px";
                 this.content.style.height = height + "px";
                 this._emit("resize");
             }
-            
+
             var longestLine = this.$getLongestLine();
             var lastRow = this.session.getLength();
 
-            this.scrollTop = 0;            
+            this.scrollTop = 0;
             config.width = longestLine;
             config.padding = this.$padding;
             config.firstRow = 0;
@@ -705,7 +705,7 @@ apf.codebox = function(struct, tagName) {
             config.characterWidth = this.characterWidth;
             config.minHeight = height;
             config.maxHeight = height;
-            config.offset = 0;            
+            config.offset = 0;
             config.height = height;
 
             this.$gutterLayer.element.style.marginTop = 0 + "px";
@@ -723,9 +723,9 @@ apf.codebox = function(struct, tagName) {
         editor.setShowPrintMargin(false);
         editor.renderer.setShowGutter(false);
         editor.renderer.setHighlightGutterLine(false);
-        
+
         editor.$mouseHandler.$focusWaitTimout = 0;
-        
+
         return editor;
     },
 

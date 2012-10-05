@@ -549,8 +549,6 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
 
     updateSplitView: function(previous, next) {
-        //if (restoring)
-        //    return;
         var editor;
         var doc = next.$doc;
         var at  = next.$at;
@@ -590,7 +588,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             editor.show();
             return;
         }
-
+console.log("showing split?");
         Splits.show(split);
         mnuSplitAlign.setAttribute("checked", split.gridLayout == "3rows");
 
@@ -792,7 +790,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         for (var i = 0, l = arguments.length; i < l; ++i) {
             editor = arguments[i];
             name = editor && editor.name && editor.name.toLowerCase() || "";
-            if (name.indexOf("code editor") === -1)
+            if (name.indexOf("code editor") === -1 && name.indexOf("preview") === -1)
                 return false;
         }
         return true;
