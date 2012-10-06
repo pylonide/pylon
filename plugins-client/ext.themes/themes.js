@@ -31,47 +31,48 @@ module.exports = ext.register("ext/themes/themes", {
 
         var timer;
 
+        function themeMenuCreator(name, path) {
+            menus.addItemByPath("View/Themes/" + name, new apf.item({
+                type    : "radio",
+                value   : path || themes[name],
+
+                onmouseover: function(e) {
+                    var value = this.value;
+
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        _self.set(value, true);
+                    }, 200);
+                },
+
+                onmouseout: function(e) {
+                    clearTimeout(timer);
+
+                    if (!_self.saved) {
+                        timer = setTimeout(function(){
+                            _self.set(_self.currTheme);
+                        }, 200);
+                    }
+                },
+
+                onclick : function(e) {
+                    var path = e.currentTarget.value;
+                    _self.set(path);
+                    ide.dispatchEvent("track_action", {type: "theme change", theme: path});
+                }
+            }));
+        }
+
         for (var name in themes) {
             if (themes[name] instanceof Array) {
                 menus.addItemByPath("View/Themes/" + name, new apf.item());
                 themes[name].forEach(function (n) {
                     var themeprop = Object.keys(n)[0];
-                    themeMenuCreator(name + "/" + themeprop, n[themeprop])
+                    themeMenuCreator(name + "/" + themeprop, n[themeprop]);
                 });
             }
-            else
+            else {
                 themeMenuCreator(name);
-
-            function themeMenuCreator(name, path) {
-                menus.addItemByPath("View/Themes/" + name, new apf.item({
-                    type    : "radio",
-                    value   : path || themes[name],
-
-                    onmouseover: function(e) {
-                        var value = this.value;
-
-                        clearTimeout(timer);
-                        timer = setTimeout(function(){
-                            _self.set(value, true);
-                        }, 200);
-                    },
-
-                    onmouseout: function(e) {
-                        clearTimeout(timer);
-
-                        if (!_self.saved) {
-                            timer = setTimeout(function(){
-                                _self.set(_self.currTheme);
-                            }, 200);
-                        }
-                    },
-
-                    onclick : function(e) {
-                        var path = e.currentTarget.value;
-                        _self.set(path);
-                        ide.dispatchEvent("track_action", {type: "theme change", theme: path});
-                    }
-                }));
             }
         }
 
@@ -91,9 +92,10 @@ module.exports = ext.register("ext/themes/themes", {
     loaded : {},
     setThemedGUI : function(path){
         var _self = this;
+        var theme;
 
         try{
-            var theme = require(path);
+            theme = require(path);
         }
         catch(e){
             return setTimeout(function(){
