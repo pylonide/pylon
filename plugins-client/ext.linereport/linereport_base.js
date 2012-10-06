@@ -28,7 +28,7 @@ worker.init = function() {
 worker.initReporter = function(checkInstall, performInstall, callback) {
    worker.$invoke(checkInstall, null, function(code, output) {
        if (code !== 0) {
-           console.log(performInstall);
+           // console.log(performInstall);
            worker.$invoke(performInstall, null, callback);
        } else {
            callback();
