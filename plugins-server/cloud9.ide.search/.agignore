@@ -1,2 +1,16 @@
 *~backup-*
-node_modules/
+.c9revisions
+.git
+.svn
+.DS_Store
+.bzr
+.cdv
+~.dep
+~.dot
+~.nib
+~.plst
+.git
+.hg
+.pc
+.svn
+*.min.js

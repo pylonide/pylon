@@ -591,7 +591,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (this.replaceAll)
             replacement = "', replaced as '" + options.replacement ;
 
-        return "Searching for '" + options.query + replacement + "' in " + path + optionsDesc + "\n";
+        return "Searching for '" + options.query + replacement + "' in " + path + " " + optionsDesc + "\n";
     },
 
     messageFooter : function(countJSON) {
