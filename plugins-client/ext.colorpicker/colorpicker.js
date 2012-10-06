@@ -69,7 +69,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     name   : "Colorpicker Code Tool",
     alone  : true,
     type   : ext.GENERAL,
-    skin   : skin,
+    skin   : {
+        id   : "colorpicker",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/colorpicker/images/"
+    },
 
     nodes : [],
 

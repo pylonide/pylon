@@ -32,7 +32,7 @@ var config = [
         prefix: "/static/bundles",
         plugins: clientExtensions
     }, {
-        packagePath: "./cloud9.static",
+        packagePath: "connect-architect/connect.static",
         prefix: "/static"
     },
     "./cloud9.alive",
@@ -45,6 +45,11 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
+    {
+        packagePath: "smith.io/server-plugin",
+        messagePath: "/smith.io/server",
+        debug: true
+    },
     // server plugins
     {
         packagePath: "./cloud9.sandbox",
@@ -57,8 +62,11 @@ var config = [
         packagePath: "./cloud9.core",
         debug: false,
         fsUrl: fsUrl,
+        smithIo: {
+            port: port,
+            prefix: "/smith.io/server"
+        },
         hosted: false,
-        socketIoTransports: ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
         bundledPlugins: [
             "helloworld"
         ],
@@ -88,6 +96,7 @@ var config = [
             "ext/preview/preview",
             "ext/log/log",
             "ext/help/help",
+            "ext/linereport/linereport",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
@@ -132,7 +141,7 @@ var config = [
             "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
-            "ext/language/liveinspect"
+            "ext/language/liveinspect",
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"
@@ -153,7 +162,8 @@ var config = [
         packagePath: "connect-architect/connect.session",
         key: "cloud9.sid." + port,
         secret: "v1234"
-    }, {
+    },
+    {
         packagePath: "connect-architect/connect.session.file",
         sessionsPath: __dirname + "/../.sessions"
     },

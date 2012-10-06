@@ -629,6 +629,14 @@ apf.codebox = function(struct, tagName) {
 
         this.$editor.focus();
     };
+    this.$blur = function (){
+        if (!this.$ext)
+            return;
+
+        this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
+        if (this.ace)
+            this.ace.blur();
+    }
 
     this.execCommand = function(command) {
         this.ace.commands.exec(command, this.ace);

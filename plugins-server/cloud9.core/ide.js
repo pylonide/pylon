@@ -21,8 +21,7 @@ var Ide = module.exports = function(options) {
     assert(options.workspaceId, "option 'workspaceId' is required");
     assert(options.workspaceDir, "option 'workspaceDir' is required");
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
-    assert(options.socketIoUrl, "option 'socketIoUrl' is required");
-    assert(options.socketIoTransports, "option 'socketIoTransports' is required");
+    assert(options.smithIo, "option 'smithIo' is required");
    // assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
@@ -35,14 +34,14 @@ var Ide = module.exports = function(options) {
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
-        socketIoUrl: options.socketIoUrl,
-        socketIoTransports: options.socketIoTransports,
+        smithIo: options.smithIo,
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         debug: (options.debug === true) ? true : false,
         workerUrl: workerUrl,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
+        runners: options.runners,
         plugins: options.plugins,
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: options.requirejsConfig,
@@ -131,8 +130,7 @@ util.inherits(Ide, EventEmitter);
                 debug: _self.options.debug,
                 workerUrl: workerUrl,
                 staticUrl: staticUrl,
-                socketIoUrl: _self.options.socketIoUrl,
-                socketIoTransports: _self.options.socketIoTransports,
+                smithIo: JSON.stringify(_self.options.smithIo),
                 sessionId: req.sessionID, // set by connect
                 uid: req.session.uid || req.session.anonid || 0,
                 pid: _self.options.pid || process.pid || 0,
@@ -142,6 +140,7 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
+                runners: _self.options.runners,
                 scripts: (_self.options.debug || _self.options.packed) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version,

@@ -89,12 +89,10 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             sessionnames.forEach(function(name) {
                 _self.mnuTabLoadSessions.appendChild(new apf.item({
                     caption : name,
-                    //type    : "radio",
                     value   : name
                 }));
                 _self.mnuTabDeleteSessions.appendChild(new apf.item({
                     caption : name,
-                    //type    : "radio",
                     value   : name
                 }));
             });
@@ -140,17 +138,15 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         else {
             this.mnuTabLoadSessions.appendChild(new apf.item({
                 caption : name,
-                //type    : "radio",
                 value   : name
             }));
             this.mnuTabDeleteSessions.appendChild(new apf.item({
                 caption : name,
-                //type    : "radio",
                 value   : name
             }));
         }
 
-        session = apf.getXml("<session name=\"" + name + "\" />");
+        session = apf.n("<session />").attr("name", name).node();
         session.appendChild(files);
         settings.model.appendXml(session, "auto/sessions");
 
@@ -216,7 +212,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
 
         settings.save();
         var menuitems = this.mnuTabLoadSessions.childNodes.concat(this.mnuTabDeleteSessions.childNodes);
-        for (var i = 0, l = menuitems.length; i < l; i++) {
+        for (var item, i = 0, l = menuitems.length; i < l; i++) {
             item = menuitems[i];
             if (item.value == name)
                 this.mnuTabLoadSessions.removeChild(item);
