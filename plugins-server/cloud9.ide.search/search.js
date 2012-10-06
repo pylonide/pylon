@@ -20,11 +20,11 @@ var ProcessManager;
 var EventBus;
 
 module.exports = function setup(options, imports, register) {
-    ackCmd = options.ackCmd || "perl " + path.join(__dirname, "ack");
     platform = options.platform || os.platform();
     arch = options.arch || os.arch();
     agCmd = options.agCmd || path.join(__dirname, [platform, arch].join("_"), "/ag");
     useAg = path.existsSync(agCmd);
+    ackCmd = options.ackCmd || "perl " + path.join(__dirname, "ack");
     perlCmd = options.perlCmd || "perl";
 
     if (!useAg)
@@ -102,7 +102,7 @@ util.inherits(SearchPlugin, Plugin);
         if (!args)
             return false;
 
-        console.log(args);
+        console.log(args.command + " " + args.join(" "));
         this.options = message;
         var self = this;
         this.pm.spawn("shell", {
@@ -238,7 +238,7 @@ util.inherits(SearchPlugin, Plugin);
     this.assembleFileListCommand = function(options) {
         var args;
 
-        if (useAg) {
+        if (!useAg) {
             args =["--nocolor", 
                    "-p", path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
                    "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
@@ -257,6 +257,19 @@ util.inherits(SearchPlugin, Plugin);
             args.command = agCmd;
         }
         else {
+            args =["--nocolor", 
+                   "-l",                                    // filenames only
+                   "--follow",                              // follow symlinks
+                   "--text",                                // list text files
+                   "--binary"]                              // list binary files
+                   
+           /* if (options.showHiddenFiles)
+                args.push("--hidden");
+    
+            if (options.maxdepth)
+                args.push("--depth", options.maxdepth); */
+
+            args.push(".", options.path);
             args.command = ackCmd;
         }
 

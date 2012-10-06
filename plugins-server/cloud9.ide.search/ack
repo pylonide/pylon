@@ -1247,6 +1247,9 @@ our %type_wanted;
 our %mappings;
 our %ignore_dirs;
 
+# CHANGE: added collections
+our @ignore_pattern_dirs;
+
 our $input_from_pipe;
 our $output_to_pipe;
 
@@ -1279,7 +1282,12 @@ BEGIN {
         _sgbak              => 'Vault/Fortress',
         'autom4te.cache'    => 'autoconf',
         'cover_db'          => 'Devel::Cover',
-        _build              => 'Module::Build',
+        _build              => 'Module::Build'
+    );
+
+    # CHANGE: we're doing this to provide pattern match support
+    @ignore_pattern_dirs = (
+        '~backup-'
     );
 
     %mappings = (
@@ -1303,7 +1311,6 @@ BEGIN {
         haskell     => [qw( hs lhs )],
         hh          => [qw( h )],
         html        => [qw( htm html shtml xhtml )],
-        jade        => [qw( jade )],
         java        => [qw( java properties )],
         js          => [qw( js )],
         jsp         => [qw( jsp jspx jhtm jhtml )],
@@ -1634,6 +1641,13 @@ sub delete_type {
 
 
 sub ignoredir_filter {
+    # CHANGE: provide quick pattern-match fail
+    foreach my $key (@ignore_pattern_dirs) { 
+        if ($_ =~ m{\Q$key\E}) {
+            return 0; 
+        }
+    }
+    
     return !exists $ignore_dirs{$_} && !exists $ignore_dirs{$File::Next::dir};
 }
 
