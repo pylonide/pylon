@@ -34,7 +34,7 @@
  *
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  * @attribute {Number}  latitude          geographical coordinate
  * @attribute {Number}  longitude         geographical coordinate
@@ -303,7 +303,7 @@ apf.map = function(struct, tagName){
      *
      * @param {Number} lat geographical coordinate latitude
      * @param {Number} lon geographical coordinate longitude
-     * @type  {void}
+     * 
      */
     this.setValue = function(lat, lon){
         if (!lat || !lon) return;

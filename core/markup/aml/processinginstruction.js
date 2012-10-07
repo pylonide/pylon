@@ -27,12 +27,12 @@ apf.AmlProcessingInstruction = function(isPrototype){
 (function(){
     this.nodeType = this.NODE_PROCESSING_INSTRUCTION;
     
-    /**
+    /*
      * @todo docs
      */
     this.data   = null;
     
-    /**
+    /*
      * @todo docs
      */
     this.target = null;

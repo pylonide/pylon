@@ -95,7 +95,7 @@
  * @attribute {String} transport the name of the teleport element that provides a
  * bidirectional connection to (a pool of) other clients.
  *
- * @see element.auth
+ * 
  *
  * @define remote
  * @allowchild unique, {any}
@@ -128,7 +128,7 @@
  *  <a:remote transport="myXMPP" id="rmtPersons" />
  * </code>
  * @attribute {String} transport   ID of a Teleport element that is able to serve
- *                                 as a transport for RDB message like {@link element.xmpp xmpp}
+ *                                 as a transport for RDB message like xmpp
  */
 /**
  * @author      Mike de Boer (mike AT ajax DOT org)

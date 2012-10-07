@@ -40,7 +40,7 @@ apf.profiler = {
      *
      * @param {Object} Parameter 1 must always be an object
      * @param {String} 2nd parameter must always be a string, describing the object. 
-     * @type  {void}
+     * 
      */
     init: function() {
         var i, j, obj, objName, pName, canProbe;
@@ -150,7 +150,7 @@ apf.profiler = {
      * Register the start of a function call (or, at least, of its pointer)
      *
      * @param {String} sName The complete name of the function (ID)
-     * @type  {void}
+     * 
      */
     registerStart: function(sName) {
         if (this.isRunning) {
@@ -190,7 +190,7 @@ apf.profiler = {
      * this means that the Profiling ends and running times will be recorded here.
      *
      * @param {String} sName The complete name of the function (ID)
-     * @type  {void}
+     * 
      */
     registerEnd: function(sName) {
         if (this.isRunning) {

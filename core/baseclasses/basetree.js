@@ -29,7 +29,7 @@
  * @baseclass
  *
  * @inherits apf.MultiSelect
- * @inherits apf.XForms
+ * @inheritsElswhere apf.XForms
  * @inherits apf.Cache
  * @inherits apf.DataAction
  * @inherits apf.Rename

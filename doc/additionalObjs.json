@@ -29,6 +29,7 @@
 	"NodeList" : "https://developer.mozilla.org/en-US/docs/DOM/NodeList",
 	
 	"term.datanode" : "http://www.google.com",
+	"term.action"   : "http://google.com",
 	"term.baseclass" : "http://www.google.com",
 	"term.datainstruction": "http://www.google.com",
 	"term.smartbinding": "http://www.google.com",

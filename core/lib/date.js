@@ -385,7 +385,7 @@
     /**
      * Determines if the current Date instance occurs on the same Date as the supplied 'date'. 
      * If no 'date' to compare to is provided, the current Date instance is compared to 'today'. 
-     * @param {date}     Date object to compare. If no date to compare, the current Date ("now") is used.
+     * @param {Date}     Date object to compare. If no date to compare, the current Date ("now") is used.
      * @return {Boolean} true if this Date instance occurs on the same Day as the supplied 'date'.
      */
     $P.isToday = $P.isSameDay = function(date) {

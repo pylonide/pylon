@@ -870,7 +870,7 @@ apf.selection = function(oWin, oDoc, editor) {
      *
      * @param {Boolean} [toEnd] Boolean state if to collapse to end or
      *                          not. Defaults to start.
-     * @type  {void}
+     * 
      */
     this.collapse = function(toEnd) {
         var range = this.getRange(), n;
@@ -940,7 +940,7 @@ apf.selection = function(oWin, oDoc, editor) {
      * with the specified tagname
      *
      * @param {String} nodeTagName
-     * @type  {void}
+     * 
      */
     this.moveToAncestorNode = function(nodeTagName) {
         var oNode, i, range = this.getRange();

@@ -61,7 +61,8 @@ apf.runWebkit = function(){
         if (window.ArrayBuffer) {
             /**
              * Binary support for Chrome 7+ which implements [ECMA-262] typed arrays
-             * @see http://www.khronos.org/registry/typedarray/specs/latest/
+             * 
+             * For more information, see <http://www.khronos.org/registry/typedarray/specs/latest/>.
              */
             XMLHttpRequest.prototype.sendAsBinary = function(string) {
                 var bytes = Array.prototype.map.call(string, function(c) {

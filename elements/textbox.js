@@ -44,7 +44,7 @@
  *
  * @form
  * @inherits apf.StandardBinding
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

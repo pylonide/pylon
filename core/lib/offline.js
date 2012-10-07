@@ -22,18 +22,20 @@
 // #ifdef __WITH_OFFLINE
 
 /**
- * @define offline
- * Adds offline support for aml applications. It can store and restore the state
+ * 
+ * Adds offline support for AML applications. It can store and restore the state
  * of the application, the models, any transaction that occurred whilst being
  * offline, queuing actions (ActionTracker state) and state of the runtime
  * application itself (all properties of each element). This allows the
  * application to return to the exact state the user left it, when needed. This
- * means that when enabled you can at any moment turn of your computer (i.e.
+ * means that when enabled you can at any moment turn of your computer (_i.e._
  * remove the battery) and when your computer starts up whilst sitting in the
- * train start the application and continue working as if the application
+ * train, start the application and continue working as if the application
  * was never closed.
- * Example:
- * <code>
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:appsettings>
  *      <a:offline providers="gears"
  *        resources     = "application|models|transactions|queue|state"
@@ -44,48 +46,84 @@
  *        onrestore     = "return confirm('Continue your previous session?');"
  *        onlosechanges = "" />
  *  </a:appsettings>
- * </code>
- *
- * @event losechanges   Fires before the offline state is removed.
- *   cancelable: Prevents the application from losing it's recorded offline state.
- * @event beforeoffline Fires before bringing the application offline.
- *   cancelable: Prevents the application from going offline
- * @event afteroffline  Firest after the application is brought offline.
- * @event beforeonline  Fires before bringing the application online.
- *   cancelable: Prevents the application from going online
- * @event afteronline   Fires after the application is brought online.
- * @event beforeload    Fires before loading the offline state into this application.
- *   cancelable: Prevents the application from reloading it's offline state.
- * @event sync          Fires at each sync item's completion.
- *   object:
- *   {Number} position the number of the item in the list that is currently processed.
- *   {Number} length   the total number of items in the list.
+ * ```
  *
  * @inherits apf.Class
+ * @define offline
+ * @class apf.offline
+ * @logic
  *
- * @attribute {Number}  progress  the progress of the sync. A number between 0 and 1.
- * Example:
- * <code>
+ */
+/**
+ * @event losechanges   Fires before the offline state is removed.
+ * @cancelable Prevents the application from losing its recorded offline state.
+ */
+/**
+ * @event beforeoffline Fires before bringing the application offline.
+ * @cancelable Prevents the application from going offline
+ */
+/**
+ * @event afteroffline  Fires after the application is brought offline.
+ */
+/**
+ * @event beforeonline  Fires before bringing the application online.
+ * @cancelable Prevents the application from going online
+ */
+/**
+ * @event afteronline   Fires after the application is brought online.
+ */
+/**
+ * @event beforeload    Fires before loading the offline state into this application.
+ * @cancelable Prevents the application from reloading its offline state.
+ */
+/**
+ * @event sync          Fires at each sync item's completion.
+ * @param {Object} e The standard event object, with the following properties:
+ *   - `position` ([[Number]]): the number of the item in the list that is currently processed.
+ *   -`length` ([[Number]]):   the total number of items in the list.
+ *
+ * 
+ */
+/**
+ * @attribute {Number}  progress  Sets or gets the progress of the sync. A number between 0 and 1.
+ * 
+ * #### Example
+ *
+ * ```xml
  * <a:modalwindow title="Synchronizing" visible="{offline.syncing}">
  *    <a:Label>Synchronizing your changes</a:label>
  *    <a:progressbar value="{offline.progress}" />
  *    <a:button onclick="apf.offline.stopSync()">Cancel</a:button>
  *    <a:button onclick="this.parentNode.hide()">Hide Window</a:button>
  * </a:modalwindow>
- * </code>
- * @attribute {Number}  position  the progress of the sync. 
- * @attribute {Number}  length    the total length of items to sync.
- * @attribute {Boolean} syncing   whether the application is syncing while coming online.
- * @attribute {Boolean} onLine    whether the application is online. This property is false during sync.
- * @attribute {String} resources the resources that should be
- * kept offline and synced later. This is a pipe '|' seperated list.
- *   Possible values:
- *   application    deals with making the actual application offline avaible.
- *   models         takes care of having the data of the models offline available.
- *   transactions   records the state of the actiontrackers so that these are available offline.
- *   queue          handles queuing of actions that can only be executed whilst online.
- *   state          records the state of all elements in this application on a property level.
- * @attribute {Number} rdb-timeout the number of milliseconds
+ * ```
+ */
+/**
+ * @attribute {Number}  position  Sets or gets the progress of the sync. 
+ */
+/**
+ * @attribute {Number}  length    Sets or gets the total length of items to sync.
+ */
+/**
+ * @attribute {Boolean} syncing   Sets or gets whether the application is syncing while coming online.
+ */
+/**
+ * @attribute {Boolean} onLine    Sets or gets whether the application is online. This property is `false` during sync.
+ */
+/**
+ * @attribute {String} resources Sets or gets the resources that should be
+ * kept offline and synced later. This is a pipe (`'|'`) seperated list.
+ *
+ *  The possible values include:
+ *
+ *   - `application`:    deals with making the actual application offline avaible.
+ *   - `models`:         takes care of having the data of the models offline available.
+ *   - `transactions`:   records the state of the actiontrackers so that these are available offline.
+ *   - `queue`:          handles queuing of actions that can only be executed whilst online.
+ *   - `state`:          records the state of all elements in this application on a property level.
+ */
+/**
+ * @attribute {Number} rdb-timeout Sets or gets the number of milliseconds
  * after the remote databindings server considers a client
  * offline and destroys all saved offline messages.
  * 
@@ -93,13 +131,13 @@
  */
 apf.offline = {
     /**
-     * whether offline support is enabled.
+     * Indicates whether offline support is enabled.
      * @type {Boolean}
      */
     enabled     : false,
 
     /**
-     * whether the application is online.
+     * Indicates whether the application is online.
      * @type {Boolean}
      */
     onLine      : -1,
@@ -123,7 +161,7 @@ apf.offline = {
                 if (aml.getAttribute("resources"))
                     this.providers = aml.getAttribute("resources").split("|");
 
-                /**
+                /*
                  * @private
                  */
                 if (aml.getAttribute("rdb-timeout"))
@@ -386,9 +424,9 @@ apf.offline = {
     },
 
     //#ifdef __WITH_RDB
-    /**
+    /*
      *  If we've been offline for a long time,
-     *  let's clear the models, we can't trust the data anymore
+     *  let's clear the models; we can't trust the data anymore
      */
     $checkRsbTimeout : function(){
         if (!this.rdbTimeout)
@@ -474,7 +512,7 @@ apf.offline = {
     },
 
     /**
-     * Clears all offline data.
+     * Clears all the offline data.
      */
     clear : function(){
         if (!this.enabled)
@@ -490,7 +528,7 @@ apf.offline = {
         }
     },
 
-    /**
+    /*
      * Does cleanup after we've come online
      * @private
      */
@@ -597,5 +635,5 @@ apf.offline = {
 /*#else
 apf.offline = {
     onLine : true
-}
+};
 #endif */

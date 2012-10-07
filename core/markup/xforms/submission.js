@@ -57,7 +57,7 @@ apf.XformsSubmissionElement = function(struct, tagName){
 
         //apf.makeClass(this);
 
-        //this.implement(apf.XForms); /** @inherits apf.XForms */
+        //this.implement(apf.XForms); /** @inheritsElsewhere apf.XForms */
         //#ifdef __WITH_AMLNODE
         this.implement(apf.AmlNode); /** @inherits apf.AmlNode */
         //#endif

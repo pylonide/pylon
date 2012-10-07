@@ -249,7 +249,7 @@ apf.AmlDocument = function(){
     this.querySelectorAll = function(){};
 
     //#ifdef __WITH_AMLDOM_W3C_XPATH
-    /**
+    /*
      * Based on the given XPath expression, this function returns an XPathResult.
      *
      * @param {String} sExpr A String representing the XPath to be evaluated

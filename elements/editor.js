@@ -43,7 +43,7 @@
  * @version     %I%, %G%
  * @since       1.0
  *
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  * @inherits apf.StandardBinding
  *
  * @binding value  Determines the way the value for the element is retrieved 
@@ -193,7 +193,7 @@ apf.editor = function(struct, tagName){
      * replace the (X)HTML that's inside the Editor with something else
      *
      * @param {String} html
-     * @type  {void}
+     * 
      */
     this.setValue = function(value){
         return this.setProperty("value", value, false, true);
@@ -256,7 +256,7 @@ apf.editor = function(struct, tagName){
      * Event handler; fired when the user right clicked inside the editable area
      *
      * @param {Event} e
-     * @type  {void}
+     * 
      * @private
      */
     function onContextmenu(e) {
@@ -272,7 +272,7 @@ apf.editor = function(struct, tagName){
      * Fix for focus handling to mix 'n match nicely with other APF elements
      *
      * @param {Event} e
-     * @type  {void}
+     * 
      */
     this.$focus = function(e){
         if (!this.$ext || this.$ext.disabled)
@@ -318,7 +318,7 @@ apf.editor = function(struct, tagName){
      * elements
      *
      * @param {Event} e
-     * @type  {void}
+     * 
      */
     this.$blur = function(e){
         if (!this.$ext)
@@ -548,7 +548,7 @@ apf.editor = function(struct, tagName){
      * like width, height, etc.
      *
      * @param {XMLRootElement} x
-     * @type  {void}
+     * 
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){
         this.$container = this.$getLayoutNode("main", "container", this.$ext);

@@ -277,7 +277,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      *
      * @param {String} sJID The Jabber Identifier of the sender
      * @param {String} sMsg The actual message
-     * @type  {void}
+     * 
      */
     this.updateMessageHistory = function(sJID, sMsg, sThread) {
         // #ifdef __WITH_RDB

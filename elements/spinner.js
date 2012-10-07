@@ -74,7 +74,7 @@
  * 
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  */
 /**

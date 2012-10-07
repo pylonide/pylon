@@ -120,7 +120,7 @@ apf.xmpp_muc = function(){
      * Checks if a specified Jabber ID is registered locally as a chatroom.
      * 
      * @param {String} sJID Jabber ID to check
-     * @type  {void}
+     * 
      */
     this.$isRoom = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");

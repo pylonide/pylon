@@ -297,7 +297,7 @@ apf.persist = function(struct, tagName){
      * @param {String}   password   Password of the user
      * @param {Function} [callback] Function that will be called after the Async
      *                              login request
-     * @type  {void}
+     * 
      */
     this.login   = 
     this.connect = function(username, password, redirect, token, callback) {
