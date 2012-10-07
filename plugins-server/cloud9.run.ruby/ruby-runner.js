@@ -8,7 +8,7 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
  * Run ruby scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, vfs, pm, sandbox, usePortFlag, callback) {
+var exports = module.exports = function (url, listenHint, vfs, pm, sandbox, usePortFlag, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
@@ -16,13 +16,13 @@ var exports = module.exports = function (url, vfs, pm, sandbox, usePortFlag, cal
     });
 
     function init(projectDir, url) {
-        pm.addRunner("ruby", exports.factory(vfs, sandbox, projectDir, url, usePortFlag));
+        pm.addRunner("ruby", exports.factory(vfs, sandbox, projectDir, url, listenHint, usePortFlag));
 
         callback();
     }
 };
 
-exports.factory = function(vfs, sandbox, root, url, usePortFlag) {
+exports.factory = function(vfs, sandbox, root, url, listenHint, usePortFlag) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -37,6 +37,7 @@ exports.factory = function(vfs, sandbox, root, url, usePortFlag) {
         options.eventName = eventName;
         options.url = url;
         options.usePortFlag = usePortFlag;
+        options.listenHint = listenHint;
         
         options.sandbox = sandbox;
         
@@ -88,7 +89,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         }
         else {
             startProcess(options.url, port);
-        }        
+        }
     });
     
     function startProcess (url, port) {
@@ -103,18 +104,21 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             self.rubyArgs.push("--ports=" + self.port);
         }
     
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
-            if (msg.type === "run-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+            if (msg.type === "ruby-exit") {
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
             
-            if (msg.type === "run-start") {
-                var info = [];
+            if (msg.type === "ruby-start") {
+                var info = [
+                    "Your code is running at '" + url + "'.",
+                    options.listenHint
+                ];
                 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "debug-data",
+                    type: "ruby-data",
                     stream: "stdout",
                     data: info.join("\n"),
                     extra: null,
@@ -122,7 +126,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
     
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "ruby";

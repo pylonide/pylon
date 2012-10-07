@@ -105,21 +105,21 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             self.nodeArgs.push("--ports=" + self.port);
         }
 
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
             if (msg.type === "node-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
 
             if (msg.type === "node-start") {
                 var info = [
-                    "Tip: you can access long running processes, like a server, at '" + url + "'.",
+                    "Your code is running at '" + url + "'.",
                     options.listenHint
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "node-debug-data",
+                    type: "node-data",
                     stream: "stdout",
                     data: info.join("\n"),
                     extra: null,
@@ -127,7 +127,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = options.nodePath || process.execPath;

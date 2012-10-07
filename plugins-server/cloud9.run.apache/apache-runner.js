@@ -65,17 +65,17 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     function startProcess (url) {
         self.apacheArgs.push(self.root);
 
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
             if (msg.type === "apache-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
 
             if (msg.type === "apache-start") {
                 var suffix = DIRECT_OPEN_FILES.test(self.file) ? "/" + self.file : "";
                 var info = [
-                    "Tip: you can access the running page at '" + url + suffix + "'."
+                    "Your page is running at '" + url + suffix + "'."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
@@ -87,7 +87,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "apache";

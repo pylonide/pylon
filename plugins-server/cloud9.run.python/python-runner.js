@@ -4,7 +4,7 @@ var util = require("util");
 var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
-var exports = module.exports = function(url, vfs, pm, sandbox, callback) {
+var exports = module.exports = function(url, listenHint, vfs, pm, sandbox, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
 
@@ -12,13 +12,13 @@ var exports = module.exports = function(url, vfs, pm, sandbox, callback) {
     });
 
     function init(projectDir, url) {
-        pm.addRunner("python", exports.factory(vfs, sandbox, projectDir, url));
+        pm.addRunner("python", exports.factory(vfs, sandbox, projectDir, url, listenHint));
 
         callback();
     }
 };
 
-exports.factory = function(vfs, sandbox, root, url) {
+exports.factory = function(vfs, sandbox, root, url, listenHint) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -31,6 +31,7 @@ exports.factory = function(vfs, sandbox, root, url) {
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
         options.url = url;
+        options.listenHint = listenHint;
 
         options.sandbox = sandbox;
 
@@ -82,18 +83,21 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             options.env.PORT = self.port;
         }
 
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
             if (msg.type === "python-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
 
             if (msg.type === "python-start") {
-                var info = [];
+                var info = [
+                    "Your code is running at '" + url + "'.",
+                    options.listenHint
+                ];
 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "python-debug-data",
+                    type: "python-data",
                     stream: "stdout",
                     data: info.join("\n"),
                     extra: null,
@@ -101,7 +105,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "python";

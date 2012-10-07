@@ -6,7 +6,7 @@ module.exports = function setup(options, imports, register) {
     var sandbox = imports.sandbox;
     var vfs = imports.vfs;
 
-    PythonRunner.call(this, options.url, vfs, pm, sandbox, function (err) {
+    PythonRunner.call(this, options.url, options.listenHint, vfs, pm, sandbox, function (err) {
         if (err) return register(err);
 
         register(null, {
