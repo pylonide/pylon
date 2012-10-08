@@ -55,7 +55,11 @@ module.exports = function setup(options, imports, register) {
                 callback(err, revisionInfo, data._user, msg, data._error);
             });
         }, 1);
-
+    }
+    
+    require("util").inherits(RevisionsPlugin, Plugin);
+    
+    (function() {
         this.onRevisionSaved = function(err, revisionInfo, user, message, _error) {
             if (err) {
                 return _error(err.toString());
@@ -236,41 +240,49 @@ module.exports = function setup(options, imports, register) {
             return { "revisions": {} };
         };
 
-        this.getAllRevisions = function(absPath, callback) {
+        this.extractRevisions = function(str, callback) {
+            if (typeof str !== "string")
+                callback(new Error("String type expected, but " + typeof str + " encountered."));
+
+            var error;
             var revObj = {};
-            fs.readFile(absPath, "utf8", function(err, data) {
-                if (err) {
-                    return callback(err);
-                }
+            var lineCount = 0;
+            var lines = str.split("\n"); // Could be made into a stream for speed
+            if (!lines.length)
+                return callback(null, revObj);
 
-                var error;
-                var lineCount = 0;
-                var lines = data.toString().split("\n");
-                if (!lines.length)
-                    return callback(null, revObj);
-
-                Async.whilst(
-                    function () {
-                        return lineCount < lines.length && !error;
-                    },
-                    function (next) {
-                        var line = lines[lineCount];
-                        if (line) {
-                            try {
-                                var revision = JSON.parse(line);
-                                revObj[revision.ts] = revision;
-                            }
-                            catch(e) {
-                                error = e;
-                            }
+            Async.whilst(
+                function () {
+                    return lineCount < lines.length && !error;
+                },
+                function (next) {
+                    var line = lines[lineCount];
+                    if (line) {
+                        try {
+                            // This is blocking. Perhaps we should look into
+                            // JSONStream
+                            var revision = JSON.parse(line);
+                            revObj[revision.ts] = revision;
                         }
-                        lineCount++;
-                        next();
-                    },
-                    function (e) {
-                        callback(error, revObj);
+                        catch(e) {
+                            error = e;
+                        }
                     }
-                );
+                    lineCount++;
+                    next();
+                },
+                function (e) {
+                    callback(error, revObj);
+                }
+            );
+        };
+
+        this.getAllRevisions = function(absPath, callback) {
+            var self = this;
+            fs.readFile(absPath, "utf8", function(err, data) {
+                if (err) return callback(err);
+
+                self.extractRevisions(data, callback);
             });
         };
 
@@ -426,6 +438,7 @@ module.exports = function setup(options, imports, register) {
                 });
             }
 
+            // This is blocking. It could be made non-blocking with JSONStreams
             receiver.broadcast(JSON.stringify(data));
         };
 
@@ -521,6 +534,5 @@ module.exports = function setup(options, imports, register) {
                 });
             }
         };
-    }
-    require("util").inherits(RevisionsPlugin, Plugin);
+    }).call(RevisionsPlugin.prototype);
 };

@@ -3,7 +3,6 @@
 var assert = require("assert");
 var sinon = require("sinon");
 var Path = require("path");
-var PathUtils = require("./path_utils.js");
 var RevisionsModule = require("./revisions");
 var rimraf = require("rimraf");
 var Diff_Match_Patch = require("./diff_match_patch");
@@ -15,6 +14,8 @@ var BASE_URL = "/sergi/node_chat";
 var assertPath = function(path, shouldExist, message) {
     assert.ok(Path.existsSync(path) == shouldExist, message || "");
 };
+
+var sampleData = Fs.readFileSync(Path.join(__dirname, "revobj.tst"), "utf8");
 
 module.exports = {
     setUp: function(next) {
@@ -54,8 +55,11 @@ module.exports = {
                 }
             }
         }, function () {
-            self.revisionsPlugin = new Plugin(ide, workspace);
-            next();
+            setTimeout(function() {
+                // Give some time to the inheritance chaing to be set properly
+                self.revisionsPlugin = new Plugin(ide, workspace);
+                next();
+            }, 100);
         });
     },
 
@@ -135,26 +139,32 @@ module.exports = {
         });
     },
 
-    "test getAllRevisions with an empty file": function(next) {
+    "test extractRevisions with an empty string": function(next) {
         var R = this.revisionsPlugin;
-        var filename = Path.normalize(__dirname + "/test1.js");
 
-        Fs.writeFile(filename, "", "utf8", function() {
-            R.getAllRevisions("test1.js", function(err, revObj) {
-                assert.ok(!err, err);
-                assert.ok(typeof revObj === "object");
-                assert.ok(Object.keys(revObj).length === 0);
-
-                Fs.unlink(filename, function() {
-                    next();
-                });
-            });
+        R.extractRevisions("", function(err, revObj) {
+            assert.ok(!err, err);
+            assert.ok(typeof revObj === "object");
+            assert.ok(Object.keys(revObj).length === 0);
+            next();
         });
     },
 
-    "!test getRevisionsPath": function(next) {
-        var path1 = PathUtils.getSessionStylePath.call(this.revisionsPlugin, "lib/test1.js");
-        assert.equal("sergi/node_chat/lib/test1.js", path1);
+    "test extractRevisions with a valid string": function(next) {
+        var R = this.revisionsPlugin;
+
+        R.extractRevisions(sampleData, function(err, revObj) {
+            assert.ok(!err, err);
+            assert.ok(typeof revObj === "object");
+            assert.ok(Object.keys(revObj).length === 34);
+            next();
+        });
+    },
+
+    "test getRevisionsPath": function(next) {
+        var R = this.revisionsPlugin;
+        var path = R.getRevisionsPath("lib/test1.js");
+        assert.equal(".c9revisions/lib/test1.js", path);
         next();
     },
 
