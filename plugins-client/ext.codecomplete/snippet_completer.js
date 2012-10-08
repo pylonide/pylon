@@ -16,7 +16,14 @@ completer.handlesLanguage = function(language) {
 completer.fetchText = function(staticPrefix, path) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', staticPrefix + "/" + path, false);
-    xhr.send();
+    try {
+        xhr.send();
+    }
+    // Likely we got a cross-script error (equivalent with a 404 in our cloud setup)
+    catch(e) {
+        return false;
+    }
+    
     if(xhr.status === 200)
         return xhr.responseText;
     else

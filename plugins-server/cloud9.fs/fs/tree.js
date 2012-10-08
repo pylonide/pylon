@@ -91,7 +91,7 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
             // if destination exists try to delete it
             self.vfs.rmdir(destination, { recursive: true }, function(err) {
                 // ignore error because destination may not exists
-                self.vfs.exec("cp", {args: ["-R", source, destination]}, callback);
+                self.vfs.execFile("cp", {args: ["-R", source, destination]}, callback);
             });
         });
     };
