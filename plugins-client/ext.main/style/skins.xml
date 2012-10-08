@@ -8599,12 +8599,15 @@
             height: 23px;
         }
         .btnRun .main { 
-            background-position: 0px -457px; 
+            background-position: 0px -434px; 
             margin-right: 3px;
             overflow: visible;
         }
+        .btnRun .main.c9-dropdown-btnOver {
+            background-position: 0px -457px; 
+        }
         .btnRun .main:after {
-            background-position: -397px -457px; 
+            background-position: -397px -424px; 
             content: "";
             display: block;
             left: 100%;
@@ -8631,8 +8634,11 @@
         }
 
         .btnRun .arrow { 
-            background-position: -400px -457px; 
+            background-position: -400px -424px; 
             width: 16px; 
+        }
+        .btnRun .c9-dropdown-btnOver.arrow { 
+            background-position: -400px -457px; 
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
             background-position: -400px -490px; 
