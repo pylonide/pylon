@@ -66,4 +66,4 @@
         "build-debug": "node ./scripts/build-debug",
         "build-packed": "node ./scripts/build-packed"
     }
-}
+} 
