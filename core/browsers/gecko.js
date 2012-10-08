@@ -183,6 +183,6 @@ apf.runGecko = function(){
         return [-1 * (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0),
             -1 * (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)];
     };
-}
+};
 
 //#endif

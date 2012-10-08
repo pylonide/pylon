@@ -664,6 +664,16 @@ li.signature {
     position: relative;
 }
 
+.incomplete, .experimental {
+    background-color: #B94A48;
+    color: #ffffff;
+}
+
+.inheritedFrom {
+    background-color: #F89406;
+    color: #ffffff;
+}
+
 .chainable {
     background-color: #0072bc;
     color: #ffffff;
@@ -687,7 +697,7 @@ li.signature {
     text-transform: capitalize;
 }
 
-.alias a, .related-to a {
+.inheritedFrom a, .alias a, .related-to a {
     color: #ffffff;
     /* text-decoration: underline; */ 
 }
@@ -717,10 +727,36 @@ li.signature {
 .snip-container label {
     color: #ffffff;
 }
+
 .description h4 {
     font-size: 18px;
     margin: 20px 0 10px;
     line-height : 18px;
+}
+
+div#inheritance {
+    float: right;
+    border: 1px solid #DDD;
+    padding: 2px 10px 5px 10px;
+    margin: 10px 0 -10px 10px;
+    max-width: 240px;
+}
+
+div#inheritance ul {
+ margin: 0 0 0 14px;
+}
+
+#inheritance h6 {
+    background: #25A8E7;
+    color: white;
+    display: block;
+    padding: 2px 3px 2px 4px;
+    margin: -2px -11px 0 -11px;
+}
+
+#hierarchyTree li {
+    font-size: 11px;
+    list-style-type: none;
 }
 
 .table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {

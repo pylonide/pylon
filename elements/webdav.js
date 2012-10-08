@@ -149,7 +149,7 @@ apf.webdav = function(struct, tagName){
      * stored in the private space by register()
      *
      * @param {String} name
-     * @type  {void}
+     * 
      * @private
      */
     function unregister() {
@@ -181,12 +181,12 @@ apf.webdav = function(struct, tagName){
      *
      * @param {Function}  fCallback    Function to execute when the request was successful
      * @param {String}    sPath        Path to the WebDAV resource
-     * @param {sBody}     [sBody]      Optional body text (used for PUTs, for example)
+     * @param {String}    [sBody]      Optional body text (used for PUTs, for example)
      * @param {Object}    [oHeaders]   Additional headers in key: value format
      * @param {Boolean}   [bUseXml]    Tells the function whether to return XML. Defaults to FALSE
      * @param {Object}    [oBinary]    Object with properties for binary upload in modern browsers
      * @param {Function}  [fCallback2] Optional second callback, passed to fCallback as arguments. Used mainly by the data instructions
-     * @type  {void}
+     * 
      */
     this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, oBinary, fCallback2) {
         if (!this.$getVar("authenticated")) {
@@ -349,7 +349,7 @@ apf.webdav = function(struct, tagName){
      * sign-on for WebDAV
      *
      * @param {Function} callback Will be executed upon successful authentication
-     * @type  {void}
+     * 
      * @private
      */
     function onAuth(callback) {
@@ -396,7 +396,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   username Username of the password-protected WebDAV resource
      * @param {String}   password Password in plaintext format
      * @param {Function} callback Function to be executed when the authentication succeeded
-     * @type  {void}
+     * 
      */
     this.authenticate = function(username, password, callback) {
         this.$regVar("auth-username", username);
@@ -422,7 +422,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Unset all cached values.
      *
-     * @type {void}
+     * 
      */
     this.reset = function() {
         unregister.call(this, "authenticated");
@@ -439,7 +439,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {String}   sPath    Path to the file or directory on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.exists = function(sPath, callback) {
         this.getProperties(sPath, 0, function(data, state, extra) {
@@ -453,7 +453,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.readFile =
     this.read = function(sPath, callback) {
@@ -480,11 +480,11 @@ apf.webdav = function(struct, tagName){
     /**
      * Reads the contents of a directory resource (one level deep) and passes
      * the resulting XML to a  callback function to be processed further.
-     * see {@link teleport.webdav.method.getProperties}
+     * 
      *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.readdir = function(sPath, callback) {
         if (sPath.charAt(sPath.length - 1) != "/")
@@ -498,7 +498,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   sPath      Path of the new directory on the WebDAV server
      * @param {Boolean}  [bLock]    Whether to require a lock before copy
      * @param {Function} [callback] Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.mkdir = function(sPath, bLock, callback) {
         if (bLock) {
@@ -534,11 +534,11 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Reads the properties of a resource on the server.
-     * see {@link teleport.webdav.method.getProperties}
+     * 
      *
      * @param {String}   sPath    Path to the resource on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.list = function(sPath, callback) {
         return this.getProperties(sPath, 0, callback);
@@ -553,7 +553,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bLock]   Whether to require a lock before write
      * @param {Object}   [oBinary] Object with properties for binary upload in modern browsers
      * @param {Function} callback  Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.writeFile =
     this.write = function(sPath, sContent, bLock, oBinary, callback) {
@@ -599,7 +599,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
      * @param {Boolean}  [bLock]      Whether to require a lock before copy
      * @param {Function} callback     Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo)
@@ -649,7 +649,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
      * @param {Boolean}  [bLock]      Whether to require a lock before move
      * @param {Function} callback     Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
@@ -703,7 +703,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
      * @param {Boolean}  [bLock]  Whether to require a lock before remove
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.remove = function(sPath, bLock, callback) {
         if (bLock) {
@@ -768,7 +768,7 @@ apf.webdav = function(struct, tagName){
      * prevent the resource being modified by another user before the transaction
      * of this user has finished or even started.
      *
-     * @see teleport.webdav.method.unlock
+     *
      * @param {String}   sPath      Path to the resource on the server to be locked
      * @param {Number}   [iDepth]   Depth of lock recursion down the tree, should be '1' or 'Infinity'
      * @param {Number}   [iTimeout] Lifetime of the lock, in seconds. Defaults to Infinite.
@@ -810,10 +810,9 @@ apf.webdav = function(struct, tagName){
      * Wrapper function that centrally manages the unlocking of resources that
      * have been locked earlier on.
      *
-     * @see teleport.webdav.method.lock
      * @param {Object}   oLock    Object representing a Lock on a resource
      * @param {Function} callback Function that is executed upon a successful UNLOCK request
-     * @type  {void}
+     * 
      */
     this.unlock = function(oLock, callback) {
         if (typeof oLock == "string")
@@ -851,7 +850,7 @@ apf.webdav = function(struct, tagName){
      * @param {XmlDocument} data  Actual XML data, received from the server
      * @param {Number}      state Internal - APF defined - state of the request
      * @param {Object}      extra Simple object that contains additional request data
-     * @type  {void}
+     * 
      * @private
      */
     function registerLock(data, state, extra) {
@@ -889,7 +888,7 @@ apf.webdav = function(struct, tagName){
      * Removes a Lock token/ object from the stack.
      *
      * @param {String} sPath Path pointing to the resource on the server
-     * @type  {void}
+     * 
      * @private
      */
     function unregisterLock(sPath) {
@@ -925,7 +924,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {Object}  oLock   Simple object that represents a validated Lock
      * @param {Boolean} bFailed Tells whether the requesting function may be excuted
-     * @type  {void}
+     * 
      * @private
      */
     function purgeLockedStack(oLock, bFailed) {
@@ -945,7 +944,7 @@ apf.webdav = function(struct, tagName){
      * @param {Number}   iDepth   Depth of lock recursion down the tree, should be '1' or 'Infinity'
      * @param {Function} callback Function that is executed upon a successful LOCK request
      * @param {Object}   oHeaders Additional headers in key: value format
-     * @type  {void}
+     * 
      */
     this.getProperties = function(sPath, iDepth, callback, oHeaders) {
         // Note: caching is being done by an external model
@@ -1034,7 +1033,7 @@ apf.webdav = function(struct, tagName){
      * @param {Number}      state    Internal - APF defined - state of the request
      * @param {Object}      extra    Simple object that contains additional request data
      * @param {Function}    callback Function to be executed when all the property packets have been parsed
-     * @type  {void}
+     * 
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {

@@ -7,3 +7,4 @@
 .settings
 node_modules/
 doc/out
+doc/apf.json

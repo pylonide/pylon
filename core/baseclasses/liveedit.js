@@ -828,7 +828,7 @@ apf.LiveEdit = function() {
      * Give or return the focus to the editable area, hence 'visual' focus.
      *
      * @param {Boolean} bNotify Flag set to TRUE if plugins should be notified of this event
-     * @type  {void}
+     * 
      */
     this.$visualFocus = function(bNotify) {
         // setting focus to the iframe content, upsets the 'code' plugin

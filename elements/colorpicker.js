@@ -35,7 +35,7 @@
  *
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  * @attribute {String} color the color that is selected in the color picker.
  *

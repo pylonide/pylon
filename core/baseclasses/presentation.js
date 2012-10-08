@@ -83,7 +83,7 @@ apf.Presentation = function(){
     this.$supportedProperties.push("skin");
     
     /**
-     * @attribute {string} skinset Sets or gets the skinset for
+     * @attribute {String} skinset Sets or gets the skinset for
      * this element. If none are specified ,the `skinset` attribute
      * of the app settings is used. When that's not defined, the default skinset
      * is used.
@@ -98,7 +98,7 @@ apf.Presentation = function(){
 
     //#ifdef __WITH_SKIN_CHANGE
     /**
-     * @attribute {string} skin Sets or gets the name of the skin in the skinset that defines 
+     * @attribute {String} skin Sets or gets the name of the skin in the skinset that defines 
      * how this element is rendered. When a skin is changed, the full state of the
      * element is kept, including its selection, all the
      * AML attributes, loaded data, and focus and disabled states.
@@ -151,7 +151,7 @@ apf.Presentation = function(){
     }
     
     /**
-     * @attribute {String} margin Sets or gets margin values. Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off margins.
+     * @attribute {String | Number} margin Sets or gets margin values. Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off margins.
      */
     this.$propHandlers["margin"] = function(value){
         if (!value)

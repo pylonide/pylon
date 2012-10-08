@@ -26,13 +26,13 @@
  * AML elements. 
  *
  * This element is used by other elements such as the 
- * [[apf.toolbar]] and [[apf.statusbar]] elements to specify sections within those elements
+ * [[apf.toolbar]] and `apf.statusbar` elements to specify sections within those elements
  * which in turn can contain other AML elements.
  *
  * #### Remarks
  *
  * This component is used in the accordion element to create its sections. In
- * the [[apf.statusbar]], the panel element is an alias of [[apf.bar]].
+ * the `apf.statusbar`, the panel element is an alias of [[apf.bar]].
  *
  * @class apf.bar
  * @inherits apf.Presentation

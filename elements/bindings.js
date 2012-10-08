@@ -22,8 +22,9 @@
 //#ifdef __WITH_DATABINDING
 
 /**
- * @define bindings element containing all the binding rules for the data 
+ * An element containing all the binding rules for the data 
  * bound elements referencing this element.
+ *
  * 
  * #### Example:
  *
@@ -50,6 +51,7 @@
  * @see apf.smartbinding
  *
  * @class apf.bindings
+ * @define bindings 
  * @inherits apf.AmlElement
  * @apfclass
  *

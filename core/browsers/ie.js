@@ -391,6 +391,6 @@ apf.runIE = function(){
     //#ifdef __WITH_PRESENTATION
     apf.importClass(apf.runXpath, true, self);
     //#endif
-}
+};
 
 // #endif

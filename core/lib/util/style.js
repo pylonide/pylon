@@ -565,6 +565,6 @@ apf.getViewPort = function(win) {
         width : win.innerWidth  || doc.clientWidth,
         height: win.innerHeight || doc.clientHeight
     };
-}
+};
 
 // #endif

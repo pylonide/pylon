@@ -41,7 +41,7 @@
  * @since       0.4
  * @form
  * @inherits apf.BaseButton
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  */
 /**

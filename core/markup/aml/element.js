@@ -157,6 +157,7 @@ apf.AmlElement = function(struct, tagName){
          *  <a:script>
          *      alert(barExample);
          *  </a:script>
+         * ```
          */
         "id": function(value){
             //#ifdef __DEBUG

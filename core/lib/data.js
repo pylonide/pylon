@@ -25,7 +25,7 @@
 /**
  * Stores data using a {@link term.datainstruction data instruction}.
  *
- * @method saveData
+ * 
  * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to store the data.
  * @param {Object}      [options]    The options for this instruction. Available properties include:
  *   - multicall ([[Boolean]]): Whether this call should not be executed immediately, but saved for later sending using the `purge()` command

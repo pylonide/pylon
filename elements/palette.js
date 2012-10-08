@@ -30,7 +30,7 @@
  * @allowchild {smartbinding}
  *
  *
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  * @inherits apf.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

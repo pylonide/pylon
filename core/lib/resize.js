@@ -64,7 +64,7 @@ apf.resize = function() {
         gridH     : 48
     };
 
-    /**
+    /*
      * html representation of resized block element
      */
     this.htmlElement;
@@ -152,7 +152,7 @@ apf.resize = function() {
     };
 };
 
-/**
+/*
  * Creates html and object representation for square element. Square is used for
  * resizing block elements.
  * 
@@ -170,15 +170,15 @@ apf.resize = function() {
  * @constructor
  */
 apf.resize.square = function(posY, posX, objResize) {
-    /**
+    /*
      * Square visibility
      */
     this.visible  = true;
-    /**
+    /*
      * square vertical align relative to resized block element
      */
     this.posX     = posX;
-    /**
+    /*
      * square vertical align relative to resized block element
      */
     this.posY     = posY;
@@ -186,13 +186,13 @@ apf.resize.square = function(posY, posX, objResize) {
     var margin = 0;
     var _self  = this;
 
-    /**
+    /*
      * html represenation of square element
      */
     this.htmlElement = objResize.htmlElement.parentNode.appendChild(document.createElement('div'));
     apf.setStyleClass(this.htmlElement, "square");
 
-    /**
+    /*
      * Repaints square
      */
     this.repaint = function() {
@@ -388,6 +388,6 @@ apf.resize.square = function(posY, posX, objResize) {
             }
         };
     };
-}
+};
 
 //#endif

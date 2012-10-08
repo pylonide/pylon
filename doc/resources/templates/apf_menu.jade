@@ -10,3 +10,41 @@ h2 UI Elements
    for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.form === true})
     li.menu-item
       mixin link(obj, ["form"])
+
+ h3 Layout
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.layout === true})
+    li.menu-item
+      mixin link(obj, ["layout"])
+
+ h3 Selection
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.selection === true})
+    li.menu-item
+      mixin link(obj, ["selection"])
+
+ h3 Logic
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.logic === true})
+    li.menu-item
+      mixin link(obj, ["logic"])
+
+ h3 Media
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.media === true})
+    li.menu-item
+      mixin link(obj, ["media"])
+
+ h3 Parsing
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.parser === true})
+    li.menu-item
+      mixin link(obj, ["parser"])
+
+ h3 Base Classes
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.baseclass === true})
+    li.menu-item
+      mixin link(obj, ["baseclass"])
+
+  

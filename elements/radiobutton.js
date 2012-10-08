@@ -222,7 +222,7 @@ apf.radiobutton = function(struct, tagName){
     });
 
     /**
-     * @attribute {string} background Sets a multistate background. The arguments
+     * @attribute {String} background Sets a multistate background. The arguments
      * are seperated by pipes (`'|'`) and are in the order of: `'imagefilename|mapdirection|nrofstates|imagesize'`
      * 
      * {:multiStateDoc}
@@ -235,7 +235,7 @@ apf.radiobutton = function(struct, tagName){
      * ```xml
      * background="threestates.gif|vertical|3|16"
      * ```
-     * @see baseclass.basebutton
+     * @see apf.BaseButton
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);

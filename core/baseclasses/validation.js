@@ -156,7 +156,7 @@ apf.Validation = function(){
      *
      * @param  {Boolean} [checkRequired] Specifies whether this check also adheres to the `'required'` rule.
      * @returns  {Boolean} Specifies whether the value is valid
-     * @see  baseclass.validationgroup
+     * @see  apf.ValidationGroup
      * @see  element.submitform
      */
     this.isValid = function(checkRequired){
@@ -292,7 +292,9 @@ apf.Validation = function(){
      */
     /**
      * @attribute  {String}   datatype     Sets or gets the datatype that the value of this element should adhere to. This can be any 
-     * of a set of predefined types, or a simple type created by an XML Schema definition. Some possible values (all of which are [[String]]s) include:
+     * of a set of predefined types, or a simple type created by an XML Schema definition. 
+     * 
+     * Some possible values (all of which are [[String]]s) include:
      *   - `xsd:dateTime`
      *   - `xsd:time`
      *   - `xsd:date`
@@ -341,7 +343,7 @@ apf.Validation = function(){
     /**
      * @attribute  {Number}  maxlength    Sets or gets the maximum length allowed for the value of this element.
     /**
-     * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. Same as {@link baseclass.validation.attribute.required}, but this rule is checked realtime when the element loses the focus, instead of at specific request (for instance, when leaving a form page).
+     * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. This rule is checked realtime when the element loses the focus.
     /**
      * @attribute  {String}   checkequal   Sets or gets the id of the element to check if it has the same value as this element.
     /**

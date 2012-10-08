@@ -453,9 +453,9 @@ apf.DataBinding = function(){
      * @param {XMLElement | String}  [xmlNode] The content to load into this element. It can be one of the following values:
      *                                                - {XMLElement}: An XML element that's loaded into this element
      *                                                - {String}: Either an XML string, or, an instruction to load the data from a remote source
-     *                                                - `null`: Clears this element from its data (just like {@link apf.Cache.clear})
+     *                                                - `null`: Clears this element from its data
      * @param {Object} [options] Set of additional options to pass. Properties include:
-     *                           - [[xmlNode]] ([[XMLElement]]):   The {@link term.datanode data node} that provides
+     *                           - [xmlNode] ([[XMLElement]]):   The {@link term.datanode data node} that provides
      *                                                       context to the data instruction.
      *                           - [callback] ([[Function]]): The code executed when the data request returns
      *                           - [properties] (`Mixed`): Custom properties available in the data instruction
@@ -656,8 +656,8 @@ apf.DataBinding = function(){
      *
      */
      /**
-      * @attribute {string} Gets the {@link term.datainstruction data instruction}
-      *                     that is used to load data into the xml root of this component.
+      * @attribute {String} get Sets or gets the {@link term.datainstruction data instruction}
+      *                     that is used to load data into the XML root of this component.
       */
     this.$loadSubData = function(xmlRootNode){
         if (this.$hasLoadStatus(xmlRootNode) && !this.$hasLoadStatus(xmlRootNode, "potential")) 
@@ -822,7 +822,7 @@ apf.DataBinding = function(){
         return ostatus.match(re) ? true : false;
     };
 
-    /**
+    /*
      * @event beforeinsert Fires before data is inserted.
      * @cancelable Prevents the data from being inserted.
      * @param {XMLElement} xmlParentNode The parent in which the new data is inserted
@@ -927,7 +927,7 @@ apf.DataBinding = function(){
     /**
      * @attribute {Boolean} render-root Sets or gets whether the root node of the data loaded
      * into this element is rendered as well. 
-     * @see element.tree
+     * @see apf.tree
      */
     this.$propHandlers["render-root"] = function(value){
         this.renderRoot = value;
@@ -1004,7 +1004,9 @@ apf.DataBinding = function(){
 
     /**
      * @attribute {String} smartbinding Sets or gets the name of the SmartBinding for this
-     * element. A smartbinding is a collection of rules which define how data
+     * element. 
+     * 
+     * A smartbinding is a collection of rules which define how data
      * is transformed into representation, how actions on the representation are
      * propagated to the data and it's original source, how drag&drop actions
      * change the data and where the data is loaded from. Each of these are
@@ -1077,6 +1079,7 @@ apf.DataBinding = function(){
      * @attribute {String} actions Sets or gets the id of the actions element which
      * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
+     *
      * #### Example
      *
      * ```xml
@@ -1464,7 +1467,7 @@ apf.DataBinding = function(){
      * model is the first model that is found without a name, or if all models
      * have a name, the first model found.
      * 
-     * @see baseclass.databinding.attribute.model
+     * @see apf.DataBinding.model
      */
     this.$propHandlers["model"] = function(value){
         //Unset model

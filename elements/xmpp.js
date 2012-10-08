@@ -814,7 +814,7 @@ apf.xmpp = function(struct, tagName){
      * @param {Function} [callback] Function that will be called after the Async
      *                              login request
      * @param {Boolean}  [reg]      Specifies whether to auto-register a new user
-     * @type  {void}
+     * 
      */
     this.connect = function(username, password, callback, reg) {
         this.reset();
@@ -939,7 +939,7 @@ apf.xmpp = function(struct, tagName){
      *   @todo: put the spec response here...
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function processDisconnect(oXml, state, extra) {
@@ -1024,7 +1024,7 @@ apf.xmpp = function(struct, tagName){
      * @param {Object} oXml
      * @param {Number} state
      * @param {Mixed}  extra
-     * @type  {void}
+     * 
      * @private
      */
     function processConnect(oXml, state, extra) {
@@ -1234,7 +1234,7 @@ apf.xmpp = function(struct, tagName){
      *   </body>
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function processAuthRequest(oXml) {
@@ -1344,7 +1344,7 @@ apf.xmpp = function(struct, tagName){
      *   </body>
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function processFinalChallenge(oXml) {
@@ -1374,7 +1374,7 @@ apf.xmpp = function(struct, tagName){
      *   </body>
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function reOpenStream(oXml) {
@@ -1468,7 +1468,7 @@ apf.xmpp = function(struct, tagName){
      *   </body>
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function processBindingResult(oXml) {
@@ -1663,7 +1663,7 @@ apf.xmpp = function(struct, tagName){
      * to be processed.
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function processStream(oXml, state) {
@@ -1690,7 +1690,7 @@ apf.xmpp = function(struct, tagName){
      * be found (we check for all possible message types).
      *
      * @param {Object} oXml
-     * @type  {void}
+     * 
      * @private
      */
     function parseData(oXml) {
@@ -1780,7 +1780,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @see teleport.xmpp.methodparseData
      * @param {Array} aMessages
-     * @type  {void}
+     * 
      * @private
      */
     function parseMessagePackets(aMessages) {
@@ -1856,7 +1856,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @see teleport.xmpp.methodparseData
      * @param {Array} aPresence
-     * @type  {void}
+     * 
      * @private
      */
     function parsePresencePackets(aPresence) {
@@ -1929,7 +1929,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @see teleport.xmpp.methodparseData
      * @param {Array} aIQs
-     * @type  {void}
+     * 
      * @private
      */
     function parseIqPackets(aIQs) {
@@ -2028,7 +2028,7 @@ apf.xmpp = function(struct, tagName){
      * @param {String} type   Status type according to the RFC
      * @param {String} status Message describing the status
      * @param {String} custom Custom status type
-     * @type  {void}
+     * 
      */
     this.setPresence = function(type, status, custom) {
         if (!this.connected) return false;
@@ -2051,7 +2051,7 @@ apf.xmpp = function(struct, tagName){
      * roster.
      * 
      * @param {Mixed} from Contact to get the presence data from (object or JID string)
-     * @type  {void}
+     * 
      */
     this.requestPresence = function(from) {
         if (!this.connected) return false;
@@ -2100,7 +2100,7 @@ apf.xmpp = function(struct, tagName){
      * 
      * @param {String}   jid        Contact to be added to the user's Roster
      * @param {Function} [callback] Synchronisation callback for Datainstructions
-     * @type  {void}
+     * 
      */
     this.addContact = function(jid, callback) {
         // #ifdef __TP_XMPP_ROSTER
@@ -2187,7 +2187,7 @@ apf.xmpp = function(struct, tagName){
      *
      * @param {String} sJID Contact that requested a subscription the user's
      *                      presence information
-     * @type  {void}
+     * 
      * @private
      */
     function incomingAdd(sJID) {
@@ -2234,7 +2234,7 @@ apf.xmpp = function(struct, tagName){
      * to the user's roster: confirmation of the subscription state.
      *
      * @param {Object} oContact Contact that has accepted the invitation to connect
-     * @type  {void}
+     * 
      * @private
      */
     function confirmAdd(oContact) {
@@ -2274,7 +2274,7 @@ apf.xmpp = function(struct, tagName){
      * @param {String} [sStatus] Optional. Possible values: online, offline,
      *                           away, extendedaway, onvacation, dnd,
      *                           donotdisturb, invisible, chatty, freeforchat.
-     * @type  {void}
+     * 
      */
     this.setStatus = function(sStatus) {
         sStatus = statusMap[sStatus] || constants.STATUS_ONLINE;
@@ -2295,7 +2295,7 @@ apf.xmpp = function(struct, tagName){
      *      {String}   [thread]   For threading messages, i.e. to log a conversation
      *      {String}   [type]     Message type, defaults to 'chat'
      *      {Function} [callback] Synchronisation callback for Datainstructions
-     * @type  {void}
+     * 
      */
     this.sendMessage = function(options) {
         if (!options || !(options.message || options.x)) return false;
@@ -2386,7 +2386,7 @@ apf.xmpp = function(struct, tagName){
      *      {String}   to         Must be of the format 'node@hostname.ext'
      *      {String}   message    The XML message to be sent
      *      {Function} [callback] Function to be executed on completion of the request
-     * @type  {void}
+     * 
      */
     this.sendXml = function(options) {
         if (!options || !(options.message || options.x)) return false;
@@ -2441,7 +2441,7 @@ apf.xmpp = function(struct, tagName){
      *                             any kind or {Object} upon success:
      *                             {String} tzo Time Zone Offset
      *                             {String} utc Timestamp in Universal Time
-     * @type  {void}
+     * 
      */
     this.getTime = function(sEntity, fCallback) {
         var sIq = createIqBlock({

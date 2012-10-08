@@ -1,4 +1,4 @@
-/**
+/*
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
  * JavaScript.
  *

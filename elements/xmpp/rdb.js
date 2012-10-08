@@ -82,7 +82,7 @@ apf.xmpp_rdb = function(){
      * Checks if a specified Jabber ID is registered locally as a chatroom.
      *
      * @param {String} sJID Jabber ID to check
-     * @type  {void}
+     * 
      */
     this.$isDoc = function(sJID) {
         var parts = sJID.replace(/\/.*$/, "").split("@");

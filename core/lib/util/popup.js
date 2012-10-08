@@ -385,6 +385,6 @@ apf.popup = {
         //this.popup.document.body.c = null;
         //this.popup.document.body.onmouseover = null;
     }
-}
+};
 
 //#endif

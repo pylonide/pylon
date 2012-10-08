@@ -218,17 +218,17 @@ apf.BindingColumnRule = function(struct, tagName){
 
             this.setProperty("width", newsize, false, true);
         }
-    }
+    };
     
     this.hide = function(){
         this.setProperty("visible", false, false, true);
         return this;
-    }
+    };
     
     this.show = function(){
         this.setProperty("visible", true, false, true);
         return this;
-    }
+    };
     
     /**
      * Sorts a column.

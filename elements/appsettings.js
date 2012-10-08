@@ -22,73 +22,140 @@
 //#ifdef __WITH_APPSETTINGS
 
 /**
- * Element specifying the settings of the application.
+ * An element specifying the settings of the APF application.
+ * @class apf.appsettings
  * @define appsettings
- *
- * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
- * @see core.apf.object.debugwin
- * @see core.apf.object.console
- * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
- * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
- * @see element.contextmenu
- * @attribute {Boolean} allow-select            whether general text in the application can be selected.
- * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element. Defaults to true.
- * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
+ * @allowchild auth, authentication, offline, printer, defaults
+ * @todo describe defaults
+ */
+/**
+ * @attribute {Boolean} debug                   Sets or gets whether the debug screen is shown at startup.
+ * 
+ */
+/**
+ * @attribute {String}  name                    Sets or gets the name of the application; used by many different services to uniquely identify the application.
+ */
+/**
+ * @attribute {Boolean} disable-right-click     Sets or gets whether a user can get the browser's contextmenu when the right mouse button is clicked.
+ * @see apf.contextmenu
+ */
+/**
+ * @attribute {Boolean} allow-select            Sets or gets whether general text in the application can be selected.
+ */
+/**
+ * @attribute {Boolean} allow-blur              Sets or gets whether its possible to blur an element while not giving the focus to another element. Defaults to `true`.
+ */
+/**
+ * @attribute {Boolean} auto-disable-actions    Sets or gets whether smartbinding actions are by default disabled.
  * @see term.action
- * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
- * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
- * @attribute {Boolean} auto-hide-loading       whether the load screen defined by the loader element is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
- * <code>
+ */
+/**
+ * @attribute {Boolean} auto-disable            Sets or gets whether elements that don't have content loaded are automatically disabled.
+ */
+/**
+ * @attribute {Boolean} disable-f5              Sets or gets whether the F5 key for refreshing is disabled.
+ */
+/**
+ * @attribute {Boolean} auto-hide-loading       Sets or gets whether the load screen defined by the loader element is automatically hidden. Setting this to `false` enables you to control when the loading screen is hidden. 
+ * 
+ * The following code shows how this can be done:
+ *
+ * ```javascript
  *  apf.document.getElementsByTagName("a:loader")[0].hide()
  *  //or
  *  loaderId.hide()
- * </code>
- * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
- * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
- * @attribute {String}  default-page            the name of the default page if none is specified using the #. Defaults to "home". See {object.history}.
- * @see element.history
- * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
+ * ```
+ */
+/**
+ * @attribute {Boolean} disable-space           Sets or gets whether the space button default behavior of scrolling the page is disabled.
+ */
+/**
+ * @attribute {Boolean} disable-backspace       Sets or gets whether the backspace button default behavior of going to the previous history state is disabled.
+ */
+/**
+ * @attribute {String}  default-page            Sets or gets the name of the default page if none is specified using the `#`. Defaults to `"home"`.
+ * @see apf.history
+ */
+/**
+ * @attribute {Boolean} undokeys                Sets or gets whether the undo and redo keyboard bindings are enabled.
  * @see apf.actiontracker
- * @attribute {String | Boolean} outline         whether an outline of an element is shown while dragging or resizing.
- * @see baseclass.interactive
- * @attribute {String | Boolean} drag-outline    whether an outline of an element is shown while dragging.
- * @see baseclass.interactive
- * @attribute {String | Boolean} resize-outline  whether an outline of an element is shown while resizing.
- * @see baseclass.interactive
- * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instruction}.
- * @see teleport.http
- * @see term.datainstruction
- * @attribute {String}  loading-message         the global value for the loading message of elements during a loading state.
- * @see baseclass.databinding.attribute.loading-message
- * @attribute {String}  offline-message         the global value for the offline message of elements not able to display content while offline.
- * @see baseclass.databinding.attribute.offline-message
- * @attribute {String}  empty-message           the global value for the empty message of elements containing no contents.
- * @see baseclass.databinding.attribute.empty-message
- * @attribute {String}  model                   the default model for this application.
- * @see element.model
- * @attribute {String}  realtime                the global value whether bound values are realtime updated. When set to false elements do not update until they lose focus.
- * @see element.editor.attribute.realtime
- * @see element.textbox.attribute.realtime
- * @see element.slider.attribute.realtime
- * @attribute {String}  skinset                 the skin set used by the application.
- * @see baseclass.presentation.attribute.skinset
- * @attribute {String}  storage                 the {@link core.storage storage provider} to be used for key/value storage.
- * @see core.storage
- * @attribute {String}  offline                 the {@link core.storage storage provider} to be used for offline support.
- * @see apf.offline
- * @attribute {String}  login                   the {@link term.datainstruction data instruction} which logs a user into the application.
- * @see element.auth
- * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.
- * @see element.auth
- * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied. Default is false.
- * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied.
- * @attribute {Boolean} iphone-fullscreen       whether the application should cover the entire screen of the iPhone. Default is true.
- * @attribute {String}  iphone-statusbar        the style of the statusbar of the iPhone webbrowser. Posssible values: 'default', black-translucent' or 'black'.
- * @attribute {String}  iphone-icon             path pointing to the icon that should be used when this application is put on the iPhone Dashboard.
- * @attribute {Boolean} iphone-icon-is-glossy   whether the icon specified with 'iphone-icon' already is glossy or if the iPhone OS should apply that effect. Default is false.
- * @attribute {Boolean} iphone-fixed-viewport   whether the viewport of the application is fixed and whether the zoom should be enabled. Default is true.
- * @allowchild auth, authentication, offline, printer, defaults
- * @todo describe defaults
+ */
+/**
+ * @attribute {String | Boolean} outline         Sets or gets whether an outline of an element is shown while dragging or resizing.
+ * @see apf.Interactive
+ */
+/**
+ * @attribute {String | Boolean} drag-outline    Sets or gets whether an outline of an element is shown while dragging.
+ * @see apf.Interactive
+ */
+/**
+ * @attribute {String | Boolean} resize-outline  Sets or gets whether an outline of an element is shown while resizing.
+ * @see apf.Interactive
+ */
+/**
+ * @attribute {String}  baseurl                 Sets or gets the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instructions}.
+ * 
+ */
+/**
+ * @attribute {String}  loading-message         Sets or gets the global value for the loading message of elements during a loading state.
+ * @see apf.DataBinding.loading-message
+ */
+/**
+ * @attribute {String}  offline-message         Sets or gets the global value for the offline message of elements not able to display content while offline.
+ * @see apf.DataBinding.offline-message
+ */
+/**
+ * @attribute {String}  empty-message           Sets or gets the global value for the empty message of elements containing no contents.
+ * @see apf.DataBinding.empty-message
+ */
+/**
+ * @attribute {String}  model                   Sets or gets the default model for this application.
+ * @see apf.model
+ */
+/**
+ * @attribute {String}  realtime                Sets or gets the global value whether bound values are updated realtime. When set to `false`, elements do not update until they lose focus.
+ * 
+ */
+/**
+ * @attribute {String}  skinset                 Sets or gets the skin set used by the application.
+ * @see apf.Presentation.skinset
+ */
+/**
+ * @attribute {String}  storage                 Sets or gets the storage provider to be used for key/value storage.
+ * 
+ */
+/**
+ * @attribute {String}  offline                 Sets or gets the storage provider to be used for offline support.
+ * 
+ */
+/**
+ * @attribute {String}  login                   Sets or gets the {@link term.datainstruction data instruction} which logs a user into the application.
+ * 
+ */
+/**
+ * @attribute {String}  logout                  Sets or gets the {@link term.datainstruction data instruction} which logs a user out of the application.
+ * 
+ */
+/**
+ * @attribute {String}  iepngfix                Sets or gets whether the fix for PNG images with transparency should be applied. Default is `false`.
+ */
+/**
+ * @attribute {String}  iepngfix-elements       Sets or gets a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied.
+ */
+/**
+ * @attribute {Boolean} iphone-fullscreen       Sets or gets whether the application should cover the entire screen of the iPhone. Default is ztruez.
+ */
+/**
+ * @attribute {String}  iphone-statusbar        Sets or gets the style of the statusbar of the iPhone webbrowser. Posssible values: `'default'`, `'black-translucent'` or `'black'`.
+ */
+/**
+ * @attribute {String}  iphone-icon             Sets or gets path pointing to the icon that should be used when this application is put on the iPhone Dashboard.
+ */
+/**
+ * @attribute {Boolean} iphone-icon-is-glossy   Sets or gets whether the icon specified with 'iphone-icon' already is glossy or if the iPhone OS should apply that effect. Default is `false`.
+ */
+/**
+ * @attribute {Boolean} iphone-fixed-viewport   Sets or gets whether the viewport of the application is fixed and whether the zoom should be enabled. Default is `true`.
  */
 apf.appsettings = function(struct, tagName){
     this.$init(tagName || "appsettings", apf.NODE_HIDDEN, struct);

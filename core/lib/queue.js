@@ -70,7 +70,7 @@ apf.setZeroTimeout = setTimeout;
 
 // #ifdef __WITH_QUEUE
 
-/**
+/*
  *
  */
 apf.queue = {

@@ -28,7 +28,7 @@
  *
  * @define browser
  *
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  * 

@@ -83,7 +83,7 @@ apf.visualSelect = function(selection){
     
     this.$getOutline = function(){
         return oOutline;
-    }
+    };
     
     var selected = [], anchors,
         size   = 7,

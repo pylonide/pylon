@@ -118,7 +118,7 @@ apf.scrollbar = function(struct, tagName){
             viewport = new apf.ViewPortHtml(viewport);
         
         this.$attach(viewport);
-    }
+    };
     
     /**
      * @todo detach

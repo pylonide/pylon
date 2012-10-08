@@ -610,5 +610,5 @@ apf.runNonIe = function (){
     apf.setOpacity = function(oHtml, value){
         oHtml.style.opacity = value;
     };
-}
+};
 //#endif

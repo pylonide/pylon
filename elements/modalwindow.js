@@ -127,7 +127,7 @@ apf.WinServer = {
  * @since       0.4
  *
  * @inherits apf.Presentation
- * @inherits apf.Transaction
+ * @inheritsElsewhere apf.Transaction
  *
  */
  /**

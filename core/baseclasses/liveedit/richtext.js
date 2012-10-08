@@ -84,7 +84,7 @@ apf.LiveEdit.richtext = function(){
      *
      * @see object.abstractevent
      * @param {Event} e
-     * @type  {void}
+     * 
      * @private
      */
     function keyupHandler(e) {
@@ -410,7 +410,7 @@ apf.LiveEdit.richtext = function(){
      *
      * @param {String} name
      * @param {Mixed}  param
-     * @type  {void}
+     * 
      */
     this.$execCommand = function(name, param) {
         if (this.$plugins[name] || this.state == apf.DISABLED)
@@ -614,7 +614,7 @@ apf.LiveEdit.richtext = function(){
      *
      * @param {String} item
      * @param {Number} state Optional.
-     * @type  {void}
+     * 
      */
     this.$notifyButton = function(item, state) {
         if (!this.$plugins) //We're in the process of being destroyed
@@ -668,7 +668,7 @@ apf.LiveEdit.richtext = function(){
      * Notify all button items on state changes (on, off or disabled)
      *
      * @param {Number} state Optional.
-     * @type  {void}
+     * 
      */
     this.$notifyAllButtons = function(state) {
         var item, o = this.$buttons;
@@ -696,7 +696,7 @@ apf.LiveEdit.richtext = function(){
      * @see object.abstractevent
      * @param {Event}      e
      * @param {DOMElement} oButton
-     * @type  {void}
+     * 
      */
     this.$buttonClick = function(e, oButton, userAction) {
         if (userAction && this.disabled)
@@ -747,7 +747,7 @@ apf.LiveEdit.richtext = function(){
      * @param {HTMLElement} oParent     DOM element which the toolbars should be inserted into
      * @param {String}      [sSkinTag]  Tagname of a toolbar node inside the editor skin definition
      * @param {String}      [sBtnClick] JS that will be executed when a button node is clicked
-     * @type  {void}
+     * 
      */
     this.$drawToolbars = function(oParent, sSkinTag, sBtnClick, bAfterRender) {
         var tb, l, k, i, j, z, x, node, buttons, bIsPlugin, item, bNode,
@@ -1097,7 +1097,7 @@ apf.LiveEdit.richtext = function(){
      * @param {DOMElement}        oRef     Button node to show popup below to
      * @param {Number}            iWidth   New width of the popup
      * @param {Number}            iHeight  New height of the popup
-     * @type  {void}
+     * 
      */
     this.$showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
         if (apf.popup.last && apf.popup.last != sCacheId) {
@@ -1170,7 +1170,7 @@ apf.LiveEdit.richtext = function(){
      * @param {String}  html
      * @param {Boolean} [bNoParse] Prevents parsing the HTML, which might alter the string
      * @param {Boolean} [bNoFocus] Prevents setting the focus back to the editor area
-     * @type  {void}
+     * 
      */
     this.$insertHtml = function(html, bNoParse, bNoFocus) {
         //removed check: if (inited && complete)
@@ -1199,7 +1199,7 @@ apf.LiveEdit.richtext = function(){
      *
      * @see element.editor.method.inserthtml
      * @param {Event} e
-     * @type  {void}
+     * 
      */
     this.$paste = function (e) {
         var _self = this;

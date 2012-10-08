@@ -22,27 +22,12 @@
 // #ifdef __AMLBUTTON || __INC_ALL
 
 /**
- * 
- * @class apf.trigger
- * @inheritdoc apf.button
- */
-/**
- * 
- * @class apf.submit
- * @inheritdoc apf.button
- */
-/**
- * 
- * @class apf.reset
- * @inheritdoc apf.button
- */
-/**
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
  * @class apf.button
  * @inherits apf.BaseButton
- * @define button, submit, trigger, reset
+ * @define button
  *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)

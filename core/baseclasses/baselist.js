@@ -31,7 +31,7 @@
  * @inherits apf.MultiSelect
  * @inherits apf.Cache
  * @inherits apf.DataAction
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

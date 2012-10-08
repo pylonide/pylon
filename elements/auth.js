@@ -576,7 +576,7 @@ apf.aml.setElement("auth", apf.auth);
     this.getCredentials = function(service){
         var cache = this.$cache[service || "default"];
         return !cache ? ["", ""] : [cache.username, cache.password];
-    }
+    };
 
     /**
      * Signals services that a log in is required and fires authrequired event

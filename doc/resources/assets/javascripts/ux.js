@@ -45,6 +45,8 @@ $(document).ready(function () {
         });
     }
 
+    $('#tabbable a:first').tab('show');
+
     var s, sx;
 
     // scrolling offset calculation via www.quirksmode.org

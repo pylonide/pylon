@@ -35,7 +35,7 @@ var HAS_CHILD = 1 << 1,
  * @allowchild {smartbinding}
  *
  *
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  * @inherits apf.MultiSelect
  * @inherits apf.Cache
  * @inherits apf.DataAction
