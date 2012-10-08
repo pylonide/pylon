@@ -32,7 +32,6 @@ var name = "revisions";
 
 module.exports = function setup(options, imports, register) {
     var fs;
-
     imports.sandbox.getProjectDir(function(err, projectDir) {
         if (err)
             return register(err);
@@ -56,9 +55,9 @@ module.exports = function setup(options, imports, register) {
             });
         }, 1);
     }
-    
+
     require("util").inherits(RevisionsPlugin, Plugin);
-    
+
     (function() {
         this.onRevisionSaved = function(err, revisionInfo, user, message, _error) {
             if (err) {
@@ -535,4 +534,11 @@ module.exports = function setup(options, imports, register) {
             }
         };
     }).call(RevisionsPlugin.prototype);
+
+    imports.sandbox.getProjectDir(function(err, projectDir) {
+        if (err) return register(err);
+
+        fs = fsnode(imports.vfs, projectDir);
+        imports.ide.register(name, RevisionsPlugin, register);
+    });
 };

@@ -197,7 +197,7 @@ util.inherits(SearchPlugin, Plugin);
                 if (parts.length < 3)
                     continue;
 
-                var _path = parts.shift().replace(this.options.path).trimRight();
+                var _path = parts.shift().replace(this.options.path, "").trimRight();
                 file = encodeURI(this.options.uri + _path, "/");
 
                 lineno = parseInt(parts.shift(), 10);
