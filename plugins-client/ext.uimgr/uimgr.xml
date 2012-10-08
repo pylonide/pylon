@@ -1,0 +1,284 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winUIExt"
+      title     = "UI Manager"
+      icon      = ""
+      center    = "true"
+      class     = "winUIExt"
+      resizable = "true"
+      buttons   = "close"
+      modal     = "false"
+      width     = "1200"
+      height    = "600"
+      kbclose   = "true"
+      draggable = "true">
+        <div id="winUIExtContent">
+            <h1>Cloud9 IDE UI</h1>
+            <div class="ui-section">
+                <h2>Buttons</h2>
+                <div class="ui-item">
+                    <h3>Button (default)</h3>
+                    <a:button width="200" skin="button">Button</a:button>
+                    <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button&quot;&gt;Button&lt;/a:button&gt;</code></pre>
+                </div>
+                <div class="ui-item">
+                    <h3>btn-access_request</h3>
+                    <a:button width="200" skin="btn-access_request">Access request</a:button>
+                    <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-access_request&quot;&gt;Access request&lt;/a:button&gt;</code></pre>
+                </div>
+                <div class="ui-item">
+                    <h3>github-button - remove</h3>
+                    <a:button width="200" skin="github-button" icon="github-kitty.png">Or sign in with GitHub instead</a:button>
+                    <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;github-button&quot; icon=&quot;github-kitty.png&quot;&gt;Or sign in with GitHub instead&lt;/a:button&gt;</code></pre>
+                </div>
+                <div class="ui-item">
+                    <h3>btn_console_open</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <h4>Default</h4>
+                            <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" height="27"/>
+                        </div>
+                        <div class="fleft version">
+                            <h4>This is how it can also look</h4>
+                            <div class="btn_console_open btn_console_openIcon btn_console_openBool btn_console_openEmpty btn_console_openDefault btn_console_openOver btn_console_openDown btn_console_openChecked btn_console_openOpen btn_console_openDown btn_console_openDown btn_console_openDown" style="background-image: url(https://c9.dev:3443/2.0.7/static/ext/main/style/icons/switch.png); box-sizing: border-box; height: 27px; margin: 0px; min-width: 18px; min-height: 1px; max-width: 10000px; max-height: 10000px; "></div>
+                        </div>
+                    </div>
+                    <pre><code>&lt;a:button id=&quot;btnCollapseConsole&quot; skin=&quot;btn_console_open&quot; icon=&quot;switch.png&quot; height=&quot;27&quot;/&gt;</code></pre>
+                </div>
+                <div class="ui-item">
+                    <h3>button-colorless</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <h4>Default - It's not called colorless for nothing</h4>
+                            <a:button width="200" skin="button-colorless">Default</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot;&gt;Default&lt;/a:button&gt;</code></pre>
+                        </div>    
+                        <div class="fleft version">
+                            <h4>Default on dark backgrounds</h4>
+                            <div class="ui-dark">
+                                <a:button width="200" skin="button-colorless" class="dark">Dark</a:button>
+                            </div>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;dark&quot;&gt;Dark&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Grey</h4>
+                            <a:button width="200" skin="button-colorless" class="grey">Grey</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;grey&quot;&gt;Grey&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Light Grey</h4>
+                            <a:button width="200" skin="button-colorless" class="light-grey">Light Grey</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;light-grey&quot;&gt;Light Grey&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Red</h4>
+                            <a:button width="200" skin="button-colorless" class="red">Red</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;red&quot;&gt;Red&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Blue</h4>
+                            <a:button width="200" skin="button-colorless" class="blue">Blue</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;blue&quot;&gt;Blue&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Light blue</h4>
+                            <a:button width="200" skin="button-colorless" class="light-blue">Light blue</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;light-blue&quot;&gt;Light Blue&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Green</h4>
+                            <a:button width="200" skin="button-colorless" class="green">Green</a:button>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;green&quot;&gt;Green&lt;/a:button&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>toolbarbutton</h3>
+                    <div class="menubar">
+                        <a:button icon="arrow_left.png" skin="toolbarbutton" visible="{pgDocs.activepagenr==1}" 
+                            onclick="pgDocs.set(0)" />                    
+                    </div>
+                    <div class="toolbar">
+                        <div class="subbar">
+                            <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
+                                <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                                <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
+                                <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
+                                <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
+                                <a:button id="btnFront" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('front')" icon="ide/shape_move_front.png" tooltip="Bring to Front" />
+                                <a:button id="btnForward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('forward')" icon="ide/shape_move_forwards.png" tooltip="Bring Forward" />
+                                <a:button id="btnBackward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('backward')" icon="ide/shape_move_backwards.png" tooltip="Send Backward" />
+                                <a:button id="btnBack" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('back')" icon="ide/shape_move_back.png" tooltip="Send to Back" />
+                            </a:hbox>
+                        </div>
+                    </div>
+                    <pre><code>Probably we should remove this skin since no icons appear</code></pre>
+                </div>
+                
+                <div class="ui-item">
+                    <h3>blackbutton</h3>
+                    <a:button width="80" skin="blackbutton">Find</a:button>
+                    <pre><code>&lt;a:button width=&quot;80&quot; skin=&quot;blackbutton&quot;&gt;Find&lt;/a:button&gt;</code></pre>
+                </div>
+                
+                <div class="ui-item">
+                    <h3>btn-default-simple</h3>
+                    <div class="ui-dark">
+                        <a:button skin="btn-default-simple">Return to the IDE</a:button>
+                    </div>
+                    <h4>Wrapped into .win-deploy-target</h4>
+                    <div class="win-deploy-target ui-dark">
+                        <a:button skin="btn-default-simple">Return to the IDE</a:button>
+                    </div>
+                    <pre><code></code></pre>
+                </div>
+                <div class="ui-item">
+                    <h3>btn-default-css3</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <h4>Default</h4>
+                            <div class="ui-dark">
+                                <a:button width="200" skin="btn-default-css3">Button</a:button>
+                            </div>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot;&gt;Button&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Green</h4>
+                            <div class="ui-dark">
+                                <a:button width="200" skin="btn-default-css3" class="btn-green">Green</a:button>
+                            </div>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot; class=&quot;btn-green&quot;&gt;Green&lt;/a:button&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <h4>Red</h4>
+                            <div class="ui-dark">
+                                <a:button width="200" skin="btn-default-css3" class="btn-red">Red</a:button>
+                            </div>
+                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot; class=&quot;btn-red&quot;&gt;Red&lt;/a:button&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-topbar-btn - <em>Defined both in the Dashboard and the IDE. Used in the Dashboard and auth</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="25" height="25" skin="c9-topbar-btn" class="home" />
+                            <pre><code>&lt;a:button width=&quot;25&quot; height=&quot;25&quot; skin=&quot;c9-topbar-btn&quot; class=&quot;home&quot; /&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button width="25" height="25" skin="c9-topbar-btn" class="dashboard" />
+                            <pre><code>&lt;a:button width=&quot;25&quot; height=&quot;25&quot; skin=&quot;c9-topbar-btn&quot; class=&quot;dashboard&quot; /&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>mnubtn</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="mnubtn"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="c9-logo"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;c9-logo&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="toggle-black-menu-bar"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;toggle-black-menu-bar&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="spacer"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;spacer&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="rundebug"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;rundebug&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="project_files"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;project_files&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="open_files"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;open_files&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="testing"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;testing&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="visual_editor"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;visual_editor&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="preferences"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;preferences&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="github_corner"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;github_corner&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="deploy"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;deploy&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="the_store"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;the_store&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="shop"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="shop1"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop1&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="shop2"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop2&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="shop3"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop3&quot;/&gt;</code></pre>
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="mnubtn" class="shop4"/>
+                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop4&quot;/&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+<!--                
+
+
+
+
+browser-btn
+header-btn
+c9-toolbarbutton2
+c9-sidepanelsbutton
+c9-toolbarbutton-glossy
+c9-toolbarbutton
+c9-toolbarbutton-light
+c9-simple-btn
+c9-menu-btn
+toolbarbutton
+dockButton
+btn_icon_only
+btn_console_open
+github-button
+button
+btn-access_request
+btn-blue-noise
+permissions-button
+btn-collab-send
+collaboratorbutton
+
+
+
+                
+-->
+            </div>
+        </div>
+    </a:window>
+</a:application>

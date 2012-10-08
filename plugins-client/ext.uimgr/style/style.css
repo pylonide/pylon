@@ -1,0 +1,40 @@
+.winUIExt .wn_cp_content {
+    background: white;
+    overflow: scroll;
+}
+#winUIExtContent {
+    padding: 20px;    
+}
+
+#winUIExtContent h1 {
+    margin-top: 0;
+}
+
+#winUIExtContent h3 {
+    background: #FEF0CF;
+    padding: 10px 5px;
+    border-top: 1px solid #E3D5BC;
+}
+
+#winUIExtContent pre {
+    background: #f2f2f2;;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px #ddd;
+    padding: 10px;
+    white-space: pre-wrap;
+}
+
+#winUIExtContent .ui-dark {
+    background: #2B2B2B;
+    padding: 10px 5px;
+}
+
+#winUIExtContent .fbox {
+    overflow: hidden;
+}
+
+#winUIExtContent .version {
+    float: left;
+    width: 550px;
+    margin-right: 17px;
+}
