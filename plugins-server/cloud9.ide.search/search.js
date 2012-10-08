@@ -52,6 +52,7 @@ util.inherits(SearchPlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on("search::filelist", function(msg) {
+            console.log(msg)
             if (msg.type == "shell-start")
                 self.processCount += 1;
             else if (msg.type == "shell-exit")
@@ -103,6 +104,7 @@ util.inherits(SearchPlugin, Plugin);
             return false;
 
         console.log(args.command + " " + args.join(" "));
+        process.exit(1)
         this.options = message;
         var self = this;
         this.pm.spawn("shell", {
@@ -161,8 +163,7 @@ util.inherits(SearchPlugin, Plugin);
                           // do the actual replace; intentionally using unescape query here
                           " if s/" + options.query + "/" + options.replacement + "/mg" + (!options.casesensitive ? "" : "i" ) + ";'");
             
-                // not sure why (perhaps due to piping?), but args must be redirected to
-                // bash like this when replacing
+                // args must be redirected to bash like this when replacing
                 args.unshift(agCmd);
                 args = ["-c", args.join(" ")];
                 console.log(args)
@@ -238,14 +239,15 @@ util.inherits(SearchPlugin, Plugin);
     this.assembleFileListCommand = function(options) {
         var args;
 
-        if (!useAg) {
-            args =["--nocolor", 
+        if (useAg) {
+            args = ["--nocolor", 
                    "-p", path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
                    "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
                    "-l",                                    // filenames only
                    "-f",                                    // follow symlinks
-                   "--search-binary"]                       // list binary files
-                   
+                   "--search-binary",                       // list binary files
+                   "-m 1"];                                 // stop after one
+
             if (options.showHiddenFiles)
                 args.push("--hidden");
     
@@ -257,20 +259,28 @@ util.inherits(SearchPlugin, Plugin);
             args.command = agCmd;
         }
         else {
-            args =["--nocolor", 
-                   "-l",                                    // filenames only
-                   "--follow",                              // follow symlinks
-                   "--text",                                // list text files
-                   "--binary"]                              // list binary files
+            args = ["--nocolor", 
+                   "-l",                 // filenames only
+                   "--follow",           // follow symlinks
+                   "--text",             // list text files
+                   "--binary"];          // list binary files                             
                    
-           /* if (options.showHiddenFiles)
+           /* 
+            
+            if (options.showHiddenFiles)
                 args.push("--hidden");
     
             if (options.maxdepth)
                 args.push("--depth", options.maxdepth); */
 
             args.push(".", options.path);
-            args.command = ackCmd;
+            args.push("</dev/null");
+
+            args.unshift(ackCmd);
+            args = ["-c", args.join(" ")];
+
+            args.command = "bash";
+            //args.command = ackCmd;
         }
 
         return args;

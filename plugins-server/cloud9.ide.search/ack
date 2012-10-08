@@ -1287,7 +1287,10 @@ BEGIN {
 
     # CHANGE: we're doing this to provide pattern match support
     @ignore_pattern_dirs = (
-        '~backup-'
+        '\w+~backup-\d+',
+        '\.c9revisions',
+        '\.architect',
+        '\/node_modules'
     );
 
     %mappings = (
@@ -1643,11 +1646,12 @@ sub delete_type {
 sub ignoredir_filter {
     # CHANGE: provide quick pattern-match fail
     foreach my $key (@ignore_pattern_dirs) { 
-        if ($_ =~ m{\Q$key\E}) {
+        App::Ack::print($key);
+        if ($_ =~ m{$key}) {
+            print($key);
             return 0; 
         }
     }
-    
     return !exists $ignore_dirs{$_} && !exists $ignore_dirs{$File::Next::dir};
 }
 
