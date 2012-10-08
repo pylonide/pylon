@@ -126,7 +126,7 @@
  */
 /**
  * @attribute {String}  offline                 Sets or gets the storage provider to be used for offline support.
- * @see apf.offline
+ * 
  */
 /**
  * @attribute {String}  login                   Sets or gets the {@link term.datainstruction data instruction} which logs a user into the application.

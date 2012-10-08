@@ -48,7 +48,7 @@
  * ```
  *
  * @class apf.tab
- * @define tab, pages, switch
+ * @define tab
  * @container
  * @allowchild page
  *
