@@ -32,14 +32,6 @@ var name = "revisions";
 
 module.exports = function setup(options, imports, register) {
     var fs;
-    imports.sandbox.getProjectDir(function(err, projectDir) {
-        if (err)
-            return register(err);
-
-        fs = fsnode(imports.vfs, projectDir);
-        imports.ide.register(name, RevisionsPlugin, register);
-    });
-
     function RevisionsPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
 
