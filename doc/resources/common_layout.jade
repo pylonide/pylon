@@ -1,6 +1,6 @@
 -var dirPrefix = "./";
--var jsDoc = 'false'
 -var landingPage = 'false'
+-var pTitle = classId || pageTitle;
 
 mixin doctype
   !!! 5
@@ -18,7 +18,7 @@ mixin head
   -if (isIndex)
     title #{title}
   -else
-    title #{title} - #{classId}
+    title #{title} - #{pTitle}
 
   meta(name="generator", content="panino-doc-build")
   meta(name="author", content="Garen J. Torikian")
