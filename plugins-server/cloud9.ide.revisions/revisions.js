@@ -33,7 +33,7 @@ var name = "revisions";
 module.exports = function setup(options, imports, register) {
     var fs;
 
-    var RevisionsPlugin = function RevisionsPlugin(ide, workspace) {
+    function RevisionsPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
 
         this.hooks = ["command"];

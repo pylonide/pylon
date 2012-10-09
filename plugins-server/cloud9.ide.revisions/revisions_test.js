@@ -200,40 +200,52 @@ module.exports = {
 
     "test saveSingleRevision valid path": function(next) {
         var R = this.revisionsPlugin;
-        var fileName = __dirname + "/test_saving.txt";
-        var revPath = __dirname + "/.c9revisions/test_saving.txt.c9save";
+
+        var leafName = "test_saving.txt";
+        var fileName = Path.join(__dirname, leafName);
+        var revPathRel = Path.join(".c9revisions", "test_saving.txt.c9save");
+        var revPath = Path.join(__dirname, revPathRel);
+
         var secondTime = Date.now() + 100;
-        Fs.writeFile(fileName, "ABCDEFGH", function(err) {
-            R.saveSingleRevision("test_saving.txt", null,
-                function(err) {
+
+        var firstContent = "ABCDEFGH";
+        var secondContent = "123456789";
+
+        Fs.writeFile(fileName, firstContent, function(err) {
+            R.saveSingleRevision(leafName, null,
+                function(err, data1) {
                     assert.ok(!err);
 
-                    Fs.writeFileSync(fileName, "123456789", "utf8");
-
-                    R.saveSingleRevision("test_saving.txt", {
+                    R.saveSingleRevision(leafName, {
                         ts: secondTime,
                         silentsave: true,
                         restoring: false,
-                        patch: [Diff.patch_make("ABCDEFGH", "123456789")],
-                        length: "123456789".length
+                        patch: [Diff.patch_make(firstContent, secondContent)],
+                        length: secondContent.length
                     },
-                    function(err) {
+                    function(err, data2) {
                         assert.ok(!err, err);
+
+                        assert.equal(data2.absPath, revPathRel);
+                        assert.equal(data2.path, leafName);
                         assert.ok(Path.existsSync(revPath));
+
                         var contents = Fs.readFileSync(revPath, "utf8");
                         var lines = contents.split(/\n/);
 
                         // Account for the extra newline at the end
                         assert.equal(lines.length, 2 + 1);
+
                         var first = JSON.parse(lines[0]);
                         var secondRev = JSON.parse(lines[1]);
                         var firstKey = Object.keys(first)[0];
+                        assert.equal(data2.revision, secondRev.ts);
                         var firstRev = first[firstKey];
 
                         assert.equal(firstRev.silentsave, true);
                         assert.equal(firstRev.restoring, false);
                         assert.equal(firstRev.length, 8);
-                        assert.equal(firstRev.patch[0][0].diffs[0][1], "ABCDEFGH");
+                        assert.equal(firstRev.patch[0][0].diffs[0][1], firstContent);
                         assert.equal(secondRev.ts, secondTime);
 
                         next();
