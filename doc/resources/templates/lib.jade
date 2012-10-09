@@ -6,29 +6,44 @@
   else
     span #{title} (#{count})
 
+mixin makeHierarchy(obj)
+    div#inheritance
+        h6 Inheritance
+        ul#hierarchyTree
+          li
+            strong #{obj.id}
+          ul
+            for h in obj.hierarchy
+              li
+                mixin hierarchyTree(h)
+
 mixin hierarchyTree(hierarchyItem)
-  mixin link(hierarchyItem.id)
+  mixin link(hierarchyItem)
   -if (hierarchyItem.parents)
     for p in hierarchyItem.parents
-      ul
+      if p.parents
+        ul  
+         li
+            mixin hierarchyTree(p)
+      else
         li
           mixin hierarchyTree(p)
 
 mixin makeTag(obj, attributes)
-  -xmlBlobs = "<a:" + obj.define + "     "; 
+  -xmlBlobs = "<pre><code class='language-xml'><span class='tag'>&lt;<span class='title'>a:" + obj.define + "</span>"
 
   -for k in obj.children.filter(function(x){return x.type === 'attribute'})
-    -xmlBlobs += "\n     " + k.name + "=";
+    -xmlBlobs += "\n     <span class='" + (k.inheritedFrom ? "isInherited" : "") + "'><span class='attribute'>" + k.name + "</span>=";
     -types = [];
     -k.signatures[0].returns.forEach(function (r) {
           -if (r.type == "Boolean")
-                -types.push('"' + 'true | false' + '"')
+                -types.push('<span class="value">"' + 'true | false' + '"')
           -else
-                -types.push('"' + r.type + '"')
-       -xmlBlobs += types.join("|");
+                -types.push('<span class="value">"' + r.type + '"')
+       -xmlBlobs += types.join("|") + "</span></span>";
     -})
 
-  != markdown("```xml\n" + xmlBlobs + ">" + "\n```");
+  != xmlBlobs + "></span></code></pre>"
 
 mixin commonDescription(obj, parents)
   if typeof obj === 'string'
@@ -36,7 +51,8 @@ mixin commonDescription(obj, parents)
 
   if (obj.private !== true && obj.name.charAt(0) !== "$")
     title = obj.id + (obj.type ? ' (' + obj.type + ')' : '')
-    article.article(id=obj.path, data-title=title)
+    -var inheritedClass = obj.inheritedFrom ? "isInherited" : ""
+    article(id=obj.path, data-title=title, class="article #{inheritedClass}")
       .section.method
         .memberContent
           if obj.signatures
@@ -61,11 +77,6 @@ mixin commonDescription(obj, parents)
                           if obj.experimental
                             li
                               span.label.experimental Experimental
-                          if obj.inheritedFrom
-                            li
-                              span.label.inheritedFrom
-                                | Inherited from: 
-                                != link(obj.inheritedFrom)
                           if obj.readonly
                             li
                               span.label.read-only Read-Only
@@ -106,11 +117,16 @@ mixin commonDescription(obj, parents)
           div.sideToggler
 
             div(id='ellipsis_#{obj.id}', class='ellipsis_description')
-              mixin markdown(obj.short_description)
+                mixin markdown(obj.short_description)
 
             h3(id='#{obj.id}', class='methodToggle methodClicker inactive')
               &nbsp;&nbsp;&nbsp;
             div.description
+        
+              if obj.inheritedFrom
+                span.inheritedFrom
+                    | Inherited from: 
+                    != link(obj.inheritedFrom)
               mixin markdown(obj.description)
 
               if obj.bound && ~obj.bound.indexOf('#')
@@ -133,6 +149,7 @@ mixin commonDescription(obj, parents)
                 != returnTable(obj.returns, ["return-list", "table", "table-striped", "table-bordered"])
 
 mixin article(obj, methods, events, properties)
+  h4 Members
   #tabbable
     ul.nav.nav-tabs
       -attributes = obj.children.filter(function(x){return x.type === 'attribute'})
@@ -201,26 +218,18 @@ mixin api()
               mixin markdown(">" + obj.stability)
 
             if obj.hierarchy
-              div#inheritance
-                h6 Inheritance
-                ul#hierarchyTree
-                  li
-                    strong #{obj.id}
-                  ul
-                    for h in obj.hierarchy
-                      li 
-                        mixin hierarchyTree(h)
-
-            if obj.define && obj.children
-              div.xmlBlob
-               mixin makeTag(obj)
-
+                 mixin makeHierarchy(obj)
             if obj.description
               .section.description
                 .memberContent
                   mixin markdown(obj.description)
-          
-              mixin article(obj, obj.children.filter(function(x){return x.type === 'class method'}), obj.children.filter(function(x){return x.type === 'events'}), obj.children.filter(function(x){return x.type === 'class property'}))
+            
+            else if obj.define && obj.children
+              h4 XML Definition
+              div.xmlBlob
+               mixin makeTag(obj)
+            
+              mixin article(obj, obj.children.filter(function(x){return x.type === 'class method'}), obj.children.filter(function(x){return x.type === 'event'}), obj.children.filter(function(x){return x.type === 'class property'}))
 
 mixin short_description_list(collection)
   ul.method-details-list

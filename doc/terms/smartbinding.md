@@ -47,8 +47,8 @@ A smartbinding can be used by multiple elements referenced by id:
 
 The bindings element is a container for binding rules. Binding rules determine
 how an element renders the data that it's bound to. Some binding rules specify
-how data can be interacted with (i.e. {@link baseclass.multiselect.binding.select the select rule}).
-Check the {@link term.binding term binding rules} for more information.
+how data can be interacted with (_i.e._, the `select` rule).
+Check the [binding rules page](./binding_rules.html) for more information.
 
 ## Actions
 
@@ -58,11 +58,11 @@ and trigger several parts of the user interaction.
 * It determines whether a user action can be executed on the bound and/or 
      selected {@link term.datanode data node}.
 * It dispatches events, before and after the data is changed.
-* It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} 
-     that is pushed on the undo stack of the {@link element.actiontracker actiontracker} 
+* It creates a [command object](http://en.wikipedia.org/wiki/Command_pattern)
+     that is pushed on the undo stack of the [action tracker](./actiontracker.html)
      connected to the element that triggered the action.
 * The command object contains all the information to send the change back 
      to the server
 
 In short, an action rule is always triggered by the user, creates an 
-undo item and sends the change back to the server. Check the action rules for more information.
+undo item and sends the change back to the server.

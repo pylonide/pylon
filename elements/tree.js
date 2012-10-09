@@ -109,7 +109,7 @@
  *
  */
 /**
- * @attribute {String} Sets or gets the {@link term.datainstruction data instruction} that is used to load the new data.
+ * @attribute {String} get Sets or gets the {@link term.datainstruction data instruction} that is used to load the new data.
  *
  */
 /**

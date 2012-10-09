@@ -37,7 +37,7 @@
  * ```
  *
  * @class apf.frame
- * @define fieldset, frame
+ * @define frame
  * @container
  * @allowchild {elements}, {anyaml}
  *

@@ -25,9 +25,12 @@
  * An element specifying the settings of the APF application.
  * @class apf.appsettings
  * @define appsettings
+ * @logic
+ * @inherits apf.AmlElement
  * @allowchild auth, authentication, offline, printer, defaults
- * @todo describe defaults
+ * 
  */
+// @todo describe defaults
 /**
  * @attribute {Boolean} debug                   Sets or gets whether the debug screen is shown at startup.
  * 

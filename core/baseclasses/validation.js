@@ -213,7 +213,7 @@ apf.Validation = function(){
      * Puts this element in the error state, optionally showing the
      * error box if this element is invalid.
      *
-     * @method apf.Validation.validate
+     * @method validate
      * @param  {Boolean} [ignoreReq]  Specifies whether this element required check is turned on.
      * @param  {Boolean} [nosetError] Specifies whether the error box is displayed if this component does not validate.
      * @param  {Boolean} [force]      Specifies whether this element is in the error state, and doesn't check if the element's value is invalid.
@@ -336,20 +336,28 @@ apf.Validation = function(){
      */
     /**
      * @attribute  {Number}  min          Sets or gets the minimal value for which the value of this element is valid.
+     */
     /**
      * @attribute  {Number}  max          Sets or gets the maximum value for which the value of this element is valid.
+     */
     /**
      * @attribute  {Number}  minlength    Sets or gets the minimal length allowed for the value of this element.
+     */
     /**
      * @attribute  {Number}  maxlength    Sets or gets the maximum length allowed for the value of this element.
+     */
     /**
      * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. This rule is checked realtime when the element loses the focus.
+     */
     /**
      * @attribute  {String}   checkequal   Sets or gets the id of the element to check if it has the same value as this element.
+     */
     /**
      * @attribute  {String}   invalidmsg   Sets or gets the message displayed when this element has an invalid value. Use a `;` character to seperate the title from the message.
+     */
     /**
      * @attribute  {String}   validgroup   Sets or gets the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
+     */
     /**
      * @attribute  {String}   validtest    Sets or gets the instruction on how to test for success. This attribute is generally used to check the value on the server.
      * 

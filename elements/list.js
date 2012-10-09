@@ -95,65 +95,14 @@ apf.list      = function(struct, tagName){
     this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
 };
 
-/*
- * @class apf.thumbnail
- * @inheritdoc apf.list
- * 
- * #### Example
- * A small product search application using a list to display results.
- * 
- * ```xml
- *  <a:bar>
- *      <h1>Search for a product</h1>
- *      <a:textbox id="txtSearch" selectfocus="true" />
- *      <a:button onclick="search()" default="true">Search</a:button>
- *  </a:bar>
- * 
- *  <a:model id="mdlSearch">
- *      <data>
- *          <item title="Title 1" src="siteimg/slideshow_img/img1_small.jpg" descr="Descr 1"></item>
- *          <item title="Title 2" src="siteimg/slideshow_img/img2_small.jpg" descr="Descr 2"></item>
- *      </data>
- *  </a:model>
- * 
- *  <a:thumbnail 
- *    model         = "mdlSearch"
- *    autoselect    = "false" 
- *    width         = "400"
- *    height        = "400"
- *    caching       = "false" 
- *    empty-message = "No products found">
- *      <a:bindings>
- *          <a:caption match="[@title]" />
- *          <a:image match="[@src]" />
- *          <a:each match="[item]" />
- *      </a:bindings>
- *  </a:thumbnail>
- * 
- *  <a:script>
- *      function search(){
- *          mdlSearch.$loadFrom("http://localhost/search.php?keyword=" + txtSearch.getValue());
- *      }
- *  </a:script>
- * ```
- */
 apf.thumbnail = function(struct, tagName){
     this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
 };
 
-/**
- * @class apf.select
- * @inheritdoc apf.list
- * 
- */
 apf.select    = function(struct, tagName){
     this.$init(tagName || "select", apf.NODE_VISIBLE, struct);
 };
 
-/**
- * @class apf.select1
- * @inheritdoc apf.list
- */
 apf.select1   = function(struct, tagName){
     this.$init(tagName || "selectl", apf.NODE_VISIBLE, struct);
 };

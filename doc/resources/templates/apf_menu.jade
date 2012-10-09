@@ -1,4 +1,5 @@
-h2 UI Elements
+-var link = link || termLink;
+ input#live_search_toc
  h3 Containers
   ul.menu
    for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.container === true})
@@ -46,6 +47,12 @@ h2 UI Elements
    for obj in fullTree.children.filter(function(x){return x.private !== true && x.baseclass === true})
     li.menu-item
       mixin link(obj, ["baseclass"])
+
+ h3 Additional Classes
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.additional === true})
+    li.menu-item
+      mixin link(obj, ["additional"])
 
  h3 Terms
   ul.menu
