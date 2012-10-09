@@ -221,8 +221,7 @@ module.exports = ext.register("ext/language/language", {
         if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        var workspaceDir = window.cloud9config && cloud9config.workspaceDir;
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), workspaceDir]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
     },
     
     onEditorClick: function(event) {
