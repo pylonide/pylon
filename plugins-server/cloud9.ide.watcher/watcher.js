@@ -8,7 +8,6 @@
 
 var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
-require("colors");
 
 var WatcherPool = require("./watcher_pool");
 
@@ -45,7 +44,7 @@ module.exports = function setup(options, imports, register) {
     (function() {
 
         this.addWatcher = function(clientId, path, client) {
-            console.log("add watcher".yellow, clientId, path);
+            // console.log("add watcher".yellow, clientId, path);
             if (!this.clients[clientId])
                 this.clients[clientId] = {};
                 
@@ -54,9 +53,7 @@ module.exports = function setup(options, imports, register) {
 
             var self = this;
 
-            this.clients[clientId][path] = {};
-
-            this.pool.watch(path, self.onChange.bind(this, client), function(err, handle) {
+            this.pool.watch(path, self.onChange.bind(this, client), self.removeWatcher.bind(this, clientId), function(err, handle) {
                 if (err)
                     return console.error("can't add watcher for " + path, err);
                     
@@ -65,7 +62,7 @@ module.exports = function setup(options, imports, register) {
         };
         
         this.onChange = function(client, e) {
-            console.log("on change".green, e);
+            //console.log("on change".green, e);
             e.type = "watcher";
             client.send(JSON.stringify(e));
         };
@@ -82,7 +79,6 @@ module.exports = function setup(options, imports, register) {
             if (!message || message.command !== "watcher")
                 return false;
 
-console.log("cmd".blue, message);
             var clientId = client.id;
 
             if (!this.clients[clientId]) {

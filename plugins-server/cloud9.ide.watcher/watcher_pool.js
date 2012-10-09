@@ -34,7 +34,7 @@ function WatcherPool(vfs) {
         }, timeout);
     };
 
-    this.watch = function(path, onChange, callback) {
+    this.watch = function(path, onChange, onClose, callback) {
         var self = this;
         this.vfs.stat(path, {}, function(err, stat) {
             if (err)
@@ -56,6 +56,10 @@ function WatcherPool(vfs) {
                     e.subtype = isDir ? "directorychange" : "change";
                     onChange(e);
                 },
+                onClose: function() {
+                    delete self.watchers[path];
+                    onClose(path);
+                },
                 path: path
             };
 
@@ -66,15 +70,13 @@ function WatcherPool(vfs) {
                 else
                     watcher = new FileWatcher(self.vfs, path);
 
-                watcher.on("close", function() {
-                    delete self.watchers[path];
-                });
                 self.watchers[path] = watcher;
                 watcher.watch();
             }
 
             watcher.on("change", handle.onChange);
             watcher.on("delete", handle.onRemove);
+            watcher.on("close", handle.onClose);
 
             callback(null, handle);
         });

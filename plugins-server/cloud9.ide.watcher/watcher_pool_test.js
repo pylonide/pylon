@@ -32,7 +32,7 @@ module.exports = {
         fs.writeFile(file, "123", function(err) {
             assert.equal(err, null);
 
-            self.pool.watch(file, onChange, function(err, handle) {
+            self.pool.watch(file, onChange, onClose, function(err, handle) {
                 assert.equal(err, null);
                 assert.ok(self.pool.watchers[file] instanceof FileWatcher);
 
@@ -40,6 +40,7 @@ module.exports = {
             });
 
             function onChange() {};
+            function onClose() {};
         });
     },
     
@@ -49,7 +50,7 @@ module.exports = {
         fs.mkdir(file, function(err) {
             assert.equal(err, null);
 
-            self.pool.watch(file, onChange, function(err, handle) {
+            self.pool.watch(file, onChange, onClose, function(err, handle) {
                 assert.equal(err, null);
                 assert.ok(self.pool.watchers[file] instanceof DirWatcher);
 
@@ -57,6 +58,7 @@ module.exports = {
             });
 
             function onChange() {};
+            function onClose() {};
         });
     },
     
@@ -66,10 +68,10 @@ module.exports = {
         fs.writeFile(file, "123", function(err) {
             assert.equal(err, null);
     
-            self.pool.watch(file, onChange, function(err, h1) {
+            self.pool.watch(file, onChange, onClose, function(err, h1) {
                 assert.equal(err, null);
                 
-                self.pool.watch(file, onChange, function(err, h2) {
+                self.pool.watch(file, onChange, onClose, function(err, h2) {
                     assert.equal(err, null);
                 
                     
@@ -84,6 +86,7 @@ module.exports = {
             });
             
             function onChange() {};
+            function onClose() {};
         });
     }
 };
