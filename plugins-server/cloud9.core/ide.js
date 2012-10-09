@@ -71,7 +71,7 @@ util.inherits(Ide, EventEmitter);
         if (statePlugin) {
             statePlugin.on("statechange", function(state) {
                 state.workspaceDir = statePlugin.workspace.workspaceDir;
-                state.davPrefix =  statePlugin.ide.davPrefix;
+                state.davPrefix = statePlugin.ide.davPrefix;
             });
         }
     };
