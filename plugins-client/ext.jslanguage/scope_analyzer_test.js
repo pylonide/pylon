@@ -194,6 +194,19 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) return callback(err); }); }");
+    },
+    "test be less complainy" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var foo = true ? false\n: { a : 1\n b : 2}");
     }
 };
 

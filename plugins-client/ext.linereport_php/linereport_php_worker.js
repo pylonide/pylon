@@ -9,8 +9,6 @@ define("ext/linereport_php/linereport_php_worker", ["require", "exports", "modul
 var baseLanguageHandler = require("ext/linereport/linereport_base");
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-
-
 handler.disabled = false;
 
 handler.handlesLanguage = function(language) {
