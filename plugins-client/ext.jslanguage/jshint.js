@@ -51,6 +51,8 @@ handler.analyzeSync = function(doc, ast) {
                 type = "error";
             if (reason.indexOf("Missing semicolon") !== -1)
                 type = "info";
+            if (reason.indexOf("better written in dot") !== -1)
+                type = "info";
             if (reason.indexOf("used out of scope") !== -1)
                 type = "info";
             if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
