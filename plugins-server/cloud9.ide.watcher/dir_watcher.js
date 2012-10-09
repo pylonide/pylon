@@ -7,9 +7,9 @@
 "use strict";
 
 var util = require("util");
-var FileWatcher= require("file_watcher");
+var FileWatcher= require("./file_watcher");
 
-module.exports = FileWatcher;
+module.exports = DirWatcher;
 
 function DirWatcher(vfs, path) {
     FileWatcher.call(this, vfs, path);
@@ -25,8 +25,53 @@ util.inherits(DirWatcher, FileWatcher);
         if (!this.watcher)
             return;
 
-        console.log(event, path);
-        self.emit("change");
+        this.vfs.stat(this.path, {}, function(err, stat) {
+            var exists = !err && stat && !stat.err;
+
+            if (!exists)
+                self.close();
+            else if (event == "rename") {
+                self.readdir(function(err, files) {
+                    if (err) return console.error(err);
+
+                    self.emit("change", {
+                        path: self.path,
+                        files: files,
+                        lastmod : stat.mtime
+                    });
+                });
+            }
+        });
+    };
+
+    this.readdir = function(callback) {
+        this.vfs.readdir(this.path, {encoding: null}, function(err, meta) {
+            if (err)
+                return callback(err);
+
+            var stream = meta.stream;
+            var files = [];
+
+            stream.on("data", function(stat) {
+                files.push({
+                    type: stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
+                    name: stat.name
+                });
+            });
+
+            var called;
+            stream.on("error", function(err) {
+                if (called) return;
+                called = true;
+                callback(err);
+            });
+
+            stream.on("end", function() {
+                if (called) return;
+                called = true;
+                callback(null, files);
+            });
+        });
     };
 
 }).call(DirWatcher.prototype);

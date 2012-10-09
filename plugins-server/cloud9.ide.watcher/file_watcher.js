@@ -22,7 +22,7 @@ util.inherits(FileWatcher, EventEmitter);
 
 (function() {
 
-    this.watch = function(callback) {
+    this.watch = function() {
         var self = this;
         this.vfs.watch(this.path, {file:false, persistent: true}, function(err, meta) {
             if (err) {
@@ -47,17 +47,24 @@ util.inherits(FileWatcher, EventEmitter);
             return;
 
         this.vfs.stat(this.path, {}, function(err, stat) {
-            //console.log("change", self.path, event, stat);
-
             var exists = !err && stat && !stat.err;
 
             if (!exists) {
-                self.emit("delete");
+                self.emit("delete", {
+                    path: self.path
+                });
                 self.close();
             } else {
-                self.emit("change");
+                self.emit("change", {
+                    path: self.path,
+                    lastmod: stat.mtime
+                });
             }
         });
+    };
+
+    this.hasListeners = function() {
+        return this.listeners("delete").length || this.listeners("change").length;
     };
 
     this.close = function() {

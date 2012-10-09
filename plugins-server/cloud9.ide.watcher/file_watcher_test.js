@@ -21,12 +21,6 @@ module.exports = {
         execFile("rm", ["-rf", base], {}, done);
     },
 
-    // watch dir
-      // detect new files/dir
-      // detect deleted files/dir
-      // ignore file/dir changes
-      // detect rm dir itself
-
     "test non existing file should emit close directly": function(done) {
         var w = new FileWatcher(this.vfs, base + "/juhu.txt");
         w.watch();
@@ -84,7 +78,54 @@ module.exports = {
                 done();
             });
         });
+    },
+
+    "test remove parent directory should emit delete": function(done) {
+        var self = this;
+        var file = base + "/inner.txt";
+
+        fs.writeFile(file, "123", function(err) {
+            assert.equal(err, null);
+
+            var w = new FileWatcher(self.vfs, file);
+            w.watch();
+
+            var changed = false;
+
+            // trigger change
+            execFile("rm", ["-rf", base], {}, function() {});
+
+            w.on("delete", function() {
+                changed = true;
+            });
+
+            w.on("close", function() {
+                assert.ok(changed);
+                done();
+            });
+        });
+    },
+
+    "test change event should contain path and last modified time": function(done) {
+        var file = base + "/new.txt";
+
+        var w = new FileWatcher(this.vfs, file);
+        w.watch();
+
+        // create new file
+        fs.writeFile(file, "1234", function() {});
+
+        w.on("change", function(e) {
+            assert.equal(e.path, file);
+            assert.ok(e.lastmod);
+            w.close();
+        });
+
+        w.on("close", function() {
+            done();
+        });
     }
+
 };
 
 !module.parent && require("asyncjs").test.testcase(module.exports, "Project").exec();
