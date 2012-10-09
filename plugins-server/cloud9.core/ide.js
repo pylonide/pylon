@@ -67,11 +67,12 @@ util.inherits(Ide, EventEmitter);
 
     this.init = function(exts) {
         this.workspace.createPlugins(exts);
+        var _self = this;
         var statePlugin = this.workspace.getExt("state");
         if (statePlugin) {
             statePlugin.on("statechange", function(state) {
-                state.workspaceDir = this.workspace.workspaceDir;
-                state.davPrefix =  this.ide.davPrefix;
+                state.workspaceDir = _self.workspace.workspaceDir;
+                state.davPrefix =  _self.ide.davPrefix;
             });
         }
     };
