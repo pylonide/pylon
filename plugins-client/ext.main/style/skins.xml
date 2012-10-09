@@ -1722,6 +1722,12 @@
             cursor: default;
         }
         
+        .c9-simple-btnIcon {
+            background-repeat: no-repeat;
+            padding-left: 18px;
+            padding-top: 2px;
+        }
+        
         .c9-simple-btn.btn-terminal {
             color: #909090;
             font-size: 11px;
