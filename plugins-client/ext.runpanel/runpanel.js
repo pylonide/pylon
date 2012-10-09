@@ -44,13 +44,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var _self = this;
 
         this.markupInsertionPoint = colLeft;
-
+/*
         panels.register(this, {
             position : 3000,
             caption: "Run & Debug",
             "class": "rundebug"
         });
-
+*/
         commands.addCommand({
             name: "run",
             "hint": "run and debug a node program on the server",
@@ -77,7 +77,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         this.nodes.push(
             this.mnuRunCfg = new apf.menu({
-                "id" : "mnuRunCfg",
+                "id" : "mnuRunCfg",/*
                 "onprop.visible" : function(e){
                     if (e.value) {
                         if (!this.populated) {
@@ -92,7 +92,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                         else
                             _self.mnuRunCfg.firstChild.enable();
                     }
-                }
+                }*/
             }),
 
             menus.$insertByIndex(barTools, new apf.splitbutton({
@@ -139,15 +139,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
 
         var c = 0;
+/*
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
             caption  : "no run history",
             disabled : true,
         }), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
+*/
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
             caption : "Configure....",
             onclick : function(){
-                _self.showRunConfigs(false);
+                settings.show()
+                /*_self.showRunConfigs(false);*/
             }
         }), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
@@ -165,7 +168,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
         }), c += 100);
 
-        settings.addSettings("General", markupSettings);
+        settings.addSettings("Run Configuration", markupSettings);
 
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/node-version", [
@@ -180,7 +183,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 ["debug", "false"],
                 ["autohide", "true"]
             ]);
-
+/*
             var runConfigs = e.model.queryNode("auto/configurations");
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
                 var setLast = false;
@@ -201,6 +204,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
 
             _self.model.load(runConfigs);
+*/
         });
 
         function setActiveFile(page){
@@ -342,7 +346,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             .attr("args", "").node();
 
         var node = this.model.appendXml(cfg);
-        this.$addMenuItem(node);
+        //this.$addMenuItem(node);
 
         lstRunCfg.select(node);
     },
@@ -362,24 +366,24 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     run : function(debug) {
         var node;
 
-        if (window.winRunPanel && winRunPanel.visible)
+        /*if (window.winRunPanel && winRunPanel.visible)
             node = lstRunCfg.selected;
-        else {
+        else {*/
             node = this.model.queryNode("node()[@last='true']")
                 || this.model.queryNode("config[@curfile]");
-        }
-
+        //}
+/*
         if (node.getAttribute("curfile")
           && this.excludedTypes[node.getAttribute("path").split(".").pop()]) {
             this.showRunConfigs(false);
             return;
         }
-
+*/
         this.runConfig(node, this.shouldRunInDebugMode());
 
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
-
+/*
     $populateMenu : function() {
         var menu = this.mnuRunCfg;
 
@@ -421,7 +425,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         }), divider);
     },
-
+*/
     runConfig : function(config, debug) {
         //ext.initExtension(this);
         var model = settings.model;

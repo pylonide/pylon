@@ -1,24 +1,47 @@
 
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:model id="mdlRunnerSelector2">
-        <data>
-            <element caption="Auto" value="auto" />
-            <element caption="Node.js 0.6.x" value="0.6.x" />
-            <element caption="Node.js 0.4.x" value="0.4.x" />
-            <!--element caption="Python" value="py" /-->
-        </data>
-    </a:model>
-    <a:hbox position="19000" edge="2 5 5 5" align="center" class="underlined">
-        <a:label flex="1">Node.js Runtime</a:label>        
-        <a:dropdown
-          model     = "mdlRunnerSelector2"
-          width     = "100"  
-          height    = "21"
-          disabled  = "{!lstRunCfg.selected}"
-          value     = "[{require('core/settings').model}::auto/node-version/@version]"
-          default   = "auto"
-          each      = "[element]"
-          caption   = "[@caption]"
-          eachvalue = "[@value]" />
-    </a:hbox>
+    <a:vbox>
+        <a:hbox edge="0 5 2 7" align="center" class="underlined">
+            <a:label width="100">File Path</a:label>
+            <a:textbox 
+              flex="1" 
+              value="[{require('ext/settings/settings').model}::auto/configurations/config/@name]"
+              class="fixMargin5" 
+              margin="5 0 0" />
+            <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
+            
+            <!--a:divider span="2" skin="c9-divider-hor" /-->
+            <a:model id="mdlRunnerSelector">
+                <data>
+                    <element caption="Default" value="default" />
+                    <element caption="Node.js (Auto)" value="node auto" />
+                    <element caption="Node.js 0.6.x" value="node 0.6.x" />
+                    <element caption="Node.js 0.4.x" value="node 0.4.x" />
+                    <element caption="Apache+PHP" value="apache" />
+                    <element caption="PHP CLI" value="php" />
+                    <element caption="Python" value="python" />
+                    <element caption="Ruby" value="ruby" />
+                </data>
+            </a:model>
+        </a:hbox>
+        <a:hbox edge="5 5 7 7" align="center" class="underlined">
+          <a:label width="100">Runtime</a:label>
+          <a:dropdown id="ddRunnerSelector"
+              model     = "mdlRunnerSelector"
+              flex      = "1"
+              value     = "[{require('ext/settings/settings').model}::auto/configurations/config/@value]"
+              default   = "default"
+              each      = "[element]"
+              caption   = "[@caption]"
+              eachvalue = "[@value]" />
+        </a:hbox>
+        <a:hbox edge="0 5 2 7" align="center">
+            <a:label width="100">Cmd Line Args</a:label>
+            <a:textbox id="txtCmdArgs" 
+              flex="1" 
+              value="[{require('ext/settings/settings').model}::auto/configurations/config/@args]"
+              class="fixMargin5" 
+              margin="5 0 0" />
+        </a:hbox>
+    </a:vbox>
 </a:application>
