@@ -100,7 +100,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                     type: "python-data",
                     stream: "stdout",
                     data: info.join("\n"),
-                    extra: null,
+                    extra: {tip: true},
                     pid: msg.pid
                 });
             }

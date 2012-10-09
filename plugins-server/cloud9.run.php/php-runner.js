@@ -95,7 +95,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
                     type: "php-data",
                     stream: "stdout",
                     data: info.join("\n"),
-                    extra: null,
+                    extra: {tip: true},
                     pid: msg.pid
                 });
             }
