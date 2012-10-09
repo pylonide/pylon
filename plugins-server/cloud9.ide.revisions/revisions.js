@@ -267,7 +267,6 @@ module.exports = function setup(options, imports, register) {
                     next();
                 },
                 function (e) {
-                            //console.log(revObj);
                     callback(error, revObj);
                 }
             );
@@ -516,7 +515,10 @@ module.exports = function setup(options, imports, register) {
             fs.mkdirP(Path.dirname(data.revPath), function(err) {
                 if (err) return data.cb(err);
                 fs.writeFile(data.revPath, data.content, "utf8", function(err) {
-                    data.cb.call(_self, err, {
+                    if (err)
+                        return data.cb(err);
+
+                    data.cb.call(_self, null, {
                         absPath: data.revPath,
                         path: data.realPath,
                         revision: data.revision.ts

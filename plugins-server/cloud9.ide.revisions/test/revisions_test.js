@@ -3,14 +3,13 @@
 var assert = require("assert");
 var sinon = require("sinon");
 var Path = require("path");
-var RevisionsModule = require("./revisions");
+var RevisionsModule = require("../revisions");
 var rimraf = require("rimraf");
-var Diff_Match_Patch = require("./diff_match_patch");
+var Diff_Match_Patch = require("../diff_match_patch");
 var VfsLocal = require("vfs-local");
 var Fs = require("fs");
 var util = require('util');
 
-var Diff_Match_Patch = require("./diff_match_patch");
 var Diff = new Diff_Match_Patch();
 
 var BASE_URL = "/sergi/node_chat";
@@ -20,6 +19,7 @@ var assertPath = function(path, shouldExist, message) {
 };
 
 var sampleData = Fs.readFileSync(Path.join(__dirname, "revobj.tst"), "utf8");
+var ___dirname = Path.resolve(__dirname, "..");
 
 module.exports = {
     setUp: function(next) {
@@ -27,7 +27,7 @@ module.exports = {
         var Plugin;
 
         var ide = {
-            workspaceDir: __dirname,
+            workspaceDir: ___dirname,
             options: {
                 baseUrl: BASE_URL
             },
@@ -46,7 +46,7 @@ module.exports = {
         };
 
         var fs = VfsLocal({
-            root: __dirname,
+            root: ___dirname,
             checkSymlinks: true
         });
 
@@ -69,8 +69,8 @@ module.exports = {
 
     tearDown: function(next) {
 
-        Fs.unlink(__dirname + "/test_saving.txt", function(){});
-        var revPath = __dirname + "/.c9revisions";
+        Fs.unlink(___dirname + "/test_saving.txt", function(){});
+        var revPath = Path.join(___dirname, ".c9revisions");
         rimraf(revPath, function(err) {
             if (!err)
                 next();
@@ -111,9 +111,9 @@ module.exports = {
     },
 
     "test getRevisions with a valid path": function(next) {
-        var file = ".c9revisions/" + Path.basename(__filename) + ".c9save";
+        var file = Path.join(___dirname, ".c9revisions", Path.basename(__filename) + ".c9save");
         try {
-            Fs.mkdirSync(".c9revisions");
+            Fs.mkdirSync(Path.join(___dirname, ".c9revisions"));
             Fs.writeFileSync(file, "", "utf8");
         } catch(e) { assert(false, e); }
 
@@ -202,9 +202,9 @@ module.exports = {
         var R = this.revisionsPlugin;
 
         var leafName = "test_saving.txt";
-        var fileName = Path.join(__dirname, leafName);
+        var fileName = Path.join(___dirname, leafName);
         var revPathRel = Path.join(".c9revisions", "test_saving.txt.c9save");
-        var revPath = Path.join(__dirname, revPathRel);
+        var revPath = Path.join(___dirname, revPathRel);
 
         var secondTime = Date.now() + 100;
 
@@ -214,7 +214,7 @@ module.exports = {
         Fs.writeFile(fileName, firstContent, function(err) {
             R.saveSingleRevision(leafName, null,
                 function(err, data1) {
-                    assert.ok(!err);
+                    assert.ok(!err, err);
 
                     R.saveSingleRevision(leafName, {
                         ts: secondTime,
@@ -255,15 +255,15 @@ module.exports = {
     },
 
     "test retrieve revision for a new file [flow]": function(next) {
-        var revPath = __dirname + "/.c9revisions";
-        var savePath = revPath + "/" + Path.basename(__filename) + ".c9save";
+        var revPath = Path.join(___dirname, ".c9revisions");
+        var savePath = Path.join(revPath, "package.json.c9save");
         if (Path.existsSync(savePath))
             Fs.unlinkSync(savePath);
 
         assertPath(savePath, false, "Revisions file shouldn't be there");
 
         var R = this.revisionsPlugin;
-        R.getRevisions(Path.basename(__filename), function(err, rev) {
+        R.getRevisions("package.json", function(err, rev) {
             assert.ok(err === null, err);
             assert.ok(typeof rev === "object");
 
@@ -285,8 +285,8 @@ module.exports = {
     },
 
     "!test saving revision from message": function(next) {
-        var fileName = __dirname + "/test_saving.txt";
-        var revPath = __dirname + "/.c9revisions";
+        var fileName = ___dirname + "/test_saving.txt";
+        var revPath = ___dirname + "/.c9revisions";
         var R = this.revisionsPlugin;
 
         R.ide.broadcast = sinon.spy();
@@ -337,8 +337,8 @@ module.exports = {
     },
 
     "!test saving revision": function(next) {
-        var fileName = __dirname + "/test_saving.txt";
-        var revPath = __dirname + "/.c9revisions";
+        var fileName = ___dirname + "/test_saving.txt";
+        var revPath = ___dirname + "/.c9revisions";
         var R = this.revisionsPlugin;
 
         R.ide.broadcast = sinon.spy();

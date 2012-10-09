@@ -13,7 +13,6 @@ var async = require("asyncjs");
 var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.runners = runners;
     this.eventEmitter = eventEmitter;
-
     this.processes = {};
 };
 
@@ -73,12 +72,11 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         if (this.disposed)
             return onStart("cannot run script - the process manager has already been disposed");
 
-        var self = this;
-
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
             return onStart("Could not find runner with ID " + runnerId);
 
+        var self = this;
         runnerFactory(options, this.eventEmitter, "", function (err, child) {
             if (err)
                 return onStart(err);
@@ -105,7 +103,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
                     runnerId, cmd,
                     function(err, pid) {
                         if (err)
-                            next(err);
+                            return next(err);
                     },
                     function(code, stdout, stderr) {
                         //console.log(code, stdout, stderr)
@@ -157,7 +155,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         if (typeof callback !== "function") {
             callback = function () {};
         }
-        
+
         var child = this.processes[pid];
         if (!child)
             return callback("Process does not exist");
