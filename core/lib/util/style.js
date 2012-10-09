@@ -477,7 +477,7 @@ apf.getWidthDiff = function(oHtml){
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
  */
-apf.getVerBorders = function(oHtml){
+apf.getHeightDiff = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
         return 0;
