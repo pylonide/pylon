@@ -8,23 +8,18 @@ html(xmlns="http://www.w3.org/1999/xhtml")
     mixin head
   
   body
-    mixin navBar
-    #nonFooter
-      #wrapper
-        .content
-          .row.centerpiece
-            .span3#sidebarContainer
-              #sidebar
-                include apf_menu.jade
-            .span9#mainContent
-              #documentation
-                -if (isIndex)
-                  mixin markdown(indexContent)
-                -else
-                  mixin api()
+    div.container
+        .span3#sidebarContainer
+          #sidebar
+            include apf_menu.jade
+        .span9#mainContent
+          #documentation
+            -if (isIndex)
+              mixin markdown(indexContent)
+            -else
+              mixin api()
 
-              div(id="disqus_thread")
-      .push
-    mixin footer
-  
+          div(id="disqus_thread")
+    .push
+
     mixin endingScripts

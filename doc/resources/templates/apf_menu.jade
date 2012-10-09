@@ -1,4 +1,5 @@
-h2 UI Elements
+-var link = link || termLink;
+ input#live_search_toc
  h3 Containers
   ul.menu
    for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.container === true})
@@ -47,4 +48,33 @@ h2 UI Elements
     li.menu-item
       mixin link(obj, ["baseclass"])
 
-  
+ h3 Additional Classes
+  ul.menu
+   for obj in fullTree.children.filter(function(x){return x.private !== true && x.additional === true})
+    li.menu-item
+      mixin link(obj, ["additional"])
+
+ h3 Terms
+  ul.menu
+    li
+        a(href="./actionrules.html") Action Rules
+    li
+        a(href="./baseclass.html")   Base Classes
+    li
+        a(href="./bindingrules.html") Binding Rules
+    li
+        a(href="./caret.html") Caret
+    li
+        a(href="./datainstruction.html") Data Instructions
+    li
+        a(href="./datanode.html") Data Node
+    li
+        a(href="./eachnode.html") Each Node
+    li
+        a(href="./livemarkup.html") Live Markup
+    li
+        a(href="./locking.html") Locking
+    li
+        a(href="./propertybinding.html") Property Binding
+    li
+        a(href="./smartbinding.html") Smart Binding

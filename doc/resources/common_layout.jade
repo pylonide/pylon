@@ -1,6 +1,6 @@
 -var dirPrefix = "./";
--var jsDoc = 'false'
 -var landingPage = 'false'
+-var pTitle = classId || pageTitle;
 
 mixin doctype
   !!! 5
@@ -18,29 +18,28 @@ mixin head
   -if (isIndex)
     title #{title}
   -else
-    title #{title} - #{classId}
+    title #{title} - #{pTitle}
 
   meta(name="generator", content="panino-doc-build")
   meta(name="author", content="Garen J. Torikian")
 
   meta(name="viewport", content="width=device-width,initial-scale=1")
 
-  link(rel="stylesheet", href="./assets/csses/bootstrap.min.css")
-  link(rel="stylesheet", href="./assets/csses/prettify.css")
-  link(rel="stylesheet", href="./assets/csses/refguide_overrides.css")
+  link(rel="stylesheet", href="/assets/csses/bootstrap.min.css")
+  link(rel="stylesheet", href="/assets/csses/prettify.css")
+  link(rel="stylesheet", href="/assets/csses/refguide_overrides.css")
 
-  link(href="./assets/images/favicon.ico", rel="icon", type="image/x-icon")
+  link(href="/assets/images/favicon.ico", rel="icon", type="image/x-icon")
 
   link(type="text/css", rel="stylesheet", href="//yandex.st/highlightjs/6.1/styles/vs.min.css")
 
-  script(src="./assets/javascripts/jquery.js")
-  script(src="./assets/javascripts/clicker.js")
-  script(src="./assets/javascripts/jquery.collapse.js")
-  script(src="./assets/javascripts/jquery.cookie.js")
-  script(src="./assets/javascripts/bootstrap-dropdown.js")
-  script(src="./assets/javascripts/bootstrap-tab.js")
-  script(src="./assets/javascripts/jquery-scrollspy.js")
-  script(src="./assets/javascripts/prettify-extension.js")
+  script(src="/assets/javascripts/jquery.js")
+  script(src="/assets/javascripts/clicker.js")
+  script(src="/assets/javascripts/jquery.collapse.js")
+  script(src="/assets/javascripts/jquery.cookie.js")
+  script(src="/assets/javascripts/bootstrap-dropdown.js")
+  script(src="/assets/javascripts/bootstrap-tab.js")
+  script(src="/assets/javascripts/jquery-scrollspy.js")
   
 mixin navBar
   div.navbar.navbar-fixed-top
@@ -60,19 +59,7 @@ mixin footer
 
 
 mixin endingScripts
-  // scripts concatenated and minified via ant build script
-  <script defer src="./assets/javascripts/plugins.js"></script>
-  <script defer src="./assets/javascripts/prettify.js"></script>
-  <script defer src="./assets/javascripts/prettify-extension.js"></script>
-  <script defer src="./assets/javascripts/ux.js"></script>
-
-  //-<script defer src="tree.js"></script>
-  // end scripts
-
-  //if lt IE 7
-    script(src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js")
-    script
-      window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
+  script(src="/assets/javascripts/ux.js")
 
 mixin markdown(text, inline)
   != markdown(text, inline)

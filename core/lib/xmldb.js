@@ -31,6 +31,7 @@
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ * @additional
  *
  * @default_private
  */

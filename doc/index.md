@@ -1,4 +1,3 @@
-
 # APF API
 
-Here's the API for APF.
+Here are the API docs for APF. Hooray !

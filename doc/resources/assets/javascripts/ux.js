@@ -30,10 +30,6 @@ $(function () {
     .on('submit', function () {
         return false;
     }).find('input');
-
-    // init prettyprint
-    $('pre > code').addClass('prettyprint');
-    prettyPrint();
 });
 
 $(document).ready(function () {
@@ -68,61 +64,6 @@ $(document).ready(function () {
         else if (sx + document.documentElement.offsetWidth > 1010) sx = 1010 - document.documentElement.offsetWidth;
     }
     else sx = 0;
-
-    $('.members').each(function (i) {
-        var position = $(this).position();
-        var $classContent = $(this).closest('.classContent');
-        
-        $(this).scrollspy({
-            min: $classContent.position().top - 35,
-            max: $classContent.position().top + $classContent.height(),
-            onEnter: function (element, position) {
-                var $pagination = $(element);
-                var $paginationContent = $('.membersContent pos' + i);
-                var $tabs = $('.tabs pos' + i);
-
-                $paginationContent.css('left', -1 * sx);
-                $paginationContent.css('top', 0);
-
-                $pagination.addClass('shadow').stop().css({
-                    height: 31,
-                    'top': 33
-                }).closest('.classContent').addClass('srolled');
-
-                $tabs.addClass('tabsSansBorder');
-            },
-            onLeave: function (element, position) {
-                var $pagination = $(element);
-                var $paginationContent = $('.membersContent pos' + i);
-                var $tabs = $('.tabs pos' + i);
-
-                $paginationContent.stop().css({
-                    top: 11
-                }); 
-                $pagination.css({
-                    'position': 'absolute',
-                    'top': 193
-                });
-                $pagination.stop().removeClass('shadow').css({
-                    height: 42
-                });
-
-                $paginationContent.css('left', 0);
-               // setTimeout(function () {
-                    $paginationContent.css({
-                        'top': ''
-                    });
-                    $pagination.css({
-                        'position': '',
-                        'top': ''
-                    });
-                    $paginationContent.css('left', 0);
-                    $pagination.closest('.classContent').removeClass('srolled')
-                    $tabs.removeClass('tabsSansBorder');
-               // }, 300);
-            }
-        });
-    });
 
     $('span.methodClicker, article.article, h3.methodClicker').each(function () {
         var a = $(this);

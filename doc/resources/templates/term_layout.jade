@@ -1,5 +1,5 @@
 include ../common_layout
-include xml_lib
+include lib
 
 mixin doctype
 
@@ -8,7 +8,6 @@ html(xmlns="http://www.w3.org/1999/xhtml")
     mixin head
   
   body
-    mixin navBar
     #nonFooter
       #wrapper
         .content
@@ -18,10 +17,10 @@ html(xmlns="http://www.w3.org/1999/xhtml")
                 include apf_menu
             .span9#mainContent
               #documentation
-                -if (isIndex)
-                  mixin markdown(indexContent)
-                -else
-                  mixin xml_api()
+              div.title
+                  h1.pageTitle #{pageTitle}
+              
+              #content!= content
 
               div(id="disqus_thread")
       .push
