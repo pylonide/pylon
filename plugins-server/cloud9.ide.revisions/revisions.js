@@ -32,18 +32,19 @@ var name = "revisions";
 
 module.exports = function setup(options, imports, register) {
     var fs;
-    function RevisionsPlugin(ide, workspace) {
+
+    var RevisionsPlugin = function RevisionsPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
 
-        var self = this;
         this.hooks = ["command"];
         this.name = name;
 
+        var _self = this;
         // This queue makes sure that changes are saved asynchronously but orderly
         this.savingQueue = Async.queue(function(data, callback) {
             var msg = data.message;
-            self.saveSingleRevision(msg.path, msg.revision, function(err, revisionInfo) {
-                callback(err, revisionInfo, data._user, msg, data._error);
+            _self.saveSingleRevision.call(_self, msg.path, msg.revision, function(err, revisionInfo) {
+                callback.call(_self, err, revisionInfo, data._user, msg, data._error);
             });
         }, 1);
     }
@@ -56,18 +57,20 @@ module.exports = function setup(options, imports, register) {
                 return _error(err.toString());
             }
 
-            self.broadcastConfirmSave(message.path, revisionInfo.revision);
+            this.broadcastConfirmSave(message.path, revisionInfo.revision);
             if (message.forceRevisionListResponse !== true)
                 return;
 
-            self.getAllRevisions(revisionInfo.absPath, function(_err, revObj) {
+            var _self = this;
+            this.getAllRevisions(revisionInfo.absPath, function(_err, revObj) {
                 if (_err) {
                     return _error("Error retrieving revisions for file " +
                         revisionInfo.absPath + "\n" + _err);
                 }
 
-                self.broadcastRevisions.call(self, revObj, user, {
-                    path: message.path
+                _self.broadcastRevisions.call(_self, revObj, user, {
+                    path: message.path,
+                    _revPath: revisionInfo.absPath
                 });
             });
         };
@@ -81,7 +84,7 @@ module.exports = function setup(options, imports, register) {
                 message: message,
                 _user: user,
                 _error: _error
-            }, self.onRevisionSaved);
+            }, this.onRevisionSaved.bind(this));
         };
 
         this.onGetRevisionHistory = function(user, message, _error) {
@@ -89,13 +92,14 @@ module.exports = function setup(options, imports, register) {
                 return _error("No path sent for the file");
             }
 
+            var _self = this;
             this.getRevisions(message.path, function(err, revObj) {
                 if (err) {
                     return _error("There was a problem retrieving the revisions" +
                         " for the file " + message.path + ":\n" + err);
                 }
 
-                self.broadcastRevisions.call(self, revObj, user, {
+                _self.broadcastRevisions.call(_self, revObj, user, {
                     id: message.id || null,
                     nextAction: message.nextAction,
                     path: message.path
@@ -178,9 +182,9 @@ module.exports = function setup(options, imports, register) {
                 return false;
             }
 
-            var self = this;
+            var _self = this;
             var _error = function(msg) {
-                self.broadcastError(message.subCommand, msg, user);
+                _self.broadcastError(message.subCommand, msg, user);
             };
 
             switch (message.subCommand) {
@@ -188,7 +192,7 @@ module.exports = function setup(options, imports, register) {
                 // on the client as is merely passed to the server in order to
                 // save it.
                 case "saveRevision":
-                    self.onSaveRevision.call(self, user, message, _error);
+                    _self.onSaveRevision.call(_self, user, message, _error);
                     break;
 
                 // The client requests the history of revisions for a particular
@@ -196,11 +200,11 @@ module.exports = function setup(options, imports, register) {
                 // original contents of that file (the ones where diffs are applied
                 // in order to get the current file).
                 case "getRevisionHistory":
-                    self.onGetRevisionHistory.call(self, user, message, _error);
+                    _self.onGetRevisionHistory.call(_self, user, message, _error);
                     break;
 
                 case "getRealFileContents":
-                    self.onGetRealFileContents.call(self, user, message, _error);
+                    _self.onGetRealFileContents.call(_self, user, message, _error);
                     break;
 
                 case "closeFile":
@@ -210,11 +214,11 @@ module.exports = function setup(options, imports, register) {
                     break;
 
                 case "removeRevision":
-                    self.onRemoveRevision.call(self, user, message, _error);
+                    _self.onRemoveRevision.call(_self, user, message, _error);
                     break;
 
                 case "moveRevision":
-                    self.onmoveRevision.call(self, user, message, _error);
+                    _self.onmoveRevision.call(_self, user, message, _error);
                     break;
             }
             return true;
@@ -263,17 +267,18 @@ module.exports = function setup(options, imports, register) {
                     next();
                 },
                 function (e) {
+                            //console.log(revObj);
                     callback(error, revObj);
                 }
             );
         };
 
         this.getAllRevisions = function(absPath, callback) {
-            var self = this;
+            var _self = this;
             fs.readFile(absPath, "utf8", function(err, data) {
                 if (err) return callback(err);
 
-                self.extractRevisions(data, callback);
+                _self.extractRevisions(data, callback);
             });
         };
 
@@ -305,14 +310,14 @@ module.exports = function setup(options, imports, register) {
             }
             // Path of the final backup file inside the workspace
             var absPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
-            var self = this;
+            var _self = this;
             // does the revisions file exists?
             fs.exists(absPath, function(exists) {
                 if (exists)
-                    self.getAllRevisions(absPath, callback);
+                    _self.getAllRevisions(absPath, callback);
                 else
                     // create new file
-                    self.saveSingleRevision(filePath, null, callback);
+                    _self.saveSingleRevision(filePath, null, callback);
             });
         };
 
@@ -364,13 +369,13 @@ module.exports = function setup(options, imports, register) {
          * Retrieves the previous contents of the given file.
          **/
         this.getPreviousRevisionContent = function(path, callback) {
-            var self = this;
+            var _self = this;
             this.getRevisions(path, function(err, revObj) {
                 if (err) {
                     return callback(err);
                 }
 
-                self.retrieveRevisionContent(revObj, null, function(err, content) {
+                _self.retrieveRevisionContent(revObj, null, function(err, content) {
                     if (err)
                         return callback(err);
 
@@ -428,7 +433,6 @@ module.exports = function setup(options, imports, register) {
                     data[key] = options[key];
                 });
             }
-
             // This is blocking. It could be made non-blocking with JSONStreams
             receiver.broadcast(JSON.stringify(data));
         };
@@ -461,70 +465,66 @@ module.exports = function setup(options, imports, register) {
                 return callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
             }
 
-            var absPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
-            var revObj;
-            fs.exists(absPath, function(exists) {
+            var _self = this;
+            var revPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
+
+            function writeRevFile(aContent, aRevision) {
+                _self._writeRevisionFile.call(_self, {
+                    realPath: path,
+                    revPath: revPath,
+                    revision: aRevision,
+                    content: aContent,
+                    cb: callback
+                });
+            }
+
+            fs.exists(revPath, function(exists) {
                 if (!exists) {
                     fs.readFile(path, "utf8", function(err, data) {
-                        if (err)
-                            return console.error(err);
+                        if (err) return callback(err);
 
                         // We just created the revisions file. Since we
                         // don't have a previous revision, our first revision will
                         // consist of the previous contents of the file.
                         var ts = Date.now();
-                        var firstRevision = {
+                        revision = {};
+                        revision[ts] = {
                             ts: ts,
                             silentsave: true,
                             restoring: false,
                             patch: [Diff.patch_make("", data)],
                             length: data.length
                         };
-                        var revisionString = JSON.stringify(firstRevision);
-                        revObj = {};
-                        revObj[ts] = firstRevision;
-
-                        create(revisionString + "\n");
+                        writeRevFile("", revision);
                     });
                 }
                 else if (revision) {
-                    fs.readFile(absPath, "utf8", write);
+                    fs.readFile(revPath, "utf8", function(err, data) {
+                        if (err) return callback(err);
+                        writeRevFile(data, revision);
+                    });
                 }
                 else {
-                     callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
+                    callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
                 }
             });
-
-            function write(err, content) {
-                if (err)
-                    return callback(err);
-
-                // broadcast first revision
-                var returnValue;
-                if (revObj) {
-                    returnValue = revObj;
-                }
-                else {
-                    content += JSON.stringify(revision) + "\n";
-                    returnValue = {
-                        absPath: absPath,
-                        path: path,
-                        revision: revision.ts
-                    };
-                }
-
-                fs.writeFile(absPath, content, "utf8", function(err) {
-                    callback(err, returnValue);
-                });
-            }
-
-            function create(data) {
-                fs.mkdirP(Path.dirname(absPath), function(err) {
-                    if (!err)
-                        write(null, data);
-                });
-            }
         };
+
+        this._writeRevisionFile = function(data) {
+            var _self = this;
+            data.content += JSON.stringify(data.revision) + "\n";
+            fs.mkdirP(Path.dirname(data.revPath), function(err) {
+                if (err) return data.cb(err);
+                fs.writeFile(data.revPath, data.content, "utf8", function(err) {
+                    data.cb.call(_self, err, {
+                        absPath: data.revPath,
+                        path: data.realPath,
+                        revision: data.revision.ts
+                    });
+                });
+            });
+        };
+
     }).call(RevisionsPlugin.prototype);
 
     imports.sandbox.getProjectDir(function(err, projectDir) {
