@@ -28,8 +28,12 @@ util.inherits(DirWatcher, FileWatcher);
         this.vfs.stat(this.path, {}, function(err, stat) {
             var exists = !err && stat && !stat.err;
 
-            if (!exists)
+            if (!exists) {
+                self.emit("delete", {
+                    path: self.path
+                });
                 self.close();
+            }
             else if (event == "rename") {
                 self.readdir(function(err, files) {
                     if (err) return console.error(err);

@@ -322,6 +322,9 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
+        if (e.action == "remove")
+            return;
+        
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
