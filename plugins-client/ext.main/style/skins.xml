@@ -1719,6 +1719,25 @@
             -webkit-user-select: none;
             -o-user-select: none;
             user-select        : none;
+            cursor: default;
+        }
+        
+        .c9-simple-btnIcon {
+            background-repeat: no-repeat;
+            padding-left: 18px;
+            padding-top: 2px;
+        }
+        
+        .c9-simple-btn.btn-terminal {
+            color: #909090;
+            font-size: 11px;
+            text-shadow: 0 1px 0 rgba(0,0,0,.25);
+        }
+        .c9-simple-btn.btn-terminal.c9-simple-btnOver {
+            color: #c5d7bf;
+        }
+        .c9-simple-btn.btn-terminal.c9-simple-btnDown {
+            color: #d1ebaf;
         }
     ]]></a:style>
 
