@@ -391,22 +391,21 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     // add file to file tree
     addToFileTree: function(file) {
         var filename = apf.escapeXML(file.name)
-        var path = apf.escapeXML(file.path);
+        var path = apf.escapeXML(file.path) + "/" + filename;
 
-        var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path + "/" + filename) + "]");
+        var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (treeNode)
             apf.xmldb.removeNode(treeNode);
 
         var xmlNode = apf.n("<file />")
             .attr("type", "fileupload")
             .attr("name", filename)
-            .attr("path", path + "/" + filename)
+            .attr("path", path)
             .node();
 
         apf.xmldb.appendChild(file.targetFolder, xmlNode);
         //trFiles.add(xmlNode, file.targetFolder);
-        file.treeNode = trFiles.queryNode("//file[@path='" + util.escapeXpathString(path) +
-            "/" + util.escapeXpathString(filename) + "'][@name='" + util.escapeXpathString(filename) + "']");
+        file.treeNode = trFiles.queryNode("//file[@path=" + util.escapeXpathString(path) + "][@name='" + filename + "']");
     },
 
     //add file to upload activity list
@@ -512,8 +511,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
                     var targetFolder;
                     if (filepath) {
-                        targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" +
-                            util.escapeXpathString(targetPath + "/" + filepath) + "']");
+                        targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path=" +
+                            util.escapeXpathString(targetPath + "/" + filepath) + "]");
 
                         // folder not exist yet, create first
                         if (!targetFolder) {
@@ -523,7 +522,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             var folders = filepath.split("/");
                             apf.asyncForEach(folders, function(folder, next) {
                                 currentPath += "/" + folder;
-                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + util.escapeXpathString(currentPath) + "']");
+                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path=" + util.escapeXpathString(currentPath) + "]");
 
                                 // subfolder is already created
                                 if (subfolder) {

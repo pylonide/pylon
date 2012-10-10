@@ -39,59 +39,72 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-// name: ["Caption", "extension", "content-type"]
+// name: ["Menu caption", "extensions", "content-type", "hidden|other"]
 var SupportedModes = {
-    c9search: ["C9Search", "c9search", "text/x-c9search"],
+    asciidoc: ["AsciiDoc", "asciidoc", "text/x-asciidoc", "other"],
+    c9search: ["C9Search", "c9search", "text/x-c9search", "hidden"],
+    c_cpp: ["C, C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
+    clojure: ["Clojure", "clj", "text/x-script.clojure"],
     coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
-    coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion"],
+    coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion", "other"],
     csharp: ["C#", "cs", "text/x-csharp"],
     css: ["CSS", "css", "text/css"],
+    diff:       ["Diff", "diff|patch", "text/x-diff", "other"],
+    glsl:       ["Glsl", "glsl|frag|vert", "text/x-glsl", "other"],
     golang: ["Go", "go", "text/x-go"],
-    groovy: ["Groovy", "groovy", "text/x-groovy"],
-    haxe: ["haXe", "hx", "text/haxe"],
+    groovy: ["Groovy", "groovy", "text/x-groovy", "other"],
+    haxe: ["haXe", "hx", "text/haxe", "other"],
     html: ["HTML", "htm|html|xhtml", "text/html"],
-    c_cpp: ["C/C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
-    clojure: ["Clojure", "clj", "text/x-script.clojure"],
+    jade:       ["Jade", "jade", "text/x-jade"],
     java: ["Java", "java", "text/x-java-source"],
+    jsp:        ["JSP", "jsp", "text/x-jsp", "other"],
     javascript: ["JavaScript", "js", "application/javascript"],
     json: ["JSON", "json", "application/json"],
-    latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex"],
+    jsx:        ["JSX", "jsx", "text/x-jsx", "other"],
+    latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
     less: ["LESS", "less", "text/x-less"],
-    liquid: ["Liquid", "liquid", "text/x-liquid"],
+    liquid: ["Liquid", "liquid", "text/x-liquid", "other"],
     lua: ["Lua", "lua", "text/x-lua"],
-    markdown: ["Markdown", "md|markdown", "text/x-markdown"],
-    ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml"],
+    luapage:    ["LuaPage"      , "lp", "text/x-luapage", "other"],
+    markdown: ["Markdown", "md|markdown", "text/x-markdown", "other"],
+    ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml", "other"],
     perl: ["Perl", "pl|pm", "text/x-script.perl"],
-    pgsql: ["pgSQL", "pgsql", "text/x-pgsql"],
+    pgsql: ["pgSQL", "pgsql", "text/x-pgsql", "other"],
     php: ["PHP", "php|phtml", "application/x-httpd-php"],
-    powershell: ["Powershell", "ps1", "text/x-script.powershell"],
+    powershell: ["Powershell", "ps1", "text/x-script.powershell", "other"],
     python: ["Python", "py", "text/x-script.python"],
     ruby: ["Ruby", "ru|gemspec|rake|rb", "text/x-script.ruby"],
-    scad: ["OpenSCAD", "scad", "text/x-scad", "hidden"],
+    scad: ["OpenSCAD", "scad", "text/x-scad", "other"],
     scala: ["Scala", "scala", "text/x-scala"],
     scss: ["SCSS", "scss|sass", "text/x-scss"],
     sh: ["SH", "sh|bash|bat", "application/x-sh"],
     sql: ["SQL", "sql", "text/x-sql"],
-    svg: ["SVG", "svg", "image/svg+xml"],
+    svg: ["SVG", "svg", "image/svg+xml", "other"],
+    tcl:        ["Tcl"          , "tcl", "text/x-tcl", "other"],
     text: ["Text", "txt", "text/plain", "hidden"],
-    textile: ["Textile", "textile", "text/x-web-textile"],
+    textile: ["Textile", "textile", "text/x-web-textile", "other"],
     typescript: ["Typescript", "ts|str", "text/x-typescript"],
     xml: ["XML", "xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl", "application/xml"],
     xquery: ["XQuery", "xq", "text/x-xquery"],
     yaml: ["YAML", "yaml", "text/x-yaml"]
 };
 
-var fileExtensions = {}, ModesCaption = {}, contentTypes = {};
+var fileExtensions = {}, ModesCaption = {}, contentTypes = {}, hiddenMode = {}, otherMode = {};
 Object.keys(SupportedModes).forEach(function(name) {
     var mode = SupportedModes[name];
     mode.caption = mode[0];
     mode.mime = mode[2];
-    mode.hidden = !!mode[3];
+    mode.hidden = mode[3] == "hidden" ? true : false;
+    mode.other = mode[3] == "other" ? true : false;
     mode.ext = mode[1];
     mode.ext.split("|").forEach(function(ext) {
         fileExtensions[ext] = name;
     });
     ModesCaption[mode.caption] = name;
+
+    hiddenMode[mode.caption] = mode.hidden;
+    otherMode[mode.caption] = mode.other;
+
     contentTypes[mode.mime] = name;
 });
 
@@ -107,6 +120,7 @@ module.exports = ext.register("ext/code/code", {
 
     fileExtensions : Object.keys(fileExtensions),
     supportedModes : Object.keys(SupportedModes),
+    prevSelection : null,
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -675,17 +689,38 @@ module.exports = ext.register("ext/code/code", {
                 group : grpSyntax
             }), c += 100),
 
+            otherGrpSyntax = new apf.group({
+                type : ""
+            }),
+
+            menus.addItemByPath("View/Syntax/Other", new apf.item({
+                group : otherGrpSyntax
+            }), c + 90000),
+
             menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
         );
 
         for (var mode in ModesCaption) {
-            if (ModesCaption[mode][3] == "hidden")
+            var path;
+            if (hiddenMode[mode])
                 continue;
+
             this.menus.push(
-                menus.addItemByPath("View/Syntax/" + mode, new apf.item({
+                menus.addItemByPath("View/Syntax/" + (otherMode[mode] ? "Other/" + mode : mode), new apf.item({
                     type: "radio",
                     value: ModesCaption[mode],
-                    group : grpSyntax
+                    group : otherMode[mode] ? otherGrpSyntax : grpSyntax,
+                    onclick : function (e) {
+                        if (_self.prevSelection == null)
+                            _self.prevSelection = this;
+                        else {
+                            _self.prevSelection.uncheck();
+                            if (_self.prevSelection.group.selectedItem.caption == "Other") {
+                                _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu")
+                            }
+                            _self.prevSelection = this;
+                        }
+                    }
                 }), c += 100)
             );
         }

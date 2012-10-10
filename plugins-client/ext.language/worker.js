@@ -16,6 +16,7 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
+var linereport = require("ext/linereport/linereport_base");
 
 var WARNING_LEVELS = {
     error: 3,
@@ -24,6 +25,7 @@ var WARNING_LEVELS = {
 };
 
 // Leaking into global namespace of worker, to allow handlers to have access
+/*global disabledFeatures: true*/
 disabledFeatures = {};
 
 EventEmitter.once = function(event, fun) {
@@ -84,6 +86,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.serverProxy = new ServerProxy(sender);
     
     Mirror.call(this, sender);
+    linereport.sender = sender;
     this.setTimeout(500);
     
     sender.on("hierarchy", function(event) {
@@ -269,26 +272,39 @@ function asyncParForEach(array, fn, callback) {
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
-    this.register = function(path) {
+    this.register = function(path, contents) {
+        var _self = this;
+        function onRegistered(handler) {
+            handler.$source = path;
+            handler.proxy = _self.serverProxy;
+            handler.sender = _self.sender;
+            _self.$initHandler(handler, null, function() {
+                _self.handlers.push(handler);
+            });    
+        }
+        if (contents) {
+            // In the context of this worker, we can't use the standard
+            // require.js approach of using <script/> tags to load scripts,
+            // but need to load them from the local domain or from text
+            // instead. For now, we'll just load external plugins from text;
+            // the UI thread'll have to provide them in that format.
+            // Note that this indirect eval call evaluates in the (worker)
+            // global context.
+            eval.call(null, contents);
+        }
         try {
             var handler = require(path);
-            handler.proxy = this.serverProxy;
-            handler.sender = this.sender;
-            this.handlers.push(handler);
-            this.$initHandler(handler, null, function() {});
+            onRegistered(handler);
         } catch (e) {
             if (isWorkerEnabled())
                 throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
-            var _self = this;
             require([path], function(handler) {
                 if (!handler)
                     throw new Error("Could not load language handler " + path, e);
-                handler.proxy = _self.serverProxy;
-                handler.sender = _self.sender;
-                _self.handlers.push(handler);
+                onRegistered(handler);
             });
-        }   
+        }
     };
 
     this.parse = function(callback, allowCached) {
@@ -692,7 +708,7 @@ function asyncParForEach(array, fn, callback) {
     };
     
     // TODO: BUG open an XML file and switch between, language doesn't update soon enough
-    this.switchFile = function(path, language, code) {
+    this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
         if (!this.$analyzeInterval) {
             this.$analyzeInterval = setInterval(function() {
@@ -701,8 +717,9 @@ function asyncParForEach(array, fn, callback) {
         }
         var oldPath = this.$path;
         code = code || "";
-        this.$path = path;
+        linereport.path = this.$path = path;
         this.$language = language;
+        linereport.workspaceDir = this.$workspaceDir = workspaceDir;
         this.cachedAst = null;
         this.lastCurrentNode = null;
         this.lastCurrentPos = null;
@@ -717,7 +734,18 @@ function asyncParForEach(array, fn, callback) {
             return callback();
         handler.path = this.$path;
         handler.language = this.$language;
-        handler.onDocumentOpen(this.$path, this.doc, oldPath, callback);
+        handler.workspaceDir = this.$workspaceDir;
+        handler.doc = this.doc;
+        handler.sender = this.sender;
+        var _self = this;
+        if (!handler.$isInited) {
+            handler.$isInited = true;
+            handler.init(function() {
+                handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
+            });
+        } else {
+            handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
+        }
     };
     
     this.documentClose = function(event) {
