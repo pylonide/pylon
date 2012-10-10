@@ -191,11 +191,6 @@ module.exports = ext.register("ext/tree/tree", {
          * and adds nodes
          */
         ide.addEventListener("treechange", function(e) {
-//            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-//                                .replace(/\[@name="workspace"\]/, "")
-//                                .replace(/\//, "");
-//            var parent = trFiles.getModel().data.selectSingleNode(path);
-
             var path = "//node()[@path='" + e.path.replace(/'/g, "\\'").replace(/\\/g, "\\\\") + "']";
             var parent = trFiles.getModel().data.selectSingleNode(path)
 
