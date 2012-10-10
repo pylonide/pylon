@@ -187,7 +187,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.offlineQueue = JSON.parse(localStorage.offlineQueue);
             }
             catch(e) {
-                console.error("Error loading revisions from local storage", e);
+                console.error("Couldn't parse revisions from local storage", e, localStorage.offlineQueue);
+                this.offlineQueue = [];
             }
         }
 
@@ -351,7 +352,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var doc = data.doc;
         if (!doc.acedoc)
             return;
-            
+
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
