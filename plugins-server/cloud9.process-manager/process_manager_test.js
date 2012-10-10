@@ -4,13 +4,15 @@ var assert = require("assert");
 var EventEmitter = require("events").EventEmitter;
 var ProcessManager = require("./process_manager");
 var shell = require("../cloud9.run.shell/shell");
+var vfsLocal = require("vfs/local");
 
 module.exports = {
 
     setUp: function() {
         this.eventEmitter = new EventEmitter();
+        var vfs = vfsLocal({ root: "/" });
         this.pm = new ProcessManager({
-            "shell": shell.factory()
+            "shell": shell.factory(vfs)
         }, this.eventEmitter);
     },
 
@@ -41,7 +43,7 @@ module.exports = {
 
                     assert.equal(events[1].type, "shell-data");
                     assert.equal(events[1].stream, "stdout");
-                    assert.ok(events[1].data.indexOf(__filename.split("/").pop()) !== -1);
+                    assert.ok(events[1].data.toString().indexOf(__filename.split("/").pop()) !== -1);
                     assert.equal(events[1].pid, pid);
 
                     assert.equal(events[2].type, "shell-exit");

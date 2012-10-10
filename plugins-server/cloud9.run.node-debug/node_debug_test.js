@@ -5,36 +5,61 @@ var async = require("asyncjs");
 var fs = require("fs");
 
 var EventEmitter = require("events").EventEmitter;
-var node = require("./node_debug");
+ // wire up the NodeRunner with appropriate createChild version
+require("../cloud9.run.node/node-plugin");
+var node_runner = require("../cloud9.run.node/node-runner");
+var node_debug = require("./node_debug-runner");
 
 var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
-
-var vfsLocal = require("vfs-local");
-var home = __dirname + "/../fixtures/node_env";
+var ProcessManager = require("../cloud9.process-manager/process_manager");
+var vfsLocal = require("vfs/local");
+var fsnode = require("vfs-nodefs-adapter");
 
 module.exports = {
 
+    timeout: 15000,
+    vfs: null,
+    home: __dirname + "/../fixtures/node_env",
+
     setUpSuite : function(next) {
-        async.rmtree(home, next);
+        var _self = this;
+        async.rmtree(this.home, function (err) {
+            if (err) return next(err);
+            async.makePath(_self.home, next);
+        });
     },
 
     setUp: function(next) {
+        var _self = this;
         this.eventEmitter = new EventEmitter();
-        var vfs = vfsLocal({
-            root: "/"
-        });
-        this.factory = node.factory(vfs, home);
-        async.makePath(home, next);
+        var vfs = this.vfs || vfsLocal({ root: "/" });
+        this.fs = fsnode(vfs);
+        var pm = this.pm = new ProcessManager({}, this.eventEmitter);
+        pm.addRunner = function (name, runner) {
+            pm.runners[name] = runner;
+        };
+        var sandbox = {
+            getProjectDir: function (callback) {
+                callback(null, _self.home);
+            },
+            getPort: function (callback) {
+                callback(null, 8080);
+            }
+        };
+        // fake setup
+        node_debug("http://localhost:5858", null, vfs, pm,
+            sandbox, node_runner, false, null, 5858,
+            function () { next(); });
     },
 
-    createDebugClient: function(child, event) {
+    createDebugClient: function(child, event, callback) {
         var self = this;
         var service = new WSV8DebuggerService({
             send: function(msg) {
                 msg = JSON.parse(msg);
-                if (msg.command == "debugNode") {
-                    console.log("send", msg);
+                if (msg.runner === "node" && msg.body) {
+                    // console.log("send", msg);
                     child.debugCommand(msg.body);
                 }
             },
@@ -42,52 +67,52 @@ module.exports = {
             },
             on: function(type, listener) {
                 self.eventEmitter.on(event, function(msg) {
-                    console.log("rec", msg);
+                    if (msg.data)
+                        msg.data = msg.data.toString();
+                    // console.log("rec", msg);
                     listener(JSON.stringify(msg));
                 });
             }
         });
-        service.attach(0, function() {});
-        return new V8Debugger(0, service);
+        service.attach(0, function() {
+            callback(null, new V8Debugger(0, service));
+        });
     },
 
     "test connect debugger": function(next) {
-
-        var child = this.factory({
-            file: "hello.js",
-            args: [],
-            env: {},
-            cwd: home,
-            breakOnStart: true
-        }, this.eventEmitter, "node");
-
-        var self = this;
-        fs.writeFile(home + "/hello.js", "console.log('hello')", function(err) {
+        var _self = this;
+        this.fs.writeFile(this.home + "/hello.js", "console.log('hello')", function(err) {
             assert.equal(err, null);
 
-            child.spawn(function(err, pid) {
+            _self.pm.spawn("node-debug", {
+                file: "hello.js",
+                args: [],
+                env: {},
+                cwd: _self.home,
+                breakOnStart: true,
+                eventEmitter: _self.eventEmitter
+            }, "node-d", function(err, pid, child) {
                 assert.ok(pid);
                 assert.equal(err, null);
-            });
+                console.log("Runner created");
 
-            var debug = self.createDebugClient(child, "node");
+                setTimeout(function () {
+                    _self.createDebugClient(child, "node-d", function (err, debug) {
+                        debug.version(function(version) {
+                            assert.ok(version.V8Version);
+                        });
 
-            debug.version(function(version) {
-                assert.ok(version.V8Version);
-            });
+                        debug.continueScript(null, null, function() {
+                        });
 
-            var continueCalled = false;
-            debug.on("break", function() {
-                debug.continueScript(null, null, function() {
-                    continueCalled = true;
-                });
-            });
-
-            self.eventEmitter.on("node", function(msg) {
-                if (msg.type == "node-debug-exit") {
-                    assert.ok(continueCalled);
-                    next();
-                }
+                        _self.eventEmitter.on("node-d", function(msg) {
+                            console.log("MSG:", msg.type);
+                            if (msg.type === "node-debug-exit") {
+                                next();
+                            }
+                        });
+                    });
+                }, 50);
             });
         });
     }
