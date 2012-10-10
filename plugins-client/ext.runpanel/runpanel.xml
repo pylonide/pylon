@@ -67,8 +67,11 @@
               flex    = "1"
               skin    = "tree"
               class   = "openfile rundebug"
-              autoselect    = "true"
+              autoselect    = "false"
               empty-message = "no run configurations"
+              onafterselect = "
+                require('ext/runpanel/runpanel').saveSelection();
+              "
               onafterchoose = "
                 require('ext/runpanel/runpanel').run();
               ">
