@@ -49,6 +49,8 @@ module.exports = {
             root: ___dirname,
             checkSymlinks: true
         });
+        
+        Fs.mkdirSync(Path.join(___dirname, ".c9revisions"));
 
         RevisionsModule(null, {
             vfs: fs,
@@ -68,7 +70,6 @@ module.exports = {
     },
 
     tearDown: function(next) {
-
         Fs.unlink(___dirname + "/test_saving.txt", function(){});
         var revPath = Path.join(___dirname, ".c9revisions");
         rimraf(revPath, function(err) {
@@ -113,17 +114,20 @@ module.exports = {
     "test getRevisions with a valid path": function(next) {
         var file = Path.join(___dirname, ".c9revisions", Path.basename(__filename) + ".c9save");
         try {
-            Fs.mkdirSync(Path.join(___dirname, ".c9revisions"));
+            
             Fs.writeFileSync(file, "", "utf8");
-        } catch(e) { assert(false, e); }
+        }
+        catch(e) { 
+            assert(false, e); 
+        }
 
         var R = this.revisionsPlugin;
-        R.getAllRevisions = function() {
-            assert(true);
-            next();
-        };
+        var spy = sinon.spy(R, "getAllRevisions");
 
-        R.getRevisions(Path.basename(__filename), function() {}); // good path
+        R.getRevisions(Path.basename(__filename), function() {
+            assert.equal(spy.called, true);
+            next();
+        });
     },
 
     "test getRevisions with a non-valid path": function(next) {
@@ -253,7 +257,77 @@ module.exports = {
                 });
         });
     },
+    
+    "test onRemoveRevision empty path": function(next) {
+        var R = this.revisionsPlugin;
+        R.onRemoveRevision(
+            null,
+            { path: "" }, 
+            function(err) {
+                assert.ok(err);
+                next();
+            },
+            function() {
+                assert.ok(false, "Should never get here");
+                next();
+            }
+        );
+    },
+    
+    "test onRemoveRevision invalid filepath": function(next) {
+        var R = this.revisionsPlugin;
+        R.onRemoveRevision(
+            null,
+            { path: "madeup/path/test.js" }, 
+            function(err) {
+                assert.ok(false, "Should never get here: " + err);
+                next();
+            },
+            function(err) {
+                assert.ok(err instanceof Error);
+                next();
+            }
+        );
+    },
+    
+    "test onRemoveRevision invalid folderpath": function(next) {
+        var R = this.revisionsPlugin;
+        R.onRemoveRevision(
+            null,
+            { path: "madeup/path", isFolder: true }, 
+            function(err) {
+                assert.ok(false, "Should never get here: " + err);
+                next();
+            },
+            function(err) {
+                assert.ok(err instanceof Error);
+                next();
+            }
+        );
+    },
 
+    "test onRemoveRevision valid filepath": function(next) {
+        var R = this.revisionsPlugin;
+        var fileName = ___dirname + "/.c9revisions/test_rev.js.c9save";
+        
+        Fs.writeFile(fileName, "ABCDEFGH", function(err) {
+            assert.ok(!err);
+            
+            R.onRemoveRevision(
+                null,
+                { path: "test_rev.js.c9save", isFolder: true }, 
+                function(err) {
+                    assert.ok(false, "Should never get here: " + err);
+                    next();
+                },
+                function(err, data) {
+                    assert.ok(!err);
+                    next();
+                }
+            );
+        });
+    },
+         
     "test retrieve revision for a new file [flow]": function(next) {
         var revPath = Path.join(___dirname, ".c9revisions");
         var savePath = Path.join(revPath, "package.json.c9save");
@@ -284,7 +358,7 @@ module.exports = {
         });
     },
 
-    "!test saving revision from message": function(next) {
+    "test saving revision [flow]": function(next) {
         var fileName = ___dirname + "/test_saving.txt";
         var revPath = ___dirname + "/.c9revisions";
         var R = this.revisionsPlugin;
@@ -307,7 +381,8 @@ module.exports = {
                     silentsave: true,
                     restoring: true,
                     contributors: ["sergi@c9.io", "mike@c9.io"],
-                    content: "123456789"
+                    content: "123456789",
+                    forceRevisionListResponse: true
                 },
                 function(err, path, revObj) {
                     assert.ok(!err, err);
@@ -329,45 +404,8 @@ module.exports = {
                 assert.equal(path, ".c9revisions/test_saving.txt.c9save");
                 assert.equal(typeof _mainRevObj, "object");
                 assert.equal(revisions.length, 1);
-                assert.equal(revObj.originalContent, "ABCDEFGH");
-                assert.equal(revObj.lastContent, "123456789");
                 next();
             }, 500);
-        });
-    },
-
-    "!test saving revision": function(next) {
-        var fileName = ___dirname + "/test_saving.txt";
-        var revPath = ___dirname + "/.c9revisions";
-        var R = this.revisionsPlugin;
-
-        R.ide.broadcast = sinon.spy();
-
-        var patch = new Diff_Match_Patch().patch_make("SERGI", "123456789");
-        Fs.writeFile(fileName, "SERGI", function(err) {
-            assert.equal(err, null);
-            R.saveRevision(
-                Path.basename(fileName),
-                {
-                    contributors: ["sergi@c9.io", "mike@c9.io"],
-                    patch: [patch],
-                    silentsave: true,
-                    restoring: false,
-                    ts: Date.now(),
-                    lastContent: "123456789",
-                    length: 9
-                } ,
-                function(err, path, revObj) {
-                    assert.ok(err === null);
-                    assert.ok(R.ide.broadcast.called);
-                    assert.equal(path, revPath + "/test_saving.txt.c9save");
-                    assert.equal(typeof revObj.revisions, "object");
-                    assert.equal(revObj.revisions.length, 1);
-                    assert.equal(revObj.originalContent, "SERGI");
-                    assert.equal(revObj.lastContent, "123456789");
-                    next();
-                }
-            );
         });
     }
 };

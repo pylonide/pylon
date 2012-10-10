@@ -124,17 +124,19 @@ module.exports = function setup(options, imports, register) {
             });
         };
 
-        this.onRemoveRevision = function(user, message, _error) {
+        this.onRemoveRevision = function(user, message, _error, cb) {
             if (!message.path) {
                 return _error("No path sent for the file to be removed");
             }
+            
+            cb = cb || function() {};
 
             var path = this.getRevisionsPath(message.path);
             if (message.isFolder === true) {
-                fs.rmdir(path, { recursive: true }, function() {});
+                fs.rmdir(path, { recursive: true }, cb);
             }
             else {
-                fs.unlink(path + "." + FILE_SUFFIX);
+                fs.unlink(path + "." + FILE_SUFFIX, cb);
             }
         };
 
@@ -308,12 +310,12 @@ module.exports = function setup(options, imports, register) {
                     "Can't retrieve the path to the user's workspace\n" + this.workspace));
             }
             // Path of the final backup file inside the workspace
-            var absPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
+            var revPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
             var _self = this;
             // does the revisions file exists?
-            fs.exists(absPath, function(exists) {
+            fs.exists(revPath, function(exists) {
                 if (exists)
-                    _self.getAllRevisions(absPath, callback);
+                    _self.getAllRevisions(revPath, callback);
                 else
                     // create new file
                     _self.saveSingleRevision(filePath, null, callback);
@@ -464,9 +466,9 @@ module.exports = function setup(options, imports, register) {
                 return callback(new Error("Missing or wrong parameters (path, revision):", path, revision));
             }
 
-            var _self = this;
             var revPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
 
+            var _self = this;
             function writeRevFile(aContent, aRevision) {
                 _self._writeRevisionFile.call(_self, {
                     realPath: path,
