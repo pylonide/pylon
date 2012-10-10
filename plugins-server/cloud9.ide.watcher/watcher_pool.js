@@ -40,7 +40,7 @@ function WatcherPool(vfs) {
             if (err)
                 return callback(err);
                 
-            var isDir = stat.mime.search(/directory|file/) != -1;
+            var isDir = stat.mime == "inode/directory";
             var handle = {
                 onRemove: function(e) {
                     if (self.ignored[path])
