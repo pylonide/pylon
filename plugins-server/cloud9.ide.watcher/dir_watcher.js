@@ -58,7 +58,7 @@ util.inherits(DirWatcher, FileWatcher);
 
             stream.on("data", function(stat) {
                 files.push({
-                    type: stat.mime.search(/directory|file/) != -1 ? "folder" : "file",
+                    type: stat.mime == "inode/directory" ? "folder" : "file",
                     name: stat.name
                 });
             });
