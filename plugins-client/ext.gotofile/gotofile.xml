@@ -7,9 +7,9 @@
       maxheight = "400"
       zindex    = "99999"
       showtab   = "[{require('ext/settings/settings').model}::auto/tabs/@show]"
-      top       = "1"
+      top       = "6"
       >
-        <a:vbox edge="0 5 5 5" padding="5" anchors2="0 0 0 0">
+        <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
               class           = "searchresults noscrollbar"

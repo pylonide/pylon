@@ -164,6 +164,23 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
+        
+        winGoToFile.addEventListener("prop.visible", function(e){
+            if (e.value) {
+                if (themes.isDark) {
+                    
+                }
+                if (!tabEditors.getPage()) {
+                    winGoToFile.setProperty("top", 0);
+                    vboxGoToFile.setProperty("edge", "5 5 5 5");
+                }
+                else {
+                    winGoToFile.setProperty("top", 6);
+                    vboxGoToFile.setProperty("edge", "1 5 5 5");
+                }
+            }
+        });
+        
         txtGoToFile.addEventListener("blur", function(e){
             if (self.winGoToFile && winGoToFile.visible
               && !apf.isChildOf(winGoToFile, e.toElement))
