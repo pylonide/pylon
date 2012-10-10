@@ -30,8 +30,9 @@ A baseclass in Ajax.org Platform (APF) is a class that
  The `apf.Class` baseclass provides all basic features a APF element needs, such
  as event system, property binding and multiple inheritance with state defined
  by each baseclass.
- By setting the prototype of a function to an instance of apf.Class
- these  <i title="an inherited characteristic (merriam-webster)">traits</i> are
+ 
+ By setting the prototype of a function to an instance of `apf.Class`,
+ these traits are
  transferred to your class.
 
 ## API
@@ -49,7 +50,7 @@ A baseclass in Ajax.org Platform (APF) is a class that
  
  There is a class tree that you can use to create your own elements. For
  instance to create a visible element that uses skinning you can inherit from
- apf.Presentation:
+ `apf.Presentation`:
  
  ```javascript
   var myElement = function(){

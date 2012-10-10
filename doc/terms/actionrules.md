@@ -3,15 +3,15 @@
 Action rules determine whether a user can execute an action and
 takes care of executing the change both locally and on a remote server. Each
 triggered action creates an item on the undo stack.
-Action rules are part of the {@link term.smartbinding smartbinding concept}.
+Action rules are part of the [smartbinding concept](./smartbinding.html).
 
 ## Syntax
 
-Actions are added to {@link element.actions}. The <i>select</i> attribute specifies
-whether an action can be executed. The <i>set</i> attribute specifies how the change
+Actions are added to [`apf.actions`](./actions.html). The `select` attribute specifies
+whether an action can be executed. The `set` attribute specifies how the change
 to the data is send to the server. The following example shows a remove 
 action on a datagrid. A jsp script is called to process the change. This is
-specified using a {@link term.datainstruction data instruction}.
+specified using a [data instruction](./datainstruction.html).
 
 ```xml
  <a:datagrid>
@@ -122,7 +122,7 @@ Another possibility is to add the item again as shown in this example:
 
 Each action has a method associated with it that exists on the element that
 the action rule is assigned to. The method has the same name as the action 
-and can be called from javascript. For instance, the {@link baseclass.multiselect.binding.remove remove action}:
+and can be called from javascript:
 
 ```javascript
  myTree.remove();
@@ -131,11 +131,12 @@ and can be called from javascript. For instance, the {@link baseclass.multiselec
 
 ## Add
 
-Adding {@link term.datanode data nodes} to an element is a bit more advanced because the origin of
-the new data can be encoded in {@link baseclass.multiselect.binding.add the add action rule}. 
+Adding [data nodes](./datanode.html) to an element is a bit more advanced because the origin of
+the new data can be encoded in the add action rule. 
+
 There are three ways to provide the data to add a node. 
 
-The first is by calling the add method using javascript.
+The first is by calling the `add` method using Javascript.
 
 ```xml
  <a:list id="myList">
@@ -146,7 +147,7 @@ The first is by calling the add method using javascript.
  </a:script>
 ```
 
-The second by specifying the template as a child of the add action rule:
+The second is by specifying the template as a child of the add action rule:
 
 ```xml
  <a:add set="{comm.addProduct([.])}">
@@ -180,11 +181,11 @@ The third way gets the added node from the server.
 
 ## Purging
 
-Sometimes it's necesary to not send the changes directly to the server. For
-instance when the application offers a <i>save</i> button. To achieve this
-set the {@link element.actiontracker.attribute.realtime realtime attribute}
-of the actiontracker to false. The save button can call the 
-{@link element.actiontracker.method.purge purge method} to have the 
+Sometimes, it's necesary to not send the changes directly to the server. For
+instance when the application offers a _save_ button. To achieve this
+set the [realtime attribute](./actiontracker.html#realtime)
+of the actiontracker to zfalsez. The save button can call [`purge()`](./actiontracker.html#purge)
+to have the 
 actiontracker send the calls.
 
 ```xml
@@ -230,4 +231,4 @@ When a user edits data, for instance user information, all the changes are
 seen as one edit and put on the undo stack as a single action. Thus clicking
 undo will undo the entire transaction, not just the last change done by that
 user in the edit window. Transaction support both optimistic and pessimistic 
-locking. For more information on transactions see {@link baseclass.transaction}.
+locking. 

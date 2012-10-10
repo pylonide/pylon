@@ -17,9 +17,9 @@ var buildOptions = {
                         // XML stuff for Jade
                         "define", "allowchild", "action",
                         // TOC forms
-                        "container", "form", "layout", "selection", "logic", "media", "parser", "apfclass",
-                        // crap to ignore
-                        "inheritsElsewhere"],
+                        "container", "form", "layout", "selection", "logic", "media", "parser", "additional",
+                        // just ignorable rubbish
+                        "inheritsElsewhere",  "apfclass"],
   linkFormat     : function (linkHtml, obj) {
                   if (linkHtml.classes && linkHtml.classes[0] == "isXML" && linkHtml.href !== undefined) {
                         linkHtml.href = linkHtml.href.replace(".html", "-element.html");

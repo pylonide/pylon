@@ -8,7 +8,7 @@ With property binding you can define the way a
  the property will always be kept up to date. This means that when one of the
  dependent properties changes, the property is recalculated. 
  
- ## Example
+ #### Example
  
  Let me give you an example to make it a bit straightforward. This example
  sets the visibility of the slider based on the state of the checkbox.

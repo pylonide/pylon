@@ -14,7 +14,7 @@ See also more information about [binding rules](./binding.html) and [action rule
 ## Model:
 
 The model is the place where your xml data resides. Data is loaded into the
-model using a {@link term.datainstruction data instruction} as the following
+model using a [data instruction](./datainstruction.html) as the following
 example shows:
 
 ```xml
@@ -56,7 +56,7 @@ The actions element is a container for action rules. Action rules influence
 and trigger several parts of the user interaction. 
 
 * It determines whether a user action can be executed on the bound and/or 
-     selected {@link term.datanode data node}.
+     selected [data node](./datanode.html).
 * It dispatches events, before and after the data is changed.
 * It creates a [command object](http://en.wikipedia.org/wiki/Command_pattern)
      that is pushed on the undo stack of the [action tracker](./actiontracker.html)

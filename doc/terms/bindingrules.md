@@ -8,8 +8,8 @@ Binding rules determine how an element displays the data that
  Binding rules are part of the [smartbinding concept](./smartbinding.html).
  
 
- Let's take a simple example, that of a {@link element.textbox textbox}. A 
- textbox has a {@link element.textbox.attribute.value value attribute}. This
+ Let's take a simple example, that of a [textbox](./textbox.html). A 
+ textbox has a `value` attribute. This
  attribute can be set like this:
 
 ```xml
@@ -39,7 +39,7 @@ Binding rules determine how an element displays the data that
 
  Each attribute on an element can be bound to data by using the attribute
  name as the name of the binding rule. In the next example, the visible
- attribute of a textbox is based on the availability of a {@link term.datanode data node}:
+ attribute of a textbox is based on the availability of a [data node](./datanode.html):
  
 ```xml
   <a:model>
@@ -128,7 +128,7 @@ Binding rules determine how an element displays the data that
 ## Processors
 
  There are several ways to convert the data retrieved from the xml data into
- the needed string or boolean. The following example uses {@link term.livemarkup live markup}
+ the needed string or boolean. The following example uses [live markup](./livemarkup.html)
  to determine the icon by the extension of the filename:
  
  ```xml
@@ -183,8 +183,8 @@ Binding rules determine how an element displays the data that
 
 ## Extending
 
- Two special binding rules are the {@link baseclass.databinding.binding.load load}
- and the {@link element.tree.binding.insert insert} bindings. These bindings
+ Two special binding rules are the load
+ and the insert bindings. These bindings
  are used to load and insert new data into the data bound to the element that
  uses them. With these rules an application can start out with only a bit of
  data and when the user needs it extends the data. A simple example is that of

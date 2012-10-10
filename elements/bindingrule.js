@@ -22,10 +22,12 @@
 //#ifdef __WITH_DATABINDING
 
 /**
- * @define bindings element containing all the binding rules for the data 
+ * An element containing all the binding rules for the data 
  * bound elements referencing this element.
- * Example:
- * <code>
+ * 
+ * #### Example
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -43,9 +45,9 @@
  *    height   = "200" 
  *    model    = "mdlList" 
  *    bindings = "bndFolders" />
- * </code>
+ * ```
+ * 
  * @see apf.smartbinding
- *
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
