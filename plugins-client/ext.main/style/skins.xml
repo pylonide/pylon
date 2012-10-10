@@ -5822,6 +5822,16 @@
             text-align : center;
             background : transparent;
         }
+        
+        .searchresults span strong {
+            color: #76A913;
+        }
+        
+        .searchresults > div.selected > span > strong, 
+        .treeOutline .item-fix.selected > span > strong,
+        .searchresults .selected span strong {
+            color: #DCFFA0;
+        }
     ]]></a:style>
 
     <a:presentation>
