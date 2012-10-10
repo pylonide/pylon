@@ -1607,9 +1607,11 @@ apf.DataBinding = function(){
 
     // #ifdef __WITH_VIRTUALVIEWPORT
     /**
-     * @attribute {String} viewport Sets or gets the way this element renders its data. Possible values include:
-     *                              - `"virtual"`:  this element only renders data that it needs to display.
-     *                              - `"normal`"`:  this element renders all data at startup.
+     * @attribute {String} viewport Sets or gets the way this element renders its data.
+     * 
+     * The possible values include:
+     *   - `"virtual"`:  this element only renders data that it needs to display.
+     *   - `"normal`"`:  this element renders all data at startup.
      * @experimental
      */
     this.$propHandlers["viewport"] = function(value){

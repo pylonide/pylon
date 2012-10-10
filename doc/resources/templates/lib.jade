@@ -8,7 +8,8 @@
 
 mixin makeHierarchy(obj)
     div#inheritance
-        h6 Inheritance
+        h6 Hierarchy
+            span#inheritance_arrow
         ul#hierarchyTree
           li
             strong #{obj.id}
@@ -33,18 +34,21 @@ mixin makeTag(obj, attributes)
   -xmlBlobs = "<pre><code class='language-xml'><span class='tag'>&lt;<span class='title'>a:" + obj.define + "</span>"
 
   -for k in obj.children.filter(function(x){return x.type === 'attribute'})
-    -xmlBlobs += "\n     <span class='" + (k.inheritedFrom ? "isInherited" : "") + "'><span class='attribute'>" + k.name + "</span>=";
+    -xmlBlobs += "\n     <span class='" + (k.inheritedFrom ? "isInheritedAttribute" : " ") + "'><span class='attribute'>" + k.name + "</span>=";
     -types = [];
-    -k.signatures[0].returns.forEach(function (r) {
+    -moreThanOneType = k.signatures[0].returns.length > 1;
+    -k.signatures[0].returns.forEach(function (r, idx, arr) {
           -if (r.type == "Boolean")
                 -types.push('<span class="value">"' + 'true | false' + '"')
           -else
-                -types.push('<span class="value">"' + r.type + '"')
-       -xmlBlobs += types.join("|") + "</span></span>";
+                -if (moreThanOneType)
+                    -types.push('<span class="value">' + r.type)
+                -else
+                    -types.push('<span class="value">"' + r.type + '"')
     -})
-
+    -xmlBlobs += (moreThanOneType ? '"' + types.join(' | ') + '"</span>' : types) + "</span></span>";
   != xmlBlobs + "></span></code></pre>"
-
+                     
 mixin commonDescription(obj, parents)
   if typeof obj === 'string'
     obj = list[obj]
@@ -219,17 +223,18 @@ mixin api()
 
             if obj.hierarchy
                  mixin makeHierarchy(obj)
+
             if obj.description
               .section.description
                 .memberContent
                   mixin markdown(obj.description)
             
-            else if obj.define && obj.children
+            if obj.define && obj.children
               h4 XML Definition
-              div.xmlBlob
+              div#xmlBlob
                mixin makeTag(obj)
             
-              mixin article(obj, obj.children.filter(function(x){return x.type === 'class method'}), obj.children.filter(function(x){return x.type === 'event'}), obj.children.filter(function(x){return x.type === 'class property'}))
+            mixin article(obj, obj.children.filter(function(x){return x.type === 'class method'}), obj.children.filter(function(x){return x.type === 'event'}), obj.children.filter(function(x){return x.type === 'class property'}))
 
 mixin short_description_list(collection)
   ul.method-details-list

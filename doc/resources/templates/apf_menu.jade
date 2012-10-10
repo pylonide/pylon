@@ -1,5 +1,7 @@
 -var link = link || termLink;
  input#live_search_toc
+ p#no_search_results
+    | <span class="number_circle">!</span> No search results
  h3 Containers
   ul.menu
    for obj in fullTree.children.filter(function(x){return x.private !== true && x.define !== undefined && x.container === true})

@@ -508,6 +508,11 @@ header.filler {
     padding-bottom: 10px;
 }
 
+#documentation h4 {
+    font-size: 18px;
+    margin: 20px 0 7px 0;
+}
+
 #documentation h4, #documentation h3, #documentation h2, #documentation h1 {
     font-weight: 100;
     font-family: Helvetica;
@@ -752,13 +757,15 @@ li.signature {
 
 div#inheritance {
     float: right;
+    min-width: 130px;
     border: 1px solid #DDD;
-    padding: 2px 10px 5px 10px;
-    margin: 10px 0 -10px 10px;
+    padding: 2px 10px 0px 10px;
+    margin: 0px 0 0px 10px;
     max-width: 240px;
     border-top-right-radius: 5px;
-    box-shadow: inset 2px -2px 2px rgba(0, 0, 0, 0.1);
-    border-bottom-left-radius: 5px;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background: white;
 }
 
 div#inheritance ul {
@@ -767,18 +774,45 @@ div#inheritance ul {
 
 div#inheritance ul#hierarchyTree {
     margin-left: 0;
+    overflow: hidden;
+    padding: 5px 2px 5px 0px;
+}
+
+#inheritance {
+    visibility: hidden;
 }
 
 #inheritance h6 {
     background: #25A8E7;
     color: white;
     display: block;
-    padding: 2px 3px 2px 4px;
+    padding: 3px 6px 1px 6px;
     margin: -2px -11px 0 -11px;
     text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.4);
     border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
     font-family: Helvetica;
     font-weight: 100;
+    cursor: pointer;
+    letter-spacing: 1px;
+    -webkit-transition: border-radius 0.4s ease-out;
+    -moz-transition: border-radius 0.4s ease-out;
+    -o-transition: border-radius 0.4s ease-out;
+}
+
+#inheritance.collapsed h6 {
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+#hierarchyTree {
+    -webkit-transition: height 0.2s, padding 0.2s;
+    -moz-transition: height 0.2s, padding 0.2s;
+    -o-transition: height 0.2s, padding 0.2s;
+}
+
+div#inheritance.collapsed ul#hierarchyTree {
+    padding: 0;
 }
 
 #hierarchyTree li {
@@ -877,72 +911,6 @@ h3.methodToggle.active {
   Footer? I hardly know her
 */
 
-#footer {
-    width:100%;
-    background: #101010 url(../images/footer_bg.png) repeat 0 0;
-    font-size: 12px;
-    color: #c3c3c3;
-    height: 40px;
-}
-#footer .footerInner {
-    padding-left: 300px;
-    margin-left: auto;
-    margin-right: auto;
-    min-height: 40px;
-    background:  url(../images/arrow_footer.png) no-repeat 261px 0;
-}
-#footer .footer-text {
-    display: block;
-    float: left;
-    margin-right: 10px;
-    margin-top: 24px;
-}
-#footer .sponsors {
-    display: inline-block;
-    margin-top: 18px;
-}
-
-#footer .sponsors .sponsor {
-    padding-right: 22px;
-}
-#footer .container
-#footer a {
-/*    color: #c3c3c3;
-    text-decoration: underline;*/
-}
-#footer .c9-logo {
-    width: 141px;
-    height: 20px;
-    background:  url(../images/c9-log-footer.png) no-repeat 0 0;
-    display: inline-block;
-    padding-right: 10px;
-}
-#footer .joyent-logo {
-    width: 70px;
-    height: 19px;
-    background:  url(../images/joyent-logo-footer.png) no-repeat 0 0;
-    display: inline-block;
-    padding-right: 10px;
-}
-#footer .mozilla-logo {
-    width: 78px;
-    height: 24px;
-    background:  url(../images/mozilla-logo-footer.png) no-repeat 0 0;
-    display: inline-block;
-    padding-right: 10px;
-}
-#footer .debuggable-logo {
-    width: 119px;
-    height: 25px;
-    background:  url(../images/debuggable-logo-footer.png) no-repeat 0 0;
-    display: inline-block;
-    padding-right: 0 !important;
-    margin-bottom : -3px;
-}
-#footer .span11 {
-    margin-left: 0;
-}
-
 .logoText, .logoImg {
     /*position: absolute;*/
     margin-bottom: 5px;
@@ -1019,9 +987,6 @@ html, body {
 div.push {
     height: 40px; /* .push must be the same height as .footer */
 }
-#footer, div.push {
+div.push {
 clear: both;
-}
-#footer {
-    margin-top: 40px;
 }

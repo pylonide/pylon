@@ -30,6 +30,7 @@ each nodes of the list. This list will display three items.
 ```
 
 ## Remarks
+
 A somewhat advanced topic is understanding how an element can use the 
 each [binding rule](./bindingrule.html). For the tree, these binding rules
 can be used to create a virtual tree mapping of the XML.
