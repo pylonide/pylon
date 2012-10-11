@@ -188,6 +188,33 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
+    this["command-ps"] = function(message) {
+        var self = this;
+        this.pm.ps(function(err, procs) {
+            self.sendResult(0, message.command, {
+                argv    : message.argv,
+                err     : null,
+                out     : procs,
+                extra   : message.extra
+            });
+        });
+    };
+
+    this["command-kill"] = function(message) {
+        var self = this;
+        this.pm.kill(message.pid, function(err) {
+            if (!err)
+                return;
+            self.sendResult(0, message.command, {
+                argv  : message.argv,
+                code  : -1,
+                err   : err || "There was a problem exiting the process",
+                extra : message.extra,
+                pid   : message.pid
+            });
+        });
+    };
+
     this.getListing = function(tail, path, dirmode, callback) {
         var self = this;
         var matches = [];
