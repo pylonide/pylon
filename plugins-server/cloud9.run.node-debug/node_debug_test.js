@@ -13,7 +13,7 @@ var node_debug = require("./node_debug-runner");
 var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
 var ProcessManager = require("../cloud9.process-manager/process_manager");
-var vfsLocal = require("vfs/local");
+var vfsLocal = require("vfs-local");
 var fsnode = require("vfs-nodefs-adapter");
 
 module.exports = {

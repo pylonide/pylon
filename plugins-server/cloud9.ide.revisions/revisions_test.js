@@ -10,7 +10,7 @@ var Diff_Match_Patch = require("./diff_match_patch");
 
 var BASE_URL = "/sergi/node_chat";
 var Fs = require("fs");
-var vfsLocal = require("vfs/local");
+var vfsLocal = require("vfs-local");
 
 var assertPath = function(path, shouldExist, message) {
     assert.ok(Path.existsSync(path) == shouldExist, message || "");

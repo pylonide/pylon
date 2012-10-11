@@ -3,7 +3,7 @@
 var assert = require("assert");
 var EventEmitter = require("events").EventEmitter;
 var shell = require("./shell");
-var vfsLocal = require("vfs/local");
+var vfsLocal = require("vfs-local");
 
 module.exports = {
 
