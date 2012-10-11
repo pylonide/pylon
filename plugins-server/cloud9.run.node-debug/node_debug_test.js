@@ -49,7 +49,7 @@ module.exports = {
         };
         // fake setup
         node_debug("http://localhost:5858", null, vfs, pm,
-            sandbox, node_runner, false, null, 5858,
+            sandbox, node_runner, false, null, null, 5858,
             function () { next(); });
     },
 
