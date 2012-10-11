@@ -26,10 +26,6 @@
  * Based on the context of the menu, items can be shown and hidden. That's
  * why this element is often called a contextmenu.
  * 
- * @class apf.menu
- * @define menu
- * @selection
- * @allowchild item, divider, check, radio
  *
  *
  * #### Example
@@ -71,6 +67,11 @@
  *    center      = "true">
  *  </a:window>
  * ```
+ *
+ * @class apf.menu
+ * @define menu
+ * @selection
+ * @allowchild item, divider, check, radio
  * @see apf.GuiElement@contextmenu
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
