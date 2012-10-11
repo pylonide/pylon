@@ -260,6 +260,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      *
      */
     filter : function(keyword, nosel, force){
+        keyword = keyword.replace(/\*/g, "");
+
         if (!this.model.data) {
             this.lastSearch = keyword;
             return;
@@ -310,6 +312,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     replaceStrong : function (value, keyword){
+        keyword = keyword.replace(/\*/g, "");
+
         if (!value) return "";
 
         var i, j;
