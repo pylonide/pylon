@@ -312,15 +312,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     replaceStrong : function (value, keyword){
+        if (!value)
+            return "";
         keyword = keyword.replace(/\*/g, "");
-
-        if (!value) return "";
-
         var i, j;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
         var result = search.matchPath(value, keyword);
-        if (! result.length)
+        if (!result.length)
             return value;
         result.forEach(function(part, i) {
             if (part.match)

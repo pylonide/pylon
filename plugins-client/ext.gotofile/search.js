@@ -100,7 +100,7 @@ module.exports.fileSearch = function(filelist, keyword) {
             var path = "";
             var result;
             result = matchPath(name, keyword);
-            if (! result.length || result.length > 6)
+            if (!result.length || result.length > 6)
                 continue;
             var matched = name.substring(result[0].val.length);
             // The less the number of groups matched, the higher prio we give
