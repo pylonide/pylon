@@ -9,27 +9,148 @@
       buttons   = "close"
       modal     = "false"
       width     = "1200"
-      height    = "600"
+      height    = "700"
       kbclose   = "true"
       draggable = "true">
         <div id="winUIExtContent">
             <h1>Cloud9 IDE UI</h1>
             <div class="ui-section">
-                <h2>Buttons</h2>
+                <h2>Bar</h2>
+                <div class="ui-item">
+                    <h3>bar - <em>Nothing to see here :)</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>black-menu-bar</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar skin="black-menu-bar"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;black-menu-bar&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:bar skin="black-menu-bar" class="closed minimized"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;black-menu-bar&quot; class=&quot;closed minimized&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-header-bar</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <h4>Remove - It's not needed it just has position absolute and coords that should be done with the anchor attr</h4>
+                            <div class="relative">
+                                <a:bar skin="c9-header-bar"></a:bar>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;c9-header-bar&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-menu-bar - <em>.c9-mbar-round should be absolute and relative to it's parrent</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version relative">
+                            <a:bar skin="c9-menu-bar"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;c9-menu-bar&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:bar skin="c9-menu-bar" class="minimized"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;c9-menu-bar&quot; class=&quot;minimized&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>debug-panel</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar skin="debug-panel" height="100"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;debug-panel&quot; height=&quot;100&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>deprecated - <em>Should remove. Maybe make overflow:hidden a class</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar skin="deprecated"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;deprecated&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>dock-panel - <em>not used</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar skin="dock-panel" height="100"></a:bar>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;dock-panel&quot; height=&quot;100&quot;&gt;&lt;/a:bar&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>winGoToFile - <em>Shouldn't be positioned like this</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar skin ="winGoToFile" width="350" minheight="35" class="position-static" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin =&quot;winGoToFile&quot; width=&quot;350&quot; minheight=&quot;35&quot; class=&quot;position-static&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="dark">
+                                <a:bar skin ="winGoToFile" width="350" minheight="35" class="position-static" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin =&quot;winGoToFile&quot; width=&quot;350&quot; minheight=&quot;35&quot; class=&quot;position-static&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                 <div class="ui-item">
+                    <h3>bar-liveinspect - <em>Remove</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:bar skin="bar-liveinspect" skinset="inlinedg" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:bar skin=&quot;bar-liveinspect&quot; skinset=&quot;inlinedg&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                
+                
+                
+                
+                
+                
+                
+                
+            </div>
+            <div class="ui-section">
+                <h2>Button</h2>
                 <div class="ui-item">
                     <h3>Button (default)</h3>
-                    <a:button width="200" skin="button">Button</a:button>
-                    <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button&quot;&gt;Button&lt;/a:button&gt;</code></pre>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="200" skin="button">Button</a:button>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button&quot;&gt;Button&lt;/a:button&gt;" />
+                        </div>
+                    </div>
                 </div>
                 <div class="ui-item">
                     <h3>btn-access_request</h3>
-                    <a:button width="200" skin="btn-access_request">Access request</a:button>
-                    <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-access_request&quot;&gt;Access request&lt;/a:button&gt;</code></pre>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="200" skin="btn-access_request">Access request</a:button>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;btn-access_request&quot;&gt;Access request&lt;/a:button&gt;" />
+                        </div>
+                    </div>
                 </div>
                 <div class="ui-item">
                     <h3>github-button - remove</h3>
-                    <a:button width="200" skin="github-button" icon="github-kitty.png">Or sign in with GitHub instead</a:button>
-                    <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;github-button&quot; icon=&quot;github-kitty.png&quot;&gt;Or sign in with GitHub instead&lt;/a:button&gt;</code></pre>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="200" skin="github-button" icon="github-kitty.png">Or sign in with GitHub instead</a:button>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;github-button&quot; icon=&quot;github-kitty.png&quot;&gt;Or sign in with GitHub instead&lt;/a:button&gt;" />
+                        </div>
+                    </div>
                 </div>
                 <div class="ui-item">
                     <h3>btn_console_open</h3>
@@ -37,13 +158,13 @@
                         <div class="fleft version">
                             <h4>Default</h4>
                             <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" height="27"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button id=&quot;btnCollapseConsole&quot; skin=&quot;btn_console_open&quot; icon=&quot;switch.png&quot; height=&quot;27&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>This is how it can also look</h4>
+                            <h4>This is how it looks opened - <em>Should redo the skin</em></h4>
                             <div class="btn_console_open btn_console_openIcon btn_console_openBool btn_console_openEmpty btn_console_openDefault btn_console_openOver btn_console_openDown btn_console_openChecked btn_console_openOpen btn_console_openDown btn_console_openDown btn_console_openDown" style="background-image: url(https://c9.dev:3443/2.0.7/static/ext/main/style/icons/switch.png); box-sizing: border-box; height: 27px; margin: 0px; min-width: 18px; min-height: 1px; max-width: 10000px; max-height: 10000px; "></div>
                         </div>
                     </div>
-                    <pre><code>&lt;a:button id=&quot;btnCollapseConsole&quot; skin=&quot;btn_console_open&quot; icon=&quot;switch.png&quot; height=&quot;27&quot;/&gt;</code></pre>
                 </div>
                 <div class="ui-item">
                     <h3>button-colorless</h3>
@@ -51,110 +172,117 @@
                         <div class="fleft version">
                             <h4>Default - It's not called colorless for nothing</h4>
                             <a:button width="200" skin="button-colorless">Default</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot;&gt;Default&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot;&gt;Default&lt;/a:button&gt;" />
                         </div>    
                         <div class="fleft version">
                             <h4>Default on dark backgrounds</h4>
                             <div class="ui-dark">
                                 <a:button width="200" skin="button-colorless" class="dark">Dark</a:button>
                             </div>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;dark&quot;&gt;Dark&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;dark&quot;&gt;Dark&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Grey</h4>
                             <a:button width="200" skin="button-colorless" class="grey">Grey</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;grey&quot;&gt;Grey&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;grey&quot;&gt;Grey&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Light Grey</h4>
                             <a:button width="200" skin="button-colorless" class="light-grey">Light Grey</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;light-grey&quot;&gt;Light Grey&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;light-grey&quot;&gt;Light Grey&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Red</h4>
                             <a:button width="200" skin="button-colorless" class="red">Red</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;red&quot;&gt;Red&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;red&quot;&gt;Red&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Blue</h4>
                             <a:button width="200" skin="button-colorless" class="blue">Blue</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;blue&quot;&gt;Blue&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;blue&quot;&gt;Blue&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Light blue</h4>
                             <a:button width="200" skin="button-colorless" class="light-blue">Light blue</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;light-blue&quot;&gt;Light Blue&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;light-blue&quot;&gt;Light Blue&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Green</h4>
                             <a:button width="200" skin="button-colorless" class="green">Green</a:button>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;green&quot;&gt;Green&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;button-colorless&quot; class=&quot;green&quot;&gt;Green&lt;/a:button&gt;" />
                         </div>
                     </div>
                 </div>
                 <div class="ui-item">
                     <h3>toolbarbutton</h3>
-                    <div class="menubar">
-                        <a:button icon="arrow_left.png" skin="toolbarbutton" visible="{pgDocs.activepagenr==1}" 
-                            onclick="pgDocs.set(0)" />                    
-                    </div>
-                    <div class="toolbar">
-                        <div class="subbar">
-                            <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
-                                <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
-                                <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
-                                <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
-                                <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
-                                <a:button id="btnFront" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('front')" icon="ide/shape_move_front.png" tooltip="Bring to Front" />
-                                <a:button id="btnForward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('forward')" icon="ide/shape_move_forwards.png" tooltip="Bring Forward" />
-                                <a:button id="btnBackward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('backward')" icon="ide/shape_move_backwards.png" tooltip="Send Backward" />
-                                <a:button id="btnBack" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('back')" icon="ide/shape_move_back.png" tooltip="Send to Back" />
-                            </a:hbox>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="menubar">
+                                <a:button icon="arrow_left.png" skin="toolbarbutton" />                    
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="Probably we should remove this skin since no icons appear" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="toolbar">
+                                <div class="subbar">
+                                    <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
+                                        <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                                        <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
+                                        <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
+                                        <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
+                                        <a:button id="btnFront" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('front')" icon="ide/shape_move_front.png" tooltip="Bring to Front" />
+                                        <a:button id="btnForward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('forward')" icon="ide/shape_move_forwards.png" tooltip="Bring Forward" />
+                                        <a:button id="btnBackward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('backward')" icon="ide/shape_move_backwards.png" tooltip="Send Backward" />
+                                        <a:button id="btnBack" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('back')" icon="ide/shape_move_back.png" tooltip="Send to Back" />
+                                    </a:hbox>
+                                </div>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="Probably we should remove this skin since no icons appear" />
                         </div>
                     </div>
-                    <pre><code>Probably we should remove this skin since no icons appear</code></pre>
                 </div>
                 
                 <div class="ui-item">
                     <h3>blackbutton</h3>
-                    <a:button width="80" skin="blackbutton">Find</a:button>
-                    <pre><code>&lt;a:button width=&quot;80&quot; skin=&quot;blackbutton&quot;&gt;Find&lt;/a:button&gt;</code></pre>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="80" skin="blackbutton">Find</a:button>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;80&quot; skin=&quot;blackbutton&quot;&gt;Find&lt;/a:button&gt;" />
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="ui-item">
                     <h3>btn-default-simple</h3>
-                    <div class="ui-dark">
-                        <a:button skin="btn-default-simple">Return to the IDE</a:button>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button skin="btn-default-simple">Return to the IDE</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn-default-simple&quot;&gt;Return to the IDE&lt;/a:button&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Wrapped into .win-deploy-target</h4>
+                            <div class="win-deploy-target ui-dark">
+                                <a:button skin="btn-default-simple">Return to the IDE</a:button>
+                            </div>
+                        </div>
                     </div>
-                    <h4>Wrapped into .win-deploy-target</h4>
-                    <div class="win-deploy-target ui-dark">
-                        <a:button skin="btn-default-simple">Return to the IDE</a:button>
-                    </div>
-                    <pre><code></code></pre>
                 </div>
                 <div class="ui-item">
                     <h3>btn-default-css3</h3>
                     <div class="fbox">
                         <div class="fleft version">
-                            <h4>Default</h4>
                             <div class="ui-dark">
                                 <a:button width="200" skin="btn-default-css3">Button</a:button>
                             </div>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot;&gt;Button&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot;&gt;Button&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Green</h4>
                             <div class="ui-dark">
                                 <a:button width="200" skin="btn-default-css3" class="btn-green">Green</a:button>
                             </div>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot; class=&quot;btn-green&quot;&gt;Green&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot; class=&quot;btn-green&quot;&gt;Green&lt;/a:button&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>Red</h4>
                             <div class="ui-dark">
                                 <a:button width="200" skin="btn-default-css3" class="btn-red">Red</a:button>
                             </div>
-                            <pre><code>&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot; class=&quot;btn-red&quot;&gt;Red&lt;/a:button&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;btn-default-css3&quot; class=&quot;btn-red&quot;&gt;Red&lt;/a:button&gt;" />
                         </div>
                     </div>
                 </div>
@@ -163,11 +291,11 @@
                     <div class="fbox">
                         <div class="fleft version">
                             <a:button width="25" height="25" skin="c9-topbar-btn" class="home" />
-                            <pre><code>&lt;a:button width=&quot;25&quot; height=&quot;25&quot; skin=&quot;c9-topbar-btn&quot; class=&quot;home&quot; /&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;25&quot; height=&quot;25&quot; skin=&quot;c9-topbar-btn&quot; class=&quot;home&quot; /&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button width="25" height="25" skin="c9-topbar-btn" class="dashboard" />
-                            <pre><code>&lt;a:button width=&quot;25&quot; height=&quot;25&quot; skin=&quot;c9-topbar-btn&quot; class=&quot;dashboard&quot; /&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;25&quot; height=&quot;25&quot; skin=&quot;c9-topbar-btn&quot; class=&quot;dashboard&quot; /&gt;" />
                         </div>
                     </div>
                 </div>
@@ -176,109 +304,707 @@
                     <div class="fbox">
                         <div class="fleft version">
                             <a:button skin="mnubtn"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="c9-logo"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;c9-logo&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;c9-logo&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="toggle-black-menu-bar"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;toggle-black-menu-bar&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;toggle-black-menu-bar&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="spacer"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;spacer&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;spacer&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="rundebug"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;rundebug&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;rundebug&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="project_files"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;project_files&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;project_files&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="open_files"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;open_files&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;open_files&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="testing"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;testing&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;testing&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="visual_editor"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;visual_editor&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;visual_editor&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="preferences"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;preferences&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;preferences&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="github_corner"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;github_corner&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;github_corner&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="deploy"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;deploy&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;deploy&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="the_store"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;the_store&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;the_store&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="shop"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="shop1"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop1&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop1&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="shop2"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop2&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop2&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="shop3"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop3&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop3&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
                             <a:button skin="mnubtn" class="shop4"/>
-                            <pre><code>&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop4&quot;/&gt;</code></pre>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;mnubtn&quot; class=&quot;shop4&quot;/&gt;" />
                         </div>
                     </div>
                 </div>
-<!--                
-
-
-
-
-browser-btn
-header-btn
-c9-toolbarbutton2
-c9-sidepanelsbutton
-c9-toolbarbutton-glossy
-c9-toolbarbutton
-c9-toolbarbutton-light
-c9-simple-btn
-c9-menu-btn
-toolbarbutton
-dockButton
-btn_icon_only
-btn_console_open
-github-button
-button
-btn-access_request
-btn-blue-noise
-permissions-button
-btn-collab-send
-collaboratorbutton
-
-
-
-                
--->
+                <div class="ui-item">
+                    <h3>dockheader</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="200" skin="dockheader"  />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;dockheader&quot;  /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button width="200" skin="dockheader" class="expanded" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;dockheader&quot; class=&quot;expanded&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>This one should probably be removed</h4>
+                            <div class="dockcol ui-dark">
+                                <a:button width="200" skin="dockheader"  />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;div class=&quot;dockcol&quot;&gt;&lt;a:button width=&quot;200&quot; skin=&quot;dockheader&quot;  /&gt;&lt;/div&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>This one should probably be removed</h4>
+                            <div class="dockcol ui-dark">
+                                <a:button width="200" skin="dockheader" class="expanded" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;div class=&quot;dockcol ui-dark&quot;&gt;&lt;a:button width=&quot;200&quot; skin=&quot;dockheader&quot; class=&quot;expanded&quot; /&gt;&lt;/div&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>browser-btn - <em>icons missing maybe remove</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="browser-btn" icon="browser_arrowleft.png" />
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="browser-btn" icon="browser_arrowright.png" />
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="browser-btn" icon="browser_refresh.png" />
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-toolbarbutton2</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="c9-toolbarbutton2"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;c9-toolbarbutton2&quot;/&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="c9-toolbarbutton2" icon="delete_icon.png" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;c9-toolbarbutton2&quot; icon=&quot;delete_icon.png&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-sidepanelsbutton</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="c9-sidepanelsbutton"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;c9-sidepanelsbutton&quot;/&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button icon="play.png" skin="c9-sidepanelsbutton"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button icon=&quot;play.png&quot; skin=&quot;c9-sidepanelsbutton&quot;/&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button icon="pause.png" skin="c9-sidepanelsbutton"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button icon=&quot;pause.png&quot; skin=&quot;c9-sidepanelsbutton&quot;/&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button icon="step.png" skin="c9-sidepanelsbutton"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button icon=&quot;step.png&quot; skin=&quot;c9-sidepanelsbutton&quot;/&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button icon="stepinto.png" skin="c9-sidepanelsbutton"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button icon=&quot;stepinto.png&quot; skin=&quot;c9-sidepanelsbutton&quot;/&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button icon="stepback.png" skin="c9-sidepanelsbutton"/>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button icon=&quot;stepback.png&quot; skin=&quot;c9-sidepanelsbutton&quot;/&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-toolbarbutton-glossy</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="c9-toolbarbutton-glossy">Button</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;c9-toolbarbutton-glossy&quot;&gt;Button&lt;/a:button&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="c9-toolbarbutton-glossy" icon="stop.png" >Stop</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;c9-toolbarbutton-glossy&quot; icon=&quot;stop.png&quot; &gt;Stop&lt;/a:button&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="c9-toolbarbutton-glossy" icon="save.png" >Save</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;c9-toolbarbutton-glossy&quot; &gt;Save&lt;/a:button&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="c9-toolbarbutton-glossy" class="btnSave save" icon="save.png" >Save</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;c9-toolbarbutton-glossy&quot; class=&quot;btnSave save&quot; &gt;Save&lt;/a:button&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="c9-toolbarbutton-glossy" class="btnSave saving" icon="save.png" >Saving</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;c9-toolbarbutton-glossy&quot; class=&quot;btnSave saving&quot; &gt;Saving&lt;/a:button&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="c9-toolbarbutton-glossy" class="btnSave saved" icon="save.png" >Saved</a:button>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;c9-toolbarbutton-glossy&quot; class=&quot;btnSave saved&quot; &gt;Saved&lt;/a:button&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-toolbarbutton</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" id="btnUiRecordStart" skin="c9-toolbarbutton" caption="Button" />
+                            </div>                            
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; id=&quot;btnUiRecordStart&quot; skin=&quot;c9-toolbarbutton&quot; caption=&quot;Button&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" id="btnUiRecordStart" skin="c9-toolbarbutton" class="with-arrow" caption="Button" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; id=&quot;btnUiRecordStart&quot; skin=&quot;c9-toolbarbutton&quot; class=&quot;with-arrow&quot; caption=&quot;Button&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" id="btnUiRecordStart" skin="c9-toolbarbutton" icon="run.png" caption="Run" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; id=&quot;btnUiRecordStart&quot; skin=&quot;c9-toolbarbutton&quot; icon=&quot;run.png&quot; caption=&quot;Run&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" id="btnUiRecordStart" skin="c9-toolbarbutton" icon="stop.png" caption="Stop" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; id=&quot;btnUiRecordStart&quot; skin=&quot;c9-toolbarbutton&quot; icon=&quot;stop.png&quot; caption=&quot;Stop&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-toolbarbutton-light</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="200" skin="c9-toolbarbutton-light" caption="button" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;c9-toolbarbutton-light&quot; caption=&quot;button&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button width="200" skin="c9-toolbarbutton-light" icon="stop.png" caption="Stop Tests" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;200&quot; skin=&quot;c9-toolbarbutton-light&quot; icon=&quot;stop.png&quot; caption=&quot;Stop Tests&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-simple-btn <em>it needs cursor:pointer in the skin</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="c9-simple-btn" caption="Button" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;c9-simple-btn&quot; caption=&quot;Button&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-menu-btn <em>defined both in the editor and the dashboard</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="c9-menu-btn">Help</a:button>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;c9-menu-btn&quot;&gt;Help&lt;/a:button&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>dockButton <em>- needs to be redone because the images are added inline</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skin="dockButton"></a:button>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>btn_icon_only</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button skin="btn_icon_only" icon="console_clear.png" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn_icon_only&quot; icon=&quot;console_clear.png&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button skin="btn_icon_only" icon="console_settings.png" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn_icon_only&quot; icon=&quot;console_settings.png&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button skin="btn_icon_only" icon="console_max.png" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn_icon_only&quot; icon=&quot;console_max.png&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button skin="btn_icon_only" icon="console_close_btn.png" class="dim22-22" />      
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn_icon_only&quot; icon=&quot;console_close_btn.png&quot; class=&quot;dim22-22&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Broken - redo or remove</h4>
+                            <div class="ui-dark">
+                                <a:button skin="btn_icon_only" icon="console_close_btn.png" class="dim14-14" />      
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn_icon_only&quot; icon=&quot;console_close_btn.png&quot; class=&quot;dim14-14&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Broken - redo or remove</h4>
+                            <div class="ui-dark">
+                                <a:button skin="btn_icon_only" icon="console_close_btn.png" class="dim8-8" />      
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;btn_icon_only&quot; icon=&quot;console_close_btn.png&quot; class=&quot;dim8-8&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Broken - redo or remove</h4>
+                            <div class="ui-dark">
+                                <a:button width="17" height="17" skin="btn_icon_only" icon="console_close_btn.png" class="tabmenubtn" />      
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;17&quot; height=&quot;17&quot; skin=&quot;btn_icon_only&quot; icon=&quot;console_close_btn.png&quot; class=&quot;tabmenubtn&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>btn-blue-noise</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="btn-blue-noise" skinset="authskin" caption="Button" />      
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;btn-blue-noise&quot; skinset=&quot;authskin&quot; caption=&quot;Button&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>permissions-button - <em>not use we should remove</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:button width="100" skin="permissions-button" skinset="collaborate" caption="Button" />      
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; skin=&quot;permissions-button&quot; skinset=&quot;collaborate&quot; caption=&quot;Button&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>btn-collab-send</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button width="100" height="24" skin="btn-collab-send" skinset="collaborate" caption="Button" />      
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button width=&quot;100&quot; height=&quot;24&quot; skin=&quot;btn-collab-send&quot; skinset=&quot;collaborate&quot; caption=&quot;Button&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>collaboratorbutton</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:button skinset="collaborate" skin="collaboratorbutton" class="add_collaborator" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skinset=&quot;collaborate&quot; skin=&quot;collaboratorbutton&quot; class=&quot;add_collaborator&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skinset="collaborate" skin="collaboratorbutton" class="remove_collaborator" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skinset=&quot;collaborate&quot; skin=&quot;collaboratorbutton&quot; class=&quot;remove_collaborator&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skinset="collaborate" skin="collaboratorbutton" class="chat_collaborator" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skinset=&quot;collaborate&quot; skin=&quot;collaboratorbutton&quot; class=&quot;chat_collaborator&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skinset="collaborate" skin="collaboratorbutton" class="share_project" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skinset=&quot;collaborate&quot; skin=&quot;collaboratorbutton&quot; class=&quot;share_project&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skinset="collaborate" skin="collaboratorbutton" class="edit_collaborator" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skinset=&quot;collaborate&quot; skin=&quot;collaboratorbutton&quot; class=&quot;edit_collaborator&quot; /&gt;" />
+                        </div>
+                        
+                    </div>
+                </div>
+               <div class="ui-item">
+                    <h3>header-btn - <em>should move the positioning from skin to markup</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version relative">
+                            <h4>Default state is useless</h4>
+                            <a:button skin="header-btn" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;header-btn&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="header-btn" class="panel-settings" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;header-btn&quot; class=&quot;panel-settings&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:button skin="header-btn" class="c9-header-plus" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;header-btn&quot; class=&quot;c9-header-plus&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Down state doesn't look ok</h4>
+                            <a:button skin="header-btn" class="c9-header-minus" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;header-btn&quot; class=&quot;c9-header-minus&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>This just adds the divider on the left</h4>
+                            <a:button skin="header-btn" class="c9-header-divider" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;header-btn&quot; class=&quot;c9-header-divider&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="ui-section">
+                <h2>Checkbox</h2>
+                <div class="ui-item">
+                    <h3>cboffline</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:checkbox width="55" skin="cboffline" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox width=&quot;55&quot; skin=&quot;cboffline&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>checkbox</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:checkbox>Checkbox</a:checkbox>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox&gt;Checkbox&lt;/a:checkbox&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>checkbox-menu</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:checkbox label="Checkbox" skin="checkbox-menu" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox label=&quot;Checkbox&quot; skin=&quot;checkbox-menu&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>checkbox_black</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:checkbox label="Checkbox" skin="checkbox_black" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox label=&quot;Checkbox&quot; skin=&quot;checkbox_black&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>checkbox_grey</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:checkbox label="Checkbox" skin="checkbox_grey" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox label=&quot;Checkbox&quot; skin=&quot;checkbox_grey&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>db-checkbox</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <h4>Needs to be fixed</h4>
+                            <a:checkbox label="Checkbox" skin="db-checkbox" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox label=&quot;Checkbox&quot; skin=&quot;db-checkbox&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:checkbox label="Checkbox" skin="db-checkbox" class="bluecheck" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:checkbox label=&quot;Checkbox&quot; skin=&quot;db-checkbox&quot; class=&quot;bluecheck&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-section">
+                <h2>Divider</h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-grey">
+                                <a:divider />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-divider</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:divider skin="c9-divider" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-divider-double</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:divider skin="c9-divider-double" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>c9-divider-hor</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:divider skin="c9-divider-hor" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>divider-debugpanel</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:divider skin="divider-debugpanel" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>divider_console</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:divider skin="divider_console" />
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+                      
+<!--        
+<div class="ui-section">
+                <h2>Buttons</h2>
+                <div class="ui-item">
+                    <h3></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+<div class="ui-item">
+                    <h3></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+-->
+
+<!-- code to get all loaded skins
+
+for (var skinset in apf.skins.skins){
+for (var name in apf.skins.skins[skinset].templates){
+console.log("Type: " + apf.skins.skins[skinset].templates[name].localName + " Skinset: " + skinset + " Skin: " + name);
+}}
+* Type: bar Skinset: default Skin: bar
+* Type: bar Skinset: default Skin: black-menu-bar
+* Type: bar Skinset: default Skin: c9-header-bar
+* Type: bar Skinset: default Skin: c9-menu-bar
+* Type: bar Skinset: default Skin: debug-panel
+* Type: bar Skinset: default Skin: deprecated
+* Type: bar Skinset: default Skin: dock-panel
+* Type: bar Skinset: default Skin: winGoToFile
+* Type: bar Skinset: inlinedg Skin: bar-liveinspect
+* Type: button Skinset: authskin Skin: btn-blue-noise
+* Type: button Skinset: collaborate Skin: btn-collab-send
+* Type: button Skinset: collaborate Skin: collaboratorbutton
+* Type: button Skinset: collaborate Skin: permissions-button
+* Type: button Skinset: default Skin: blackbutton
+* Type: button Skinset: default Skin: browser-btn
+* Type: button Skinset: default Skin: btn-access_request
+* Type: button Skinset: default Skin: btn-default-css3
+* Type: button Skinset: default Skin: btn-default-simple
+* Type: button Skinset: default Skin: btn_console_open
+* Type: button Skinset: default Skin: btn_icon_only
+* Type: button Skinset: default Skin: button
+* Type: button Skinset: default Skin: button-colorless
+* Type: button Skinset: default Skin: c9-menu-btn
+* Type: button Skinset: default Skin: c9-sidepanelsbutton
+* Type: button Skinset: default Skin: c9-simple-btn
+* Type: button Skinset: default Skin: c9-toolbarbutton
+* Type: button Skinset: default Skin: c9-toolbarbutton-glossy
+* Type: button Skinset: default Skin: c9-toolbarbutton-light
+* Type: button Skinset: default Skin: c9-toolbarbutton2
+* Type: button Skinset: default Skin: c9-topbar-btn
+* Type: button Skinset: default Skin: dockButton
+* Type: button Skinset: default Skin: dockheader
+* Type: button Skinset: default Skin: github-button
+* Type: button Skinset: default Skin: header-btn
+* Type: button Skinset: default Skin: mnubtn
+* Type: button Skinset: default Skin: toolbarbutton
+* Type: checkbox Skinset: default Skin: cboffline
+* Type: checkbox Skinset: default Skin: checkbox
+* Type: checkbox Skinset: default Skin: checkbox-menu
+* Type: checkbox Skinset: default Skin: checkbox_black
+* Type: checkbox Skinset: default Skin: checkbox_grey
+* Type: checkbox Skinset: default Skin: db-checkbox
+? Type: checkbox Skinset: default Skin: null
+x Type: codebox Skinset: default Skin: codebox
+Type: codeeditor Skinset: default Skin: codeeditor
+Type: datagrid Skinset: default Skin: datagrid
+Type: datagrid Skinset: default Skin: dgcheck
+* Type: divider Skinset: default Skin: c9-divider
+Type: divider Skinset: default Skin: c9-divider-double
+Type: divider Skinset: default Skin: c9-divider-hor
+Type: divider Skinset: default Skin: divider
+Type: divider Skinset: default Skin: divider-debugpanel
+Type: divider Skinset: default Skin: divider_console
+Type: dropdown Skinset: default Skin: black_dropdown
+Type: dropdown Skinset: default Skin: dropdown
+Type: dropdown Skinset: default Skin: dropdown-dark-glossy
+Type: dropdown Skinset: default Skin: light_dropdown
+Type: errorbox Skinset: default Skin: errorbox
+Type: frame Skinset: default Skin: fieldset
+Type: frame Skinset: default Skin: frame
+Type: img Skinset: default Skin: img
+Type: label Skinset: default Skin: black_label
+Type: label Skinset: default Skin: label
+Type: label Skinset: default Skin: tooltipLabel
+Type: list Skinset: collaborate Skin: lstCollaboratorsRoom
+Type: list Skinset: collaborate Skin: members-list
+Type: list Skinset: default Skin: breakpoints
+Type: list Skinset: default Skin: lineselect
+Type: list Skinset: default Skin: list
+Type: menu Skinset: collaborate Skin: permissionsmenu
+Type: menu Skinset: default Skin: dockwin_runbtns
+Type: menu Skinset: default Skin: dockwindowbasic
+Type: menu Skinset: default Skin: dockwindowblack
+Type: menu Skinset: default Skin: menu
+Type: menu Skinset: default Skin: menu-bk
+Type: modalwindow Skinset: authskin Skin: win-auth
+Type: modalwindow Skinset: collaborate Skin: dockextwin
+Type: modalwindow Skinset: collaborate Skin: todowin
+Type: modalwindow Skinset: default Skin: bk-win-noisebg
+Type: modalwindow Skinset: default Skin: bk-window
+Type: modalwindow Skinset: default Skin: bk-window2
+Type: modalwindow Skinset: default Skin: change_photo
+Type: modalwindow Skinset: default Skin: dockwin
+Type: modalwindow Skinset: default Skin: fm-window
+Type: modalwindow Skinset: default Skin: panel
+Type: modalwindow Skinset: default Skin: window
+Type: notifier Skinset: notificationsskin Skin: notifications-bubble
+Type: pages Skinset: default Skin: pages
+Type: progressbar Skinset: default Skin: progressbar
+Type: progressbar Skinset: default Skin: progressbar-green
+Type: radiobutton Skinset: default Skin: classic
+Type: radiobutton Skinset: default Skin: radio_black
+Type: radiobutton Skinset: default Skin: radio_grey
+Type: radiobutton Skinset: default Skin: radiobutton
+Type: scrollbar Skinset: default Skin: console_scrollbar
+Type: scrollbar Skinset: default Skin: sbios
+Type: scrollbar Skinset: default Skin: scrollbar
+Type: slider Skinset: default Skin: horizontal
+Type: slider Skinset: default Skin: range
+Type: slider Skinset: default Skin: slider
+Type: spinner Skinset: default Skin: spinner
+Type: splitbutton Skinset: default Skin: splitbutton
+Type: splitter Skinset: default Skin: darksplitter
+Type: splitter Skinset: default Skin: splitter
+Type: statusbar Skinset: default Skin: status
+Type: statusbar Skinset: default Skin: statusbar
+Type: tab Skinset: default Skin: dockbar
+Type: tab Skinset: default Skin: docktab
+Type: tab Skinset: default Skin: editor_tab
+Type: tab Skinset: default Skin: extensions_tab
+Type: tab Skinset: default Skin: tab
+Type: tab Skinset: default Skin: tab_console
+Type: text Skinset: default Skin: text
+Type: textarea Skinset: default Skin: textarea_ide
+Type: textbox Skinset: authskin Skin: auth-tb
+Type: textbox Skinset: default Skin: black_textbox
+Type: textbox Skinset: default Skin: input
+Type: textbox Skinset: default Skin: searchbox
+Type: textbox Skinset: default Skin: searchbox_textbox
+Type: textbox Skinset: default Skin: secret
+Type: textbox Skinset: default Skin: tb_console
+Type: textbox Skinset: default Skin: tbsimple
+Type: textbox Skinset: default Skin: textarea
+Type: textbox Skinset: default Skin: textbox
+Type: textbox Skinset: default Skin: textbox-modal
+Type: toolbar Skinset: default Skin: toolbar
+Type: tree Skinset: collaborate Skin: collaborators-tree
+Type: tree Skinset: default Skin: tree
+    
+Windows?!
+
+-->
         </div>
     </a:window>
 </a:application>
