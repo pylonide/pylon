@@ -43,8 +43,9 @@
  *  </a:toolbar>
  * ```
  * 
- * @define item
  * @class apf.item
+ * @selection
+ * @define item
  * @inherits apf.Presentation
  *
  */
