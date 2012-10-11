@@ -287,6 +287,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      *
      */
     filter : function(keyword, nosel, force){
+        keyword = keyword.replace(/\*/g, "");
+
         if (!this.model.data) {
             this.lastSearch = keyword;
             return;
@@ -340,13 +342,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     replaceStrong : function (value, keyword){
-        if (!value) return "";
-
+        if (!value)
+            return "";
+        keyword = keyword.replace(/\*/g, "");
         var i, j;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
         var result = search.matchPath(value, keyword);
-        if (! result.length)
+        if (!result.length)
             return value;
         result.forEach(function(part, i) {
             if (part.match)
