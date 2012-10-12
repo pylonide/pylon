@@ -5,21 +5,16 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-/*global tabEditors */
+/*global tabEditors mnuCtxEditor mnuCtxEditorJumpToDef */
 define(function(require, exports, module) {
 
-var ext = require("core/ext");
+var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var commands = require("ext/commands/commands");
-var ide = require("core/ide");
 
-module.exports = ext.register("ext/language/jumptodef", {
-    name    : "jumptodef",
-    dev     : "Ajax.org",
-    type    : ext.GENERAL,
-    alone   : true,
-    nodes   : [],
-
+module.exports = {
+    nodes : [],
+    
     hook : function(language, worker){
         var _self = this;
         _self.worker = worker;
@@ -36,6 +31,31 @@ module.exports = ext.register("ext/language/jumptodef", {
             }
         });
         
+        // right click context item in ace
+        ide.addEventListener("init.ext/code/code", function() {
+            _self.nodes.push(
+                mnuCtxEditor.insertBefore(new apf.divider({
+                    visible : "{mnuCtxEditorJumpToDef.visible}"
+                }), mnuCtxEditor.firstChild),
+                mnuCtxEditor.insertBefore(new apf.item({
+                    id : "mnuCtxEditorJumpToDef",
+                    caption : "Jump to Definition",
+                    command: "jumptodef"
+                }), mnuCtxEditor.firstChild)
+            );
+            
+            // when the context menu pops up we'll ask the worker whether we've 
+            // jumptodef available here
+            apf.addListener(mnuCtxEditor, "prop.visible", function (ev) {
+                // only fire when visibility is set to true        
+                if (ev.value) {
+                    // because of delays we'll enable by default
+                    mnuCtxEditorJumpToDef.enable();
+                    _self.checkIsJumpToDefAvailable();
+                }
+            });
+        });
+        
         // listen to the worker's response
         worker.on("definition", function(ev) {
             editors.jump({
@@ -44,6 +64,32 @@ module.exports = ext.register("ext/language/jumptodef", {
                 node: tabEditors.getPage().xmlRoot,
                 animate: false
             });
+        });
+        
+        // when the analyzer tells us if the jumptodef result is available
+        // we'll disable/enable the jump to definition item in the ctx menu
+        worker.on("isJumpToDefinitionAvailableResult", function (ev) {
+            if (ev.data.value) {
+                mnuCtxEditorJumpToDef.enable();
+            }
+            else {
+                mnuCtxEditorJumpToDef.disable();
+            }
+        });
+    },
+    
+    /**
+     * Fire an event to the worker that asks whether the jumptodef is available for the
+     * current position.
+     * Fires an 'isJumpToDefinitionAvailableResult' event on the same channel when ready
+     */
+    checkIsJumpToDefAvailable: function () {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
+        this.worker.isJumpToDefinitionAvailable({
+            data: editor.getSelection().getCursor()
         });
     },
 
@@ -78,6 +124,5 @@ module.exports = ext.register("ext/language/jumptodef", {
         });
         this.nodes = [];
     }
-});
-
+};
 });

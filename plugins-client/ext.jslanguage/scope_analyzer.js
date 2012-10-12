@@ -715,6 +715,13 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
             mainNode = node;
         }
     );
+    
+    // no mainnode can be found then invoke callback wo value because then we've got no clue
+    // what were doing
+    if (!mainNode) {
+        return callback();
+    }
+    
     var pos = mainNode.getPos();
     var declarations = [];
     var uses = [];
