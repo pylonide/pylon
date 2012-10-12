@@ -1,0 +1,14 @@
+{
+    "name": "ext.linereport",
+    "version": "0.0.1",
+    "main": "linereport-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.linereport"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

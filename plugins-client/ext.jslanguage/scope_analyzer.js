@@ -506,6 +506,22 @@ handler.analyze = function(doc, ast, callback) {
                     scope.vars["_" + b.x.value] = oldVar;
                     return node;
                 },
+                /*
+                 * Catches errors like these:
+                 * if(err) callback(err);
+                 * which in 99% of cases is wrong: a return should be added:
+                 * if(err) return callback(err);
+                 */
+                'If(Var("err"), Call(fn, args), None())', function(b, node) {
+                    // Check if the `err` variable is used somewhere in the function arguments.
+                    if(b.args.collectTopDown('Var("err")').length > 0)
+                        markers.push({
+                            pos: b.fn.getPos(),
+                            type: 'warning',
+                            level: 'warning',
+                            message: "Did you forget a 'return' here?"
+                        });
+                },
                 'PropAccess(_, "lenght")', function(b, node) {
                     markers.push({
                         pos: node.getPos(),

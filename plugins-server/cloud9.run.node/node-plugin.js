@@ -6,11 +6,11 @@ module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
     var sandbox = imports.sandbox;
     var vfs = imports.vfs;
-    var nodePath = options.nodePath || null;
     
     assert(options.listenHint, "Option 'listenHint' is required");
 
-    NodeRunner.call(this, options.url, options.listenHint, vfs, pm, sandbox, false, nodePath, function (err) {
+    NodeRunner.call(this, options.url, options.listenHint, vfs, pm, sandbox,
+        false, options.nodePath, options.nodeVersions, function (err) {
         if (err) return register(err);
 
         register(null, {

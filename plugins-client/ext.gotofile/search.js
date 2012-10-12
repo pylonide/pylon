@@ -7,6 +7,8 @@
 
 define(function(require, exports, module) {
 
+var Heap = require("./heap");
+
 var fileTypes = {
     "js": 1, "json": 11, "css": 5, "less": 5, "scss": 5, "sass": 5, "xml": 11, 
     "rdf": 15, "rss": 15, "svg": 5, "wsdl": 11, "xslt": 5, "atom": 5, 
@@ -25,99 +27,118 @@ var fileTypes = {
 /**
  * Search through a list of filenames.
  */
-module.exports.fileSearch = function(filelist, keyword, cache) {
+module.exports.fileSearch = function(filelist, keyword) {
     var klen = keyword.length;
-    
+
     /**
-     * full filename with extension             1000
-     * name part without the extension           201
-     * start of filename                         200
-     * part of filename                          100
-     * depth of path (or length to optimize)     200 - 10 * count("/")
-     * full part of path                          50
-     * extension weight                           -1 * lut[ext]
+     * FULL MATCHES                              >= 50
+     *   full filename with extension             1000
+     *   name part without the extension           201
+     *   start of filename                         200
+     *   part of filename                          100
+     *   depth of path (or length to optimize)     200 - 10 * count("/")
+     *   full part of path                          50
+     *
+     * SCATTERED MATCHES                         <= 45
+     *   number of match groups                     20 - 3 * #groups
+     *   path depth                                 15 - 2 * count("/")
+     *   match diff                                 10 - len(diff)
+     *
+     * Extension weight                             -1 * lut[ext]
      */
-    
+
     var dt = new Date();
-    
+
     var type = "value";
     var toS = function(){
         return this[type];
     };
-     
-    var name, res = [], value, ext;
-    for (var i = 0, l = filelist.length, s, j, k, q, p; i < l; i++) {
+
+    var name, res = klen < 3 ? [] : new Heap(), value, ext;
+    for (var i = 0, l = filelist.length, s, j, k, q, p, m, n; i < l; i++) {
         name = filelist[i];
-        
+
         // We only add items that have the keyword in it's path
+        value = 0;
         if ((j = name.lastIndexOf(keyword)) > -1) {
-            cache.push(name);
-            
             if (klen < 3) {
                 res.push(name);
                 continue;
             }
-            
-            value = 0;
-            
             // We prioritize ones that have the name in the filename
             if (j > (q = name.lastIndexOf("/"))) {
                 k = name.lastIndexOf("/" + keyword);
-
                 if (k > -1) {
                     // We give first prio to full filename matches
                     if (name.length == klen + 1 + k)
                         value += 1000;
-                    
+
                     // Then to match of name prior to extension
                     else if (name.lastIndexOf(".") == k + klen + 1)
                         value += 201;
-                    
+
                     // Then to matches from the start of the filename
                     else if (k == q)
                         value += 200;
-                    
+
                     // Then anywhere in the filename
                     else
                         value += 100;
                 }
-                
+
                 // The shorter the path depth, the higher prio we give
-                value += 200 - (name.split("/").length * 10);
+                value += 200 - Math.min(name.split("/").length * 10, 150);
             }
             // Then the rest
             else
                 value += 50;
-        
-            //Check extension
+        }
+        // Check for spatial matches
+        else {
+            if (klen < 4 || name.split("/").length > 5)
+                continue;
+            var path = "";
+            var result;
+            result = matchPath(name, keyword);
+            if (!result.length || result.length > 6)
+                continue;
+            var matched = name.substring(result[0].val.length);
+            // The less the number of groups matched, the higher prio we give
+            value += 20 - Math.min((result.length-2)*3, 19);
+            // The shorter the path depth, the higher prio we give
+            value += 15 - Math.min(name.split("/").length*2, 14);
+            // The shorter the match diff, the higher prio we give
+            value += 10 - Math.min(matched.length - keyword.length, 9);
+            value += 20; // extension
+        }
+
+        if (value > 0) {
+            // Check extension
             s = name.lastIndexOf(".");
             if (s > -1)
                 value -= 10 * (fileTypes[name.substr(s+1)] || 0) || 20;
             else
                 value -= 20;
-        
-            res.push({
-                toString : toS,
-                value : 2000000 - value,
-                //name  : value + ", " + name
-                name  : name
-            });
+
+            if (res.size() === 100 && value > res.min().value)
+                res.pop();
+            if (res.size() < 100)
+                res.push({
+                    toString : toS,
+                    value : value,
+                    name  : name
+                });
         }
     }
 
-    if (!res.length)
-        return [];
-    
     if (klen < 3)
         return res;
-    
-    if (klen > 2 && res.length < 10000)
-        res.sort();
-    
-    var type = "name";
-    res = res.join("\n").split("\n");
-    
-    return res;
+
+    var ret = [];
+    while (res.size())
+        ret.unshift(res.pop().name);
+
+    return ret;
 };
 
 var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensitive, results, head) {
@@ -154,5 +175,52 @@ var treeSearch = module.exports.treeSearch = function(tree, keyword, caseInsensi
     return results;
 };
 
+var matchPath = module.exports.matchPath = function (path, keyword) {
+    var result = [];
+    var pathSplits = path.split("/");
+    // Optimization
+    if (pathSplits.length > 4)
+        pathSplits = [pathSplits.slice(0, pathSplits.length - 4).join("/") + "/"]
+            .concat(pathSplits.slice(pathSplits.length - 4, pathSplits.length));
+    var value = "";
+    var k, i, j = -1;
+    for (k = pathSplits.length-1; k >= 0  && !result.length; k--) {
+        value = (k > 0 ? "/" : "") + pathSplits[k] + value;
+        // find matched parts
+        var matchI = null;
+        var missI = null;
+        for (i = 0, j = 0; i < value.length && j < keyword.length; i++) {
+            if (value[i] === keyword[j]) {
+                matchI = matchI === null ? i : matchI;
+                j++;
+                if (missI !== null) {
+                    result.push({ val: value.substring(missI, i) });
+                    missI = null;
+                }
+            }
+            else {
+                missI = missI === null ? i : missI;
+                if (matchI !== null) {
+                    result.push({ match: true, val: value.substring(matchI, i)});
+                    matchI = null;
+                }
+            }
+        }
+        if (j !== keyword.length) {
+            result = [];
+            continue;
+        }
+
+        if (missI !== null)
+            result.push({ val: value.substring(missI, i) });
+        if (matchI !== null)
+            result.push({ match: true, val: value.substring(matchI, i)});
+        result.push({ val: value.substring(i, value.length) });
+        // Add the first non matched part if exists
+        if (k)
+            result.unshift({ val: pathSplits.slice(0, k).join('/') });
+    }
+    return result;
+};
 
 });

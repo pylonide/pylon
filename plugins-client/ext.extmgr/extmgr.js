@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -16,7 +16,7 @@ var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
 
 /*global dgExt dgExtUser tbModuleName tabExtMgr btnUserExtEnable
-  btnDefaultExtEnable winExt btnAdd*/
+  btnDefaultExtEnable winExt btnAdd winQuestion*/
 
 var LOAD_TIMEOUT_REMOTE = 30 * 1000;
 var LOAD_TIMEOUT_LOCAL = 5 * 1000;
@@ -25,32 +25,32 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     name   : "Extension Manager",
     dev    : "Ajax.org",
     alone  : true,
-    type   : ext.GENERAL, 
+    type   : ext.GENERAL,
     markup : markup,
     desp   : [panels],
     requireFailed : false,
-    
+
     nodes : [],
-    
+
     hook : function(){
         var _self = this;
-        
+
         menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
         menus.addItemByPath("Tools/Extension Manager...", new apf.item({
             onclick : function(){
                 _self.show();
             }
         }), 2000000);
-        
+
         // Load up extensions the user added manually
         ide.addEventListener("settings.load", function(e){
             _self.loadedSettings = false;
-            
+
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
                 for (var n = 0; n < nodes.length; n++)
                     _self.loadExtension(nodes[n].getAttribute("realPath") || nodes[n].getAttribute("path"), nodes[n]);
-                
+
                 _self.loadedSettings = true;
             });
         });
@@ -76,7 +76,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 eNode.appendChild(copy);
             }
         });
-        
+
         // Hackity hackathon
         // @TODO the problem is apparently that APF does not
         // like to show the datagrid records when two datagrids are
@@ -89,13 +89,12 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
         var nodes = ext.model.queryNodes("plugin");
         for (var i = 0; i < nodes.length; i++) {
-            apf.xmldb.setAttribute(nodes[i], "total", 
+            apf.xmldb.setAttribute(nodes[i], "total",
                 parseInt(nodes[i].getAttribute("hook"), 10) + parseInt(nodes[i].getAttribute("init") || 0, 10));
         }
     },
 
     addExtension : function() {
-        var _self = this;
         var path = this.canonicalizePath(tbModuleName.value);
         tbModuleName.setValue(path);
         if (this.requireFailed) {
@@ -109,7 +108,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             this.$reportBadInput(path);
         }
     },
-    
+
     canonicalizePath: function(path) {
         path = path.trim();
         if (!path.match("://") && path.substr(-3) === ".js")
@@ -131,12 +130,13 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             message += "\n" + extraMessage;
         util.alert("Error", "Validation Error", message);
     },
-    
+
     loadExtension : function(path, extNode) {
         var timer = setTimeout(function() {
             if (extNode) {
                 path = extNode.getAttribute("path");
-                util.question("Extension Manager", "Extension '" + path + "' failed to load.",
+                util.question("Extension Manager", "Extension '" + path +
+                    "' failed to load. Check your browser's error log.",
                     "Would you like to remove it?",
                     function() {
                         winQuestion.hide();
@@ -148,16 +148,17 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                     function() {
                         winQuestion.hide();
                         _self.$reportBadInput(path, "Please reload Cloud9.");
-                    })
+                    });
                 return;
             }
             _self.requireFailed = true;
-            _self.$reportBadInput(path, "Please reload Cloud9 to add another extension.");
+            _self.$reportBadInput(path, "Check your browser's error log. " + 
+                "Please reload Cloud9 to add another extension.");
             _self.$enableInput();
         }, path.match("://") ? LOAD_TIMEOUT_REMOTE : LOAD_TIMEOUT_LOCAL);
         var _self = this;
         require([path], function(loaded) {
-            var extNode = ext.model.queryNode("plugin[@path='" + loaded.path + "']");
+            var extNode = ext.model.queryNode("plugin[@path=" + util.escapeXpathString(loaded.path) + "]");
             if (!extNode) {
                 _self.requireFailed = true;
                 _self.$reportBadInput(path, "Extension was loaded but not registered successfully.");
@@ -166,6 +167,10 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 btnAdd.enable();
                 return;
             }
+            ide.dispatchEvent("track_action", {
+                type: "extmgr",
+                path: path
+            });
             apf.xmldb.setAttribute(extNode, "userext", "1");
             apf.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();
@@ -173,12 +178,12 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             clearTimeout(timer);
         });
     },
-    
+
     $disableInput : function() {
         tbModuleName.disable();
         btnAdd.disable();
     },
-    
+
     $enableInput : function() {
         if (typeof tbModuleName === "undefined")
             return;
@@ -232,7 +237,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 btnDefaultExtEnable.setAttribute("caption", "Enable");
         }
     },
-    
+
     show : function(){
         ext.initExtension(this);
         winExt.show();
@@ -240,26 +245,26 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
     enable : function(){
         if (!this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.enable();
         });
         this.disabled = false;
     },
-    
+
     disable : function(){
         if (this.disabled) return;
-        
+
         this.nodes.each(function(item){
             item.disable();
         });
         this.disabled = true;
     },
-    
+
     destroy : function(){
         menus.remove("Tools/~", 1000000);
         menus.remove("Tools/Extension Manager...");
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

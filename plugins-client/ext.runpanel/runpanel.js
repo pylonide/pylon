@@ -99,7 +99,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
+                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -177,7 +177,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             ]);
 
             settings.setDefaults("auto/configurations", [
-                ["debug", "true"],
+                ["debug", "false"],
                 ["autohide", "true"]
             ]);
 
@@ -276,6 +276,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
     },
 
+    saveSelection : function() {
+        var node = this.model.data.selectSingleNode('config[@last="true"]');
+        if (node)
+            node.removeAttribute("last");
+        if (lstRunCfg.selected) {
+            lstRunCfg.selected.setAttribute("last", "true");
+            settings.save();
+        }
+        else
+            lstRunCfg.select(lstRunCfg.$model.queryNode("//config"));
+    },
+
     checkAutoHide : function(){
         /*var value = settings.model.queryValue("auto/configurations/@autohide");
         var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
@@ -308,6 +320,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
+        });
+
+        setTimeout(function() {
+            if (lstRunCfg.$model)
+                lstRunCfg.select(lstRunCfg.$model.queryNode("config[@last='true']"));
         });
     },
 
@@ -419,7 +436,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (self.lstRunCfg)
                     lstRunCfg.select(this.node);
             }
-        }), divider)
+        }), divider);
     },
 
     runConfig : function(config, debug) {
@@ -437,13 +454,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             apf.xmldb.removeAttribute(lastNode, "last");
         apf.xmldb.setAttribute(config, "last", "true");
 
+        self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations
         // will vary over time
         ide.dispatchEvent("beforeRunning");
-
+        var args = config.getAttribute("args");
         noderunner.run(
             config.getAttribute("path"),
-            (config.getAttribute("args") || "").split(" "),
+            args ? args.split(" ") : [],
             debug,
             config.getAttribute("value")
         );

@@ -32,7 +32,7 @@ var config = [
         prefix: "/static/bundles",
         plugins: clientExtensions
     }, {
-        packagePath: "./cloud9.static",
+        packagePath: "connect-architect/connect.static",
         prefix: "/static"
     },
     "./cloud9.alive",
@@ -45,7 +45,11 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
-    "./../plugins-client/lib.smith.io",
+    {
+        packagePath: "smith.io/server-plugin",
+        messagePath: "/smith.io/server",
+        debug: true
+    },
     // server plugins
     {
         packagePath: "./cloud9.sandbox",
@@ -92,6 +96,7 @@ var config = [
             "ext/preview/preview",
             "ext/log/log",
             "ext/help/help",
+            "ext/linereport/linereport",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
@@ -152,11 +157,6 @@ var config = [
     }, {
         packagePath: "./cloud9.fs",
         urlPrefix: fsUrl
-    },
-    {
-        packagePath: "smith.io/server-plugin",
-        clientRoute: "/static/smith.io/client.js",
-        messageRoute: "/smith.io/server"        
     },
     "./cloud9.socket",
     {

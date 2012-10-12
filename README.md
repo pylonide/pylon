@@ -36,7 +36,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS `>= 0.6.16` (node 0.8.x will *not work* at the moment!)
+  * NodeJS `>= 0.6.16`
   * NPM `>= 1.1.16`
 
 Install:
@@ -165,11 +165,11 @@ Cloud9 wouldn't be where it is now without contributions. Feel free to fork and 
 
 If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email.
 
-Email: info@ajax.org
+Email: cla@c9.io
 
 Fax: +31 (0) 206388953
 
-Address: Ajax.org B.V.
+Address: Cloud9 IDE
   Keizersgracht 241
   1016 EA, Amsterdam
   the Netherlands

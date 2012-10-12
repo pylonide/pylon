@@ -81,7 +81,7 @@ module.exports = ext.register("ext/console/console", {
             if (message.body.extra.sentatinit)
                 this.recreateLogStreamBlocks(message.body.out);
         },
-        
+
         kill: function(message, outputElDetails) {
             logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
@@ -107,11 +107,11 @@ module.exports = ext.register("ext/console/console", {
             if (proc.extra) {
                 command_id = proc.extra.command_id;
                 original_line = proc.extra.original_line;
-                
+
                 if (!original_line) {
                     continue;
                 }
-                
+
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
 
                 if (proc.type === "run-npm") {
@@ -143,7 +143,7 @@ module.exports = ext.register("ext/console/console", {
         if (typeof tracer_id === "undefined") {
             return null;
         }
-        
+
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/console/console", {
         if (activePg.childNodes[0].tagName.indexOf("codeeditor") >=0) {
             var searchConsole = require("ext/searchinfiles/searchinfiles").searchConsole;
             searchConsole.$editor.session.getDocument().setValue("");
-        } 
+        }
         else if (activePg.childNodes[0].tagName.indexOf("text") === -1)
             return;
 
@@ -375,7 +375,7 @@ module.exports = ext.register("ext/console/console", {
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
 
-        if (txtConsolePrompt) // fix for c9local packed
+        if (window.txtConsolePrompt) // fix for c9local packed
             txtConsolePrompt.hide();
 
         if (spinnerElement) {
@@ -408,11 +408,11 @@ module.exports = ext.register("ext/console/console", {
         var command_id = this.createOutputBlock("Running " + lang + " Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
-    
+
         var containerEl = this.getLogStreamOutObject(command_id).$ext;
         containerEl.setAttribute("rel", command_id);
         apf.setStyleClass(containerEl, "has_pid");
-    
+
         this.command_id_tracer++;
         return command_id;
     },
@@ -434,15 +434,17 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
+        var runners = window.cloud9config.runners;
         var lang;
-        if ((lang = /^(\w+)-start$/.exec(message.type))) {
+        // Skip internal processes
+        if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
             if (apf.isTrue(clearOnRun) && window["txtOutput"])
                 txtOutput.clear();
 
             this.createProcessLog(message.pid, lang[1]);
             return;
-        } else if ((lang = /^(\w+)-data$/.exec(message.type))) {
+        } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.data && message.data.indexOf("Tip: you can") === 0) {
                 (function () {
                     var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
@@ -484,7 +486,7 @@ module.exports = ext.register("ext/console/console", {
 
             logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
             return;
-        } else if ((lang = /^(\w+)-exit$/.exec(message.type))) {
+        } else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             this.markProcessAsCompleted(message.pid, true);
             return;
         }
@@ -532,27 +534,27 @@ module.exports = ext.register("ext/console/console", {
             default:
                 break;
         }
-        
+
         if (message.type.match(/-start$/)) {
             var command_id = extra && extra.command_id;
-        
+
             if (!command_id) {
                 return;
             }
-        
+
             this.tracerToPidMap[command_id] = message.pid;
             this.pidToTracerMap[message.pid] = command_id;
-        
+
             var containerEl = this.getLogStreamOutObject(command_id, null, extra.original_line).$ext;
             containerEl.setAttribute("rel", command_id);
             apf.setStyleClass(containerEl, "has_pid");
             return;
         }
-        
+
         if (message.type.match(/-data$/)) {
             var type = "tracer";
             var id = extra && extra.command_id;
-        
+
             if (!id) {
                 if (extra)
                     return;
@@ -563,13 +565,13 @@ module.exports = ext.register("ext/console/console", {
             logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(id, type === "pid"), ide);
             return;
         }
-        
+
         if (message.type.match(/-exit$/)) {
             if (extra && extra.command_id) this.markProcessAsCompleted(extra.command_id);
             else this.markProcessAsCompleted(message.pid, true);
             return;
         }
-        
+
         if (message.type !== "result") return;
 
         var outputElDetails;
@@ -834,7 +836,7 @@ module.exports = ext.register("ext/console/console", {
 
         this.nodes.push(winDbgConsole);
 
-        
+
         txtConsoleInput.ace.commands.bindKeys({
             "up": function(input) {input.setValue(_self.cliInputHistory.getPrev(), 1);},
             "down": function(input) {input.setValue(_self.cliInputHistory.getNext(), 1);},
@@ -885,7 +887,7 @@ module.exports = ext.register("ext/console/console", {
         });
 
         logger.appendConsoleFragmentsAfterInit();
-        
+
         // when the IDE socket is ready we'll retrieve a list of running processes
         _self.getRunningServerProcesses();
     },
@@ -1067,7 +1069,7 @@ module.exports = ext.register("ext/console/console", {
         this.$collapsedHeight = this.collapsedHeight;
 
         cliBox.show();
-        
+
         if (temporary) {
             var _self = this;
             txtConsoleInput.addEventListener("blur", function(){
@@ -1089,7 +1091,7 @@ module.exports = ext.register("ext/console/console", {
             cliExt.style.bottom = "";
 
             document.body.scrollTop = 0;
-            
+
             anims.animateSplitBoxNode(winDbgConsole, {
                 height: _self.collapsedHeight + "px",
                 timingFunction: timing,
@@ -1104,7 +1106,7 @@ module.exports = ext.register("ext/console/console", {
         else {
             cliExt.scrollTop = 0;
             document.body.scrollTop = 0;
-            
+
             cliExt.style.bottom = "-" + _self.collapsedHeight + "px";
             tabConsole.$ext.style.bottom = 0;
 
@@ -1114,7 +1116,7 @@ module.exports = ext.register("ext/console/console", {
                 duration: 0.2,
                 immediate: immediate
             });
-            
+
             anims.animate(cliBox, {
                 bottom: "0px",
                 timingFunction: timing,
@@ -1130,12 +1132,12 @@ module.exports = ext.register("ext/console/console", {
 
     hideInput : function(force, immediate){
         var _self = this;
-        
+
         if (!force && (!this.inited || this.hiddenInput))
             return;
 
         this.$collapsedHeight = 0;
-        
+
         var timing = "cubic-bezier(.10, .10, .25, .90)";
         var cliExt = cliBox.$ext;
         if (_self.hidden) {
@@ -1143,7 +1145,7 @@ module.exports = ext.register("ext/console/console", {
             cliExt.style.bottom = "";
 
             document.body.scrollTop = 0;
-            
+
             anims.animateSplitBoxNode(winDbgConsole, {
                 height: "0px",
                 timingFunction: timing,
@@ -1158,16 +1160,16 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             cliExt.scrollTop = 0;
-            
+
             document.body.scrollTop = 0;
-            
+
             anims.animate(tabConsole, {
                 bottom : "0px",
                 timingFunction: timing,
                 duration: 0.2,
                 immediate: immediate
             });
-            
+
             anims.animate(cliBox, {
                 bottom: "-" + _self.collapsedHeight + "px",
                 timingFunction: timing,
@@ -1180,7 +1182,7 @@ module.exports = ext.register("ext/console/console", {
                 apf.layout.forceResize();
             });
         }
-        
+
         settings.model.setQueryValue("auto/console/@showinput", false);
         this.hiddenInput = true;
     },
@@ -1191,7 +1193,7 @@ module.exports = ext.register("ext/console/console", {
     _show: function(shouldShow, immediate) {
         var _self = this;
         var searchPage = tabConsole.getPage("pgSFResults");
-            
+
         if (this.hidden != shouldShow)
             return;
 
@@ -1205,7 +1207,7 @@ module.exports = ext.register("ext/console/console", {
         var finish = function() {
             if (_self.onFinishTimer)
                 clearTimeout(_self.onFinishTimer);
-            
+
             _self.onFinishTimer = setTimeout(function(){
                 if (!shouldShow) {
                     tabConsole.hide();
@@ -1213,9 +1215,9 @@ module.exports = ext.register("ext/console/console", {
                 else {
                     winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
                     winDbgConsole.minheight = _self.minHeight;
-                    
+
                     _self.maxHeight = window.innerHeight - 70;
-                    winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
+                    winDbgConsole.$ext.style.maxHeight = _self.maxHeight + "px";
                 }
 
                 winDbgConsole.height = height + 1;
@@ -1235,14 +1237,14 @@ module.exports = ext.register("ext/console/console", {
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
             height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
-            
+
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
             cliBox.$ext.style.height = "28px";
 
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
-            
+
             if (!immediate && animOn) {
                 if (searchPage) {
                     var renderer = searchPage.childNodes[0].$editor.renderer;

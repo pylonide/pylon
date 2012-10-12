@@ -32,7 +32,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     nodes         : [],
     arraySearchResults : [],
     arrayCache : [],
-    arrayCacheLastSearch : [],
 
     isGeneric : window.cloud9config.local && window.cloud9config.workspaceId && window.cloud9config.workspaceId == "generic",
 
@@ -63,8 +62,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             menus.addItemByPath("File/Open...", mnuItem, 500),
             menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100),
 
-            this.model = new apf.model(),
-            this.modelCache = new apf.model()
+            this.model = new apf.model()
         );
 
         ide.addEventListener("init.ext/editors/editors", function(){
@@ -262,28 +260,27 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      *
      */
     filter : function(keyword, nosel, force){
+        keyword = keyword.replace(/\*/g, "");
+
         if (!this.model.data) {
             this.lastSearch = keyword;
             return;
         }
 
-        if (!keyword)
-            this.arraySearchResults = this.arrayCache;
+        if (!keyword || !keyword.length) {
+            var result = this.arrayCache.slice();
+            // More prioritization for already open files
+            tabEditors.getPages().forEach(function (page) {
+                var path = page.$doc.getNode().getAttribute("path")
+                     .substring(window.cloud9config.davPrefix.length);
+                result.remove(path);
+                result.unshift(path);
+            });
+            this.arraySearchResults = result;
+        }
         else {
-            var nodes;
-
-            // Optimization reusing smaller result if possible
-            if (this.lastSearch && keyword.indexOf(this.lastSearch) > -1)
-                nodes = this.arrayCacheLastSearch;
-            else
-                nodes = this.arrayCache;
-
-            var cache = [];
-
             dgGoToFile.$viewport.setScrollTop(0);
-
-            this.arraySearchResults = search.fileSearch(nodes, keyword, cache);
-            this.arrayCacheLastSearch = cache;
+            this.arraySearchResults = search.fileSearch(this.arrayCache, keyword);
         }
 
         this.lastSearch = keyword;
@@ -312,6 +309,25 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var selNode = dgGoToFile.getFirstTraverseNode();
         if (selNode)
             dgGoToFile.select(selNode);
+    },
+
+    replaceStrong : function (value, keyword){
+        if (!value)
+            return "";
+        keyword = keyword.replace(/\*/g, "");
+        var i, j;
+        if ((i = value.lastIndexOf(keyword)) !== -1)
+            return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
+        var result = search.matchPath(value, keyword);
+        if (!result.length)
+            return value;
+        result.forEach(function(part, i) {
+            if (part.match)
+                result[i] = "<strong>" + part.val + "</strong>";
+            else
+                result[i] = part.val;
+        });
+        return result.join("");
     },
 
     updateDatagrid : function(init){
@@ -417,19 +433,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
             //Hide window until the list is loaded, unless we don't have data yet
             if (!dgGoToFile.xmlRoot) {
-                if (this.modelCache.data) {
-                    apf.setOpacity(winGoToFile.$ext, 0);
-
-                    dgGoToFile.addEventListener("afterload", function(){
-                        apf.setOpacity(winGoToFile.$ext, 1);
-
-                        dgGoToFile.removeEventListener("afterload", arguments.callee);
-                    });
-                }
-                else {
-                    dgGoToFile.$setClearMessage(dgGoToFile["loading-message"], "loading");
-                    apf.setOpacity(winGoToFile.$ext, 1);
-                }
+                dgGoToFile.$setClearMessage(dgGoToFile["loading-message"], "loading");
+                apf.setOpacity(winGoToFile.$ext, 1);
             }
             else {
                 apf.setOpacity(winGoToFile.$ext, 1);
@@ -468,8 +473,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     winGoToFile.visible = true;
                     winGoToFile.hide();
 
-                    if (editors.currentEditor && editors.currentEditor.ceEditor)
-                        editors.currentEditor.ceEditor.focus();
+                    setTimeout(function() {
+                        if (editors.currentEditor && editors.currentEditor.ceEditor)
+                            editors.currentEditor.ceEditor.focus();
+                    }, 0);
 
                     callback && callback();
                 });

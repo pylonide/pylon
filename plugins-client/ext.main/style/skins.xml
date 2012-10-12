@@ -1654,7 +1654,7 @@
             font-family   : Tahoma, Arial;
             font-size     : 12px;
             line-height   : 14px;
-            color         : #e8e8e8;
+            color         : #cecece;
             height        : 20px;
             padding       : 4px 2px 0 2px;
             margin        : 0 5px;
@@ -1719,6 +1719,25 @@
             -webkit-user-select: none;
             -o-user-select: none;
             user-select        : none;
+            cursor: default;
+        }
+        
+        .c9-simple-btnIcon {
+            background-repeat: no-repeat;
+            padding-left: 18px;
+            padding-top: 2px;
+        }
+        
+        .c9-simple-btn.btn-terminal {
+            color: #909090;
+            font-size: 11px;
+            text-shadow: 0 1px 0 rgba(0,0,0,.25);
+        }
+        .c9-simple-btn.btn-terminal.c9-simple-btnOver {
+            color: #c5d7bf;
+        }
+        .c9-simple-btn.btn-terminal.c9-simple-btnDown {
+            color: #d1ebaf;
         }
     ]]></a:style>
 
@@ -2055,6 +2074,10 @@
         }
         .c9-toolbarbutton-glossy.saved .c9-icon {
             background-color: #85C410;
+            right: 10px;
+        }
+        .c9-toolbarbutton-glossy.error .c9-icon {
+            background-color: red;
             right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-icon {
@@ -8432,7 +8455,7 @@
             overflow:hidden;
             font-family:Arial;
             font-size:12px;
-            color:#d6d6d6;
+            color:#cecece;
             line-height:14px;
             height             : 14px;
             padding:1px 5px 0 7px;
@@ -8595,12 +8618,12 @@
             height: 23px;
         }
         .btnRun .main { 
-            background-position: 0px -424px; 
+            background-position: 0px -457px; 
             margin-right: 3px;
             overflow: visible;
         }
         .btnRun .main:after {
-            background-position: -397px -424px; 
+            background-position: -397px -457px; 
             content: "";
             display: block;
             left: 100%;
@@ -8614,10 +8637,7 @@
         }
         .btnRun .main .c9-icon {
             left: 3px;
-            top: 3px;
-        }
-        .btnRun .main.c9-dropdown-btnOver { 
-            background-position: 0px -457px; 
+            top: 2px;
         }
         .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -397px -457px; 
@@ -8630,11 +8650,8 @@
         }
 
         .btnRun .arrow { 
-            background-position: -400px -424px; 
-            width: 16px; 
-        }
-        .btnRun .arrow.c9-dropdown-btnOver { 
             background-position: -400px -457px; 
+            width: 16px; 
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
             background-position: -400px -490px; 

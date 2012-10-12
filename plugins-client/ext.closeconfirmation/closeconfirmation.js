@@ -43,7 +43,7 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
         var changed = false;
         tabEditors.getPages().forEach(function(page){
             var node = page.$doc.getNode();
-            if (node && node.getAttribute("changed") == 1 && page.$doc.getValue())
+            if (node && node.getAttribute("changed") == 1 && page.$doc.getValue() && !node.getAttribute("deleted"))
                 changed = true;
         });
         
