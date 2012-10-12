@@ -33,7 +33,8 @@
  * the statusbar, the panel element is an alias of `bar`.
  *
  * @class apf.splitbutton
- * @define bar, panel, menubar
+ * @define splitbutton
+ * @container
  * @allowchild button
  * @allowchild {elements}, {anyaml}
  *
