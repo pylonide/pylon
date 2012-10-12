@@ -322,6 +322,9 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
+        if (e.action == "remove")
+            return;
+        
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -901,7 +904,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc.$isTree;
+        return doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
     /**

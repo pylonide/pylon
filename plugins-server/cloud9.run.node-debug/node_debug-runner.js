@@ -8,7 +8,7 @@ var NodeDebugProxy = require("./nodedebugproxy");
  * debug node scripts with restricted user rights
  */
 
-var exports = module.exports = function (url, listenHint, vfs, pm, sandbox, runNode, usePortFlag, nodePath, debugPort, callback) {
+var exports = module.exports = function (url, listenHint, vfs, pm, sandbox, runNode, usePortFlag, nodePath, nodeVersions, debugPort, callback) {
     var NodeRunner = runNode.Runner;
 
     debugPort = parseInt(debugPort);
@@ -23,14 +23,14 @@ var exports = module.exports = function (url, listenHint, vfs, pm, sandbox, runN
     });
 
     function init(projectDir, url) {
-        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, listenHint, usePortFlag, nodePath, debugPort));
+        pm.addRunner("node-debug", exports.factory(vfs, sandbox, projectDir, url, listenHint, usePortFlag, nodePath, nodeVersions, debugPort));
 
         callback();
     }
 };
 
 function setup (NodeRunner) {
-    exports.factory = function(vfs, sandbox, root, url, listenHint, usePortFlag, nodePath, debugPort) {
+    exports.factory = function(vfs, sandbox, root, url, listenHint, usePortFlag, nodePath, nodeVersions, debugPort) {
         return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
@@ -41,7 +41,9 @@ function setup (NodeRunner) {
             options.env = args.env;
             options.nodeVersion = args.nodeVersion;
             options.debugPort = debugPort;
-            options.nodePath = args.nodePath || nodePath;
+            options.nodePath = args.nodePath ||
+                (nodeVersions && args.nodeVersion && nodeVersions[args.nodeVersion]) ||
+                nodePath || process.execPath;
             options.encoding = args.encoding;
             options.breakOnStart = args.breakOnStart;
             options.eventEmitter = eventEmitter;
@@ -120,7 +122,6 @@ function setup (NodeRunner) {
             function send(msg) {
                 self.eventEmitter.emit(self.eventName, msg);
             }
-            
             this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
             this.nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
@@ -133,12 +134,23 @@ function setup (NodeRunner) {
             });
 
             this.nodeDebugProxy.on("connection", function() {
+                // console.log("Debug proxy connected");
                 send({
                     "type": "node-debug-ready",
                     "pid": self.pid,
                     "extra": self.extra
                 });
                 self._flushSendQueue();
+            });
+
+            this.nodeDebugProxy.on("end", function(err) {
+                // console.log("nodeDebugProxy terminated");
+                if (err) {
+                    // TODO send the error message back to the client
+                    // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);
+                    console.error(err);
+                }
+                delete self.nodeDebugProxy;
             });
 
             this.nodeDebugProxy.connect();
