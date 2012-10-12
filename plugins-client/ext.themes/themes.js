@@ -178,10 +178,7 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + ".dark .revisions-list .revision, "
              + "." + cssClass + ".dark .cc_complete_option, "
              + "." + cssClass + " .searchresults > div",
-             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")],
-            ["." + cssClass + " .ace_corner", 
-             "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
-             + bg + " inset !important;"]
+             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")]
         ], self, _self.stylesheet);
 
         ide.dispatchEvent("theme.init", {theme: theme, path: path});

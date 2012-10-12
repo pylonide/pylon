@@ -119,6 +119,9 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("jumpToDefinition", function(event) {
         _self.jumpToDefinition(event);
     });
+    sender.on("isJumpToDefinitionAvailable", function(event) {
+        _self.isJumpToDefinitionAvailable(event);
+    });
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
@@ -601,33 +604,66 @@ function asyncParForEach(array, fn, callback) {
             cursorMoved(null, currentPos);
         }
     };
-
-    this.jumpToDefinition = function(event) {
-        var pos = event.data;
+    
+    this.$getDefinitionDeclaration = function (row, col, callback) {
+        var pos = { row: row, column: col };
+        // because the asyncforeach iterates over all handlers
+        // we need a variable in a higher scope to find out if
+        // any of the handlers returned a positive result that
+        // we can reuse in the callback
+        var endResult;
+        
         var _self = this;
-            var ast = this.cachedAst;
+        var ast = this.cachedAst;
+        
         if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-            asyncForEach(this.handlers, function(handler, next) {
+            if (!currentNode) 
+                return callback();
+            
+            asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
-                        if (result)
-                            _self.sender.emit("jumpToDefinition", result);
+                        if (result) {
+                            endResult = result;
+                        }
                         next();
                     });
                 }
                 else {
                     next();
             }
+            }, function () {
+                callback(endResult);
             });
+        });
+    };
+
+    this.jumpToDefinition = function(event) {
+        var _self = this;
+        var pos = event.data;
+        
+        _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
+            if (result)
+                _self.sender.emit("definition", result);
+        });
+    };
+    
+    this.isJumpToDefinitionAvailable = function(event) {
+        var _self = this;
+        var pos = event.data;
+        
+        _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
+            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!result });
         });
     };
 
     this.sendVariablePositions = function(event) {
         var pos = event.data;
         var _self = this;
-            var ast = this.cachedAst;
+        var ast = this.cachedAst;
+        
         if (!ast && this.isParsingSupported())
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
@@ -717,7 +753,7 @@ function asyncParForEach(array, fn, callback) {
         }
         var oldPath = this.$path;
         code = code || "";
-        this.$path = path;
+        linereport.path = this.$path = path;
         this.$language = language;
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
         this.cachedAst = null;

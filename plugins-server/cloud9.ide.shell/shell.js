@@ -135,8 +135,8 @@ util.inherits(ShellPlugin, Plugin);
     };
 
     this["command-commandhints"] = function(message) {
-        var commands = {},
-            _self    = this;
+        var commands = {};
+        var _self = this;
 
         Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
@@ -153,31 +153,6 @@ util.inherits(ShellPlugin, Plugin);
              .end(function() {
                  _self.sendResult(0, message.command, commands);
              });
-    };
-
-    this["command-mv"] =
-    this["command-mkdir"] =
-    this["command-rm"] =
-    this["command-pwd"] =
-    this["command-ls"] = function(message) {
-        var self = this;
-        this.processCount += 1;
-        this.pm.exec("shell", {
-            command: message.command,
-            args: message.argv.slice(1),
-            cwd: message.cwd || this.workspaceDir,
-            extra: message.extra
-        }, function(code, out, err) {
-            self.processCount -= 1;
-
-            self.sendResult(0, message.command, {
-                code    : code,
-                argv    : message.argv,
-                err     : err,
-                out     : out,
-                extra   : message.extra
-            });
-        });
     };
 
     this["command-cd"] = function(message) {
@@ -212,7 +187,7 @@ util.inherits(ShellPlugin, Plugin);
             });
         });
     };
-
+    
     this["command-ps"] = function(message) {
         var self = this;
         this.pm.ps(function(err, procs) {
