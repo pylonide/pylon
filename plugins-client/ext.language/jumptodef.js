@@ -21,7 +21,7 @@ module.exports = {
         
         commands.addCommand({
             name : "jumptodef",
-            bindKey: {mac: "F12", win: "F12"},
+            bindKey: {mac: "F3", win: "F3"},
             hint: "jump to the definition of the variable or function that is under the cursor",
             isAvailable : function(editor){
                 return editor && editor.ceEditor;
