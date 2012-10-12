@@ -88,9 +88,7 @@ module.exports = {
         if (!editor || !editor.ceEditor)
             return;
 
-        this.worker.isJumpToDefinitionAvailable({
-            data: editor.getSelection().getCursor()
-        });
+        this.worker.emit("isJumpToDefinitionAvailable", { data: editor.getSelection().getCursor() });
     },
 
     jumptodef: function() {
