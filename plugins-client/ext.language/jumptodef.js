@@ -5,24 +5,24 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global tabEditors */
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
-var markup = require("text!ext/jumptodef/jumptodef.xml");
 var commands = require("ext/commands/commands");
 var ide = require("core/ide");
 
-module.exports = ext.register("ext/jumptodef/jumptodef", {
+module.exports = ext.register("ext/language/jumptodef", {
     name    : "jumptodef",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    markup  : markup,
     nodes   : [],
 
-    hook : function(){
+    hook : function(language, worker){
         var _self = this;
+        _self.worker = worker;
         
         commands.addCommand({
             name : "jumptodef",
@@ -36,18 +36,14 @@ module.exports = ext.register("ext/jumptodef/jumptodef", {
             }
         });
         
-        ide.addEventListener("language.worker", function(e) {
-            // listen to the worker's response
-            e.worker.on("definition", function(ev) {
-                editors.jump({
-                    column: ev.data.column,
-                    row: ev.data.row + 1,
-                    node: tabEditors.getPage().xmlRoot,
-                    animate: false
-                });
+        // listen to the worker's response
+        worker.on("definition", function(ev) {
+            editors.jump({
+                column: ev.data.column,
+                row: ev.data.row + 1,
+                node: tabEditors.getPage().xmlRoot,
+                animate: false
             });
-            
-            _self.worker = e.worker;
         });
     },
 
@@ -58,8 +54,6 @@ module.exports = ext.register("ext/jumptodef/jumptodef", {
 
         var sel = editor.getSelection();
         var pos = sel.getCursor();
-        
-        console.log(pos);
         
         this.worker.jumpToDefinition({
             data: pos
