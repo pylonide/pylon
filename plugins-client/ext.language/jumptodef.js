@@ -99,7 +99,7 @@ module.exports = {
         var sel = editor.getSelection();
         var pos = sel.getCursor();
         
-        this.worker.jumpToDefinition({
+        this.worker.emit("jumpToDefinition", {
             data: pos
         });
     },
