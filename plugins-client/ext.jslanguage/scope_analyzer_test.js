@@ -181,7 +181,7 @@ module.exports = {
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
     },
-    ">test jump to definition on a position without code should not throw" : function(next) {
+    "test jump to definition on a position without code should not throw" : function(next) {
         disabledFeatures = { jshint: true };
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
