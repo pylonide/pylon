@@ -119,6 +119,8 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
         if (message.command === "node" && message.argv.length > 1)
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
+        else if (message.command == "rvm")
+            return cb("rvm isn't supported by the console - please use the terminal instead");
 
         this.searchAndRunShell(message, cb);
     };
