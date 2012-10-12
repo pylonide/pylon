@@ -720,15 +720,16 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
     var uses = [];
 
     var length = pos.ec - pos.sc;
-
-    v.declarations.forEach(function(node) {
+    
+    // if the annotation cant be found we will skip this to avoid null ref errors
+    v && v.declarations.forEach(function(node) {
          if(node !== currentNode[0]) {
             var pos = node.getPos();
             declarations.push({column: pos.sc, row: pos.sl});
         }
     });
     
-    v.uses.forEach(function(node) {
+    v && v.uses.forEach(function(node) {
         if(node !== currentNode) {
             var pos = node.getPos();
             uses.push({column: pos.sc, row: pos.sl});

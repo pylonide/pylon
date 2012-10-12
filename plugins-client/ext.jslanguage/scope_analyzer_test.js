@@ -178,7 +178,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var ab = 4; var ab = 5; console.log(ab + ab);");
+        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
     },
     "test missing return in err handler" : function(next) {
         disabledFeatures = { jshint: true };
