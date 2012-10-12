@@ -148,8 +148,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
                 "irb() { command irb --readline \"$@\"; };" +
                 "node() {" +
                 "  if [ $# -eq 0 ]; then" +
-                "    if command node -v | grep v0.6 > /dev/null; then echo Interactive mode not supported with Node 0.6;" +
-                "    else command node -i; fi" +
+                "    command node -i;" +
                 "  else command node \"$@\"; fi;" +
                 "};";
 
