@@ -30,7 +30,7 @@
         "connect-architect": "0.0.6",
 
         "smith": "0.1.9",
-        "smith.io": "0.0.31",
+        "smith.io": "0.0.32",
         "vfs-architect": "0.0.2",
         "jsDAV": "0.1.7"
     },
@@ -45,11 +45,11 @@
 
     "mappings": {
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/999bf92801dc0d860698306b9e399a21e064132a"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/fe39db0195e7556facb3f1588d984f5d2cc5c53c"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/8ae38f8dcd948aded2eff7698d0d7705aeaf6e61"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/bee2a82c6d5e2875024bfdc83937e98092ccf04f"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/d7ab6ada6ec802f8d4107dae038327c7fa9c5601"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/b22d7ad712f76a7e7b1070ab339d567dfbf059b1"]
     },
 
     "repository" : {
