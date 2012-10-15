@@ -7,14 +7,18 @@ cd "$CMD_DIR/.."
 make update
 
 case `uname -a` in
-Linux*x86_64*)  echo "Linux 64 bit"   
+Linux*x86_64*)  echo "Linux 64 bit"
     node server.js "$@" -a x-www-browser
     ;;
 
-Linux*i686*)  echo "Linux 32 bit"   
+Linux*i686*)  echo "Linux 32 bit"
     node server.js "$@" -a x-www-browser
     ;;
-    
+
+Linux*arm*)  echo "Linux ARM"
+    node server.js "$@" -a x-www-browser
+    ;;
+
 Darwin*)  echo  "OSX"
     node server.js "$@" -a open
     ;;
@@ -29,7 +33,7 @@ CYGWIN*)  echo  "Cygwin"
 
 MING*)  echo  "MingW"
     node server.js "$@" -a "cmd /c start"
-    ;;    
+    ;;
 
 SunOS*)  echo  "Solaris"
     node server.js "$@"
