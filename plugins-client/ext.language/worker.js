@@ -293,7 +293,12 @@ function asyncParForEach(array, fn, callback) {
             // the UI thread'll have to provide them in that format.
             // Note that this indirect eval call evaluates in the (worker)
             // global context.
-            eval.call(null, contents);
+            try {
+                eval.call(null, contents);
+            } catch (e) {
+                console.log("Could not load language handler " + path);
+                throw e;
+            }
         }
         try {
             var handler = require(path);
