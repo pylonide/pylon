@@ -28,8 +28,6 @@ module.exports = ext.register("ext/watcher/watcher", {
         this.removedPaths = {};
         this.changedPaths = {};
 
-        var removedPathCount = 0;
-        var changedPathCount = 0;
         var _self = this;
 
         function checkPage() {
@@ -47,7 +45,6 @@ module.exports = ext.register("ext/watcher/watcher", {
                     function() { // Yes
                         apf.xmldb.setAttribute(data, "changed", "1");
                         delete _self.removedPaths[path];
-                        --removedPathCount;
                         winQuestion.hide();
                     },
                     function() { // Yes to all
@@ -57,29 +54,28 @@ module.exports = ext.register("ext/watcher/watcher", {
                            apf.xmldb.setAttribute(page.$model.data, "changed", "1");
                         });
                         _self.removedPaths = {};
-                        removedPathCount = 0;
                         winQuestion.hide();
                     },
                     function() { // No
                         tabEditors.remove(page);
                         delete _self.removedPaths[path];
-                        --removedPathCount;
                         winQuestion.hide();
                     },
                     function() { // No to all
                         var pages = tabEditors.getPages();
 
                         pages.forEach(function(page) {
-                            if (_self.removedPaths[page.$model.data.getAttribute("path")])
+                            var path = page.$model.data.getAttribute("path");
+                            ide.dispatchEvent("afterFileRemove");
+                            if (_self.removedPaths[path])
                                 tabEditors.remove(page);
                         });
                         this.removedPaths = {};
-                        removedPathCount = 0;
                         winQuestion.hide();
                     }
                 );
-                btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
-                btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
+                btnQuestionYesToAll.setAttribute("visible", Object.keys(_self.removedPaths).length > 1);
+                btnQuestionNoToAll.setAttribute("visible", Object.keys(_self.removedPaths).length > 1);
             }
             else if (_self.changedPaths[path]) {
                 util.question(
@@ -89,7 +85,6 @@ module.exports = ext.register("ext/watcher/watcher", {
                     function() { // Yes
                         ide.dispatchEvent("reload", {doc : page.$doc});
                         delete _self.changedPaths[path];
-                        --changedPathCount;
                         winQuestion.hide();
                     },
                     function() { // Yes to all
@@ -100,26 +95,31 @@ module.exports = ext.register("ext/watcher/watcher", {
                                 ide.dispatchEvent("reload", {doc : page.$doc});
                         });
                         _self.changedPaths = {};
-                        changedPathCount = 0;
                         winQuestion.hide();
                     },
                     function() { // No
                         delete _self.changedPaths[path];
-                        --changedPathCount;
                         winQuestion.hide();
                     },
                     function() { // No to all
                         _self.changedPaths = {};
-                        changedPathCount = 0;
                         winQuestion.hide();
                     }
                 );
-                btnQuestionYesToAll.setAttribute("visible", changedPathCount > 1);
-                btnQuestionNoToAll.setAttribute("visible", changedPathCount > 1);
+                btnQuestionYesToAll.setAttribute("visible", Object.keys(_self.changedPaths).length > 1);
+                btnQuestionNoToAll.setAttribute("visible", Object.keys(_self.changedPaths).length > 1);
             }
         }
 
         ide.addEventListener("openfile", function(e) {
+            if (e.type == "nofile")
+                return;
+
+            var path = e.doc.getNode().getAttribute("path");
+            _self.sendWatchFile(path);
+        });
+
+        ide.addEventListener("afterfilesave", function(e) {
             if (e.type == "nofile")
                 return;
 
@@ -155,6 +155,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             };
 
             var pages = tabEditors.getPages();
+            
             if (!pages.some(getPagePath)) {
                 return;
             }
@@ -162,7 +163,9 @@ module.exports = ext.register("ext/watcher/watcher", {
             // allow another plugin to change the watcher behavior
             var eventData = {
                 path: path,
-                message: message
+                message: message,
+                action: message.subtype,
+                isFolder: message.subtype === "directorychange"
             };
 
             if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
@@ -173,7 +176,6 @@ module.exports = ext.register("ext/watcher/watcher", {
                 case "remove":
                     if (!_self.removedPaths[path]) {
                         _self.removedPaths[path] = path;
-                        removedPathCount += 1;
                         checkPage();
                     }
                     break;
@@ -182,7 +184,6 @@ module.exports = ext.register("ext/watcher/watcher", {
                     var currentPageLastMod = new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime();
                     if (!_self.changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
                         _self.changedPaths[path] = path;
-                        changedPathCount += 1;
                         checkPage();
                     }
                     break;
@@ -231,7 +232,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
-    
+
     sendWatchDirectory : function(path) {
         ide.send({
             "command"     : "watcher",
@@ -239,7 +240,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             "path"        : path.slice(ide.davPrefix.length).replace(/^\//, "")
         });
     },
-    
+
     sendUnwatchDirectory : function(path) {
         ide.send({
             "command"     : "watcher",
@@ -260,7 +261,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         this.disabled = false;
 
         var _self = this;
-        
+
         var pages = tabEditors.getPages();
         pages.forEach(function(page) {
             if (page.$model) {

@@ -511,8 +511,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
                     var targetFolder;
                     if (filepath) {
-                        targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" +
-                            util.escapeXpathString(targetPath + "/" + filepath) + "']");
+                        targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path=" +
+                            util.escapeXpathString(targetPath + "/" + filepath) + "]");
 
                         // folder not exist yet, create first
                         if (!targetFolder) {
@@ -522,7 +522,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             var folders = filepath.split("/");
                             apf.asyncForEach(folders, function(folder, next) {
                                 currentPath += "/" + folder;
-                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + util.escapeXpathString(currentPath) + "']");
+                                subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path=" + util.escapeXpathString(currentPath) + "]");
 
                                 // subfolder is already created
                                 if (subfolder) {

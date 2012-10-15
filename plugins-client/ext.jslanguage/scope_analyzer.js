@@ -743,22 +743,31 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
             mainNode = node;
         }
     );
+    
+    // no mainnode can be found then invoke callback wo value because then we've got no clue
+    // what were doing
+    if (!mainNode) {
+        return callback();
+    }
+    
     var pos = mainNode.getPos();
-    var others = [];
+    var declarations = [];
+    var uses = [];
 
     var length = pos.ec - pos.sc;
-
-    v.declarations.forEach(function(node) {
+    
+    // if the annotation cant be found we will skip this to avoid null ref errors
+    v && v.declarations.forEach(function(node) {
          if(node !== currentNode[0]) {
             var pos = node.getPos();
-            others.push({column: pos.sc, row: pos.sl});
+            declarations.push({column: pos.sc, row: pos.sl});
         }
     });
     
-    v.uses.forEach(function(node) {
+    v && v.uses.forEach(function(node) {
         if(node !== currentNode) {
             var pos = node.getPos();
-            others.push({column: pos.sc, row: pos.sl});
+            uses.push({column: pos.sc, row: pos.sl});
         }
     });
     callback({
@@ -767,7 +776,20 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
             row: pos.sl,
             column: pos.sc
         },
-        others: others
+        others: declarations.concat(uses),
+        declarations: declarations,
+        uses: uses
+    });
+};
+
+handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
+    handler.getVariablePositions(doc, fullAst, pos, currentNode, function (data) {
+        if (!data || !data.declarations || data.declarations.length === 0) {
+            return callback(null);
+        }
+        
+        // invoke the callback with the position of the last declared variable
+        callback(data.declarations[data.declarations.length - 1]);
     });
 };
 
