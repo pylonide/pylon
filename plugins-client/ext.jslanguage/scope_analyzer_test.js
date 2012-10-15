@@ -313,6 +313,19 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "for(;;) { [].forEach(function() {}) }");
+    },
+    "test be selectively complainy about functions in loops" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "for(;;) { [].bar(function() {}) }");
     }
 };
 
