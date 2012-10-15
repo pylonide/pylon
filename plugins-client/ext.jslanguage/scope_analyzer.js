@@ -498,7 +498,6 @@ handler.analyze = function(doc, ast, callback) {
                             type: 'warning',
                             message: "Function created in a loop."
                         });
-                        console.log("BOO YAH");
                     }
                     
                     var newScope = new Scope(scope);

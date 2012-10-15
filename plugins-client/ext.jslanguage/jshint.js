@@ -38,7 +38,7 @@ handler.analyzeSync = function(doc, ast) {
             laxbreak: true,
             laxcomma: true,
             loopfunc: true,
-            lastsemic: true.
+            lastsemic: true,
             multistr: true
         });
         
