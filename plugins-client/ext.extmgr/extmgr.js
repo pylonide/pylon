@@ -174,7 +174,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             apf.xmldb.setAttribute(extNode, "userext", "1");
             apf.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();
-            _self.$enableInput();
+            _self.$enableInput(true);
             clearTimeout(timer);
         });
     },
@@ -184,11 +184,12 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         btnAdd.disable();
     },
 
-    $enableInput : function() {
+    $enableInput : function(clear) {
         if (typeof tbModuleName === "undefined")
             return;
+        if (clear)
+            tbModuleName.clear();
         tbModuleName.enable();
-        tbModuleName.clear();
         btnAdd.enable();
     },
 

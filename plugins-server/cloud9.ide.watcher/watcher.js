@@ -18,7 +18,6 @@ module.exports = function setup(options, imports, register) {
 
     var IGNORE_TIMEOUT = 50;
     
-    imports.ide.register(name, WatcherPlugin, register);
 
     function WatcherPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
@@ -124,4 +123,6 @@ module.exports = function setup(options, imports, register) {
         };
 
     }).call(WatcherPlugin.prototype);
+    
+    imports.ide.register(name, WatcherPlugin, register);
 };
