@@ -84,7 +84,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
-                            window.open("/api/project/download/zip/" + ide.projectName);
+                            window.open("/api/" + window.location.pathname.replace(/(^[\/]+|[\/]+$)/g, "") + "/download");
                         }
                     }), 390)
                 );
@@ -231,7 +231,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             return false;
         }
-        
+
         var files = e.dataTransfer.files;
         // Dropped item is a folder, second condition is for FireFox
         if (!files.length || !files[0].size || (files.length == 1 && files[0].type == "")) {
