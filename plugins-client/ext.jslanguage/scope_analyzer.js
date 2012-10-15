@@ -585,6 +585,12 @@ handler.analyze = function(doc, ast, callback) {
                     analyze(scope, b.body, inCallback, IN_LOOP);
                     analyze(scope, b.e3, inCallback, IN_LOOP);
                     return node;
+                },
+                'ForIn(e1, e2, body)', function(b) {
+                    analyze(scope, b.e2, inCallback, inLoop);
+                    analyze(scope, b.e1, inCallback, inLoop);
+                    analyze(scope, b.body, inCallback, IN_LOOP);
+                    return node;
                 }
             );
         }
