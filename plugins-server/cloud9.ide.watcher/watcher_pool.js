@@ -100,8 +100,9 @@ function WatcherPool(vfs) {
         watcher.removeListener("change", handle.onChange);
         watcher.removeListener("delete", handle.onRemove);
 
-        if (!watcher.hasListeners())
+        if (!watcher.hasListeners()) {
             watcher.close();
+        }
     };
 
     this.dispose = function() {

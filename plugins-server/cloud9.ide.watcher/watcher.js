@@ -17,17 +17,17 @@ module.exports = function setup(options, imports, register) {
     var name = "watcher";
 
     var IGNORE_TIMEOUT = 200;
-    
+
     function WatcherPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
 
         var pool = this.pool = new WatcherPool(vfs);
-        
+
         DAV.plugins["watcher"] = function (handler) {
             handler.addEventListener("beforeBind", onChange);
             handler.addEventListener("beforeUnbind", onChange);
             handler.addEventListener("beforeWriteContent", onChange);
-            
+
             function onChange(e, uri) {
                 var path = handler.server.tree.basePath + "/" + uri;
                 pool.ignoreFile(path, IGNORE_TIMEOUT);
@@ -49,20 +49,25 @@ module.exports = function setup(options, imports, register) {
             // console.log("add watcher".yellow, clientId, path);
             if (!this.clients[clientId])
                 this.clients[clientId] = {};
-                
+
             if (this.clients[clientId][path])
                 return;
 
             var self = this;
 
+            // claim this slot until pool.watch returns
+            this.clients[clientId][path] = {
+                async: 1
+            };
+
             this.pool.watch(path, self.onChange.bind(this, client), self.removeWatcher.bind(this, clientId), function(err, handle) {
                 if (err)
                     return console.error("can't add watcher for " + path, err);
-                    
+
                 self.clients[clientId][path] = handle;
             });
         };
-        
+
         this.onChange = function(client, e) {
             //console.log("on change".green, e);
             e.type = "watcher";
@@ -72,7 +77,8 @@ module.exports = function setup(options, imports, register) {
         this.removeWatcher = function(clientId, path) {
             var watchers = this.clients[clientId];
             if (watchers && watchers[path]) {
-                this.pool.unwatch(watchers[path]);
+                if (!watchers[path].async)
+                    this.pool.unwatch(watchers[path]);
                 delete watchers[path];
             }
         };
@@ -111,7 +117,7 @@ module.exports = function setup(options, imports, register) {
 
             for (var path in this.clients[clientId])
                 this.removeWatcher(clientId, path);
-                
+
             delete this.clients[clientId];
         };
 
@@ -126,6 +132,6 @@ module.exports = function setup(options, imports, register) {
         };
 
     }).call(WatcherPlugin.prototype);
-    
+
     imports.ide.register(name, WatcherPlugin, register);
 };
