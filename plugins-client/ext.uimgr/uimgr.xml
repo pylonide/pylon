@@ -9,15 +9,15 @@
       buttons   = "close"
       modal     = "false"
       width     = "1200"
-      height    = "700"
+      height    = "900"
       kbclose   = "true"
       draggable = "true">
         <div id="winUIExtContent">
             <h1>Cloud9 IDE UI</h1>
             <div class="ui-section">
-                <h2>Bar</h2>
+                <h2><a href="http://ui.ajax.org/#docs/element.bar" target="_blank">Bar</a></h2>
                 <div class="ui-item">
-                    <h3>bar - <em>Nothing to see here :)</em></h3>
+                    <h3>bar<em> - Nothing to see here :)</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:bar></a:bar>
@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>c9-menu-bar - <em>.c9-mbar-round should be absolute and relative to it's parrent</em></h3>
+                    <h3>c9-menu-bar<em> - .c9-mbar-round should be absolute and relative to it's parrent</em></h3>
                     <div class="fbox">
                         <div class="fleft version relative">
                             <a:bar skin="c9-menu-bar"></a:bar>
@@ -73,7 +73,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>deprecated - <em>Should remove. Maybe make overflow:hidden a class</em></h3>
+                    <h3>deprecated<em> - Should remove. Maybe make overflow:hidden a class</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:bar skin="deprecated"></a:bar>
@@ -82,7 +82,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>dock-panel - <em>not used</em></h3>
+                    <h3>dock-panel<em> - not used</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:bar skin="dock-panel" height="100"></a:bar>
@@ -91,7 +91,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>winGoToFile - <em>Shouldn't be positioned like this</em></h3>
+                    <h3>winGoToFile<em> - Shouldn't be positioned like this</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:bar skin ="winGoToFile" width="350" minheight="35" class="position-static" />
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                  <div class="ui-item">
-                    <h3>bar-liveinspect - <em>Remove</em></h3>
+                    <h3>bar-liveinspect<em> - Remove</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:bar skin="bar-liveinspect" skinset="inlinedg" />
@@ -124,7 +124,7 @@
                 
             </div>
             <div class="ui-section">
-                <h2>Button</h2>
+                <h2><a href="http://ui.ajax.org/#docs/element.button" target="_blank">Button</a></h2>
                 <div class="ui-item">
                     <h3>Button (default)</h3>
                     <div class="fbox">
@@ -161,8 +161,8 @@
                             <a:textarea class="winUIExtCode" width="550" value="&lt;a:button id=&quot;btnCollapseConsole&quot; skin=&quot;btn_console_open&quot; icon=&quot;switch.png&quot; height=&quot;27&quot;/&gt;" />
                         </div>
                         <div class="fleft version">
-                            <h4>This is how it looks opened - <em>Should redo the skin</em></h4>
-                            <div class="btn_console_open btn_console_openIcon btn_console_openBool btn_console_openEmpty btn_console_openDefault btn_console_openOver btn_console_openDown btn_console_openChecked btn_console_openOpen btn_console_openDown btn_console_openDown btn_console_openDown" style="background-image: url(https://c9.dev:3443/2.0.7/static/ext/main/style/icons/switch.png); box-sizing: border-box; height: 27px; margin: 0px; min-width: 18px; min-height: 1px; max-width: 10000px; max-height: 10000px; "></div>
+                            <h4>This is how it looks opened<em> - Should redo the skin</em></h4>
+                            <div class="btn_console_open btn_console_openIcon btn_console_openBool btn_console_openEmpty btn_console_openDefault btn_console_openOpen btn_console_openDown" style="background-image: url(https://c9.dev:3443/2.0.7/static/ext/main/style/icons/switch.png); box-sizing: border-box; height: 27px;"></div>
                         </div>
                     </div>
                 </div>
@@ -287,7 +287,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>c9-topbar-btn - <em>Defined both in the Dashboard and the IDE. Used in the Dashboard and auth</em></h3>
+                    <h3>c9-topbar-btn<em> - Defined both in the Dashboard and the IDE. Used in the Dashboard and auth</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:button width="25" height="25" skin="c9-topbar-btn" class="home" />
@@ -404,7 +404,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>browser-btn - <em>icons missing maybe remove</em></h3>
+                    <h3>browser-btn<em> - icons missing maybe remove</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <a:button skin="browser-btn" icon="browser_arrowleft.png" />
@@ -558,7 +558,9 @@
                     <h3>c9-menu-btn <em>defined both in the editor and the dashboard</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
-                            <a:button skin="c9-menu-btn">Help</a:button>
+                            <div class="ui-dark">
+                                <a:button skin="c9-menu-btn">Help</a:button>
+                            </div>
                             <a:textarea class="winUIExtCode" width="550" value="&lt;a:button skin=&quot;c9-menu-btn&quot;&gt;Help&lt;/a:button&gt;" />
                         </div>
                     </div>
@@ -634,7 +636,7 @@
                     </div>
                 </div>
                 <div class="ui-item">
-                    <h3>permissions-button - <em>not use we should remove</em></h3>
+                    <h3>permissions-button<em> - not use we should remove</em></h3>
                     <div class="fbox">
                         <div class="fleft version">
                             <div class="ui-dark">
@@ -680,7 +682,7 @@
                     </div>
                 </div>
                <div class="ui-item">
-                    <h3>header-btn - <em>should move the positioning from skin to markup</em></h3>
+                    <h3>header-btn<em> - should move the positioning from skin to markup</em></h3>
                     <div class="fbox">
                         <div class="fleft version relative">
                             <h4>Default state is useless</h4>
@@ -709,7 +711,7 @@
                 </div>
             </div>
             <div class="ui-section">
-                <h2>Checkbox</h2>
+                <h2><a href="http://ui.ajax.org/#docs/element.checkbox" target="_blank">Checkbox</a></h2>
                 <div class="ui-item">
                     <h3>cboffline</h3>
                     <div class="fbox">
@@ -774,8 +776,85 @@
                     </div>
                 </div>
             </div>
+            
+            
+            <div class="ui-section ui-datagrid-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.datagrid" target="_blank">Datagrid</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:model id="mdlNews">
+                                <data>
+                                    <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
+                                    <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
+                                    <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
+                                    <news title="text 4" subtitle="text 41" date="2009-11-20"></news>
+                                    <news title="text 5" subtitle="text 51" date="2009-11-20"></news>
+                                </data>
+                            </a:model>
+                            <a:datagrid height="100" model="mdlNews" options="move|size|sort" >
+                                <a:each match="[news]">
+                                    <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
+                                    <a:column caption="Date" value="[@date]" width="70" />
+                                    <a:column caption="Title" width="390" value="[@title]" />
+                                    <a:column caption="Subtitle" value="[@subtitle]" width="100" />
+                                </a:each>
+                            </a:datagrid>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlNews&quot;&gt;&#010;    &lt;data&gt;&#010;        &lt;news title=&quot;text 1&quot; subtitle=&quot;text 11&quot; date=&quot;2009-11-18&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 2&quot; subtitle=&quot;text 21&quot; date=&quot;2009-11-19&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 3&quot; subtitle=&quot;text 31&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 4&quot; subtitle=&quot;text 41&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 5&quot; subtitle=&quot;text 51&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;    &lt;/data&gt;&#010;&lt;/a:model&gt;&#010;&#010;&lt;a:datagrid height=&quot;100&quot; model=&quot;mdlNews&quot; options=&quot;move|size|sort&quot; &gt;&#010;    &lt;a:each match=&quot;[news]&quot;&gt;&#010;        &lt;a:column caption=&quot;Icon&quot; type=&quot;icon&quot; width=&quot;40&quot; &#010;value=&quot;newspaper.png&quot; /&gt;&#010;        &lt;a:column caption=&quot;Date&quot; value=&quot;[@date]&quot; width=&quot;70&quot; /&gt;&#010;        &lt;a:column caption=&quot;Title&quot; width=&quot;390&quot; value=&quot;[@title]&quot; /&gt;&#010;        &lt;a:column caption=&quot;Subtitle&quot; value=&quot;[@subtitle]&quot; width=&quot;100&quot; /&gt;&#010;    &lt;/a:each&gt;&#010;&lt;/a:datagrid&gt;" />
+                        </div>
+                        
+                        
+                        <div class="fleft version">
+                            <a:model id="mdlNews">
+                                <data>
+                                    <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
+                                    <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
+                                    <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
+                                    <news title="text 4" subtitle="text 41" date="2009-11-20"></news>
+                                    <news title="text 5" subtitle="text 51" date="2009-11-20"></news>
+                                </data>
+                            </a:model>
+                            <a:datagrid height="100" model="mdlNews" options="move|size|sort" skin="dgcheck" >
+                                <a:each match="[news]">
+                                    <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
+                                    <a:column caption="Date" value="[@date]" width="70" />
+                                    <a:column caption="Title" width="390" value="[@title]" />
+                                    <a:column caption="Subtitle" value="[@subtitle]" width="100" />
+                                </a:each>
+                            </a:datagrid>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlNews&quot;&gt;&#010;    &lt;data&gt;&#010;        &lt;news title=&quot;text 1&quot; subtitle=&quot;text 11&quot; date=&quot;2009-11-18&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 2&quot; subtitle=&quot;text 21&quot; date=&quot;2009-11-19&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 3&quot; subtitle=&quot;text 31&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 4&quot; subtitle=&quot;text 41&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 5&quot; subtitle=&quot;text 51&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;    &lt;/data&gt;&#010;&lt;/a:model&gt;&#010;&#010;&lt;a:datagrid height=&quot;100&quot; model=&quot;mdlNews&quot; options=&quot;move|size|sort&quot; skin=&quot;dgcheck&quot; &gt;&#010;    &lt;a:each match=&quot;[news]&quot;&gt;&#010;        &lt;a:column caption=&quot;Icon&quot; type=&quot;icon&quot; width=&quot;40&quot; &#010;value=&quot;newspaper.png&quot; /&gt;&#010;        &lt;a:column caption=&quot;Date&quot; value=&quot;[@date]&quot; width=&quot;70&quot; /&gt;&#010;        &lt;a:column caption=&quot;Title&quot; width=&quot;390&quot; value=&quot;[@title]&quot; /&gt;&#010;        &lt;a:column caption=&quot;Subtitle&quot; value=&quot;[@subtitle]&quot; width=&quot;100&quot; /&gt;&#010;    &lt;/a:each&gt;&#010;&lt;/a:datagrid&gt;" />
+                        </div>
+                        
+                        
+                        <div class="fleft version">
+                        <h4>Fix or remove</h4>
+                            <a:model id="mdlNews">
+                                <data>
+                                    <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
+                                    <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
+                                    <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
+                                    <news title="text 4" subtitle="text 41" date="2009-11-20"></news>
+                                    <news title="text 5" subtitle="text 51" date="2009-11-20"></news>
+                                </data>
+                            </a:model>
+                            <div class="noscrollbar">
+                                <a:datagrid height="100" model="mdlNews" options="move|size|sort" skin="dgcheck" >
+                                    <a:each match="[news]">
+                                        <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
+                                        <a:column caption="Date" value="[@date]" width="70" />
+                                        <a:column caption="Title" width="390" value="[@title]" />
+                                        <a:column caption="Subtitle" value="[@subtitle]" width="100" />
+                                    </a:each>
+                                </a:datagrid>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlNews&quot;&gt;&#010;    &lt;data&gt;&#010;        &lt;news title=&quot;text 1&quot; subtitle=&quot;text 11&quot; date=&quot;2009-11-18&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 2&quot; subtitle=&quot;text 21&quot; date=&quot;2009-11-19&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 3&quot; subtitle=&quot;text 31&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 4&quot; subtitle=&quot;text 41&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;        &lt;news title=&quot;text 5&quot; subtitle=&quot;text 51&quot; date=&quot;2009-11-20&quot;&gt;&lt;/news&gt;&#010;    &lt;/data&gt;&#010;&lt;/a:model&gt;&#010;&#010;&lt;div class=&quot;noscrollbar&quot;&gt;&#010;    &lt;a:datagrid height=&quot;100&quot; model=&quot;mdlNews&quot; options=&quot;move|size|sort&quot; skin=&quot;dgcheck&quot; &gt;&#010;        &lt;a:each match=&quot;[news]&quot;&gt;&#010;            &lt;a:column caption=&quot;Icon&quot; type=&quot;icon&quot; width=&quot;40&quot; value=&quot;newspaper.png&quot; /&gt;&#010;            &lt;a:column caption=&quot;Date&quot; value=&quot;[@date]&quot; width=&quot;70&quot; /&gt;&#010;            &lt;a:column caption=&quot;Title&quot; width=&quot;390&quot; value=&quot;[@title]&quot; /&gt;&#010;            &lt;a:column caption=&quot;Subtitle&quot; value=&quot;[@subtitle]&quot; width=&quot;100&quot; /&gt;&#010;        &lt;/a:each&gt;&#010;    &lt;/a:datagrid&gt;&#010;&lt;/div&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="ui-section">
-                <h2>Divider</h2>
+                <h2><a href="http://ui.ajax.org/#docs/element.divider" target="_blank">Divider</a></h2>
                 <div class="ui-item">
                     <h3>Default</h3>
                     <div class="fbox">
@@ -783,7 +862,7 @@
                             <div class="ui-grey">
                                 <a:divider />
                             </div>
-                            <a:textarea class="winUIExtCode" width="550" value="" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:divider /&gt;" />
                         </div>
                     </div>
                 </div>
@@ -794,7 +873,7 @@
                             <div class="ui-dark">
                                 <a:divider skin="c9-divider" />
                             </div>
-                            <a:textarea class="winUIExtCode" width="550" value="" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:divider skin=&quot;c9-divider&quot; /&gt;" />
                         </div>
                     </div>
                 </div>
@@ -805,7 +884,7 @@
                             <div class="ui-dark">
                                 <a:divider skin="c9-divider-double" />
                             </div>
-                            <a:textarea class="winUIExtCode" width="550" value="" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:divider skin=&quot;c9-divider-double&quot; /&gt;" />
                         </div>
                     </div>
                 </div>
@@ -816,7 +895,7 @@
                             <div class="ui-dark">
                                 <a:divider skin="c9-divider-hor" />
                             </div>
-                            <a:textarea class="winUIExtCode" width="550" value="" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:divider skin=&quot;c9-divider-hor&quot; /&gt;" />
                         </div>
                     </div>
                 </div>
@@ -827,7 +906,7 @@
                             <div class="ui-dark">
                                 <a:divider skin="divider-debugpanel" />
                             </div>
-                            <a:textarea class="winUIExtCode" width="550" value="" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:divider skin=&quot;divider-debugpanel&quot; /&gt;" />
                         </div>
                     </div>
                 </div>
@@ -838,15 +917,859 @@
                             <div class="ui-dark">
                                 <a:divider skin="divider_console" />
                             </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:divider skin=&quot;divider_console&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-section ui-dropdown-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.dropdown" target="_blank">Dropdown</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">                            
+                            <h4>Static declaration<em> - mostly for mockups</em></h4>
+                            <a:dropdown width="300">
+                                <a:item value="a">Something A</a:item>
+                                <a:item value="b">Something B</a:item>
+                                <a:item value="c">Something C</a:item>
+                                <a:item value="c">Something D</a:item>
+                                <a:item value="c">Something E</a:item>
+                            </a:dropdown>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:dropdown width=&quot;300&quot; &gt;&#010;    &lt;a:item value=&quot;a&quot;&gt;Something A&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;b&quot;&gt;Something B&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something C&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something D&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something E&lt;/a:item&gt;&#010;&lt;/a:dropdown&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Using a model<em> - probably how it will be used in real life</em></h4>
+                            <a:model id="mdlCars">
+                                <cars>
+                                    <car modelno="1" name="Model 1"/>
+                                    <car modelno="2" name="Model 2"/>
+                                    <car modelno="3" name="Model 3"/>
+                                    <car modelno="4" name="Model 4"/>
+                                    <car modelno="5" name="Model 5"/>
+                                </cars>
+                            </a:model>
+                            <a:dropdown width="300" model="mdlCars" each="[car]" eachvalue="[@value]" caption="[@name]" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlCars&quot;&gt;&#010;    &lt;cars&gt;&#010;        &lt;car modelno=&quot;1&quot; name=&quot;Model 1&quot;/&gt;&#010;        &lt;car modelno=&quot;2&quot; name=&quot;Model 2&quot;/&gt;&#010;        &lt;car modelno=&quot;3&quot; name=&quot;Model 3&quot;/&gt;&#010;        &lt;car modelno=&quot;4&quot; name=&quot;Model 4&quot;/&gt;&#010;        &lt;car modelno=&quot;5&quot; name=&quot;Model 5&quot;/&gt;&#010;    &lt;/cars&gt;&#010;&lt;/a:model&gt;&#010;&lt;a:dropdown width=&quot;300&quot; model=&quot;mdlCars&quot; each=&quot;[car]&quot; eachvalue=&quot;[@value]&quot; caption=&quot;[@name]&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>black_dropdown</h3>
+                    <div class="fbox">
+                        <div class="fleft version">                            
+                            <h4>Static declaration<em> - mostly for mockups</em></h4>
+                            <a:dropdown width="300" skin="black_dropdown">
+                                <a:item value="a">Something A</a:item>
+                                <a:item value="b">Something B</a:item>
+                                <a:item value="c">Something C</a:item>
+                                <a:item value="c">Something D</a:item>
+                                <a:item value="c">Something E</a:item>
+                            </a:dropdown>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:dropdown width=&quot;300&quot; skin=&quot;black_dropdown&quot;&gt;&#010;    &lt;a:item value=&quot;a&quot;&gt;Something A&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;b&quot;&gt;Something B&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something C&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something D&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something E&lt;/a:item&gt;&#010;&lt;/a:dropdown&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Using a model<em> - probably how it will be used in real life</em></h4>
+                            <a:model id="mdlCars">
+                                <cars>
+                                    <car modelno="1" name="Model 1"/>
+                                    <car modelno="2" name="Model 2"/>
+                                    <car modelno="3" name="Model 3"/>
+                                    <car modelno="4" name="Model 4"/>
+                                    <car modelno="5" name="Model 5"/>
+                                </cars>
+                            </a:model>
+                            <a:dropdown width="300" skin="black_dropdown" model="mdlCars" each="[car]" eachvalue="[@value]" caption="[@name]" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlCars&quot;&gt;&#010;    &lt;cars&gt;&#010;        &lt;car modelno=&quot;1&quot; name=&quot;Model 1&quot;/&gt;&#010;        &lt;car modelno=&quot;2&quot; name=&quot;Model 2&quot;/&gt;&#010;        &lt;car modelno=&quot;3&quot; name=&quot;Model 3&quot;/&gt;&#010;        &lt;car modelno=&quot;4&quot; name=&quot;Model 4&quot;/&gt;&#010;        &lt;car modelno=&quot;5&quot; name=&quot;Model 5&quot;/&gt;&#010;    &lt;/cars&gt;&#010;&lt;/a:model&gt;&#010;&lt;a:dropdown width=&quot;300&quot; skin=&quot;black_dropdown&quot; model=&quot;mdlCars&quot; each=&quot;[car]&quot; eachvalue=&quot;[@value]&quot; caption=&quot;[@name]&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>dropdown-dark-glossy</h3>
+                    <div class="fbox">
+                        <div class="fleft version">                            
+                            <h4>Static declaration<em> - mostly for mockups</em></h4>
+                            <a:dropdown width="300" skin="dropdown-dark-glossy">
+                                <a:item value="a">Something A</a:item>
+                                <a:item value="b">Something B</a:item>
+                                <a:item value="c">Something C</a:item>
+                                <a:item value="c">Something D</a:item>
+                                <a:item value="c">Something E</a:item>
+                            </a:dropdown>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:dropdown width=&quot;300&quot; skin=&quot;dropdown-dark-glossy&quot;&gt;&#010;    &lt;a:item value=&quot;a&quot;&gt;Something A&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;b&quot;&gt;Something B&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something C&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something D&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something E&lt;/a:item&gt;&#010;&lt;/a:dropdown&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Using a model<em> - probably how it will be used in real life</em></h4>
+                            <a:model id="mdlCars">
+                                <cars>
+                                    <car modelno="1" name="Model 1"/>
+                                    <car modelno="2" name="Model 2"/>
+                                    <car modelno="3" name="Model 3"/>
+                                    <car modelno="4" name="Model 4"/>
+                                    <car modelno="5" name="Model 5"/>
+                                </cars>
+                            </a:model>
+                            <a:dropdown width="300" skin="dropdown-dark-glossy" model="mdlCars" each="[car]" eachvalue="[@value]" caption="[@name]" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlCars&quot;&gt;&#010;    &lt;cars&gt;&#010;        &lt;car modelno=&quot;1&quot; name=&quot;Model 1&quot;/&gt;&#010;        &lt;car modelno=&quot;2&quot; name=&quot;Model 2&quot;/&gt;&#010;        &lt;car modelno=&quot;3&quot; name=&quot;Model 3&quot;/&gt;&#010;        &lt;car modelno=&quot;4&quot; name=&quot;Model 4&quot;/&gt;&#010;        &lt;car modelno=&quot;5&quot; name=&quot;Model 5&quot;/&gt;&#010;    &lt;/cars&gt;&#010;&lt;/a:model&gt;&#010;&lt;a:dropdown width=&quot;300&quot; skin=&quot;dropdown-dark-glossy&quot; model=&quot;mdlCars&quot; each=&quot;[car]&quot; eachvalue=&quot;[@value]&quot; caption=&quot;[@name]&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>light_dropdown</h3>
+                    <div class="fbox">
+                        <div class="fleft version">                            
+                            <h4>Static declaration<em> - mostly for mockups</em></h4>
+                            <a:dropdown width="300" skin="light_dropdown">
+                                <a:item value="a">Something A</a:item>
+                                <a:item value="b">Something B</a:item>
+                                <a:item value="c">Something C</a:item>
+                                <a:item value="c">Something D</a:item>
+                                <a:item value="c">Something E</a:item>
+                            </a:dropdown>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:dropdown width=&quot;300&quot; skin=&quot;light_dropdown&quot;&gt;&#010;    &lt;a:item value=&quot;a&quot;&gt;Something A&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;b&quot;&gt;Something B&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something C&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something D&lt;/a:item&gt;&#010;    &lt;a:item value=&quot;c&quot;&gt;Something E&lt;/a:item&gt;&#010;&lt;/a:dropdown&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <h4>Using a model<em> - probably how it will be used in real life</em></h4>
+                            <a:model id="mdlCars">
+                                <cars>
+                                    <car modelno="1" name="Model 1"/>
+                                    <car modelno="2" name="Model 2"/>
+                                    <car modelno="3" name="Model 3"/>
+                                    <car modelno="4" name="Model 4"/>
+                                    <car modelno="5" name="Model 5"/>
+                                </cars>
+                            </a:model>
+                            <a:dropdown width="300" skin="light_dropdown" model="mdlCars" each="[car]" eachvalue="[@value]" caption="[@name]" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:model id=&quot;mdlCars&quot;&gt;&#010;    &lt;cars&gt;&#010;        &lt;car modelno=&quot;1&quot; name=&quot;Model 1&quot;/&gt;&#010;        &lt;car modelno=&quot;2&quot; name=&quot;Model 2&quot;/&gt;&#010;        &lt;car modelno=&quot;3&quot; name=&quot;Model 3&quot;/&gt;&#010;        &lt;car modelno=&quot;4&quot; name=&quot;Model 4&quot;/&gt;&#010;        &lt;car modelno=&quot;5&quot; name=&quot;Model 5&quot;/&gt;&#010;    &lt;/cars&gt;&#010;&lt;/a:model&gt;&#010;&lt;a:dropdown width=&quot;300&quot; skin=&quot;light_dropdown&quot; model=&quot;mdlCars&quot; each=&quot;[car]&quot; eachvalue=&quot;[@value]&quot; caption=&quot;[@name]&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.frame" target="_blank">frame</a></h2>
+                <div class="ui-item">
+                    <h3>Default<em> - fix</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:frame caption="Frame">Frame</a:frame>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:frame caption=&quot;Frame&quot;&gt;Frame&lt;/a:frame&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.errorbox" target="_blank">Errorbox</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:errorbox visible="true">Invalid field address entered.</a:errorbox>
+                            <a:textarea class="winUIExtCode" width="550" style="margin-top: 100px" value="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.img" target="_blank">img</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">   
+                            <a:img src="http://siliconangle.com/files/2012/04/Cloud9_logo.jpg" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:img src=&quot;http://siliconangle.com/files/2012/04/Cloud9_logo.jpg&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.label" target="_blank">Label</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:label for="">Address</a:label>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:label for=&quot;&quot;&gt;Address&lt;/a:label&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>black_label</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:label for="" skin="black_label">Address</a:label>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:label for=&quot;&quot; skin=&quot;black_label&quot;&gt;Address&lt;/a:label&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>tooltipLabel</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:label for="" skin="tooltipLabel">Address</a:label>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:label for=&quot;&quot; skin=&quot;tooltipLabel&quot;&gt;Address&lt;/a:label&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.list" target="_blank">List</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:list>
+                                <a:item>The Netherlands</a:item>
+                                <a:item>United States of America</a:item>
+                                <a:item>United Kingdom</a:item>
+                            </a:list>
+                            <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list &gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                        </div>
+                    </div>
+                    <div class="ui-item">
+                        <h3>lstCollaboratorsRoom<em> - skinset: collaborate</em></h3>
+                        <div class="fbox">
+                            <div class="fleft version">
+                                <h4>Not used - remove</h4>
+                                <a:list skin="lstCollaboratorsRoom" skinset="collaborate">
+                                    <a:item>The Netherlands</a:item>
+                                    <a:item>United States of America</a:item>
+                                    <a:item>United Kingdom</a:item>
+                                </a:list>
+                                <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list skin=&quot;members-list&quot; skinset=&quot;collaborate&quot;&gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-item">
+                        <h3>members-list<em> - skinset: collaborate</em></h3>
+                        <div class="fbox">
+                            <div class="fleft version">
+                                <h4>This skin is not used, so maybe we should remove it</h4>
+                                <a:list skin="members-list" skinset="collaborate">
+                                    <a:item>The Netherlands</a:item>
+                                    <a:item>United States of America</a:item>
+                                    <a:item>United Kingdom</a:item>
+                                </a:list>
+                                <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list skin=&quot;members-list&quot; skinset=&quot;collaborate&quot;&gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-item">
+                        <h3>breakpoints</h3>
+                        <div class="fbox">
+                            <div class="fleft version">
+                                <a:list skin="breakpoints">
+                                    <a:item>The Netherlands</a:item>
+                                    <a:item>United States of America</a:item>
+                                    <a:item>United Kingdom</a:item>
+                                </a:list>
+                                <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list skin=&quot;breakpoints&quot; &gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-item">
+                        <h3>lineselect</h3>
+                        <div class="fbox">
+                            <div class="fleft version">
+                                <h4>Fix or remove</h4>
+                                <a:list skin="lineselect">
+                                    <a:item>The Netherlands</a:item>
+                                    <a:item>United States of America</a:item>
+                                    <a:item>United Kingdom</a:item>
+                                </a:list>
+                                <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list skin=&quot;lineselect&quot; &gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                            </div>
+                            <div class="fleft version">
+                                <a:list skin="lineselect" class="searchresults">
+                                    <a:item>The Netherlands</a:item>
+                                    <a:item>United States of America</a:item>
+                                    <a:item>United Kingdom</a:item>
+                                </a:list>
+                                <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list skin=&quot;lineselect&quot; class=&quot;searchresults&quot;&gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                            </div>
+                            <div class="fleft version">
+                                <h4>Fix or remove</h4>
+                                <a:list skin="lineselect" class="treeOutline">
+                                    <a:item>The Netherlands</a:item>
+                                    <a:item>United States of America</a:item>
+                                    <a:item>United Kingdom</a:item>
+                                </a:list>
+                                <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:list skin=&quot;lineselect&quot; class=&quot;treeOutline&quot;&gt;&#010;    &lt;a:item&gt;The Netherlands&lt;/a:item&gt;&#010;    &lt;a:item&gt;United States of America&lt;/a:item&gt;&#010;    &lt;a:item&gt;United Kingdom&lt;/a:item&gt;&#010;&lt;/a:list&gt;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.modalwindow" target="_blank">modalwindow</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>bk-win-noisebg</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="bk-win-noisebg" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>bk-window</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="bk-window" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>bk-window2</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="bk-window2" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>change_photo</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="change_photo" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>dockwin</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="dockwin" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>fm-window</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="fm-window" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>panel</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skin="panel" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>win-auth<em> - skinset: authskin</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skinset="authskin" skin="win-auth" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
+                            <a:textarea class="winUIExtCode" width="550" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>dockextwin<em> - skinset: collaborate</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:window skinset="collaborate" skin="dockextwin" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
                             <a:textarea class="winUIExtCode" width="550" value="" />
                         </div>
                     </div>
                 </div>
             </div>
-                      
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.progressbar" target="_blank">Progressbar</a></h2>
+                <div class="ui-item">
+                    <h3>default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:progressbar min="0" max="100" value="60" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:progressbar min=&quot;0&quot; max=&quot;100&quot; value=&quot;60&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>progressbar-green</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:progressbar min="0" max="100" value="60" skin="progressbar-green" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:progressbar min=&quot;0&quot; max=&quot;100&quot; value=&quot;60&quot; skin=&quot;progressbar-green&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    
+                        
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.radiobutton" target="_blank">Radiobutton</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:radiobutton group="g1">Option 1</a:radiobutton>
+                            <a:radiobutton group="g1">Option 2</a:radiobutton>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:radiobutton group=&quot;g1&quot;&gt;Option 1&lt;/a:radiobutton&gt;&#010;&lt;a:radiobutton group=&quot;g1&quot;&gt;Option 2&lt;/a:radiobutton&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>classic</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:radiobutton group="g2" skin="classic">Option 1</a:radiobutton>
+                            <a:radiobutton group="g2" skin="classic">Option 2</a:radiobutton>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:radiobutton group=&quot;g2&quot; skin=&quot;classic&quot;&gt;Option 1&lt;/a:radiobutton&gt;&#010;&lt;a:radiobutton group=&quot;g2&quot; skin=&quot;classic&quot;&gt;Option 2&lt;/a:radiobutton&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>radio_black</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:radiobutton group="g3" skin="radio_black">Option 1</a:radiobutton>
+                                <a:radiobutton group="g3" skin="radio_black">Option 2</a:radiobutton>                                
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:radiobutton group=&quot;g3&quot; skin=&quot;radio_black&quot;&gt;Option 1&lt;/a:radiobutton&gt;&#010;&lt;a:radiobutton group=&quot;g3&quot; skin=&quot;radio_black&quot;&gt;Option 2&lt;/a:radiobutton&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>radio_grey</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:radiobutton group="g4" skin="radio_grey">Option 1</a:radiobutton>
+                            <a:radiobutton group="g4" skin="radio_grey">Option 2</a:radiobutton>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:radiobutton group=&quot;g4&quot; skin=&quot;radio_grey&quot;&gt;Option 1&lt;/a:radiobutton&gt;&#010;&lt;a:radiobutton group=&quot;g4&quot; skin=&quot;radio_grey&quot;&gt;Option 2&lt;/a:radiobutton&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.spinner" target="_blank">Spinner</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:spinner value="6" min="0" max="10" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:spinner value=&quot;6&quot; min=&quot;0&quot; max=&quot;10&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.splitbutton" target="_blank">splitbutton</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:menu id="splitbuttonSubmenu">
+                                <a:item type="radio" selected="true">Option</a:item>
+                                <a:item type="radio">Option</a:item>
+                                <a:item type="radio">Option</a:item>
+                            </a:menu>
+                            <a:splitbutton icon="run.png" caption="run" submenu="splitbuttonSubmenu" />
+                            <a:textarea class="winUIExtCode" width="550" height="100" value="&lt;a:menu id=&quot;splitbuttonSubmenu&quot;&gt;&#010;    &lt;a:item type=&quot;radio&quot; selected=&quot;true&quot;&gt;Option&lt;/a:item&gt;&#010;    &lt;a:item type=&quot;radio&quot;&gt;Option&lt;/a:item&gt;&#010;    &lt;a:item type=&quot;radio&quot;&gt;Option&lt;/a:item&gt;&#010;&lt;/a:menu&gt;&#010;&lt;a:splitbutton icon=&quot;run.png&quot; caption=&quot;run&quot; submenu=&quot;splitbuttonSubmenu&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.splitter" target="_blank">Splitter</a></h2>
+                <div class="ui-item">
+                    <h3>Default - redo</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textarea class=&quot;winUIExtCode&quot; width=&quot;550&quot; value=&quot;&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" class="splitterMoving" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; class=&quot;splitterMoving&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" class="splitterRealtime" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; class=&quot;splitterRealtime&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" class="vertical" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; class=&quot;vertical&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" class="splitter-editor-right" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; class=&quot;splitter-editor-right&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" class="splitter-editor-right panelsplitter" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; class=&quot;splitter-editor-right panelsplitter&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="dockcol"><a:splitter width="2" height="10" /></div>
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;div class=&quot;dockcol&quot;&gt;&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; /&gt;&lt;/div&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>darksplitter - fix</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" skin="darksplitter" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; skin=&quot;darksplitter&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" skin="darksplitter" class="darksplitterMoving" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; skin=&quot;darksplitter&quot; class=&quot;darksplitterMoving&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" skin="darksplitter" class="darksplitterRealtime" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; skin=&quot;darksplitter&quot; class=&quot;darksplitterRealtime&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:splitter width="2" height="10" skin="darksplitter" class="vertical" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:splitter width=&quot;2&quot; height=&quot;10&quot; skin=&quot;darksplitter&quot; class=&quot;vertical&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.tab" target="_blank">Tab</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:tab>
+                                <a:page caption="Tab1" />
+                                <a:page caption="Tab2" />
+                            </a:tab>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>dockbar<em> - Has some CSS that can be removed</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:tab skin="dockbar">
+                                <a:page caption="Tab1" />
+                                <a:page caption="Tab2" />
+                            </a:tab>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab skin=&quot;dockbar&quot;&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                    </div>
+                </div>
+                            
+                <div class="ui-item">
+                    <h3>docktab</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="ui-dark">
+                                <a:tab skin="docktab">
+                                    <a:page caption="Tab1" />
+                                    <a:page caption="Tab2" />
+                                </a:tab>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab skin=&quot;docktab&quot;&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:tab skin="docktab" class="dragging">
+                                <a:page caption="Tab1" />
+                                <a:page caption="Tab2" />
+                            </a:tab>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab skin=&quot;docktab&quot; class=&quot;dragging&quot;&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                    </div>
+                </div>
+                            
+                <div class="ui-item">
+                    <h3>docktab</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <div class="dockcol">
+                                <a:tab skin="docktab">
+                                    <a:page caption="Tab1" />
+                                    <a:page caption="Tab2" />
+                                </a:tab>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;div class=&quot;dockcol&quot;&gt;&#010;    &lt;a:tab skin=&quot;docktab&quot;&gt;&#010;        &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;        &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;    &lt;/a:tab&gt;&#010;&lt;/div&gt;" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ui-item">
+                    <h3>editor_tab</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:tab skin="editor_tab">
+                                <a:page caption="Tab1" />
+                                <a:page caption="Tab2" />
+                            </a:tab>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab skin=&quot;editor_tab&quot;&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <div class="dark">
+                                <a:tab skin="editor_tab">
+                                    <a:page caption="Tab1" />
+                                    <a:page caption="Tab2" />
+                                </a:tab>
+                            </div>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;div class=&quot;dark&quot;&gt;&#010;    &lt;a:tab skin=&quot;editor_tab&quot;&gt;&#010;        &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;        &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;    &lt;/a:tab&gt;&#010;&lt;/div&gt;" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ui-item">
+                    <h3>extensions_tab</h3>
+                    <div class="fbox">
+                        <div class="fleft version">            
+                            <a:tab skin="extensions_tab">
+                                <a:page caption="Tab1" />
+                                <a:page caption="Tab2" />
+                            </a:tab>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab skin=&quot;extensions_tab&quot;&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ui-item">
+                    <h3>tab_console<em> - Needs fixing</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:tab skin="tab_console" height="50">
+                                <a:page caption="Tab1" />
+                                <a:page caption="Tab2" />
+                            </a:tab>
+                            <a:textarea class="winUIExtCode" width="550" height="120" value="&lt;a:tab skin=&quot;tab_console&quot; height=&quot;50&quot;&gt;&#010;    &lt;a:page caption=&quot;Tab1&quot; /&gt;&#010;    &lt;a:page caption=&quot;Tab2&quot; /&gt;&#010;&lt;/a:tab&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.text" target="_blank">Text</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:text value="Text" />
+                            <a:text class="modal_text" value="Text" />
+                            <a:text class="apf_console" value="Text" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textarea value=&quot;Textarea&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.textarea" target="_blank">Textarea</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textarea value="Textarea" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textarea value=&quot;Textarea&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.textbox" target="_blank">textbox</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="input" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;input&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="secret" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;secret&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>black_textbox</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="black_textbox" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;black_textbox&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>searchbox</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="searchbox" />                            
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;searchbox&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>searchbox_textbox</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="searchbox_textbox" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;searchbox_textbox&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="searchbox_textbox" class="small-font" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;searchbox_textbox&quot; class=&quot;small-font&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>tb_console</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="tb_console" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;tb_console&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>tbsimple</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="tbsimple" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;tbsimple&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>textarea</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="textarea" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;textarea&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>textbox-modal</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="textbox-modal" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;textbox-modal&quot; /&gt;" />
+                        </div>
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="textbox-modal" class="required-tb" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;textbox-modal&quot; class=&quot;required-tb&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>auth-tb<em> - skinset: authskin</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            <a:textbox value="textbox" skin="auth-tb" skinset="authskin" />
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textbox value=&quot;textbox&quot; skin=&quot;auth-tb&quot; skinset=&quot;authskin&quot; /&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.tree" target="_blank">Tree</a></h2>
+                <div class="ui-item">
+                    <h3>Default</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+
+                            <a:tree>
+                                <a:item caption="root" icon="icoUsers.gif">
+                                    <a:item icon="icoUsers.gif" caption="test">
+                                        <a:item icon="icoUsers.gif" caption="test" />
+                                        <a:item icon="icoUsers.gif" caption="test" />
+                                        <a:item icon="icoUsers.gif" caption="test" />
+                                    </a:item>
+                                    <a:item icon="icoUsers.gif" caption="test" />
+                                    <a:item icon="icoUsers.gif" caption="test" />
+                                    <a:item icon="icoUsers.gif" caption="test" />
+                                </a:item>
+                            </a:tree>
+                            
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:tree &gt;&#010; &lt;a:item caption=&quot;root&quot; icon=&quot;icoUsers.gif&quot;&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot;&gt;&#010;            &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;            &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;            &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;        &lt;/a:item&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;    &lt;/a:item&gt;&#010;&lt;/a:tree&gt;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-item">
+                    <h3>collaborators-tree<em> - skinset: collaborate</em></h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                            
+                            <a:tree skin="collaborators-tree" skinset="collaborate">
+                                <a:item caption="root" icon="icoUsers.gif">
+                                    <a:item icon="icoUsers.gif" caption="test">
+                                        <a:item icon="icoUsers.gif" caption="test" />
+                                        <a:item icon="icoUsers.gif" caption="test" />
+                                        <a:item icon="icoUsers.gif" caption="test" />
+                                    </a:item>
+                                    <a:item icon="icoUsers.gif" caption="test" />
+                                    <a:item icon="icoUsers.gif" caption="test" />
+                                    <a:item icon="icoUsers.gif" caption="test" />
+                                </a:item>
+                            </a:tree>
+                            
+                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:tree skin=&quot;collaborators-tree&quot; skinset=&quot;collaborate&quot;&gt;&#010;    &lt;a:item caption=&quot;root&quot; icon=&quot;icoUsers.gif&quot;&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot;&gt;&#010;            &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;            &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;            &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;        &lt;/a:item&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;        &lt;a:item icon=&quot;icoUsers.gif&quot; caption=&quot;test&quot; /&gt;&#010;    &lt;/a:item&gt;&#010;&lt;/a:tree&gt;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
 <!--        
 <div class="ui-section">
-                <h2>Buttons</h2>
+                <h2><a href="http://ui.ajax.org/#docs/element." target="_blank"></a></h2>
                 <div class="ui-item">
                     <h3></h3>
                     <div class="fbox">
@@ -917,90 +1840,90 @@ console.log("Type: " + apf.skins.skins[skinset].templates[name].localName + " Sk
 * Type: checkbox Skinset: default Skin: db-checkbox
 ? Type: checkbox Skinset: default Skin: null
 x Type: codebox Skinset: default Skin: codebox
-Type: codeeditor Skinset: default Skin: codeeditor
-Type: datagrid Skinset: default Skin: datagrid
-Type: datagrid Skinset: default Skin: dgcheck
+? Type: codeeditor Skinset: default Skin: codeeditor - it's just ACE - should I show it?
+* Type: datagrid Skinset: default Skin: datagrid
+* Type: datagrid Skinset: default Skin: dgcheck
 * Type: divider Skinset: default Skin: c9-divider
-Type: divider Skinset: default Skin: c9-divider-double
-Type: divider Skinset: default Skin: c9-divider-hor
-Type: divider Skinset: default Skin: divider
-Type: divider Skinset: default Skin: divider-debugpanel
-Type: divider Skinset: default Skin: divider_console
-Type: dropdown Skinset: default Skin: black_dropdown
-Type: dropdown Skinset: default Skin: dropdown
-Type: dropdown Skinset: default Skin: dropdown-dark-glossy
-Type: dropdown Skinset: default Skin: light_dropdown
-Type: errorbox Skinset: default Skin: errorbox
-Type: frame Skinset: default Skin: fieldset
-Type: frame Skinset: default Skin: frame
-Type: img Skinset: default Skin: img
-Type: label Skinset: default Skin: black_label
-Type: label Skinset: default Skin: label
-Type: label Skinset: default Skin: tooltipLabel
-Type: list Skinset: collaborate Skin: lstCollaboratorsRoom
-Type: list Skinset: collaborate Skin: members-list
-Type: list Skinset: default Skin: breakpoints
-Type: list Skinset: default Skin: lineselect
-Type: list Skinset: default Skin: list
-Type: menu Skinset: collaborate Skin: permissionsmenu
-Type: menu Skinset: default Skin: dockwin_runbtns
-Type: menu Skinset: default Skin: dockwindowbasic
-Type: menu Skinset: default Skin: dockwindowblack
-Type: menu Skinset: default Skin: menu
-Type: menu Skinset: default Skin: menu-bk
-Type: modalwindow Skinset: authskin Skin: win-auth
-Type: modalwindow Skinset: collaborate Skin: dockextwin
-Type: modalwindow Skinset: collaborate Skin: todowin
-Type: modalwindow Skinset: default Skin: bk-win-noisebg
-Type: modalwindow Skinset: default Skin: bk-window
-Type: modalwindow Skinset: default Skin: bk-window2
-Type: modalwindow Skinset: default Skin: change_photo
-Type: modalwindow Skinset: default Skin: dockwin
-Type: modalwindow Skinset: default Skin: fm-window
-Type: modalwindow Skinset: default Skin: panel
-Type: modalwindow Skinset: default Skin: window
-Type: notifier Skinset: notificationsskin Skin: notifications-bubble
-Type: pages Skinset: default Skin: pages
-Type: progressbar Skinset: default Skin: progressbar
-Type: progressbar Skinset: default Skin: progressbar-green
-Type: radiobutton Skinset: default Skin: classic
-Type: radiobutton Skinset: default Skin: radio_black
-Type: radiobutton Skinset: default Skin: radio_grey
-Type: radiobutton Skinset: default Skin: radiobutton
-Type: scrollbar Skinset: default Skin: console_scrollbar
-Type: scrollbar Skinset: default Skin: sbios
-Type: scrollbar Skinset: default Skin: scrollbar
-Type: slider Skinset: default Skin: horizontal
-Type: slider Skinset: default Skin: range
-Type: slider Skinset: default Skin: slider
-Type: spinner Skinset: default Skin: spinner
-Type: splitbutton Skinset: default Skin: splitbutton
-Type: splitter Skinset: default Skin: darksplitter
-Type: splitter Skinset: default Skin: splitter
-Type: statusbar Skinset: default Skin: status
-Type: statusbar Skinset: default Skin: statusbar
-Type: tab Skinset: default Skin: dockbar
-Type: tab Skinset: default Skin: docktab
-Type: tab Skinset: default Skin: editor_tab
-Type: tab Skinset: default Skin: extensions_tab
-Type: tab Skinset: default Skin: tab
-Type: tab Skinset: default Skin: tab_console
-Type: text Skinset: default Skin: text
-Type: textarea Skinset: default Skin: textarea_ide
-Type: textbox Skinset: authskin Skin: auth-tb
-Type: textbox Skinset: default Skin: black_textbox
-Type: textbox Skinset: default Skin: input
-Type: textbox Skinset: default Skin: searchbox
-Type: textbox Skinset: default Skin: searchbox_textbox
-Type: textbox Skinset: default Skin: secret
-Type: textbox Skinset: default Skin: tb_console
-Type: textbox Skinset: default Skin: tbsimple
-Type: textbox Skinset: default Skin: textarea
-Type: textbox Skinset: default Skin: textbox
-Type: textbox Skinset: default Skin: textbox-modal
-Type: toolbar Skinset: default Skin: toolbar
-Type: tree Skinset: collaborate Skin: collaborators-tree
-Type: tree Skinset: default Skin: tree
+* Type: divider Skinset: default Skin: c9-divider-double
+* Type: divider Skinset: default Skin: c9-divider-hor
+* Type: divider Skinset: default Skin: divider
+* Type: divider Skinset: default Skin: divider-debugpanel
+* Type: divider Skinset: default Skin: divider_console
+* Type: dropdown Skinset: default Skin: black_dropdown
+* Type: dropdown Skinset: default Skin: dropdown
+* Type: dropdown Skinset: default Skin: dropdown-dark-glossy
+* Type: dropdown Skinset: default Skin: light_dropdown
+* Type: errorbox Skinset: default Skin: errorbox
+* Type: frame Skinset: default Skin: fieldset
+* Type: frame Skinset: default Skin: frame
+* Type: img Skinset: default Skin: img
+* Type: label Skinset: default Skin: black_label
+* Type: label Skinset: default Skin: label
+* Type: label Skinset: default Skin: tooltipLabel
+* Type: list Skinset: collaborate Skin: lstCollaboratorsRoom
+* Type: list Skinset: collaborate Skin: members-list
+* Type: list Skinset: default Skin: breakpoints
+* Type: list Skinset: default Skin: lineselect
+* Type: list Skinset: default Skin: list
+? Type: menu Skinset: collaborate Skin: permissionsmenu
+? Type: menu Skinset: default Skin: dockwin_runbtns
+? Type: menu Skinset: default Skin: dockwindowbasic
+? Type: menu Skinset: default Skin: dockwindowblack
+? Type: menu Skinset: default Skin: menu
+? Type: menu Skinset: default Skin: menu-bk
+* Type: modalwindow Skinset: authskin Skin: win-auth
+* Type: modalwindow Skinset: collaborate Skin: dockextwin
+? Type: modalwindow Skinset: collaborate Skin: todowin - this breaks the IDE
+* Type: modalwindow Skinset: default Skin: bk-win-noisebg
+* Type: modalwindow Skinset: default Skin: bk-window
+* Type: modalwindow Skinset: default Skin: bk-window2
+* Type: modalwindow Skinset: default Skin: change_photo
+* Type: modalwindow Skinset: default Skin: dockwin
+* Type: modalwindow Skinset: default Skin: fm-window
+* Type: modalwindow Skinset: default Skin: panel
+* Type: modalwindow Skinset: default Skin: window
+? Type: notifier Skinset: notificationsskin Skin: notifications-bubble - need help showing it/triggering events
+? Type: pages Skinset: default Skin: pages - what does this show?!
+* Type: progressbar Skinset: default Skin: progressbar
+* Type: progressbar Skinset: default Skin: progressbar-green
+* Type: radiobutton Skinset: default Skin: classic
+* Type: radiobutton Skinset: default Skin: radio_black
+* Type: radiobutton Skinset: default Skin: radio_grey
+* Type: radiobutton Skinset: default Skin: radiobutton
+? Type: scrollbar Skinset: default Skin: console_scrollbar
+? Type: scrollbar Skinset: default Skin: sbios
+? Type: scrollbar Skinset: default Skin: scrollbar
+? Type: slider Skinset: default Skin: horizontal - breaks the IDE - remove
+? Type: slider Skinset: default Skin: range - breaks the IDE - remove
+? Type: slider Skinset: default Skin: slider - breaks the IDE - remove
+* Type: spinner Skinset: default Skin: spinner
+* Type: splitbutton Skinset: default Skin: splitbutton
+* Type: splitter Skinset: default Skin: darksplitter
+* Type: splitter Skinset: default Skin: splitter
+? Type: statusbar Skinset: default Skin: status - breaks the IDE - remove
+? Type: statusbar Skinset: default Skin: statusbar - breaks the IDE - remove
+* Type: tab Skinset: default Skin: dockbar
+* Type: tab Skinset: default Skin: docktab
+* Type: tab Skinset: default Skin: editor_tab
+* Type: tab Skinset: default Skin: extensions_tab
+* Type: tab Skinset: default Skin: tab
+* Type: tab Skinset: default Skin: tab_console
+* Type: text Skinset: default Skin: text
+* Type: textarea Skinset: default Skin: textarea_ide
+* Type: textbox Skinset: authskin Skin: auth-tb
+* Type: textbox Skinset: default Skin: black_textbox
+* Type: textbox Skinset: default Skin: input
+* Type: textbox Skinset: default Skin: searchbox
+* Type: textbox Skinset: default Skin: searchbox_textbox
+* Type: textbox Skinset: default Skin: secret
+* Type: textbox Skinset: default Skin: tb_console
+* Type: textbox Skinset: default Skin: tbsimple
+* Type: textbox Skinset: default Skin: textarea
+* Type: textbox Skinset: default Skin: textbox
+* Type: textbox Skinset: default Skin: textbox-modal
+? Type: toolbar Skinset: default Skin: toolbar
+* Type: tree Skinset: collaborate Skin: collaborators-tree
+* Type: tree Skinset: default Skin: tree
     
 Windows?!
 

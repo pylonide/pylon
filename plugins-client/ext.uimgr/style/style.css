@@ -9,7 +9,12 @@
 #winUIExtContent h1 {
     margin-top: 0;
 }
-
+#winUIExtContent h2 a {
+    color: #3E95DE;
+}
+.ui-section h2 {
+    text-transform: capitalize;
+}
 .ui-section.close .ui-item {
     display: none;
 }
@@ -32,6 +37,12 @@
     margin-top: 10px;
     white-space: pre-wrap;
 }
+#winUIExtContent .ui-dropdown-section .winUIExtCode {
+    height: 150px;
+}
+#winUIExtContent .ui-datagrid-section .winUIExtCode {
+    height: 300px;
+}
 
 #winUIExtContent .ui-dark {
     background: #2B2B2B;
@@ -49,6 +60,7 @@
 #winUIExtContent .version {
     float: left;
     margin-left: 17px;
+    margin-bottom: 17px;
     width: 550px;
 }
 #winUIExtContent .relative {
