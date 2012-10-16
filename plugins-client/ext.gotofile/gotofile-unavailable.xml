@@ -1,0 +1,22 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id = "winBlockGotoFile"
+      title   = "Can't Use GotoFile!"
+      icon      = ""
+      center    = "true"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "600"
+      skin      = "bk-window2"
+      render    = "runtime"
+      class     = "relative"
+      model     = "true">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h4>Generic workspaces can't use gotofile!</h4>
+            <p>Due to the size of your filesystem, we can't launch gotofile. In the future, we will provide an update to resolve this limitation.</p>
+            <p>Smaller workspaces and folders can continue to use gotofile.</p>
+       </a:vbox>
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button onclick = "winBlockGotoFile.close();" skin="btn-default-css3" class="btn-green">Got it</a:button>
+        </a:hbox>
+    </a:window>
+</a:application>

@@ -1,9 +1,11 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * Go to file extension
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2010-2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
+/*global winGoToFile tabEditors txtGoToFile dgGoToFile */
 
 define(function(require, exports, module) {
 
@@ -11,33 +13,39 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
-var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
-var search = require('ext/gotofile/search');
 var filelist = require("ext/filelist/filelist");
-var anims = require("ext/anims/anims");
+var search = require("ext/gotofile/search");
+var editors = require("ext/editors/editors");
 
-module.exports = ext.register("ext/gotofile/gotofile", {
-    name    : "Go To File",
-    dev     : "Ajax.org",
-    alone   : true,
-    offline : false,
-    type    : ext.GENERAL,
-    markup  : markup,
-    offline : false,
-    autodisable : ext.ONLINE | ext.LOCAL,
-
-    eventsEnabled : true,
-    dirty         : true,
-    nodes         : [],
-    arraySearchResults : [],
-    arrayCache : [],
-
-    isGeneric : window.cloud9config.local && window.cloud9config.workspaceId && window.cloud9config.workspaceId == "generic",
-
-    hook : function(){
-        var _self = this;
-
+module.exports = ext.register("ext/gotofile/gotofile", new (function () {
+    var _self = this;
+    
+    this.name = "Go To File";
+    this.dev = "Ajax.org";
+    this.alone = true;
+    this.offline = false;
+    this.type = ext.GENERAL;
+    this.markup = markup;
+    this.autodisable = ext.ONLINE | ext.LOCAL;
+    
+    // so the filelist can be populated before the init function is called
+    // and therefore the model has not been loaded, so thats kinda sucky
+    // therefore we create the model in code when we create this plugin...
+    window.mdlGoToFile = this.model = (function () {
+        var m = new apf.model();
+        apf.xmldb.setAttribute(m, "id", "mdlGoToFile");
+        m.load("<files loading='true'/>");
+        return m;
+    }());
+    
+    this.nodes = [];
+    
+    this.$isInited = false;
+    this.$filelist = [];
+    
+    // hook the menu items to the UI and such
+    this.hook = function () {
         var mnuItem = new apf.item({
             command : "gotofile"
         });
@@ -46,306 +54,119 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             name: "gotofile",
             hint: "search for a filename and jump to it",
             bindKey: {mac: "Command-E", win: "Ctrl-E"},
-            exec: function () {
-                if (!_self.isGeneric)
-                    _self.toggleDialog(1);
-                else {
-                    ext.initExtension(_self);
-                    winGoToFile.visible = true;
-                    winGoToFile.hide();
-                    winBlockGotoFile.show();
-                }
-            }
+            exec: _self.openDialog
         });
 
         this.nodes.push(
             menus.addItemByPath("File/Open...", mnuItem, 500),
-            menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100),
-
-            this.model = new apf.model()
+            menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100)
         );
 
+        // apparently the markup needs to be somewhere here, no clue really
+        // maybe it has something to do with positioning, let's just keep it this way.
         ide.addEventListener("init.ext/editors/editors", function(){
             _self.markupInsertionPoint = tabEditors;
-            //tabEditors.appendChild(winGoToFile);
-        });
-
-        ide.addEventListener("extload", function(){
-            if (!_self.isGeneric) {
-                _self.updateFileCache();
-            }
-        });
-    },
-
-    setEventsEnabled : function(enabled) {
-        this.eventsEnabled = enabled;
-    },
-
-    init : function() {
-        var _self = this;
-
-        txtGoToFile.addEventListener("keydown", function(e) {
-            if (!_self.eventsEnabled)
-                return;
-
-            if (e.keyCode == 27)
-                _self.toggleDialog(-1);
-
-            else if (e.keyCode == 13){
-                _self.openFile(true);
-
-                ide.dispatchEvent("track_action", {type: "gotofile"});
-                return false;
-            }
-            else if (dgGoToFile.xmlRoot) {
-                if (e.keyCode == 38 && dgGoToFile.viewport.length) {
-                    if (dgGoToFile.selected == dgGoToFile.$cachedTraverseList[0])
-                        return;
-
-                    var prev = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected, false);
-                    if (prev) {
-                        dgGoToFile.select(prev, e.ctrlKey, e.shiftKey);
-                        dgGoToFile.focus();
-                        e.preventDefault();
-                    }
-                }
-                else if (e.keyCode == 40 && dgGoToFile.viewport.length && dgGoToFile.selected) {
-                    var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
-                    if (next) {
-                        dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
-                        dgGoToFile.focus();
-                        e.preventDefault();
-                    }
-                }
-            }
-        });
-
-        txtGoToFile.addEventListener("afterchange", function(e) {
-            if (!_self.eventsEnabled)
-                return;
-
-            _self.filter(txtGoToFile.value);
-
-            if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
-                _self.dirty = false;
-                _self.updateFileCache(true);
-            }
-        });
-
-        dgGoToFile.addEventListener("keydown", function(e) {
-            if (e.keyCode == 27) {
-                _self.toggleDialog(-1);
-            }
-            if (e.keyCode == 9) {
-                txtGoToFile.focus();
-                e.preventDefault();
-            }
-            else if (e.keyCode == 38 && !e.shiftKey) {
-                if (this.selected == this.$cachedTraverseList[0])
-                    txtGoToFile.focus();
-            }
-            else if (e.keyCode == 13) {
-                _self.openFile(true);
-                return false;
-            }
-            else if (apf.isCharacter(e.keyCode)) {
-                txtGoToFile.focus();
-                return;
-            }
-
-            e.preventDefault();
-        }, true);
-
-        apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
-            _self.openFile();
-        });
-
-        winGoToFile.addEventListener("blur", function(e){
-            if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
-                _self.toggleDialog(-1);
         });
         
-        winGoToFile.addEventListener("prop.visible", function(e){
-            if (e.value) {
-                if (themes.isDark) {
-                    
-                }
-                if (!tabEditors.getPage()) {
-                    winGoToFile.setProperty("top", 0);
-                    vboxGoToFile.setProperty("edge", "5 5 5 5");
-                }
-                else {
-                    winGoToFile.setProperty("top", 6);
-                    vboxGoToFile.setProperty("edge", "1 5 5 5");
-                }
-            }
-        });
-        
-        txtGoToFile.addEventListener("blur", function(e){
-            if (self.winGoToFile && winGoToFile.visible
-              && !apf.isChildOf(winGoToFile, e.toElement))
-                _self.toggleDialog(-1);
-        });
-
-        ide.addEventListener("closepopup", function(e){
-            if (e.element != _self)
-                _self.toggleDialog(-1, true);
-        });
-
-        ide.addEventListener("beforewatcherchange", function(){
-            _self.dirty = true;
-        });
-
-        this.updateDatagrid(true);
-
-        this.nodes.push(winGoToFile);
-    },
+        // start loading the file list at the moment that we hook
+        // that saves time...
+        _self.updateFileList();
+    };
     
-    windowVisible : function(winValue, data){
-        var _self = this;
-        if (winValue) {
-            var search = _self.lastSearch;
-            _self.lastSearch = null; //invalidate cache
-
-            var sel = [];
-            dgGoToFile.getSelection().forEach(function(node){
-                var i = node.firstChild.nodeValue;
-                sel.push(_self.arraySearchResults[i]);
-            })
-
-            var state = {
-                sel : sel, //store previous selection
-                caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
-                scrollTop : dgGoToFile.$viewport.getScrollTop()
-            };
-
-            _self.model.load(data);
-            _self.filter(search, state.sel.length);
-
-            if (state.sel.length && state.sel.length < 100) {
-                var list = [], sel = state.sel;
-                for (var i = 0, l = sel.length; i < l; i++) {
-                    list.push(dgGoToFile.queryNode("//d:href[text()='"
-                        + _self.arraySearchResults.indexOf(sel[i]) + "']"));
-                }
-                dgGoToFile.selectList(list);
-                if (state.caret)
-                    dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='"
-                        + _self.arraySearchResults.indexOf(state.caret) + "']"));
-                dgGoToFile.$viewport.setScrollTop(state.scrollTop);
+    this.init = function () {
+        apf.addListener(dgGoToFile, "click", function () {
+            _self.onItemSelect(dgGoToFile.selected);
+        });
+        
+        apf.addListener(txtGoToFile, "prop.value", function (e) {
+            if (e.changed) {
+                _self.search(e.value);
             }
+        });
+        
+        _self.$isInited = true;
+    };
+    
+    /**
+     * Open the go to file dialog
+     */
+    this.openDialog = function () {
+        // on first use, we'll init...
+        if (!_self.$isInited) {
+            ext.initExtension(_self);
         }
-    },
+        
+        // show the window, and give focus to the textbox
+        winGoToFile.show();
+        txtGoToFile.focus();
+    };
     
-    updateFileCache : function(isDirty){
-        var _self = this;
-
-        filelist.getFileList(isDirty, function(data, state){
-            if (state != apf.SUCCESS)
+    /**
+     * Query the server for a new file list and put it in the $filelist variable
+     */
+    this.updateFileList = function () {
+        filelist.getFileList(false, function(data, state){
+            if (state != apf.SUCCESS) {
                 return;
+            }
 
             var array = data.replace(/^\./gm, "").split("\n");
             array.pop(); //remove trailing empty element;
-
-            var start = "<d:href>";
-            var end   = "</d:href>";
-            var glue  = end + start;
-
-            var c = array.length;
-            var arrN = [];
-            while(c--) { arrN.unshift(c); }
-
-            data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
-                + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
-
-            _self.arrayCache = array;
-
-            if (self.winGoToFile && _self.lastSearch) {
-                if (!winGoToFile.visible) {
-                    winGoToFile.addEventListener("prop.visible", function(e){
-                        _self.windowVisible(e.value, data)
-
-                        winGoToFile.removeEventListener("prop.visible", arguments.callee);
-                    });
-                 }
-                 else {
-                     _self.windowVisible(true, data);
-                 }
-            }
-            else {
-                _self.arraySearchResults = array;
-                _self.model.load(data);
-
-                if (self.dgGoToFile)
-                    _self.updateDatagrid();
-            }
+            
+            // store it
+            _self.$filelist = array;
+            
+            // afterwards, notify the model that we now have proper data...
+            apf.xmldb.setAttribute(_self.model.data, "loading", false);
+            
+            // and do a new search with the content of the textbox
+            _self.search(_self.$isInited && txtGoToFile.value);
         });
-    },
-
+    };
+    
     /**
-     * Searches through the dataset
-     *
+     * Search for a specific file
      */
-    filter : function(keyword, nosel, force){
-        keyword = keyword.replace(/\*/g, "");
-
-        if (!this.model.data) {
-            this.lastSearch = keyword;
-            return;
-        }
-
-        if (!keyword || !keyword.length) {
-            var result = this.arrayCache.slice();
-            // More prioritization for already open files
-            tabEditors.getPages().forEach(function (page) {
-                var path = page.$doc.getNode().getAttribute("path")
-                     .substring(window.cloud9config.davPrefix.length);
-                result.remove(path);
-                result.unshift(path);
-            });
-            this.arraySearchResults = result;
-        }
-        else {
-            dgGoToFile.$viewport.setScrollTop(0);
-            this.arraySearchResults = search.fileSearch(this.arrayCache, keyword);
-        }
-
-        this.lastSearch = keyword;
-
-        this.updateDatagrid();
-
-        // See if there are open files that match the search results
-        // and the first if in the displayed results
-
-        if (nosel)
-            return;
-
-        var pages = tabEditors.getPages(), hash = {};
-        for (var i = pages.length - 1; i >= 0; i--) {
-            hash[pages[i].id] = true;
-        }
-
-        var nodes = dgGoToFile.getTraverseNodes();
-        if (!nodes)
-            return;
+    this.search = function (value) {
+        value = value || "";
         
-        for (var i = Math.max(dgGoToFile.$viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
-            if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
-                dgGoToFile.select(nodes[i]);
-                return;
-            }
+        // loading, then no thanks 
+        if (apf.isTrue(_self.model.data.getAttribute("loading"))) {
+            return;
         }
-
-        var selNode = dgGoToFile.getFirstTraverseNode();
-        if (selNode)
-            dgGoToFile.select(selNode);
-    },
-
-    replaceStrong : function (value, keyword){
+        
+        // clear out the model first
+        var children = _self.model.queryNodes("file");
+        for (var i = children.length; i--; ) {
+            apf.xmldb.removeNode(children[i]);
+        }
+        
+        var results = search.fileSearch(_self.$filelist, value);
+        // limit the number of results to a 100 because no-one cares anyway
+        results = results.splice(0, 100);
+        
+        // then map it and append to the model
+        results.forEach(function (path) {
+            var node = apf.n("<file/>")
+                .attr("path", path)
+                .attr("displayname", _self.replaceStrong(apf.getFilename(path), value))
+                .attr("displaypath", _self.replaceStrong(path, value))
+                .node();
+            
+            // this might be a bit slow, lets try it anyways
+            apf.xmldb.appendChild(_self.model.data, node);
+        });
+    };
+    
+    /**
+     * Make the part of a value that matches the keyword strong
+     * Or something else because there are no comments here
+     */
+    this.replaceStrong = function (value, keyword){
         if (!value)
             return "";
         keyword = keyword.replace(/\*/g, "");
-        var i, j;
+        var i;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
         var result = search.matchPath(value, keyword);
@@ -358,191 +179,52 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 result[i] = part.val;
         });
         return result.join("");
-    },
-
-    updateDatagrid : function(init){
-        var vp = dgGoToFile.$viewport;
-
-        if(!this.arraySearchResults)
+    };
+    
+    /**
+     * Firs after you've selected an item from the list
+     */
+    this.onItemSelect = function (node) {
+        if (!node) {
             return;
-
-        if (!this.arraySearchResults.length) {
-            if (init || !txtGoToFile.value) {
-                dgGoToFile.clear("loading");
-                this.filter("");
-            }
-            else {
-                dgGoToFile.removeAttribute("height");
-                dgGoToFile.clear("empty");
-            }
         }
-        else {
-            dgGoToFile.$removeClearMessage();
-            dgGoToFile.load(this.model.data);
+        
+        var path = ide.davPrefix + node.getAttribute("path");
+        
+        editors.gotoDocument({ path: path, active: true });
+        
+        // after you've selected an item we'll close the window...
+        winGoToFile.hide();
+        // and re-set selection
+        dgGoToFile.select(-1);
+    };
+    
+    // outline requires this, will check why...
+    this.setEventsEnabled = function () {};
 
-            vp.length = this.arraySearchResults.length;
-            var limit = Math.ceil(vp.getHeight() / vp.$getItemHeight() + 2);
-            if (limit > vp.length)
-                vp.resize(vp.length);
-            else if (vp.length > limit && vp.limit != 11)
-                vp.resize(Math.min(vp.length, 11));
-            vp.change(0, vp.limit, true);
-
-            setTimeout(function(){
-                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
-                txtGoToFile.focus();
-            });
-        }
-
-        if (!vp.length) {
-            if (this.arraySearchResults.length)
-                dgGoToFile.setAttribute("height", 18);
-        }
-        else if (vp.length < 100) {
-            var sh = vp.getScrollHeight();
-            if (sh / vp.length == 1000)
-                return setTimeout(arguments.callee.bind(dgGoToFile));
-
-            var ht = Math.min(350, sh);
-            if (ht != dgGoToFile.height)
-                dgGoToFile.setAttribute("height", ht);
-        }
-        else if (dgGoToFile.height != 350) {
-            dgGoToFile.setAttribute("height", 350);
-        }
-    },
-
-    openFile: function(noanim){
-        var nodes = dgGoToFile.getSelection();
-
-        if (nodes.length == 0)
-            return false;
-
-        var _self = this;
-        this.toggleDialog(-1, noanim, function(){
-            setTimeout(function(){
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    var path = ide.davPrefix.replace(/[\/]+$/, "") + "/"
-                        + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
-
-                    editors.gotoDocument({path: path, active : i == l - 1});
-
-                    ide.dispatchEvent("track_action", {type: "fileopen"});
-                }
-            }, 10);
-        });
-    },
-
-    gotofile : function(){
-        if (!this.isGeneric)
-            this.toggleDialog();
-        else
-            winBlockGotoFile.show();
-
-        return false;
-    },
-
-    "_gotofilelegacy" : function(){
-        this.toggleDialog();
-        return false;
-    },
-
-    toggleDialog: function(force, noanim, callback) {
-        if (!self.winGoToFile || !force && !winGoToFile.visible || force > 0) {
-            if (self.winGoToFile && winGoToFile.visible)
-                return;
-
-            ext.initExtension(this);
-
-            ide.dispatchEvent("closepopup", {element: this});
-
-            winGoToFile.show();
-
-            if (dgGoToFile.$model != this.model)
-                dgGoToFile.setModel(this.model);
-
-            //Hide window until the list is loaded, unless we don't have data yet
-            if (!dgGoToFile.xmlRoot) {
-                dgGoToFile.$setClearMessage(dgGoToFile["loading-message"], "loading");
-                apf.setOpacity(winGoToFile.$ext, 1);
-            }
-            else {
-                apf.setOpacity(winGoToFile.$ext, 1);
-            }
-
-            if (!txtGoToFile.inited) {
-                setTimeout(function(){
-                    txtGoToFile.inited = true;
-                    txtGoToFile.focus();
-                });
-            }
-            else {
-                txtGoToFile.focus();
-            }
-
-            // If we had a filter and new content, lets refilter
-            if (this.lastSearch) {
-                var search = this.lastSearch;
-                this.lastSearch = null; //invalidate cache
-                this.filter(search);
-            }
-            else {
-                this.filter("");
-            }
-        }
-        else if (self.winGoToFile && winGoToFile.visible) {
-            if (!noanim) {
-                winGoToFile.visible = false;
-
-                //Animate
-                anims.animate(winGoToFile, {
-                    opacity: "0",
-                    timingFunction: "linear",
-                    duration : 0.025
-                }, function(){
-                    winGoToFile.visible = true;
-                    winGoToFile.hide();
-
-                    setTimeout(function() {
-                        if (editors.currentEditor && editors.currentEditor.ceEditor)
-                            editors.currentEditor.ceEditor.focus();
-                    }, 0);
-
-                    callback && callback();
-                });
-            }
-            else {
-                winGoToFile.hide();
-                callback && callback();
-            }
-        }
-
-        return false;
-    },
-
-    enable : function(){
+    // === Generic enable/disable logic, why is this not in 'ext'? ===
+    this.enable = function(){
         this.nodes.each(function(item){
             if (item.enable)
                 item.enable();
         });
-    },
+    };
 
-    disable : function(){
+    this.disable = function(){
         this.nodes.each(function(item){
             if (item.disable)
                 item.disable();
         });
     },
 
-    destroy : function(){
+    this.destroy = function(){
         commands.removeCommandByName("gotofile");
 
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
-        winGoToFile.destroy(true, true);
         this.nodes = [];
-    }
-});
+    };
+})());
 
 });
