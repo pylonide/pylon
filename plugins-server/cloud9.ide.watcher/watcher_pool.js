@@ -8,6 +8,7 @@
 
 var DirWatcher = require("./dir_watcher");
 var FileWatcher = require("./file_watcher");
+var dirname = require("path").dirname;
 
 module.exports = WatcherPool;
 
@@ -23,7 +24,7 @@ function WatcherPool(vfs) {
 
 (function() {
 
-    this.ignoreFile = function(path, timeout) {
+    this.ignoreFile = function(path, timeout, skipParent) {
         var self = this;
         
         if (this.ignored[path])
@@ -32,6 +33,13 @@ function WatcherPool(vfs) {
         this.ignored[path] = setTimeout(function() {
             delete(self.ignored[path]);
         }, timeout);
+
+        if (skipParent)
+            return;
+            
+        var parentDir = dirname(path);
+        if (parentDir)
+            this.ignoreFile(parentDir, timeout, true);
     };
 
     this.watch = function(path, onChange, onClose, callback) {
@@ -43,15 +51,17 @@ function WatcherPool(vfs) {
             var isDir = stat.mime == "inode/directory";
             var handle = {
                 onRemove: function(e) {
-                    if (self.ignored[path])
+                    if (self.ignored[path]) {
                         return;
+                    }
                         
                     e.subtype = "remove";
                     onChange(e);
                 },
                 onChange: function(e) {
-                    if (self.ignored[path])
+                    if (self.ignored[path]) {
                         return;
+                    }
                         
                     e.subtype = isDir ? "directorychange" : "change";
                     onChange(e);

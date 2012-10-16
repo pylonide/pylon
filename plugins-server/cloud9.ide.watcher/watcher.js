@@ -16,20 +16,23 @@ module.exports = function setup(options, imports, register) {
     var vfs = imports.vfs;
     var name = "watcher";
 
-    var IGNORE_TIMEOUT = 50;
+    var IGNORE_TIMEOUT = 200;
     
-
     function WatcherPlugin(ide, workspace) {
         Plugin.call(this, ide, workspace);
 
         var pool = this.pool = new WatcherPool(vfs);
         
         DAV.plugins["watcher"] = function (handler) {
-            handler.addEventListener("beforeWriteContent", function (e, uri) {
+            handler.addEventListener("beforeBind", onChange);
+            handler.addEventListener("beforeUnbind", onChange);
+            handler.addEventListener("beforeWriteContent", onChange);
+            
+            function onChange(e, uri) {
                 var path = handler.server.tree.basePath + "/" + uri;
                 pool.ignoreFile(path, IGNORE_TIMEOUT);
                 e.next();
-            });
+            }
         };
 
         this.hooks = ["disconnect", "command"];
