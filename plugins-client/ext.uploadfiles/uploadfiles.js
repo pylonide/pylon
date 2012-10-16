@@ -5,6 +5,13 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global winUploadFiles,mnuCtxTree,itemCtxTreeNewFile,lstUploadActivity,
+         fileUploadSelect,hboxUploadNoFolders,hboxUploadWithFolders,fileUploadSelectBtn,
+         folderUploadSelect,vboxTreeContainer,boxUploadActivity,cbToggleUploadQueue,
+         trFiles,tabEditors,uplTargetFolder,winNoFolderSupport,btnNoFolderSupportOpenDialog,
+         mdlUploadActivity,btnCancelUploads,davProject,winUploadFileExists,btnUploadOverwriteAll,
+         btnUploadSkipAll,uploadFileExistsMsg,uploadactivityNumFiles */
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -77,10 +84,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     mnuCtxTree.insertBefore(new apf.divider({
                         visible : "{mnuCtxTreeUpload.visible}"
                     }), itemCtxTreeNewFile)
-                )
+                );
             });
 
-            if(window.cloud9config.hosted) {
+            if (window.cloud9config.hosted) {
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
@@ -107,7 +114,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 hboxUploadNoFolders.hide();
                 hboxUploadWithFolders.show();
 
-                apf.setStyleClass(fileUploadSelectBtn.$ext, "uploadWithFolders")
+                apf.setStyleClass(fileUploadSelectBtn.$ext, "uploadWithFolders");
 
                 this.folderbrowser = folderUploadSelect.$ext;
                 this.folderbrowser.style.display = "block";
@@ -125,15 +132,15 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             vboxTreeContainer.appendChild(boxUploadActivity);
         });
 
-
-        lstUploadActivity.$ext.addEventListener("mouseover", function(e) {
+        var list = lstUploadActivity;
+        list.$ext.addEventListener("mouseover", function(e) {
             _self.lockHideQueue = true;
             if (!apf.isChildOf(this, e.relatedTarget)) {
                 _self.lockHideQueue = true;
             }
         });
 
-        lstUploadActivity.$ext.addEventListener("mouseout", function(e) {
+        list.$ext.addEventListener("mouseout", function(e) {
             if (apf.isChildOf(this, e.relatedTarget))
                 return;
 
@@ -143,9 +150,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
         cbToggleUploadQueue.addEventListener("click", function(e) {
             if (!e.currentTarget.checked)
-                lstUploadActivity.hide();
+                list.hide();
             else
-                lstUploadActivity.show();
+                list.show();
         });
     },
 
@@ -306,9 +313,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
             filename = file.name;
             if (this.ignoreFiles.indexOf(filename) == -1) {
-                if (file.size > MAX_UPLOAD_SIZE_FILE) {
-                    files_too_big.push(filename)
-                }
+                if (file.size > MAX_UPLOAD_SIZE_FILE)
+                    files_too_big.push(filename);
 
                 // if more then one file is too big there is no need to check any further
                 if (files_too_big.length > 1)
@@ -390,7 +396,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     // add file to file tree
     addToFileTree: function(file) {
-        var filename = apf.escapeXML(file.name)
+        var filename = apf.escapeXML(file.name);
         var path = apf.escapeXML(file.path) + "/" + filename;
 
         var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
@@ -403,9 +409,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             .attr("path", path)
             .node();
 
-        apf.xmldb.appendChild(file.targetFolder, xmlNode);
-        //trFiles.add(xmlNode, file.targetFolder);
-        file.treeNode = trFiles.queryNode("//file[@path=" + util.escapeXpathString(path) + "][@name='" + filename + "']");
+        file.treeNode = apf.xmldb.appendChild(file.targetFolder, xmlNode);
     },
 
     //add file to upload activity list
@@ -642,7 +646,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if(!this.currentFile) return;
         var total = Math.floor(perc * 100);
         var node = this.currentFile.queueNode;
-        var curPerc = node.getAttribute("progress")
+        var curPerc = node.getAttribute("progress");
         apf.xmldb.setAttribute(node, "progress", Math.max(total, curPerc));
     },
 
