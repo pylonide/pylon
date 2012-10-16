@@ -418,6 +418,22 @@ module.exports = ext.register("ext/console/console", {
     },
 
     onMessage: function(e) {
+        // [Jan] Alright so here is something that is utter wrong with this plugin
+        // regardless of the command, or the type, or basically whatever the &@*#
+        // we send from the server, as long as it has a 'type' that ends with -data
+        // or -start or something the console tries to interpret it, which is complete
+        // and utter bullshit, because we're perfectly capable of tracking which events
+        // originated from this plugin.
+        //
+        // So because it should ignore some events we're now forced to do something
+        // like this, which I don't like at all but I can't find an easy solution.
+        //
+        // Rather all console commands should have a seperate 'console' command like
+        // any normal plugin.
+        if (e.message.command === "run-shell") {
+            return;
+        }
+        
         if (!e.message.type)
             return;
 

@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.ide.run-shell",
+    "version": "0.0.1",
+
+    "main": "./run-shell-plugin.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "eventbus",
+            "vfs"
+        ]
+    }
+}
