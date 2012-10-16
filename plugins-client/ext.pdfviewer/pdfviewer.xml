@@ -1,0 +1,7 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar id="pdfEditor"
+      flex              = "1"
+      anchors           = "0 0 0 0"
+      visible           = "false"
+    />
+</a:application>

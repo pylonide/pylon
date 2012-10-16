@@ -1,0 +1,14 @@
+{
+    "name": "ext.pdfviewer",
+    "version": "0.0.1",
+    "main": "pdfviewer-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.pdfviewer"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
