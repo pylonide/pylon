@@ -1,7 +1,9 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="pdfEditor"
+    <a:bar id="barPDF"
       flex              = "1"
       anchors           = "0 0 0 0"
       visible           = "false"
-    />
+    >
+    	<canvas id="pdfEditor" style="border:1px solid black;"/>
+	</a:bar>
 </a:application>

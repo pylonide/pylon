@@ -196,6 +196,8 @@ var contentTypes = {
     "hh": "text/x-c",
     "hpp": "text/x-c",
 
+    "pdf": "application/pdf",
+    
     "bmp": "image",
     "djv": "image",
     "djvu": "image",

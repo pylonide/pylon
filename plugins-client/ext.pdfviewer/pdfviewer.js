@@ -10,6 +10,8 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var PDFJS = require("ext/pdfviewer/pdf"); 
+window.PDFJS.workerSrc = ide.staticPrefix + "/ext/pdfviewer/pdf.js";
 var markup = require("text!ext/pdfviewer/pdfviewer.xml");
 var editors = require("ext/editors/editors");
 
@@ -20,26 +22,78 @@ module.exports = ext.register("ext/pdfviewer/pdfviewer", {
     type    : ext.EDITOR,
     markup  : markup,
     deps    : [editors],
-
     nodes : [],
 
     setDocument : function(doc, actiontracker){
         doc.session = doc.getNode().getAttribute("path");
-        pdfEditor.setProperty("value", apf.escapeXML(doc.session));
-        if (!doc.isInited) {
-            doc.isInited = true;
-            doc.dispatchEvent("init");
-        }
+        window.PDFJS.getDocument(apf.escapeXML(doc.session)).then(function(pdf) {
+          // Using promise to fetch the page
+          pdf.getPage(1).then(function(page) {
+            var scale = 1.5;
+            var viewport = page.getViewport(scale);
+        
+            //
+            // Prepare canvas using PDF page dimensions
+            //
+            var canvas = document.getElementById('pdfEditor');
+            var context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+        
+            //
+            // Render PDF page into canvas context
+            //
+            var renderContext = {
+              canvasContext: context,
+              viewport: viewport
+            };
+            page.render(renderContext);
+          });
+        });
     },
 
+    focus : function(){
+        barPDF.focus();
+        var page = tabEditors.getPage();
+        if (!page) return;
+
+        var doc = page.$doc;
+    },
+    
     hook : function() {},
 
     init : function() {
-        var editor = pdfEditor;
+        var editor = barPDF;
+
+        this.PDFJS = PDFJS;
+        ide.addEventListener("beforefilesave", function(e) {
+            var path = e.node && e.node.getAttribute("path");
+            if (!path)
+                return;
+            // don't save images for now.
+            if (editor.value == path)
+                return false;
+        });
+
+        barPDF.addEventListener("blur", function(){
+            //PDFJS.focus = null;
+            //var cursor = document.querySelector(".terminal .reverse-video");
+            //if (cursor && apf.isTrue(settings.model.queryValue("auto/terminal/blinking")))
+            //    cursor.parentNode.removeChild(cursor);
+            barTerminal.setAttribute("class", "c9pdfviewer");
+        });
+
+        barPDF.addEventListener("focus", function(){
+            barPDF.setAttribute("class", "c9pdfviewer c9pdfviewerFocus");
+        });
+
+        barPDF.addEventListener("prop.scrollback", function(e){
+
+        });
 
         editor.show();
 
-        this.pdfEditor = this.amlEditor = editor;
+        this.barPDF = this.amlEditor = editor;
     },
 
     enable : function() {
