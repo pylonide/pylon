@@ -10,8 +10,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var PDFJS = require("ext/pdfviewer/pdf"); 
-window.PDFJS.workerSrc = ide.staticPrefix + "/ext/pdfviewer/pdf.js";
+require("ext/pdfviewer/pdf"); 
 var markup = require("text!ext/pdfviewer/pdfviewer.xml");
 var editors = require("ext/editors/editors");
 
@@ -63,9 +62,12 @@ module.exports = ext.register("ext/pdfviewer/pdfviewer", {
     hook : function() {},
 
     init : function() {
+        var _self = this;
+
+        window.PDFJS.workerSrc = ide.staticPrefix + "/ext/pdfviewer/pdf.js";
+
         var editor = barPDF;
 
-        this.PDFJS = PDFJS;
         ide.addEventListener("beforefilesave", function(e) {
             var path = e.node && e.node.getAttribute("path");
             if (!path)
@@ -80,15 +82,19 @@ module.exports = ext.register("ext/pdfviewer/pdfviewer", {
             //var cursor = document.querySelector(".terminal .reverse-video");
             //if (cursor && apf.isTrue(settings.model.queryValue("auto/terminal/blinking")))
             //    cursor.parentNode.removeChild(cursor);
-            barTerminal.setAttribute("class", "c9pdfviewer");
+            barPDF.setAttribute("class", "c9pdfviewer");
         });
 
         barPDF.addEventListener("focus", function(){
             barPDF.setAttribute("class", "c9pdfviewer c9pdfviewerFocus");
         });
 
-        barPDF.addEventListener("prop.scrollback", function(e){
+        pdfEditor.addEventListener("click", function(e) {
+            _self.focus();
+        });
 
+        pdfEditor.addEventListener("onscroll", function(e) {
+            alert("SFD")
         });
 
         editor.show();

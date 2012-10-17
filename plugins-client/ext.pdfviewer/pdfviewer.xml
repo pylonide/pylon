@@ -3,6 +3,7 @@
       flex              = "1"
       anchors           = "0 0 0 0"
       visible           = "false"
+      focussable  = "true" 
     >
     	<canvas id="pdfEditor" style="border:1px solid black;"/>
 	</a:bar>
