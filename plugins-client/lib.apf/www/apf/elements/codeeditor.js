@@ -293,7 +293,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["gutter"] = function(value, prop, initial) {
         this.$editor.renderer.setShowGutter(value);
-        this.$corner.style.display = value ? "block" : "none";
     };
 
     this.$propHandlers["fontsize"] = function(value, prop, initial) {
@@ -454,7 +453,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         //Build Main Skin
         this.$ext    = this.$getExternal();
         this.$input  = this.$getLayoutNode("main", "content", this.$ext);
-        this.$corner = this.$getLayoutNode("main", "corner", this.$ext);
 
         this.addEventListener("resize", function(e) {
             this.$editor.resize();
@@ -462,11 +460,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         this.$editor = new Editor(new VirtualRenderer(this.$input), null);
         new MultiSelect(this.$editor);
-
-        this.$editor.renderer.$gutterLayer.addEventListener("changeGutterWidth",
-            function(width){
-                _self.$corner.style.left = (width - 5) + "px"
-            });
 
         if (apf.isTrue(this.getAttribute("globalcommands"))){
             if(this.$editor.keyBinding.setDefaultHandler)

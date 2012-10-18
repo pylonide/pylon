@@ -447,7 +447,9 @@ module.exports = ext.register("ext/console/console", {
         } else if ((lang = /^([\w-]+)-web-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             require("ext/preview/preview").preview(message.url);
         } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
-            if (message.data && message.data.indexOf("Tip: you can") === 0) {
+            if (message.extra && message.extra.tip) {
+                message.data = "\u001b[1;32;40m" + message.data;
+
                 (function () {
                     var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
                     if (!prjmatch) return;

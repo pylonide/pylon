@@ -62,7 +62,7 @@
                 </a:page>
             </a:tab>
 
-            <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="4" pack="end" visible="false" height="31">
+            <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="0" pack="end" visible="false" height="31">
                 <a:text id="txtConsolePrompt"
                     class="txt_console_prompt"
                     visible="false"

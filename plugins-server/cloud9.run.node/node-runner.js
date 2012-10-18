@@ -7,7 +7,7 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 /**
  * Run node scripts with restricted user rights
  */
-var exports = module.exports = function(url, listenHint, vfs, pm, sandbox, usePort, nodePath, callback) {
+var exports = module.exports = function(url, listenHint, vfs, pm, sandbox, usePort, nodePath, nodeVersions, callback) {
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
 
@@ -15,13 +15,13 @@ var exports = module.exports = function(url, listenHint, vfs, pm, sandbox, usePo
     });
 
     function init(projectDir, url) {
-        pm.addRunner("node", exports.factory(vfs, sandbox, projectDir, url, listenHint, nodePath, usePort));
+        pm.addRunner("node", exports.factory(vfs, sandbox, projectDir, url, listenHint, nodePath, nodeVersions, usePort));
 
         callback();
     }
 };
 
-exports.factory = function(vfs, sandbox, root, url, listenHint, nodePath, usePort) {
+exports.factory = function(vfs, sandbox, root, url, listenHint, nodePath, nodeVersions, usePort) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -30,7 +30,9 @@ exports.factory = function(vfs, sandbox, root, url, listenHint, nodePath, usePor
         options.args = args.args;
         options.cwd = args.cwd;
         options.env = args.env;
-        options.nodePath = args.nodePath || nodePath || process.execPath;
+        options.nodePath = args.nodePath ||
+            (nodeVersions && args.nodeVersion && nodeVersions[args.nodeVersion]) ||
+            nodePath || process.execPath;
         options.nodeVersion = args.nodeVersion;
         options.encoding = args.encoding;
         options.eventEmitter = eventEmitter;
@@ -105,29 +107,29 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             self.nodeArgs.push("--ports=" + self.port);
         }
 
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
             if (msg.type === "node-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
 
             if (msg.type === "node-start") {
                 var info = [
-                    "Tip: you can access long running processes, like a server, at '" + url + "'.",
+                    "Your code is running at '" + url + "'.",
                     options.listenHint
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "node-debug-data",
+                    type: "node-data",
                     stream: "stdout",
                     data: info.join("\n"),
-                    extra: null,
+                    extra: {tip: true},
                     pid: msg.pid
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = options.nodePath || process.execPath;

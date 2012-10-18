@@ -22,9 +22,11 @@ module.exports = ext.register("ext/preview/preview", {
     markup  : markup,
     deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
-
     counter : 0,
     nodes : [],
+    disableLut: {
+        "terminal": true
+    },
     popups: [],
     page: null,
 
@@ -33,7 +35,7 @@ module.exports = ext.register("ext/preview/preview", {
         var page = this.page = doc.$page;
         doc.editor = this;
         var path = node.getAttribute("path");
-        node.setAttribute("name", node.getAttribute("name").split(".#!preview")[0]);
+        node.setAttribute("name", "Preview: " + node.getAttribute("name").split(".#!preview")[0]);
         var url = path.substring(0, path.length - 10);
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url) {
@@ -151,8 +153,14 @@ module.exports = ext.register("ext/preview/preview", {
     },
 
     enable : function() {
+        var page = tabEditors.getPage();
+        var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
+        if(this.disableLut[contentType])
+            return this.disable();
+        
         if (this.enabled)
             return;
+        
         this.enabled = true;
 
         this.nodes.each(function(item){

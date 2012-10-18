@@ -66,35 +66,41 @@ var createItem = module.exports.test.createItem = function(line, ide) {
         .replace(RE_COLOR, function(m, style) {
             if (!style)
                 return "";
-            style = parseInt(style.replace(";", ""), 10);
+            var splits = style.split(";");
+            var html = "";
             // check for end of style delimiters
             if (openSpanTagCount > 0 && (style === 39 || (style < 30 && style > 20))) {
                 --openSpanTagCount;
                 return "</span>";
             }
             else {
-                if (style === 1) {
+                if (splits[0] === "1") {
+                    splits.splice(0, 1);
                     ++openSpanTagCount;
-                    return "<span class=\"term_boldColor\" style=\"font-weight:bold\">";
+                    html += "<span class=\"term_boldColor\" style=\"font-weight:bold\">";
                 }
-                else if (style === 3) {
-                    ++openSpanTagCount;
-                    return "<span style=\"font-style:italic\">";
-                }
-                else if (style === 4) {
-                    ++openSpanTagCount;
-                    return "<span style=\"text-decoration:underline\">";
-                }
-                else if (style >= 30 && !(style > 40 && style < 50)) {
+                style = parseInt(splits[0], 10);
+                if (! style)
+                    return html;
+                if (style >= 30 && style <= 37) {
                     ++openSpanTagCount;
                     var ansiColor = (style % 30);
                     if (ansiColor >= 10)
                         ansiColor -= 2;
-                    return "<span class=\"term_ansi" + ansiColor + "Color\">";
+                    html += "<span class=\"term_ansi" + ansiColor + "Color\">";
                 }
-                else {
-                    return "";
+                style = parseInt(splits[1], 10);
+                if (! style)
+                    return html;
+                if (style >= 40 && style <= 47) {
+                    ++openSpanTagCount;
+                    var ansiBg = (style % 30);
+                    if (ansiBg >= 10)
+                        ansiBg -= 2;
+                    // TODO: actual background coloring -> tweak theme generator
+                    html += "<span style='background-color: rgb(0, 0, 0);'>";
                 }
+                return html;
             }
         })
         .replace(/(\u0007|\u001b)\[(K|2J)/g, "");

@@ -41,6 +41,8 @@ dom.importCssString("\
     position: absolute !important;\
     text-align: left !important;\
     top: 0;\
+    z-index: 5;\
+    pointer-events: auto;\
 }\
 .ace_blame-cell{\
     border-top: solid 1px;\
@@ -161,8 +163,9 @@ var BlameGutter = function(editor, blameData) {
                     c = foldWidgets[i] = this.session.getFoldWidget(i);
                 if (c)
                     html.push(
-                        "<span class='ace_fold-widget ", c,
-                        c == "start" && i == foldStart && i < fold.end.row ? " closed" : " open",
+                        "<span class='ace_fold-widget ace_", c,
+                        c == "start" && i == foldStart && i < fold.end.row ? " ace_closed" : " ace_open",
+                        "' style='height:", lineHeight, "px",
                         "'></span>"
                     );
             }
@@ -253,8 +256,11 @@ var BlameGutter = function(editor, blameData) {
 
     this.onMousedown = function(e) {
         var target = e.domEvent.target;
-        if (target == this.closeButton)
-            return this.removeData();
+
+        if (target == this.closeButton) {
+            this.removeData();
+            return e.stop();
+        }
 
         if (target == this.resizer) {
             var rect = this.editor.blameGutter.element.getBoundingClientRect();
@@ -266,7 +272,7 @@ var BlameGutter = function(editor, blameData) {
                 this.editor.renderer.$gutterLayer._emit("changeGutterWidth", gutterWidth);
             };
             mouseHandler.captureMouse(e, "resizeBlameGutter");
-            return;
+            return e.stop();
         }
 
         if (dom.hasCssClass(target, "ace_blame-cell")) {
@@ -275,13 +281,14 @@ var BlameGutter = function(editor, blameData) {
 
             var blameCell = gutter.blameData[index];
             if (!blameCell)
-                return;
+                return e.stop();
             gutter.selectedText = blameCell.text;
             var ch = target.parentNode.children;
             for (var i = ch.length; i--; ) {
                 var isSelected = ch[i].innerHTML.indexOf(gutter.selectedText) == 0;
                 ch[i].className = "ace_blame-cell" + (isSelected ? " selected" : "");
             }
+            return e.stop();
         }
     };
 

@@ -119,6 +119,8 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
         if (message.command === "node" && message.argv.length > 1)
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
+        else if (message.command == "rvm")
+            return cb("rvm isn't supported by the console - please use the terminal instead");
 
         this.searchAndRunShell(message, cb);
     };
@@ -148,8 +150,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
                 "irb() { command irb --readline \"$@\"; };" +
                 "node() {" +
                 "  if [ $# -eq 0 ]; then" +
-                "    if command node -v | grep v0.6 > /dev/null; then echo Interactive mode not supported with Node 0.6;" +
-                "    else command node -i; fi" +
+                "    command node -i;" +
                 "  else command node \"$@\"; fi;" +
                 "};";
 

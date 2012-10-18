@@ -451,6 +451,7 @@ module.exports = ext.register("ext/save/save", {
             });
 
             apf.xmldb.removeAttribute(node, "new");
+            apf.xmldb.removeAttribute(node, "changed");
             apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
 
             if (_self.saveBuffer[path]) {
