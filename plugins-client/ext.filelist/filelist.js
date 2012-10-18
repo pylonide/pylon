@@ -58,6 +58,8 @@ module.exports = ext.register("ext/filelist/filelist", {
     },
 
     getFileList : function(retrieveNewFromServer, callback){
+        var _self = this;
+        
         if (!retrieveNewFromServer && this.cached)
             return callback(this.cached, apf.SUCCESS);
 
@@ -69,15 +71,15 @@ module.exports = ext.register("ext/filelist/filelist", {
             this.$onMessage = this.onMessage.bind(this)
             ide.addEventListener("socketMessage", this.$onMessage);
         }
-
-        this.cached = "";
+        
+        _self.cached = "";
         ide.send({
             command: "search",
             type: "filelist",
             path: "",
             showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
         });
-        this.retrieving = true;
+        _self.retrieving = true;
     },
 
     enable : function() {

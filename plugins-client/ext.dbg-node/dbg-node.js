@@ -4,17 +4,23 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
-/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack ide */
-
 define(function(require, exports, module) {
 
 var V8Debugger = require("v8debug/V8Debugger");
-var WSV8DebuggerService = require("v8debug/WSV8DebuggerService");
 var ide = require("core/ide");
+var util = require("core/util");
+var oop = require("ace/lib/oop");
+var DebuggerService = require("ext/dbg-node/service");
+var DebugHandler = require("ext/debugger/debug_handler");
+var extDebugger = require("ext/debugger/debugger");
 
-var v8DebugClient = exports.v8DebugClient = function() {
+/*global mdlDbgSources mdlDbgBreakpoints mdlDbgStack */
+
+var v8DebugClient = module.exports = function() {
+    this.stripPrefix = ide.workspaceDir || "";
 };
+
+oop.inherits(v8DebugClient, DebugHandler);
 
 (function() {
     this.$startDebugging = function() {
@@ -31,7 +37,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         v8dbg.addEventListener("exception", onException);
         v8dbg.addEventListener("afterCompile", onAfterCompile);
 
-        this.setFrame(null);
+        this.onChangeFrame(null);
 
         // on detach remove all event listeners
         this.removeListeners = function () {
@@ -42,56 +48,38 @@ var v8DebugClient = exports.v8DebugClient = function() {
         };
     };
 
-    this.attach = function() {
+    this.$syncAfterAttach = function () {
         var _self = this;
-        var onAttach = function(err, dbgImpl) {
-            ide.dispatchEvent("dbg.attached", {dbgImpl: dbgImpl});
-            _self.onChangeRunning();
-            _self.syncAfterAttach();
-        };
-
-        this.$v8ds = new WSV8DebuggerService(ide.socket);
-
-        this.$v8ds.attach(0, function() {
-            _self.$startDebugging();
-            onAttach(null, _self);
-        });
-    };
-
-    this.syncAfterAttach = function () {
-        var _self = this;
-        _self.loadScripts(function() {
+        _self.loadSources(function() {
             _self.backtrace(function() {
                 _self.updateBreakpoints(function() {
                     _self.$v8dbg.listbreakpoints(function(e){
                         _self.$handleDebugBreak(e.breakpoints);
                     });
                 });
-                ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
+                if (_self.activeFrame)
+                    ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
                 _self.onChangeRunning();
             });
         });
     };
 
-    this.detach = function(callback) {
-        this.setFrame(null);
-        if (!this.$v8dbg)
-            return callback();
-
-        this.$v8dbg = null;
-        this.onChangeRunning();
-
-        var _self = this;
-        this.removeListeners();
-        this.$v8ds.detach(0, function(err) {
-            callback && callback(err);
-            _self.$v8ds = null;
-        });
+    this.attach = function(pid, runner) {
+        if (this.$v8ds)
+            this.$v8ds.disconnect();
+        this.pid = pid;
+        this.$v8ds = new DebuggerService(pid, runner);
+        this.$v8ds.connect();
+        this.$startDebugging();
+        this.$syncAfterAttach();
     };
 
-    this.setFrame = function(frame) {
-        this.activeFrame = frame;
-        ide.dispatchEvent("dbg.changeFrame", {data: frame});
+    this.detach = function() {
+        this.$v8ds.disconnect();
+        this.$v8ds = null;
+        this.$v8dbg = null;
+        this.onChangeRunning();
+        this.removeListeners();
     };
 
     this.onChangeRunning = function(e) {
@@ -104,7 +92,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         ide.dispatchEvent("dbg.changeState", {state: this.state});
 
         if (this.state != "stopped")
-            this.setFrame(null);
+            this.onChangeFrame(null);
     };
 
     this.onBreak = function(e) {
@@ -130,6 +118,11 @@ var v8DebugClient = exports.v8DebugClient = function() {
         mdlDbgSources.appendXml(script);
     };
 
+    this.onChangeFrame = function(frame) {
+        this.activeFrame = frame;
+        ide.dispatchEvent("dbg.changeFrame", {data: frame});
+    };
+
     this.$handleDebugBreak = function(remoteBreakpoints) {
         var frame = this.activeFrame;
         if (!frame || !this.$v8dbg)
@@ -138,15 +131,19 @@ var v8DebugClient = exports.v8DebugClient = function() {
         if (bp.number != 1)
             return;
 
-        var uibp = mdlDbgBreakpoints.queryNode("//breakpoint[@line='" +
-            frame.getAttribute("line") +"' and @path='" +
-            frame.getAttribute("scriptPath") + "']");
+        var uibp = mdlDbgBreakpoints.queryNode(
+            "//breakpoint[@line='" + frame.getAttribute("line") +"' and @path='" +
+            frame.getAttribute("scriptPath") + "']"
+        ) || mdlDbgBreakpoints.queryNode(
+            "//breakpoint[@line='" + bp.line +"' and @path='" +
+            this.getPathFromScriptId(bp.script_id) + "']"
+        );
 
         if (uibp && uibp.getAttribute("enabled") == "true")
             return;
 
         this.$v8dbg.clearbreakpoint(1, function(){});
-        this.continueScript();
+        this.resume();
     };
 
     // apf xml helpers
@@ -155,30 +152,21 @@ var v8DebugClient = exports.v8DebugClient = function() {
         "function": 4
     };
 
-    this.stripPrefix = "";
-
-    this.setStrip = function(stripPrefix) {
-        this.stripPrefix = stripPrefix;
-    };
-
     this.$strip = function(str) {
-        if (!this.stripPrefix)
-            return str;
-
-        return str.indexOf(this.stripPrefix) === 0
-            ? str.slice(this.stripPrefix.length)
+        return str.lastIndexOf(this.stripPrefix, 0) === 0
+            ? str.slice(this.stripPrefix.length + 1)
             : str;
     };
 
     this.$getScriptXml = function(script) {
-        return [
-            "<file scriptid='", script.id,
-            "' scriptname='", apf.escapeXML(script.name || "anonymous"),
-            "' path='", apf.escapeXML(this.getLocalScriptPath(script)),
-            "' text='", this.$strip(apf.escapeXML(script.text || "anonymous")),
-            "' lineoffset='", script.lineOffset,
-            "' debug='true' />"
-        ].join("");
+        return util.toXmlTag("file", {
+            scriptid: script.id,
+            scriptname: script.name || "anonymous",
+            path: this.getLocalScriptPath(script),
+            text: this.$strip(script.text || "anonymous"),
+            lineoffset: script.lineOffset,
+            debug: "true"
+        });
     };
 
     function getId(frame){
@@ -203,7 +191,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
 
     this.getScriptIdFromPath = function(path) {
-        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (!script)
             return;
         return script.getAttribute("scriptid");
@@ -212,7 +200,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
     this.getScriptnameFromPath = function(path) {
         if (!path)
             return;
-        var script = mdlDbgSources.queryNode("//file[@path='" + path + "']");
+        var script = mdlDbgSources.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (script)
             return script.getAttribute("scriptname");
         // if script isn't added yet reconstruct it's name from ide.workspaceDir
@@ -278,15 +266,13 @@ var v8DebugClient = exports.v8DebugClient = function() {
     };
 
     this.$serializeVariable = function(item, name) {
-        var str = [
-            "<item name='", apf.escapeXML(name || item.name),
-            "' value='", apf.escapeXML(this.$valueString(item.value)),
-            "' type='", item.value.type,
-            "' ref='", typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
-            hasChildren[item.value.type] ? "' children='true" : "",
-            "' />"
-        ];
-        return str.join("");
+        return util.toXmlTag("item", {
+            name: name || item.name,
+            value: this.$valueString(item.value),
+            type: item.value.type,
+            ref: typeof item.value.ref == "number" ? item.value.ref : item.value.handle,
+            children: hasChildren[item.value.type] ? "true" : "false"
+        });
     };
 
     /**
@@ -325,18 +311,17 @@ var v8DebugClient = exports.v8DebugClient = function() {
 
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
-        xml.push(
-            "<frame index='", frame.index,
-            "' name='", apf.escapeXML(apf.escapeXML(this.$frameToString(frame))),
-            "' column='", frame.column,
-            "' id='", getId(frame),
-            "' ref='", frame.ref,
-            "' line='", frame.line,
-            "' script='", this.$strip(script.name),
-            "' scriptPath='", this.getLocalScriptPath(script),
-            "' scriptid='", frame.func.scriptId, //script.id,
-            "'>"
-        );
+        xml.push(util.toXmlTag("frame", {
+            index: frame.index,
+            name: apf.escapeXML(this.$frameToString(frame)), //dual escape???
+            column: frame.column,
+            id: getId(frame),
+            ref: frame.ref,
+            line: frame.line,
+            script: this.$strip(script.name),
+            scriptPath: this.getLocalScriptPath(script),
+            scriptid: frame.func.scriptId //script.id,
+        }, true));
         xml.push("<vars>");
 
         var receiver = {
@@ -361,23 +346,17 @@ var v8DebugClient = exports.v8DebugClient = function() {
         var scopes = frame.scopes;
         for (j = 0, l = scopes.length; j < l; j++) {
             var scope = scopes[j];
-            xml.push("<scope index='",scope.index, "' type='", scope.type, "' />");
+            xml.push(util.toXmlTag("scope", {
+                index: scope.index,
+                type: scope.type
+            }));
         }
         xml.push("</scopes>");
 
         xml.push("</frame>");
     };
 
-    // used from other plugins
-    /**
-     * state of the debugged process
-     *    null:  process doesn't exist
-     *   'stopped':  paused on breakpoint
-     *   'running':
-     */
-    this.state = null;
-
-    this.loadScripts = function(callback) {
+    this.loadSources = function(callback) {
         var model = mdlDbgSources;
         var _self = this;
         this.$v8dbg.scripts(4, null, false, function(scripts) {
@@ -406,13 +385,15 @@ var v8DebugClient = exports.v8DebugClient = function() {
                 return {};
             }
 
-            var i, l;
+            var i;
+            var l;
             var frames    = body.frames;
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isSameFrameset(xmlFrames, frames)) {
                 for (i = 0, l = frames.length; i < l; i++)
                     _self.$updateFrame(xmlFrames[i], frames[i]);
-            } else {
+            }
+            else {
                 var xml = [];
                 if (frames) {
                     for (i = 0, l = frames.length; i < l; i++)
@@ -423,14 +404,13 @@ var v8DebugClient = exports.v8DebugClient = function() {
 
             var topFrame = model.data.firstChild;
             topFrame && topFrame.setAttribute("istop", true);
-            _self.setFrame(topFrame);
+            _self.onChangeFrame(topFrame);
             callback();
         });
     };
 
-    this.loadScript = function(script, callback) {
+    this.loadSource = function(script, callback) {
         var id = script.getAttribute("scriptid");
-        var _self = this;
         this.$v8dbg.scripts(4, [id], true, function(scripts) {
             if (!scripts.length)
                 return;
@@ -439,7 +419,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         });
     };
 
-    this.loadObjects = function(item, callback) {
+    this.loadObject = function(item, callback) {
         var ref   = item.getAttribute("ref");
         var _self = this;
         this.$v8dbg.lookup([ref], false, function(body) {
@@ -496,7 +476,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
             return callback("<vars />");
     };
 
-    this.continueScript = function(stepaction, stepcount, callback) {
+    this.resume = function(stepaction, stepcount, callback) {
         this.$v8dbg.continueScript(stepaction, stepcount, callback);
     };
 
@@ -524,20 +504,26 @@ var v8DebugClient = exports.v8DebugClient = function() {
             var str = [];
             var name = expression.trim();
             if (error) {
-                str.push("<item type='.error' name=\"", apf.escapeXML(name),
-                    "\" value=\"", apf.escapeXML(error.message), "\" />");
+                str.push(util.toXmlTag("item", {
+                    type: ".error",
+                    name: name,
+                    value: error.message
+                }));
             }
             else {
-                str.push(
-                    "<item name=\"", apf.escapeXML(name),
-                    "\" value='", apf.escapeXML(body.text), //body.value ||
-                    "' type='", body.type,
-                    "' ref='", body.handle,
-                    body.constructorFunction ? "' constructor='" + body.constructorFunction.ref : "",
-                    body.prototypeObject ? "' prototype='" + body.prototypeObject.ref : "",
-                    body.properties && body.properties.length ? "' children='true" : "",
-                    "' />"
-              );
+                var props = {
+                    name: name,
+                    value: body.text,
+                    type: body.type,
+                    ref: body.handle
+                };
+                if (body.constructorFunction)
+                    props.contructor = body.constructorFunction.ref;
+                if (body.prototypeObject)
+                    props.prototype = body.prototypeObject.ref;
+                if (body.properties && body.properties.length)
+                    props.children = "true";
+                str.push(util.toXmlTag("item", props));
             }
             callback(apf.getXml(str.join("")), body, refs, error);
         });
@@ -547,16 +533,7 @@ var v8DebugClient = exports.v8DebugClient = function() {
         var _self = this;
 
         // read all the breakpoints, then call the debugger to actually set them
-        var uiBreakpoints = mdlDbgBreakpoints.queryNodes("breakpoint").map(function(bp) {
-            return {
-                path: bp.getAttribute("path") || "",
-                line: parseInt(bp.getAttribute("line"), 10),
-                column: parseInt(bp.getAttribute("column"), 10) || 0,
-                enabled: bp.getAttribute("enabled") == "true",
-                condition: bp.getAttribute("condition") || "",
-                ignoreCount: bp.getAttribute("ignoreCount") || 0
-            };
-        });
+        var uiBreakpoints = this.$getUIBreakpoints();
 
         // keep track of all breakpoints and check if they're really added
         var counter = 0;
@@ -579,7 +556,8 @@ var v8DebugClient = exports.v8DebugClient = function() {
             delete createdBreakpoints[bp.$location];
             if (oldBp && isEqual(oldBp, bp)) {
                 _self.$v8breakpoints[bp.$location] = oldBp;
-            } else {
+            }
+            else {
                 _self.$v8breakpoints[bp.$location] = bp;
                 addBp(bp);
             }
@@ -619,28 +597,10 @@ var v8DebugClient = exports.v8DebugClient = function() {
 
 }).call(v8DebugClient.prototype);
 
+v8DebugClient.handlesRunner = function(runner) {
+    return runner === "node";
+};
 
-ide.addEventListener("dbg.ready", function(e) {
-    if (e.type == "node-debug-ready") {
-        if (!exports.dbgImpl) {
-            exports.dbgImpl = new v8DebugClient();
-            exports.dbgImpl.attach();
-        }
-    }
-});
-
-ide.addEventListener("dbg.exit", function(e) {
-    if (exports.dbgImpl) {
-        exports.dbgImpl.detach();
-        exports.dbgImpl = null;
-    }
-});
-
-ide.addEventListener("dbg.state", function(e) {
-    if (e["node-debug"] && !exports.dbgImpl) {
-        exports.dbgImpl = new v8DebugClient();
-        exports.dbgImpl.attach();
-    }
-});
+extDebugger.registerDebugHandler(v8DebugClient);
 
 });

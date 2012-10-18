@@ -22,7 +22,7 @@ module.exports = ext.register("ext/codetools/codetools", {
 
     register: function(plugin) {
         var _self = this;
-        if (ceEditor)
+        if (typeof ceEditor !== "undefined")
             return attachCE();
 
         ide.addEventListener("init.ext/code/code", attachCE);

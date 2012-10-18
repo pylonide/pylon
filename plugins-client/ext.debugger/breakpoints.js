@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var dock = require("ext/dockpanel/dockpanel");
 var sources = require("ext/debugger/sources");
+var util = require("core/util");
 var BREAKPOINT_DELAY = 100;
 
 /*global dbgBreakpoints:true mdlDbgBreakpoints:true dbg:true lstBreakpoints:true lstScripts:true tabEditors:true*/
@@ -55,7 +56,7 @@ module.exports = {
             convertBreakpoints(mdlDbgBreakpoints);
             _self.$syncOpenFiles();
         });
-        
+
         // converts Breakpoints to the new format, needed only for the transition period
         function convertBreakpoints(model) {
             var brokenNodes = model.queryNodes("//breakpoint[not(@path)]");
@@ -176,7 +177,8 @@ module.exports = {
             len = range.end.row - range.start.row;
             if (delta.action == "insertText") {
                 firstRow = range.start.column ? range.start.row + 1 : range.start.row;
-            } else {
+            }
+            else {
                 firstRow = range.start.row;
             }
 
@@ -184,7 +186,8 @@ module.exports = {
                 var args = Array(len);
                 args.unshift(firstRow, 0);
                 this.$breakpoints.splice.apply(this.$breakpoints, args);
-            } else {
+            }
+            else {
                 var rem = this.$breakpoints.splice(firstRow + 1, len);
 
                 if (!this.$breakpoints[firstRow]) {
@@ -202,9 +205,9 @@ module.exports = {
     updateSession: function(session) {
         var rows = [];
         var path = session.c9doc.getNode().getAttribute("path");
-        var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path='" + path + "']");
+        var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path=" + util.escapeXpathString(path) + "]");
 
-        for (var i=0; i< breakpoints.length; i++) {
+        for (var i = 0; i < breakpoints.length; i++) {
             var bp = breakpoints[i];
             var line = parseInt(bp.getAttribute("line"), 10);
             var offset = parseInt(bp.getAttribute("lineoffset"), 10);
@@ -218,8 +221,10 @@ module.exports = {
     gotoBreakpoint: function(bp) {
         var row = parseInt(bp.getAttribute("line"), 10);
         var column = parseInt(bp.getAttribute("column"), 10);
-        if (isNaN(row)) row = null;
-        if (isNaN(column)) column = null;
+        if (isNaN(row))
+            row = null;
+        if (isNaN(column))
+            column = null;
         var path = bp.getAttribute("path");
 
         sources.show({
@@ -231,8 +236,8 @@ module.exports = {
 
     removeBreakpoint: function(path, row) {
         this.$updating = true;
-        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path='" + path +
-            "' and @line='" + row + "']");
+        var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path=" + util.escapeXpathString(path) +
+            " and @line='" + row + "']");
         bp && apf.xmldb.removeNode(bp);
         this.$updating = false;
     },
@@ -244,12 +249,12 @@ module.exports = {
         var tofind = ide.davPrefix;
         if (path.indexOf(tofind) > -1)
             displayText = path.substring(path.indexOf(tofind) + tofind.length);
-        
+
         this.removeBreakpoint(path, row);
         var className = session.$breakpoints[row];
         if (!className)
             return;
-        
+
         var content = session.getLine(row);
         var bp = apf.n("<breakpoint/>")
             .attr("path", path)
@@ -272,7 +277,7 @@ module.exports = {
         if (path.indexOf(tofind) == 0)
             displayText = path.substring(tofind.length + 1);
 
-        var bpList = mdlDbgBreakpoints.queryNodes("breakpoint[@path='" + path + "']");
+        var bpList = mdlDbgBreakpoints.queryNodes("breakpoint[@path=" + util.escapeXpathString(path) + "]");
         for (var i = bpList.length; i--; ) {
             apf.xmldb.removeNode(bpList[i]);
         }

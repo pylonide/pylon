@@ -13,7 +13,8 @@ var NOT_EVENT_HANDLERS = {
     addMarker: true,
     traverseUp : true,
     traverse : true,
-    topdown : true
+    topdown : true,
+    traverseTopDown : true
 };
 
 outlineHandler.handlesLanguage = function(language) {

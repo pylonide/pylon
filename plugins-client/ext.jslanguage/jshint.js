@@ -34,7 +34,12 @@ handler.analyzeSync = function(doc, ast) {
             browser: true,
             node: true,
             esnext: true,
-            expr: true
+            expr: true,
+            laxbreak: true,
+            laxcomma: true,
+            loopfunc: true,
+            lastsemic: true,
+            multistr: true
         });
         
         lint.errors.forEach(function(warning) {
@@ -47,6 +52,10 @@ handler.analyzeSync = function(doc, ast) {
             if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
                 type = "error";
             if (reason.indexOf("Missing semicolon") !== -1)
+                type = "info";
+            if (reason.indexOf("better written in dot") !== -1)
+                type = "info";
+            if (reason.indexOf("used out of scope") !== -1)
                 type = "info";
             if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
                 type = "warning";

@@ -19,6 +19,5 @@ support/connect/support/expresso
 support/connect/support/less
 support/connect/support/sass
 support/connect/support/coffee-script
-support/socket.io/support/expresso
 support/gnu-builds
 *.psd

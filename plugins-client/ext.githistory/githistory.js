@@ -695,15 +695,7 @@ module.exports = ext.register("ext/githistory/githistory", {
 
         if (ext.execCommand(this.command, data) !== false) {
             if (ide.dispatchEvent("consolecommand." + this.command, { data: data}) !== false) {
-                if (!ide.onLine) {
-                    util.alert("Currently Offline",
-                        "Currently Offline",
-                        "This operation could not be completed because you are offline.");
-                    return false;
-                } else {
-                    ide.socket.send(JSON.stringify(data));
-                    return true;
-                }
+                ide.send(data);
             }
         }
 

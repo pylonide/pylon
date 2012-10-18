@@ -4,6 +4,8 @@ var util = require("util");
 var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
+var DIRECT_OPEN_FILES = /\.(php|.?html?)$/;
+
 /**
  * Run apache scripts with restricted user rights
  */
@@ -63,28 +65,29 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     function startProcess (url) {
         self.apacheArgs.push(self.root);
 
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
             if (msg.type === "apache-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
 
             if (msg.type === "apache-start") {
+                var suffix = DIRECT_OPEN_FILES.test(self.file) ? "/" + self.file : "";
                 var info = [
-                    "Tip: you can access long running processes, like a server, at '" + url + "'."
+                    "Your page is running at '" + url + suffix + "'."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {
                     type: "apache-data",
                     stream: "stdout",
                     data: info.join("\n"),
-                    extra: null,
+                    extra: {tip: true},
                     pid: msg.pid
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "apache";

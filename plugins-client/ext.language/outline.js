@@ -260,7 +260,7 @@ module.exports = {
     },
     
     scrollToTop: function(selectFirstItem) {
-        if (selectFirstItem && mdlOutline.data.childNodes[0]) {
+        if (selectFirstItem && mdlOutline.data.childNodes[0] && mdlOutline.data.childNodes[0].nodeType === 1) {
             treeOutline.select(mdlOutline.data.childNodes[0]);
         }
         // HACK: Need to set to non-falsy values first

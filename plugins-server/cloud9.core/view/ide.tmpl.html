@@ -16,7 +16,6 @@
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
         [%loadedDetectionScript%]
-        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
         <script type="text/javascript">
@@ -29,6 +28,7 @@
                 debug: <%debug%>,
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,
+                runners: <%runners%>,
                 name: <%name%>,
                 uid: <%uid%>,
                 pid: <%pid%>,
@@ -37,8 +37,7 @@
                 version: <%version%>,
                 workerUrl: "[%workerUrl%]",
                 staticUrl: "[%staticUrl%]",
-                socketIoUrl: <%socketIoUrl%>,
-                socketIoTransports: <%socketIoTransports%>,
+                smithIo: <%smithIo%>,
                 hosted: [%hosted%],
                 local: <%local%>,
                 env: <%env%>,
@@ -68,7 +67,33 @@
             
             var config = <%requirejsConfig%>; 
 
+            function createSplash() {
+                var loadingMsgs = ["Cloning weapon...",
+                    "Red 5, standing by...",
+                    "Making sure all systems are operational...",
+                    "Turning you to the dark side--we have cookies...",
+                    "Assembling the alliance...",
+                    "Copy, Gold Leader. We are already on our way out...",
+                    "Dispatching war rocket Ajax to bring back his body...",
+                    "Making you strong with the force, we are...",
+                    "The Shield is down! Commencing attack on the Death star's main reactor...",
+                    "Your precious awaits...",
+                    "I am Gandalf the White. And I come back to you now, at the turn of the tide...",
+                    "Reticulating splines..."];
+                var loadingIde = document.createElement('div');
+                loadingIde.setAttribute("id", "loadingide");
+                var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
+
+                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
+                loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>' + msg + '</div>';
+                document.body.appendChild(loadingIde);
+            }
+
             require(config, [apfLoc], function(){
+                if (!window.localStorage || !localStorage.lastLoadTime ||
+                    parseInt(localStorage.lastLoadTime, 10) > 4000)
+                    setTimeout(createSplash);
+
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
                     "core/settings", "ext/main/main", "ext/editors/editors",
@@ -82,7 +107,7 @@
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
                     }
-                    
+
                     // if you pass `force=true` into the querystring, then
                     // we bypass the browser check
                     if (window.cloud9config.hosted && !window.location.search.match(/\bforce\=true\b/)) {
@@ -127,6 +152,12 @@
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
                 console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
+                if (window.localStorage)
+                    localStorage.lastLoadTime = cloud9config.totalTime;
+
+                var loadingDiv = document.getElementById("loadingide");
+                if (loadingDiv)
+                    document.body.removeChild(loadingDiv);
 
                 ide.addEventListener("$event.extload", function(cb){
                     cb();
@@ -140,7 +171,9 @@
                     "[%staticUrl%]/ext/main/style/images/cover-logo.png",
                     "[%staticUrl%]/ext/main/style/images/panelBg.png",
                     "[%staticUrl%]/ext/main/style/images/editor_tab.png",
-                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
+                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png",
+                    "[%staticUrl%]/ext/main/style/images/loading-your-editor.png",
+                    "[%staticUrl%]/ext/main/style/images/loaderide.gif"
                 ];
                 if (document.images) {
                     var img;
@@ -153,47 +186,6 @@
         //]]>
         </script>
     </head>
-    <body style="display:none">
-        <div id="noscript">
-            <div class="noscript">
-                <div id="hp_header">
-                    <div id="logo"></div>
-                </div>
-                <div class="oldbro_middle_panel">
-                    <div class="content">
-                        <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
-                        <span class="browser_option">
-                            <a href="http://www.mozilla.com/firefox" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ff_32x32.png" alt="" />
-                                <div>Mozilla Firefox</div>
-                            </a>
-                        </span>
-                        <span class="browser_option" style="width:50px;">
-                            <a href="http://www.apple.com/safari" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/safari_32x32.png" alt="" />
-                                <div>Safari</div>
-                            </a>
-                        </span>
-                        <span class="browser_option">
-                            <a href="http://www.google.com/chrome" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/chrome_32x32.png" alt="" />
-                                <div>Google Chrome</div>
-                            </a>
-                        </span>
-                        <span class="browser_option">
-                            <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
-                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ie_32x32.png" alt="" />
-                                <div>Internet Explorer</div>
-                            </a>
-                        </span>
-                    </div>
-                </div>
-                <div class="wn_main_section_rounded">
-                    <div class="wnmsr_left"></div>
-                    <div class="wnmsr_middle"></div>
-                    <div class="wnmsr_right"></div>
-                </div>
-            </div>
-        </div>
+    <body>
     </body>
 </html>

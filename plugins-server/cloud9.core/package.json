@@ -17,7 +17,8 @@
             "static",
             "client.cloud9",
             "workspace-permissions",
-            "sandbox"
+            "sandbox",
+            "process-manager"
         ]
     }
 }

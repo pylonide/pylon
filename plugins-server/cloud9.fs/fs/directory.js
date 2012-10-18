@@ -176,7 +176,13 @@ require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
             var nodes = [];
 
             stream.on("data", function(stat) {
-                var path = Path.join(self.path, stat.name);
+                if(stat.mime === 'inode/symlink') {
+                    stat = stat.linkStat;
+                }                    
+                var path = (stat.fullPath
+                    ? stat.fullPath
+                    : Path.join(self.path, stat.name)
+                );
                 nodes.push(stat.mime === "inode/directory"
                     ? new jsDAV_FS_Directory(self.vfs, path, stat)
                     : new jsDAV_FS_File(self.vfs, path, stat)

@@ -46,9 +46,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     hook : function(){
         var _self = this;
-        
+
         this.markupInsertionPoint = searchRow;
-        
+
         commands.addCommand({
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
@@ -329,10 +329,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     if (lines[i + j].search(re[j]) == -1)
                         return 0;
                 return 1;
-            }
+            };
         }
 
-        var count = function () {
+        var count = function() {
             var chunk = Math.min(len, startI + 500);
             for (var i = startI; i < chunk; i++) {
                 if (i == row)
@@ -342,12 +342,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (i == len) {
                 callback && callback(matchTotal, matchPos);
                 _self.$matchCountTimer = null;
-            } else {
+            }
+            else {
                 startI = chunk;
                 _self.$matchCountTimer = setTimeout(count, 100);
                 progress && progress(matchTotal, matchPos, startI/len);
             }
-        }
+        };
         count();
     },
 
@@ -415,16 +416,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             var toHeight = 38;//winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight + 4;
-            
+
             if (animate) {
                 anims.animateSplitBoxNode(winSearchReplace, {
-                    height: toHeight + "px", 
+                    height: toHeight + "px",
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)",
                     duration : 0.2
                 }, function() {
                     if (stateChange && !isReplace && wasVisible)
                         _self.setupDialog(isReplace);
-                    
+
                     winSearchReplace.$ext.style.height = "";
 
                     divSearchCount.$ext.style.visibility = "";
@@ -463,10 +464,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     winSearchReplace.visible = true;
                     winSearchReplace.hide();
                     winSearchReplace.parentNode.removeChild(winSearchReplace);
-                    
+
                     if (!noselect)
                         editor.ceEditor.focus();
-                    
+
                     setTimeout(function(){
                         callback
                             ? callback()
@@ -640,7 +641,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             this.$crtSearch = searchTxt;
         } else {
             this.updateCounter(!reverseBackwards != !options.backwards,
-				null, reverseBackwards ? -1 : 1);
+                null, reverseBackwards ? -1 : 1);
         }
 
         if (chkHighlightMatches.checked)

@@ -106,7 +106,7 @@ self.onmessage = function(e) {
                 var counterBefore = extraCounter;
                 str += lines.map(function(line) {
                     extraCounter = extraCounter + 1; // Keep a count for current line
-                    return "\n" + startChar[type] + line;
+                    return (extraCounter === 1 ? "" : "\n") + startChar[type] + line;
                 }).join("");
 
                 // If this range of lines is unchanged, we don't need metadata.

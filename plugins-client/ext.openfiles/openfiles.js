@@ -52,8 +52,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         ide.addEventListener("openfile", function(e){
             var node = e.doc.getNode();
             if (node) {
-                if (!model.queryNode('//node()[@path="'
-                  + node.getAttribute("path").replace(/"/g, "&quot;") + '"]')) {
+                if (!model.queryNode('//node()[@path=' + util.escapeXpathString(node.getAttribute("path")) + ']')) {
                     var xmlNode = model.appendXml(apf.getCleanCopy(node));
 
                     if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth)
@@ -63,20 +62,19 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("afteropenfile", function(e){
-            var node = model.queryNode('//node()[@path="'
-                + e.node.getAttribute("path").replace(/"/g, "&quot;") + '"]');
+            var node = model.queryNode('//node()[@path=' + util.escapeXpathString(e.node.getAttribute("path")) + ']');
             if (!node || !e.doc.$page)
                 return;
-            
+
             if (node.getAttribute("customtype") == util.getContentType("c9search"))
                 ide.dispatchEvent("c9searchopen", e);
-                
+
             var pgModel = e.doc.$page.$model;
             pgModel.addEventListener("update",
               pgModel.$lstOpenFilesListener = function(){
                   if (!pgModel.data)
                       return;
-                  
+
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
                       apf.xmldb.setAttribute(node, "changed", changed);
@@ -84,8 +82,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("filenotfound", function(e){
-            var node = model.queryNode('//node()[@path="'
-                + e.path.replace(/"/g, "&quot;") + '"]');
+            var node = model.queryNode('//node()[@path=' + util.escapeXpathString(e.path) + ']');
 
             if (node)
                 model.removeXml(node);
@@ -95,16 +92,16 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (e.returnValue === false)
                 return;
 
-            var node = model.queryNode('//node()[@path="'
-                + (e.page.id || "").replace(/"/g, "&quot;") + '"]');
+            var node = model.queryNode('//node()[@path=' +
+                util.escapeXpathString(e.page.id || "") + ']');
 
             if (!node || !node.parentNode || node.beingRemoved)
                 return;
-            
+
             if (node.getAttribute("customtype") == util.getContentType("c9search"))
                 ide.dispatchEvent("c9searchclose", e);
-                
-            e.page.$model.removeEventListener("update", 
+
+            e.page.$model.removeEventListener("update",
                 e.page.$model.$lstOpenFilesListener);
 
             if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth) {
@@ -128,13 +125,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 apf.xmldb.setAttribute(node, "changed", 0);
                 return;
             }
-            
-            var path = (e.newPath || e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
-            var fNode = model.queryNode('//node()[@path="' + path + '"]');
+            var path = util.escapeXpathString(e.newPath || e.path || node.getAttribute("path"));
+
+            var fNode = model.queryNode('//node()[@path=' + path + ']');
 
             if (!e.replace)
-                var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
+                var trNode = trFiles.queryNode('//node()[@path=' + path + ']');
             if (node && fNode) {
                 if (e.path) {
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
@@ -153,14 +150,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
 
     animateAdd : function(xmlNode){
-        if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
+        if (!apf.isTrue(settings.model.queryValue("general/@animateui")))
             return;
 
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
 
         htmlNode.style.overflow = "hidden";
         apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
-            //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
             {type: "left", to:0, from: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
         ], onfinish: function(){
 
@@ -170,15 +166,14 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     animateRemove : function(xmlNode){
         var _self = this;
 
-        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (apf.isTrue(settings.model.queryValue("general/@animateui"))) {
             var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
                 htmlNode.style.overflow = "hidden";
-                
+
             apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
-                //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
                 {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
             ], onfinish: function(){
-                htmlNode.style.display = 'none';
+                htmlNode.style.display = "none";
                 _self.model.removeXml(xmlNode);
             }});
         }
@@ -218,12 +213,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 editors.close(page);
             }
         });
-        
+
         ide.addEventListener("tab.afterswitch", function(e){
             var page = e.nextPage;
             if (page && page.$model.data) {
-                var node = _self.model.queryNode("file[@path='"
-                    + page.$model.data.getAttribute("path") + "']");
+                var node = _self.model.queryNode("file[@path="
+                    + util.escapeXpathString(page.$model.data.getAttribute("path"))
+                    + "]");
                 if (node && !lstOpenFiles.isSelected(node))
                     lstOpenFiles.select(node);
             }

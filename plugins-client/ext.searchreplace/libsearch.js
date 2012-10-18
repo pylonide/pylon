@@ -133,7 +133,7 @@ module.exports = {
             new RegExp(searchTxt);
         } catch(e) {
             tooltip.$ext.innerHTML
-                = e.message.replace(": /" + searchTxt + "/", "");
+                = apf.escapeXML(e.message.replace(": /" + searchTxt + "/", ""));
             apf.setOpacity(tooltip.$ext, 1);
 
             var pos = apf.getAbsolutePosition(win.$ext);
@@ -180,17 +180,23 @@ module.exports = {
 
     regexp : {
         alone : {"^":1, "$":1, ".":1},
-        before : {"+":1, "*":1, "?":1},
+        rangeStart : {"+":1, "*":1, "?":1, "{":1},
         replace : /^\\[sSwWbBnrd]/,
         searches : /^\((?:\?\:|\?\!|\?|\?\=|\?\<\=)/,
-        range : /^\{\s*\d+(\s*\,\s*\d+\s*)?\}/
+        range : /^([+*?]|\{(\d+,\d+|\d+,?|,?\d+)\})\??|^[$\^]/
     },
 
     //Calculate RegExp Colors
     parseRegExp : function(value){
         var re = this.regexp;
-        var out   = [];
         var l, t, c, sub = 0, collection = 0;
+        var out = [];
+        var push = function(text, type) {
+            if (typeof text == "number")
+                text = value.substr(0, text);
+            out.push(text, type);
+            value = value.substr(text.length);
+        };
 
         //This could be optimized if needed
         while (value.length) {
@@ -198,18 +204,13 @@ module.exports = {
                 // \\ detection
                 if (t = value.match(/^\\\\+/g)) {
                     var odd = ((l = t[0].length) % 2);
-                    out.push([value.substr(0, l - odd),
-                        sub > 0 ? "subescaped" : "escaped"]);
-                    value = value.substr(l - odd);
-
+                    push([l - odd, sub > 0 ? "subescaped" : "escaped"]);
                     continue;
                 }
 
                 // Replacement symbols
                 if (t = value.match(re.replace)) {
-                    out.push([t[0], "replace"]);
-                    value = value.substr(2);
-
+                    push(t[0], "replace");
                     continue;
                 }
 
@@ -217,23 +218,17 @@ module.exports = {
                 if (t = value.match(/^\\(?:(u)\d{0,4}|(x)\d{0,2})/)) {
                     var isError = (t[1] == "u" && t[0].length != 6)
                         || (t[1] == "x" && t[0].length != 4);
-                    out.push([t[0], isError ? "error" : "escaped"]);
-                    value = value.substr(t[0].length);
-
+                    push(t[0], isError ? "error" : "escaped");
                     continue;
                 }
 
                 // Escaped symbols
-                out.push([value.substr(0, 2), "escaped"]);
-                value = value.substr(2);
-
+                push(2, "escaped");
                 continue;
             }
 
             if (c == "|") {
-                value = value.substr(1);
-                out.push([c, "collection"]);
-
+                push(c, "collection");
                 continue;
             }
 
@@ -242,15 +237,11 @@ module.exports = {
                 sub++;
                 t = value.match(re.searches);
                 if (t) {
-                    out.push([value.substr(0, t[0].length), "sub"]);
-                    value = value.substr(t[0].length);
-
+                    push(t[0], "sub");
                     continue;
                 }
 
-                out.push(["(", "sub"]);
-                value = value.substr(1);
-
+                push("(", "sub");
                 continue;
             }
 
@@ -262,7 +253,7 @@ module.exports = {
                 }
                 else {
                     sub--;
-                    out.push([")", "sub"]);
+                    push(")", "sub");
                     value = value.substr(1);
                 }
 
@@ -286,89 +277,60 @@ module.exports = {
                         break;
                 }
 
-                out.push([temp.join(""), "collection"]);
-                value = value.substr(temp.length);
-
-                continue;
-            }
-
-            // Ranges
-            if (c == "{") {
-                collection = 1;
-
-                var ct, temp = ["{"];
-                for (var i = 1, l = value.length; i < l; i++) {
-                    ct = value.charAt(i);
-                    temp.push(ct);
-                    if (ct == "{")
-                        collection++;
-                    else if (ct == "}")
-                        collection--;
-
-                    if (!collection)
-                        break;
-                }
-
-                out.push([temp.join(""), "range"]);
-                value = value.substr(temp.length);
-
+                push(temp.join(""), "collection");
                 continue;
             }
 
             if (c == "]" || c == "}") {
-                out.push([c, sub > 0 ? "sub" : "text"]);
-                value = value.substr(1);
-
+                push(c, sub > 0 ? "sub" : "text");
                 continue;
             }
 
-            if (re.before[c]) {
-                var style, last = out[out.length - 1];
-                if (!last)
-                    style = "error";
-                else if (last[1] == "text")
-                    style = "replace";
-                else {
-                    var str = last[0];
-                    var lastChar = str.charAt(str.length - 1);
-                    if (lastChar == "(" || re.before[lastChar]
-                      || re.alone[lastChar] && lastChar != ".")
-                        style = "error";
-                    else
-                        style = last[1];
+            // Ranges
+            if (re.rangeStart[c]) {
+                var m = value.match(re.range);
+                if (!m) {
+                    push(c, "text");
+                    continue;
                 }
-
-                out.push([c, style]);
-                value = value.substr(1);
-
+                push(m[0], "range");
+                // double quantifier is an error
+                m = value.match(re.range);
+                if (m) {
+                    push(m[0], "error");
+                    continue
+                }
                 continue;
             }
 
             if (re.alone[c]) {
-                out.push([c, "replace"]);
-                value = value.substr(1);
-
-                continue;
+                push(c, "replace");
+                if (c == ".")
+                    continue;
+                var m = value.match(re.range);
+                if (m) {
+                    push(m[0], "error");
+                    continue;
+                }
             }
 
             // Just Text
-            out.push([c, sub > 0 ? "sub" : "text"]);
-            value = value.substr(1)
+            push(c, sub > 0 ? "sub" : "text");
         }
 
         // Process out ace token list
         var last = "text", res = [], token = {type: last, value: ""};
-        for (var i = 0; i < out.length; i++) {
-            if (out[i][1] != last) {
+        for (var i = 0; i < out.length; i+=2) {
+            if (out[i+1] != last) {
                 token.value && res.push(token);
-                last = out[i][1];
+                last = out[i+1];
                 token = {type: "r_" + last, value: ""}
             }
-           token.value += out[i][0];
+           token.value += out[i];
         }
         token.value && res.push(token);
         return res;
-    },
+    }
 }
 
 });

@@ -42,17 +42,6 @@ function $cancelWhenOffline() {
         return false;
 }
 
-function escapeXpathString(name){
-    if (name.indexOf('"') > -1) {
-        var out = [], parts = name.split('"');
-        parts.each(function(part) {
-            out.push(part == '' ? "'\"'" : '"' + part + '"');
-        })
-        return "concat(" + out.join(", ") + ")";
-    }
-    return '"' + name + '"';
-}
-
 module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
     dev              : "Cloud9 IDE, Inc.",
@@ -202,16 +191,18 @@ module.exports = ext.register("ext/tree/tree", {
          * and adds nodes
          */
         ide.addEventListener("treechange", function(e) {
-            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, "");
-            var parent = trFiles.getModel().data.selectSingleNode(path);
+            var path = "//node()[@path='" + e.path.replace(/'/g, "\\'").replace(/\\/g, "\\\\") + "']";
+            var parent = trFiles.getModel().data.selectSingleNode(path)
 
             if (!parent)
                 return;
 
-            var nodes   = parent.childNodes;
-            var files   = e.files;
+            var nodes = parent.childNodes;
+            var files = {};
+            
+            e.files.forEach(function(f) {
+                files[f.name] = f;
+            });
 
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
                 for (var file in files) {
@@ -238,11 +229,11 @@ module.exports = ext.register("ext/tree/tree", {
             for (var filename in files) {
                 var file = files[filename];
 
-                var xmlNode = "<" + file.type +
-                    " type='" + file.type + "'" +
-                    " name='" + filename + "'" +
-                    " path='" + path + "/" + filename + "'" +
-                "/>";
+                var xmlNode = new apf.getXml("<" + apf.escapeXML(file.type) + " />");
+                xmlNode.setAttribute("type", file.type);
+                xmlNode.setAttribute("name", file.name);
+                xmlNode.setAttribute("path", path + "/" + file.name);
+                
                 trFiles.add(xmlNode, parent);
             }
         });
@@ -315,7 +306,7 @@ module.exports = ext.register("ext/tree/tree", {
             var filtered = [];
             for (var i = 0, l = nodes.length; i < l; i++) {
                 if (!pNode.selectSingleNode("node()[@path="
-                  + escapeXpathString(nodes[i].getAttribute("path")) + "]"))
+                  + util.escapeXpathString(nodes[i].getAttribute("path")) + "]"))
                     filtered.push(nodes[i]);
             }
             return filtered;
@@ -357,8 +348,10 @@ module.exports = ext.register("ext/tree/tree", {
                 }
                 else {
                     apf.xmldb.appendChild(settingsData.selectSingleNode("auto"),
-                        apf.getXml('<tree_selection path="' + nodePath +
-                            '" type="' + nodeType + '" />')
+                        apf.n("<tree_selection />")
+                            .attr("path", nodePath)
+                            .attr("type", nodeType)
+                            .node()
                     );
                 }
 
@@ -402,7 +395,7 @@ module.exports = ext.register("ext/tree/tree", {
 
                 var count = 0;
                 filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-                while (args[0].selectSingleNode('node()[@name=' + escapeXpathString(filename) + ']')) {
+                while (args[0].selectSingleNode('node()[@name=' + util.escapeXpathString(filename) + ']')) {
                     filename = filename.replace(/\.(\d+)$/, "");
 
                     var idx  = filename.lastIndexOf(".");
@@ -425,7 +418,8 @@ module.exports = ext.register("ext/tree/tree", {
         });
 
         trFiles.addEventListener("beforerename", this.$beforerename = function(e){
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport)
+                return false;
 
             if (trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
@@ -590,7 +584,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (path === ide.davPrefix)
                 parentNode = trFiles.queryNode("folder[@root=1]");
             else
-                parentNode = trFiles.queryNode('//folder[@path="' + path + '"]');
+                parentNode = trFiles.queryNode('//folder[@path=' + util.escapeXpathString(path) + ']');
 
             return parentNode;
         }
@@ -699,8 +693,8 @@ module.exports = ext.register("ext/tree/tree", {
 
             // Re-select the last selected item
             if(_self.treeSelection.path) {
-                var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
-                    _self.treeSelection.path + '" and @type="' +
+                var xmlNode = trFiles.$model.queryNode('//node()[@path=' +
+                    util.escapeXpathString(_self.treeSelection.path) + ' and @type="' +
                     _self.treeSelection.type + '"]');
                 if (xmlNode)
                     trFiles.select(xmlNode);

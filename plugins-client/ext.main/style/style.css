@@ -41,7 +41,36 @@ BODY {
     font-family : Arial, Helvetica, sans-serif;
     line-height : 16px;
 }
-
+#loadingide {
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+    color: #5aacca;
+    font-size: 16px;
+    background-color: #f1f9fc;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    text-align: center;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+}
+#loadingide .loader-content {
+    background: url(images/loading-your-editor.png) no-repeat top center;
+    height: 37px;
+    position: relative;
+    width: 390px;
+    padding-top: 50px;
+    margin: 0 auto;
+    top: 28%;
+}
+#loadingide .spinner {
+    background: url(images/loaderide.gif) no-repeat center center;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 0;
+    left: 10px;
+}
 #loadscreen{
     background : white;
     padding : 10px;

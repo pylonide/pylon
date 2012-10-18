@@ -26,7 +26,7 @@ var MESSAGE_TYPES = {
 var numOutputSection = 0;
 function logToInspectorOutput(output, type, pre, post, existingDiv) {
     var outStr = MESSAGE_TYPES[type];
-    outStr = outStr.replace("__MSG__", output);
+    outStr = outStr.replace("__MSG__", apf.escapeXML(output));
 
     if (!existingDiv) {
         numOutputSection++;

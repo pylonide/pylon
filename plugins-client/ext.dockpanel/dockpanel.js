@@ -12,6 +12,7 @@ var ide = require("core/ide");
 var menus = require("ext/menus/menus");
 var DockableLayout = require("ext/dockpanel/libdock");
 var settings = require("ext/settings/settings");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/dockpanel/dockpanel", {
     name           : "Dock Panel",
@@ -111,7 +112,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 ide.dispatchEvent("dockpanel.load.settings", {state: state});
                 _self.layout.loadState(state);
                 _self.loaded = true;
+                
+                _self.setParentHboxTop(
+                    apf.isFalse(settings.model.queryValue("auto/tabs/@show")) ? -15 : 0, 
+                    apf.isFalse(settings.model.queryValue("general/@animateui"))
+                );
             });
+        });
+        
+        ide.addEventListener("tabs.visible", function(e){
+            _self.setParentHboxTop(!e.value ? -15 : 0, e.noanim);
         });
         
         this.nodes.push(
@@ -141,6 +151,17 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             
             menus.addItemByPath("View/Dock Panels/~", new apf.divider(), 200)
         );
+    },
+    
+    setParentHboxTop : function(top, noAnim){
+        if (noAnim) {
+            hboxDockPanel.$ext.style.top = top + "px";
+        }
+        else {
+            anims.animate(hboxDockPanel.$ext, {
+                top: top + "px"
+            });
+        }
     },
     
     saveSettings : function(){
@@ -432,6 +453,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * Updates the notification element to visually reflect notCount
      */
     updateNotificationElement: function(btnObj, count, options){
+        if (!btnObj) {
+            return console.trace("dockpanel.updateNotificationElement requires btnObj not to be null");
+        }
+        
         var countInner = count === 0 ? "" : count;
         var notificationEl = btnObj.$ext.getElementsByClassName("dock_notification")[0];
         

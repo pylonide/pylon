@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var panels = require("ext/panels/panels");
 var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
@@ -142,6 +143,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuContext = this.menu = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
         );
         
+        this.mnuTabs.addEventListener("prop.visible", function(e) {
+            if (btnEditorTabsBehavior.value)
+                apf.setStyleClass(_self.mnuTabs.$ext, "tabsContextMenu");
+            else
+                apf.setStyleClass(_self.mnuTabs.$ext, "", ["tabsContextMenu"]);
+        });
+        
         mnuContext.addEventListener("prop.visible", function(e) {
             if (e.value && window.event) {
                 this.$page = apf.findHost(document.elementFromPoint(
@@ -254,7 +262,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
             
             if (settings.model.queryValue("auto/panels/@active") == "ext/tree/tree" && apf.isTrue(settings.model.queryValue('general/@revealfile'))) {
-                _self.revealtab(page);
+                _self.revealtab(page, true);
             }
         });
 
@@ -630,7 +638,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
      * unfolds its parent folders until the node can be reached by an xpath
      * selector and focused, to finally scroll to the selected node.
      */
-    revealtab: function(page) {
+    revealtab: function(page, noFocus) {
         if (!page || page.command)
             page = tabEditors.getPage();
         if (!page)
@@ -640,10 +648,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         // so this operation is visible
         ide.dispatchEvent("exitfullscreen");
 
-        this.revealInTree(page.$doc.getNode());
+        this.revealInTree(page.$doc.getNode(), noFocus);
     },
 
-    revealInTree : function(docNode) {
+    revealInTree : function(docNode, noFocus) {
         var _self = this;
 
         if (this.control && this.control.stop)
@@ -654,11 +662,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var parts, file, pathList, str, xpath;
         var type = docNode.tagName || "file";
         var path = docNode.getAttribute('path');
-        var node = trFiles.queryNode('//' + type + '[@path="' + path + '"]');
+        var node = trFiles.queryNode('//' + type + '[@path=' + util.escapeXpathString(path) + ']');
 
         if (node) {
             trFiles.expandAndSelect(node);
-            trFiles.focus();
+            if (!noFocus)
+                trFiles.focus();
             scrollToFile();
         }
         else {
@@ -676,7 +685,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             trFiles.expandList(pathList, function() {
                 trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
-                trFiles.focus();
+                if (!noFocus)
+                    trFiles.focus();
                 scrollToFile();
             });
         }
