@@ -88,8 +88,8 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             }
 
             if (msg.type === "php-start") {
-                var info = ["This runner is for pure php scripts",
-                    "To run PHP web app / page, select the apache runner"];
+                var info = ["This runner is for pure PHP scripts",
+                    "To run a PHP web app or page, select the Apache runner"];
 
                 options.eventEmitter.emit(options.eventName, {
                     type: "php-data",
