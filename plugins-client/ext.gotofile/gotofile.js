@@ -16,6 +16,7 @@ var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
 var filelist = require("ext/filelist/filelist");
 var anims = require("ext/anims/anims");
+var themes = "ext/themes/themes";
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -164,6 +165,23 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
+        
+        winGoToFile.addEventListener("prop.visible", function(e){
+            if (e.value) {
+                if (themes.isDark) {
+                    
+                }
+                if (!tabEditors.getPage()) {
+                    winGoToFile.setProperty("top", 0);
+                    vboxGoToFile.setProperty("edge", "5 5 5 5");
+                }
+                else {
+                    winGoToFile.setProperty("top", 6);
+                    vboxGoToFile.setProperty("edge", "1 5 5 5");
+                }
+            }
+        });
+        
         txtGoToFile.addEventListener("blur", function(e){
             if (self.winGoToFile && winGoToFile.visible
               && !apf.isChildOf(winGoToFile, e.toElement))
@@ -245,10 +263,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
             if (self.winGoToFile && _self.lastSearch) {
                 if (!winGoToFile.visible) {
-                    winGoToFile.addEventListener("prop.visible", function(e){
-                        _self.windowVisible(e.value, data)
+                    winGoToFile.addEventListener("prop.visible", $winGoToFileProVisible = function(e){
+                        _self.windowVisible(e.value, data);
 
-                        winGoToFile.removeEventListener("prop.visible", arguments.callee);
+                        winGoToFile.removeEventListener("prop.visible", $winGoToFileProVisible);
                     });
                  }
                  else {
