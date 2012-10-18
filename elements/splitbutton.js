@@ -22,11 +22,11 @@
 // #ifdef __AMLSPLITBUTTON || __INC_ALL
 
 /**
- * An element displaying a skinnable rectangle which can contain other 
- * AML elements. This element is used by other elements such as the 
+ * An element displaying a skinnable rectangle which can contain other
+ * AML elements. This element is used by other elements such as the
  * toolbar and statusbar element to specify sections within those elements
  * which in turn can contain other AML elements.
- * 
+ *
  * #### Remarks
  *
  * This component is used in the accordian element to create its sections. In
@@ -59,31 +59,48 @@ apf.splitbutton = function(struct, tagName){
 
 (function(){
     this.$focussable = false;
-    
+
+    this.$booleanProperties["disabled-split"] = 1;
+    //this.$supportedProperties.push("disabled-split", "button-skin");
+
     this.$propHandlers["caption"] = function(value) {
         this.$button1.setProperty("caption", value);
-    }
-    
+    };
+
     this.$propHandlers["icon"] = function(value) {
         this.$button1.setProperty("icon", value);
-    }
-    
+    };
+
     this.$propHandlers["tooltip"] = function(value) {
         this.$button1.setProperty("tooltip", value);
-    }
-    
+    };
+
     this.$propHandlers["hotkey"] = function(value) {
         this.$button1.setProperty("hotkey", value);
-    }
+    };
 
     this.$propHandlers["disabled"] = function(value) {
         this.$button1.setProperty("disabled", value);
         this.$button2.setProperty("disabled", value);
-    }
-    
+    };
+
+    this.$propHandlers["disabled-split"]= function(value) {
+        this.$button2.setProperty("disabled", value);
+    };
+
+    this.$propHandlers["button-skin"] = function(value) {
+        this.$button1.setProperty("skin", value);
+        this.$button2.setProperty("skin", value);
+    };
+
+    this.$propHandlers["class"] = function(value){
+        apf.setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
+        this.$lastClassValue = value;
+    };
+
     this.$propHandlers["submenu"] = function(value) {
         this.$button2.setProperty("submenu", value);
-        
+
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
             if (!self[value].$splitInited) {
@@ -91,55 +108,61 @@ apf.splitbutton = function(struct, tagName){
                     var split = this.opener.parentNode;
                     var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
                         - apf.getAbsolutePosition(split.$button1.$ext)[0];
-                    
+
                     this.$ext.style.marginLeft = "-" + diff + "px";
                 });
                 self[value].$splitInited = true;
             }
-            
+
             this.removeEventListener("mousedown", arguments.callee);
         });
-    }
-    
+    };
+
     this.$draw = function(){
         var _self = this;
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
         //this.$ext.style.overflow = "hidden";
         //this.$ext.style.position = "relative";
-        
-        var skin = this.getAttribute("skin") || this.localName;
-        
+
+        var skin = this["button-skin"] || this.getAttribute("skin") || this.localName;
+
         this.$button1 = new apf.button({
             htmlNode: this.$ext,
             parentNode: this,
+            skinset: this.getAttribute("skinset"),
             skin: skin,
             "class": "main",
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
+                if (_self.$button2.disabled)
+                    return;
                 _self.$button2.$setState("Over", {});
-                
+
                 _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 apf.setStyleClass(this.$ext, "", ["primary"]);
+                if (_self.$button2.disabled)
+                    return;
                 _self.$button2.$setState("Out", {});
-                
+
                 _self.dispatchEvent("mouseout", { button: this });
             },
             onclick: function(e) {
                 _self.dispatchEvent("click");
             }
         });
-        
+
         this.$button2 = new apf.button({
             htmlNode: this.$ext,
             parentNode: this,
+            skinset: this.getAttribute("skinset"),
             skin: skin,
             "class": "arrow",
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button1.$setState("Over", {});
-                
+
                 _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
@@ -151,16 +174,16 @@ apf.splitbutton = function(struct, tagName){
                     apf.setStyleClass(this.$ext, "primary");
                     _self.$button1.$setState("Over", {});
                 }
-                
+
                 _self.dispatchEvent("mouseout", { button: this });
             }
         });
     };
 
     this.$loadAml = function(x){
-        
+
     };
-    
+
 }).call(apf.splitbutton.prototype = new apf.GuiElement());
 
 apf.aml.setElement("splitbutton",  apf.splitbutton);
