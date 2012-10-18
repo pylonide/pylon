@@ -1,0 +1,123 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:splitbutton name="run-splitbutton">
+    <a:style><![CDATA[
+        .c9-runbtn {
+            background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.12) 0, rgba(255,255,255,0) 100%);
+            background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.12) 0, rgba(255,255,255,0) 100%);
+            background-image:         linear-gradient(top, rgba(255,255,255,0.12) 0, rgba(255,255,255,0) 100%);
+            border: 1px solid #1f1f1f;
+            box-shadow: 0 1px 0 0 rgba(237,237,237,.15) inset;
+            cursor: pointer;
+            font-family: Arial;
+            font-size: 12px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            text-shadow: 0 1px 0 rgba(0,0,0,.25);
+
+            background-color: #292929;
+
+            position: relative;
+            float: left;
+            margin-top: -2px;
+        }
+
+        .c9-runbtn.main {
+            border-left-color: #000;
+            border-radius: 3px 0 0 0;
+        }
+
+        .c9-runbtn.arrow {
+            border-left-color: rgba(237,237,237,.15);
+            border-right-color: #000;
+            border-radius: 0 3px 0 0;
+            width: 29px;
+        }
+
+        .c9-runbtnOver {
+            background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.1) 100%);
+            background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.1) 100%);
+            background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.1) 100%);
+        }
+
+        .c9-runbtnDown {
+            background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.1) 0, rgba(255,255,255,0) 100%);
+            background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.1) 0, rgba(255,255,255,0) 100%);
+            background-image:         linear-gradient(bottom, rgba(255,255,255,.1) 0, rgba(255,255,255,0) 100%);
+
+            box-shadow: 0 -1px 0 0 rgba(237,237,237,.28) inset;
+        }
+
+        .c9-runbtnDisabled {
+            color: rgba(0,0,0,.5);
+            text-shadow: 0 1px 0 rgba(255,255,255,.15)
+        }
+
+        .c9-runbtn .c9-label {
+            position: relative;
+            overflow: hidden;
+            line-height: 14px;
+            height: 14px;
+            padding: 0 7px 0 24px;
+            margin: 6px 0 0 0;
+            color: #c5d7bf;
+        }
+
+        .c9-runbtn.main .c9-icon {
+            width: 19px;
+            height: 19px;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            display: block;
+        }
+
+        .c9-runbtn.main .c9-arrow,
+        .c9-runbtn.arrow .c9-label,
+        .c9-runbtn.arrow .c9-icon {
+            display: none;
+        }
+
+        .c9-runbtn .c9-arrow {
+            width: 20px;
+            height: 16px;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+
+            background-image: url(images/c9-no-repeat.png);
+            background-repeat: no-repeat;
+            background-position: -70px -274px
+        }
+
+        .c9-runbtnDisabled .c9-arrow {
+            background-position: -102px -274px;
+        }
+
+        .running .c9-runbtn.main {
+            box-shadow: 1px 1px 10px 5px rgba(0, 0, 0, 0.6) inset;
+        }
+
+        .running .c9-runbtn .c9-label {
+            color: #b8b8b8;
+        }
+
+        .c9-runbtnDisabled.arrow {
+            border-left: 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="div[2]/text()" background="div/span" icon="div[1]">
+            <div class="c9-runbtn">
+                <div class="c9-icon"></div>
+                <div class="c9-label">-</div>
+                <div class="c9-arrow"></div>
+             </div>
+        </a:main>
+    </a:presentation>
+</a:splitbutton>
+</a:skin>

@@ -17,6 +17,7 @@ var tooltip = require("ext/tooltip/tooltip");
 var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");
+var skin = require("text!ext/runpanel/skin.xml");
 var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
 var commands = require("ext/commands/commands");
@@ -31,6 +32,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
+    skin: {
+        id: "noderunner-skin",
+        data: skin,
+        "icon-path": ide.staticPrefix + "/ext/main/style/icons/",
+        "media-path": ide.staticPrefix + "/ext/main/style/images/"
+    },
     deps    : [noderunner],
 
     defaultWidth : 270,
@@ -100,40 +107,25 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 }
             }),
 
+            this.model = new apf.model().load("<configurations />"),
+
             menus.$insertByIndex(barTools, new apf.splitbutton({
-                id       : "btnRun",
-                checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
-                icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
-                command  : "run",
-                visible  : "{!stProcessRunning.active and 1}",
-                disabled : "{!!!ide.onLine}",
-                submenu  : "mnuRunCfg"
-            }), 100),
-
-            menus.$insertByIndex(barTools, new apf.button({
-                id       : "btnStop",
-                icon     : "stop.png",
-                caption  : "stop",
-                width    : "52",
-                tooltip  : "Stop",
-                skin     : "c9-toolbarbutton-glossy",
-                command  : "stop",
-                visible  : "{stProcessRunning.active and 1}" ,
-                disabled : "{!!!ide.onLine}"
-            }), 200),
-
-//            menus.$insertByIndex(barTools, new apf.divider({
-//                skin : "c9-divider"
-//            }), 300),
-
-            this.model = new apf.model().load("<configurations />")
+                id              : "btnRun",
+                skin            : "run-splitbutton",
+                skinset         : "noderunner-skin",
+                checked         : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
+                icon            : "{stProcessRunning.active and 1 ? 'stop.png' : 'run.png'}",
+                caption         : "{stProcessRunning.active and 1 ? 'Stop' : apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
+                command         : "run",
+                visible         : "true",
+                disabled        : "{!!!ide.onLine}",
+                "class"         : "{stProcessRunning.active and 1 ? 'running' : 'stopped'}",
+                "disabled-split": "{stProcessRunning.active and 1}",
+                submenu         : "mnuRunCfg"
+            }), 100)
         );
 
-        apf.setStyleClass(btnRun.$ext, "btnRun");
-        apf.setStyleClass(btnStop.$ext, "btnStop");
-
-        tooltip.add( btnRun.$button1, {
+        tooltip.add(btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications, or run your <span>PHP</span>, <span>Python</span>, or <span>Ruby</span> code.\
             For more help, check out our guided tour in the Help menu.\
             Want your language supported? Tweet us \
@@ -311,7 +303,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.importCssString(cssString);
 
         this.panel = winRunPanel;
-        this.nodes.push(winRunPanel);
+        this.nodes.push(
+            this.panel
+        );
 
         lstRunCfg.addEventListener("click", function(e){
             if (e.htmlEvent.target.tagName == "SPAN") {
@@ -347,7 +341,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     addConfig : function() {
         var path, name, file = ide.getActivePageModel();
         var extension = "";
-        
+
         if (file) {
             path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
             name  = file.getAttribute("name").replace(/\.(js|py)$/,
