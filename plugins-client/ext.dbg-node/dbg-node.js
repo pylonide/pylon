@@ -60,7 +60,7 @@ oop.inherits(v8DebugClient, DebugHandler);
                 if (_self.activeFrame)
                     ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
                 _self.onChangeRunning();
-            });
+            }, true); // The sync backtrace should be silent
         });
     };
 
@@ -118,9 +118,10 @@ oop.inherits(v8DebugClient, DebugHandler);
         mdlDbgSources.appendXml(script);
     };
 
-    this.onChangeFrame = function(frame) {
+    this.onChangeFrame = function(frame, silent) {
         this.activeFrame = frame;
-        ide.dispatchEvent("dbg.changeFrame", {data: frame});
+        if (! silent)
+            ide.dispatchEvent("dbg.changeFrame", {data: frame});
     };
 
     this.$handleDebugBreak = function(remoteBreakpoints) {
@@ -372,7 +373,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         });
     };
 
-    this.backtrace = function(callback) {
+    this.backtrace = function(callback, silent) {
         var _self = this;
         var model = mdlDbgStack;
         this.$v8dbg.backtrace(null, null, null, true, function(body, refs) {
@@ -404,7 +405,7 @@ oop.inherits(v8DebugClient, DebugHandler);
 
             var topFrame = model.data.firstChild;
             topFrame && topFrame.setAttribute("istop", true);
-            _self.onChangeFrame(topFrame);
+            _self.onChangeFrame(topFrame, silent);
             callback();
         });
     };
