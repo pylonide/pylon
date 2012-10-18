@@ -10,7 +10,9 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+require("ext/pdfviewer/compatibility"); 
 require("ext/pdfviewer/pdf"); 
+var css = require("text!ext/pdfviewer/viewer.css");
 var markup = require("text!ext/pdfviewer/pdfviewer.xml");
 var editors = require("ext/editors/editors");
 
@@ -64,6 +66,7 @@ module.exports = ext.register("ext/pdfviewer/pdfviewer", {
     init : function() {
         var _self = this;
 
+        apf.importCssString(css || "");
         window.PDFJS.workerSrc = ide.staticPrefix + "/ext/pdfviewer/pdf.js";
 
         var editor = barPDF;
