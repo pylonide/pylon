@@ -6053,6 +6053,145 @@
         </a:empty>
     </a:presentation>
 </a:list>
+<a:list name="runconfigurations">
+    <a:style><![CDATA[
+        .listRC{
+            overflow: hidden;
+            position: relative;
+            cursor: default;
+            color      : #333;
+            
+            box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, 
+                        -1px 0 0 0 rgba(255,255,255,.9) inset; 
+            background-color: rgba(220, 220, 220, 0.9);
+            background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
+                        		url(images/c9-noise-light-10.png),
+                				url(images/c9-noise-light-10.png),
+                                url(images/c9-noise-light-10.png),
+                				url(images/c9-noise-light-10.png);
+        }
+        
+        .listRC .rcItem{
+            padding    : 0 2px 0 29px;
+            position   : relative;
+            height     : 20px;
+            line-height: 19px;
+            border-top:1px solid transparent;
+            border-bottom:1px solid transparent;
+        }
+        
+        .listRC .content{
+            cursor : pointer;
+            font-family : Arial, Tahoma;
+            font-size : 11px;
+            padding : 0 0 0 0;
+        }
+        
+        .listRC .content div{
+            font-family : Courier New;
+            padding : 2px 0 0 0;
+            font-size : 12px;
+            white-space : nowrap;
+            overflow : hidden;
+        }
+
+        .listRC .radiobutton {
+            width      : 16px;
+            height     : 17px;
+            background : url("images/radio-black.png") no-repeat 0 0;
+            display : block;
+            position : absolute;
+            left : 8px;
+            top : 2px;
+        }
+
+        .listRC .rcItem .radiobutton:hover{
+            background-position : 0 -119px;
+        }
+        
+        .listRC .rcItem .radiobutton:active{
+            background-position : 0 -17px;
+        }
+
+        .listRC .selected .radiobutton:active {
+            background-position : 0 -51px !important;
+        }
+        
+        .listRC .selected {
+            border-top:1px solid #55a2e0;
+            border-bottom:1px solid #1166aa;
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3692db', endColorstr='#1680d5');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3692db', endColorstr='#1680d5')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#3692db), color-stop(1, #1680d5));
+            background : -moz-linear-gradient(center bottom, #1680d5 0%, #3692db 100%) repeat scroll 0 0 transparent;
+            color: #E8E8E8;
+        }
+        
+        .listRC .selected .radiobutton {
+            background-position : 0 -34px;
+        }
+
+        .listRC .selected .radiobutton:hover{
+            background-position : 0 -102px;
+        }
+
+        .listRCDisabled .radiobutton {
+            background-position : 0 -68px;
+        }
+
+        .listRCDisabled .rcItem {
+            color : #bebebe;
+        }
+        
+        .listRC .rcItem .btnDelete {
+            width               : 15px;
+            height              : 19px;
+            position            : absolute;
+            right               : 7px;
+            top                 : 0px;
+            background-image    : url(images/delete_btn2.png);
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+        }
+        
+        .listRC .rcItem .btnDelete:hover {
+            background-position : -15px 0;
+        }
+
+        .listRC .rcItem .btnDelete:active {
+            background-position : -30px 0;
+        }
+        
+        .listRC .selected .btnDelete {
+            background-position : 0 0;
+        }
+        
+        .listRC .selected .btnDelete:hover {
+            background-position : -15px 0;
+        }
+
+        .listRC .selected .btnDelete:active {
+            background-position : -30px 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="listRC">
+            </div>
+        </a:main>
+        <a:item class="." caption="div" icon="div" select="." check="span">
+            <div class="rcItem">
+                <span class="radiobutton"> </span> 
+                <div class="content"> </div>
+                <div class="btnDelete"> </div>
+            </div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
 
 <a:menu name="menu">
     <a:style><![CDATA[
