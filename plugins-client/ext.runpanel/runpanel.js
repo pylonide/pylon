@@ -276,6 +276,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
     },
 
+    saveSelection : function() {
+        var node = this.model.data.selectSingleNode('config[@last="true"]');
+        if (node)
+            node.removeAttribute("last");
+        if (lstRunCfg.selected) {
+            lstRunCfg.selected.setAttribute("last", "true");
+            settings.save();
+        }
+        else
+            lstRunCfg.select(lstRunCfg.$model.queryNode("//config"));
+    },
+
     checkAutoHide : function(){
         /*var value = settings.model.queryValue("auto/configurations/@autohide");
         var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
@@ -308,6 +320,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
+        });
+
+        setTimeout(function() {
+            if (lstRunCfg.$model)
+                lstRunCfg.select(lstRunCfg.$model.queryNode("config[@last='true']"));
         });
     },
 

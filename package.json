@@ -30,9 +30,9 @@
         "connect-architect": "0.0.6",
 
         "smith": "0.1.9",
-        "smith.io": "0.0.30",
+        "smith.io": "0.0.31",
         "vfs-architect": "0.0.2",
-        "jsDAV": "0.1.6"
+        "jsDAV": "0.1.7"
     },
 
     "devDependencies": {
@@ -66,4 +66,4 @@
         "build-debug": "node ./scripts/build-debug",
         "build-packed": "node ./scripts/build-packed"
     }
-} 
+}

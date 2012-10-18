@@ -16,7 +16,7 @@ var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
 var filelist = require("ext/filelist/filelist");
 var anims = require("ext/anims/anims");
-var themes = "ext/themes/themes";
+var themes = require("ext/themes/themes");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -66,15 +66,29 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             this.model = new apf.model()
         );
 
-        ide.addEventListener("init.ext/editors/editors", function(){
+        ide.addEventListener("init.ext/editors/editors", this.$initEditorExt = function(){
             _self.markupInsertionPoint = tabEditors;
             //tabEditors.appendChild(winGoToFile);
         });
 
-        ide.addEventListener("extload", function(){
+        ide.addEventListener("extload", this.$extLoad = function(){
             if (!_self.isGeneric) {
                 _self.updateFileCache();
             }
+        });
+        
+        ide.addEventListener("closefile", this.$closeFile = function() {
+            setTimeout(function(){
+                _self.updateWinPos();
+            });
+        });
+        
+        ide.addEventListener("newfile", this.$newFile = function() {
+            _self.updateFileCache(true);
+        });
+        
+        ide.addEventListener("removefile", this.$removeFile = function() {
+            _self.updateFileCache(true);
         });
     },
 
@@ -168,17 +182,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         winGoToFile.addEventListener("prop.visible", function(e){
             if (e.value) {
-                if (themes.isDark) {
-                    
-                }
-                if (!tabEditors.getPage()) {
-                    winGoToFile.setProperty("top", 0);
-                    vboxGoToFile.setProperty("edge", "5 5 5 5");
-                }
-                else {
-                    winGoToFile.setProperty("top", 6);
-                    vboxGoToFile.setProperty("edge", "1 5 5 5");
-                }
+                _self.updateWinPos();
             }
         });
         
@@ -188,18 +192,38 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1);
         });
 
-        ide.addEventListener("closepopup", function(e){
+        ide.addEventListener("closepopup", this.$closepopup = function(e){
             if (e.element != _self)
                 _self.toggleDialog(-1, true);
         });
 
-        ide.addEventListener("beforewatcherchange", function(){
+        ide.addEventListener("beforewatcherchange", this.$beforewatcherchange = function(){
             _self.dirty = true;
         });
 
         this.updateDatagrid(true);
 
         this.nodes.push(winGoToFile);
+        
+        this.updateWinPos();
+    },
+    
+    updateWinPos : function(){
+        if (!self["winGoToFile"])
+            return;
+        
+        if (!tabEditors.getPage() || !themes.isDark) {
+            winGoToFile.setProperty("top", 0);
+            vboxGoToFile.setProperty("edge", "5 5 5 5");
+            
+            winGoToFile.$ext.style.top = 0;
+        }
+        else {
+            winGoToFile.setProperty("top", 6);
+            vboxGoToFile.setProperty("edge", "1 5 5 5");
+            
+            winGoToFile.$ext.style.top = "6px";
+        }
     },
     
     windowVisible : function(winValue, data){
@@ -288,6 +312,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      *
      */
     filter : function(keyword, nosel, force){
+        keyword = keyword.replace(/\*/g, "");
+
         if (!this.model.data) {
             this.lastSearch = keyword;
             return;
@@ -341,13 +367,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     replaceStrong : function (value, keyword){
-        if (!value) return "";
-
+        if (!value)
+            return "";
+        keyword = keyword.replace(/\*/g, "");
         var i, j;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
         var result = search.matchPath(value, keyword);
-        if (! result.length)
+        if (!result.length)
             return value;
         result.forEach(function(part, i) {
             if (part.match)
@@ -540,6 +567,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         winGoToFile.destroy(true, true);
         this.nodes = [];
+        
+        ide.removeEventListener("init.ext/editors/editors", this.$initEditorExt);
+        ide.removeEventListener("extload", this.$extLoad);
+        ide.removeEventListener("closefile", this.$closeFile);
+        ide.removeEventListener("newfile", this.$newFile);
+        ide.removeEventListener("removefile", this.$removeFile);
+        
+        ide.removeEventListener("closepopup", this.$closepopup);
+        ide.removeEventListener("beforewatcherchange", this.$beforewatcherchange);
     }
 });
 
