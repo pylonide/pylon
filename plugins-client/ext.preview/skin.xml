@@ -1,0 +1,80 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:button name="btn-preview-nav">
+    <a:style><![CDATA[
+        .btn-preview-nav {
+            height             : 24px;
+            overflow           : hidden;
+            cursor             : default;
+            position           : relative;
+            background-repeat:no-repeat;
+            background-position: 0 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select : none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select        : none;
+            
+            background: url(images/c9-preview-repeat.png) repeat-x 0 100px;
+            border-radius: 3px;
+            
+            border: 1px solid transparent;
+        }
+
+        .btn-preview-navOver {
+            background-position : 0 0;
+            border-color: #010910;
+        }
+
+        .btn-preview-navDown {
+            background-position : 0 -33px;
+            border-color: #010910;
+        }
+
+        .btn-preview-nav .icon {
+            width                 : 24px;
+            height                : 23px;
+            -webkit-border-radius : 3px;
+            -moz-border-radius    : 3px;
+            border-radius         : 3px;
+            margin-left: 1px;
+        }
+        
+        .btn-preview-nav.close .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -66px;
+        }
+        
+        .btn-preview-nav.refresh .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -89px;
+        }
+        
+        .btn-preview-nav.popup .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -114px;
+        }
+        
+        .btn-preview-nav.goforward .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -186px;
+        }
+        
+        .btn-preview-navDisabled.goforward .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -210px;
+        }
+        
+        .btn-preview-nav.goback .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -138px;
+        }
+        
+        .btn-preview-navDisabled.goback .icon {
+            background: url(images/c9-preview-repeat.png) no-repeat 0 -162px;
+        }
+    ]]></a:style>
+
+     <a:presentation>
+        <a:main caption="div" label="div" background="." icon="div">
+            <div class="btn-preview-nav">
+                <div class="icon"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+</a:skin>

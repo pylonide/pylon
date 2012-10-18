@@ -8,10 +8,13 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var markup = require("text!ext/preview/preview.xml");
 var editors = require("ext/editors/editors");
 var splits = require("ext/splitview/splits");
+var skin    = require("text!ext/preview/skin.xml");
+var css     = require("text!ext/preview/style/style.css");
 
 module.exports = ext.register("ext/preview/preview", {
     name    : "Preview",
@@ -20,6 +23,13 @@ module.exports = ext.register("ext/preview/preview", {
     type    : ext.EDITOR,
     alone   : true,
     markup  : markup,
+    skin    : {
+        id   : "previewskin",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/preview/style/images/",
+        "icon-path"  : ide.staticPrefix + "/ext/preview/style/icons/"
+    },
+    css   : util.replaceStaticPrefix(css),
     deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
     counter : 0,
@@ -128,6 +138,8 @@ module.exports = ext.register("ext/preview/preview", {
     init : function(){
         var editor = this.amlEditor = barPreview;
         this.enabled = false;
+        
+        apf.importCssString(this.css || "");
     },
 
     getTextbox: function(editor) {
