@@ -51,6 +51,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (ide.readonly)
             return;
         var _self = this;
+        ext.initExtension(this);
 
         this.markupInsertionPoint = colLeft;
 
