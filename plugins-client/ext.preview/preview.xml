@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:bar id="barPreview" anchors="0 0 0 0">
-      <a:hbox class="previewbar" height="36" align="center" edge="4 5 5" padding="5">
+      <a:hbox class="previewbar" height="36" align="center" edge="4 5 4" padding="5">
         <a:textbox class="ace_searchbox tb_textbox searchbox searchTxt tb_console" value="" flex="1"/>
         <a:button onclick="require('ext/preview/preview').refresh()" skin="btn-preview-nav" skinset="previewskin" class="refresh"></a:button>
         <a:divider skin="c9-divider" />
