@@ -789,6 +789,15 @@ function asyncParForEach(array, fn, callback) {
         }
     };
     
+    this.documentOpen = function(path, language, code) {
+        var _self = this;
+        var doc = {getValue: function() {return code;} };
+        asyncForEach(this.handlers, function(handler, next) {
+        console.log(handler.onDocumentOpen+"")
+            handler.onDocumentOpen(path, doc, _self.path, next);
+        });
+    };
+    
     this.documentClose = function(event) {
         if (this.$analyzeInterval) {
             clearInterval(this.$analyzeInterval);

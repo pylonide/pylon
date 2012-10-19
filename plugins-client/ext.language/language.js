@@ -53,10 +53,6 @@ module.exports = ext.register("ext/language/language", {
         if (!createUIWorkerClient || !isWorkerEnabled)
             throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
 
-        var deferred = lang.deferredCall(function() {
-            _self.setPath();
-        });
-
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
             var worker;
@@ -68,6 +64,12 @@ module.exports = ext.register("ext/language/language", {
                     ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
             }
             complete.setWorker(worker);
+            
+            ide.addEventListener("closefile", function(e){
+                var path = e.page && e.page.id;
+                if (path)
+                    worker.emit("documentClose", {data: path});
+            });
 
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
@@ -76,12 +78,7 @@ module.exports = ext.register("ext/language/language", {
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
-                event.doc.addEventListener("close", function() {
-                    worker.emit("documentClose", {data: path});
-                });
-                // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
-                deferred.cancel().schedule(100);
+                worker.call("documentOpen", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
             });
 
             // Language features
@@ -138,8 +135,8 @@ module.exports = ext.register("ext/language/language", {
 
         this.editor = editors.currentEditor.amlEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
-        this.editor.selection.on("changeCursor", this.$onCursorChange);
-        var oldSelection = this.editor.selection;
+        this.editor.session.selection.on("changeCursor", this.$onCursorChange);
+        var oldSession = this.editor.session;
         this.setPath();
 
         this.updateSettings();
@@ -150,15 +147,21 @@ module.exports = ext.register("ext/language/language", {
         this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.onCommandKey, defaultCommandHandler);
     
         this.editor.on("changeSession", function() {
+            oldSession.selection.removeEventListener("changeCursor", _self.$onCursorChange);
+            _self.editor.selection.on("changeCursor", _self.$onCursorChange);
+            oldSession = _self.editor.session;
+            clearTimeout(_self.$timeout);
             // Time out a litle, to let the page path be updated
-            setTimeout(function() {
+            _self.$timeout = setTimeout(function() {
                 _self.setPath();
-                oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
-                _self.editor.selection.on("changeCursor", _self.$onCursorChange);
-                oldSelection = _self.editor.selection;
             }, 100);
         });
-        
+
+        this.editor.on("changeMode", function() {
+            _self.$timeout = setTimeout(function() {
+                _self.setPath();
+            }, 100);
+        });
 
         this.editor.on("change", function(e) {
             e.range = {
@@ -223,7 +226,7 @@ module.exports = ext.register("ext/language/language", {
         if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
     },
     
     onEditorClick: function(event) {
