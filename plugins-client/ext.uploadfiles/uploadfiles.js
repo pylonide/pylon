@@ -91,7 +91,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
-                            window.open("/api/" + window.location.pathname.replace(/(^[\/]+|[\/]+$)/g, "") + "/download");
+                            window.open(ide.apiPrefix + "/download");
                         }
                     }), 390)
                 );
