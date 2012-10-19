@@ -32,12 +32,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
-    skin: {
-        id: "noderunner-skin",
-        data: skin,
-        "icon-path": ide.staticPrefix + "/ext/main/style/icons/",
-        "media-path": ide.staticPrefix + "/ext/main/style/images/"
-    },
     deps    : [noderunner],
 
     defaultWidth : 270,
@@ -51,7 +45,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (ide.readonly)
             return;
         var _self = this;
-        ext.initExtension(this);
 
         this.markupInsertionPoint = colLeft;
 
@@ -113,7 +106,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             menus.$insertByIndex(barTools, new apf.splitbutton({
                 id              : "btnRun",
                 skin            : "run-splitbutton",
-                skinset         : "noderunner-skin",
                 checked         : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon            : "{stProcessRunning.active and 1 ? 'stop.png' : 'run.png'}",
                 caption         : "{stProcessRunning.active and 1 ? 'Stop' : apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
