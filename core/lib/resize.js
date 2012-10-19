@@ -33,7 +33,7 @@
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
- * @namespace apf
+ * 
  */
 
 apf.resize = function() {

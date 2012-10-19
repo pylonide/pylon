@@ -748,7 +748,7 @@ apf.$viewportVirtual = function(amlNode){
     };
     
     /**
-     * @note This function only supports single dimension items (also no grid, like thumbnails)
+     * Note: this function only supports single dimension items (also no grid, like thumbnails)
      */
     this.resize = function(limit, updateScrollbar){
         this.cache = null;

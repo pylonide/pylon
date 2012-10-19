@@ -27,7 +27,7 @@
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
- * @namespace apf
+ * 
  * @private
  */
 apf.silverlight = (function() {

@@ -98,7 +98,7 @@
  * @inherits apf.Class
  * @inherits apf.BaseComm
  * @inherits apf.http
- * @namespace apf
+ * 
  *
  * @default_private
  */

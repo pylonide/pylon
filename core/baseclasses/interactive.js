@@ -40,9 +40,9 @@ apf.__INTERACTIVE__ = 1 << 21;
  * @version     %I%, %G%
  * @since       1.0
  *
- * @see element.appsettings.attribute.outline
- * @see element.appsettings.attribute.resize-outline
- * @see element.appsettings.attribute.drag-outline
+ * @see apf.appsettings.outline
+ * @see apf.appsettings.resize-outline
+ * @see apf.appsettings.drag-outline
  */
 /**
  * @attribute {Boolean} draggable Sets or gets whether an element is draggable. The user will

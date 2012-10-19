@@ -148,7 +148,7 @@
  * @attribute {String} name     the unique identifier of the service
  * @attribute {String} login    the {@link term.datainstruction data instruction} on how to log in to a service
  * @attribute {String} logout   the {@link term.datainstruction data instruction} on how to log out of a service
- * @see element.appsettings
+ * @see apf.appsettings
  *
  * @default_private
  */

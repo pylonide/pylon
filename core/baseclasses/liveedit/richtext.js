@@ -1409,7 +1409,7 @@ apf.CMDMACRO      = 0x0010;//"commandmacro";
  * @class plugin
  * @constructor
  * @extends LiveEdit
- * @namespace apf
+ * 
  * @author Mike de Boer  (mike AT javeline DOT com)
  *
  * Example plugin:
