@@ -82,20 +82,22 @@ module.exports = ext.register("ext/preview/preview", {
             }), 10)
         );
 
-        ide.addEventListener("init.ext/editors/editors", function(e) {
-            ide.addEventListener("tab.afterswitch", function(e){
-                _self.enable();
-            });
-            ide.addEventListener("closefile", function(e){
-                if (tabEditors.getPages().length == 1)
-                    _self.disable();
-            });
+        ide.addEventListener("tab.afterswitch", function(e){
+            _self.enable();
+            if (e.nextPage !== _self.page)
+                return;
+            var page = tabEditors.getPage();
+            var node = page.$doc.getNode();
+            _self.preview(node.getAttribute("path").split(".#!preview")[0], true);
+        });
+        ide.addEventListener("closefile", function(e){
+            if (tabEditors.getPages().length == 1)
+                _self.disable();
         });
 
         ide.addEventListener("afterfilesave", function(e) {
             if (!_self.popups.length)
                 return;
-            // var path = e.node.getAttribute("path");
             _self.popups = _self.popups.filter(function (popup) {
                 return !! popup.Array;
             });
@@ -112,24 +114,28 @@ module.exports = ext.register("ext/preview/preview", {
             else if (e.action == "remove") {
                 _self.split = null;
                 _self.page = null;
-                editors.close(e.page);
+                // editors.close(e.page);
             }
         });
     },
 
-    preview : function (url) {
+    preview : function (url, tabView) {
         // window.open(url, "_blank");
-        var path = url + ".#!preview";
-        editors.gotoDocument({
-            path: path,
-            type: "nofile",
-            active: false
-        });
         if (this.split && this.page)
             splits.mutate(this.split, this.page);
-        setTimeout(function() {
-            splits.mutate(null, tabEditors.getPage(path));
-            splits.update(splits.getActive());
+        setTimeout(function () {
+            var path = url + ".#!preview";
+            editors.gotoDocument({
+                path: path,
+                type: "nofile",
+                active: !!tabView
+            });
+            if (!tabView) {
+                setTimeout(function() {
+                    splits.mutate(null, tabEditors.getPage(path));
+                    splits.update(splits.getActive());
+                });
+            }
         });
     },
 
