@@ -36,24 +36,68 @@ module.exports = ext.register("ext/uimgr/uimgr", {
 
     hook : function(){
         var _self = this;
+        this.loadSkins();
     },
 
     init : function(amlNode){
         // Save the manually-loaded extensions
         var _self = this;
         apf.importCssString(this.css || "");
+        
     },
 
     show : function(){
+        document.getElementsByTagName("body")[0].innerHTML = "";
         ext.initExtension(this);
 
+        var skins = {
+            defaultSkinset: {
+                name: "",
+                skinset: "",
+                elements: {
+                    bar: {
+                        content: "",
+                        localName: "",
+                        onDark: false,
+                        type: "",
+                        wrapper: ""
+                    }
+                }
+            }
+        };
+        
+        for (var skinset in skins) {
+            for (var skin in skins[skinset].elements) {
+                switch (skin) {
+                    case "bar":
+                        
+                        break;
+                }
+                console.log( skin, skins[skinset].elements[skin] );
+            }
+        }
+        
+        
         winUIExt.show()
     },
     hide : function(){
         ext.initExtension(this);
         winUIExt.hide()
     },
-
+    
+    loadSkins: function() {
+        var includeSkins = ["searchinfiles", "statusbar", "zen", "quicksearch"];
+        
+        for(var i = 0; i < includeSkins.length; i++) {
+            var includeSkin = includeSkins[i];
+            
+            var skinData = require("text!ext/" + includeSkin + "/skin.xml");
+            var skinNode = new apf.skin(apf.extend({}, {id: includeSkin, data: skinData, "media-path": ide.staticPrefix + "/ext/" + includeSkin + "/images/"}, {data: null}));
+            skinNode.setProperty("src", skinData);
+            apf.document.documentElement.appendChild(skinNode);
+        }
+    },
+    
     enable : function(){
         if (!this.disabled) return;
 

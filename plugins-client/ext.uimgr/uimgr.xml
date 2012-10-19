@@ -1,3 +1,16 @@
+<!-- 
+Problems found
+
+Duplicate skins
+Not used code inside of skins
+Unused skins
+Skinsets have different names than the skin
+APF doesn't generate usefull errors when for example it fallsback to a default skin
+
+129 skins load at runtime
+153 skins in total in cloud9
+-->
+
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window
       id        = "winUIExt"
@@ -11,9 +24,79 @@
       width     = "1200"
       height    = "900"
       kbclose   = "true"
+      realtime  = "true"
       draggable = "true">
         <div id="winUIExtContent">
+            <div id="fixed-menu">
+                <a href="#button">Buttons</a>
+            </div>
             <h1>Cloud9 IDE UI</h1>
+             <div class="ui-section">
+                <h2><a href="http://ui.ajax.org/#docs/element.button" target="_blank">Button</a></h2>
+                <div class="ui-item">
+                    <h3>Missing buttons</h3>
+                    <div class="fbox">
+                        <div class="fleft version">
+                        <h1>node_modules/cloud9/plugins-client/ext.searchinfiles/skin.xml:</h1>
+                        <a:button id="testingit" skin="btnquicksearchnav" skinset="searchinfiles">Button</a:button>
+                         
+                         
+                         
+                         
+                        <h1>node_modules/cloud9/plugins-client/ext.statusbar/skin.xml:</h1>
+                        <a:button skin="btn-expand-statusbar" skinset="statusbar">Button</a:button>
+                        <a:button skin="btn-statusbar-icon" skinset="statusbar">Button</a:button>
+                         
+                         
+                         
+                         
+                        <h1>node_modules/cloud9/plugins-client/ext.zen/skin.xml:</h1>
+                        <a:button skin="zenbutton" skinset="zen">Button</a:button>
+                         
+                         
+                         
+                        <h1>node_modules/cloud9/plugins-client/ext.main/style/skins.xml:</h1>
+                        <a:button skin="blackbutton" skinset="">Button</a:button>
+                        <a:button skin="browser-btn" skinset="">Button</a:button>
+                        <a:button skin="btn-access_request" skinset="">Button</a:button>
+                        <a:button skin="btn-default-css3" skinset="">Button</a:button>
+                        <a:button skin="btn-default-simple" skinset="">Button</a:button>
+                        <a:button skin="btn_console_open" skinset="">Button</a:button>
+                        <a:button skin="btn_icon_only" skinset="">Button</a:button>
+                        <a:button skin="button" skinset="">Button</a:button>
+                        <a:button skin="button-colorless" skinset="">Button</a:button>
+                        <a:button skin="button-colorless" skinset="">Button</a:button>
+                        <a:button skin="c9-menu-btn" skinset="">Button</a:button>
+                        <a:button skin="c9-sidepanelsbutton" skinset="">Button</a:button>
+                        <a:button skin="c9-simple-btn" skinset="">Button</a:button>
+                        <a:button skin="c9-toolbarbutton" skinset="">Button</a:button>
+                        <a:button skin="c9-toolbarbutton-glossy" skinset="">Button</a:button>
+                        <a:button skin="c9-toolbarbutton-light" skinset="">Button</a:button>
+                        <a:button skin="c9-toolbarbutton2" skinset="">Button</a:button>
+                        <a:button skin="c9-topbar-btn" skinset="">Button</a:button>
+                        <a:button skin="dockButton" skinset="">Button</a:button>
+                        <a:button skin="dockheader" skinset="">Button</a:button>
+                        <a:button skin="github-button" skinset="">Button</a:button>
+                        <a:button skin="header-btn" skinset="">Button</a:button>
+                        <a:button skin="mnubtn" skinset="">Button</a:button>
+                        <a:button skin="toolbarbutton" skinset="">Button</a:button>
+                         
+                         
+                         
+                         
+                        <h1>node_modules/cloud9/plugins-client/ext.uploadfiles/skin.xml:</h1>
+                        <a:button skin="btn-cancel-upload" skinset="uploadfiles">Button</a:button>
+                         
+                         
+                         
+                         
+                        <h1>node_modules/cloud9/plugins-client/ext.quicksearch/skin.xml:</h1>
+                        <a:button skin="btnsearchicon" skinset="quicksearch">Button</a:button>
+                        <a:button skin="btnquicksearchnav" skinset="quicksearch">Button</a:button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="ui-section">
                 <h2><a href="http://ui.ajax.org/#docs/element.bar" target="_blank">Bar</a></h2>
                 <div class="ui-item">
@@ -124,7 +207,7 @@
                 
             </div>
             <div class="ui-section">
-                <h2><a href="http://ui.ajax.org/#docs/element.button" target="_blank">Button</a></h2>
+                <h2><a href="http://ui.ajax.org/#docs/element.button" target="_blank" name="button" >Button</a></h2>
                 <div class="ui-item">
                     <h3>Button (default)</h3>
                     <div class="fbox">
@@ -1297,15 +1380,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="ui-item">
-                    <h3>dockextwin<em> - skinset: collaborate</em></h3>
-                    <div class="fbox">
-                        <div class="fleft version">
-                            <a:window skinset="collaborate" skin="dockextwin" modal="false" buttons="min|max|close" title="Static modal window" visible="true" resizable="true" minwidth="300" minheight="290" width="500" height="400"></a:window>
-                            <a:textarea class="winUIExtCode" width="550" value="" />
-                        </div>
-                    </div>
-                </div>
+                
             </div>
             
             
@@ -1766,7 +1841,7 @@
                     </div>
                 </div>
             </div>
-            
+                        
 <!--        
 <div class="ui-section">
                 <h2><a href="http://ui.ajax.org/#docs/element." target="_blank"></a></h2>
@@ -1924,10 +1999,10 @@ x Type: codebox Skinset: default Skin: codebox
 ? Type: toolbar Skinset: default Skin: toolbar
 * Type: tree Skinset: collaborate Skin: collaborators-tree
 * Type: tree Skinset: default Skin: tree
-    
-Windows?!
 
 -->
+
+
         </div>
     </a:window>
 </a:application>
