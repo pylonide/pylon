@@ -330,9 +330,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                         "<span class='codetools_colorpicker' style='",
                         "left:", left - 3, "px;",
                         "top:", top - 1, "px;",
-                        "height:", viewport.lineHeight, "px;",
-                        "' onclick='require(\'ext/codetools/codetools\').toggleColorPicker({row:",
-                        pos.row, ",column:", pos.column, ",color:\'", color, "\'});'", (markerId ? " id='" + markerId + "'" : ""), ">", color, "</span>"
+                        "height:", viewport.lineHeight, "px;'",
+                        (markerId ? " id='" + markerId + "'" : ""), ">", color, "</span>"
                     );
                 }, true);
                 Colors[id] = [range, marker, editor.session];

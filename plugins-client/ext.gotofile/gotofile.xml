@@ -23,12 +23,12 @@
               empty-message   = "No files found that match '{txtGoToFile.value}'">
                 <a:each match="[d:response/d:href]" />
                 <a:caption><?lm
-                    var re = new RegExp("({txtGoToFile.value})", 'i');
-                    var value = require('ext/gotofile/gotofile').arraySearchResults[[text()]] || "";
+                    var gotofile = require('ext/gotofile/gotofile');
+                    var value = gotofile.arraySearchResults[[text()]] || "";
                     <span>{
-                        (apf.getFilename(value) || "").replace(re, <strong>$1</strong>);
+                        gotofile.replaceStrong(apf.getFilename(value), txtGoToFile.value);
                     }</span>
-                    <span class="path">{value.replace(re, <strong>$1</strong>);}</span>
+                    <span class="path">{gotofile.replaceStrong(value, txtGoToFile.value);}</span>
                 ?></a:caption>
             </a:list>
         </a:vbox>

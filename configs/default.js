@@ -141,7 +141,7 @@ var config = [
             "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
-            "ext/language/liveinspect",
+            "ext/language/liveinspect"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"

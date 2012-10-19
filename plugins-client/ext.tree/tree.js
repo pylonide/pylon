@@ -191,16 +191,18 @@ module.exports = ext.register("ext/tree/tree", {
          * and adds nodes
          */
         ide.addEventListener("treechange", function(e) {
-            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, "");
-            var parent = trFiles.getModel().data.selectSingleNode(path);
+            var path = "//node()[@path='" + e.path.replace(/'/g, "\\'").replace(/\\/g, "\\\\") + "']";
+            var parent = trFiles.getModel().data.selectSingleNode(path)
 
             if (!parent)
                 return;
 
-            var nodes   = parent.childNodes;
-            var files   = e.files;
+            var nodes = parent.childNodes;
+            var files = {};
+            
+            e.files.forEach(function(f) {
+                files[f.name] = f;
+            });
 
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
                 for (var file in files) {
@@ -227,11 +229,11 @@ module.exports = ext.register("ext/tree/tree", {
             for (var filename in files) {
                 var file = files[filename];
 
-                var xmlNode = apf.n("<" + apf.escapeXML(file.type) + " />")
-                    .attr("type", file.type)
-                    .attr("name", filename)
-                    .attr("path", path + "/" + filename)
-                    .node();
+                var xmlNode = new apf.getXml("<" + apf.escapeXML(file.type) + " />");
+                xmlNode.setAttribute("type", file.type);
+                xmlNode.setAttribute("name", file.name);
+                xmlNode.setAttribute("path", path + "/" + file.name);
+                
                 trFiles.add(xmlNode, parent);
             }
         });
