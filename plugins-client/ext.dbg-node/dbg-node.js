@@ -99,8 +99,8 @@ oop.inherits(v8DebugClient, DebugHandler);
     };
 
     this.onBreak = function(e) {
-        var bps = e.data.breakpoints;
-        if (bps.length === 1 && bps[0] === 1)
+        var bps = e.data && e.data.breakpoints;
+        if (bps && bps.length === 1 && bps[0] === 1)
             return;
         var _self = this;
         this.backtrace(function() {
