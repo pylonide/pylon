@@ -627,7 +627,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (treeNode)
             apf.xmldb.removeNode(treeNode);
 
-        fs.remove(path + "/" + filename, this.upload);
+        fs.remove(treeNode, this.upload);
     },
 
     overwriteAll: function() {
