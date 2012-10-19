@@ -45,15 +45,11 @@ module.exports = ext.register("ext/preview/preview", {
         var page = this.page = doc.$page;
         doc.editor = this;
         var path = node.getAttribute("path");
-        node.setAttribute("name", "Preview: " + node.getAttribute("name").split(".#!preview")[0]);
+        node.setAttribute("name", "Preview: " + apf.getFilename(path).split(".#!preview")[0]);
         var url = path.substring(0, path.length - 10);
         var frmPreview = this.getIframe();
-        if (frmPreview.$ext.src !== url) {
-            // onload is fired when the url changes
-            page.setAttribute("class", "loading_active");
-            frmPreview.$ext.src = url;
-            this.getTextbox().setValue(url);
-        }
+        if (frmPreview.$ext.src !== url)
+            this.refresh(url);
         if (!doc.preview)
             doc.preview = {fd: ++this.counter};
         this.amlEditor.show();
@@ -109,9 +105,15 @@ module.exports = ext.register("ext/preview/preview", {
         });
 
         ide.addEventListener("splits.mutate", function(e) {
-            console.log("closing: ",e.action, e.page.$editor === _self);
-            if (e.action == "remove" && e.page.$editor === _self)
+            if (e.page.$editor !== _self)
+                return;
+            if (e.action === "add")
+                _self.split = e.split;
+            else if (e.action == "remove") {
+                _self.split = null;
+                _self.page = null;
                 editors.close(e.page);
+            }
         });
     },
 
@@ -123,6 +125,8 @@ module.exports = ext.register("ext/preview/preview", {
             type: "nofile",
             active: false
         });
+        if (this.split && this.page)
+            splits.mutate(this.split, this.page);
         setTimeout(function() {
             splits.mutate(null, tabEditors.getPage(path));
             splits.update(splits.getActive());
@@ -130,21 +134,29 @@ module.exports = ext.register("ext/preview/preview", {
     },
 
     popup: function (url) {
-        url = url || this.getTextbox().getValue();
-        var w = window.open(url);
+        url = url || txtPreview.getValue();
+        var w = window.open(url, "_blank");
         this.popups.push(w);
+    },
+
+    refresh: function (url) {
+        var frmPreview = this.getIframe();
+        if (!frmPreview || !this.page)
+            return;
+        url = url || txtPreview.getValue();
+        this.page.setAttribute("class", "loading_active");
+        frmPreview.$ext.src = url;
+        txtPreview.setValue(url);
+    },
+
+    close: function () {
+        this.page && editors.close(this.page);
     },
 
     init : function(){
         var editor = this.amlEditor = barPreview;
         this.enabled = false;
-        
         apf.importCssString(this.css || "");
-    },
-
-    getTextbox: function(editor) {
-        editor = editor || this.amlEditor;
-        return editor.selectSingleNode("//a:textbox");
     },
 
     getIframe: function(editor) {
@@ -169,12 +181,9 @@ module.exports = ext.register("ext/preview/preview", {
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
             return this.disable();
-        
         if (this.enabled)
             return;
-        
         this.enabled = true;
-
         this.nodes.each(function(item){
             item.enable && item.enable();
         });
@@ -184,7 +193,6 @@ module.exports = ext.register("ext/preview/preview", {
         if (!this.enabled)
             return;
         this.enabled = false;
-
         this.nodes.each(function(item){
             item.disable && item.disable();
         });
