@@ -4,6 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+/*global winGoToFile winBlockGotoFile tabEditors txtGoToFile dgGoToFile vboxGoToFile*/
 
 define(function(require, exports, module) {
 
@@ -25,7 +26,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     offline : false,
     type    : ext.GENERAL,
     markup  : markup,
-    offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
 
     eventsEnabled : true,
@@ -209,7 +209,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
     
     updateWinPos : function(){
-        if (!self["winGoToFile"])
+        if (!window.winGoToFile)
             return;
         
         if (!tabEditors.getPage() || !themes.isDark) {
@@ -248,7 +248,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.filter(search, state.sel.length);
 
             if (state.sel.length && state.sel.length < 100) {
-                var list = [], sel = state.sel;
+                var list = [];
+                sel = state.sel;
                 for (var i = 0, l = sel.length; i < l; i++) {
                     list.push(dgGoToFile.queryNode("//d:href[text()='"
                         + _self.arraySearchResults.indexOf(sel[i]) + "']"));
@@ -284,9 +285,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
 
             _self.arrayCache = array;
-
+            
             if (self.winGoToFile && _self.lastSearch) {
                 if (!winGoToFile.visible) {
+                    var $winGoToFileProVisible;
                     winGoToFile.addEventListener("prop.visible", $winGoToFileProVisible = function(e){
                         _self.windowVisible(e.value, data);
 
@@ -370,7 +372,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (!value)
             return "";
         keyword = keyword.replace(/\*/g, "");
-        var i, j;
+        var i;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
         var result = search.matchPath(value, keyword);
@@ -414,7 +416,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             vp.change(0, vp.limit, true);
 
             setTimeout(function(){
-                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
                 txtGoToFile.focus();
             });
         }
@@ -440,7 +442,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     openFile: function(noanim){
         var nodes = dgGoToFile.getSelection();
 
-        if (nodes.length == 0)
+        if (nodes.length === 0)
             return false;
 
         var _self = this;
