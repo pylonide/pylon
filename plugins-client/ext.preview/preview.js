@@ -39,6 +39,7 @@ module.exports = ext.register("ext/preview/preview", {
     },
     popups: [],
     page: null,
+    splits: [],
 
     setDocument : function(doc, actiontracker) {
         var node = doc.getNode();
@@ -110,19 +111,19 @@ module.exports = ext.register("ext/preview/preview", {
             if (e.page.$editor !== _self)
                 return;
             if (e.action === "add")
-                _self.split = e.split;
-            else if (e.action == "remove") {
-                _self.split = null;
-                _self.page = null;
-                // editors.close(e.page);
-            }
+                _self.splits.push(e.split);
+            else if (e.action == "remove")
+                _self.splits.remove(e.split);
         });
     },
 
     preview : function (url, tabView) {
         // window.open(url, "_blank");
-        if (this.split && this.page)
-            splits.mutate(this.split, this.page);
+        var page = tabEditors.getPage();
+        this.splits.forEach(function (split){
+            if (split.pairs.length === 2 && (page === split.pairs[0].page || page === split.pairs[1].page))
+                splits.mutate(split, split.pairs[1].page);
+        });
         setTimeout(function () {
             var path = url + ".#!preview";
             editors.gotoDocument({
@@ -145,7 +146,7 @@ module.exports = ext.register("ext/preview/preview", {
         this.popups.push(w);
     },
 
-    refresh: function (url) {
+    refresh: function (url, focus) {
         var frmPreview = this.getIframe();
         if (!frmPreview || !this.page)
             return;
@@ -153,6 +154,8 @@ module.exports = ext.register("ext/preview/preview", {
         this.page.setAttribute("class", "loading_active");
         frmPreview.$ext.src = url;
         txtPreview.setValue(url);
+        if (focus)
+            tabEditors.set(this.page);
     },
 
     close: function () {
