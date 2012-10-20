@@ -10,7 +10,7 @@ var completer = module.exports = Object.create(baseLanguageHandler);
 var modeCache = {}; // extension -> static data
 
 completer.handlesLanguage = function(language) {
-    return language === "css";
+    return ["css", "php"].indexOf(language) !== -1;
 };
 
 var CSS_ID_REGEX = /[a-zA-Z_0-9\$\-]/;
@@ -35,7 +35,7 @@ completer.fetchText = function(staticPrefix, path) {
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, CSS_ID_REGEX);
-    if(!identifier.length || line[pos.column - identifier.length - 1] === '.') // No snippet completion after "."
+    if(!identifier.length) // No completion after "."
         return callback([]);
 
     var mode = modeCache[this.language];
@@ -49,19 +49,35 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         modeCache[this.language] = mode;
     }
 
+    function getIcon(type) {
+        var iconMap = {
+            "variable": "property",
+            "constant": "property",
+            "function": "method"
+        };
+        var subs = Object.keys(iconMap);
+        for (var i = 0; i < subs.length; i++)
+            if (type.indexOf(subs[i]) !== -1)
+                return iconMap[subs[i]];
+        return null;
+    }
+
     // keywords, functions, constants, ..etc
     var types = Object.keys(mode);
     var matches = [];
     types.forEach(function (type) {
+        var icon = getIcon(type);
+        var append = type.indexOf("function") === -1 ? "" : "()";
+        var deprecated = type.indexOf("deprecated") === -1 ? 0 : 1;
         var compls = completeUtil.findCompletions(identifier, mode[type]);
         matches.push.apply(matches, compls.map(function(m) {
             return {
               name        : m,
-              replaceText : m,
-              doc         : null,
-              icon        : null,
+              replaceText : m + append,
+              doc         : deprecated ? ("Deprecated: <del>" + m+append + "</del>") : null,
+              icon        : icon,
               meta        : type,
-              priority    : 2
+              priority    : 2 - deprecated
             };
         }));
     });

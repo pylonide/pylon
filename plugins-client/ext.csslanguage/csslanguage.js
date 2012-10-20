@@ -20,7 +20,6 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
 
     init : function() {
         language.registerLanguageHandler("ext/csslanguage/css_handler");
-        language.registerLanguageHandler("ext/codecomplete/mode_completer");
     },
 
     enable : function() {

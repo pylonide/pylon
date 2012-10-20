@@ -101,6 +101,10 @@ function isJavaScript() {
     return editors.currentEditor.amlEditor.syntax === "javascript";
 }
 
+function isHtml() {
+    return editors.currentEditor.amlEditor.syntax === "html";
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
  * indicates the cursor position after the replacement.
@@ -125,7 +129,7 @@ function asyncReplaceText(editor, prefix, match) {
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
         isInvokeScheduled = true;
-    }   
+    }
     
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
@@ -134,9 +138,12 @@ function asyncReplaceText(editor, prefix, match) {
     // Find prefix whitespace of current line
     for (var i = 0; i < line.length && (line[i] === ' ' || line[i] === "\t");)
         i++;
-    
+
     var prefixWhitespace = line.substring(0, i);
     
+    if (isHtml() && line[i] === '<' && newText[0] === '<')
+        newText = newText.substring(1);
+
     var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
     
     // Pad the text to be inserted
@@ -154,7 +161,7 @@ function asyncReplaceText(editor, prefix, match) {
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
     
-    var cursorCol = pos.column + colOffset - prefix.length;
+    var cursorCol = rowOffset ? colOffset : pos.column + colOffset - prefix.length;
     
     if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
