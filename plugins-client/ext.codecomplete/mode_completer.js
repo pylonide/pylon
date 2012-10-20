@@ -19,23 +19,6 @@ completer.handlesLanguage = function(language) {
 
 var CSS_ID_REGEX = /[a-zA-Z_0-9\$\-]/;
 
-completer.fetchText = function(staticPrefix, path) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', staticPrefix + "/" + path, false);
-    try {
-        xhr.send();
-    }
-    // Likely we got a cross-script error (equivalent with a 404 in our cloud setup)
-    catch(e) {
-        return false;
-    }
-    
-    if(xhr.status === 200)
-        return xhr.responseText;
-    else
-        return false;
-};
-
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column,
@@ -48,7 +31,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     if (mode === undefined) {
         var text;
         if (this.language)
-            text = this.fetchText(this.staticPrefix, 'ext/codecomplete/modes/' + this.language + '.json');
+            text = completeUtil.fetchText(this.staticPrefix, 'ext/codecomplete/modes/' + this.language + '.json');
         mode = text ? JSON.parse(text) : {};
         // Cache
         modeCache[this.language] = mode;

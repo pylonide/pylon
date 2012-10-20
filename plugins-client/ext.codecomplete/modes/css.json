@@ -5,5 +5,5 @@
     "color": ["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "orange", "purple", "red", "silver", "teal", "white", "yellow"],
     "font": ["arial", "century", "comic", "courier", "garamond", "georgia", "helvetica", "impact", "lucida", "symbol", "system", "tahoma", "times", "trebuchet", "utopia", "verdana", "webdings", "sans-serif", "serif", "monospace"],
     "pseudo.element": ["after", "before", "first-letter", "first-line", "moz-selection", "selection"],
-    "pseudo.classe": ["active", "checked", "disabled", "empty", "enabled", "first-child", "first-of-type", "focus", "hover", "indeterminate", "invalid", "last-child", "last-of-type", "link", "not", "nth-child", "nth-last-child", "nth-last-of-type", "nth-of-type", "only-child", "only-of-type", "required", "root", "target", "valid", "visited"]
+    "pseudo.class": ["active", "checked", "disabled", "empty", "enabled", "first-child", "first-of-type", "focus", "hover", "indeterminate", "invalid", "last-child", "last-of-type", "link", "not", "nth-child", "nth-last-child", "nth-last-of-type", "nth-of-type", "only-child", "only-of-type", "required", "root", "target", "valid", "visited"]
 }
