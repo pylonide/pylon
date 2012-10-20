@@ -1,5 +1,9 @@
-var globalRequire = require;
-
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
@@ -10,7 +14,7 @@ var completer = module.exports = Object.create(baseLanguageHandler);
 var snippetCache = {}; // extension -> snippets
     
 completer.handlesLanguage = function(language) {
-    return ["html", "javascript"].indexOf(language) !== -1;
+    return ["javascript"].indexOf(language) !== -1;
 };
 
 completer.fetchText = function(staticPrefix, path) {
@@ -61,6 +65,5 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         };
     }));
 };
-
 
 });

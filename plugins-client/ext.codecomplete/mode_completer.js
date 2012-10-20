@@ -1,5 +1,9 @@
-var globalRequire = require;
-
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
 define(function(require, exports, module) {
 
 var completeUtil = require("ext/codecomplete/complete_util");
@@ -34,7 +38,8 @@ completer.fetchText = function(staticPrefix, path) {
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, CSS_ID_REGEX);
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column,
+            this.language === "css" ? CSS_ID_REGEX : null);
     if(!identifier.length) // No completion after "."
         return callback([]);
 

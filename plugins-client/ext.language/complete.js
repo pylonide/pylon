@@ -22,6 +22,9 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+// Adding HAML to HTML syntax completion
+var HTML_REGEX = /[a-zA-Z_0-9\$\_.#]/;
+
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 1500;
@@ -75,10 +78,11 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos) {
+function retrievePreceedingIdentifier(text, pos, regex) {
+    regex = regex || (isHtml() && HTML_REGEX) || ID_REGEX;
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
-        if(ID_REGEX.test(text[i]))
+        if(regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
@@ -141,7 +145,9 @@ function asyncReplaceText(editor, prefix, match) {
 
     var prefixWhitespace = line.substring(0, i);
     
-    if (isHtml() && line[i] === '<' && newText[0] === '<')
+    // Remove HTML duplicate '<' completions
+    var preId = retrievePreceedingIdentifier(line, pos.column);
+    if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
         newText = newText.substring(1);
 
     var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
@@ -538,7 +544,7 @@ module.exports = {
                 matches.splice(i, 1);
                 i--;
             }
-        }        
+        }
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0]);

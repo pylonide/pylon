@@ -10,8 +10,8 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var language = require("ext/language/language");
 
-module.exports = ext.register("ext/csslanguage/csslanguage", {
-    name    : "CSS Language Support",
+module.exports = ext.register("ext/htmllanguage/htmllanguage", {
+    name    : "HTML Language Support",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, language],
@@ -19,7 +19,7 @@ module.exports = ext.register("ext/csslanguage/csslanguage", {
     alone   : true,
 
     init : function() {
-        language.registerLanguageHandler("ext/csslanguage/css_handler");
+        language.registerLanguageHandler("ext/htmllanguage/html_completer");
     },
 
     enable : function() {
