@@ -17,6 +17,7 @@ var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 var linereport = require("ext/linereport/linereport_base");
+var SyntaxDetector = require("ext/language/syntax_detector");
 
 var WARNING_LEVELS = {
     error: 3,
@@ -841,10 +842,12 @@ function asyncParForEach(array, fn, callback) {
             _self.findNode(ast, currentPos, function(node) {
                 var currentNode = node;
                 var matches = [];
-        
+
+            var language = SyntaxDetector.getContextSyntax(_self.doc, data.pos, _self.$language);
             asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language)) {
+                if (handler.handlesLanguage(language)) {
                         handler.staticPrefix = data.staticPrefix;
+                        handler.language = language;
                         handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
                         if (completions)
                             matches = matches.concat(completions);
