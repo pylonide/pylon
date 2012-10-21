@@ -223,8 +223,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg"
-              || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
+            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" ||
+                (line && line.indexOf("<a:skin") > -1)))
                 return;
 
             line = doc.getLine(pos.row);

@@ -4,6 +4,7 @@ module.exports = {
     "script": "<script type=\"text/javascript\" src=\"^^\"></script>",
     "csslink": "<link rel=\"stylesheet\" href=\"^^\" type=\"text/css\" />",
     "link": "<link rel=\"stylesheet\" href=\"^^\" type=\"text/css\" />",
+    "style": "<style type=\"text/css\">\n    ^^\n</style>",
     "amailto": "<a href=\"mailto:^^\"></a>",
     "html": "<!DOCTYPE html>\n<html>\n    ^^\n</html>",
     "body": "<body>\n    ^^\n</body>",

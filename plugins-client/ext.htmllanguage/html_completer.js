@@ -16,7 +16,7 @@ completer.handlesLanguage = function(language) {
     return language === "html";
 };
 
-var HAML_REGEX = /([a-zA-Z]*)([.#])([\w]+)$/;
+var JADE_REGEX = /.*([a-zA-Z]*)([.#])([\w]+)/;
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
