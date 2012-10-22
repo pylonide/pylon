@@ -43,7 +43,10 @@
                 env: <%env%>,
                 settings: <%settingsXml%>,
                 packed: <%packed%>,
-                packedName: <%packedName%>
+                packedName: <%packedName%>,
+                metrics: {
+                    captureCommandsRegex: [%metricCommandRegex%]
+                }
             };
 
             // prevent console messages from crashing our app!

@@ -314,6 +314,21 @@ module.exports = ext.register("ext/console/console", {
                     command_id : this.command_id_tracer
                 }
             };
+            
+            // so there are some commands that we want to catch 
+            // and some that we don't really care about
+            var re = window.cloud9config.metrics.captureCommandsRegex;
+            if (re instanceof RegExp && re.test(cmd)) {
+                // record the data as a metric
+                ide.dispatchEvent("metrics.record", {
+                    label: "console",
+                    data: {
+                        command: cmd, // command is nice to have
+                        arg0: argv[1], // arg0 is nice to filter on
+                        args: argv.slice(2).join(" ") // slice doesnt manipulate source array so thats ok
+                    }
+                });
+            }
 
             if (cmd.trim() === "npm")
                 data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
