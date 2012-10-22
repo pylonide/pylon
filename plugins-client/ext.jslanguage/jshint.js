@@ -32,6 +32,7 @@ handler.analyzeSync = function(doc, ast) {
         return markers;
 
     lint(value, {
+        es5: true,
         undef: false,
         onevar: false,
         passfail: false,
