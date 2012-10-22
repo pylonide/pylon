@@ -16,11 +16,11 @@ completer.handlesLanguage = function(language) {
     return language === "html";
 };
 
-var JADE_REGEX = /.*([a-zA-Z]*)([.#])([\w]+)/;
+var JADE_REGEX = /.*?([a-zA-Z]*)([.#])([\w]+)/;
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var match = HAML_REGEX.exec(line.substring(0, pos.column));
+    var match = JADE_REGEX.exec(line.substring(0, pos.column));
     if(match) {
         var replaceText;
         var snippet = htmlSnippets[match[1]];
@@ -35,11 +35,11 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 "\">^^", "</", match[1] || "div", ">"].join("");
         }
         callback([{
-              name        : match[0],
+              name        : match[1]+match[2]+match[3],
               replaceText : replaceText,
               doc         : "<pre>" + replaceText.replace("\^\^", "&#9251;") + "</pre>",
               icon        : null,
-              meta        : "HAML",
+              meta        : "Jade-Haml",
               priority    : 100
         }]);
     }
