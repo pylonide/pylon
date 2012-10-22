@@ -57,6 +57,22 @@
               checked = "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
               caption = "Auto show/hide debug tools" />
         </a:menu>
+        
+        <a:menu id="mnuRunCfg" style="margin-left:-137px" skin="mnuRunCfg">
+            <div class="window">
+                <div class="tooltip"></div>
+                <div class="fbox">
+                    <div class="col col1">
+                        <div class="title"></div>
+                        <div class="black"></div>
+                    </div>
+                    <div class="col col2">
+                        <div class="title"></div>
+                        <div class="gray"></div>
+                    </div>
+                </div>
+            </div>
+        </a:menu>
       
         <a:vbox anchors="0 0 0 0">
             <a:list id="lstRunCfg" 
@@ -65,7 +81,7 @@
               each    = "[config]"
               caption = "[@name]"
               flex    = "1"
-              skin    = "tree"
+              skin    = "runconfigurations"
               class   = "openfile rundebug"
               autoselect    = "false"
               empty-message = "no run configurations"

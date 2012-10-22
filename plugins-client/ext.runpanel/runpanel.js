@@ -83,7 +83,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         this.nodes.push(
             this.mnuRunCfg = new apf.menu({
-                "id" : "mnuRunCfg",
+                "id" : "mnuRunCfg_old",
                 "onprop.visible" : function(e){
                     if (e.value) {
                         if (!this.populated) {
