@@ -133,7 +133,8 @@ module.exports = ext.register("ext/language/language", {
         var worker = this.worker;
         apf.importCssString(css);
         
-        if (!editors.currentEditor || !editors.currentEditor.amlEditor)
+        if (!(editors.currentEditor && editors.currentEditor.amlEditor &&
+            editors.currentEditor.amlEditor.$editor))
             return;
 
         this.editor = editors.currentEditor.amlEditor.$editor;

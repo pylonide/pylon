@@ -43,7 +43,7 @@ module.exports = ext.register("ext/preview/preview", {
 
     setDocument : function(doc, actiontracker) {
         var node = doc.getNode();
-        var page = this.page = doc.$page;
+        this.page = doc.$page;
         doc.editor = this;
         var path = node.getAttribute("path");
         node.setAttribute("name", "Preview: " + apf.getFilename(path).split(".#!preview")[0]);
