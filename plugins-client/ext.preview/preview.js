@@ -112,7 +112,7 @@ module.exports = ext.register("ext/preview/preview", {
                 return;
             if (e.action === "add")
                 _self.splits.push(e.split);
-            else if (e.action == "remove")
+            else if (e.action === "remove")
                 _self.splits.remove(e.split);
         });
     },
@@ -121,7 +121,7 @@ module.exports = ext.register("ext/preview/preview", {
         // window.open(url, "_blank");
         var page = tabEditors.getPage();
         this.splits.forEach(function (split){
-            if (split.pairs.length === 2 && (page === split.pairs[0].page || page === split.pairs[1].page))
+            if (split.pairs.length === 2 && page === split.pairs[1].page)
                 splits.mutate(split, split.pairs[1].page);
         });
         setTimeout(function () {
