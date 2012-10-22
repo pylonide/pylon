@@ -10,7 +10,6 @@ var Document = require("ace/document").Document;
 var completer = require("ext/htmllanguage/html_completer");
 
 module.exports = {
-    timeout: 1000000,
     
     "test basic snippet completion 1" : function(next) {
         var doc = new Document("<bo");
