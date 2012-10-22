@@ -111,8 +111,9 @@ util.inherits(SearchPlugin, Plugin);
 
     this.assembleSearchCommand = function(options) {
         var include = "";
-        var cmd = grepCmd + " -P -s -r --color=never --binary-files=without-match -n " +
-            (!options.casesensitive ? "-i" : "");
+        var cmd = grepCmd + " -s -r --color=never --binary-files=without-match -n " +
+            (!options.casesensitive ? "-i " : "") +
+            (process.platform != "darwin" ? "-P " : "");
 
         if (options.pattern) { // handles grep peculiarities with --include
             if (options.pattern.split(",").length > 1)
@@ -121,7 +122,7 @@ util.inherits(SearchPlugin, Plugin);
                 include = options.pattern;
         }
         else {
-            include = "\\*{" + PATTERN_EXT + "}";
+            include = (process.platform != "darwin" ? "\\" : "") + "*{" + PATTERN_EXT + "}";
         }
 
         if (options.maxresults)
@@ -148,10 +149,10 @@ util.inherits(SearchPlugin, Plugin);
 
         query = query.replace(new RegExp("\\\'", "g"), "'\\''"); // ticks must be double escaped for BSD grep
 
-        cmd += " --exclude=*{" + PATTERN_EDIR + "}*"
-            +  " --include=" + include
-            + " '" + query.replace(/-/g, "\\-") + "'"
-            + " \"" + escapeShell(options.path) + "\"";
+        cmd += " --exclude=*{" + PATTERN_EDIR + "}*" +
+               " --include=" + include +
+               " '" + query.replace(/-/g, "\\-") + "'" +
+               " \"" + escapeShell(options.path) + "\"";
 
         if (options.replaceAll) {
             if (!options.replacement)
