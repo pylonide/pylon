@@ -7,11 +7,12 @@
 
 define(function(require, exports, module) {
 
+/*global tabEditors ceEditor mnuSyntax*/
+
 require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
@@ -234,12 +235,12 @@ module.exports = ext.register("ext/code/code", {
         if (self.ceEditor)
             self.ceEditor.setAttribute("syntax", this.getSyntax(file));
     },
-    
+
     getContentType : function(node) {
         var syntax = this.getSyntax(node);
         if (!syntax)
             return "auto";
-        
+
         return SupportedModes[syntax].mime || "auto";
     },
 
@@ -281,7 +282,7 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
-                
+
                 if (!doc || !doc.acesession)
                     return; //This is probably a deconstructed document
 
@@ -343,7 +344,7 @@ module.exports = ext.register("ext/code/code", {
                     //??? call doc.$page.destroy()
                 });
             });
-            
+
             doc.dispatchEvent("init");
         }
 
@@ -368,38 +369,7 @@ module.exports = ext.register("ext/code/code", {
 
     hook: function() {
         var _self = this;
-
-        var fnWrap = function(command){
-            command.readOnly = command.readOnly || false;
-            command.focusContext = true;
-
-            var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor, event) {
-                if (event instanceof KeyboardEvent &&
-                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
-                    return false;
-
-                return isAvailable ? isAvailable(editor) : true;
-            };
-
-            command.findEditor = function(editor) {
-                if (editor && editor.ceEditor)
-                    return editor.ceEditor.$editor;
-                return editor;
-            };
-        };
-
-        if (!defaultCommands.wrapped) {
-            defaultCommands.each(fnWrap, defaultCommands);
-            defaultCommands.wrapped = true;
-        }
-        if (!MultiSelectCommands.wrapped) {
-            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
-            MultiSelectCommands.wrapped = true;
-        }
-
-        commands.addCommands(defaultCommands, true);
-        commands.addCommands(MultiSelectCommands, true);
+        this.wrapAceCommands();
 
         commands.addCommand({
             name: "syntax",
@@ -458,26 +428,66 @@ module.exports = ext.register("ext/code/code", {
                 // path without dav prefix and without trailing slashes
                 var path = (e.nextPage.name.indexOf(e.currentTarget.davPrefix) === 0 ?
                     e.nextPage.name.substr(e.currentTarget.davPrefix.length) :
-                    e.nextPage.name).replace(/^\/+/, "")
-                
+                    e.nextPage.name).replace(/^\/+/, "");
+
                 editor.afterOpenFile(editor.getSession(), path);
             }
         });
+
+        this.registerMenuItems();
+    },
+
+    wrapAceCommands: function() {
+        var fnWrap = function(command){
+            command.readOnly = command.readOnly || false;
+            command.focusContext = true;
+
+            var isAvailable = command.isAvailable;
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
+                    return false;
+
+                return isAvailable ? isAvailable(editor) : true;
+            };
+
+            command.findEditor = function(editor) {
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
+                return editor;
+            };
+        };
+
+        if (!defaultCommands.wrapped) {
+            defaultCommands.each(fnWrap, defaultCommands);
+            defaultCommands.wrapped = true;
+        }
+        if (!MultiSelectCommands.wrapped) {
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
+            MultiSelectCommands.wrapped = true;
+        }
+
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
+
 
         // Override ACE key bindings (conflict with goto definition)
         commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Alt-Shift-R" };
         commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Alt-R" };
         commands.addCommand(commands.commands.togglerecording);
         commands.addCommand(commands.commands.replaymacro);
+    },
 
-        c = 20000;
+    registerMenuItems: function() {
+        var _self = this;
+        var c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
             addEditorMenu("Tools/Toggle Macro Recording", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
 
-        var c = 600;
+        c = 600;
         this.menus.push(
             menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
             menus.addItemByPath("Edit/Line/", null, c += 100),
@@ -663,11 +673,11 @@ module.exports = ext.register("ext/code/code", {
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;
-                        
+
                     var page = tabEditors.getPage();
-                    if (page.$model) 
+                    if (page.$model)
                         return apf.isTrue(page.$model.queryValue("@wrapmode"));
-                    
+
                     return false;
                 }
             }), 600000)
@@ -806,11 +816,11 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("afteronline", function(){
             menus.menus["View/Syntax"].enable();
         });
-        
+
         ide.addEventListener("animate", function(e){
             if (!ceEditor.$ext.offsetHeight)
                 return;
-        
+
             if (e.type == "editor") {
                 var renderer = ceEditor.$editor.renderer;
                 renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
@@ -819,19 +829,54 @@ module.exports = ext.register("ext/code/code", {
                 if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getHeight() - parseInt(e.options.height);
                     if (delta < 0) return;
-                    
+
                     var renderer = ceEditor.$editor.renderer;
                     renderer.onResize(true, null, null, ceEditor.getHeight() + delta);
                 }
                 else if (e.options.width != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getWidth() - parseInt(e.options.width);
                     if (delta < 0) return;
-                    
+
                     var renderer = ceEditor.$editor.renderer;
                     renderer.onResize(true, null, ceEditor.getWidth() + delta);
                 }
             }
         });
+        
+        // display feedback while loading files
+        var isOpen, bgMessage;
+        var checkLoading = function(e) {
+            if (!ceEditor.xmlRoot)
+                return;
+            var loading = ceEditor.xmlRoot.hasAttribute("loading");
+            var container = ceEditor.$editor.container;
+
+            if (loading) {
+                if (!bgMessage || !bgMessage.parentNode) {
+                    bgMessage = bgMessage|| document.createElement("div");                    
+                    container.parentNode.appendChild(bgMessage);
+                }
+                var isDark = container.className.indexOf("ace_dark")!=-1;
+                bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
+                
+                bgMessage.textContent = "Loading " + ceEditor.xmlRoot.getAttribute("name");
+                container.style.transitionProperty = "opacity";
+                container.style.transitionDuration = "300ms";
+                container.style.pointerEvents = "none";
+                container.style.opacity = 0;
+                isOpen = true;
+            } else if (isOpen) {
+                isOpen = false;
+                container.style.opacity = 1;
+                container.style.pointerEvents = "";
+            }
+        };
+
+        ide.addEventListener("openfile", function(){
+            setTimeout(checkLoading, 0);
+        });
+        ide.addEventListener("afteropenfile", checkLoading);
+        ide.addEventListener("tab.afterswitch", checkLoading);
     },
 
     /**
@@ -938,3 +983,5 @@ module.exports = ext.register("ext/code/code", {
 });
 
 });
+
+

@@ -134,7 +134,7 @@ var config = [
             "ext/jslanguage/jslanguage",
             "ext/csslanguage/csslanguage",
             "ext/htmllanguage/htmllanguage",
-            //"ext/autotest/autotest",
+            "ext/autotest/autotest",
             "ext/closeconfirmation/closeconfirmation",
             "ext/codetools/codetools",
             "ext/colorpicker/colorpicker",

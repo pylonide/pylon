@@ -7,7 +7,7 @@
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
-var lint = require("ace/worker/jshint").JSHINT;
+var lint = require("ace/mode/javascript/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
 var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
