@@ -21,60 +21,65 @@ handler.analyze = function(doc, ast, callback) {
 };
 
 handler.analyzeSync = function(doc, ast) {
+    var markers = [];
+    if (!this.isFeatureEnabled("jshint"))
+        return markers;
+
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
+    // jshint throws error when called on empty string
+    if (!value)
+        return markers;
 
-    var markers = [];
-    if (this.isFeatureEnabled("jshint")) {
-        lint(value, {
-            undef: false,
-            onevar: false,
-            passfail: false,
-            devel: true,
-            browser: true,
-            node: true,
-            esnext: true,
-            expr: true,
-            laxbreak: true,
-            laxcomma: true,
-            loopfunc: true,
-            lastsemic: true,
-            multistr: true
-        });
-        
-        lint.errors.forEach(function(warning) {
-            if (!warning)
+    lint(value, {
+        es5: true,
+        undef: false,
+        onevar: false,
+        passfail: false,
+        devel: true,
+        browser: true,
+        node: true,
+        esnext: true,
+        expr: true,
+        laxbreak: true,
+        laxcomma: true,
+        loopfunc: true,
+        lastsemic: true,
+        multistr: true
+    });
+    
+    lint.errors.forEach(function(warning) {
+        if (!warning)
+            return;
+        var type = "warning";
+        var reason = warning.reason;
+        if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+            type = "error";
+        if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
+            type = "error";
+        if (reason.indexOf("Missing semicolon") !== -1)
+            type = "info";
+        if (reason.indexOf("better written in dot") !== -1)
+            type = "info";
+        if (reason.indexOf("used out of scope") !== -1)
+            type = "info";
+        if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
+            type = "warning";
+            warning.reason = "Assignment in conditional expression";
+        }
+        for (var i = 0; i < disabledJSHintWarnings.length; i++)
+            if(disabledJSHintWarnings[i].test(warning.reason))
                 return;
-            var type = "warning";
-            var reason = warning.reason;
-            if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
-                type = "error";
-            if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
-                type = "error";
-            if (reason.indexOf("Missing semicolon") !== -1)
-                type = "info";
-            if (reason.indexOf("better written in dot") !== -1)
-                type = "info";
-            if (reason.indexOf("used out of scope") !== -1)
-                type = "info";
-            if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
-                type = "warning";
-                warning.reason = "Assignment in conditional expression";
-            }
-            for (var i = 0; i < disabledJSHintWarnings.length; i++)
-                if(disabledJSHintWarnings[i].test(warning.reason))
-                    return;
-            markers.push({
-                pos: {
-                    sl: warning.line-1,
-                    sc: warning.column-1
-                },
-                type: type,
-                level: type,
-                message: warning.reason
-            });
+        markers.push({
+            pos: {
+                sl: warning.line-1,
+                sc: warning.character-1
+            },
+            type: type,
+            level: type,
+            message: warning.reason
         });
-    }
+    });
     return markers;
 };
 
