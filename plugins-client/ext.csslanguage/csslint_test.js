@@ -16,14 +16,14 @@ module.exports = {
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
         emitter.on("markers", function(markers) {
-            // using id & false color
+            // false color & empty selector
             assert.equal(markers.length, 2);
             next();
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/csslanguage/css_handler");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.css", "css", "#hello { color: 1px; }");
+        worker.switchFile("test.css", "css", "#hello { color: 1px; } #nonused{}");
     }
 };
 
