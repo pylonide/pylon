@@ -18,7 +18,6 @@ var Path = require("path");
 var Ide = module.exports = function(options) {
     EventEmitter.call(this);
 
-console.log(options);
     assert(options.workspaceId, "option 'workspaceId' is required");
     assert(options.workspaceDir, "option 'workspaceDir' is required");
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
