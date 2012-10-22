@@ -73,7 +73,7 @@ handler.analyzeSync = function(doc, ast) {
         markers.push({
             pos: {
                 sl: warning.line-1,
-                sc: warning.column-1
+                sc: warning.character-1
             },
             type: type,
             level: type,
