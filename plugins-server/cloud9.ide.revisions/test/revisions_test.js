@@ -49,7 +49,7 @@ module.exports = {
             root: ___dirname,
             checkSymlinks: true
         });
-        
+
         Fs.mkdirSync(Path.join(___dirname, ".c9revisions"));
 
         RevisionsModule(null, {
@@ -64,6 +64,11 @@ module.exports = {
             setTimeout(function() {
                 // Give some time to the inheritance chaing to be set properly
                 self.revisionsPlugin = new Plugin(ide, workspace);
+                self.cData = {
+                    _plugin: Plugin,
+                    _ide: ide,
+                    _ws: workspace
+                };
                 next();
             }, 100);
         });
@@ -114,11 +119,11 @@ module.exports = {
     "test getRevisions with a valid path": function(next) {
         var file = Path.join(___dirname, ".c9revisions", Path.basename(__filename) + ".c9save");
         try {
-            
+
             Fs.writeFileSync(file, "", "utf8");
         }
-        catch(e) { 
-            assert(false, e); 
+        catch(e) {
+            assert(false, e);
         }
 
         var R = this.revisionsPlugin;
@@ -257,12 +262,12 @@ module.exports = {
                 });
         });
     },
-    
+
     "test onRemoveRevision empty path": function(next) {
         var R = this.revisionsPlugin;
         R.onRemoveRevision(
             null,
-            { path: "" }, 
+            { path: "" },
             function(err) {
                 assert.ok(err);
                 next();
@@ -273,12 +278,12 @@ module.exports = {
             }
         );
     },
-    
+
     "test onRemoveRevision invalid filepath": function(next) {
         var R = this.revisionsPlugin;
         R.onRemoveRevision(
             null,
-            { path: "madeup/path/test.js" }, 
+            { path: "madeup/path/test.js" },
             function(err) {
                 assert.ok(false, "Should never get here: " + err);
                 next();
@@ -289,12 +294,12 @@ module.exports = {
             }
         );
     },
-    
+
     "test onRemoveRevision invalid folderpath": function(next) {
         var R = this.revisionsPlugin;
         R.onRemoveRevision(
             null,
-            { path: "madeup/path", isFolder: true }, 
+            { path: "madeup/path", isFolder: true },
             function(err) {
                 assert.ok(false, "Should never get here: " + err);
                 next();
@@ -309,13 +314,13 @@ module.exports = {
     "test onRemoveRevision valid filepath": function(next) {
         var R = this.revisionsPlugin;
         var fileName = ___dirname + "/.c9revisions/test_rev.js.c9save";
-        
+
         Fs.writeFile(fileName, "ABCDEFGH", function(err) {
             assert.ok(!err);
-            
+
             R.onRemoveRevision(
                 null,
-                { path: "test_rev.js.c9save", isFolder: true }, 
+                { path: "test_rev.js.c9save", isFolder: true },
                 function(err) {
                     assert.ok(false, "Should never get here: " + err);
                     next();
@@ -327,7 +332,7 @@ module.exports = {
             );
         });
     },
-         
+
     "test retrieve revision for a new file [flow]": function(next) {
         var revPath = Path.join(___dirname, ".c9revisions");
         var savePath = Path.join(revPath, "package.json.c9save");
@@ -360,7 +365,7 @@ module.exports = {
 
     "test saving revision [flow]": function(next) {
         var fileName = ___dirname + "/test_saving.txt";
-        var revPath = ___dirname + "/.c9revisions";
+        // var revPath = ___dirname + "/.c9revisions";
         var R = this.revisionsPlugin;
 
         R.ide.broadcast = sinon.spy();
@@ -396,15 +401,68 @@ module.exports = {
                 assert.equal(userBcastSpy.called, true);
 
                 var _mainRevObj = broadcastRevisions.args[0][0];
-                var ts = Object.keys(_mainRevObj)[0];
-                var revObj = _mainRevObj[ts];
+                // var ts = Object.keys(_mainRevObj)[0];
+                // var revObj = _mainRevObj[ts];
                 var path = broadcastRevisions.args[0][2]._revPath;
                 var revisions = Object.keys(_mainRevObj);
 
                 assert.equal(path, ".c9revisions/test_saving.txt.c9save");
+                assert.ok(Path.existsSync(".c9revisions/test_saving.txt.c9save"));
                 assert.equal(typeof _mainRevObj, "object");
                 assert.equal(revisions.length, 1);
                 next();
+            }, 500);
+        });
+    },
+
+    ">test that removed files get their revisions deleted on startup": function(next) {
+        var R = this.revisionsPlugin;
+        var fileName = ___dirname + "/test_saving.txt";
+
+        R.ide.broadcast = sinon.spy();
+        var broadcastRevisions = sinon.spy(R, "broadcastRevisions");
+        var userBcastSpy = sinon.spy();
+
+        var _self = this;
+        Fs.writeFile(fileName, "ABCDEFGH", function(err) {
+            assert.equal(err, null);
+            R.onSaveRevision.call(R,
+                {
+                    data: { email: "sergi@c9.io" },
+                    broadcast: userBcastSpy
+                },
+                {
+                    path: Path.basename(fileName),
+                    silentsave: true,
+                    restoring: true,
+                    contributors: ["sergi@c9.io", "mike@c9.io"],
+                    content: "123456789",
+                    forceRevisionListResponse: true
+                },
+                function(err, path, revObj) {
+                    assert.ok(!err, err);
+                }
+            );
+
+            setTimeout(function() {
+                var _mainRevObj = broadcastRevisions.args[0][0];
+                var path = broadcastRevisions.args[0][2]._revPath;
+                var revisions = Object.keys(_mainRevObj);
+
+                assert.equal(path, ".c9revisions/test_saving.txt.c9save");
+                assert.ok(Path.existsSync(path));
+                assert.equal(typeof _mainRevObj, "object");
+                assert.equal(revisions.length, 1);
+
+                // Remove original
+                Fs.unlinkSync(fileName);
+                assert.ok(!Path.existsSync(fileName));
+
+                var _R = new _self.cData._plugin(_self._ide, _self._ws);
+                setTimeout(function() {
+                    assert.ok(!Path.existsSync(path));
+                    next();
+                }, 500);
             }, 500);
         });
     }
