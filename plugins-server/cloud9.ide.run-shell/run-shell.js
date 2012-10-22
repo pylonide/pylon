@@ -40,4 +40,13 @@ module.exports = function (pm, fs, eventbus) {
         eventbus.on(channel, listener);
     };
     
+    /**
+     * Lifecycle function that you can call to determine whether this plugin
+     * is busy
+     * @return Boolean Indicating whether we're busy
+     */
+    this.canShutdown = function() {
+        return _self.processCount === 0;
+    };
+    
 };
