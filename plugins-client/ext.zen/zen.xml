@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:button id="btnZenFullscreen"
-      visible = "{tabEditors.getPage() and tabEditors.getPage().type == 'ext/code/code'}"
+      visible = "{tabEditors.activepage and tabEditors.getPage().type != 'ext/preview/preview'}"
       width   = "26"
       height  = "26"
       top     = "13"
