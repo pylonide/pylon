@@ -187,7 +187,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.offlineQueue = JSON.parse(localStorage.offlineQueue);
             }
             catch(e) {
-                console.error("Couldn't parse revisions from local storage", e, localStorage.offlineQueue);
                 this.offlineQueue = [];
             }
         }
