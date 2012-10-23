@@ -324,18 +324,11 @@ function asyncParForEach(array, fn, callback) {
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
-                try {
-                    handler.parse(_self.doc.getValue(), function(ast) {
-                        if(ast)
-                            _self.cachedAst = ast;
-                        next();
-                    });
-                } catch(e) {
-                    if (e instanceof TypeError || e instanceof ReferenceError || typeof e === 'AssertionError')
-                        throw e;
-                    // Ignore parse errors
+                handler.parse(_self.doc.getValue(), function(ast) {
+                    if (ast)
+                        _self.cachedAst = ast;
                     next();
-                }
+                });
             } else {
                 next();
             }
