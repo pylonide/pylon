@@ -87,8 +87,10 @@ util.inherits(SearchPlugin, Plugin);
         var args;
         if (type === "codesearch")
             args = this.assembleSearchCommand(message);
-        else if (type === "filelist")
+        else if (type === "filelist") {
+            return false;
             args = this.assembleFileListCommand(message);
+	}
 
         if (!args)
             return false;
