@@ -9,7 +9,7 @@
 
 var Os = require("os");
 
-module.exports = new (function() {
+module.exports = function() {
     this.env = {
         grepCmd: "grep",
         perlCmd: "perl",
@@ -298,4 +298,4 @@ module.exports = new (function() {
     dirs = makeUnique(dirs);
     var PATTERN_DIR  = escapeRegExp(dirs.join("|"));
     var PATTERN_EDIR = dirs.join(",");
-})();
+};

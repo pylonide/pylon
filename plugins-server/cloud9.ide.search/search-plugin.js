@@ -9,14 +9,14 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var Search = require("./search");
+var SearchLib = require("./search");
 
 var name = "search";
 
-var ProcessManager;
-var EventBus;
+var ProcessManager, EventBus, Search;
 
 module.exports = function setup(options, imports, register) {
+    Search = new SearchLib();
     Search.setEnv({
         grepCmd: options.grepCmd || "grep",
         perlCmd: options.perlCmd || "perl",

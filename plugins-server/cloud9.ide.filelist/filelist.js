@@ -9,7 +9,7 @@
 
 var Os = require("os");
 
-module.exports = new (function() {
+module.exports = function() {
     this.env = {
         findCmd: "find",
         perlCmd: "perl",
@@ -116,4 +116,4 @@ module.exports = new (function() {
         args.command = this.env.findCmd;
         return args;
     };
-})();
+};

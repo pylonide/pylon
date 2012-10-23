@@ -9,16 +9,17 @@
 
 var Url = require("url");
 var Plugin = require("../cloud9.core/plugin");
-var Filelist = require("./filelist");
+var FilelistLib = require("./filelist");
 var util = require("util");
 var Connect = require("connect");
 var error = require("http-error");
 
 var name = "filelist";
 
-var ProcessManager, EventBus, IdeRoutes, Permissions;
+var ProcessManager, EventBus, IdeRoutes, Permissions, Filelist;
 
 module.exports = function setup(options, imports, register) {
+    Filelist = new FilelistLib();
     Filelist.setEnv({
         findCmd: options.findCmd,
         platform: options.platform
