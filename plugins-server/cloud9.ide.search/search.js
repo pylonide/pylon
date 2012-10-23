@@ -8,6 +8,7 @@
 "use strict";
 
 var Os = require("os");
+var Path = require("path");
 
 module.exports = function() {
     this.env = {
@@ -32,7 +33,12 @@ module.exports = function() {
             return true;
 
         options.uri = path;
-        options.path = this.env.basePath + (path ? "/" + path : "");
+        options.path = Path.normalize(this.env.basePath + (path ? "/" + path : ""));
+        // if the relative path FROM the workspace directory TO the requested path
+        // is outside of the workspace directory, the result of Path.relative() will
+        // start with '../', which we can trap and use:
+        if (Path.relative(this.env.basePath, options.path).indexOf("../") === 0)
+            return false;
 
         var args = this.assembleCommand(options);
 
