@@ -27,7 +27,7 @@ var Workspace = module.exports = function(ide) {
             console.error("Error: Couldn't retrieve permissions for user ", user);
             console.trace();
         }
-        
+
         var serverExclude = (user.permissions && user.permissions.server_exclude) || "";
         return util.arrayToMap(serverExclude.split("|"));
     };
@@ -40,7 +40,8 @@ var Workspace = module.exports = function(ide) {
         var server_exclude = this.getServerExclude(user);
 
         for (var name in this.plugins) {
-            if (server_exclude[name]) continue;
+            if (server_exclude[name])
+                continue;
 
             var plugin = this.plugins[name];
             var hooks = plugin.getHooks();
@@ -53,24 +54,26 @@ var Workspace = module.exports = function(ide) {
         // wants to be notified via an error that there was no plugin found to
         // handle this command
         var message = args.length > 1 && args[1];
-        if (message && message.requireshandling === true) {
-            function sendCommandNotFound(err) {
-                self.send({
-                    type: "result",
-                    subtype: "info",
-                    body: err || "Command '" + message.command + "' was not recognized",
-                    extra: message.extra
-                }, message);
-            }
-            
-            if (this.plugins["npm-runtime"]) {
-                this.plugins["npm-runtime"].searchAndRunModuleHook(message, user, function(err, found) {
-                    if (err || !found)
-                        sendCommandNotFound(err);
-                });
-            }
-            else
-                sendCommandNotFound();
+        if (!message || message.requireshandling !== true)
+            return;
+
+        var sendCommandNotFound = function(err) {
+            self.send({
+                type: "result",
+                subtype: "info",
+                body: err || "Command '" + message.command + "' was not recognized",
+                extra: message.extra
+            }, message);
+        };
+
+        if (this.plugins["npm-runtime"]) {
+            this.plugins["npm-runtime"].searchAndRunModuleHook(message, user, function(err, found) {
+                if (err || !found)
+                    sendCommandNotFound(err);
+            });
+        }
+        else {
+            sendCommandNotFound();
         }
     };
 
@@ -108,23 +111,28 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.canShutdown = function() {
-        var self = this;
-        return Object.keys(this.plugins).every(function(name) {
-            return self.plugins[name].canShutdown();
+        var plugins = this.plugins;
+        if (!plugins)
+            return true;
+
+        return Object.keys(plugins).every(function(name) {
+            return plugins[name].canShutdown();
         });
     };
 
     this.dispose = function(callback) {
         var count = 0;
+        var disposeFn = function() {
+            process.nextTick(function() {
+                count -= 1;
+                if (count === 0)
+                    callback && callback();
+            });
+        };
+
         for (var name in this.plugins) {
             count += 1;
-            this.plugins[name].dispose(function() {
-                process.nextTick(function() {
-                    count -= 1;
-                    if (count === 0)
-                        callback && callback();
-                });
-            });
+            this.plugins[name].dispose(disposeFn);
         }
     };
 
