@@ -55,6 +55,7 @@ worker.invokeReporter = function(command, processLine, callback) {
         }, REPORTER_TIMEOUT);
         _self.$invoke(command, worker.path, function(code, output) {
             var doc = _self.doc.getValue();
+            resultCache[command] = resultCache[command] || {};
             var result = resultCache[command]['_' + doc] = _self.parseOutput(output, processLine);
             setTimeout(function() {
                 if (resultCache[command] && resultCache[command]['_' + doc])
