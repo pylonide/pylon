@@ -14,7 +14,7 @@ var completer = module.exports = Object.create(baseLanguageHandler);
 var modeCache = {}; // extension -> static data
 
 completer.handlesLanguage = function(language) {
-    return ["css", "php"].indexOf(language) !== -1;
+    return ["css", "php", "ruby"].indexOf(language) !== -1;
 };
 
 var CSS_ID_REGEX = /[a-zA-Z_0-9\$\-]/;
