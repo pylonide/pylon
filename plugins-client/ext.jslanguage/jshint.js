@@ -45,7 +45,8 @@ handler.analyzeSync = function(doc, ast) {
         laxcomma: true,
         loopfunc: true,
         lastsemic: true,
-        multistr: true
+        multistr: true,
+        onecase: true
     });
     
     lint.errors.forEach(function(warning) {
