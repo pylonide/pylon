@@ -106,7 +106,7 @@ var config = [
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
-            "ext/dbg-node/dbg-node", 
+            "ext/dbg-node/dbg-node",
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
             "ext/consolehints/consolehints",
@@ -195,6 +195,7 @@ var config = [
     "./cloud9.ide.gittools",
     "./cloud9.ide.hg",
     "./cloud9.ide.npm",
+    "./cloud9.ide.filelist",
     "./cloud9.ide.search",
     "./cloud9.ide.run-node",
     {
