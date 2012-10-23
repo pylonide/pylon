@@ -6,11 +6,12 @@
             <div class="fbox">
                 <div class="col col1">
                     <div class="title">
+                        <a:hbox height="26" align="center" edge="2 0 0 8">
                         <a:button id="btnAddRunConf"
-                          class  = "c9-header-plus"
                           onclick  = "require('ext/runpanel/runpanel').addConfig()"
-                          skin     = "header-btn" 
+                          skin     = "addnew_btn" 
                           caption  = "Add New" />
+                        </a:hbox>
                     </div>
                     <div class="black">
                         <a:list id="lstRunCfg" 

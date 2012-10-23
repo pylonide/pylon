@@ -6308,7 +6308,33 @@
         </a:main>
     </a:presentation>
 </a:menu>
+<a:button name="addnew_btn">
+    <a:style><![CDATA[
+        .addnew_btn {
+            background: url(images/plus2.png) no-repeat 0 0;
+            color: #bed6b2;
+            padding-right: 20px;
+            cursor: default;
+            font-size: 11px;
+            padding: 0 0 0 20px;
+            height: 18px;
+            line-height: 18px
+        }
 
+        .addnew_btnOver {
+            
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "text()"
+          background = "."
+          icon       = ".">
+            <div class="addnew_btn"> </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
