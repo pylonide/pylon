@@ -8,6 +8,7 @@
 "use strict";
 
 var Os = require("os");
+var Path = require("path");
 
 module.exports = function() {
     this.env = {
@@ -32,15 +33,20 @@ module.exports = function() {
         var path = options.path;
 
         if (options.path === null)
-            return true;
+            return onExit(1, "Invalid path");
 
         options.uri = path;
-        options.path = this.env.basePath + (path ? "/" + path : "");
+        options.path = Path.normalize(this.env.basePath + (path ? "/" + path : ""));
+        // if the relative path FROM the workspace directory TO the requested path
+        // is outside of the workspace directory, the result of Path.relative() will
+        // start with '../', which we can trap and use:
+        if (Path.relative(this.env.basePath, options.path).indexOf("../") === 0)
+            return onExit(1, "Invalid path");
 
         var args = this.assembleCommand(options);
 
         if (!args)
-            return false;
+            return onExit(1, "Invalid arguments");
 
         var channel = this.env.workspaceId + "::download_" + this.filelistCounter++;
 
@@ -73,8 +79,6 @@ module.exports = function() {
 
             eventbus.on(channel, listener);
         });
-
-        return true;
     };
 
     this.assembleCommand = function(options) {
