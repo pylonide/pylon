@@ -33,9 +33,7 @@ var SearchPlugin = function(ide, workspace) {
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
-    this.pm = ProcessManager;
-    this.eventbus = EventBus;
-    Search.setEnv({ basePath: ide.workspaceDir });
+    Search.setEnv({ basePath: ide.workspace.workspaceDir });
 };
 
 util.inherits(SearchPlugin, Plugin);
@@ -44,7 +42,7 @@ util.inherits(SearchPlugin, Plugin);
 
     this.init = function() {
         var self = this;
-        this.eventbus.on("codesearch", function(msg) {
+        EventBus.on("codesearch", function(msg) {
             if (msg.type == "shell-start") {
                 self.processCount += 1;
                 self.filecount = 0;
@@ -65,7 +63,7 @@ util.inherits(SearchPlugin, Plugin);
         if (message.command !== "codesearch")
             return false;
 
-        return Search.exec(message, this.pm, client, function(err, pid) {
+        return Search.exec(message, ProcessManager, client, function(err, pid) {
             if (err)
                 self.error(err, 1, "Could not spawn grep process for codesearch", client);
         });
