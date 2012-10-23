@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 
 /**
  * Keeps a record of all files in the repository
@@ -26,37 +27,7 @@ module.exports = ext.register("ext/filelist/filelist", {
     queue : [],
     autodisable : ext.ONLINE | ext.LOCAL,
 
-    init : function(){
-    },
-
-    onMessage : function(e) {
-        var message = e.message;
-        if (message.extra != "filelist")
-            return false;
-
-        if (message.type == "shell-data") {
-            this.cached += message.data;
-            return true;
-        }
-        else if (message.type == "shell-exit") {
-            // so we should use message.code !== 0 here actually
-            // but the way 'find' behaves is that it will exit with code 1 when the search is done
-            // when at any moment data is written to stderr
-            // so therefore this way
-            var state = this.cached.length > 0 ? apf.SUCCESS : apf.ERROR;
-            var data = this.cached;
-            this.retrieving = false;
-
-            var queue = this.queue;
-            queue.forEach(function(cb){ cb(data, state) });
-
-            this.queue = [];
-
-            ide.removeEventListener("socketMessage", this.$onMessage);
-            this.$onMessage = null;
-        }
-        return true;
-    },
+    init : function(){},
 
     getFileList : function(retrieveNewFromServer, callback){
         var _self = this;
@@ -68,18 +39,20 @@ module.exports = ext.register("ext/filelist/filelist", {
         if (this.retrieving)
             return;
 
-        if (!this.$onMessage) {
-            this.$onMessage = this.onMessage.bind(this)
-            ide.addEventListener("socketMessage", this.$onMessage);
-        }
+        this.cached = "";
+        apf.ajax(ide.apiPrefix + "/fs/list?path=&showHiddenFiles=0", {
+            method: "GET",
+            callback: function(data, state, extra) {
+                _self.cached = data || extra.http.responseText;
+                _self.retrieving = false;
 
-        _self.cached = "";
-        ide.send({
-            command: "filelist",
-            path: "",
-            showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
+                var queue = _self.queue;
+                queue.forEach(function(cb){ cb(data, state) });
+
+                _self.queue = [];
+            }
         });
-        _self.retrieving = true;
+        this.retrieving = true;
     },
 
     enable : function() {
