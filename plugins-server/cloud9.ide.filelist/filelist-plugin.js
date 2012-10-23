@@ -36,11 +36,11 @@ var FilelistPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.name = name;
     this.processCount = 0;
-    this.ws = ide.workspaceId;
+    this.ws = ide.workspace.workspaceId;
 
     Filelist.setEnv({
         workspaceId: this.ws,
-        basePath: ide.workspaceDir
+        basePath: ide.workspace.workspaceDir
     });
 
     // set up some routes as well
