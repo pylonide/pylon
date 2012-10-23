@@ -7,14 +7,16 @@
 
 "use strict";
 
+var Url = require("url");
 var Plugin = require("../cloud9.core/plugin");
 var Filelist = require("./filelist");
 var util = require("util");
+var Connect = require("connect");
+var error = require("http-error");
 
 var name = "filelist";
 
-var ProcessManager;
-var EventBus;
+var ProcessManager, EventBus, IdeRoutes, Permissions;
 
 module.exports = function setup(options, imports, register) {
     Filelist.setEnv({
@@ -24,45 +26,74 @@ module.exports = function setup(options, imports, register) {
 
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
+    IdeRoutes = imports["ide-routes"];
+    Permissions = imports["workspace-permissions"];
     imports.ide.register(name, FilelistPlugin, register);
 };
 
 var FilelistPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
-    this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
-    this.pm = ProcessManager;
-    this.eventbus = EventBus;
-    Filelist.setEnv({ basePath: ide.workspaceDir });
+    this.ws = ide.workspaceId;
+
+    Filelist.setEnv({
+        workspaceId: this.ws,
+        basePath: ide.workspaceDir
+    });
+
+    // set up some routes as well
+    var self = this;
+    IdeRoutes.use("/fs", Connect.router(function(app) {
+        app.get("/list", self.getList.bind(self));
+    }));
 };
 
 util.inherits(FilelistPlugin, Plugin);
 
 (function() {
 
-    this.init = function() {
-        var self = this;
-        this.eventbus.on("filelist", function(msg) {
-            if (msg.type == "shell-start")
-                self.processCount += 1;
-            else if (msg.type == "shell-exit")
-                self.processCount -= 1;
-            else if (msg.stream != "stdout")
-                return;
+    this.getList = function(req, res, next) {
+        var uid = req.session.uid || req.session.anonid;
+        if (!uid)
+            return next(new error.Unauthorized());
 
-            self.ide.broadcast(JSON.stringify(msg), self.name);
-        });
-    };
-
-    this.command = function(user, message, client) {
-        if (message.command !== "filelist")
-            return false;
-
-        var self = this;
-        return Filelist.exec(message, this.pm, client, function(err, pid) {
+        // does this user has read-permissions...
+        Permissions.getPermissions(uid, this.ws, "fs_filelist", function(err, perms) {
             if (err)
-                self.error(err, 1, "Could not spawn find process for filelist", client);
+                return next(err);
+
+            if (perms.fs.indexOf("r") === -1)
+                return next(new error.Forbidden("You are not allowed to view this resource"));
+
+            // and kick off the download action!
+            var headersSent = false;
+            var query = Url.parse(req.url, true).query;
+            query.showHiddenFiles = !!parseInt(query.showHiddenFiles, 10);
+
+            Filelist.exec(query, ProcessManager, EventBus,
+                // start
+                function() {
+                    // skip it!
+                },
+                // incoming data
+                function(msg) {
+                    if (msg.stream != "stderr") {
+                        if (!headersSent) {
+                            res.writeHead(200, { "content-type": "text/plain" });
+                            headersSent = true;
+                        }
+                        res.write(msg.data);
+                    }
+                },
+                // process exit
+                function(code, stderr) {
+                    if (code === 0)
+                        res.end();
+                    else
+                        next("Process terminated with code " + code + ", " + stderr);
+                }
+            );
         });
     };
 

@@ -14,8 +14,11 @@ module.exports = new (function() {
         findCmd: "find",
         perlCmd: "perl",
         platform: Os.platform(),
-        basePath: ""
+        basePath: "",
+        workspaceId: ""
     };
+
+    this.filelistCounter = 0;
 
     this.setEnv = function(newEnv) {
         var self = this;
@@ -25,7 +28,7 @@ module.exports = new (function() {
         });
     };
 
-    this.exec = function(options, pm, client, callback) {
+    this.exec = function(options, pm, eventbus, onStart, onData, onExit) {
         var path = options.path;
 
         if (options.path === null)
@@ -39,15 +42,36 @@ module.exports = new (function() {
         if (!args)
             return false;
 
+        var channel = this.env.workspaceId + "::download_" + this.filelistCounter++;
+
         pm.spawn("shell", {
             command: args.command,
             extra: "filelist",
             args: args,
             cwd: options.path,
             encoding: "utf8"
-        }, "filelist", callback || function(err) {
-            if (err)
-                console.error(err);
+        }, channel, function(err, pid, process) {
+            var stderr = "";
+
+            var listener = function (msg) {
+                switch (msg.type) {
+                    case "shell-start":
+                        onStart();
+                        break;
+                    case "shell-data":
+                        if (msg.stream === "stderr")
+                            stderr += msg.data.toString("ascii");
+                        else
+                            onData(msg);
+                        break;
+                    case "shell-exit":
+                        eventbus.removeListener(channel, listener);
+                        onExit(msg.code, stderr);
+                        break;
+                }
+            };
+
+            eventbus.on(channel, listener);
         });
 
         return true;

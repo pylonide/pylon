@@ -9,7 +9,9 @@
             "ide",
             "process-manager",
             "run-shell",
-            "eventbus"
+            "eventbus",
+            "ide-routes",
+            "workspace-permissions"
         ]
     }
 }

@@ -174,6 +174,7 @@ var config = [
     },
     "./cloud9.eventbus",
     "./cloud9.process-manager",
+    "./cloud9.routes",
     "./cloud9.run.shell",
     {
         packagePath: "./cloud9.run.node",
