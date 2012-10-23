@@ -41,7 +41,7 @@ module.exports = ext.register("ext/linereport/linereport", {
     onWorkerMessage : function(event) {
         if (!this.firstUsed && event.data.path) {
             this.firstUsed = true;
-            this.onFirstUse();
+            this.onFirstUse(event);
         }
             
         var doc = window.tabEditors.getPage().$doc;
@@ -83,10 +83,15 @@ module.exports = ext.register("ext/linereport/linereport", {
         }
     },
     
-    onFirstUse: function() {
+    onFirstUse: function(event) {
         // Enable autosave since it makes linereport trigger automatically
         autosave.isAutoSaveEnabled = true;
         settings.model.setQueryValue("general/@autosaveenabled", true);
+        ide.dispatchEvent("track_action", {
+            type: "linereport_firstuse",
+            language: event.data.language,
+            source: event.data.source
+        });
     },
     
     enable: function() {
