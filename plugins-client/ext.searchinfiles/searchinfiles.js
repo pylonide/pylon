@@ -473,8 +473,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (path.indexOf(ide.davPrefix) == 0)
             path = path.slice(ide.davPrefix.length).replace(/^\//,"");
 
-        options.command = "search";
-        options.type = "codesearch";
+        options.command = "codesearch";
         options.path = path;
         ide.send(options);
 

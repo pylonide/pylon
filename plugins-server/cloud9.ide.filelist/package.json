@@ -1,8 +1,8 @@
 {
-    "name": "cloud9.ide.search",
+    "name": "cloud9.ide.filelist",
     "version": "0.0.1",
 
-    "main": "./search-plugin.js",
+    "main": "./filelist-plugin.js",
 
     "plugin": {
         "consumes": [

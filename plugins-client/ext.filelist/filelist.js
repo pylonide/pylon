@@ -1,5 +1,5 @@
 /**
- * HTML Editor for the Cloud9 IDE
+ * File list for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -25,7 +25,7 @@ module.exports = ext.register("ext/filelist/filelist", {
     alone : true,
     queue : [],
     autodisable : ext.ONLINE | ext.LOCAL,
-    
+
     init : function(){
     },
 
@@ -37,7 +37,8 @@ module.exports = ext.register("ext/filelist/filelist", {
         if (message.type == "shell-data") {
             this.cached += message.data;
             return true;
-        } else if (message.type == "shell-exit") {
+        }
+        else if (message.type == "shell-exit") {
             // so we should use message.code !== 0 here actually
             // but the way 'find' behaves is that it will exit with code 1 when the search is done
             // when at any moment data is written to stderr
@@ -48,7 +49,7 @@ module.exports = ext.register("ext/filelist/filelist", {
 
             var queue = this.queue;
             queue.forEach(function(cb){ cb(data, state) });
-            
+
             this.queue = [];
 
             ide.removeEventListener("socketMessage", this.$onMessage);
@@ -59,7 +60,7 @@ module.exports = ext.register("ext/filelist/filelist", {
 
     getFileList : function(retrieveNewFromServer, callback){
         var _self = this;
-        
+
         if (!retrieveNewFromServer && this.cached)
             return callback(this.cached, apf.SUCCESS);
 
@@ -71,11 +72,10 @@ module.exports = ext.register("ext/filelist/filelist", {
             this.$onMessage = this.onMessage.bind(this)
             ide.addEventListener("socketMessage", this.$onMessage);
         }
-        
+
         _self.cached = "";
         ide.send({
-            command: "search",
-            type: "filelist",
+            command: "filelist",
             path: "",
             showHiddenFiles: true //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))
         });
