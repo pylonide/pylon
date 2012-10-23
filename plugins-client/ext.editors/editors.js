@@ -1068,6 +1068,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         function focus() {
+            if (!_self.currentEditor.amlEditor)
+                return;
             var ace = _self.currentEditor.amlEditor.$editor;
             if (!ace.$isFocused) {
                 setTimeout(f = function() {
