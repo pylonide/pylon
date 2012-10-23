@@ -301,8 +301,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         );
 
         lstRunCfg.addEventListener("click", function(e){
-            if (e.htmlEvent.target.tagName == "SPAN") {
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
+            if (e.htmlEvent.target.className == "btnDelete") {
+                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
                 this.remove(xmlNode);
             }
         });

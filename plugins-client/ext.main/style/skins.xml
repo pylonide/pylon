@@ -5704,6 +5704,14 @@
         .menu-bk .label {
             color: #F1F1F1;
         }
+        
+        .label.graylabel {
+            color: #CECECE;
+        }
+        
+        .label.size12 {
+            font-size: 12px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -6060,7 +6068,8 @@
             overflow: hidden;
             position: relative;
             cursor: default;
-            color      : #333;
+            color      : #cecece;
+            text-shadow   : #000 0px 1px 0px;
             background: rgba(24, 24, 24, .4) url(images/c9-noise-dark.png)
         }
 
@@ -6117,7 +6126,7 @@
             -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3692db', endColorstr='#1680d5')";
             background : -webkit-gradient(linear, left top, left bottom, from(#3692db), color-stop(1, #1680d5));
             background : -moz-linear-gradient(center bottom, #1680d5 0%, #3692db 100%) repeat scroll 0 0 transparent;
-            color: #E8E8E8;
+            color: #ffffff;
         }
 
         .listRC .selected .radiobutton {
@@ -6140,7 +6149,7 @@
             width               : 15px;
             height              : 19px;
             position            : absolute;
-            right               : 7px;
+            right               : 8px;
             top                 : 0px;
             background-image    : url(images/delete_btn2.png);
             background-repeat   : no-repeat;
@@ -6194,13 +6203,12 @@
             border-bottom-width: 6px;
             border: 1px solid black;
             box-shadow: 0 5px 8px rgba(0,0,0,.55);
-            height: 230px;
-            margin: -13px 0 0 -181px;
+            height: 235px;
+            margin: -13px 0 0 -239px;
             position: relative;
             -webkit-transition: all .2s ease;
             -moz-transition: all .2s ease;
             transition: all .2s ease;
-            width: 500px;
         }
         .mnuRunCfg .window .fbox {
             height: 100%;
@@ -6212,7 +6220,7 @@
             position: relative;
         }
         .mnuRunCfg .window .col1 {
-            width: 35%;
+            width: 175px;
         }
         .mnuRunCfg .window .col1:after {
             border-left: 1px solid rgba(0,0,0,.4);
@@ -6234,7 +6242,7 @@
             height: 100%;
         }
         .mnuRunCfg .window .col2 {
-            width: 65%;
+            width: 342px;
         }
         .mnuRunCfg .window .col2:after {
             border-left: 1px solid rgba(255,255,255,.1);
@@ -6266,7 +6274,7 @@
         }
         .mnuRunCfg .window .tooltip {
             height: 8px;
-            left: 50%;
+            left: 309px;
             margin-left: -7px;
             overflow: hidden;
             position: absolute;
@@ -12220,7 +12228,7 @@
         }
 
         .rundebug .curfile span{
-            display : none !important;
+            /*display : none !important;*/
         }
 
         .filemgr-tree .item-fix.selected {
