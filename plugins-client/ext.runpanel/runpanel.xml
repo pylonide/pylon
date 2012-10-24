@@ -36,10 +36,10 @@
                 </div>
                 <div class="col col2">
                     <div class="title">
-                        <a:hbox height="36" align="center">
+                        <a:hbox height="28" align="center" edge="0 4 0 0">
                             <a:checkbox label="Advanced" skin="checkbox_grey" />
                             <a:filler />
-                            <a:button caption="(i)" />
+                            <a:button skin="btn_icon_only" class="dim18-18" icon="info.png" onclick="window.open('https://docs.c9.io')" />
                         </a:hbox>
                     </div>
                     <div class="gray">
