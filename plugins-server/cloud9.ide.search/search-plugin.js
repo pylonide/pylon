@@ -21,8 +21,7 @@ module.exports = function setup(options, imports, register) {
         platform: options.platform || require("os").platform()
     });
 
-    var ProcessManager = imports["process-manager"];
-    var EventBus = imports.eventbus;
+    var Vfs = imports["vfs"];
 
     var SearchPlugin = function(ide, workspace) {
         Plugin.call(this, ide, workspace);
@@ -36,34 +35,28 @@ module.exports = function setup(options, imports, register) {
 
     (function() {
 
-        this.init = function() {
-            var self = this;
-            EventBus.on("codesearch", function(msg) {
-                if (msg.type == "shell-start") {
-                    self.processCount += 1;
-                    self.filecount = 0;
-                    self.count = 0;
-                    self.prevFile = null;
-                }
-                else if (msg.type == "shell-exit") {
-                    self.processCount -= 1;
-                }
-
-                msg = Search.parseResult(msg);
-                if (msg)
-                    self.ide.broadcast(JSON.stringify(msg), self.name);
-            });
-        };
+        this.init = function() {};
 
         this.command = function(user, message, client) {
             if (message.command !== "codesearch")
                 return false;
 
             var self = this;
-            return Search.exec(message, ProcessManager, client, function(err, pid) {
-                if (err)
-                    self.error(err, 1, "Could not spawn grep process for codesearch", client);
-            });
+            return Search.exec(message, Vfs,
+                // data
+                function(msg) {
+                    msg.extra = "codesearch";
+                    self.ide.broadcast(JSON.stringify(msg), self.name);
+                },
+                // exit
+                function(code, stderr, msg) {
+                    if (code)
+                        self.error(stderr, 1, "Could not spawn grep process for codesearch", client);
+                    msg.extra = "codesearch";
+                    msg.type = "exit";
+                    self.ide.broadcast(JSON.stringify(msg), self.name);
+                }
+            );
         };
 
     }).call(SearchPlugin.prototype);

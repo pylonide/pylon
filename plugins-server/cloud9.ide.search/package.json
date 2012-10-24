@@ -7,9 +7,7 @@
     "plugin": {
         "consumes": [
             "ide",
-            "process-manager",
-            "run-shell",
-            "eventbus"
+            "vfs"
         ]
     }
 }

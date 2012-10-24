@@ -486,33 +486,25 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (message.extra != "codesearch")
             return false;
 
-        if (!chkSFConsole.checked) {
-            if (this.firstRun) {
-                var currLength = this.tabacedoc.getLength() - 2; // the distance to the last message
-                this.searcheditor.scrollToLine(currLength, false, true);
-                this.firstRun = false;
-            }
+        var doc = !chkSFConsole.checked ? this.tabacedoc : this.consoleacedoc;
+        var editor = !chkSFConsole.checked ? this.searcheditor : this.searchConsole.$editor;
+        if (this.firstRun) {
+            var currLength = doc.getLength() - 2; // the distance to the last message
+            editor.scrollToLine(currLength, false, true);
+            this.firstRun = false;
 
-            this.appendLines(this.tabacedoc, message.data);
         }
-        else {
-            if (this.firstRun) {
-                var currLength = this.consoleacedoc.getLength() - 2; // the distance to the last message
-                this.searchConsole.$editor.scrollToLine(currLength, false, true);
-                this.firstRun = false;
-            }
-
-            this.appendLines(this.consoleacedoc, message.data);
-        }
+        this.appendLines(doc, message.data);
 
         // finish
-        if (message.type == "shell-exit") {
+        if (message.type == "exit") {
             if (!chkSFConsole.checked) {
-                var node = this.tabacedoc.node;
+                var node = doc.node;
                 node.setAttribute("saving", "0");
                 node.setAttribute("changed", "0");
             }
             btnSFFind.$ext.innerText = "Find";
+            this.appendLines(doc, message);
         }
         return true;
     },
@@ -555,15 +547,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     appendLines : function(doc, content) {
-        if (content.length == 0) // blank lines can get through
+        if (!content || (!content.length && !content.count)) // blank lines can get through
             return;
 
-        if (typeof content == "string") {
+        if (typeof content == "string")
             content = content.split("\n");
-        } else if (typeof content.count == "number") {
-            // final message
+        else if (typeof content.count == "number") // final message
             content = ["\n", this.messageFooter(content), "\n", "\n", "\n"];
-        }
 
         if (content.length > 0)
             doc.insertLines(doc.getLength(), content);

@@ -26,7 +26,7 @@ module.exports = function() {
         });
     };
 
-    this.exec = function(options, pm, client, callback) {
+    this.exec = function(options, vfs, onData, onExit) {
         var path = options.path;
 
         if (options.path === null)
@@ -46,15 +46,44 @@ module.exports = function() {
             return false;
 
         this.options = options;
-        pm.spawn("shell", {
-            command: args.command,
-            extra: "codesearch",
-            args: args,
-            cwd: options.path,
-            encoding: "utf8"
-        }, "codesearch", callback || function(err, pid) {
-            if (err)
-                self.error(err, 1, "Could not spawn find process for filelist", client);
+        var self = this;
+
+        if (this.activeProcess)
+            this.activeProcess.kill("SIGKILL");
+
+        vfs.spawn(args.command, { args: args, cwd: options.path, stdoutEncoding: "utf8", stderrEncoding: "utf8" }, function(err, meta) {
+            if (err || !meta.process)
+                return onExit(1, err);
+
+            var child = meta.process;
+            self.activeProcess = child;
+
+            var stderr = "";
+            var prevFile = null;
+            var filecount = 0;
+            var count = 0;
+
+            child.stdout.on("data", function(data) {
+                var msg = self.parseResult(prevFile, options, data);
+                count += msg.count;
+                filecount += msg.filecount;
+                prevFile = msg.prevFile;
+
+                if (msg)
+                    onData(msg);
+            });
+
+            child.stderr.on("data", function(data) {
+                stderr += data;
+            });
+
+            child.on("exit", function(code) {
+                self.processCount -= 1;
+                onExit(code, stderr, {
+                    count: count,
+                    filecount: filecount
+                });
+            });
         });
 
         return true;
@@ -125,59 +154,52 @@ module.exports = function() {
         return args;
     };
 
-    this.parseResult = function(msg) {
-        if (msg.type == "shell-exit") {
-            msg.data = {
-                count: this.count,
-                filecount: this.filecount
-            };
-            return msg;
-        }
-        else
-
-        var data = msg.data;
+    this.parseResult = function(prevFile, options, data) {
         if (typeof data !== "string" || data.indexOf("\n") === -1)
-            return;
+            return { count: 0, filecount: 0, data: "" };
 
         var parts, file, lineno, result = "";
         var aLines = data.split(/([\n\r]+)/g);
         var count = 0;
+        var filecount = 0;
 
-        if (this.options) {
+        if (options) {
             for (var i = 0, l = aLines.length; i < l; ++i) {
                 parts = aLines[i].split(":");
 
                 if (parts.length < 3)
                     continue;
 
-                var _path = parts.shift().replace(this.options.path, "").trimRight();
-                file = encodeURI(this.options.uri + _path, "/");
+                var _path = parts.shift().replace(options.path, "").trimRight();
+                file = encodeURI(options.uri + _path, "/");
 
                 lineno = parseInt(parts.shift(), 10);
                 if (!lineno)
                     continue;
 
-                count += 1;
-                if (file !== this.prevFile) {
-                    this.filecount += 1;
-                    if (this.prevFile)
+                ++count;
+                if (file !== prevFile) {
+                    ++filecount;
+                    if (prevFile)
                         result += "\n \n";
 
                     result += file + ":";
-                    this.prevFile = file;
+                    prevFile = file;
                 }
 
                 result += "\n\t" + lineno + ": " + parts.join(":");
             }
         }
         else {
-            console.error("this.options object doesn't exist", msg);
+            console.error("options object doesn't exist", data);
         }
 
-        this.count += count;
-        msg.data = result;
-
-        return msg;
+        return {
+            count: count,
+            filecount: filecount,
+            prevFile: prevFile,
+            data: result
+        };
     };
 
     // util
