@@ -56,7 +56,12 @@
                                 </a:hbox-->
                                 <a:hbox height="36" align="center">
                                     <a:label width="100" class="graylabel size12">File to run:</a:label>
-                                    <a:textbox skin = "searchbox_textbox" flex="1" value="[{lstRunCfg.selected}::@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                                    <a:textbox 
+                                      skin     = "searchbox_textbox" 
+                                      class    = "dark-bg"  
+                                      flex     = "1" 
+                                      value    = "[{lstRunCfg.selected}::@path]" 
+                                      disabled = "{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
                                     <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
                                     
                                     <!--a:divider span="2" skin="c9-divider-hor" /-->
@@ -81,32 +86,43 @@
                                       disabled  = "{!lstRunCfg.selected}"
                                       value     = "[{lstRunCfg.selected}::@value]"
                                       default   = "default"
+                                      skin      = "dropdown-dark-glossy"
+                                      class     = "single-arrow"
                                       each      = "[element]"
                                       caption   = "[@caption]"
                                       eachvalue = "[@value]" />
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
                                     <a:label width="100" class="graylabel size12">Cmd Line Args</a:label>
-                                    <a:textbox id="txtCmdArgs" skin="searchbox_textbox" flex="1" value="[{lstRunCfg.selected}::@args]" disabled="{!lstRunCfg.selected}"/>
+                                    <a:textbox id="txtCmdArgs" 
+                                      skin     = "searchbox_textbox" 
+                                      class    = "dark-bg" 
+                                      flex     = "1" 
+                                      value    = "[{lstRunCfg.selected}::@args]" 
+                                      disabled = "{!lstRunCfg.selected}"/>
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
                                     <a:label width="100" class="graylabel size12">Debug Mode</a:label>
-                                    <a:checkbox class="underlined" label="Enabled by default"
-        value="[{require('ext/settings/settings').model}::auto/configurations/@debug]" skin="checkbox_grey" />
+                                    <a:checkbox 
+                                      class = "underlined" 
+                                      label = "Enabled by default"
+                                      value = "[{require('ext/settings/settings').model}::auto/configurations/@debug]" skin="checkbox_grey" />
                                 </a:hbox>
                                 <a:divider skin="c9-divider-hor" />
-                                <a:hbox edge="11 10 0 0" pack="end">
+                                <a:hbox edge="11 10 0 0" pack="end" align="center">
                                     <a:button
                                       id       = "btnDefaultExtEnable"
                                       skin     = "btn-default-simple"
                                       caption  = "Close"
+                                      class    = "no-bold size-13"
                                       onclick  = "mnuRunCfg.hide()"
                                     />
                                     <a:button
                                       caption = "Run"
-                                      margin = "0 0 0 10"
-                                      skin = "btn-default-css3"
-                                      class = "btn-green"
+                                      margin  = "0 0 0 10"
+                                      width   = "170"
+                                      skin    = "btn-default-css3"
+                                      class   = "btn-green2 no-bold size-13"
                                       onclick = "require('ext/runpanel/runpanel').run()"
                                     />
                                 </a:hbox>

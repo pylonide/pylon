@@ -2789,7 +2789,8 @@
             position: relative;
         }
 
-        .win-deploy-target .btn-default-css3 {
+        .win-deploy-target .btn-default-css3,
+        .size-13.btn-default-css3 {
             font-size: 13px;
         }
 
@@ -2880,7 +2881,17 @@
 
             text-shadow   : #068e02 0px 1px 0px;
         }
+        
+        .btn-default-css3.btn-green2 {
+            background-image: linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -o-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -moz-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -webkit-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -ms-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
 
+            text-shadow   : rgba(0,0,0,0.25) 0px 1px 0px;
+        }
+        
         .btn-default-css3Over.btn-green {
             background-image: linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
             background-image: -o-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
@@ -2904,6 +2915,14 @@
             background-image: -webkit-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
         }
+        
+        .btn-default-css3Down.btn-green2 {
+            background-image: linear-gradient(bottom, #30a12d 0%, #088e04 100%);
+            background-image: -o-linear-gradient(bottom, #30a12d 0%, #088e04 100%);
+            background-image: -moz-linear-gradient(bottom, #30a12d 0%, #088e04 100%);
+            background-image: -webkit-linear-gradient(bottom, #30a12d 0%, #088e04 100%);
+            background-image: -ms-linear-gradient(bottom, #30a12d 0%, #088e04 100%);
+        }
 
         .btn-default-css3Disabled.btn-green {
             background-image: linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
@@ -2911,6 +2930,17 @@
             background-image: -moz-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -webkit-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(2,141,0) 0%, rgb(73,165,20) 100%);
+
+            text-shadow   : #3da110 0px 1px 0px;
+            color: #037a01;
+        }
+        
+        .btn-default-css3Disabled.btn-green2 {
+            background-image: linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -o-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -moz-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -webkit-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
+            background-image: -ms-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
 
             text-shadow   : #3da110 0px 1px 0px;
             color: #037a01;
@@ -2998,6 +3028,11 @@
             border-top: 1px solid #dd5757;
         }
         /*-----------*/
+        
+        .no-bold.btn-default-css3 {
+            font-weight: normal;
+            color: #cecece;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -3029,6 +3064,15 @@
 
         .win-deploy-target .btn-default-simple {
             font-size          : 11px;
+        }
+        
+        .size-13.btn-default-simple {
+            font-size: 13px;
+        }
+        
+        .no-bold.btn-default-simple {
+            font-weight: normal;
+            color: #cecece;
         }
     ]]></a:style>
 
@@ -5091,8 +5135,9 @@
             overflow: hidden;
             padding: 0 0 0 8px;
         }
+        
         .dropdown-dark-glossy .button {
-            background: url(images/dropdown-dark-glossy/button.png) no-repeat 50% 0;
+            background: url(images/dropdown-dark-glossy/button.png) no-repeat 3px 6px;
             display: inline-block;
             height: 25px;
             position: absolute;
@@ -5100,6 +5145,11 @@
             top: 0;
             width: 16px;
         }
+        
+        .single-arrow.dropdown-dark-glossy .button {
+            background: url(images/dropdown-dark-glossy/arrow.png) no-repeat 1px 10px;
+        }
+        
         .dropdown-dark-glossy .button:before {
             background: url(images/dropdown-dark-glossy/divider.png) no-repeat 50% 0;
             content: "";
@@ -5114,7 +5164,6 @@
      * Hover
      */
         .dropdown-dark-glossyOver,
-        .dropdown-dark-glossyOver .button,
         .dropdown-dark-glossyOver .button:before {
             background-position: 50% -30px;
         }
@@ -5122,7 +5171,6 @@
      * Down
      */
         .dropdown-dark-glossyDown,
-        .dropdown-dark-glossyDown .button,
         .dropdown-dark-glossyDown .button:before {
             background-position: 50% -60px;
         }
@@ -5135,7 +5183,6 @@
      * Disabled
      */
         .dropdown-dark-glossyDisabled,
-        .dropdown-dark-glossyDisabled .button,
         .dropdown-dark-glossyDisabled .button:before {
             background-position: 50% -90px;
         }
@@ -5181,13 +5228,13 @@
      */
         .dropdown-dark-glossy-options .list .c9-dd-item.hover {
             background-color: #262626;
-            color: #F5B53C;
+            color: #c5d7bf;
         }
     /**
      * Options list - SELECTED
      */
         .dropdown-dark-glossy-options .list .c9-dd-item.selected {
-            color: #F5B53C;
+            color: #c5d7bf;
         }
     ]]></a:style>
 
@@ -11753,11 +11800,18 @@
             position : relative;
             height   : 25px;
         }
-
+        
+        .dark-bg.searchbox_textbox {
+            height: auto;
+            -webkit-box-shadow:  0px 0 8px 0 rgba(0, 0, 0, 0.6);
+            box-shadow:  0px 0 8px 0 rgba(0, 0, 0, 0.6);
+            border-radius: 3px;
+            border          : 1px solid #000;
+        }
+        
         .searchbox_textbox .sbtb_middle {
             height           : 19px;
             padding          : 2px 25px 2px 4px;
-
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
             background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
@@ -11773,7 +11827,20 @@
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
         }
-
+        
+        .dark-bg.searchbox_textbox .sbtb_middle{
+            height : auto !important;
+            padding : 4px 7px 3px 7px;
+            box-shadow: inset 0 2px 3px 0 rgba(0,0,0,.3);
+            background-color: #F2F2F2;
+            border:none;
+            color           : #202020;
+            font-size       : 14px;
+            line-height     : 18px;
+            outline         : none;
+            text-overflow   : ellipsis;
+        }
+        
         .searchbox_textbox .sbtb_middle INPUT {
             border           : 0;
             height           : 17px;
@@ -11785,6 +11852,19 @@
             width: 100%;
         }
 
+        .dark-bg.searchbox_textbox .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            line-height      : 15px;
+            font-size        : 12px;
+            color            : #303030;
+            font-family      : menlo,courier new,fixed,swiss,sans-serif;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+            padding : 0;
+        }
+        
         .searchbox_textbox.small_font .sbtb_middle,
             .searchbox_textbox.small_font .sbtb_middle INPUT {
             font-size: 11px;
@@ -11792,6 +11872,12 @@
 
         .searchbox_textboxInitial .sbtb_middle INPUT {
             color : #777777;
+        }
+        
+        .dark-bg.searchbox_textboxInitial .sbtb_middle input {
+            color: #bababa;
+            text-shadow : #ffffff 0px 1px 0px;
+            font-family: Arial;
         }
 
         .searchbox_textbox .sbtb_arrow {
