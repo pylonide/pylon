@@ -50,7 +50,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             name: "gotoline",
             bindKey: {mac: "Command-L", win: "Ctrl-G"},
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.amlEditor;
             },
             exec: function() {
                 _self.gotoline();
@@ -92,7 +92,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
             else if (e.keyCode == 27){
                 _self.hide();
-                ceEditor.focus();
+                editors.currentEditor.amlEditor.focus();
             }
             else if (restricted.indexOf(e.keyCode) == -1)
                 text.focus();
@@ -105,7 +105,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
             else if (e.keyCode == 27){
                 _self.hide();
-                ceEditor.focus();
+                editors.currentEditor.amlEditor.focus();
 
                 if (_self.$originalLine) {
                     _self.execGotoLine(_self.$originalLine, _self.$originalColumn, true);
@@ -147,8 +147,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
     show : function() {
         var editor = editors.currentEditor;
-        var ace = editor.ceEditor.$editor;
-        var aceHtml = editor.ceEditor.$ext;
+        var ace = editor.amlEditor.$editor;
+        var aceHtml = editor.amlEditor.$ext;
         var cursor = ace.getCursorPosition();
 
         this.$originalLine = cursor.row + 1;
@@ -161,10 +161,18 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
         var epos = apf.getAbsolutePosition(aceHtml);
         var maxTop = aceHtml.offsetHeight - 100;
+        var top = Math.max(0, Math.min(maxTop, pos.pageY - epos[1] - 5));
+        var left = 0;
 
-        editor.ceEditor.parentNode.appendChild(winGotoLine);
-        winGotoLine.setAttribute("top", Math.max(0, Math.min(maxTop, pos.pageY - epos[1] - 5)));
-        //winGotoLine.setAttribute("left", 0);
+        editor.amlEditor.parentNode.appendChild(winGotoLine);
+
+        var correct = ide.dispatchEvent("ext.gotoline.correctpos", {
+            anim: "out",
+            top: top,
+            left: left
+        });
+        console.log("correcting??",correct,(correct ? correct.top : top) + "px",(correct ? correct.left : left) + "px");
+        winGotoLine.$ext.style.top = (correct ? correct.top : top) + "px";
 
         winGotoLine.show();
         txtLineNr.focus();
@@ -176,6 +184,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 width: "60px",
                 timingFunction: "cubic-bezier(.11, .93, .84, 1)",
                 duration : 0.15
+            }, function() {
+                winGotoLine.$ext.style.left = (correct ? correct.left : left) + "px";
             });
         }
         else {
@@ -243,12 +253,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 return;
 
             var cursor = ace.getCursorPosition();
-            var aceHtml = editor.ceEditor.$ext;
+            var aceHtml = editor.amlEditor.$ext;
 
             var firstLine = ace.renderer.textToScreenCoordinates(0, 0).pageY;
             var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-            var half = aceHtml.offsetHeight / 2; //ceEditor.$editor.renderer.$size.scrollerHeight / 2; //
-            var lineHeight = ceEditor.$editor.renderer.lineHeight;
+            var half = aceHtml.offsetHeight / 2; //amlEditor.$editor.renderer.$size.scrollerHeight / 2; //
+            var lineHeight = amlEditor.$editor.renderer.lineHeight;
             var totalLines = ace.getSession().getLength();
             var lastLine = ace.renderer.textToScreenCoordinates(totalLines, 0).pageY + lineHeight;
             var maxTop = aceHtml.offsetHeight - winGotoLine.getHeight() - 10;
@@ -276,11 +286,19 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (this.lineControl)
                 this.lineControl.stop();
 
+            var left = 0;
+            var correct = ide.dispatchEvent("ext.gotoline.correctpos", {
+                anim: "out",
+                top: top,
+                left: left
+            });
             //Animate
             anims.animate(winGotoLine, {
-                top: top + "px",
+                top: (correct ? correct.top : top) + "px",
                 timingFunction: "cubic-bezier(.11, .93, .84, 1)",
                 duration : 0.25
+            }, function() {
+                winGotoLine.$ext.style.left = (correct ? correct.left : left) + "px";
             });
         }
         else {
