@@ -15,7 +15,8 @@ var NOT_EVENT_HANDLERS = {
     traverse : true,
     topdown : true,
     traverseTopDown : true,
-    rewrite : true
+    rewrite : true,
+    traverseAll : true
 };
 
 outlineHandler.handlesLanguage = function(language) {
