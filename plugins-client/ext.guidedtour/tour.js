@@ -263,7 +263,7 @@ this.tour = {
     }, {
         before: function() {
             dbgCallStack && dbgCallStack.parentNode && dbgCallStack.parentNode.parentNode.hide();
-            dbg.main.continueScript();
+            dbg.main.step();
             txtConsoleInput.setValue("git status");
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),

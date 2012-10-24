@@ -15,15 +15,16 @@ var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
 
-var complete = require('ext/language/complete');
-var marker = require('ext/language/marker');
-var refactor = require('ext/language/refactor');
-var outline = require('ext/language/outline');
+var complete = require("ext/language/complete");
+var marker = require("ext/language/marker");
+var refactor = require("ext/language/refactor");
+var outline = require("ext/language/outline");
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 var keyhandler = require("ext/language/keyhandler");
+var jumptodef = require("ext/language/jumptodef");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
@@ -75,7 +76,7 @@ module.exports = ext.register("ext/language/language", {
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue()]);
+                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
                 event.doc.addEventListener("close", function() {
                     worker.emit("documentClose", {data: path});
                 });
@@ -89,6 +90,7 @@ module.exports = ext.register("ext/language/language", {
             refactor.hook(_self, worker);
             outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
+            jumptodef.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
@@ -122,6 +124,10 @@ module.exports = ext.register("ext/language/language", {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
     
+    isWorkerEnabled : function() {
+        return isWorkerEnabled();
+    },
+
     init : function() {
         var _self = this;
         var worker = this.worker;
@@ -217,14 +223,10 @@ module.exports = ext.register("ext/language/language", {
         if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
     },
     
     onEditorClick: function(event) {
-        if(event.domEvent.altKey) {
-            var pos = event.getDocumentPosition();
-            this.worker.emit("jumpToDefinition", {data: pos});
-        }
     },
     
     /**
@@ -234,12 +236,17 @@ module.exports = ext.register("ext/language/language", {
         complete.invoke();
     },
 
-    registerLanguageHandler: function(modulePath, className) {
+    /**
+     * Registers a new language handler.
+     * @param modulePath  the require path of the handler
+     * @param contents    (optionally) the contents of the handler script
+     */
+    registerLanguageHandler: function(modulePath, contents) {
         var _self = this;
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function(){
-            _self.worker.call("register", [modulePath, className]);
+            _self.worker.call("register", [modulePath, contents]);
         });
     },
 

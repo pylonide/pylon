@@ -47,8 +47,11 @@ ext:
 # calls dryice on worker & packages it
 worker: plugins-client/lib.ace/www/worker/worker-language.js
 
-plugins-client/lib.ace/www/worker/worker-language.js : $(wildcard plugins-client/ext.language/*) \
+plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/worker/worker-javascript.js : \
+        $(wildcard node_modules/ace/*) $(wildcard node_modules/ace/*/*) $(wildcard node_modules/ace/*/*/mode/*) \
+        $(wildcard plugins-client/ext.language/*) \
         $(wildcard plugins-client/ext.language/*/*) \
+        $(wildcard plugins-client/ext.linereport/*) \
         $(wildcard plugins-client/ext.codecomplete/*) \
         $(wildcard plugins-client/ext.codecomplete/*/*) \
         $(wildcard plugins-client/ext.jslanguage/*) \
@@ -66,6 +69,7 @@ plugins-client/lib.ace/www/worker/worker-language.js : $(wildcard plugins-client
 	ln -s `pwd`/plugins-client/ext.language /tmp/c9_worker_build/ext/language
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
+	ln -s `pwd`/plugins-client/ext.linereport /tmp/c9_worker_build/ext/linereport
 	node Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 

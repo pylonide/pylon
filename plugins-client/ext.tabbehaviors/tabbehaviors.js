@@ -7,6 +7,8 @@
 
 define(function(require, exports, module) {
 
+/*global tabEditors mnuContextTabs mnuContext trFiles*/
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
@@ -142,6 +144,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             
             mnuContext = this.menu = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
         );
+        
+        this.mnuTabs.addEventListener("prop.visible", function(e) {
+            if (btnEditorTabsBehavior.value)
+                apf.setStyleClass(_self.mnuTabs.$ext, "tabsContextMenu");
+            else
+                apf.setStyleClass(_self.mnuTabs.$ext, "", ["tabsContextMenu"]);
+        });
         
         mnuContext.addEventListener("prop.visible", function(e) {
             if (e.value && window.event) {
@@ -755,7 +764,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     removeItem: function(page) {
-        var item, idx, keyId;
+        var item;
         var i = 0;
         var l = this.nodes.length;
         var _self = this;

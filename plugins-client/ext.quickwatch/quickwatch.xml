@@ -45,7 +45,7 @@
                 </a:model>
                 <a:actions />
                 <a:each match="[item|globals]" sort="[@name]">
-                    <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
+                    <a:insert match="[item[@children]]" get="{adbg.loadObject(dbg, %[.])}" />
                     <a:expanded match="[node()[@expand]]" />
                     <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon="debugger/genericvariable_obj.gif" tree="true" />
                     <a:column caption="Value" value="{apf.escapeXML([@value])}" width="100%" />

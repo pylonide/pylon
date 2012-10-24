@@ -187,7 +187,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.offlineQueue = JSON.parse(localStorage.offlineQueue);
             }
             catch(e) {
-                console.error("Error loading revisions from local storage", e);
+                this.offlineQueue = [];
             }
         }
 
@@ -321,6 +321,9 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
+        if (e.action == "remove")
+            return;
+        
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -351,7 +354,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var doc = data.doc;
         if (!doc.acedoc)
             return;
-            
+
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
@@ -900,7 +903,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc.$isTree;
+        return doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
     /**
@@ -1117,9 +1120,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             ranges.forEach(function(range) {
                 Util.addCodeMarker(newSession, doc, range[4], {
-                    fromRow: range[0],
+                    fromRow: range[0] - 1,
                     fromCol: range[1],
-                    toRow: range[2],
+                    toRow: range[2] - 1,
                     toCol: range[3]
                 });
             });

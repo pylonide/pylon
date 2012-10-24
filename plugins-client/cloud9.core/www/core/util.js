@@ -13,6 +13,9 @@ var ide = require("core/ide");
 var markup = require("text!core/util.xml");
 
 exports.escapeXpathString = function(name){
+    if (!name)
+        return "";
+    
     if (name.indexOf('"') > -1) {
         var out = [];
         var parts = name.split('"');
@@ -224,7 +227,9 @@ var contentTypes = {
     "sh": "application/x-sh",
     "bash": "application/x-sh",
 
-    "xq": "text/x-xquery"
+    "xq": "text/x-xquery",
+    
+    "terminal": "terminal"
 };
 
 exports.getFileIcon = function(xmlNode) {
@@ -241,7 +246,7 @@ exports.getFileIcon = function(xmlNode) {
 
 
 exports.getContentType = function(filename) {
-    var type = filename.split(".").pop().toLowerCase() || "";
+    var type = filename.split(".").pop().split("!").pop().toLowerCase() || "";
     return contentTypes[type] || "text/plain";
 };
 

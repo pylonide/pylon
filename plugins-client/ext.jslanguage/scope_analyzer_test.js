@@ -6,12 +6,15 @@ if (typeof process !== "undefined") {
 /*global disabledFeatures:true*/
 
 define(function(require, exports, module) {
-
+    
+var sinon = require("sinon");
 var assert = require("assert");
 var LanguageWorker = require('../ext.language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 module.exports = {
+    timeout: 1000000,
+    
     "test jshint-style globals" : function(next) {
         disabledFeatures = { jshint: undefined };
         var emitter = Object.create(EventEmitter);
@@ -155,6 +158,187 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "function g(err){this};");
+    },
+    "test jump to definition should point to variable declaration" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("definition", function(def) {
+            assert.equal(def.row, 0);
+            assert.equal(def.column, 4);
+            next();
+        });
+        emitter.once("markers", function(markers) {
+            worker.jumpToDefinition({
+                data: {
+                    row: 0,
+                    column: 26
+                }
+            });
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
+    },
+    "test jump to definition on a position without code should not throw" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        var definitionListener = sinon.stub();
+        emitter.on("definition", definitionListener);
+        emitter.once("markers", function(markers) {
+            worker.jumpToDefinition({
+                data: {
+                    row: 0,
+                    column: 40
+                }
+            });
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);                            ");
+        
+        // definition listener should not be called
+        setTimeout(function () {
+            sinon.assert.callCount(definitionListener, 0);
+            next();
+        }, 500);
+    },
+    "test isJumpToDefinitionAvailable should return true when available" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("isJumpToDefinitionAvailableResult", function(res) {
+            assert.equal(res.value, true);
+            next();
+        });
+        emitter.once("markers", function(markers) {
+            worker.isJumpToDefinitionAvailable({
+                data: {
+                    row: 0,
+                    column: 26
+                }
+            });
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
+    },
+    "test isJumpToDefinitionAvailable should return false when not available" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("isJumpToDefinitionAvailableResult", function(res) {
+            assert.equal(res.value, false);
+            next();
+        });
+        emitter.once("markers", function(markers) {
+            worker.isJumpToDefinitionAvailable({
+                data: {
+                    row: 0,
+                    column: 15
+                }
+            });
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
+    },
+    
+    "test missing return in err handler" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) callback(err); }); }");
+    },
+    "test missing return in err handler without using err in call" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 0);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } doSomethingElse(function(err) { if(err) console.log('sup'); });");
+    },
+    "test not reporting error when there is a return in err handler" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 0);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) return callback(err); }); }");
+    },
+    "test be less complainy" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "var foo = true ? false\n: { a : 1\n b : 2}");
+    },
+    "test be less complainy 2" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 0);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "for(;;) { [].forEach(function() {}) }");
+    },
+    "test be selectively complainy about functions in loops" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "for(;;) { [].bar(function() {}) }");
+    },
+    "test complain about functions in 'for in'" : function(next) {
+        disabledFeatures = { jshint: true };
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            assert.equal(markers.length, 1);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/parse");
+        worker.switchFile("test.js", "javascript", "for(var x in []) { x.bar(function() {}) }");
     }
 };
 

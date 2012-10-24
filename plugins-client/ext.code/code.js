@@ -7,11 +7,12 @@
 
 define(function(require, exports, module) {
 
+/*global tabEditors ceEditor mnuSyntax*/
+
 require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
@@ -39,59 +40,72 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-// name: ["Caption", "extension", "content-type"]
+// name: ["Menu caption", "extensions", "content-type", "hidden|other"]
 var SupportedModes = {
-    c9search: ["C9Search", "c9search", "text/x-c9search"],
+    asciidoc: ["AsciiDoc", "asciidoc", "text/x-asciidoc", "other"],
+    c9search: ["C9Search", "c9search", "text/x-c9search", "hidden"],
+    c_cpp: ["C, C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
+    clojure: ["Clojure", "clj", "text/x-script.clojure"],
     coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
-    coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion"],
+    coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion", "other"],
     csharp: ["C#", "cs", "text/x-csharp"],
     css: ["CSS", "css", "text/css"],
+    diff:       ["Diff", "diff|patch", "text/x-diff", "other"],
+    glsl:       ["Glsl", "glsl|frag|vert", "text/x-glsl", "other"],
     golang: ["Go", "go", "text/x-go"],
-    groovy: ["Groovy", "groovy", "text/x-groovy"],
-    haxe: ["haXe", "hx", "text/haxe"],
+    groovy: ["Groovy", "groovy", "text/x-groovy", "other"],
+    haxe: ["haXe", "hx", "text/haxe", "other"],
     html: ["HTML", "htm|html|xhtml", "text/html"],
-    c_cpp: ["C/C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
-    clojure: ["Clojure", "clj", "text/x-script.clojure"],
+    jade:       ["Jade", "jade", "text/x-jade"],
     java: ["Java", "java", "text/x-java-source"],
+    jsp:        ["JSP", "jsp", "text/x-jsp", "other"],
     javascript: ["JavaScript", "js", "application/javascript"],
     json: ["JSON", "json", "application/json"],
-    latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex"],
+    jsx:        ["JSX", "jsx", "text/x-jsx", "other"],
+    latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
     less: ["LESS", "less", "text/x-less"],
-    liquid: ["Liquid", "liquid", "text/x-liquid"],
+    liquid: ["Liquid", "liquid", "text/x-liquid", "other"],
     lua: ["Lua", "lua", "text/x-lua"],
-    markdown: ["Markdown", "md|markdown", "text/x-markdown"],
-    ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml"],
+    luapage:    ["LuaPage"      , "lp", "text/x-luapage", "other"],
+    markdown: ["Markdown", "md|markdown", "text/x-markdown", "other"],
+    ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml", "other"],
     perl: ["Perl", "pl|pm", "text/x-script.perl"],
-    pgsql: ["pgSQL", "pgsql", "text/x-pgsql"],
+    pgsql: ["pgSQL", "pgsql", "text/x-pgsql", "other"],
     php: ["PHP", "php|phtml", "application/x-httpd-php"],
-    powershell: ["Powershell", "ps1", "text/x-script.powershell"],
+    powershell: ["Powershell", "ps1", "text/x-script.powershell", "other"],
     python: ["Python", "py", "text/x-script.python"],
     ruby: ["Ruby", "ru|gemspec|rake|rb", "text/x-script.ruby"],
-    scad: ["OpenSCAD", "scad", "text/x-scad", "hidden"],
+    scad: ["OpenSCAD", "scad", "text/x-scad", "other"],
     scala: ["Scala", "scala", "text/x-scala"],
     scss: ["SCSS", "scss|sass", "text/x-scss"],
     sh: ["SH", "sh|bash|bat", "application/x-sh"],
     sql: ["SQL", "sql", "text/x-sql"],
-    svg: ["SVG", "svg", "image/svg+xml"],
+    svg: ["SVG", "svg", "image/svg+xml", "other"],
+    tcl:        ["Tcl"          , "tcl", "text/x-tcl", "other"],
     text: ["Text", "txt", "text/plain", "hidden"],
-    textile: ["Textile", "textile", "text/x-web-textile"],
+    textile: ["Textile", "textile", "text/x-web-textile", "other"],
     typescript: ["Typescript", "ts|str", "text/x-typescript"],
     xml: ["XML", "xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl", "application/xml"],
     xquery: ["XQuery", "xq", "text/x-xquery"],
     yaml: ["YAML", "yaml", "text/x-yaml"]
 };
 
-var fileExtensions = {}, ModesCaption = {}, contentTypes = {};
+var fileExtensions = {}, ModesCaption = {}, contentTypes = {}, hiddenMode = {}, otherMode = {};
 Object.keys(SupportedModes).forEach(function(name) {
     var mode = SupportedModes[name];
     mode.caption = mode[0];
     mode.mime = mode[2];
-    mode.hidden = !!mode[3];
+    mode.hidden = mode[3] == "hidden" ? true : false;
+    mode.other = mode[3] == "other" ? true : false;
     mode.ext = mode[1];
     mode.ext.split("|").forEach(function(ext) {
         fileExtensions[ext] = name;
     });
     ModesCaption[mode.caption] = name;
+
+    hiddenMode[mode.caption] = mode.hidden;
+    otherMode[mode.caption] = mode.other;
+
     contentTypes[mode.mime] = name;
 });
 
@@ -107,6 +121,7 @@ module.exports = ext.register("ext/code/code", {
 
     fileExtensions : Object.keys(fileExtensions),
     supportedModes : Object.keys(SupportedModes),
+    prevSelection : null,
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -220,12 +235,12 @@ module.exports = ext.register("ext/code/code", {
         if (self.ceEditor)
             self.ceEditor.setAttribute("syntax", this.getSyntax(file));
     },
-    
+
     getContentType : function(node) {
         var syntax = this.getSyntax(node);
         if (!syntax)
             return "auto";
-        
+
         return SupportedModes[syntax].mime || "auto";
     },
 
@@ -267,7 +282,7 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
-                
+
                 if (!doc || !doc.acesession)
                     return; //This is probably a deconstructed document
 
@@ -329,7 +344,7 @@ module.exports = ext.register("ext/code/code", {
                     //??? call doc.$page.destroy()
                 });
             });
-            
+
             doc.dispatchEvent("init");
         }
 
@@ -354,38 +369,7 @@ module.exports = ext.register("ext/code/code", {
 
     hook: function() {
         var _self = this;
-
-        var fnWrap = function(command){
-            command.readOnly = command.readOnly || false;
-            command.focusContext = true;
-
-            var isAvailable = command.isAvailable;
-            command.isAvailable = function(editor, event) {
-                if (event instanceof KeyboardEvent &&
-                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
-                    return false;
-
-                return isAvailable ? isAvailable(editor) : true;
-            };
-
-            command.findEditor = function(editor) {
-                if (editor && editor.ceEditor)
-                    return editor.ceEditor.$editor;
-                return editor;
-            };
-        };
-
-        if (!defaultCommands.wrapped) {
-            defaultCommands.each(fnWrap, defaultCommands);
-            defaultCommands.wrapped = true;
-        }
-        if (!MultiSelectCommands.wrapped) {
-            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
-            MultiSelectCommands.wrapped = true;
-        }
-
-        commands.addCommands(defaultCommands, true);
-        commands.addCommands(MultiSelectCommands, true);
+        this.wrapAceCommands();
 
         commands.addCommand({
             name: "syntax",
@@ -444,26 +428,66 @@ module.exports = ext.register("ext/code/code", {
                 // path without dav prefix and without trailing slashes
                 var path = (e.nextPage.name.indexOf(e.currentTarget.davPrefix) === 0 ?
                     e.nextPage.name.substr(e.currentTarget.davPrefix.length) :
-                    e.nextPage.name).replace(/^\/+/, "")
-                
+                    e.nextPage.name).replace(/^\/+/, "");
+
                 editor.afterOpenFile(editor.getSession(), path);
             }
         });
+
+        this.registerMenuItems();
+    },
+
+    wrapAceCommands: function() {
+        var fnWrap = function(command){
+            command.readOnly = command.readOnly || false;
+            command.focusContext = true;
+
+            var isAvailable = command.isAvailable;
+            command.isAvailable = function(editor, event) {
+                if (event instanceof KeyboardEvent &&
+                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
+                    return false;
+
+                return isAvailable ? isAvailable(editor) : true;
+            };
+
+            command.findEditor = function(editor) {
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
+                return editor;
+            };
+        };
+
+        if (!defaultCommands.wrapped) {
+            defaultCommands.each(fnWrap, defaultCommands);
+            defaultCommands.wrapped = true;
+        }
+        if (!MultiSelectCommands.wrapped) {
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
+            MultiSelectCommands.wrapped = true;
+        }
+
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
+
 
         // Override ACE key bindings (conflict with goto definition)
         commands.commands.togglerecording.bindKey = { mac: "Command-Shift-R", win: "Alt-Shift-R" };
         commands.commands.replaymacro.bindKey = { mac: "Command-Ctrl-R", win: "Alt-R" };
         commands.addCommand(commands.commands.togglerecording);
         commands.addCommand(commands.commands.replaymacro);
+    },
 
-        c = 20000;
+    registerMenuItems: function() {
+        var _self = this;
+        var c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
             addEditorMenu("Tools/Toggle Macro Recording", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
 
-        var c = 600;
+        c = 600;
         this.menus.push(
             menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
             menus.addItemByPath("Edit/Line/", null, c += 100),
@@ -649,11 +673,11 @@ module.exports = ext.register("ext/code/code", {
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;
-                        
+
                     var page = tabEditors.getPage();
-                    if (page.$model) 
+                    if (page.$model)
                         return apf.isTrue(page.$model.queryValue("@wrapmode"));
-                    
+
                     return false;
                 }
             }), 600000)
@@ -675,17 +699,38 @@ module.exports = ext.register("ext/code/code", {
                 group : grpSyntax
             }), c += 100),
 
+            otherGrpSyntax = new apf.group({
+                type : ""
+            }),
+
+            menus.addItemByPath("View/Syntax/Other", new apf.item({
+                group : otherGrpSyntax
+            }), c + 90000),
+
             menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
         );
 
         for (var mode in ModesCaption) {
-            if (ModesCaption[mode][3] == "hidden")
+            var path;
+            if (hiddenMode[mode])
                 continue;
+
             this.menus.push(
-                menus.addItemByPath("View/Syntax/" + mode, new apf.item({
+                menus.addItemByPath("View/Syntax/" + (otherMode[mode] ? "Other/" + mode : mode), new apf.item({
                     type: "radio",
                     value: ModesCaption[mode],
-                    group : grpSyntax
+                    group : otherMode[mode] ? otherGrpSyntax : grpSyntax,
+                    onclick : function (e) {
+                        if (_self.prevSelection == null)
+                            _self.prevSelection = this;
+                        else {
+                            _self.prevSelection.uncheck();
+                            if (_self.prevSelection.group.selectedItem.caption == "Other") {
+                                _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu")
+                            }
+                            _self.prevSelection = this;
+                        }
+                    }
                 }), c += 100)
             );
         }
@@ -771,11 +816,11 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("afteronline", function(){
             menus.menus["View/Syntax"].enable();
         });
-        
+
         ide.addEventListener("animate", function(e){
             if (!ceEditor.$ext.offsetHeight)
                 return;
-        
+
             if (e.type == "editor") {
                 var renderer = ceEditor.$editor.renderer;
                 renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
@@ -784,19 +829,54 @@ module.exports = ext.register("ext/code/code", {
                 if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getHeight() - parseInt(e.options.height);
                     if (delta < 0) return;
-                    
+
                     var renderer = ceEditor.$editor.renderer;
                     renderer.onResize(true, null, null, ceEditor.getHeight() + delta);
                 }
                 else if (e.options.width != undefined && apf.isChildOf(e.other, ceEditor, true)) {
                     var delta = e.which.getWidth() - parseInt(e.options.width);
                     if (delta < 0) return;
-                    
+
                     var renderer = ceEditor.$editor.renderer;
                     renderer.onResize(true, null, ceEditor.getWidth() + delta);
                 }
             }
         });
+        
+        // display feedback while loading files
+        var isOpen, bgMessage;
+        var checkLoading = function(e) {
+            if (!ceEditor.xmlRoot)
+                return;
+            var loading = ceEditor.xmlRoot.hasAttribute("loading");
+            var container = ceEditor.$editor.container;
+
+            if (loading) {
+                if (!bgMessage || !bgMessage.parentNode) {
+                    bgMessage = bgMessage|| document.createElement("div");                    
+                    container.parentNode.appendChild(bgMessage);
+                }
+                var isDark = container.className.indexOf("ace_dark")!=-1;
+                bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
+                
+                bgMessage.textContent = "Loading " + ceEditor.xmlRoot.getAttribute("name");
+                container.style.transitionProperty = "opacity";
+                container.style.transitionDuration = "300ms";
+                container.style.pointerEvents = "none";
+                container.style.opacity = 0;
+                isOpen = true;
+            } else if (isOpen) {
+                isOpen = false;
+                container.style.opacity = 1;
+                container.style.pointerEvents = "";
+            }
+        };
+
+        ide.addEventListener("openfile", function(){
+            setTimeout(checkLoading, 0);
+        });
+        ide.addEventListener("afteropenfile", checkLoading);
+        ide.addEventListener("tab.afterswitch", checkLoading);
     },
 
     /**
@@ -903,3 +983,5 @@ module.exports = ext.register("ext/code/code", {
 });
 
 });
+
+

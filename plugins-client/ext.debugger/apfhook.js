@@ -12,10 +12,10 @@ var ide = require("core/ide");
 
 window.adbg = {
     exec : function(method, args, callback, options) {
-        if (method == "loadScript") {
+        if (method == "loadSource") {
             var dbg = args[0].main;
             var script = args[1];
-            dbg.loadScript(script, function(source) {
+            dbg.loadSource(script, function(source) {
                 if (options && options.callback) {
                     options.callback(apf.escapeXML(source), apf.SUCCESS);
                 }
@@ -26,11 +26,11 @@ window.adbg = {
                 }
             });
         }
-        else if (method == "loadObjects") {
+        else if (method == "loadObject") {
             var dbg = args[0].main;
             var item = args[1];
 
-            dbg.loadObjects(item, function(xml) {
+            dbg.loadObject(item, function(xml) {
                 if (options && options.callback) {
                     options.callback(xml, apf.SUCCESS);
                 }

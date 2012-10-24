@@ -84,6 +84,10 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     toggleTabs : function(force, preview, noAnim, mouse){
+        if (typeof noAnim == "undefined") {
+            noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
+        }
+        
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
@@ -160,14 +164,12 @@ module.exports = ext.register("ext/editors/editors", {
                 }),
 
                 btnMenu = new apf.button({
+                    id : "btnEditorTabsBehavior",
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
-                    onmousedown : function(){
-                        apf.setStyleClass(window[menus.getMenuId('View/Tabs')].$ext, 'tabsContextMenu');
-                    },
                     skin : "btn_icon_only",
-                    "class" : "tabmenubtn",
+                    "class" : "tabmenubtn"
                 }) /*,
                 new apf.hbox({
                     id      : "barButtons",

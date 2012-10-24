@@ -212,6 +212,8 @@ module.exports = ext.register("ext/panels/panels", {
         this.currentPanel = panelExt;
         this.lastPanel    = panelExt;
 
+        this.currentPanel.panel.setTitle(this.currentPanel.button && this.currentPanel.button.caption || "Untitled");
+
         settings.model.setQueryValue("auto/panels/@active", panelExt.path);
 
         ide.dispatchEvent("showpanel." + panelExt.path);
