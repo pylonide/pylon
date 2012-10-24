@@ -21,6 +21,10 @@ module.exports = ext.register("ext/html/html", {
     nodes : [],
     autodisable : ext.ONLINE | ext.LOCAL,
     
+    disableLut: {
+        "terminal": true
+    },
+    
     init : function(){
         var _self = this;
         
@@ -54,8 +58,14 @@ module.exports = ext.register("ext/html/html", {
     },
 
     enable : function() {
+        var page = tabEditors.getPage();
+        var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
+        if(this.disableLut[contentType])
+            return this.disable();
+        
         if (this.enabled)
             return;
+        
         this.enabled = true;
 
         this.nodes.each(function(item){
