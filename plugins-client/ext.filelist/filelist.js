@@ -40,7 +40,7 @@ module.exports = ext.register("ext/filelist/filelist", {
             return;
 
         this.cached = "";
-        apf.ajax(ide.apiPrefix + "/fs/list?path=&showHiddenFiles=0", {
+        apf.ajax(location.pathname + "/api/fs/list?path=&showHiddenFiles=0", {
             method: "GET",
             callback: function(data, state, extra) {
                 _self.cached = data || extra.http.responseText;
