@@ -19,8 +19,6 @@ module.exports = function() {
         workspaceId: ""
     };
 
-    this.filelistCounter = 0;
-
     this.setEnv = function(newEnv) {
         var self = this;
         Object.keys(this.env).forEach(function(e) {
@@ -29,7 +27,7 @@ module.exports = function() {
         });
     };
 
-    this.exec = function(options, pm, eventbus, onStart, onData, onExit) {
+    this.exec = function(options, vfs, onData, onExit) {
         var path = options.path;
 
         if (options.path === null)
@@ -48,36 +46,22 @@ module.exports = function() {
         if (!args)
             return onExit(1, "Invalid arguments");
 
-        var channel = this.env.workspaceId + "::download_" + this.filelistCounter++;
+        vfs.spawn(args.command, { args: args, cwd: options.path, stdoutEncoding: "utf8", stderrEncoding: "utf8" }, function(err, meta) {
+            if (err || !meta.process)
+                return onExit(1, err);
 
-        pm.spawn("shell", {
-            command: args.command,
-            extra: "filelist",
-            args: args,
-            cwd: options.path,
-            encoding: "utf8"
-        }, channel, function(err, pid, process) {
             var stderr = "";
+            meta.process.stdout.on("data", function(data) {
+                onData(data);
+            });
 
-            var listener = function (msg) {
-                switch (msg.type) {
-                    case "shell-start":
-                        onStart();
-                        break;
-                    case "shell-data":
-                        if (msg.stream === "stderr")
-                            stderr += msg.data.toString("ascii");
-                        else
-                            onData(msg);
-                        break;
-                    case "shell-exit":
-                        eventbus.removeListener(channel, listener);
-                        onExit(msg.code, stderr);
-                        break;
-                }
-            };
+            meta.process.stderr.on("data", function(data) {
+                stderr += data;
+            });
 
-            eventbus.on(channel, listener);
+            meta.process.on("exit", function(code) {
+                onExit(code, stderr);
+            });
         });
     };
 
@@ -100,18 +84,18 @@ module.exports = function() {
             args.unshift("-E");
 
         //Hidden Files
-        if (options.showHiddenFiles)
-            args.push("!", "-regex", "\\/\\.[^\\/]*$");
+        if (!options.showHiddenFiles)
+            args.push("(", "!", "-regex", ".*/\\..*", ")");
 
         if (options.maxdepth)
             args.push("-maxdepth", options.maxdepth);
 
         excludeExtensions.forEach(function(pattern){
-            args.push("!", "-regex", ".*\\/" + pattern + "$");
+            args.push("(", "!", "-regex", ".*\\/" + pattern + "$", ")");
         });
 
         excludeDirectories.forEach(function(pattern){
-            args.push("!", "-regex", ".*\\/" + pattern + "\\/.*");
+            args.push("(", "!", "-regex", ".*\\/" + pattern + "\\/.*", ")");
         });
 
         if (this.env.platform !== "darwin")
