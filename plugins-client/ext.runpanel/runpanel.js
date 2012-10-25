@@ -21,6 +21,8 @@ var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
 var commands = require("ext/commands/commands");
 
+/*global stProcessRunning*/
+
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",
     dev     : "Ajax.org",
@@ -53,13 +55,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         commands.addCommand({
             name: "run",
-            "hint": "run and debug a node program on the server",
+            "hint": "run or debug an application (stops the app if running)",
             "commands": {
                 "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
             },
             bindKey: {mac: "F5", win: "F5"},
             exec: function () {
-                _self.run();
+                if (stProcessRunning.active)
+                    _self.stop();
+                else
+                    _self.run();
             }
         });
 

@@ -21,7 +21,7 @@ module.exports = {
         
         commands.addCommand({
             name : "jumptodef",
-            bindKey: {mac: "F12", win: "F12"},
+            bindKey: {mac: "F3", win: "F3"},
             hint: "jump to the definition of the variable or function that is under the cursor",
             isAvailable : function(editor){
                 return editor && editor.ceEditor;
@@ -88,9 +88,7 @@ module.exports = {
         if (!editor || !editor.ceEditor)
             return;
 
-        this.worker.isJumpToDefinitionAvailable({
-            data: editor.getSelection().getCursor()
-        });
+        this.worker.emit("isJumpToDefinitionAvailable", { data: editor.getSelection().getCursor() });
     },
 
     jumptodef: function() {
@@ -101,7 +99,7 @@ module.exports = {
         var sel = editor.getSelection();
         var pos = sel.getCursor();
         
-        this.worker.jumpToDefinition({
+        this.worker.emit("jumpToDefinition", {
             data: pos
         });
     },
