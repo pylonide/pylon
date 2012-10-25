@@ -106,7 +106,7 @@ var config = [
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
-            "ext/dbg-node/dbg-node", 
+            "ext/dbg-node/dbg-node",
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
             "ext/consolehints/consolehints",
@@ -132,7 +132,7 @@ var config = [
             "ext/guidedtour/guidedtour",
             "ext/quickstart/quickstart",
             "ext/jslanguage/jslanguage",
-            //"ext/autotest/autotest",
+            "ext/autotest/autotest",
             "ext/closeconfirmation/closeconfirmation",
             "ext/codetools/codetools",
             "ext/colorpicker/colorpicker",
@@ -177,6 +177,7 @@ var config = [
     },
     "./cloud9.eventbus",
     "./cloud9.process-manager",
+    "./cloud9.routes",
     "./cloud9.run.shell",
     {
         packagePath: "./cloud9.run.node",
@@ -198,6 +199,7 @@ var config = [
     "./cloud9.ide.gittools",
     "./cloud9.ide.hg",
     "./cloud9.ide.npm",
+    "./cloud9.ide.filelist",
     "./cloud9.ide.search",
     "./cloud9.ide.run-node",
     {

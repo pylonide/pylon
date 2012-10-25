@@ -54,13 +54,16 @@ oop.inherits(v8DebugClient, DebugHandler);
             _self.backtrace(function() {
                 _self.updateBreakpoints(function() {
                     _self.$v8dbg.listbreakpoints(function(e){
-                        _self.$handleDebugBreak(e.breakpoints);
+                        _self.$handleDebugBreak(e.breakpoints, function() {
+                            if (_self.activeFrame) {
+                                ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
+                                _self.onChangeFrame(_self.activeFrame);
+                            }
+                            _self.onChangeRunning();
+                        });
                     });
                 });
-                if (_self.activeFrame)
-                    ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
-                _self.onChangeRunning();
-            });
+            }, true); // The sync backtrace should be silent
         });
     };
 
@@ -96,6 +99,9 @@ oop.inherits(v8DebugClient, DebugHandler);
     };
 
     this.onBreak = function(e) {
+        var bps = e.data && e.data.breakpoints;
+        if (bps && bps.length === 1 && bps[0] === 1)
+            return;
         var _self = this;
         this.backtrace(function() {
             ide.dispatchEvent("dbg.break", {frame: _self.activeFrame});
@@ -118,18 +124,19 @@ oop.inherits(v8DebugClient, DebugHandler);
         mdlDbgSources.appendXml(script);
     };
 
-    this.onChangeFrame = function(frame) {
+    this.onChangeFrame = function(frame, silent) {
         this.activeFrame = frame;
-        ide.dispatchEvent("dbg.changeFrame", {data: frame});
+        if (!silent)
+            ide.dispatchEvent("dbg.changeFrame", {data: frame});
     };
 
-    this.$handleDebugBreak = function(remoteBreakpoints) {
+    this.$handleDebugBreak = function(remoteBreakpoints, callback) {
         var frame = this.activeFrame;
         if (!frame || !this.$v8dbg)
-            return;
+            return callback();
         var bp = remoteBreakpoints[0];
-        if (bp.number != 1)
-            return;
+        if (bp.number !== 1)
+            return callback();
 
         var uibp = mdlDbgBreakpoints.queryNode(
             "//breakpoint[@line='" + frame.getAttribute("line") +"' and @path='" +
@@ -140,10 +147,11 @@ oop.inherits(v8DebugClient, DebugHandler);
         );
 
         if (uibp && uibp.getAttribute("enabled") == "true")
-            return;
+            return callback();
 
         this.$v8dbg.clearbreakpoint(1, function(){});
-        this.resume();
+        this.onChangeFrame(null);
+        this.resume(null, null, callback);
     };
 
     // apf xml helpers
@@ -372,7 +380,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         });
     };
 
-    this.backtrace = function(callback) {
+    this.backtrace = function(callback, silent) {
         var _self = this;
         var model = mdlDbgStack;
         this.$v8dbg.backtrace(null, null, null, true, function(body, refs) {
@@ -404,7 +412,7 @@ oop.inherits(v8DebugClient, DebugHandler);
 
             var topFrame = model.data.firstChild;
             topFrame && topFrame.setAttribute("istop", true);
-            _self.onChangeFrame(topFrame);
+            _self.onChangeFrame(topFrame, silent);
             callback();
         });
     };

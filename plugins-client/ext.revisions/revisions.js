@@ -187,7 +187,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.offlineQueue = JSON.parse(localStorage.offlineQueue);
             }
             catch(e) {
-                console.error("Couldn't parse revisions from local storage", e, localStorage.offlineQueue);
                 this.offlineQueue = [];
             }
         }
@@ -1121,9 +1120,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             ranges.forEach(function(range) {
                 Util.addCodeMarker(newSession, doc, range[4], {
-                    fromRow: range[0],
+                    fromRow: range[0] - 1,
                     fromCol: range[1],
-                    toRow: range[2],
+                    toRow: range[2] - 1,
                     toCol: range[3]
                 });
             });
