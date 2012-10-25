@@ -10,10 +10,10 @@ define(function(require, exports, module) {
 
 var GridLayouts = {
     "3cols": {
-        "ascii": 
+        "ascii":
                 "+--+--+--+\n" +
                 "|  |  |  |\n" +
-                "+--+--+--+", 
+                "+--+--+--+",
         "struct": {
             "hbox": [
                 "splitter",
@@ -27,7 +27,7 @@ var GridLayouts = {
         ]
     },
     "3rows": {
-        "ascii": 
+        "ascii":
                 "+-----+\n" +
                 "|     |\n" +
                 "+-----+\n" +
@@ -141,7 +141,7 @@ var defaultGrid = grids.DEFAULT_GRID = "3cols";
 
 
 /**
- * Create the available grids 
+ * Create the available grids
  */
 grids.init = function(gridLayout) {
     gridLayout = gridLayout || defaultGrid;
@@ -156,20 +156,20 @@ grids.get = function(name) {
 
 grids.update = function(gridLayout, split) {
     var grid = GridLayouts[gridLayout];
-    
+
     //console.log("update: ", split.pairs[0].page.$pHtmlNode, grid.node, grid.node.parentNode, grid.node.$pHtmlNode);
-    grid.node.show();
+    //grid.node.show();
     // attach the grid layout to the first page of the splitview...
     var page = split.pairs[0].page;
     var amlPage = page.fake ? page.relPage : page;
     amlPage.appendChild(grid.node);
-    
+
     //console.log(split.pairs.map(function(pair){return pair.editor.$ext;}), grid.insertPoints);
     var i = 0;
     var l = split.pairs.length;
     for (; i < l; ++i)
         insertEditorAt(grid.node, split.pairs[i].editor, [].concat(grid.insertPoints[i]));
-    
+
     // hide splitters that we don't need to see anymore
     var splitters = grid.splitters || grid.node.selectNodes("splitter");
     for (i = splitters.length - 1; i >= l - 1; --i)
@@ -221,7 +221,7 @@ function createNodes(struct, splitters, parent) {
             options.skin = "darksplitter";
             options.zindex = 8;
         }
-        
+
         var node = parent.appendChild(new apf[nodeName](options));
         if (nodeName == "splitter")
             splitters.push(node);
@@ -240,7 +240,9 @@ function createGridNodes(name) {
     var blueprint = GridLayouts[name];
     if (!blueprint)
         throw new Error("Grid layout with name '" + name + "' not found!");
-    
+    // check if nodes are already created:
+    if (blueprint.node)
+        return;
     // preparse paths out of the insertPoints...
     blueprint.insertPoints = blueprint.insertPoints.map(function(insertPoint) {
         if (typeof insertPoint == "string")
@@ -248,7 +250,7 @@ function createGridNodes(name) {
         return insertPoint;
     });
     //console.log("blueprint.insertPoints: ", blueprint.insertPoints);
-    
+
     var splitters = [];
     createNodes(blueprint.struct, splitters);
     if (!blueprint.node)
@@ -293,7 +295,7 @@ function insertEditorAt(parent, editor, insertPoint) {
         if (parent.tagName.indexOf(nextPoint) == -1) {
             throw new Error("No valid insertion point found for editor");
         }
-        
+
         // do we need to keep searching down the path?
         if (insertPoint.length > 1) {
             for (var i = 0, l = parent.childNodes.length; i < l; ++i) {
@@ -340,9 +342,9 @@ function insertEditorAt(parent, editor, insertPoint) {
             }
         }
     }
-    
+
     editor.show();
-    
+
     // make sure we make the splitter visible, if needed
     if (editor.previousSibling && editor.previousSibling.tagName == "splitter")
         editor.previousSibling.show();
