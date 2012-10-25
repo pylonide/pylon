@@ -117,21 +117,19 @@ module.exports = ext.register("ext/preview/preview", {
         });
     },
 
-    preview : function (url, tabView) {
+    preview : function (url) {
         // window.open(url, "_blank");
         var page = tabEditors.getPage();
         var path = url + ".#!preview";
         editors.gotoDocument({
             path: path,
             type: "nofile",
-            active: !!tabView
+            active: false
         });
-        if (!tabView) {
-            setTimeout(function() {
-                splits.mutate(null, tabEditors.getPage(path));
-                splits.update(splits.getActive());
-            });
-        }
+        setTimeout(function() {
+            splits.mutate(null, tabEditors.getPage(path));
+            splits.update(splits.getActive());
+        });
     },
 
     popup: function (url) {
