@@ -7,7 +7,8 @@
 
 /*global tabEditors searchRow winSearchInFiles winSearchReplace  rbSFSelection
     txtSFFind chkSFRegEx tooltipSearchInFiles txtSFReplace txtSFPatterns
-    trFiles chkSFMatchCase chkSFRegEx chkSFConsole tabConsole btnSFFind */
+    trFiles chkSFMatchCase chkSFRegEx chkSFConsole tabConsole btnSFFind,
+    chkSFWholeWords, grpSFScope */
 
 define(function(require, exports, module) {
 
@@ -135,7 +136,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             "Return|Shift-Return": function(){ _self.replace(); }
         });
 
-        var kb = this.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
+        kb = this.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
         kb.bindKeys({
             "Return|Shift-Return": function(){ _self.execFind(); }
         });
@@ -170,7 +171,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     setSearchSelection: function(e){
-        var selectedNode;
+        var selectedNode, name;
 
         if (trFiles) {
             // If originating from an event
@@ -181,18 +182,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             var filepath = selectedNode.getAttribute("path").split("/");
 
-            var name = "";
+            name = "";
             // get selected node in tree and set it as selection
-            if (selectedNode.getAttribute("type") == "folder") {
+            if (selectedNode.getAttribute("type") == "folder")
                 name = filepath[filepath.length - 1];
-            }
-            else if (selectedNode.getAttribute("type") == "file") {
+            else if (selectedNode.getAttribute("type") == "file")
                 name = filepath[filepath.length - 2];
-            }
 
-            if (name.length > 25) {
+            if (name.length > 25)
                 name = name.substr(0, 22) + "...";
-            }
         }
         else {
             var path = settings.model.queryValue("auto/tree_selection/@path");
@@ -243,8 +241,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
 
             winSearchInFiles.$ext.style.overflow = "hidden";
-            winSearchInFiles.$ext.style.height
-                = winSearchInFiles.$ext.offsetHeight + "px";
+            winSearchInFiles.$ext.style.height =
+                winSearchInFiles.$ext.offsetHeight + "px";
 
             this.position = -1;
 
@@ -273,18 +271,18 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             //Animate
             if (animate) {
                 anims.animateSplitBoxNode(winSearchInFiles, {
-                height: "102px",
-                    timingFunction: "cubic-bezier(.10, .10, .25, .90)",
-                    duration: 0.2
-                }, function() {
-                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                winSearchInFiles.$ext.style.height = "";
+                    height: "102px",
+                        timingFunction: "cubic-bezier(.10, .10, .25, .90)",
+                        duration: 0.2
+                    }, function() {
+                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    winSearchInFiles.$ext.style.height = "";
 
-                setTimeout(function(){
-                    apf.layout.forceResize();
-                }, 50);
-            });
-        }
+                    setTimeout(function(){
+                        apf.layout.forceResize();
+                    }, 50);
+                });
+            }
             else {
                 winSearchInFiles.$ext.style.height = "";
                 apf.layout.forceResize();
@@ -296,32 +294,32 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             //Animate
             if (animate && !apf.isGecko) {
-            winSearchInFiles.visible = false;
+                winSearchInFiles.visible = false;
 
-            winSearchInFiles.$ext.style.height
-                = winSearchInFiles.$ext.offsetHeight + "px";
+                winSearchInFiles.$ext.style.height =
+                    winSearchInFiles.$ext.offsetHeight + "px";
 
                 anims.animateSplitBoxNode(winSearchInFiles, {
-                height: "0px",
+                    height: "0px",
                     timingFunction: "ease-in-out",
                     duration : 0.2
                 }, function(){
-                winSearchInFiles.visible = true;
-                winSearchInFiles.hide();
+                    winSearchInFiles.visible = true;
+                    winSearchInFiles.hide();
                     winSearchInFiles.parentNode.removeChild(winSearchInFiles);
 
-                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
-                if (!noselect && editors.currentEditor)
-                    editors.currentEditor.ceEditor.focus();
+                    if (!noselect && editors.currentEditor)
+                        editors.currentEditor.ceEditor.focus();
 
-                setTimeout(function(){
-                    callback
-                        ? callback()
-                        : apf.layout.forceResize();
-                }, 50);
-            });
-        }
+                    setTimeout(function(){
+                        callback
+                            ? callback()
+                            : apf.layout.forceResize();
+                    }, 50);
+                });
+            }
             else {
                 winSearchInFiles.hide();
                 winSearchInFiles.parentNode.removeChild(winSearchInFiles);
@@ -444,7 +442,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
                 _self.tabacedoc.node = node;
 
-                apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults")
+                apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults");
 
                 _self.apfeditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
                     _self.launchFileFromSearch(_self.apfeditor.$editor);
@@ -473,8 +471,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (path.indexOf(ide.davPrefix) == 0)
             path = path.slice(ide.davPrefix.length).replace(/^\//,"");
 
-        options.command = "search";
-        options.type = "codesearch";
+        options.command = "codesearch";
         options.path = path;
         ide.send(options);
 
@@ -489,33 +486,25 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (message.extra != "codesearch")
             return false;
 
-        if (!chkSFConsole.checked) {
-            if (this.firstRun) {
-                var currLength = this.tabacedoc.getLength() - 2; // the distance to the last message
-                this.searcheditor.scrollToLine(currLength, false, true);
-                this.firstRun = false;
-            }
+        var doc = !chkSFConsole.checked ? this.tabacedoc : this.consoleacedoc;
+        var editor = !chkSFConsole.checked ? this.searcheditor : this.searchConsole.$editor;
+        if (this.firstRun) {
+            var currLength = doc.getLength() - 2; // the distance to the last message
+            editor.scrollToLine(currLength, false, true);
+            this.firstRun = false;
 
-            this.appendLines(this.tabacedoc, message.data);
         }
-        else {
-            if (this.firstRun) {
-                var currLength = this.consoleacedoc.getLength() - 2; // the distance to the last message
-                this.searchConsole.$editor.scrollToLine(currLength, false, true);
-                this.firstRun = false;
-            }
-
-            this.appendLines(this.consoleacedoc, message.data);
-        }
+        this.appendLines(doc, message.data);
 
         // finish
-        if (message.type == "shell-exit") {
+        if (message.type == "exit") {
             if (!chkSFConsole.checked) {
-                var node = this.tabacedoc.node;
+                var node = doc.node;
                 node.setAttribute("saving", "0");
                 node.setAttribute("changed", "0");
             }
             btnSFFind.$ext.innerText = "Find";
+            this.appendLines(doc, message);
         }
         return true;
     },
@@ -558,15 +547,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     appendLines : function(doc, content) {
-        if (content.length == 0) // blank lines can get through
+        if (!content || (!content.length && !content.count)) // blank lines can get through
             return;
 
-        if (typeof content == "string") {
+        if (typeof content == "string")
             content = content.split("\n");
-        } else if (typeof content.count == "number") {
-            // final message
+        else if (typeof content.count == "number") // final message
             content = ["\n", this.messageFooter(content), "\n", "\n", "\n"];
-        }
 
         if (content.length > 0)
             doc.insertLines(doc.getLength(), content);

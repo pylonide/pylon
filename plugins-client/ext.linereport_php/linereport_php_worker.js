@@ -9,8 +9,6 @@ define("ext/linereport_php/linereport_php_worker", ["require", "exports", "modul
 var baseLanguageHandler = require("ext/linereport/linereport_base");
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-
-
 handler.disabled = false;
 
 handler.handlesLanguage = function(language) {
@@ -39,7 +37,8 @@ handler.analyze = function(doc, fullAst, callback) {
  * line:column: error message.
  */
 handler.$postProcess = function(line) {
-    return line.replace(/(.*) (in .*? )?on line ([0-9]+)$/, "$3:1: $1/");
+    return line.replace(/(.*) (in .*? )?on line ([0-9]+)$/, "$3:1: $1/")
+        .replace(/parse error in (.*)\/(.+?)\/?$/, "parse error in $2");
 };
 
 });
