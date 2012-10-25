@@ -12,6 +12,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var completer = module.exports = Object.create(baseLanguageHandler);
 
 var modeCache = {}; // extension -> static data
+var iconLanglist = ["php"];
 
 completer.handlesLanguage = function(language) {
     return ["css", "php"].indexOf(language) !== -1;
@@ -20,24 +21,27 @@ completer.handlesLanguage = function(language) {
 var CSS_ID_REGEX = /[a-zA-Z_0-9\$\-]/;
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
+    var language = this.language;
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column,
-            this.language === "css" ? CSS_ID_REGEX : null);
+             language === "css" ? CSS_ID_REGEX : null);
     if(!identifier.length) // No completion after "."
         return callback([]);
 
-    var mode = modeCache[this.language];
+    var mode = modeCache[language];
 
     if (mode === undefined) {
         var text;
-        if (this.language)
+        if (language)
             text = completeUtil.fetchText(this.staticPrefix, 'ext/codecomplete/modes/' + this.language + '.json');
         mode = text ? JSON.parse(text) : {};
         // Cache
-        modeCache[this.language] = mode;
+        modeCache[language] = mode;
     }
 
     function getIcon(type) {
+        if (iconLanglist.indexOf(language) === -1)
+            return null;
         var iconMap = {
             "variable": "property",
             "constant": "property",
