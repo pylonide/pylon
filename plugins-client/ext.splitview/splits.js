@@ -270,12 +270,8 @@ exports.mutate = function(split, page, type) {
 
         editor.removeAttribute("model");
         editor.removeAttribute("actiontracker");
-        //removeEditorListeners(editor);
-        editor.hide();
-        apf.document.documentElement.appendChild(editor);
         page.$deactivateButton();
         clearSplitViewStyles(page);
-        editor.hide();
         split.zManager.clear(editor.$ext);
         if (split === ActiveSplit && tabs.getPage() !== split.pairs[0].page)
             tabs.set(split.pairs[0].page);

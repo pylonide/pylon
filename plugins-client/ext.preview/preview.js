@@ -32,6 +32,7 @@ module.exports = ext.register("ext/preview/preview", {
     css   : util.replaceStaticPrefix(css),
     deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
+    hidePage : true,
     counter : 0,
     nodes : [],
     disableLut: {
@@ -43,7 +44,8 @@ module.exports = ext.register("ext/preview/preview", {
 
     setDocument : function(doc, actiontracker) {
         var node = doc.getNode();
-        this.page = doc.$page;
+        var page = this.page = doc.$page;
+        page.$button.style.display = "none";
         doc.editor = this;
         var path = node.getAttribute("path");
         node.setAttribute("name", "Preview: " + apf.getFilename(path).split(".#!preview")[0]);
@@ -85,11 +87,6 @@ module.exports = ext.register("ext/preview/preview", {
 
         ide.addEventListener("tab.afterswitch", function(e){
             _self.enable();
-            if (e.nextPage !== _self.page)
-                return;
-            var page = tabEditors.getPage();
-            var node = page.$doc.getNode();
-            _self.preview(node.getAttribute("path").split(".#!preview")[0], true);
         });
         ide.addEventListener("closefile", function(e){
             if (tabEditors.getPages().length == 1)
@@ -108,8 +105,11 @@ module.exports = ext.register("ext/preview/preview", {
         });
 
         ide.addEventListener("splits.mutate", function(e) {
-            if (e.page.$editor !== _self)
+            if (e.page.$editor !== _self) {
+                if (e.action === "remove")
+                    editors.close(e.split.pairs[0].page);
                 return;
+            }
             if (e.action === "add")
                 _self.splits.push(e.split);
             else if (e.action === "remove")
@@ -120,24 +120,18 @@ module.exports = ext.register("ext/preview/preview", {
     preview : function (url, tabView) {
         // window.open(url, "_blank");
         var page = tabEditors.getPage();
-        this.splits.forEach(function (split){
-            if (split.pairs.length === 2 && page === split.pairs[1].page)
-                splits.mutate(split, split.pairs[1].page);
+        var path = url + ".#!preview";
+        editors.gotoDocument({
+            path: path,
+            type: "nofile",
+            active: !!tabView
         });
-        setTimeout(function () {
-            var path = url + ".#!preview";
-            editors.gotoDocument({
-                path: path,
-                type: "nofile",
-                active: !!tabView
+        if (!tabView) {
+            setTimeout(function() {
+                splits.mutate(null, tabEditors.getPage(path));
+                splits.update(splits.getActive());
             });
-            if (!tabView) {
-                setTimeout(function() {
-                    splits.mutate(null, tabEditors.getPage(path));
-                    splits.update(splits.getActive());
-                });
-            }
-        });
+        }
     },
 
     popup: function (url) {

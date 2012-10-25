@@ -225,6 +225,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 }
             }
             else if (page.fake) {
+                if (page.$editor && page.$editor.hidePage)
+                    return;
                 _self.addItem(page);
                 
                 if (_self.accessList.indexOf(page) == -1) {
