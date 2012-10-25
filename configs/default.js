@@ -97,6 +97,7 @@ var config = [
             "ext/log/log",
             "ext/help/help",
             "ext/linereport/linereport",
+            "ext/linereport_php/linereport_php",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
