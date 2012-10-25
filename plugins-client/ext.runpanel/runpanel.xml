@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 
-    <a:menu id="mnuRunCfg" style="margin-left:-137px" skin="mnuRunCfg">
+    <a:menu id="mnuRunCfg" style="margin-left:-137px" skin="mnuRunCfg" width="280">
         <div class="window">
             <div class="tooltip"></div>
             <div class="fbox">
@@ -37,10 +37,17 @@
                 </div>
                 <div class="col col2">
                     <div class="title">
-                        <a:hbox height="28" align="center" edge="0 4 0 0">
-                            <a:checkbox label="Advanced" skin="checkbox_grey" />
+                        <a:hbox height="28" align="center" edge="0 4 0 6">
+                            <a:checkbox 
+                              label = "Advanced" 
+                              skin  = "checkbox_black"
+                              class = "dark-bg" />
                             <a:filler />
-                            <a:button skin="btn_icon_only" class="dim18-18" icon="info.png" onclick="window.open('https://docs.c9.io')" />
+                            <a:button 
+                              skin    = "btn_icon_only" 
+                              class   = "dim18-18" 
+                              icon    = "info.png" 
+                              onclick = "window.open('https://docs.c9.io')" />
                         </a:hbox>
                     </div>
                     <div class="gray">
@@ -56,7 +63,7 @@
                                       disabled="{!lstRunCfg.selected || [{lstRunCfg.selected}::@curfile]}"/>
                                 </a:hbox-->
                                 <a:hbox height="36" align="center">
-                                    <a:label width="100" class="graylabel size12">File to run:</a:label>
+                                    <a:label width="100" class="graylabel size-12 arial dark-bg">File to run:</a:label>
                                     <a:textbox 
                                       skin     = "searchbox_textbox" 
                                       class    = "dark-bg"  
@@ -80,7 +87,7 @@
                                     </a:model>
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
-                                  <a:label width="100" class="graylabel size12">Runtime:</a:label>
+                                  <a:label width="100" class="graylabel size-12 arial dark-bg">Runtime:</a:label>
                                   <a:dropdown id="ddRunnerSelector"
                                       model     = "mdlRunnerSelector"
                                       flex      = "1"
@@ -94,7 +101,7 @@
                                       eachvalue = "[@value]" />
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
-                                    <a:label width="100" class="graylabel size12">Cmd Line Args</a:label>
+                                    <a:label width="100" class="graylabel size-12 arial dark-bg">Cmd Line Args</a:label>
                                     <a:textbox id="txtCmdArgs" 
                                       skin     = "searchbox_textbox" 
                                       class    = "dark-bg" 
@@ -103,29 +110,27 @@
                                       disabled = "{!lstRunCfg.selected}"/>
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
-                                    <a:label width="100" class="graylabel size12">Debug Mode</a:label>
+                                    <a:label width="100" class="graylabel size-12 arial dark-bg">Debug Mode</a:label>
                                     <a:checkbox 
-                                      class = "underlined" 
+                                      class = "underlined dark-bg" 
                                       label = "Enabled by default"
-                                      value = "[{require('ext/settings/settings').model}::auto/configurations/@debug]" skin="checkbox_grey" />
+                                      skin  = "checkbox_black"
+                                      value = "[{require('ext/settings/settings').model}::auto/configurations/@debug]" />
                                 </a:hbox>
-                                <a:divider skin="c9-divider-hor" />
-                                <a:hbox edge="11 10 0 0" pack="end" align="center">
+                                <a:divider skin="c9-divider-hor" margin="0 -9 0 -8" />
+                                <a:hbox edge="11 0 0 0" pack="end" align="center" padding="10">
                                     <a:button
                                       id       = "btnDefaultExtEnable"
                                       skin     = "btn-default-simple"
                                       caption  = "Close"
                                       class    = "no-bold size-13"
-                                      onclick  = "mnuRunCfg.hide()"
-                                    />
+                                      onclick  = "mnuRunCfg.hide()" />
                                     <a:button
                                       caption = "Run"
-                                      margin  = "0 0 0 10"
                                       width   = "170"
                                       skin    = "btn-default-css3"
                                       class   = "btn-green2 no-bold size-13"
-                                      onclick = "require('ext/runpanel/runpanel').run()"
-                                    />
+                                      onclick = "require('ext/runpanel/runpanel').run()" />
                                 </a:hbox>
                             </a:vbox>
                         </a:bar>

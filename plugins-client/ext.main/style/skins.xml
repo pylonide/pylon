@@ -3365,7 +3365,11 @@
             color : #C0C0C0;
             top         : 0;
         }
-
+        
+        .cbblack.cbcontainer.dark-bg span {
+            text-shadow: #000 0px 1px 0px;
+        }
+        
         .cbblack.cbcontainer .checkbox {
             width      : 16px;
             height     : 17px;
@@ -3373,23 +3377,23 @@
         }
 
         .cbblack.cbcontainerOver .checkbox{
-            background-position : 0 -85px;
-        }
-
-        .cbblack.cbcontainerDown .checkbox{
             background-position : 0 -17px;
         }
 
-        .cbblack.cbcontainerChecked .checkbox {
+        .cbblack.cbcontainerDown .checkbox{
             background-position : 0 -34px;
         }
 
+        .cbblack.cbcontainerChecked .checkbox {
+            background-position : 0 -51px;
+        }
+
         .cbblack.cbcontainerOver.cbcontainerChecked .checkbox{
-            background-position : 0 -102px;
+            background-position : 0 -68px;
         }
 
         .cbblack.cbcontainerChecked.cbcontainerDown .checkbox {
-            background-position : 0 -51px;
+            background-position : 0 -85px;
         }
 
         .cbblack.cbcontainerError span {
@@ -3398,9 +3402,13 @@
         }
 
         .cbblack.cbcontainerDisabled .checkbox {
-            background-position : 0 -68px;
+            background-position : 0 -102px;
         }
-
+        
+        .cbblack.cbcontainerDisabled.cbcontainerChecked .checkbox {
+            background-position : 0 -119px;
+        }
+        
         .cbblack.cbcontainerDisabled span {
             color : #bebebe;
         }
@@ -3433,23 +3441,23 @@
         }
 
         .cbgrey.cbcontainerOver .checkbox{
-            background-position : 0 -85px;
-        }
-
-        .cbgrey.cbcontainerDown .checkbox{
             background-position : 0 -17px;
         }
 
-        .cbgrey.cbcontainerChecked .checkbox {
+        .cbgrey.cbcontainerDown .checkbox{
             background-position : 0 -34px;
         }
 
+        .cbgrey.cbcontainerChecked .checkbox {
+            background-position : 0 -51px;
+        }
+
         .cbgrey.cbcontainerOver.cbcontainerChecked .checkbox{
-            background-position : 0 -102px;
+            background-position : 0 -68px;
         }
 
         .cbgrey.cbcontainerChecked.cbcontainerDown .checkbox {
-            background-position : 0 -51px;
+            background-position : 0 -85px;
         }
 
         .cbgrey.cbcontainerError span {
@@ -3458,7 +3466,7 @@
         }
 
         .cbgrey.cbcontainerDisabled .checkbox {
-            background-position : 0 -68px;
+            background-position : 0 -102px;
         }
 
         .cbgrey.cbcontainerChecked.cbcontainerDisabled .checkbox {
@@ -5140,6 +5148,11 @@
             padding: 0 18px 0 0;
             position: relative;
         }
+        
+        .single-arrow.dropdown-dark-glossy {
+            padding: 0 25px 0 0;
+        }
+        
         .dropdown-dark-glossy .label {
             color: #C0DABE;
             display: inline-block;
@@ -5160,7 +5173,8 @@
         }
         
         .single-arrow.dropdown-dark-glossy .button {
-            background: url(images/dropdown-dark-glossy/arrow.png) no-repeat 1px 10px;
+            background: url(images/dropdown-dark-glossy/arrow.png) no-repeat 5px 10px;
+            width: 23px;
         }
         
         .dropdown-dark-glossy .button:before {
@@ -5769,8 +5783,16 @@
             color: #CECECE;
         }
         
-        .label.size12 {
+        .label.size-12 {
             font-size: 12px;
+        }
+        
+        .label.arial {
+            font-family: Arial;
+        }
+        
+        .label.dark-bg {
+            text-shadow: #000 0px 1px 0px;
         }
     ]]></a:style>
 
@@ -6229,7 +6251,7 @@
         }
 
         .listRC .selected .btnDelete:hover {
-            background-position : -16px 0;
+            background-position : -17px 0;
         }
 
         .listRC .selected .btnDelete:active {
@@ -6263,7 +6285,7 @@
             border-bottom-width: 6px;
             border: 1px solid black;
             box-shadow: 0 5px 8px rgba(0,0,0,.55);
-            height: 235px;
+            height: 226px;
             margin: -13px 0 0 -239px;
             position: relative;
             -webkit-transition: all .2s ease;
