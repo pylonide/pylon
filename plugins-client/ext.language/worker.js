@@ -285,6 +285,8 @@ function asyncParForEach(array, fn, callback) {
             handler.proxy = _self.serverProxy;
             handler.sender = _self.sender;
             _self.$initHandler(handler, null, function() {
+                // Note: may not return for a while for asynchronous workers,
+                //       don't use this for queueing other tasks
                 _self.handlers.push(handler);
             });    
         }
@@ -761,6 +763,8 @@ function asyncParForEach(array, fn, callback) {
         if (!handler.$isInited) {
             handler.$isInited = true;
             handler.init(function() {
+                // Note: may not return for a while for asynchronous workers,
+                //       don't use this for queueing other tasks
                 handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
             });
         } else {
