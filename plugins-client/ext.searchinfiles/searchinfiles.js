@@ -498,6 +498,21 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         // finish
         if (message.type == "exit") {
+            var footer = ["\n"];
+            // if process failed add that info to the message
+            if (message.code && message.stderr) {
+                footer.push("Search in files failed with code " + message.code + 
+                    " (" + message.stderr + ")");
+            }
+            else {
+                // add info about the result of this search
+                var footerData = { count: message.count, filecount: message.filecount };
+                footer.push(this.messageFooter(footerData));
+            }
+            
+            footer.push("\n", "\n", "\n");
+            doc.insertLines(doc.getLength(), footer);
+            
             if (!chkSFConsole.checked) {
                 var node = doc.node;
                 node.setAttribute("saving", "0");
@@ -552,8 +567,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         if (typeof content == "string")
             content = content.split("\n");
-        else if (typeof content.count == "number") // final message
-            content = ["\n", this.messageFooter(content), "\n", "\n", "\n"];
 
         if (content.length > 0)
             doc.insertLines(doc.getLength(), content);

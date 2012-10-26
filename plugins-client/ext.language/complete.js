@@ -29,7 +29,6 @@ var SHOW_DOC_DELAY_MOUSE_OVER = 100;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
-var CONCORDE_DELAY = 70;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
@@ -108,13 +107,6 @@ function isJavaScript() {
  * is deleted.
  */
 function replaceText(editor, prefix, match) {
-    // Replace text asynchronously in case Concorde didn't update the editor yet
-    setTimeout(function() {
-        asyncReplaceText(editor, prefix, match);
-    }, CONCORDE_DELAY);
-}
-
-function asyncReplaceText(editor, prefix, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
