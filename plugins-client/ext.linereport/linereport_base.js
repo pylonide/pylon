@@ -20,20 +20,22 @@ var inProgress = {}; // map command to boolean
 var nextJob = {}; // map command to function
     
 worker.init = function() {
+    worker.$isInited = false; // allow children to still be inited
     worker.sender.on("linereport_invoke_result", function(event) {
         worker.$onInvokeResult(event.data);
     });
 };
 
 worker.initReporter = function(checkInstall, performInstall, callback) {
-   worker.$invoke(checkInstall, null, function(code, output) {
-       if (code !== 0) {
-           // console.log(performInstall);
-           worker.$invoke(performInstall, null, callback);
-       } else {
-           callback();
-       }
-   });
+    // TODO: make sure IDE is online
+    worker.$invoke(checkInstall, null, function(code, output) {
+        if (code !== 0) {
+            // console.log(performInstall);
+            worker.$invoke(performInstall, null, callback);
+        } else {
+            callback();
+        }
+    });
 },
 
 worker.invokeReporter = function(command, processLine, callback) {
