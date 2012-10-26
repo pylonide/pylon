@@ -9,17 +9,29 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
+var os = require("os");
+var path = require("path");
 var SearchLib = require("./search");
 
 var name = "search";
 
 module.exports = function setup(options, imports, register) {
-    var Search = new SearchLib();
+    var Search = new SearchLib(),
+        platform = options.platform || os.platform(),
+        arch = options.arch || os.arch();
     Search.setEnv({
-        grepCmd: options.grepCmd || "grep",
-        perlCmd: options.perlCmd || "perl",
-        platform: options.platform || require("os").platform()
+        platform:  platform,
+        arch:  options.arch || os.arch(),
+        agCmd:  options.agCmd || path.join(__dirname, [platform, arch].join("_"), "ag"),
+        nakCmd: options.nakCmd || "node " + path.join(__dirname, "../../node_modules/nak/bin/nak")
     });
+
+    if (!Search.isAgAvailable())
+        console.warn("No ag found for " + [platform, arch].join("_"));
+    else 
+        Search.setEnv({
+            useAg: true
+        });
 
     var Vfs = imports["vfs"];
 
@@ -50,8 +62,8 @@ module.exports = function setup(options, imports, register) {
                 },
                 // exit
                 function(code, stderr, msg) {
-                    if (code)
-                        self.error(stderr, 1, "Could not spawn grep process for codesearch", client);
+                    //if (code)
+                    //    self.error(stderr, 1, "Could not spawn " + (this.useAg ? "ag" : "nak") + " process for codesearch", client);
                     msg.extra = "codesearch";
                     msg.type = "exit";
                     self.ide.broadcast(JSON.stringify(msg), self.name);

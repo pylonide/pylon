@@ -9,22 +9,20 @@
 
 var Os = require("os");
 var Path = require("path");
+var Fs = require("fs");
 
 module.exports = function() {
-    this.env = {
-        findCmd: "find",
-        perlCmd: "perl",
-        platform: Os.platform(),
-        basePath: "",
-        workspaceId: ""
-    };
+    this.env = { };
 
     this.setEnv = function(newEnv) {
         var self = this;
-        Object.keys(this.env).forEach(function(e) {
-            if (newEnv[e])
-                self.env[e] = newEnv[e];
+        Object.keys(newEnv).forEach(function(e) {
+            self.env[e] = newEnv[e];
         });
+    };
+
+    this.isAgAvailable = function() {
+        return Fs.existsSync(this.env.agCmd);
     };
 
     this.exec = function(options, vfs, onData, onExit) {
@@ -66,42 +64,46 @@ module.exports = function() {
     };
 
     this.assembleCommand = function(options) {
-        var excludeExtensions = [
-            "\\.gz", "\\.bzr", "\\.cdv", "\\.dep", "\\.dot", "\\.nib",
-            "\\.plst", "_darcs", "_sgbak", "autom4te\\.cache", "cover_db",
-            "_build", "\\.tmp"
-        ];
+        var args;
+        
+        if (this.env.useAg) {
+            args = ["--nocolor", 
+                   "-p", Path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
+                   "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
+                   "-l",                                    // filenames only
+                   "-f",                                    // follow symlinks
+                   "--search-binary",                       // list binary files
+                   "-m 1"];                                 // stop after one
 
-        var excludeDirectories = [
-            "\\.c9revisions", "\\.architect", "\\.sourcemint",
-            "\\.git", "\\.hg", "\\.pc", "\\.svn", "blib",
-            "CVS", "RCS", "SCCS", "\\.DS_Store"
-        ];
+            if (options.showHiddenFiles)
+                args.push("--hidden");
 
-        var args = ["-L", ".", "-type", "f", "-a"];
+            if (options.maxdepth)
+                args.push("--depth", options.maxdepth);
 
-        if (this.env.platform === "darwin")
-            args.unshift("-E");
+            args.push(".", options.path);
 
-        //Hidden Files
-        if (!options.showHiddenFiles)
-            args.push("(", "!", "-regex", ".*/\\..*", ")");
+            args.command = this.env.agCmd;
+        }
+        else {
+            args = ["--nocolor", 
+                    "-l",                                     // filenames only   
+                    "-p", Path.join(__dirname, ".agignore")]; // use the Cloud9 ignore file                     
+            
+            if (options.showHiddenFiles)
+                args.push("-H");
 
-        if (options.maxdepth)
-            args.push("-maxdepth", options.maxdepth);
+            if (options.maxdepth)
+                args.push("-m", options.maxdepth);
 
-        excludeExtensions.forEach(function(pattern){
-            args.push("(", "!", "-regex", ".*\\/" + pattern + "$", ")");
-        });
+            args.push(options.path);
 
-        excludeDirectories.forEach(function(pattern){
-            args.push("(", "!", "-regex", ".*\\/" + pattern + "\\/.*", ")");
-        });
+            args.unshift(this.env.nakCmd);
+            args = ["-c", args.join(" ")];
 
-        if (this.env.platform !== "darwin")
-            args.push("-regextype", "posix-extended", "-print");
+            args.command = "bash";
+        }
 
-        args.command = this.env.findCmd;
         return args;
     };
 };

@@ -11,16 +11,23 @@ var Url = require("url");
 var Plugin = require("../cloud9.core/plugin");
 var FilelistLib = require("./filelist");
 var util = require("util");
+var os = require("os");
+var path = require("path");
 var Connect = require("connect");
 var error = require("http-error");
 
 var name = "filelist";
 
 module.exports = function setup(options, imports, register) {
-    var Filelist = new FilelistLib();
+    var Filelist = new FilelistLib(),
+        platform = options.platform || os.platform(),
+        arch = options.arch || os.arch();
+
     Filelist.setEnv({
-        findCmd: options.findCmd,
-        platform: options.platform
+        platform:  platform,
+        arch:  options.arch || os.arch(),
+        agCmd:  options.agCmd || path.join(__dirname, "../cloud9.ide.search", [platform, arch].join("_"), "ag"),
+        nakCmd: options.nakCmd || "node " + path.join(__dirname, "../../node_modules/nak/bin/nak")
     });
 
     var Vfs = imports["vfs"];
@@ -34,6 +41,7 @@ module.exports = function setup(options, imports, register) {
         this.ws = ide.workspace.workspaceId;
 
         Filelist.setEnv({
+            useAg: Filelist.isAgAvailable(),
             workspaceId: this.ws,
             basePath: ide.workspace.workspaceDir
         });
@@ -54,7 +62,7 @@ module.exports = function setup(options, imports, register) {
             if (!uid)
                 return next(new error.Unauthorized());
 
-            // does this user has read-permissions...
+            // does this user have read-permissions...
             Permissions.getPermissions(uid, this.ws, "fs_filelist", function(err, perms) {
                 if (err)
                     return next(err);
