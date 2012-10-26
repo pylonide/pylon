@@ -65,9 +65,9 @@ describe("search", function() {
             function(code, stderr, msg) {
                 Assert.equal(code, 0);
                 Assert.equal(msg.count, 48);
-                Assert.equal(msg.filecount, 13);
+                Assert.equal(msg.filecount, 15);
                 var lines = out.split("\n");
-                Assert.equal(lines.length, 73);
+                Assert.equal(lines.length, 77);
 
                 next();
             }
@@ -128,7 +128,7 @@ describe("search", function() {
             // exit
             function(code, stderr, msg) {
                 Assert.equal(code, 0);
-                Assert.equal(msg.count, 923);
+                Assert.equal(msg.count, 941);
                 Assert.equal(msg.filecount, 3);
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 28);

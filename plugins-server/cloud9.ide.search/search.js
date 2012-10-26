@@ -166,7 +166,6 @@ module.exports = function() {
             args.command = "bash";
         }
 
-        console.log(args.command + " " + args.join(" "));
         return args;
     };
 
