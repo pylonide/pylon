@@ -9,6 +9,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global barIdeStatus lblInsertActive lblSelectionLength lblRowCol lblEditorStatus hboxStatusBarSettings mdlStatusBar*/
+
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
@@ -18,6 +20,7 @@ var markup = require("text!ext/statusbar/statusbar.xml");
 var skin = require("text!ext/statusbar/skin.xml");
 var menus = require("ext/menus/menus");
 var code = require("ext/code/code");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/statusbar/statusbar", {
     name     : "Status bar",
@@ -38,6 +41,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     horScrollAutoHide : true,
     edgeDistance : 3,
     offsetWidth : 0,
+    viewStatusBarMenuItem: null,
 
     hook : function(){
         var _self = this;
@@ -54,25 +58,27 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
                 _self.preinit();
         });
-
-        this.nodes.push(
-            menus.addItemByPath("View/Status Bar", new apf.item({
-                test : "1",
-                type : "check",
-                checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
-                "onprop.checked" : function(e){
-                    if (apf.isTrue(e.value)) {
-                        _self.preinit();
-                        if (self.barIdeStatus)
-                            barIdeStatus.show();
-                    }
-                    else {
-                        if (self.barIdeStatus)
-                            barIdeStatus.hide();
-                    }
+        
+        this.viewStatusBarMenuItem = new apf.item({
+            test : "1",
+            type : "check",
+            checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
+            // -> if you're looking for disabled, check the init function :-)
+            // the moment that someone clicks this thing well call preinit 
+            // (its already called if the user has it checked on IDE load)
+            "onprop.checked": function (ev) {
+                if (ev.value) {
+                    _self.preinit();
                 }
-            }), 600)
-        );
+                // if weve already been loaded, then update the status here
+                // otherwise it'll be done in init
+                if (window.mdlStatusBar) {
+                    apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "showStatusbar", ev.value);
+                }
+            }
+        });
+        
+        this.nodes.push(menus.addItemByPath("View/Status Bar", this.viewStatusBarMenuItem, 600));
     },
     
     preinit : function(){
@@ -80,9 +86,21 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             return;
         
         var _self = this;
-        ide.addEventListener("init.ext/code/code", this.$preinit = function(){
+        
+        var doIt = function () {
+            // if we called ourselves directly there is no event handler
+            // but the IDE doesnt really care
+            ide.removeEventListener("init.ext/code/code", doIt);
             ext.initExtension(_self);
-        });
+        };
+        
+        // code editor not loaded yet? then wait for it...
+        if (typeof window.ceEditor === "undefined") {
+            ide.addEventListener("init.ext/code/code", doIt);
+        }
+        else {
+            doIt();
+        }
     },
     
     init : function(){
@@ -99,7 +117,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
         
         ide.addEventListener("vim.changeMode", function(e) {
-            if (!window["lblInsertActive"])
+            if (!window.lblInsertActive)
                 return;
 
             if (e.mode === "insert")
@@ -120,30 +138,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         ide.addEventListener("init.ext/editors/editors", function(e){
             ide.addEventListener("tab.afterswitch", function(e){
                 var editor = e.nextPage.$editor;
-                if (!editor.ceEditor) {
-                    barIdeStatus.hide();
-                    return;
-                }
-                
-                editor = editor.ceEditor.$editor;
-                barIdeStatus.show();
-            
-                _self.updateStatus(editor);
-    
-                if (!editor.$hasSBEvents) {
-                    _self.$onChangeStatus = function(e) {
-                        if (_self._timerstatus)
-                            return;
-    
-                        _self._timerselection = setTimeout(function() {
-                            _self.updateStatus(editor);
-                            _self._timerselection = null;
-                        }, 80);
-                    };
-                    editor.addEventListener("changeSelection", _self.$onChangeStatus);                    
-                    editor.addEventListener("changeStatus", _self.$onChangeStatus);
-                    editor.$hasSBEvents = true;
-                }
+                _self.onAfterSwitch(editor);
             });
         });
 
@@ -158,6 +153,55 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 _self.setPosition();
             }
         });
+        
+        // load model with initial values
+        var state = mdlStatusBar.data.selectSingleNode("//state");
+        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.ceEditor));
+        apf.xmldb.setAttribute(state, "showStatusbar", apf.isTrue(settings.model.queryValue("auto/statusbar/@show")));
+        
+        // if we assign this before the plugin has been init'ed it will create some empty model
+        // itself because we reference a non existing model
+        _self.viewStatusBarMenuItem.setAttribute("disabled", '{apf.isFalse([mdlStatusBar::state/@isCodeEditor])}');
+        
+        // if we have an editor, make sure to update the UI
+        if (editors.currentEditor) {
+            _self.onAfterSwitch(editors.currentEditor);
+        }
+    },
+    
+    onAfterSwitch : function (editor) {
+        var _self = this;
+        
+        if (!editor) {
+            return;
+        }
+        
+        // update the model so we can use this info in the XML
+        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", !!editor.ceEditor);
+        
+        // if we dont have a code editor then continue
+        if (!editor.ceEditor) {
+            return;
+        }
+        
+        editor = editor.ceEditor.$editor;
+    
+        _self.updateStatus(editor);
+
+        if (!editor.$hasSBEvents) {
+            _self.$onChangeStatus = function(e) {
+                if (_self._timerstatus)
+                    return;
+
+                _self._timerselection = setTimeout(function() {
+                    _self.updateStatus(editor);
+                    _self._timerselection = null;
+                }, 80);
+            };
+            editor.addEventListener("changeSelection", _self.$onChangeStatus);                    
+            editor.addEventListener("changeStatus", _self.$onChangeStatus);
+            editor.$hasSBEvents = true;
+        }
     },
 
     updateStatus : function(ace) {
@@ -246,7 +290,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             }
         }, 50);
     },
-
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
@@ -270,4 +314,3 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 });
 
 });
-

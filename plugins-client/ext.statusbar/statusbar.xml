@@ -1,9 +1,17 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlStatusBar">
+        <data><state isCodeEditor="false" showStatusbar="true"/></data>
+    </a:model>
+
     <a:bar id="barIdeStatus" 
       skin    = "bar-status" 
       skinset = "c9statusbar"
       class   = "expanded"
-      visible = "[{require('core/settings').model}::auto/statusbar/@show]"
+      visible = "{{
+        apf.isTrue([mdlStatusBar::state/@isCodeEditor]) 
+        and
+        apf.isTrue([mdlStatusBar::state/@showStatusbar])
+      }}"
       height  = "28"
       bottom  = "3"
       right   = "3">
@@ -19,13 +27,6 @@
               onclick = "require('core/ide').dispatchEvent('gotoline')"
             />
             <a:divider class="divider-status-bar" width="2" height="20" margin="1 0 1 0" />
-            <!--a:button 
-              skin    = "btn-expand-statusbar" 
-              skinset = "statusbar"
-              icon    = "statusbar-arrow.png" 
-              onclick = "require('ext/statusbar/statusbar').toggleStatusBar()"
-              margin  = "1 1 2 3"
-            /-->
             <a:hbox id="hboxStatusBarSettings" style="overflow:hidden">
                 <a:button id="btnSbPrefs"
                   skin    = "btn-statusbar-icon" 
