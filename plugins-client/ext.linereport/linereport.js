@@ -23,9 +23,10 @@ module.exports = ext.register("ext/linereport/linereport", {
     deps     : [language, editors],
     nodes    : [],
     
-    buffers      : {},
-    saveTriggers : {},
-    firstUsed    : false,
+    stdoutBuffers : {},
+    stderrBuffers : {},
+    saveTriggers  : {},
+    firstUsed     : false,
     
     hook: function() {
         var _self = this;
@@ -63,15 +64,23 @@ module.exports = ext.register("ext/linereport/linereport", {
             return;
         switch (event.message.type) {
             case "npm-module-data":
-                this.buffers[id] = (this.buffers[id] || "") + event.message.data;
+                if (event.message.stream === "stdout")
+                    this.stdoutBuffers[id] = (this.stdoutBuffers[id] || "") + event.message.data;
+                else
+                    this.stderrBuffers[id] = (this.stderrBuffers[id] || "") + event.message.data;
+
                 break;
             case "npm-module-exit":
                 language.worker.emit("linereport_invoke_result", {data: {
                     id: id,
                     code: event.message.code,
-                    output: this.buffers[id] || ""
+                    stdout: this.stdoutBuffers[id] || "",
+                    stderr: this.stderrBuffers[id] || ""
                 }});
-                delete this.buffers[id];
+                if (this.stdoutBuffers[id])
+                    delete this.stdoutBuffers[id];
+                if (this.stderrBuffers[id])
+                    delete this.stderrBuffers[id];
                 break;
         }
     },

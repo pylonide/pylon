@@ -28,7 +28,7 @@ worker.init = function() {
 
 worker.initReporter = function(checkInstall, performInstall, callback) {
     // TODO: make sure IDE is online
-    worker.$invoke(checkInstall, null, function(code, output) {
+    worker.$invoke(checkInstall, null, function(code, stdout, stderr) {
         if (code !== 0) {
             // console.log(performInstall);
             worker.$invoke(performInstall, null, callback);
@@ -55,16 +55,17 @@ worker.invokeReporter = function(command, processLine, callback) {
         inProgress[command] = setTimeout(function() {
             delete inProgress[command];
         }, REPORTER_TIMEOUT);
-        _self.$invoke(command, worker.path, function(code, output) {
+        _self.$invoke(command, worker.path, function(code, stdout, stderr) {
             var doc = _self.doc.getValue();
             resultCache[command] = resultCache[command] || {};
-            var result = resultCache[command]['_' + doc] = _self.parseOutput(output, processLine);
+            var result = resultCache[command]['_' + doc] =
+                _self.parseOutput(stdout, processLine) + _self.parseOutput(stderr, processLine);
             setTimeout(function() {
                 if (resultCache[command] && resultCache[command]['_' + doc])
                     delete resultCache[command]['_' + doc];
             }, CACHE_TIMEOUT);
             if (result.length === 0 && code !== 0)
-                console.log("External tool produced an error that could not be parsed:", output);
+                console.log("External tool produced an error that could not be parsed:\n", stderr + '\n' + stdout);
             
             if (inProgress[command]) {
                 clearTimeout(inProgress[command]);
@@ -108,7 +109,7 @@ worker.$onInvokeResult = function(event) {
    // Note: invoked at least once for each linereport_base instance
    if (!callbacks[event.id])
        return; // already handled
-   callbacks[event.id](event.code, event.output);
+   callbacks[event.id](event.code, event.stdout, event.stderr);
    delete callbacks[event.id];
 };
 
