@@ -7,9 +7,9 @@
 
 "use strict";
 
-var Os = require("os");
 var Path = require("path");
 var Fs = require("fs");
+Fs.existsSync = Fs.existsSync || Path.existsSync;
 
 module.exports = function() {
     this.env = { };
@@ -61,7 +61,7 @@ module.exports = function() {
             var prevFile = null;
             var filecount = 0;
             var count = 0;
-
+        
             child.stdout.on("data", function(data) {
                 var msg = self.parseResult(prevFile, options, data);
                 count += msg.count;
@@ -111,7 +111,7 @@ module.exports = function() {
             else {
                 // avoid bash weirdness
                 if (options.replaceAll) {
-                    query = bashEscapeRegExp(query);
+                    query = $escapeRegExp(query);
                 }
             }
 
@@ -121,17 +121,12 @@ module.exports = function() {
                 if (!options.replacement)
                     options.replacement = "";
 
-                // pipe the results into perl
-                args.push("-l | xargs " + perlCmd +
-                          // print the grep result to STDOUT (to arrange in parseSearchResult())
-                          " -pi -e 'print STDOUT \"$ARGV:$.:$_\"" +
-                          // do the actual replace; intentionally using unescape query here
-                          " if s/" + options.query + "/" + options.replacement + "/mg" + (!options.casesensitive ? "" : "i" ) + ";'");
-            
-                // args must be redirected to bash like this when replacing
+                // pipe the results into nak, which we can do the replace/format and is guaranteed to exist
+                args.push("-l | ", this.env.nakCmd + " --c9Format --piped '" + options.query + "' '" + options.replacement + "'");
+                      
+                // see note for "nodeception" below on why we do this
                 args.unshift(this.env.agCmd);
                 args = ["-c", args.join(" ")];
-
                 args.command = "bash";
             }
             else {
@@ -140,7 +135,8 @@ module.exports = function() {
         }
         else {
             args = ["--nocolor",                              // don't color items
-                    "-p", Path.join(__dirname, ".agignore")]; // use the Cloud9 ignore file
+                    "-p", Path.join(__dirname, ".agignore"),  // use the Cloud9 ignore file
+                    "--c9Format"];                            // format for parseResult to consume
 
             if (!options.casesensitive)
                 args.push("-i");
@@ -149,36 +145,25 @@ module.exports = function() {
                 args.push("-w");
 
             if (!options.regexp)
-                args.push("-Q");
-            else {
-                // avoid bash weirdness
-                if (options.replaceAll) {
-                    query = bashEscapeRegExp(query);
-                }
-            }
+                args.push("-q");
 
-            args.push(query, options.path);
+            args.push("'" + query + "'");
 
-            if (options.replaceAll) {
+            if (options.replaceAll && options.replacement) {
                 if (!options.replacement)
                     options.replacement = "";
 
-                // pipe the results into perl
-                args.push("-l | xargs " + perlCmd +
-                          // print the grep result to STDOUT (to arrange in parseSearchResult())
-                          " -pi -e 'print STDOUT \"$ARGV:$.:$_\"" +
-                          // do the actual replace; intentionally using unescape query here
-                          " if s/" + options.query + "/" + options.replacement + "/mg" + (!options.casesensitive ? "" : "i" ) + ";'");
+                // nak naturally suports find/replace, so no piping needed!
+                args.push("'" + options.replacement + "'");
+            }
             
-                // args must be redirected to bash like this when replacing
-                args.unshift(this.env.nakCmd);
-                args = ["-c", args.join(" ")];
-
-                args.command = "bash";
-            }
-            else {
-                args.command = this.env.nakCmd;
-            }
+            args.push(options.path);
+            
+            // since we're actually calling try to call a node binary (from a node program--nodeception!)
+            // we need to launch the script via bash and act as though the command is a string
+            args.unshift(this.env.nakCmd);
+            args = ["-c", args.join(" ")];
+            args.command = "bash";
         }
 
         return args;
@@ -192,7 +177,7 @@ module.exports = function() {
         var aLines = data.split(/([\n\r]+)/g);
         var count = 0;
         var filecount = 0;
-
+        
         if (options) {
             for (var i = 0, l = aLines.length; i < l; ++i) {
                 parts = aLines[i].split(":");
@@ -231,32 +216,9 @@ module.exports = function() {
             data: result
         };
     };
-
-    // util
-    var makeUnique = function(arr){
-        var i, length, newArr = [];
-        for (i = 0, length = arr.length; i < length; i++) {
-            if (newArr.indexOf(arr[i]) == -1)
-                newArr.push(arr[i]);
-        }
-
-        arr.length = 0;
-        for (i = 0, length = newArr.length; i < length; i++)
-            arr.push(newArr[i]);
-
-        return arr;
-    };
-
-    var escapeRegExp = function(str) {
-        return str.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
-    };
-
+    
     // taken from http://xregexp.com/
-    var grepEscapeRegExp = function(str) {
+    var $escapeRegExp = function(str) {
         return str.replace(/[[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
-    };
-
-    var escapeShell = function(str) {
-        return str.replace(/([\\"'`$\s\(\)<>])/g, "\\$1");
     };
 };

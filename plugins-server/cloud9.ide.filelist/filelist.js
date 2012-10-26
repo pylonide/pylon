@@ -7,9 +7,9 @@
 
 "use strict";
 
-var Os = require("os");
 var Path = require("path");
 var Fs = require("fs");
+Fs.existsSync = Fs.existsSync || Path.existsSync;
 
 module.exports = function() {
     this.env = { };
