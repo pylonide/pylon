@@ -10,22 +10,39 @@
 "mocha";
 
 var Assert = require("assert");
+var Path = require("path");
+var Os = require("os");
+
 var VfsLocal = require("vfs-local");
 var Search = require("./search");
 
-var basePath = __dirname;
-var workspaceId = "user/mikedeboer/cloud9";
+var basePath = Path.join(__dirname, "..");
 
 describe("search", function() {
     var o;
     var vfs = VfsLocal({ root: "/" });
 
+    var platform = Os.platform() ,
+        arch = Os.arch();
+
     beforeEach(function() {
         o = new Search();
-        o.setEnv({ basePath: basePath });
+        o.setEnv({ 
+            basePath: basePath,
+            platform:  platform,
+            arch:  arch,
+            agCmd:  Path.join(__dirname, [platform, arch].join("_"), "ag"),
+            nakCmd: "node " + Path.join(__dirname, "../../node_modules/nak/bin/nak")
+        });
+        if (!o.isAgAvailable())
+            console.warn("No ag found for " + [platform, arch].join("_"));
+        else 
+            o.setEnv({
+                useAg: true
+        });
     });
 
-    it("should find matches without regexp, case-sensitive ON and word boundaries OFF",  function(next) {
+    it("with ag: should find matches without regexp, case-sensitive OFF and word boundaries OFF",  function(next) {
         var out = "";
 
         o.exec({
@@ -47,17 +64,17 @@ describe("search", function() {
             // exit
             function(code, stderr, msg) {
                 Assert.equal(code, 0);
-                Assert.equal(msg.count, 36);
-                Assert.equal(msg.filecount, 6);
+                Assert.equal(msg.count, 48);
+                Assert.equal(msg.filecount, 13);
                 var lines = out.split("\n");
-                Assert.equal(lines.length, 47);
+                Assert.equal(lines.length, 73);
 
                 next();
             }
         );
     });
 
-    it("should find matches without regexp, case-insensitive ON and word boundaries OFF",  function(next) {
+    it("with ag: should find matches without regexp, case-sensitive ON and word boundaries OFF",  function(next) {
         var out = "";
 
         o.exec({
@@ -79,28 +96,28 @@ describe("search", function() {
             // exit
             function(code, stderr, msg) {
                 Assert.equal(code, 0);
-                Assert.equal(msg.count, 23);
+                Assert.equal(msg.count, 22);
                 Assert.equal(msg.filecount, 3);
                 var lines = out.split("\n");
-                Assert.equal(lines.length, 28);
+                Assert.equal(lines.length, 27);
 
                 next();
             }
         );
     });
 
-    it("should find matches without regexp, case-sensitive ON and word boundaries ON",  function(next) {
+    it("with ag: should find matches without regexp, case-sensitive OFF and word boundaries ON",  function(next) {
         var out = "";
 
         o.exec({
-                query: "Search",
-                needle: "Search",
+                query: "var",
+                needle: "var",
                 pattern: "",
-                casesensitive: true,
+                casesensitive: false,
                 regexp: false,
                 replaceAll: false,
                 replacement: "",
-                wholeword: false,
+                wholeword: true,
                 command: "codesearch",
                 path: ""
             }, vfs,
@@ -111,7 +128,7 @@ describe("search", function() {
             // exit
             function(code, stderr, msg) {
                 Assert.equal(code, 0);
-                Assert.equal(msg.count, 23);
+                Assert.equal(msg.count, 923);
                 Assert.equal(msg.filecount, 3);
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 28);
@@ -121,7 +138,7 @@ describe("search", function() {
         );
     });
 
-    it("should find matches with a regexp",  function(next) {
+    it("with ag: should find matches with a regexp",  function(next) {
         var out = "";
 
         o.exec({

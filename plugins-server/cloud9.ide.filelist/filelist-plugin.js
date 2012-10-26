@@ -25,7 +25,7 @@ module.exports = function setup(options, imports, register) {
 
     Filelist.setEnv({
         platform:  platform,
-        arch:  options.arch || os.arch(),
+        arch:  arch,
         agCmd:  options.agCmd || path.join(__dirname, "../cloud9.ide.search", [platform, arch].join("_"), "ag"),
         nakCmd: options.nakCmd || "node " + path.join(__dirname, "../../node_modules/nak/bin/nak")
     });

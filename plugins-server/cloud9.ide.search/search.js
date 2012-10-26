@@ -93,8 +93,8 @@ module.exports = function() {
 
         if (!query)
             return;
-
-        if (!this.env.useAg) {
+        
+        if (this.env.useAg) {
             args = ["--nocolor",                             // don't color items
                     "-p", Path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
                     "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
@@ -166,6 +166,7 @@ module.exports = function() {
             args.command = "bash";
         }
 
+        console.log(args.command + " " + args.join(" "));
         return args;
     };
 
