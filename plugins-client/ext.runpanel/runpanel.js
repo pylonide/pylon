@@ -40,6 +40,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     nodes : [],
     model : new apf.model(),
+    
+    disableLut: {
+        "terminal": true
+    },
 
     hook : function(){
         if (ide.readonly)
@@ -131,7 +135,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var c = 0;
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
             caption  : "no run history",
-            disabled : true,
+            disabled : true
         }), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({
@@ -212,6 +216,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
             ide.addEventListener("updatefile", function(e){
                 setActiveFile(tabEditors.getPage());
+            });
+            
+            ide.addEventListener("tab.afterswitch", function(e){
+                _self.enable();
+            });
+            ide.addEventListener("closefile", function(e){
+                if (tabEditors.getPages().length == 1)
+                    _self.disable();
             });
         });
 
@@ -466,6 +478,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     enable : function(){
+        var page = tabEditors.getPage();
+        var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
+        if(this.disableLut[contentType])
+            return this.disable();
+        
         this.nodes.each(function(item){
             item.enable && item.enable();
         });

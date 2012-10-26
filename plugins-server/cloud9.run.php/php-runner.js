@@ -80,26 +80,27 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             options.env.PORT = self.port;
         }
 
-        // a nice debug message for our users when we fire up the process
-        var debugMessageListener = function (msg) {
+        // a nice message for our users when we fire up the process
+        var messageListener = function (msg) {
             // process dies? then we die as well
             if (msg.type === "php-exit") {
-                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+                return options.eventEmitter.removeListener(options.eventName, messageListener);
             }
 
             if (msg.type === "php-start") {
-                var info = [];
+                var info = ["This runner is for pure PHP scripts",
+                    "To run a PHP web app or page, select the Apache runner"];
 
                 options.eventEmitter.emit(options.eventName, {
-                    type: "php-debug-data",
+                    type: "php-data",
                     stream: "stdout",
                     data: info.join("\n"),
-                    extra: null,
+                    extra: {tip: true},
                     pid: msg.pid
                 });
             }
         };
-        options.eventEmitter.on(options.eventName, debugMessageListener);
+        options.eventEmitter.on(options.eventName, messageListener);
 
         options.cwd = options.cwd ? options.cwd : options.root;
         options.command = "php";
