@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 
-    <a:menu id="mnuRunCfg" style="margin-left:-137px" skin="mnuRunCfg" width="280">
+    <a:menu id="mnuRunCfg" style="margin-left:-137px" skin="mnuRunCfg">
         <div class="window">
             <div class="tooltip"></div>
             <div class="fbox">
@@ -41,7 +41,10 @@
                             <a:checkbox 
                               label = "Advanced" 
                               skin  = "checkbox_black"
-                              class = "dark-bg" />
+                              class = "dark-bg" 
+                              onclick = "
+                                apf.setStyleClass(mnuRunCfg.$ext, (this.checked ? 'showList' : ''), [(this.checked ? '' : 'showList')])
+                              " />
                             <a:filler />
                             <a:button 
                               skin    = "btn_icon_only" 
