@@ -15,15 +15,16 @@ var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
 
-var complete = require('ext/language/complete');
-var marker = require('ext/language/marker');
-var refactor = require('ext/language/refactor');
-var outline = require('ext/language/outline');
+var complete = require("ext/language/complete");
+var marker = require("ext/language/marker");
+var refactor = require("ext/language/refactor");
+var outline = require("ext/language/outline");
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 var keyhandler = require("ext/language/keyhandler");
+var jumptodef = require("ext/language/jumptodef");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
@@ -89,6 +90,7 @@ module.exports = ext.register("ext/language/language", {
             refactor.hook(_self, worker);
             outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
+            jumptodef.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
@@ -225,10 +227,6 @@ module.exports = ext.register("ext/language/language", {
     },
     
     onEditorClick: function(event) {
-        if(event.domEvent.altKey) {
-            var pos = event.getDocumentPosition();
-            this.worker.emit("jumpToDefinition", {data: pos});
-        }
     },
     
     /**

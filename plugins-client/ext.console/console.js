@@ -120,7 +120,7 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             else {
-                command_id = this.createProcessLog(spi);
+                command_id = this.createProcessLog(spi, proc.type);
             }
 
             this.tracerToPidMap[command_id] = spi;
@@ -404,7 +404,8 @@ module.exports = ext.register("ext/console/console", {
     },
 
     createProcessLog: function(message_pid, lang) {
-        lang = lang ? (lang[0].toUpperCase() + lang.substring(1)) : "Generic";
+        lang = lang ? lang.replace(/-debug$/, "") : "generic";
+        lang = lang[0].toUpperCase() + lang.substring(1);
         var command_id = this.createOutputBlock("Running " + lang + " Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
@@ -445,7 +446,9 @@ module.exports = ext.register("ext/console/console", {
             this.createProcessLog(message.pid, lang[1]);
             return;
         } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
-            if (message.data && message.data.indexOf("Tip: you can") === 0) {
+            if (message.extra && message.extra.tip) {
+                message.data = "\u001b[1;32;40m" + message.data;
+
                 (function () {
                     var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
                     if (!prjmatch) return;
