@@ -6169,6 +6169,10 @@
             font-family : Arial, Tahoma;
             font-size : 11px;
             padding : 0 0 0 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 115px;
         }
 
         .listRC .content div{

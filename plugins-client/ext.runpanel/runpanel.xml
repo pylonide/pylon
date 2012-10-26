@@ -19,7 +19,7 @@
                           model   = "{require('ext/runpanel/runpanel').model}"
                           border  = "0"
                           each    = "[config]"
-                          caption = "[@name]"
+                          caption = "[@path]"
                           flex    = "1"
                           skin    = "runconfigurations"
                           class   = "openfile rundebug"
