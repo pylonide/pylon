@@ -15,4 +15,5 @@
 *.min.js
 core.packed.js
 loader.crush.js
-/cloud9.ide.revisions/diff_match_patch.js
+diff_match_patch.js
+file7_ignorable.rb

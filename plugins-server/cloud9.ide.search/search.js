@@ -30,7 +30,7 @@ module.exports = function() {
 
         if (options.path === null)
             return true;
-
+            
         options.uri = path;
         options.path = Path.normalize(this.env.basePath + (path ? "/" + path : ""));
         // if the relative path FROM the workspace directory TO the requested path
@@ -80,7 +80,8 @@ module.exports = function() {
                 self.processCount -= 1;
                 onExit(code, stderr, {
                     count: count,
-                    filecount: filecount
+                    filecount: filecount,
+                    command: args.command + " " + args.join(" ")
                 });
             });
         });
@@ -93,12 +94,12 @@ module.exports = function() {
 
         if (!query)
             return;
-        
+
         if (this.env.useAg) {
             args = ["--nocolor",                             // don't color items
                     "-p", Path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
                     "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
-                     "--search-files"];                      // formats output in "grep-like" manner                               
+                    "--search-files"];                       // formats output in "grep-like" manner                               
             
             if (!options.casesensitive)
                 args.push("-i");
@@ -106,6 +107,9 @@ module.exports = function() {
             if (options.wholeword)
                 args.push("-w");
 
+            if (options.hidden)
+                args.push("--hidden");
+                
             if (!options.regexp)
                 args.push("-Q");
             else {
@@ -144,6 +148,9 @@ module.exports = function() {
             if (options.wholeword)
                 args.push("-w");
 
+            if (options.hidden)
+                args.push("-H");
+                
             if (!options.regexp)
                 args.push("-q");
 
@@ -165,7 +172,7 @@ module.exports = function() {
             args = ["-c", args.join(" ")];
             args.command = "bash";
         }
-
+        
         return args;
     };
 
@@ -174,7 +181,7 @@ module.exports = function() {
             return { count: 0, filecount: 0, data: "" };
 
         var parts, file, lineno, result = "";
-        var aLines = data.split(/([\n\r]+)/g);
+        var aLines = data.split(/([\n\r\u0000]+)/g);
         var count = 0;
         var filecount = 0;
         
