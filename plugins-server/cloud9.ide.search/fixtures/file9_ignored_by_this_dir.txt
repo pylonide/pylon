@@ -1,6 +1,6 @@
 Like file 7 in that it contains all other files, but it should be blocked by this directory's .agignore.
 
-And yet never shows up!
+It will never show up!
 
 Lo-fi sriracha odd future photo booth synth you probably haven't heard of 
 them master cleanse authentic. Dreamcatcher raw denim skateboard, squid biodiesel williamsburg leggings single-origin coffee photo booth chillwave high life ennui retro jean shorts mcsweeney's.

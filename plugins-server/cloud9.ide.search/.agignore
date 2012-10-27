@@ -16,4 +16,6 @@
 core.packed.js
 loader.crush.js
 diff_match_patch.js
+
+# only for testing purposes
 file7_ignorable.rb

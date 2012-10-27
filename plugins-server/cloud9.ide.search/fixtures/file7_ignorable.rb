@@ -1,6 +1,6 @@
 Contains all the other files.
 
-And yet never shows up!
+And yet it never shows up, because it's in the default exclude.
 
 Lo-fi sriracha odd future photo booth synth you probably haven't heard of 
 them master cleanse authentic. Dreamcatcher raw denim skateboard, squid biodiesel williamsburg leggings single-origin coffee photo booth chillwave high life ennui retro jean shorts mcsweeney's.

@@ -119,6 +119,21 @@ module.exports = function() {
                 }
             }
 
+            if (options.pattern) {
+                // we just need the extension;
+                // *.txt -> txt; file names are ok though
+                var pattern = options.pattern.replace(/^\*\./g, "");
+
+                // remove all whitespace
+                pattern = pattern.replace(/\s/g, "");
+
+                // ag wants pipe seperation, not comma
+                // (technically, this is a regexp list with ORs)
+                pattern = pattern.replace(/,/g, "|");
+
+                args.push("-G", pattern);
+            }
+
             args.push(query, options.path);
 
             if (options.replaceAll) {
@@ -154,6 +169,15 @@ module.exports = function() {
             if (!options.regexp)
                 args.push("-q");
 
+            if (options.pattern) {
+                var pattern = options.pattern.replace(/^\*\./g, "");
+
+                // remove all whitespace
+                pattern = pattern.replace(/\s/g, "");
+
+                args.push("-G", pattern);
+            }
+
             args.push("'" + query + "'");
 
             if (options.replaceAll && options.replacement) {
@@ -172,7 +196,7 @@ module.exports = function() {
             args = ["-c", args.join(" ")];
             args.command = "bash";
         }
-        
+
         return args;
     };
 
