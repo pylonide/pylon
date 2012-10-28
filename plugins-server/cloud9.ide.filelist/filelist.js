@@ -68,12 +68,10 @@ module.exports = function() {
         
         if (this.env.useAg) {
             args = ["--nocolor", 
-                   "-p", Path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
+                   "-p", Path.join(__dirname, "..", "cloud9.ide.search", ".agignore"), // use the Cloud9 ignore file
                    "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
                    "-l",                                    // filenames only
-                   "-f",                                    // follow symlinks
-                   "--search-binary",                       // list binary files
-                   "-m 1"];                                 // stop after one
+                   "--search-binary"]                       // list binary files
 
             if (options.showHiddenFiles)
                 args.push("--hidden");
@@ -81,14 +79,15 @@ module.exports = function() {
             if (options.maxdepth)
                 args.push("--depth", options.maxdepth);
 
-            args.push(".", options.path);
+            // any non-null file
+            args.push("[^\\0]", options.path);
 
             args.command = this.env.agCmd;
         }
         else {
             args = ["--nocolor", 
-                    "-l",                                     // filenames only   
-                    "-p", Path.join(__dirname, ".agignore")]; // use the Cloud9 ignore file                     
+                    "-l",                                                     // filenames only   
+                    "-p", Path.join(__dirname, "..", "cloud9.ide.search", ".agignore")]; // use the Cloud9 ignore file                     
             
             if (options.showHiddenFiles)
                 args.push("-H");

@@ -33,7 +33,7 @@
         "smith.io": "0.0.32",
         "vfs-architect": "0.0.2",
         "jsDAV": "0.1.8",
-        "nak": "0.1.0"
+        "nak": "0.1.2"
     },
 
     "devDependencies": {

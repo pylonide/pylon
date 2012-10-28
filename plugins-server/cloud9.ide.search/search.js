@@ -120,19 +120,35 @@ module.exports = function() {
             }
 
             if (options.pattern) {
-                // we just need the extension;
-                // *.txt -> txt; file names are ok though
-                var pattern = options.pattern.replace(/^\*\./g, "");
+                var includes = [], excludes = [];
 
-                // remove all whitespace
-                pattern = pattern.replace(/\s/g, "");
+                // strip whitespace, grab out exclusions
+                options.pattern.split(",").forEach(function (p) {
+                    // strip whitespace
+                    p = p.replace(/\s*/g, "");
 
-                // ag wants pipe seperation, not comma
-                // (technically, this is a regexp list with ORs)
-                pattern = pattern.replace(/,/g, "|");
+                    if (/^\-/.test(p))
+                        excludes.push(p.substring(1));
+                    else
+                        includes.push(p);
+                });
 
-                args.push("-G", pattern);
-            }
+                // the user gives us a wildcard pattern,
+                // but ag uses regexps for matching includes; convert them!
+                // (we're not using regexps here because it's too
+                // complicated to convey to the user--most people will try
+                // "*.txt" instead of ".*\.txt")
+                if (includes.length > 0)
+                    args.push("-G", $convertFromWildcard(includes.join(",")));
+
+                // frustratingly, ag's rules for excludes DO use
+                // wildcards...
+                if (excludes.length) {
+                    excludes.forEach(function (exclude) {
+                        args.push("--ignore", exclude);
+                    });
+                }
+            }    
 
             args.push(query, options.path);
 
@@ -143,7 +159,7 @@ module.exports = function() {
                 // pipe the results into nak, which we can do the replace/format and is guaranteed to exist
                 args.push("-l | ", this.env.nakCmd + " --c9Format --piped '" + options.query + "' '" + options.replacement + "'");
                       
-                // see note for "nodeception" below on why we do this
+                // see "nodeception" note below on why we do this
                 args.unshift(this.env.agCmd);
                 args = ["-c", args.join(" ")];
                 args.command = "bash";
@@ -169,13 +185,28 @@ module.exports = function() {
             if (!options.regexp)
                 args.push("-q");
 
+            // see above notes on ag for discussion about pattern handling
             if (options.pattern) {
-                var pattern = options.pattern.replace(/^\*\./g, "");
+                var includes = [], excludes = [];
 
-                // remove all whitespace
-                pattern = pattern.replace(/\s/g, "");
+                // strip whitespace, grab out exclusions
+                options.pattern.split(",").forEach(function (p) {
+                    // strip whitespace
+                    p = p.replace(/\s*/g, "");
 
-                args.push("-G", pattern);
+                    if (/^\-/.test(p))
+                        excludes.push(p.substring(1));
+                    else
+                        includes.push(p);
+                });
+
+                // wildcard handling will be done in nak
+                if (includes.length)
+                    args.push("-G", "'" + options.pattern + "'");
+
+                if (excludes.length) {
+                    args.push("--ignore", "'" + excludes + "'");
+                }
             }
 
             args.push("'" + query + "'");
@@ -190,7 +221,7 @@ module.exports = function() {
             
             args.push(options.path);
             
-            // since we're actually calling try to call a node binary (from a node program--nodeception!)
+            // since we're actually calling a node binary (from a node program--nodeception!)
             // we need to launch the script via bash and act as though the command is a string
             args.unshift(this.env.nakCmd);
             args = ["-c", args.join(" ")];
@@ -252,4 +283,21 @@ module.exports = function() {
     var $escapeRegExp = function(str) {
         return str.replace(/[[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
     };
+
+    var $convertFromWildcard = function(pattern) {
+        // remove all whitespace
+        pattern = pattern.replace(/\s/g, "");
+
+        pattern = $escapeRegExp(pattern);
+
+        // convert wildcard norms to regex ones     
+        pattern = pattern.replace(/\\\*/g, ".*");
+        pattern = pattern.replace(/\\\?/g, ".");
+
+        // we wants pipe seperation, not commas
+        // (this is a regexp list with ORs)
+        pattern = pattern.replace(/\\,/g, "|");
+ 
+        return pattern;
+    }
 };

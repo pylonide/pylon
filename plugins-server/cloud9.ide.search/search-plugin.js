@@ -23,7 +23,7 @@ module.exports = function setup(options, imports, register) {
         platform:  platform,
         arch:  arch,
         agCmd:  options.agCmd || path.join(__dirname, [platform, arch].join("_"), "ag"),
-        nakCmd: options.nakCmd || "node " + path.join(__dirname, "../../node_modules/nak/bin/nak")
+        nakCmd: options.nakCmd || "node " + path.join(__dirname, "..", "..", "node_modules/nak/bin/nak")
     });
 
     if (!Search.isAgAvailable())

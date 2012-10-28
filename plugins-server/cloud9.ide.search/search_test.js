@@ -18,8 +18,6 @@ var Search = require("./search");
 
 var basePath = Path.join(__dirname, "fixtures");
 
-var agResults = { "1": {}, "2": {}, "3": {}, "4": {}, "5": {}, "6": {} };
-
 var options1 = {
                 query: "sriracha",
                 needle: "sriracha",
@@ -84,7 +82,7 @@ var options1 = {
     options6 = {
                 query: "shorts",
                 needle: "shorts",
-                pattern: "*.txt, file5_not_really_image.gif",
+                pattern: "*.txt, file*.gif",
                 casesensitive: true,
                 regexp: true,
                 replaceAll: false,
@@ -92,6 +90,19 @@ var options1 = {
                 wholeword: false,
                 command: "codesearch",
                 path: ""
+            },
+    options7 = {
+                query: "williamsburg",
+                needle: "williamsburg",
+                pattern: "-file*.txt",
+                casesensitive: true,
+                regexp: true,
+                replaceAll: false,
+                replacement: "",
+                wholeword: false,
+                command: "codesearch",
+                path: "",
+                hidden: true
             };
     
 describe("search", function() {
@@ -113,7 +124,7 @@ describe("search", function() {
     });
 
     it("should find matches without regexp, case-sensitive OFF and word boundaries OFF",  function(next) {
-        var out = "";
+        var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
             useAg: true
@@ -132,9 +143,9 @@ describe("search", function() {
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 13);
 
-                agResults["1"].count = msg.count;
-                agResults["1"].filecount = msg.filecount;
-                agResults["1"].lines = lines.length;
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
 
                 o.setEnv({ 
                     useAg: false
@@ -155,9 +166,9 @@ describe("search", function() {
                         var lines = out.split("\n");
                         Assert.equal(lines.length, 13);
 
-                        Assert.equal(msg.count, agResults["1"].count);
-                        Assert.equal(msg.filecount, agResults["1"].filecount);
-                        Assert.equal(lines.length, agResults["1"].lines);
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
                         
                         next();
                     }
@@ -167,7 +178,7 @@ describe("search", function() {
     });
 
     it("should find matches without regexp, case-sensitive ON and word boundaries OFF",  function(next) {
-        var out = "";
+        var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
             useAg: true
@@ -186,9 +197,9 @@ describe("search", function() {
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 5);
 
-                agResults["2"].count = msg.count;
-                agResults["2"].filecount = msg.filecount;
-                agResults["2"].lines = lines.length;
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
                 
                 o.setEnv({ 
                     useAg: false
@@ -209,9 +220,9 @@ describe("search", function() {
                         var lines = out.split("\n");
                         Assert.equal(lines.length, 5);
 
-                        Assert.equal(msg.count, agResults["2"].count);
-                        Assert.equal(msg.filecount, agResults["2"].filecount);
-                        Assert.equal(lines.length, agResults["2"].lines);
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
                         
                         next();
                     }
@@ -221,7 +232,7 @@ describe("search", function() {
     });
 
     it("should find matches without regexp, case-sensitive OFF and word boundaries ON",  function(next) {
-        var out = "";
+        var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
             useAg: true
@@ -240,9 +251,9 @@ describe("search", function() {
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 8);
 
-                agResults["3"].count = msg.count;
-                agResults["3"].filecount = msg.filecount;
-                agResults["3"].lines = lines.length;
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
                 
                 o.setEnv({ 
                     useAg: false
@@ -263,9 +274,9 @@ describe("search", function() {
                         var lines = out.split("\n");
                         Assert.equal(lines.length, 8);
 
-                        Assert.equal(msg.count, agResults["3"].count);
-                        Assert.equal(msg.filecount, agResults["3"].filecount);
-                        Assert.equal(lines.length, agResults["3"].lines);
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
                         
                         next();
                     }
@@ -275,7 +286,7 @@ describe("search", function() {
     });
 
     it("should find matches with a regexp, case-sensitive OFF",  function(next) {
-        var out = "";
+        var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
             useAg: true
@@ -294,9 +305,9 @@ describe("search", function() {
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 15);
 
-                agResults["4"].count = msg.count;
-                agResults["4"].filecount = msg.filecount;
-                agResults["4"].lines = lines.length;
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
                 
                 o.setEnv({ 
                     useAg: false
@@ -317,9 +328,9 @@ describe("search", function() {
                         var lines = out.split("\n");
                         Assert.equal(lines.length, 15);
 
-                        Assert.equal(msg.count, agResults["4"].count);
-                        Assert.equal(msg.filecount, agResults["4"].filecount);
-                        Assert.equal(lines.length, agResults["4"].lines);
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
                         
                         next();
                     }
@@ -329,7 +340,7 @@ describe("search", function() {
     });
     
     it("should find matches with a regexp, case-sensitive ON, including the default .agignore file, and hidden files",  function(next) {
-        var out = "";
+        var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
             useAg: true
@@ -348,9 +359,9 @@ describe("search", function() {
                 var lines = out.split("\n");
                 Assert.equal(lines.length, 27);
 
-                agResults["5"].count = msg.count;
-                agResults["5"].filecount = msg.filecount;
-                agResults["5"].lines = lines.length;
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
                 
                 o.setEnv({ 
                     useAg: false
@@ -371,9 +382,9 @@ describe("search", function() {
                         var lines = out.split("\n");
                         Assert.equal(lines.length, 27);
 
-                        Assert.equal(msg.count, agResults["5"].count);
-                        Assert.equal(msg.filecount, agResults["5"].filecount);
-                        Assert.equal(lines.length, agResults["5"].lines);
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
                         
                         next();
                     }
@@ -382,8 +393,8 @@ describe("search", function() {
         );
     });
  
-     it("should find matches without regexp, only two file types, and no hidden files (even if they contain the string)",  function(next) {
-        var out = "";
+    it("should find matches without regexp, only two file types, and no hidden files (even if they contain the string)",  function(next) {
+        var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
             useAg: true
@@ -406,9 +417,9 @@ describe("search", function() {
                 // but we're not searching hidden files
                 Assert.equal(/.file8_hidden.txt/.test(lines), false);
 
-                agResults["6"].count = msg.count;
-                agResults["6"].filecount = msg.filecount;
-                agResults["6"].lines = lines.length;
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
                 
                 o.setEnv({ 
                     useAg: false
@@ -423,20 +434,71 @@ describe("search", function() {
                     },
                     // exit
                     function(code, stderr, msg) {
-                        console.log(msg.command)
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 14);
-                        Assert.equal(msg.filecount, 7);
+                        Assert.equal(msg.count, 2);
+                        Assert.equal(msg.filecount, 2);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, 27);
+                        Assert.equal(lines.length, 5);
 
-                        // contains the query, has the right extension,
-                        // but we're not searching hidden files
                         Assert.equal(/.file8_hidden.txt/.test(lines), false);
 
-                        Assert.equal(msg.count, agResults["6"].count);
-                        Assert.equal(msg.filecount, agResults["6"].filecount);
-                        Assert.equal(lines.length, agResults["6"].lines);
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
+                        
+                        next();
+                    }
+                );
+            }
+        );
+    });
+
+    it("should find matches without regexp, excluding txt files",  function(next) {
+        var out = "", agCount = "", agFileCount = "", agLines = "";
+        
+        o.setEnv({ 
+            useAg: true
+        });
+        
+        o.exec(options7, vfs,
+            // data
+            function(msg) {
+                out += msg.data;
+            },
+            // exit
+            function(code, stderr, msg) {
+                Assert.equal(code, 0);
+                Assert.equal(msg.count, 10);
+                Assert.equal(msg.filecount, 4);
+                var lines = out.split("\n");
+                Assert.equal(lines.length, 17);
+
+                agCount = msg.count;
+                agFileCount = msg.filecount;
+                agLines = lines.length;
+                
+                o.setEnv({ 
+                    useAg: false
+                });
+                
+                out = options7.path = "";
+                
+                o.exec(options7, vfs,
+                    // data
+                    function(msg) {
+                        out += msg.data;
+                    },
+                    // exit
+                    function(code, stderr, msg) {
+                        Assert.equal(code, 0);
+                        Assert.equal(msg.count, 10);
+                        Assert.equal(msg.filecount, 4);
+                        var lines = out.split("\n");
+                        Assert.equal(lines.length, 17);
+
+                        Assert.equal(msg.count, agCount);
+                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(lines.length, agLines);
                         
                         next();
                     }
