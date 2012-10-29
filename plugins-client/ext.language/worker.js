@@ -169,32 +169,6 @@ var isWorkerEnabled = exports.isWorkerEnabled = function() {
     return !window.location || !window.location.search.match(/[?&]noworker=1/);
 };
 
-exports.createUIWorkerClient = function() {
-    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
-    var result = new LanguageWorker(emitter);
-    result.on = function(name, f) {
-        emitter.on.call(result, name, f);
-    };
-    result.call = function(cmd, args, callback) {
-        if (callback) {
-            var id = this.callbackId++;
-            this.callbacks[id] = callback;
-            args.push(id);
-        }
-        this.send(cmd, args);
-    };
-    result.send = function(cmd, args) {
-        setTimeout(function() { result[cmd].apply(result, args); }, 0);
-    };
-    result.emit = function(event, data) {
-        emitter._dispatchEvent.call(emitter, event, data);
-    };
-    emitter.emit = function(event, data) {
-        emitter._dispatchEvent.call(result, event, { data: data });
-    };
-    return result;
-};
-
 /**
  * Ensure that an event handler is called only once if multiple
  * events are received at the same time.
@@ -828,51 +802,49 @@ function asyncParForEach(array, fn, callback) {
             _self.findNode(ast, currentPos, function(node) {
                 var currentNode = node;
                 var matches = [];
-        
-            asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language)) {
-                        handler.staticPrefix = data.staticPrefix;
-                        handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
-                        if (completions)
-                            matches = matches.concat(completions);
-                        next();
-                    });
-                }
-                else
-                    next();
-            }, function() {
-                removeDuplicateMatches(matches);
-                // Sort by priority, score
-                matches.sort(function(a, b) {
-                    if (a.priority < b.priority)
-                        return 1;
-                    else if (a.priority > b.priority)
-                        return -1;
-                    else if (a.score < b.score)
-                        return 1;
-                    else if (a.score > b.score)
-                        return -1;
-                    else if (a.id && a.id === b.id) {
-                        if (a.isFunction)
-                            return -1;
-                        else if (b.isFunction)
-                            return 1;
+            
+                asyncForEach(_self.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(_self.$language)) {
+                            handler.staticPrefix = data.staticPrefix;
+                            handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
+                            if (completions)
+                                matches = matches.concat(completions);
+                            next();
+                        });
                     }
-                    if (a.name < b.name)
-                        return -1;
-                    else if(a.name > b.name)
-                        return 1;
                     else
-                        return 0;
-                });
-                    // Removed for the java completion result caching cases
-                    // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", {
-                    pos: pos,
-                    matches: matches
+                        next();
+                }, function() {
+                    removeDuplicateMatches(matches);
+                    // Sort by priority, score
+                    matches.sort(function(a, b) {
+                        if (a.priority < b.priority)
+                            return 1;
+                        else if (a.priority > b.priority)
+                            return -1;
+                        else if (a.score < b.score)
+                            return 1;
+                        else if (a.score > b.score)
+                            return -1;
+                        else if (a.id && a.id === b.id) {
+                            if (a.isFunction)
+                                return -1;
+                            else if (b.isFunction)
+                                return 1;
+                        }
+                        if (a.name < b.name)
+                            return -1;
+                        else if(a.name > b.name)
+                            return 1;
+                        else
+                            return 0;
+                    });
+                    _self.sender.emit("complete", {
+                        pos: pos,
+                        matches: matches
+                    });
                 });
             });
-        });
         });
     };
 
