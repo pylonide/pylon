@@ -74,10 +74,10 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos) {
+function retrievePreceedingIdentifier(text, pos, regex) {
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
-        if(ID_REGEX.test(text[i]))
+        if((regex || ID_REGEX).test(text[i]))
             buf.push(text[i]);
         else
             break;
@@ -193,7 +193,7 @@ module.exports = {
         this.ext = ext;
     },
     
-    showCompletionBox: function(matches, prefix) {
+    showCompletionBox: function(matches, prefix, line, column) {
         var _self = this;
         this.editor = editors.currentEditor;
         var ace = this.editor.amlEditor.$editor;
@@ -201,6 +201,8 @@ module.exports = {
         this.scrollIdx = 0;
         this.matchEls = [];
         this.prefix = prefix;
+        this.line = line;
+        this.column = column;
         this.matches = matches;
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
@@ -315,7 +317,7 @@ module.exports = {
                 match.doc = '<p>' + match.doc + '</p>';
                 
             if (match.icon || match.type)
-                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "")
+                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "");
                 
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
@@ -332,7 +334,8 @@ module.exports = {
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
-                replaceText(amlEditor.$editor, _self.prefix, match);
+                var identifier = retrievePreceedingIdentifier(_self.line, _self.column, match.identifierRegex);
+                replaceText(amlEditor.$editor, identifier, match);
                 amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + EXTRA_LINE_HEIGHT + "px";
@@ -427,7 +430,8 @@ module.exports = {
             case 13: // Enter
             case 9: // Tab
                 var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
+                var identifier = retrievePreceedingIdentifier(_self.line, _self.column, this.matches[this.selectedIdx].identifierRegex);
+                replaceText(editor, identifier, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
                 e.preventDefault();
                 break;
@@ -520,10 +524,11 @@ module.exports = {
         var matches = event.data.matches;     
         
         if (matches.length === 1 && !this.forceBox) {
+            identifier = retrievePreceedingIdentifier(line, pos.column, matches[0].identifierRegex);
             replaceText(editor, identifier, matches[0]);
         }
         else if (matches.length > 0) {
-            this.showCompletionBox(matches, identifier);
+            this.showCompletionBox(matches, identifier, line, pos.column);
         }
         else {
             if(typeof barCompleterCont !== 'undefined')
