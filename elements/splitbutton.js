@@ -104,6 +104,7 @@ apf.splitbutton = function(struct, tagName){
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
             if (!self[value].$splitInited) {
+                _self.dispatchEvent("submenu.init");
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
                     var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
@@ -121,8 +122,6 @@ apf.splitbutton = function(struct, tagName){
     this.$draw = function(){
         var _self = this;
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
-        //this.$ext.style.overflow = "hidden";
-        //this.$ext.style.position = "relative";
 
         var skin = this["button-skin"] || this.getAttribute("skin") || this.localName;
 
@@ -176,6 +175,9 @@ apf.splitbutton = function(struct, tagName){
                 }
 
                 _self.dispatchEvent("mouseout", { button: this });
+            },
+            onclick: function(e) {
+                _self.dispatchEvent("split.click", e);
             }
         });
     };
