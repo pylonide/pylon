@@ -70,6 +70,7 @@ util.inherits(ShellPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
+        console.log("DADADA", message);
         if (!this["command-" + message.command])
             return false;
 

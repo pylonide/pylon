@@ -6,16 +6,26 @@
 
 "use strict";
 
+define(function(require, exports, module) {
+    
+var ide = require("core/ide");
+var ext = require("core/ext");
+var util = require("core/util");
+var fs = require("ext/filesystem/filesystem");
 var Path = require("path");
 
-var ShellPlugin = function(ide, workspace) {
-    this.name = name;
-    this.processCount = 0;
-};
+module.exports = ext.register("ext/run.shell/run.shell", {
+    dev        : "Ajax.org",
+    name       : "Save",
+    alone      : true,
+    type       : ext.GENERAL,
+    deps       : [fs],
+    offline    : true,
 
-(function() {
-
-    this.metadata = {
+    nodes      : [],
+    saveBuffer : {},
+    
+    metadata : {
         "commands": {
             "cd" : {
                 "hint": "change working directory",
@@ -43,29 +53,36 @@ var ShellPlugin = function(ide, workspace) {
             },
             "pwd": {"hint": "return working directory name"}
         }
-    };
+    },
 
-    this.command = function(user, message, client) {
-        if (!this["command-" + message.command])
+    hook: function() {
+        this.processCount = 0;
+        
+        //ide.addEventListener()
+    },
+
+    command: function(user, message, client) {
+        var cmdString = "command-" + message.command;
+        if (!this[cmdString])
             return false;
 
         if (message.runner && message.runner !== "shell")
             return false;
 
-        this["command-" + message.command.toLowerCase()](message);
+        this[cmdString.toLowerCase()](message);
 
         console.log(message);
 
         return true;
-    };
+    },
 
-    this["command-internal-autocomplete"] = function(message) {
+    "command-internal-autocomplete": function(message) {
         var argv = [].concat(message.argv);
         var cmd = argv.shift();
         var self = this;
 
         this.getListing(argv.pop(), message.cwd || this.workspaceDir, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
-            ide.dispatchEvent("internal-autocomplete", {
+            self.ide.dispatchEvent("internal-autocomplete", {
                 matches: matches,
                 line   : message.line,
                 base   : tail,
@@ -74,14 +91,12 @@ var ShellPlugin = function(ide, workspace) {
                 argv   : message.argv
             });
         });
-    };
+    },
 
 
-
-    this["command-internal-isfile"] = function(message) {
+    "command-internal-isfile": function(message) {
         var file  = message.argv.pop();
-        var path  = message.cwd || this.workspaceDir;
-        var self = this;
+        var path  = message.cwd;
 
         path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
 
@@ -91,7 +106,7 @@ var ShellPlugin = function(ide, workspace) {
         }
 
         ide.send(message);
-    };
+    },
 /*
     this["command-commandhints"] = function(message) {
         var commands = {};
@@ -115,7 +130,7 @@ var ShellPlugin = function(ide, workspace) {
     };
 */
 
-    this["command-ps"] = function(message) {
+    "command-ps": function(message) {
         var self = this;
         this.pm.ps(function(err, procs) {
             self.sendResult(0, message.command, {
@@ -125,9 +140,9 @@ var ShellPlugin = function(ide, workspace) {
                 extra   : message.extra
             });
         });
-    };
+    },
 
-    this["command-kill"] = function(message) {
+    "command-kill": function(message) {
         var self = this;
         this.pm.kill(message.pid, function(err) {
             if (!err) return;
@@ -140,9 +155,9 @@ var ShellPlugin = function(ide, workspace) {
                 pid   : message.pid
             });
         });
-    };
+    },
 
-    this.getListing = function(tail, path, dirmode, callback) {
+    getListing: function(tail, path, dirmode, callback) {
         var self = this;
         var matches = [];
         tail = (tail || "")
@@ -173,10 +188,10 @@ var ShellPlugin = function(ide, workspace) {
                 callback(tail, nodes);
             });
         });
-    };
+    },
 
-    this.canShutdown = function() {
+    canShutdown: function() {
         return this.processCount === 0;
-    };
-
-}).call(ShellPlugin.prototype);
+    }
+});
+});

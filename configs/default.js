@@ -141,10 +141,11 @@ var config = [
             "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/quicksearch/quicksearch",
-            "ext/language/liveinspect"
+            "ext/language/liveinspect",
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"
+            "ext/run/run"
         ],
         metrics: {
             captureCommandsRegex: /^(?:heroku\b|vmc\b|azure\b|acs-|c9pm\b|git\s+push\s+(?:heroku|azure))/i
@@ -216,7 +217,8 @@ var config = [
         packagePath: "./cloud9.ide.settings",
         settingsPath: ".settings"
     },
-    "./cloud9.ide.shell",
+    //"./cloud9.ide.shell",
+    "./cloud9.ide.run",
     "./cloud9.ide.state",
     "./cloud9.ide.watcher"
 ];

@@ -308,6 +308,7 @@ module.exports = ext.register("ext/console/console", {
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
+		type: "run",
                 requireshandling: !commands.commands[cmd],
                 tracer_id: this.command_id_tracer,
                 extra : {

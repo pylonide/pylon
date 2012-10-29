@@ -21,11 +21,17 @@ module.exports = ext.register("ext/run/run", {
 
     processes: [],
 
+    hook: function(){},
+
     init : function(){
         //ide.addEventListener("process-start", function() {});
         //ide.addEventListener("process-stop", function() {});
-        ide.addEventListener("processlist-change", function(pids) {
-            processes = pids;
+        ide.addEventListener("socketMessage", function(message) {
+            console.log("MSG", message);
+            if (message.type === "processlist-change") {
+                console.log("processlist-change", message.pid);
+                processes = message.list;
+            }
         });
     },
 
