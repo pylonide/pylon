@@ -219,7 +219,7 @@ module.exports = ext.register("ext/panels/panels", {
         this.mnuPanelsNone.setAttribute("selected", false);
         panelExt.mnuItem.select(); //Will set setting too
         
-        panelExt.panel.setTitle(panelExt.button && panelExt.button.caption || "Project Files");
+        panelExt.panel.setTitle(panelExt.button && panelExt.button.caption || "Workspace Files");
     },
 
     deactivate : function(noButton, anim){
