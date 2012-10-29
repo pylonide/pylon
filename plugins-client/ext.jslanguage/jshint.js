@@ -57,7 +57,7 @@ handler.analyzeSync = function(doc, ast) {
             type = "error";
         if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
             type = "error";
-        if (reason.indexOf("Missing semicolon") !== -1)
+        if (reason.indexOf("Missing semicolon") !== -1 || reason.indexOf("Unnecessary semicolon") !== -1)
             type = "info";
         if (reason.indexOf("better written in dot") !== -1)
             type = "info";

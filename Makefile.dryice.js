@@ -69,6 +69,7 @@ function worker(project) {
                     'ext/jslanguage/debugger',
                     'ext/jslanguage/outline',
                     'ext/linereport/linereport_base',
+                    'ext/linereport_php/linereport_php_worker',
                 ]
             })
         ],
