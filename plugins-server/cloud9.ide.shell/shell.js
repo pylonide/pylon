@@ -155,6 +155,27 @@ util.inherits(ShellPlugin, Plugin);
              });
     };
 
+    this["command-commandhints"] = function(message) {
+        var commands = {};
+        var _self = this;
+
+        Async.list(Object.keys(this.workspace.plugins))
+             .each(function(sName, next) {
+                 var oExt = _self.workspace.getExt(sName);
+                 if (oExt.$commandHints) {
+                     oExt.$commandHints(commands, message, next);
+                 }
+                 else {
+                     if (oExt.metadata && oExt.metadata.commands)
+                         c9util.extend(commands, oExt.metadata.commands);
+                     next();
+                 }
+             })
+             .end(function() {
+                 _self.sendResult(0, message.command, commands);
+             });
+    };
+
     this["command-cd"] = function(message) {
         var to = message.argv.pop();
         var path = message.cwd || this.workspaceDir;
