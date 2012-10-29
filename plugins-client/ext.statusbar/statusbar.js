@@ -161,23 +161,25 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     updateStatus : function(ace) {
+        
         if (!ace.selection.isEmpty()) {
+            var selectionLength;
             var range = ace.getSelectionRange();
             if (this.$showRange) {
-                this.$lblSelectionLength = "(" +
+                selectionLength = "(" +
                     (range.end.row - range.start.row) + ":" +
                     (range.end.column - range.start.column) + ")";
             } 
             else {
                 var value = ace.session.getTextRange(range);
-                this.$lblSelectionLength = "(" + value.length + " Bytes)";
+                selectionLength = "(" + value.length + " Bytes)";
             }
+            
+            lblSelectionLength.setAttribute("caption", selectionLength);
         } 
         else {
-            this.$lblSelectionLength = "";
+            lblSelectionLength.setAttribute("caption", "");
         }
-        
-        lblSelectionLength.setAttribute("caption", this.$lblSelectionLength);
 
         var cursor = ace.selection.lead;
         lblRowCol.setAttribute("caption", (cursor.row + 1) + ":" + (cursor.column + 1));
@@ -193,12 +195,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         else if (ace.commands.recording)
             status = "REC";
             
-        if (!status) 
-            lblEditorStatus.hide();
-        else
-            lblEditorStatus.show();
-            
-        lblEditorStatus.$ext.textContent = status;
+        lblEditorStatus.setAttribute("caption", status);
     },
     
     toggleSelectionLength: function(){

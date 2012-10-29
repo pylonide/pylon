@@ -11,7 +11,7 @@
             <a:label id="lblEditorStatus" 
               caption = "" 
               margin  = "2 3 0 3" 
-              visible = "false"/>
+              visible = "{this.caption != ''}"/>
             <a:label id="lblSelectionLength" 
               caption = "" 
               margin  = "2 3 0 3"
