@@ -85,8 +85,7 @@ module.exports = function() {
             args.command = this.env.agCmd;
         }
         else {
-            args = ["--nocolor", 
-                    "-l",                                                     // filenames only   
+            args = ["-l",                                                     // filenames only   
                     "-p", Path.join(__dirname, "..", "cloud9.ide.search", ".agignore")]; // use the Cloud9 ignore file                     
             
             if (options.showHiddenFiles)

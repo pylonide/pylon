@@ -169,8 +169,7 @@ module.exports = function() {
             }
         }
         else {
-            args = ["--nocolor",                              // don't color items
-                    "-p", Path.join(__dirname, ".agignore"),  // use the Cloud9 ignore file
+            args = ["-p", Path.join(__dirname, ".agignore"),  // use the Cloud9 ignore file
                     "--c9Format"];                            // format for parseResult to consume
 
             if (!options.casesensitive)
