@@ -298,7 +298,7 @@ module.exports = {
             }
             
             var trim = match.meta ? " maintrim" : "";
-            if (!isInferAvailable || match.icon) {
+            if ((!isInferAvailable || match.icon) && match.name.indexOf(_self.prefix) === 0) {
                 html += '<span class="main' + trim + '"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
             }
             else if (hasIcons) {
@@ -512,20 +512,12 @@ module.exports = {
         editor.removeEventListener("change", this.$onChange);
         killCrashedCompletionInvoke.cancel();
 
-        if (pos.column !== eventPos.column || pos.row !== eventPos.row)
+        if (pos.column !== eventPos.column || pos.row !== eventPos.row || event.data.line != line)
             return;
         if (event.data.isUpdate && !isPopupVisible())
             return;
     
-        var matches = event.data.matches;
-        
-        // Remove out-of-date matches
-        for (var i = 0; i < matches.length; i++) {
-            if(matches[i].name.indexOf(identifier) !== 0) {
-                matches.splice(i, 1);
-                i--;
-            }
-        }        
+        var matches = event.data.matches;     
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0]);

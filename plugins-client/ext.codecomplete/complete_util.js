@@ -2,10 +2,10 @@ define(function(require, exports, module) {
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
-function retrievePreceedingIdentifier(text, pos) {
+function retrievePreceedingIdentifier(text, pos, regex) {
     var buf = [];
     for (var i = pos-1; i >= 0; i--) {
-        if(ID_REGEX.test(text[i]))
+        if ((regex || ID_REGEX).test(text[i]))
             buf.push(text[i]);
         else
             break;
