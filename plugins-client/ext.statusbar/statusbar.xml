@@ -15,7 +15,7 @@
             <a:label id="lblSelectionLength" 
               caption = "" 
               margin  = "2 3 0 3"
-              visible = "false"
+              visible = "{this.caption != ''}"
               onclick = "require('ext/statusbar/statusbar').toggleSelectionLength()"
             />
             <a:label id="lblRowCol"

@@ -172,17 +172,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 var value = ace.session.getTextRange(range);
                 this.$lblSelectionLength = "(" + value.length + " Bytes)";
             }
-            
-            if (!this.$lblSelectionLength)
-                lblSelectionLength.hide();
-            else
-                lblSelectionLength.show();
-            
-            lblSelectionLength.$ext.textContent = this.$lblSelectionLength;
         } 
-        else if (this.$lblSelectionLength) {            
-            lblSelectionLength.$ext.textContent = this.$lblSelectionLength = "";
+        else {
+            this.$lblSelectionLength = "";
         }
+        
+        lblSelectionLength.setAttribute("caption", this.$lblSelectionLength);
 
         var cursor = ace.selection.lead;
         lblRowCol.setAttribute("caption", (cursor.row + 1) + ":" + (cursor.column + 1));
