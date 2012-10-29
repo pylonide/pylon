@@ -733,6 +733,7 @@ function asyncParForEach(array, fn, callback) {
         handler.workspaceDir = this.$workspaceDir;
         handler.doc = this.doc;
         handler.sender = this.sender;
+        handler.$completeUpdate = this.completeUpdate.bind(this);
         var _self = this;
         if (!handler.$isInited) {
             handler.$isInited = true;
@@ -841,11 +842,20 @@ function asyncParForEach(array, fn, callback) {
                     });
                     _self.sender.emit("complete", {
                         pos: pos,
-                        matches: matches
+                        matches: matches,
+                        isUpdate: event.isUpdate
                     });
                 });
             });
         });
+    };
+    
+    /**
+     * Retrigger completion if the popup is still open and new
+     * information is now available.
+     */
+    this.completeUpdate = function(pos) {
+        this.complete({data: {pos: pos, staticPrefix: this.staticPrefix, isUpdate: true}});
     };
 
 }).call(LanguageWorker.prototype);

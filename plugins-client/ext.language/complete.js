@@ -514,6 +514,8 @@ module.exports = {
 
         if (pos.column !== eventPos.column || pos.row !== eventPos.row)
             return;
+        if (event.data.isUpdate && !isPopupVisible())
+            return;
     
         var matches = event.data.matches;
         
