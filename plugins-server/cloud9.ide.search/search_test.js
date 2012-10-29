@@ -161,13 +161,9 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 6);
-                        Assert.equal(msg.filecount, 4);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 13);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
                         
                         next();
@@ -215,13 +211,9 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 2);
-                        Assert.equal(msg.filecount, 2);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 5);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
                         
                         next();
@@ -269,13 +261,9 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 3);
-                        Assert.equal(msg.filecount, 3);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 8);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
                         
                         next();
@@ -323,13 +311,9 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 8);
-                        Assert.equal(msg.filecount, 4);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 15);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
                         
                         next();
@@ -377,13 +361,9 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 14);
-                        Assert.equal(msg.filecount, 7);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 27);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
                         
                         next();
@@ -435,16 +415,12 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 2);
-                        Assert.equal(msg.filecount, 2);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 5);
-
-                        Assert.equal(/.file8_hidden.txt/.test(lines), false);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
+
+                        Assert.equal(/.file8_hidden.txt/.test(lines), false);
                         
                         next();
                     }
@@ -491,13 +467,9 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, 10);
-                        Assert.equal(msg.filecount, 4);
-                        var lines = out.split("\n");
-                        Assert.equal(lines.length, 17);
-
                         Assert.equal(msg.count, agCount);
                         Assert.equal(msg.filecount, agFileCount);
+                        var lines = out.split("\n");
                         Assert.equal(lines.length, agLines);
                         
                         next();

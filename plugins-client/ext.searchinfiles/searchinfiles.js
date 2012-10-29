@@ -164,6 +164,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             });
         });
 
+        tooltip.add(txtSFPatterns.$ext, {
+            message : txtSFPatterns.label,
+            width : "auto",
+            timeout : 0,
+            tooltip : tt,
+            animate : false,
+            getPosition : function(){
+                var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                var left = pos[0] + txtSFPatterns.getLeft();
+                var top = pos[1];
+                return [left, top - 16];
+            }
+        });
+        
         ide.addEventListener("aftereditorfocus", function(e) {
             if (_self.searchConsole && _self.returnFocus)
                 _self.searchConsole.focus();

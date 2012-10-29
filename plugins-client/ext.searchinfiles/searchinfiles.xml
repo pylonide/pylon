@@ -16,7 +16,7 @@
                   onclick="require('ext/searchinfiles/searchinfiles').execFind()">Find</a:button>
             </a:hbox>
             <a:hbox padding="5" align="start" height="27" edge="0 85 0 126">
-                <a:codebox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" focusselect="true"/>
+                <a:codebox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" label="Wildcards accepted. Prefix with - to exclude a pattern." focusselect="true"/>
                 <a:radiobutton margin="3 0 0 0"
                   group  = "grpSFScope"
                   skin   = "radio_black"
