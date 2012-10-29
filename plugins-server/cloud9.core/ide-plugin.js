@@ -72,8 +72,7 @@ module.exports = function setup(options, imports, register) {
             env: options.env,
             packed: options.packed,
             packedName: options.packedName,
-            local: options.local,
-            metrics: options.metrics
+            local: options.local
         });
 
         var server = connect.getModule()();

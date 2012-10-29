@@ -22,8 +22,6 @@ var Ide = module.exports = function(options) {
     assert(options.workspaceDir, "option 'workspaceDir' is required");
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert(options.smithIo, "option 'smithIo' is required");
-    assert(options.metrics, "option 'metrics' is required");
-    assert(options.metrics.captureCommandsRegex, "option 'metrics.captureCommandsRegex' is required");
    // assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
@@ -54,10 +52,7 @@ var Ide = module.exports = function(options) {
         env: options.env,
         local: options.local,
         packed: options.packed,
-        packedName: options.packedName,
-        metrics: {
-            captureCommandsRegex: options.metrics.captureCommandsRegex.toString()
-        }
+        packedName: options.packedName
     };
 
     this.$users = {};
@@ -154,8 +149,7 @@ util.inherits(Ide, EventEmitter);
                 packed: _self.options.packed,
                 packedName: _self.options.packedName,
                 local: _self.options.local,
-                loadedDetectionScript: loadedDetectionScript,
-                metricCommandRegex: _self.options.metrics.captureCommandsRegex
+                loadedDetectionScript: loadedDetectionScript
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");

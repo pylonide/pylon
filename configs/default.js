@@ -147,10 +147,7 @@ var config = [
             //"ext/minimap/minimap"
             //"ext/acebugs/acebugs"
             "ext/run/run"
-        ],
-        metrics: {
-            captureCommandsRegex: /^(?:heroku\b|vmc\b|azure\b|acs-|c9pm\b|git\s+push\s+(?:heroku|azure))/i
-        }
+        ]
     }, {
         packagePath: "vfs-architect/local",
         root: "/"
