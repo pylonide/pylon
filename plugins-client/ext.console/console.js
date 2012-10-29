@@ -450,15 +450,14 @@ module.exports = ext.register("ext/console/console", {
             return;
         }
         
-        if (!e.message.type)
+        if (!e.message.type) {
             return;
+        }
+        
+        console.log(e.message);
 
         var message = e.message;
-        //console.log(message.type, message);
-        var extra = message.extra;
-        if (!extra && message.body)
-            extra = message.body.extra;
-
+        var extra = message.extra || (message.body && message.body.extra);
         if (extra) {
             // If true, this client is receiving data about a command that did
             // not originate from it
@@ -471,12 +470,14 @@ module.exports = ext.register("ext/console/console", {
         // Skip internal processes
         if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-            if (apf.isTrue(clearOnRun) && window["txtOutput"])
+            if (apf.isTrue(clearOnRun) && window.txtOutput) {
                 txtOutput.clear();
+            }
 
             this.createProcessLog(message.pid, lang[1]);
             return;
-        } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+        }
+        else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.extra && message.extra.tip) {
                 message.data = "\u001b[1;32;40m" + message.data;
 
@@ -520,7 +521,8 @@ module.exports = ext.register("ext/console/console", {
 
             logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
             return;
-        } else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
+        } 
+        else if ((lang = /^(\w+)-exit$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             this.markProcessAsCompleted(message.pid, true);
             return;
         }

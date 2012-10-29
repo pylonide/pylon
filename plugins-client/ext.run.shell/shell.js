@@ -6,36 +6,12 @@
 
 "use strict";
 
-var util = require("util");
 var Path = require("path");
-var Async = require("asyncjs");
-
-var Plugin = require("../cloud9.core/plugin");
-var c9util = require("../cloud9.core/util");
-
-var name = "shell";
-var ProcessManager;
-var VFS;
-
-module.exports = function setup(options, imports, register) {
-    ProcessManager = imports["process-manager"];
-    VFS = imports.vfs;
-    imports.ide.register(name, ShellPlugin, register);
-};
 
 var ShellPlugin = function(ide, workspace) {
-    Plugin.call(this, ide, workspace);
-
-    this.pm = ProcessManager;
-    this.vfs = VFS;
-    this.workspaceId = workspace.workspaceId;
-    this.workspaceDir = ide.workspaceDir;
-    this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
 };
-
-util.inherits(ShellPlugin, Plugin);
 
 (function() {
 
@@ -77,7 +53,7 @@ util.inherits(ShellPlugin, Plugin);
             return false;
 
         this["command-" + message.command.toLowerCase()](message);
-        
+
         console.log(message);
 
         return true;
@@ -89,7 +65,7 @@ util.inherits(ShellPlugin, Plugin);
         var self = this;
 
         this.getListing(argv.pop(), message.cwd || this.workspaceDir, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
-            self.sendResult(0, "internal-autocomplete", {
+            ide.dispatchEvent("internal-autocomplete", {
                 matches: matches,
                 line   : message.line,
                 base   : tail,
@@ -100,12 +76,7 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
-    this._isDir = function(stat) {
-        return (
-            stat.mime == "inode/directory" ||
-            (stat.linkStat && stat.linkStat.mime == "inode/directory")
-        );
-    };
+
 
     this["command-internal-isfile"] = function(message) {
         var file  = message.argv.pop();
@@ -119,23 +90,9 @@ util.inherits(ShellPlugin, Plugin);
             return;
         }
 
-        this.vfs.stat(path, {}, function(err, stat) {
-            if (err || stat.err) {
-                return self.sendResult(0, "error", {
-                    errmsg: "Problem opening file; it does not exist or something else failed. More info: " +
-                        err.toString().replace("Error: ENOENT, ", ""),
-                    extra: message.extra
-                });
-            }
-            self.sendResult(0, "internal-isfile", {
-                cwd: path,
-                isfile: (stat && !self._isDir(stat)),
-                sender: message.sender || "shell",
-                extra: message.extra
-            });
-        });
+        ide.send(message);
     };
-
+/*
     this["command-commandhints"] = function(message) {
         var commands = {};
         var _self = this;
@@ -148,7 +105,7 @@ util.inherits(ShellPlugin, Plugin);
                  }
                  else {
                      if (oExt.metadata && oExt.metadata.commands)
-                         c9util.extend(commands, oExt.metadata.commands);
+                         apf.extend(commands, oExt.metadata.commands);
                      next();
                  }
              })
@@ -156,40 +113,8 @@ util.inherits(ShellPlugin, Plugin);
                  _self.sendResult(0, message.command, commands);
              });
     };
+*/
 
-    this["command-cd"] = function(message) {
-        var to = message.argv.pop();
-        var path = message.cwd || this.workspaceDir;
-        var self = this;
-
-        path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
-
-        if (path.indexOf(this.workspaceDir) === -1)
-            return this.sendResult();
-
-        this.vfs.stat(path, {}, function(err, stat) {
-            if (err || stat.err) {
-                return self.sendResult(0, "error", {
-                    errmsg: "Problem changing directory; it does not exist or something else failed. More info: " +
-                        err.toString().replace("Error: ENOENT, ", ""),
-                    extra: message.extra
-                });
-            }
-
-            if (!self._isDir(stat)) {
-                return self.sendResult(0, "error", {
-                    errmsg: "Not a directory.",
-                    extra: message.extra
-                });
-            }
-
-            self.sendResult(0, message.command, {
-                cwd: path,
-                extra: message.extra
-            });
-        });
-    };
-    
     this["command-ps"] = function(message) {
         var self = this;
         this.pm.ps(function(err, procs) {
@@ -205,8 +130,8 @@ util.inherits(ShellPlugin, Plugin);
     this["command-kill"] = function(message) {
         var self = this;
         this.pm.kill(message.pid, function(err) {
-            if (!err)
-                return;
+            if (!err) return;
+
             self.sendResult(0, message.command, {
                 argv  : message.argv,
                 code  : -1,

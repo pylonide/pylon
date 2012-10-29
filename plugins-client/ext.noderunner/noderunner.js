@@ -1,7 +1,7 @@
 /**
  * Node Runner Module for the Cloud9 IDE
  *
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -10,9 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
-var markup = require("text!ext/noderunner/noderunner.xml");
 var c9console = require("ext/console/console");
-var _debugger = require("ext/debugger/debugger");
 
 /*global stProcessRunning*/
 
@@ -23,7 +21,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     alone   : true,
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
-    markup  : markup,
 
     NODE_VERSION: "auto",
 
@@ -34,7 +31,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             ide.addEventListener("socketDisconnect", function() {
                 ide.dispatchEvent("dbg.exit");
             });
-        } else {
+        }
+        else {
             ide.addEventListener("socketConnect", function() {
                 _self.queryServerState();
             });
@@ -61,10 +59,9 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     onMessage : function(e) {
         var message = e.message;
-        //if (message.type != "shell-data")
-           // console.log("MSG", message)
         var runners = window.cloud9config.runners;
         var lang;
+
         if ((lang = /^(\w+)-debug-ready$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             ide.dispatchEvent("dbg.ready", message);
             return;
@@ -136,25 +133,33 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     run : function(path, args, debug, nodeVersion) {
-        var runner;
-        if (stProcessRunning.active || typeof path != "string")
+        if (stProcessRunning.active || typeof path != "string") {
             return false;
+        }
         // TODO there should be a way to set state to waiting
         stProcessRunning.activate();
 
         path = path.trim();
 
-        if (nodeVersion == 'default' || !nodeVersion) {
+        var runner;
+        if (nodeVersion === "default" || !nodeVersion) {
             runner = this.detectRunner(path);
-            nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
+            if (runner === "node")
+                nodeVersion = settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION;
+
         }
         else {
-            runner = nodeVersion.split(" ")[0];
-            nodeVersion = nodeVersion.split(" ")[1] || 'auto';
+            var splitVersion = nodeVersion.split(" ");
+            runner = splitVersion[0];
+            nodeVersion = splitVersion[1];
         }
+
+        if (!nodeVersion)
+            nodeVersion = "auto";
 
         var page = ide.getActivePageModel();
         var command = {
+            "ideRun"  : true, // Property that indicates if it is run from 'Run' button in the IDE
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
             "runner"  : runner,
@@ -179,14 +184,9 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         this.queryServerState();
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
-    },
+    enable : function(){},
+    disable : function(){},
+    destroy : function(){},
 
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
