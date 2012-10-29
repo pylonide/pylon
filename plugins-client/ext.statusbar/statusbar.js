@@ -161,7 +161,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     updateStatus : function(ace) {
-        
         if (!ace.selection.isEmpty()) {
             var selectionLength;
             var range = ace.getSelectionRange();
