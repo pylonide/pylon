@@ -123,7 +123,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         });
 
         function handleFileSelect(e){
-            var files = e.target.files;
+            var files = Array.prototype.slice.call(e.target.files);
             _self.startUpload(files);
             e.target.value = "";
         };
@@ -293,7 +293,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     onDrop: function(e) {
         ext.initExtension(this);
 
-        this.startUpload(e.dataTransfer.files);
+        var files = Array.prototype.slice.call(e.dataTransfer.files);
+        this.startUpload(files);
     },
 
     startUpload: function(files) {
