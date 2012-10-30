@@ -124,7 +124,7 @@ var config = [
             "ext/beautify/beautify",
             "ext/offline/offline",
             "ext/stripws/stripws",
-            "ext/testpanel/testpanel",
+            //"ext/testpanel/testpanel",
             "ext/nodeunit/nodeunit",
             "ext/zen/zen",
             "ext/codecomplete/codecomplete",

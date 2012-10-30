@@ -212,14 +212,14 @@ module.exports = ext.register("ext/panels/panels", {
         this.currentPanel = panelExt;
         this.lastPanel    = panelExt;
 
-        this.currentPanel.panel.setTitle(this.currentPanel.button && this.currentPanel.button.caption || "Untitled");
-
         settings.model.setQueryValue("auto/panels/@active", panelExt.path);
 
         ide.dispatchEvent("showpanel." + panelExt.path);
 
         this.mnuPanelsNone.setAttribute("selected", false);
         panelExt.mnuItem.select(); //Will set setting too
+        
+        panelExt.panel.setTitle(panelExt.button && panelExt.button.caption || "Workspace Files");
     },
 
     deactivate : function(noButton, anim){
