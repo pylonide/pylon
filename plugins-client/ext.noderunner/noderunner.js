@@ -33,6 +33,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             this.queryServerState();
             ide.addEventListener("socketDisconnect", function() {
                 ide.dispatchEvent("dbg.exit");
+                stProcessRunning.deactivate();
             });
         } else {
             ide.addEventListener("socketConnect", function() {
