@@ -78,7 +78,7 @@ module.exports = ext.register("ext/language/language", {
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("documentOpen", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
+                worker.call("documentOpen", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, window.cloud9config.workspaceDir]);
             });
 
             // Language features

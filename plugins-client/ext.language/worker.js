@@ -303,7 +303,7 @@ function asyncParForEach(array, fn, callback) {
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
-                handler.parse(_self.doc.getValue(), function(ast) {
+                handler.parse(_self.doc.getValue(), function onParse(ast) {
                     if (ast)
                         _self.cachedAst = ast;
                     next();
