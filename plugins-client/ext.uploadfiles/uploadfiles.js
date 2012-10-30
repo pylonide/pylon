@@ -174,10 +174,19 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     _self.onProgress(data.value);
                     break;
                 case "paused":
-                    ide.addEventListener("afteronline", function(e) {
-                        // upload current file again
-                        _self.upload();
-                    });
+                    if (!ide.onLine || data.error === 500) {
+                        ide.addEventListener("afteronline", function(e) {
+                            // upload current file again
+                            _self.upload();
+                        });
+                    }
+                    // so when we have 404's or something, we'll show this to the users
+                    else {
+                        util.alert("Upload failed", "Uploading " + data.filepath + " failed",
+                            "The server responded with error code " + data.error);
+
+                        _self.removeCurrentUploadFile();
+                    }
                     break;
                 case "debug":
                     console.log(JSON.stringify(data));
