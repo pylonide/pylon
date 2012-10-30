@@ -432,7 +432,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         var _self = this;
         this.$v8dbg.lookup([ref], false, function(body) {
             var refs  = [];
-            var props = body[ref].properties;
+            var props = body[ref].properties || [];
             for (var i = 0, l = props.length; i < l; i++)
                 refs.push(props[i].ref);
 
