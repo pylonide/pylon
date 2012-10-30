@@ -250,7 +250,14 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
         var files = e.dataTransfer.files;
         // Dropped item is a folder, second condition is for FireFox
-        if (!files.length || !files[0].size || (files.length == 1 && files[0].type == "")) {
+        if (!files.length || !files[0].size ||
+                // because this isnt a super check it also triggers on a file that the
+                // browser doesn't recognize (no mime-type), so... let's check on file name
+                // containing a . as well, it will only change behavior in Chrome a.t.m.
+                // and as of Chrome 21 folder upload is available there
+                (files.length == 1 && files[0].type == "" && 
+                    files[0].name.indexOf(".") === -1)) {
+                    
             ext.initExtension(this);
 
             winNoFolderSupport.show();
