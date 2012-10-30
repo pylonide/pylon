@@ -22,6 +22,9 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+// Adding HAML to HTML syntax completion
+var HTML_REGEX = /[a-zA-Z_0-9\$\_.#]/;
+
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 1500;
@@ -74,10 +77,11 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos) {
+function retrievePreceedingIdentifier(text, pos, regex) {
+    regex = regex || (isHtml() && HTML_REGEX) || ID_REGEX;
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
-        if(ID_REGEX.test(text[i]))
+        if(regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
@@ -100,6 +104,10 @@ function isJavaScript() {
     return editors.currentEditor.amlEditor.syntax === "javascript";
 }
 
+function isHtml() {
+    return editors.currentEditor.amlEditor.syntax === "html";
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
  * indicates the cursor position after the replacement.
@@ -117,7 +125,7 @@ function replaceText(editor, prefix, match) {
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
         isInvokeScheduled = true;
-    }   
+    }
     
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
@@ -126,9 +134,14 @@ function replaceText(editor, prefix, match) {
     // Find prefix whitespace of current line
     for (var i = 0; i < line.length && (line[i] === ' ' || line[i] === "\t");)
         i++;
-    
+
     var prefixWhitespace = line.substring(0, i);
     
+    // Remove HTML duplicate '<' completions
+    var preId = retrievePreceedingIdentifier(line, pos.column);
+    if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
+        newText = newText.substring(1);
+
     var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
     
     // Pad the text to be inserted
@@ -146,7 +159,7 @@ function replaceText(editor, prefix, match) {
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
     
-    var cursorCol = pos.column + colOffset - prefix.length;
+    var cursorCol = rowOffset ? colOffset : pos.column + colOffset - prefix.length;
     
     if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
@@ -523,7 +536,7 @@ module.exports = {
                 matches.splice(i, 1);
                 i--;
             }
-        }        
+        }
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0]);
