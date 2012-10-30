@@ -361,7 +361,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (!editor || !editor.amlEditor)
             return;
 
-        var wasVisible  = !!winSearchReplace.parentNode;//visible;
+        var wasVisible  = winSearchReplace.visible;//visible;
         var stateChange = isReplace != undefined && this.$lastState != isReplace;
 
         tooltipSearchReplace.$ext.style.display = "none";
