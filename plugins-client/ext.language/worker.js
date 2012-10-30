@@ -18,7 +18,7 @@ var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 var linereport = require("ext/linereport/linereport_base");
 
-var isInWebWorker = !window.location || !window.document;
+var isInWebWorker = typeof window == "undefined" || !window.location || !window.document;
 
 var WARNING_LEVELS = {
     error: 3,
