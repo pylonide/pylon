@@ -712,7 +712,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var oldPath = this.$path;
         code = code || "";
-        linereport.path = this.$path = path;
+        linereport.path = this.$path = path.replace(/\/workspace/, workspaceDir.replace(/\/$/, ""));
         this.$language = language;
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
         this.cachedAst = null;
