@@ -55,6 +55,7 @@ worker.invokeReporter = function(command, processLine, callback) {
         }, REPORTER_TIMEOUT);
         _self.$invoke(command, worker.path, function(code, output) {
             var doc = _self.doc.getValue();
+            resultCache[command] = resultCache[command] || {};
             var result = resultCache[command]['_' + doc] = _self.parseOutput(output, processLine);
             setTimeout(function() {
                 if (resultCache[command] && resultCache[command]['_' + doc])
@@ -83,7 +84,7 @@ worker.onDocumentOpen = function(path, doc, oldPath, callback) {
 
 worker.$invoke = function(command, path, callback) {
     var id = commandId++;
-    var command = {
+    var commandData = {
         command: "sh",
         argv: ["sh", "-c", command],
         line: command,
@@ -93,7 +94,12 @@ worker.$invoke = function(command, path, callback) {
         extra: { linereport_id: id }
     };
     callbacks[id] = callback;
-    this.sender.emit("linereport_invoke", { command: command, path: path });
+    this.sender.emit("linereport_invoke", {
+        command: commandData,
+        path: path,
+        language: this.language,
+        source: this.$source
+    });
 };
 
 worker.$onInvokeResult = function(event) {

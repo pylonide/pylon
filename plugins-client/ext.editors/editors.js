@@ -15,6 +15,9 @@ var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var anims = require("ext/anims/anims");
 
+/*global tabEditors colMiddle barButtonContainer barButtons tabExtMgr tabmenubtn
+  trfiles logobar*/
+
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
@@ -887,7 +890,7 @@ module.exports = ext.register("ext/editors/editors", {
                     // node.firstChild is not always present (why?)
                     if ((node.getAttribute("changed") == 1) && node.firstChild) {
                         doc.cachedValue = node.firstChild.nodeValue
-                            .replace(/\n]\n]/g, "]]")
+                            .replace(/\n\]\n\]/g, "]]")
                             .replace(/\\r/g, "\r")
                             .replace(/\\n/g, "\n");
                     }
@@ -1068,6 +1071,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         function focus() {
+            if (!_self.currentEditor.amlEditor)
+                return;
             var ace = _self.currentEditor.amlEditor.$editor;
             if (!ace.$isFocused) {
                 setTimeout(f = function() {
@@ -1107,7 +1112,7 @@ module.exports = ext.register("ext/editors/editors", {
                     var node = e.doc.getNode();
                     if (node.getAttribute("path") == path)
                         jumpTo();
-                }
+                };
                 ide.addEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
             }
 
