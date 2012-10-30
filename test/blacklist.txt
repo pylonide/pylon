@@ -1,4 +1,3 @@
 ./plugins-client/ext.console/logger_test.js
 ./plugins-server/cloud9.ide.revisions/revisions_test.js
-./plugins-server/cloud9.ide.filelist/filelist_test.js
 ./plugins-server/cloud9.ide.search/search_test.js
