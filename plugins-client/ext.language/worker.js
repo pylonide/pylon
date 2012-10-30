@@ -316,17 +316,19 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.parse = function(callback, allowCached) {
+    this.parse = function(part, callback, allowCached) {
         var _self = this;
-        if (allowCached && this.cachedAst) {
-            callback(_self.cachedAst);
-            return;
-        }
+        part = part || {
+            language: _self.$language,
+            value: _self.doc.getValue()
+        };
+        if (allowCached && this.cachedAst)
+            return callback(this.cachedAst);
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
-            if (handler.handlesLanguage(_self.$language)) {
+            if (handler.handlesLanguage(part.language)) {
                 try {
-                    handler.parse(_self.doc.getValue(), function(ast) {
+                    handler.parse(part.value, function(ast) {
                         if(ast)
                             _self.cachedAst = ast;
                         next();
@@ -345,9 +347,8 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    this.isParsingSupported = function() {
-        if (this.cachedAst)
-            return true;
+    this.isParsingSupported = function(language) {
+        language = language || this.$language;
         var result;
         var _self = this;
         this.handlers.forEach(function(handler) {
@@ -385,7 +386,7 @@ function asyncParForEach(array, fn, callback) {
     this.outline = function(event) {
         var _self = this;
         var foundHandler = false;
-        this.parse(function(ast) {
+        this.parse(null, function(ast) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
@@ -466,32 +467,48 @@ function asyncParForEach(array, fn, callback) {
     
     this.analyze = function(callback) {
         var _self = this;
-        this.parse(function(ast) {
-            var markers = [];
-            asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language) && (ast || !_self.isParsingSupported())) {
-                    handler.analyze(_self.doc, ast, function(result) {
-                        if (result)
-                            markers = markers.concat(result);
+        var parts = SyntaxDetector.getCodeParts(this.doc, this.$language);
+        var markers = [];
+        asyncForEach(parts, function(part, nextPart) {
+            var partMarkers = [];
+            _self.parse(part, function(ast) {
+                asyncForEach(_self.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(part.language) && (ast || !_self.isParsingSupported(part.language))) {
+                        handler.analyze(part.value, ast, function(result) {
+                            if (result)
+                                partMarkers = partMarkers.concat(result);
+                            next();
+                        });
+                    }
+                    else {
                         next();
+                    }
+                }, function () {
+                    filterMarkersAroundError(ast, partMarkers);
+                    var region = part.region;
+                    partMarkers.forEach(function (marker) {
+                        var pos = marker.pos;
+                        pos.sl = pos.el = pos.sl + region.sl;
+                        if (pos.sl === region.sl) {
+                            pos.sc +=  region.sc;
+                            pos.ec += region.sc;
+                        }
                     });
-                }
-                else {
-                    next();
-                }
-            }, function() {
-                var extendedMakers = markers;
-                filterMarkersAroundError(ast, markers);
-                if (_self.getLastAggregateActions().markers.length > 0)
-                    extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
-                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
-                _self.currentMarkers = markers;
-                if (_self.postponedCursorMove) {
-                    _self.onCursorMove(_self.postponedCursorMove);
-                    _self.postponedCursorMove = null;
-                }
-                callback();
+                    markers = markers.concat(partMarkers);
+                    nextPart();
+                });
             });
+        }, function() {
+            var extendedMakers = markers;
+            if (_self.getLastAggregateActions().markers.length > 0)
+                extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+            _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
+            _self.currentMarkers = markers;
+            if (_self.postponedCursorMove) {
+                _self.onCursorMove(_self.postponedCursorMove);
+                _self.postponedCursorMove = null;
+            }
+            callback();
         });
     };
 
@@ -504,7 +521,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }
     };
-    
+
     this.filterMarkersBasedOnLevel = function(markers) {
         for (var i = 0; i < markers.length; i++) {
             var marker = markers[i];
@@ -834,8 +851,8 @@ function asyncParForEach(array, fn, callback) {
     
     this.complete = function(event) {
         var _self = this;
-        
-        this.parse(function(ast) {
+
+        this.parse(null, function(ast) {
         var data = event.data;
         var pos = data.pos;
             var currentPos = { line: pos.row, col: pos.column };

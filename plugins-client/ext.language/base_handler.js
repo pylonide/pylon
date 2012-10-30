@@ -17,9 +17,9 @@ module.exports = {
     path: null,
     workspaceDir: null,
     doc: null,
-    
+
     // UTILITIES
-    
+
     /**
      * Determine whether a certain feature is enabled in the user's preferences.
      */
@@ -36,7 +36,7 @@ module.exports = {
     handlesLanguage: function(language) {
         return false;
     },
-    
+
     /**
      * Determine if the language component supports parsing.
      * Assumed to be true if at least one hander for the language reports true.
@@ -52,19 +52,19 @@ module.exports = {
     getIdentifierRegex: function() {
         return null;
     },
-    
+
     // PARSING AND ABSTRACT SYNTAX CALLBACKS
 
     /**
      * If the language handler implements parsing, this function should take
      * the source code and turn it into an AST
-     * @param doc the Document object repersenting the source
+     * @param value the source the document to analyze
      * @return treehugger AST or null if not implemented
      */
-    parse: function(doc, callback) {
+    parse: function(value, callback) {
         callback();
     },
-    
+
     /**
      * Finds a tree node at a certain row and col,
      * e.g. using the findNode(pos) function of treehugger.
@@ -72,7 +72,7 @@ module.exports = {
     findNode: function(ast, pos, callback) {
         callback();
     },
-    
+
     /**
      * Returns the  a tree node at a certain row and col,
      * e.g. using the node.getPos() function of treehugger.
@@ -84,14 +84,14 @@ module.exports = {
     },
 
     // OTHER CALLBACKS
-    
+
     /**
      * Initialize this language handler.
      */
     init: function(callback) {
         callback();
     },
-    
+
     /**
      * Invoked when the document has been updated (possibly after a certain interval)
      * @param doc the Document object repersenting the source
@@ -99,7 +99,7 @@ module.exports = {
     onUpdate: function(doc, callback) {
         callback();
     },
-    
+
     /**
      * Invoked when a new document has been opened
      * @param path the path of the newly opened document
@@ -109,7 +109,7 @@ module.exports = {
     onDocumentOpen: function(path, doc, oldPath, callback) {
         callback();
     },
-    
+
     /**
      * Invoked when a document is closed in the IDE
      * @param path the path of the file
@@ -117,7 +117,7 @@ module.exports = {
     onDocumentClose: function(path, callback) {
         callback();
     },
-    
+
     /**
      * Invoked when the cursor has been moved inside to a different AST node
      * @param doc the Document object repersenting the source
@@ -129,7 +129,7 @@ module.exports = {
     onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode, callback) {
         callback();
     },
-    
+
     /**
      * Invoked when an outline is required
      * @param doc the Document object repersenting the source
@@ -150,7 +150,7 @@ module.exports = {
     hierarchy: function(doc, cursorPos, callback) {
         callback();
     },
-    
+
     /**
      * Performs code completion for the user based on the current cursor position
      * @param doc the Document object repersenting the source
@@ -162,17 +162,17 @@ module.exports = {
     complete: function(doc, fullAst, pos, currentNode, callback) {
         callback();
     },
-    
+
     /**
      * Enables the handler to do analysis of the AST and annotate as desired
-     * @param doc the Document object repersenting the source
+     * @param value the source the document to analyze
      * @param fullAst the entire AST of the current file (if exists)
      * @return an array of error and warning markers
      */
-    analyze: function(doc, fullAst, callback) {
+    analyze: function(value, fullAst, callback) {
         callback();
     },
-    
+
     /**
      * Invoked when inline variable renaming is activated
      * @param doc the Document object repersenting the source

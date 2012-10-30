@@ -7,21 +7,23 @@
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
-var lint = require("ace/worker/jshint").JSHINT;
+var lint = require("ace/mode/javascript/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
+var disabledJSHintWarnings = [/Missing radix parameter./,
+    /Bad for in variable '(.+)'./,
+    /use strict/,
+    /Input is an empty string./];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-handler.analyze = function(doc, ast, callback) {
-    callback(handler.analyzeSync(doc, ast));
+handler.analyze = function(value, ast, callback) {
+    callback(handler.analyzeSync(value, ast));
 };
 
-handler.analyzeSync = function(doc, ast) {
-    var value = doc.getValue();
+handler.analyzeSync = function(value, ast) {
     value = value.replace(/^(#!.*\n)/, "//$1");
 
     var markers = [];

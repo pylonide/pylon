@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var settings = require("ext/settings/settings");
 var Editors = require("ext/editors/editors");
 var codetools = require("ext/codetools/codetools");
+var SyntaxDetector = require("ext/language/syntax_detector");
 
 var Range = require("ace/range").Range;
 
@@ -223,8 +224,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg"
-              || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
+            if (!(e.amlEditor.syntax === "css" || e.amlEditor.syntax === "svg" ||
+                SyntaxDetector.getContextSyntax(doc, pos, e.amlEditor.syntax) === "css" || (line && line.indexOf("<a:skin") > -1)))
                 return;
 
             line = doc.getLine(pos.row);
@@ -248,8 +249,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg"
-              || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
+            if (!(e.amlEditor.syntax === "css" || e.amlEditor.syntax === "svg" ||
+                SyntaxDetector.getContextSyntax(doc, pos, e.amlEditor.syntax) === "css" || (line && line.indexOf("<a:skin") > -1)))
                 return;
             //do not show anything when a selection is made...
             var range = editor.selection.getRange();
