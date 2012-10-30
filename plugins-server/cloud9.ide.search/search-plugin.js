@@ -11,26 +11,34 @@ var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 var os = require("os");
 var path = require("path");
+var fs = require("fs");
 var SearchLib = require("./search");
+
+var AgLib = require("./search-plugin-ag");
+var NakLib = require("./search-plugin-nak");
 
 var name = "search";
 
 module.exports = function setup(options, imports, register) {
     var Search = new SearchLib(),
-        platform = options.platform || os.platform(),
-        arch = options.arch || os.arch();
-    Search.setEnv({
-        platform:  platform,
-        arch:  arch,
-        agCmd:  options.agCmd || path.join(__dirname, [platform, arch].join("_"), "ag"),
-        nakCmd: options.nakCmd || "node " + path.join(__dirname, "..", "..", "node_modules/nak/bin/nak")
-    });
 
-    if (!Search.isAgAvailable())
-        console.warn("No ag found for " + [platform, arch].join("_"));
-    else 
-        Search.setEnv({
-            useAg: true
+        // decide whether to use ag or nak
+        platform = options.platform || os.platform(),
+        arch = options.arch || os.arch(),
+        agCmd = options.agCmd || path.join(__dirname, [platform, arch].join("_"), "ag"),
+        nakCmd = options.nakCmd || "node " + path.join(__dirname, "..", "..", "node_modules/nak/bin/nak");
+
+    fs.exists(agCmd, function(useAg) {
+        if (useAg)
+            Search.setEnv({
+                searchType: new AgLib(agCmd, nakCmd)
+            });
+        else {
+            console.warn("No ag found for " + [platform, arch].join("_"));
+            Search.setEnv({
+                searchType: new NakLib(nakCmd)
+            });
+        }
     });
 
     var Vfs = imports["vfs"];

@@ -16,6 +16,9 @@ var Filelist = require("./filelist");
 var Os = require("os");
 var Path = require("path");
 
+var AgLib = require("./filelist-plugin-ag");
+var NakLib = require("./filelist-plugin-nak");
+
 var basePath = Path.join(__dirname, "fixtures");
 
 var outsidePath = "/../../../../../etc";
@@ -38,16 +41,14 @@ describe("filelist", function() {
     var vfs = VfsLocal({ root: "/" });
 
     var platform = Os.platform() ,
-        arch = Os.arch();
+        arch = Os.arch(),
+        agCmd =  Path.join(__dirname, "..", "cloud9.ide.search", [platform, arch].join("_"), "ag"),
+        nakCmd = "node " + Path.join(__dirname, "../../node_modules/nak/bin/nak")
 
     beforeEach(function() {
         o = new Filelist();
         o.setEnv({ 
-            basePath: basePath,
-            platform:  platform,
-            arch:  arch,
-            agCmd:  Path.join(__dirname, "..", "cloud9.ide.search", [platform, arch].join("_"), "ag"),
-            nakCmd: "node " + Path.join(__dirname, "../../node_modules/nak/bin/nak")
+            basePath: basePath
         });
     });
 
@@ -55,7 +56,7 @@ describe("filelist", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd)
         });
 
         o.exec(options1, vfs,
@@ -73,7 +74,7 @@ describe("filelist", function() {
                 Assert.equal(files[4], basePath + "/level1/level2/.level3a/.hidden");
 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                         
                 out = options1.path = "";
@@ -104,7 +105,7 @@ describe("filelist", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
 
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd)
         });
 
         o.exec(options2, vfs,
@@ -121,7 +122,7 @@ describe("filelist", function() {
                 Assert.equal(files[4], basePath + "/level1/level2/level3/level4/level4.txt");
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                         
                 out = options2.path = "";
@@ -149,7 +150,7 @@ describe("filelist", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
 
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd)
         });
 
         o.exec(options3, vfs,
@@ -163,7 +164,7 @@ describe("filelist", function() {
                 Assert.equal(stderr, "Invalid path");
 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                         
                 out = "";

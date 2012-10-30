@@ -12,22 +12,36 @@ var Plugin = require("../cloud9.core/plugin");
 var FilelistLib = require("./filelist");
 var util = require("util");
 var os = require("os");
+var fs = require("fs");
 var path = require("path");
 var Connect = require("connect");
 var error = require("http-error");
+
+var AgLib = require("./filelist-plugin-ag");
+var NakLib = require("./filelist-plugin-nak");
 
 var name = "filelist";
 
 module.exports = function setup(options, imports, register) {
     var Filelist = new FilelistLib(),
-        platform = options.platform || os.platform(),
-        arch = options.arch || os.arch();
 
-    Filelist.setEnv({
-        platform:  platform,
-        arch:  arch,
-        agCmd:  options.agCmd || path.join(__dirname, "..", "cloud9.ide.search", [platform, arch].join("_"), "ag"),
-        nakCmd: options.nakCmd || "node " + path.join(__dirname, "..", "..", "node_modules/nak/bin/nak")
+    // decide whether to use ag or nak
+    platform = options.platform || os.platform(),
+    arch = options.arch || os.arch(),
+    agCmd = options.agCmd || path.join(__dirname, "..", "cloud9.ide.search", [platform, arch].join("_"), "ag"),
+    nakCmd = options.nakCmd || "node " + path.join(__dirname, "..", "..", "node_modules/nak/bin/nak");
+
+    fs.exists(agCmd, function(useAg) {
+        if (useAg)
+            Filelist.setEnv({
+                searchType: new AgLib(agCmd)
+            });
+        else {
+            console.warn("No ag found for " + [platform, arch].join("_"));
+            Filelist.setEnv({
+                searchType: new NakLib(nakCmd)
+            });
+        }
     });
 
     var Vfs = imports["vfs"];
@@ -41,7 +55,6 @@ module.exports = function setup(options, imports, register) {
         this.ws = ide.workspace.workspaceId;
 
         Filelist.setEnv({
-            useAg: Filelist.isAgAvailable(),
             workspaceId: this.ws,
             basePath: ide.workspace.workspaceDir
         });

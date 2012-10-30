@@ -21,10 +21,6 @@ module.exports = function() {
         });
     };
 
-    this.isAgAvailable = function() {
-        return Fs.existsSync(this.env.agCmd);
-    };
-
     this.exec = function(options, vfs, onData, onExit) {
         var path = options.path;
 
@@ -39,7 +35,7 @@ module.exports = function() {
         if (Path.relative(this.env.basePath, options.path).indexOf("../") === 0)
             return onExit(1, "Invalid path");
 
-        var args = this.assembleCommand(options);
+        var args = this.env.searchType.assembleCommand(options);
 
         if (!args)
             return onExit(1, "Invalid arguments");
@@ -61,47 +57,5 @@ module.exports = function() {
                 onExit(code, stderr);
             });
         });
-    };
-
-    this.assembleCommand = function(options) {
-        var args;
-        
-        if (this.env.useAg) {
-            args = ["--nocolor", 
-                   "-p", Path.join(__dirname, "..", "cloud9.ide.search", ".agignore"), // use the Cloud9 ignore file
-                   "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
-                   "-l",                                    // filenames only
-                   "--search-binary"]                       // list binary files
-
-            if (options.showHiddenFiles)
-                args.push("--hidden");
-
-            if (options.maxdepth)
-                args.push("--depth", options.maxdepth);
-
-            // any non-null file
-            args.push("[^\\0]", options.path);
-
-            args.command = this.env.agCmd;
-        }
-        else {
-            args = ["-l",                                                     // filenames only   
-                    "-p", Path.join(__dirname, "..", "cloud9.ide.search", ".agignore")]; // use the Cloud9 ignore file                     
-            
-            if (options.showHiddenFiles)
-                args.push("-H");
-
-            if (options.maxdepth)
-                args.push("-m", options.maxdepth);
-
-            args.push(options.path);
-
-            args.unshift(this.env.nakCmd);
-            args = ["-c", args.join(" ")];
-
-            args.command = "bash";
-        }
-
-        return args;
     };
 };

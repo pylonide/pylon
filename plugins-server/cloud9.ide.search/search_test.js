@@ -16,6 +16,9 @@ var Os = require("os");
 var VfsLocal = require("vfs-local");
 var Search = require("./search");
 
+var AgLib = require("./search-plugin-ag");
+var NakLib = require("./search-plugin-nak");
+
 var basePath = Path.join(__dirname, "fixtures");
 
 var options1 = {
@@ -110,16 +113,14 @@ describe("search", function() {
     var vfs = VfsLocal({ root: "/" });
 
     var platform = Os.platform() ,
-        arch = Os.arch();
+        arch = Os.arch(),
+        agCmd = Path.join(__dirname, [platform, arch].join("_"), "ag"),
+        nakCmd = "node " + Path.join(__dirname, "../../node_modules/nak/bin/nak");
 
     beforeEach(function() {
         o = new Search();
         o.setEnv({ 
-            basePath: basePath,
-            platform:  platform,
-            arch:  arch,
-            agCmd:  Path.join(__dirname, [platform, arch].join("_"), "ag"),
-            nakCmd: "node " + Path.join(__dirname, "../../node_modules/nak/bin/nak")
+            basePath: basePath
         });
     });
 
@@ -127,7 +128,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options1, vfs,
@@ -148,7 +149,7 @@ describe("search", function() {
                 agLines = lines.length;
 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                         
                 out = options1.path = "";
@@ -177,7 +178,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options2, vfs,
@@ -198,7 +199,7 @@ describe("search", function() {
                 agLines = lines.length;
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                 
                 out = options2.path = "";
@@ -227,7 +228,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options3, vfs,
@@ -248,7 +249,7 @@ describe("search", function() {
                 agLines = lines.length;
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                 
                 out = options3.path = "";
@@ -277,7 +278,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options4, vfs,
@@ -298,7 +299,7 @@ describe("search", function() {
                 agLines = lines.length;
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                 
                 out = options4.path = "";
@@ -327,7 +328,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options5, vfs,
@@ -348,7 +349,7 @@ describe("search", function() {
                 agLines = lines.length;
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                 
                 out = options5.path = "";
@@ -377,7 +378,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options6, vfs,
@@ -402,7 +403,7 @@ describe("search", function() {
                 agLines = lines.length;
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                 
                 out = options6.path = "";
@@ -433,7 +434,7 @@ describe("search", function() {
         var out = "", agCount = "", agFileCount = "", agLines = "";
         
         o.setEnv({ 
-            useAg: true
+            searchType: new AgLib(agCmd, nakCmd)
         });
         
         o.exec(options7, vfs,
@@ -454,7 +455,7 @@ describe("search", function() {
                 agLines = lines.length;
                 
                 o.setEnv({ 
-                    useAg: false
+                    searchType: new NakLib(nakCmd)
                 });
                 
                 out = options7.path = "";
