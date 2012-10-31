@@ -954,7 +954,7 @@ module.exports = ext.register("ext/editors/editors", {
                     //popup a file watch dialog to ask if the user wants to
                     //load the new file from disk, losing changes.
                     if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
-                        copy.appendChild(copy.ownerDocument.createTextNode(
+                        copy.appendChild(copy.ownerDocument.createCDATASection(
                             (pages[i].$doc.getValue() || "")
                                 .replace(/\r/g, "\\r")
                                 .replace(/\n/g, "\\n")
