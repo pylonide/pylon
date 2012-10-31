@@ -1,9 +1,53 @@
+#menubar {
+    background: white;
+    box-shadow: 
+        0 1px 0 0 rgba(0,0,0,.3),
+        0 3px 3px 0 rgba(0,0,0,.3);
+    box-sizing: border-box;
+    left: 0;
+    padding: 5px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+.fleft {
+    float: left;
+}
+.fright {
+    float: right;
+}
+#menubar .link {
+    border-right: 1px solid #dedede;
+    color: #3E95DE;
+    display: inline-block;
+    font-weight: bold;
+    height: 19px;
+    line-height: 19px;
+    margin: 4px 0;
+    padding: 0 5px;
+    text-decoration: none;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+#menubar .link:last-child {
+    border-right: none;
+}
+.anchor {
+    display: inline-block;
+    margin-bottom: 30px;
+}
+
 .winUIExt .wn_cp_content {
     background: white;
     overflow: scroll;
 }
 #winUIExtContent {
-    padding: 20px;    
+    margin-top: 32px;
+    padding: 20px;
+}
+.lightsOff {
+    background: #2B2B2B;
 }
 
 #winUIExtContent h1 {
@@ -11,6 +55,7 @@
 }
 #winUIExtContent h2 a {
     color: #3E95DE;
+    text-transform: capitalize;
 }
 .ui-section h2 {
     text-transform: capitalize;
@@ -19,13 +64,10 @@
     display: none;
 }
 
-#winUIExtContent h3 {
+#winUIExtContent h4 {
     background: #FEF0CF;
     padding: 10px 5px;
     border-top: 1px solid #E3D5BC;
-}
-#winUIExtContent h4 {
-    margin-top: 0;
 }
 #winUIExtContent .winUIExtCode {
     background: #f2f2f2;;
@@ -36,6 +78,7 @@
     padding: 10px;
     margin-top: 10px;
     white-space: pre-wrap;
+    width: 530px !important;
 }
 #winUIExtContent .ui-dropdown-section .winUIExtCode {
     height: 150px;
@@ -43,18 +86,11 @@
 #winUIExtContent .ui-datagrid-section .winUIExtCode {
     height: 300px;
 }
-
-#winUIExtContent .ui-dark {
-    background: #2B2B2B;
-    padding: 10px 5px;
-}
-#winUIExtContent .ui-grey {
-    background: #f2f2f2;
-    padding: 10px 5px;
-}
-
-#winUIExtContent .fbox {
-    overflow: hidden;
+#winUIExtContent .skin:after {
+    content: "";
+    display: block;
+    clear: both;
+    float: none;
 }
 
 #winUIExtContent .version {

@@ -31,72 +31,6 @@ APF doesn't generate usefull errors when for example it fallsback to a default s
                 <a href="#button">Buttons</a>
             </div>
             <h1>Cloud9 IDE UI</h1>
-             <div class="ui-section">
-                <h2><a href="http://ui.ajax.org/#docs/element.button" target="_blank">Button</a></h2>
-                <div class="ui-item">
-                    <h3>Missing buttons</h3>
-                    <div class="fbox">
-                        <div class="fleft version">
-                        <h1>node_modules/cloud9/plugins-client/ext.searchinfiles/skin.xml:</h1>
-                        <a:button id="testingit" skin="btnquicksearchnav" skinset="searchinfiles">Button</a:button>
-                         
-                         
-                         
-                         
-                        <h1>node_modules/cloud9/plugins-client/ext.statusbar/skin.xml:</h1>
-                        <a:button skin="btn-expand-statusbar" skinset="statusbar">Button</a:button>
-                        <a:button skin="btn-statusbar-icon" skinset="statusbar">Button</a:button>
-                         
-                         
-                         
-                         
-                        <h1>node_modules/cloud9/plugins-client/ext.zen/skin.xml:</h1>
-                        <a:button skin="zenbutton" skinset="zen">Button</a:button>
-                         
-                         
-                         
-                        <h1>node_modules/cloud9/plugins-client/ext.main/style/skins.xml:</h1>
-                        <a:button skin="blackbutton" skinset="">Button</a:button>
-                        <a:button skin="browser-btn" skinset="">Button</a:button>
-                        <a:button skin="btn-access_request" skinset="">Button</a:button>
-                        <a:button skin="btn-default-css3" skinset="">Button</a:button>
-                        <a:button skin="btn-default-simple" skinset="">Button</a:button>
-                        <a:button skin="btn_console_open" skinset="">Button</a:button>
-                        <a:button skin="btn_icon_only" skinset="">Button</a:button>
-                        <a:button skin="button" skinset="">Button</a:button>
-                        <a:button skin="button-colorless" skinset="">Button</a:button>
-                        <a:button skin="button-colorless" skinset="">Button</a:button>
-                        <a:button skin="c9-menu-btn" skinset="">Button</a:button>
-                        <a:button skin="c9-sidepanelsbutton" skinset="">Button</a:button>
-                        <a:button skin="c9-simple-btn" skinset="">Button</a:button>
-                        <a:button skin="c9-toolbarbutton" skinset="">Button</a:button>
-                        <a:button skin="c9-toolbarbutton-glossy" skinset="">Button</a:button>
-                        <a:button skin="c9-toolbarbutton-light" skinset="">Button</a:button>
-                        <a:button skin="c9-toolbarbutton2" skinset="">Button</a:button>
-                        <a:button skin="c9-topbar-btn" skinset="">Button</a:button>
-                        <a:button skin="dockButton" skinset="">Button</a:button>
-                        <a:button skin="dockheader" skinset="">Button</a:button>
-                        <a:button skin="github-button" skinset="">Button</a:button>
-                        <a:button skin="header-btn" skinset="">Button</a:button>
-                        <a:button skin="mnubtn" skinset="">Button</a:button>
-                        <a:button skin="toolbarbutton" skinset="">Button</a:button>
-                         
-                         
-                         
-                         
-                        <h1>node_modules/cloud9/plugins-client/ext.uploadfiles/skin.xml:</h1>
-                        <a:button skin="btn-cancel-upload" skinset="uploadfiles">Button</a:button>
-                         
-                         
-                         
-                         
-                        <h1>node_modules/cloud9/plugins-client/ext.quicksearch/skin.xml:</h1>
-                        <a:button skin="btnsearchicon" skinset="quicksearch">Button</a:button>
-                        <a:button skin="btnquicksearchnav" skinset="quicksearch">Button</a:button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="ui-section">
                 <h2><a href="http://ui.ajax.org/#docs/element.bar" target="_blank">Bar</a></h2>
                 <div class="ui-item">
@@ -303,7 +237,7 @@ APF doesn't generate usefull errors when for example it fallsback to a default s
                             <div class="toolbar">
                                 <div class="subbar">
                                     <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
-                                        <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                                        <a:button id="btnVBox" skin="toolbarbutton"icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
                                         <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
                                         <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
                                         <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
@@ -1684,7 +1618,7 @@ APF doesn't generate usefull errors when for example it fallsback to a default s
                     <div class="fbox">
                         <div class="fleft version">
                             <a:textarea value="Textarea" />
-                            <a:textarea class="winUIExtCode" width="550" value="&lt;a:textarea value=&quot;Textarea&quot; /&gt;" />
+                            <a:textarea class="winUIExtCode" value="&lt;a:textarea value=&quot;Textarea&quot; /&gt;" />
                         </div>
                     </div>
                 </div>

@@ -40,7 +40,10 @@ module.exports = ext.register("ext/language/language", {
     nodes   : [],
     alone   : true,
     markup  : markup,
-    skin    : skin,
+    skin    : {
+        id   : "language",
+        data : skin
+    },
     worker  : null,
     enabled : true,
 
