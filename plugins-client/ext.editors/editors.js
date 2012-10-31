@@ -15,6 +15,9 @@ var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var anims = require("ext/anims/anims");
 
+/*global tabEditors colMiddle barButtonContainer barButtons tabExtMgr tabmenubtn
+  trfiles logobar*/
+
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
@@ -53,6 +56,8 @@ module.exports = ext.register("ext/editors/editors", {
         }), 40000);
 
         oExtension.fileExtensions.each(function(mime){
+            // force lower-case, to account for other LowerCase checks below
+            mime = mime.toLowerCase();
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 
@@ -84,6 +89,10 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     toggleTabs : function(force, preview, noAnim, mouse){
+        if (typeof noAnim == "undefined") {
+            noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
+        }
+        
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
@@ -883,7 +892,7 @@ module.exports = ext.register("ext/editors/editors", {
                     // node.firstChild is not always present (why?)
                     if ((node.getAttribute("changed") == 1) && node.firstChild) {
                         doc.cachedValue = node.firstChild.nodeValue
-                            .replace(/\n]\n]/g, "]]")
+                            .replace(/\n\]\n\]/g, "]]")
                             .replace(/\\r/g, "\r")
                             .replace(/\\n/g, "\n");
                     }
@@ -1064,6 +1073,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         function focus() {
+            if (!_self.currentEditor.amlEditor)
+                return;
             var ace = _self.currentEditor.amlEditor.$editor;
             if (!ace.$isFocused) {
                 setTimeout(f = function() {
@@ -1103,7 +1114,7 @@ module.exports = ext.register("ext/editors/editors", {
                     var node = e.doc.getNode();
                     if (node.getAttribute("path") == path)
                         jumpTo();
-                }
+                };
                 ide.addEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
             }
 

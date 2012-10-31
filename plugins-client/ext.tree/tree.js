@@ -43,7 +43,7 @@ function $cancelWhenOffline() {
 }
 
 module.exports = ext.register("ext/tree/tree", {
-    name             : "Project Files",
+    name             : "Workspace Files",
     dev              : "Cloud9 IDE, Inc.",
     alone            : true,
     type             : ext.GENERAL,
@@ -74,7 +74,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Register this panel on the left-side panels
         panels.register(this, {
             position : 1000,
-            caption: "Project Files",
+            caption: "Workspace Files",
             "class": "project_files",
             command: "opentreepanel"
         });

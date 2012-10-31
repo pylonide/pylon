@@ -729,10 +729,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
+        var ceEditor = editor.amlEditor;
         return ceEditor.$editor;
     },
 
