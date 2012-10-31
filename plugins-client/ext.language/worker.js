@@ -856,7 +856,15 @@ function asyncParForEach(array, fn, callback) {
      * information is now available.
      */
     this.completeUpdate = function(pos) {
-        this.complete({data: {pos: pos, staticPrefix: this.staticPrefix, isUpdate: true}});
+        if (!isWorkerEnabled()) { // Avoid making the stack too deep in ?noworker=1 mode
+            var _self = this;
+            setTimeout(function onCompleteUpdate() {
+                _self.complete({data: {pos: pos, staticPrefix: _self.staticPrefix, isUpdate: true}});
+            }, 0);
+        }
+        else {
+            this.complete({data: {pos: pos, staticPrefix: this.staticPrefix, isUpdate: true}});
+        }
     };
 
 }).call(LanguageWorker.prototype);
