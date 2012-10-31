@@ -1,6 +1,8 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 
-    <a:menu id="mnuRunCfg" style="margin-left:-137px" skin="mnuRunCfg">
+    <a:menu id="mnuRunCfg" 
+      skin  = "mnuRunCfg"
+      class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}">
         <div class="window">
             <div class="tooltip"></div>
             <div class="fbox">
@@ -39,9 +41,11 @@
                     <div class="title">
                         <a:hbox height="28" align="center" edge="0 4 0 6">
                             <a:checkbox 
+                              id    = "cbRunCfgAdvanced"
                               label = "Advanced" 
                               skin  = "checkbox_black"
                               class = "dark-bg" 
+                              value = "[{require('ext/settings/settings').model}::auto/configurations/@showruncfglist]"
                               onclick = "
                                 apf.setStyleClass(mnuRunCfg.$ext, (this.checked ? 'showList' : ''), [(this.checked ? '' : 'showList')])
                               " />
@@ -114,11 +118,12 @@
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
                                     <a:label width="100" class="graylabel size-12 arial dark-bg">Debug Mode</a:label>
-                                    <a:checkbox 
+                                    <a:checkbox id="cbRunDbgDebugMode"
                                       class = "underlined dark-bg" 
                                       label = "Enabled by default"
                                       skin  = "checkbox_black"
-                                      value = "[{require('ext/settings/settings').model}::auto/configurations/@debug]" />
+                                      value = "[{lstRunCfg.selected}::@debug]"
+                                      checked = "{this.value}" />
                                 </a:hbox>
                                 <a:divider skin="c9-divider-hor" margin="0 -9 0 -8" />
                                 <a:hbox edge="11 0 0 0" pack="end" align="center" padding="10">
@@ -129,7 +134,8 @@
                                       class    = "no-bold size-13"
                                       onclick  = "mnuRunCfg.hide()" />
                                     <a:button
-                                      caption = "Run"
+                                      checked = "[{lstRunCfg.selected}::@debug]"
+                                      caption = "{apf.isTrue(cbRunDbgDebugMode.value) ? 'Run in Debug Mode' : 'Run'}"
                                       width   = "170"
                                       skin    = "btn-default-css3"
                                       class   = "btn-green2 no-bold size-13"

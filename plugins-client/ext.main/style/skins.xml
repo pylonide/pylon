@@ -6236,7 +6236,7 @@
         }
 
         .listRC .rcItem .btnDelete {
-            width               : 15px;
+            width               : 16px;
             height              : 19px;
             position            : absolute;
             right               : 8px;
@@ -6247,11 +6247,11 @@
         }
 
         .listRC .rcItem .btnDelete:hover {
-            background-position : -16px 0;
+            background-position : -15px 0;
         }
 
         .listRC .rcItem .btnDelete:active {
-            background-position : -32px 0;
+            background-position : -31px 0;
         }
 
         .listRC .selected .btnDelete {
@@ -6259,11 +6259,11 @@
         }
 
         .listRC .selected .btnDelete:hover {
-            background-position : -17px 0;
+            background-position : -15px 0;
         }
 
         .listRC .selected .btnDelete:active {
-            background-position : -32px 0;
+            background-position : -31px 0;
         }
     ]]></a:style>
 
@@ -6288,15 +6288,24 @@
     <a:style><![CDATA[
         .mnuRunCfg {
             display: none;
-            width: 280px;
+            margin-left: -93px !important;
+            -webkit-transition: margin .2s ease;
+            -moz-transition: margin .2s ease;
+            transition: margin .2s ease;
         }
         .mnuRunCfg .window {
-            border-bottom-width: 6px;
             border: 1px solid black;
+            border-bottom-width: 6px;
+            background-color: #3C3C3C;
             box-shadow: 0 5px 8px rgba(0,0,0,.55);
             height: 226px;
             margin: -13px 0 0 -64px;
             position: relative;
+            /*
+            -webkit-transition: all .2s ease;
+            -moz-transition: all .2s ease;
+            transition: all .2s ease;
+            */
 
         }
         .mnuRunCfg .window .fbox {
@@ -6309,8 +6318,10 @@
             position: relative;
         }
         .mnuRunCfg .window .col1 {
-            display: none;
-            width: 175px;
+            width: 0;
+            -webkit-transition: all .2s ease;
+            -moz-transition: all .2s ease;
+            transition: all .2s ease;
         }
         .mnuRunCfg .window .col1:after {
             border-left: 1px solid rgba(0,0,0,.4);
@@ -6364,7 +6375,7 @@
         }
         .mnuRunCfg .window .tooltip {
             height: 8px;
-            left: 134px;
+            left: 50%;
             margin-left: -7px;
             overflow: hidden;
             position: absolute;
@@ -6389,15 +6400,19 @@
             width: 10px;
             z-index: 1;
         }
-        
+        .mnuRunCfg.showList {
+            margin-left: -181px !important;
+        }
+        /*
         .mnuRunCfg.showList .window {
             margin: -13px 0 0 -239px;
         }
         .mnuRunCfg.showList .window .tooltip {
             left: 309px;
         }
+        */
         .mnuRunCfg.showList .window .col1 {
-            display: block;
+            width: 175px;
         }
     ]]></a:style>
     <a:presentation>
@@ -6411,18 +6426,21 @@
 <a:button name="addnew_btn">
     <a:style><![CDATA[
         .addnew_btn {
+            border: 1px solid transparent;
+            cursor: default;
+            padding: 0 11px 0 5px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 3px;
+        }
+        
+        .addnew_btnOver {
             background-image: -webkit-linear-gradient(top, #3C3C3C 0, #343434 50%, #272727 51%, #333 100%);
             background-image:    -moz-linear-gradient(top, #3C3C3C 0, #343434 50%, #272727 51%, #333 100%);
             background-image:         linear-gradient(top, #3C3C3C 0, #343434 50%, #272727 51%, #333 100%);
             border: 1px solid #1f1f1f;
             box-shadow: 0 1px 0 0 rgba(237,237,237,.15) inset;
             background-color: #292929;
-            /*background: url(images/plus2.png) no-repeat 0 0;*/
-            cursor: default;
-            padding: 0 11px 0 5px;
-            height: 24px;
-            line-height: 24px;
-            border-radius: 3px;
         }
 
         .addnew_btn .icon {
@@ -6445,7 +6463,7 @@
             text-shadow: 0px 1px 0px #151515;
         }
         
-        .addnew_btnOver {
+        .addnew_btnDown {
             background-image: -webkit-linear-gradient(top, #232323 0, #212121 100%);
             background-image:    -moz-linear-gradient(top, #232323 0, #212121 100%);
             background-image:         linear-gradient(top, #232323 0, #212121 100%);

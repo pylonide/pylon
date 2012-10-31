@@ -49,15 +49,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (ide.readonly)
             return;
         var _self = this;
-
-        this.markupInsertionPoint = colLeft;
-
-        panels.register(this, {
-            position : 3000,
-            caption: "Run & Debug",
-            "class": "rundebug"
-        });
-
+        
+        ext.initExtension(this);
+        
         commands.addCommand({
             name: "run",
             "hint": "run or debug an application (stops the app if running)",
@@ -86,39 +80,21 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
 
         this.nodes.push(
-            this.mnuRunCfg = new apf.menu({
-                "id" : "mnuRunCfg_old",
-                "onprop.visible" : function(e){
-                    if (e.value) {
-                        if (!this.populated) {
-                            _self.$populateMenu();
-                            this.populated = true;
-                        }
-
-                        if (!self.tabEditors
-                          || tabEditors.length == 0
-                          || _self.excludedTypes[tabEditors.getPage().id.split(".").pop()])
-                            _self.mnuRunCfg.firstChild.disable();
-                        else
-                            _self.mnuRunCfg.firstChild.enable();
-                    }
-                }
-            }),
-
             this.model = new apf.model().load("<configurations />"),
 
             menus.$insertByIndex(barTools, new apf.splitbutton({
                 id              : "btnRun",
                 skin            : "run-splitbutton",
-                checked         : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
-                icon            : "{stProcessRunning.active and 1 ? 'stop.png' : 'run.png'}",
-                caption         : "{stProcessRunning.active and 1 ? 'Stop' : apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
+                checked         : "[{lstRunCfg.selected}::@debug]",
+                icon            : "{stProcessRunning.active and 1 ? 'stop.png' : apf.isTrue(this.checked) ? 'bug.png' : 'run.png'}",
+                caption         : "{stProcessRunning.active and 1 ? 'Stop' : 'Run'}",
                 command         : "run",
                 visible         : "true",
                 disabled        : "{!!!ide.onLine}",
                 "class"         : "{stProcessRunning.active and 1 ? 'running' : 'stopped'}",
                 "disabled-split": "{stProcessRunning.active and 1}",
-                submenu         : "mnuRunCfg"
+                submenu         : "mnuRunCfg"/*,
+                "onsubmenu.init" : "require('core/ext').initExtension(require('ext/runpanel/runpanel'))"*/
             }), 100)
         );
 
@@ -131,33 +107,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             timeout : 1000,
             hideonclick : true
         });
-
-        var c = 0;
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
-            caption  : "no run history",
-            disabled : true
-        }), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
-            caption : "Configure....",
-            onclick : function(){
-                _self.showRunConfigs(false);
-            }
-        }), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
-            caption : "Run in debug mode",
-            type    : "check",
-            checked : "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
-        }), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
-            caption : "Auto show & hide debug tools",
-            type    : "check",
-            onclick : function(){
-                _self.checkAutoHide();
-            },
-            checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
-        }), c += 100);
 
         settings.addSettings("General", markupSettings);
 
@@ -172,7 +121,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
             settings.setDefaults("auto/configurations", [
                 ["debug", "false"],
-                ["autohide", "true"]
+                ["autohide", "true"],
+                ["showruncfglist", "false"]
             ]);
 
             var runConfigs = e.model.queryNode("auto/configurations");
@@ -278,7 +228,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
     },
 
-    saveSelection : function() {
+    saveSelection : function() {console.log("saveSelection");
         var node = this.model.data.selectSingleNode('config[@last="true"]');
         if (node)
             node.removeAttribute("last");
@@ -311,19 +261,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.push(
             this.panel
         );
+        
+        /*btnRun.setAttribute("checked", "[{lstRunCfg.selected}::@debug]");*/
 
         lstRunCfg.addEventListener("click", function(e){
             if (e.htmlEvent.target.className == "btnDelete") {
                 var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
                 this.remove(xmlNode);
             }
-        });
-
-        lstRunCfg.addEventListener("afterremove", function(e){
-            _self.mnuRunCfg.childNodes.each(function(item){
-                if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
-                    item.destroy(true, true);
-            });
         });
 
         setTimeout(function() {
@@ -360,7 +305,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             .attr("path", path)
             .attr("name", name)
             .attr("extension", extension)
-            .attr("args", "").node();
+            .attr("args", "")
+            .attr("debug", "false").node();
 
         var node = this.model.appendXml(cfg);
         this.$addMenuItem(node);
@@ -399,48 +345,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.runConfig(node, this.shouldRunInDebugMode());
 
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
-    },
-
-    $populateMenu : function() {
-        var menu = this.mnuRunCfg;
-
-        var item = menu.firstChild;
-        while (item && item.localName !== "divider") {
-            menu.removeChild(item);
-            item = menu.firstChild;
-        }
-        var divider = item;
-
-        var configs = this.model.queryNodes("config");
-        if (!configs.length)
-            menu.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
-        else {
-            for (var i =  0, l = configs.length; i < l; i++) {
-                this.$addMenuItem(configs[i], divider);
-            }
-        }
-    },
-
-    $addMenuItem : function(cfg, divider){
-        var _self = this;
-
-        if (this.mnuRunCfg.populated)
-            return;
-
-        if (!divider)
-            divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];
-
-        this.mnuRunCfg.insertBefore(new apf.item({
-            caption  : "[{this.node}::@name]",
-            node     : cfg,
-            type     : "radio",
-            selected : "[{this.node}::@last]",
-            onclick  : function() {
-                _self.runConfig(this.node, _self.shouldRunInDebugMode());
-                if (self.lstRunCfg)
-                    lstRunCfg.select(this.node);
-            }
-        }), divider);
     },
 
     runConfig : function(config, debug) {
