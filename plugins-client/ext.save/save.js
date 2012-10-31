@@ -485,10 +485,12 @@ module.exports = ext.register("ext/save/save", {
         var _self = this;
         var value = page.$doc.getValue();
         fs.saveFile(newPath, value, function(value, state, extra) {
-            if (state != apf.SUCCESS) {
-                util.alert("Could not save document",
-                  "An error occurred while saving this document",
-                  "Please see if your internet connection is available and try again.");
+            if (state !== apf.SUCCESS) {
+                apf.xmldb.removeAttribute(file, "saving")
+                return util.alert("Could not save document",
+                    "An error occurred while saving this document",
+                    "Please see if your internet connection is available and try again." +
+                    "The server responded with status " + extra.status + ".");
             }
 
             var model = page.$model;
