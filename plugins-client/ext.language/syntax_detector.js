@@ -48,8 +48,9 @@ function getSyntaxRegions(doc, originalSyntax) {
     });
     var syntax = defaultSyntax;
     var regions = [{syntax: syntax, sl: 0, sc: 0}];
-    var endLang;
-    var i, m, cut, sameLine = 0;
+    var starter, endLang;
+    var tempS, tempM;
+    var i, m, cut, inLine = 0;
 
     for (var row = 0; row < lines.length; row++) {
         var line = lines[row];
@@ -60,42 +61,49 @@ function getSyntaxRegions(doc, originalSyntax) {
                 endLang = null;
                 syntax = defaultSyntax;
                 regions[regions.length-1].el = row;
-                regions[regions.length-1].ec = m.index + sameLine;
+                regions[regions.length-1].ec = m.index + inLine;
                 regions.push({
                     syntax: syntax,
                     sl: row,
-                    sc: m.index + sameLine
+                    sc: m.index + inLine
                 });
                 cut = m.index + m[0].length;
                 lines[row] = line.substring(cut);
-                sameLine += cut;
+                inLine += cut;
                 row--; // continue processing of the line
+            }
+            else {
+                inLine = 0;
             }
         }
         else {
             for (i = 0; i < starters.length; i++) {
-                var starter = starters[i];
-                m = type[starter].exec(line);
-                if (m) {
-                    syntax = starter.replace("-start", "");
-                    endLang = type[syntax+"-end"];
-                    regions[regions.length-1].el = row;
-                    regions[regions.length-1].ec = sameLine + m.index + m[0].length;
-                    regions.push({
-                        syntax: syntax,
-                        sl: row,
-                        sc: sameLine + m.index + m[0].length
-                    });
-                    cut = m.index + m[0].length;
-                    lines[row] = line.substring(m.index + m[0].length);
-                    row--; // continue processing of the line
-                    sameLine += cut;
-                    break;
+                tempS = starters[i];
+                tempM = type[tempS].exec(line);
+                if (tempM && (!m || m.index > tempM.index)) {
+                    m = tempM;
+                    starter = tempS;
                 }
             }
+            if (m) {
+                syntax = starter.replace("-start", "");
+                endLang = type[syntax+"-end"];
+                regions[regions.length-1].el = row;
+                regions[regions.length-1].ec = inLine + m.index + m[0].length;
+                regions.push({
+                    syntax: syntax,
+                    sl: row,
+                    sc: inLine + m.index + m[0].length
+                });
+                cut = m.index + m[0].length;
+                lines[row] = line.substring(m.index + m[0].length);
+                row--; // continue processing of the line
+                inLine += cut;
+            }
+            else {
+                inLine = 0;
+            }
         }
-        if (!m)
-            sameLine = 0;
     }
     regions[regions.length-1].el = lines.length;
     regions[regions.length-1].ec = lines[lines.length-1].length;
@@ -125,7 +133,7 @@ function getCodeParts (doc, originalSyntax) {
                 [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter()),
             language: region.syntax,
             region: region
-        }
+        };
     });
 }
 
