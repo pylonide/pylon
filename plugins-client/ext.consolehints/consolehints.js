@@ -149,10 +149,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 for (var cmd in cmds)
                     commands.commands[cmd] = cmds[cmd];
             };
-            c9console.onMessageMethods["internal-autocomplete"] = function(message) {
-                var cmds = message.body;
-                _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
-            };
 
             // Asynchronously retrieve commands that other plugins may have
             // registered, hence the (relatively) long timeout.
@@ -300,6 +296,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     // command `fn2`, calls the functions with the proper array of completions,
     // if any.
     getCmdCompletion: function(value, fn1, fn2) {
+        console.log("ASDASD", value, fn1, fn2);
         var fullCmd = value.match(/(\w+)\s+(.*)$/);
         if (fullCmd) {
             // If we don't recognize the root command
@@ -309,6 +306,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
             var subCommands = rootCmd.commands;
             var filtered;
+            console.log("2", subCommands)
             if (subCommands && subCommands["[PATH]"])
                 filtered = ["[PATH]"];
             else if (subCommands)
@@ -333,20 +331,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 if (cmds.length) {
                     // This is legacy. Not the best way to determine if a command
                     // accepts filename inputs
-                    if (cmds[0] === "[PATH]") {
-                        ide.send({
-                            command: "internal-autocomplete",
-                            argv: [cmd1, cmd2],
-                            cwd: c9console.getCwd()
-                        });
-                    }
-                    else {
+                    if (cmds[0] !== "[PATH]") {
                         cliValue = cliValue.replace(RE_lastWord, cmds[0]);
                     }
                 }
             },
             function(cmds) {
-                if (cmds.length) cliValue = cmds[0];
+                if (cmds.length)
+                    cliValue = cmds[0];
             }
         );
 
