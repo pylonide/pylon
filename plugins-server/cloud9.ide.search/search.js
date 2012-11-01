@@ -8,8 +8,6 @@
 "use strict";
 
 var Path = require("path");
-var Fs = require("fs");
-Fs.existsSync = Fs.existsSync || Path.existsSync;
 
 module.exports = function() {
     this.env = { };
