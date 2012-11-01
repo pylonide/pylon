@@ -710,6 +710,11 @@ function asyncParForEach(array, fn, callback) {
     
     this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
+        if (!this.$analyzeInterval) {
+            this.$analyzeInterval = setInterval(function() {
+                _self.analyze(function(){});
+            }, 2000);
+        }
         var oldPath = this.$path;
         code = code || "";
         linereport.workspaceDir = this.$workspaceDir = workspaceDir = workspaceDir.replace(/\/$/, "");
@@ -747,15 +752,11 @@ function asyncParForEach(array, fn, callback) {
         }
     };
     
-    this.documentOpen = function(path, language, code) {
-        var _self = this;
-        var doc = {getValue: function() {return code;} };
-        asyncForEach(this.handlers, function(handler, next) {
-            handler.onDocumentOpen(path, doc, _self.path, next);
-        });
-    };
-    
     this.documentClose = function(event) {
+        if (this.$analyzeInterval) {
+            clearInterval(this.$analyzeInterval);
+            this.$analyzeInterval = null;
+        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
