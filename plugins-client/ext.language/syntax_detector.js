@@ -32,8 +32,14 @@ var mixedLanguages = {
  */
 function getSyntaxRegions(doc, originalSyntax) {
      if (! mixedLanguages[originalSyntax])
-        return [{syntax: originalSyntax, sl: 0, sc: 0,
-            el: doc.getLength(), ec: doc.getLine(doc.getLength()-1).length}];
+        return [{
+            syntax: originalSyntax,
+            sl: 0,
+            sc: 0,
+            el: doc.getLength(),
+            ec: doc.getLine(doc.getLength()-1).length
+        }];
+
     var lines = doc.getAllLines();
     var type = mixedLanguages[originalSyntax];
     var defaultSyntax = type["default"] || originalSyntax;

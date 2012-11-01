@@ -13,6 +13,7 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
+var SyntaxDetector = require("ext/language/syntax_detector");
 
 var lang = require("ace/lib/lang");
 var language;
@@ -22,8 +23,10 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
-// Adding HAML to HTML syntax completion
-var HTML_REGEX = /[a-zA-Z_0-9\$\_.#]/;
+var ID_REGEXES = {
+    "html": /[a-zA-Z_0-9\$\_.#]/, // Jade-typing regex
+    "css": /[a-zA-Z-]/
+};
 
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
@@ -77,8 +80,8 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos, regex) {
-    regex = regex || (isHtml() && HTML_REGEX) || ID_REGEX;
+function retrievePreceedingIdentifier(text, pos) {
+    regex = ID_REGEXES[getSyntax()] || ID_REGEX;
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
         if(regex.test(text[i]))
@@ -100,12 +103,20 @@ function retrieveFollowingIdentifier(text, pos) {
     return buf;
 }
 
+function getSyntax() {
+    var editor = editors.currentEditor.amlEditor.$editor;
+    return SyntaxDetector.getContextSyntax(
+        editor.getSession().getDocument(),
+        editor.getCursorPosition(),
+        editors.currentEditor.amlEditor.syntax);
+}
+
 function isJavaScript() {
-    return editors.currentEditor.amlEditor.syntax === "javascript";
+    return getSyntax() === "javascript";
 }
 
 function isHtml() {
-    return editors.currentEditor.amlEditor.syntax === "html";
+    return getSyntax() === "html";
 }
 
 /**
@@ -119,14 +130,14 @@ function replaceText(editor, prefix, match) {
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
-    
+
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
         isInvokeScheduled = true;
     }
-    
+
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
         newText += "^^";
@@ -143,7 +154,7 @@ function replaceText(editor, prefix, match) {
         newText = newText.substring(1);
 
     var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
-    
+
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
     var splitPaddedLines = paddedLines.split("\n");
@@ -155,12 +166,12 @@ function replaceText(editor, prefix, match) {
     }
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
-    
+
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    
+
     var cursorCol = rowOffset ? colOffset : pos.column + colOffset - prefix.length;
-    
+
     if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
             cursorCol++;

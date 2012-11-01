@@ -18,7 +18,7 @@ completer.handlesLanguage = function(language) {
     return ["css", "php"].indexOf(language) !== -1;
 };
 
-var CSS_ID_REGEX = /[a-zA-Z_0-9\$\-]/;
+var CSS_ID_REGEX = /[a-zA-Z-]/;
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var language = this.language;
