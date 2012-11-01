@@ -29,7 +29,9 @@
  *
  * #### Example
  *
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <!-- startcontent -->
  *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">
  *          <a:checkbox>Example</a:checkbox>
@@ -45,6 +47,8 @@
  *          <a:checkbox>This better?</a:checkbox>
  *      </a:page>
  *  </a:tab>
+ * <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.tab
