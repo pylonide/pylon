@@ -152,6 +152,13 @@ apf.GuiElement = function(){
     //#endif
     this.$booleanProperties["visible"]          = true;
     
+    /**
+     * @attribute {Boolean} draggable If true, the element can be dragged around the screen.
+     */    
+    /**
+     * @attribute {Boolean} resizable If true, the element can by resized by the user.
+     * 
+     */
     //#ifdef __WITH_INTERACTIVE
     this.$supportedProperties.push("draggable", "resizable");
     //#endif
