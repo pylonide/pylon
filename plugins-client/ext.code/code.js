@@ -761,7 +761,7 @@ module.exports = ext.register("ext/code/code", {
     init: function(amlPage) {
         var _self = this;
         
-        if (window.__defineGetter__)
+        if (window.__defineGetter__ && window.cloud9config.packed)
             window.__defineGetter__("ceEditor", function() { window.location.href = "http://goo.gl/tTLGJ"; });
 
         _self.amlEditor = codeEditor_dontEverUseThisVariable;
