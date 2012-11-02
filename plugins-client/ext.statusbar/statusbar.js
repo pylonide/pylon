@@ -156,7 +156,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         // load model with initial values
         var state = mdlStatusBar.data.selectSingleNode("//state");
-        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.name === "Code Editor"));
+        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.path == "ext/code/code"));
         apf.xmldb.setAttribute(state, "showStatusbar", apf.isTrue(settings.model.queryValue("auto/statusbar/@show")));
         
         // if we assign this before the plugin has been init'ed it will create some empty model
@@ -177,7 +177,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         }
         
         // update the model so we can use this info in the XML
-        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.name === "Code Editor");
+        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.path === "ext/code/code");
         
         // if we dont have a code editor then continue
         if (!editor.amlEditor) {

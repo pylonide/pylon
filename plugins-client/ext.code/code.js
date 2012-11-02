@@ -111,6 +111,7 @@ Object.keys(SupportedModes).forEach(function(name) {
 
 module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
+    extName : "ext/code/code",
     dev     : "Ajax.org",
     type    : ext.EDITOR,
     markup  : markup,
@@ -212,7 +213,8 @@ module.exports = ext.register("ext/code/code", {
 
             apf.xmldb.setAttribute(file, "customtype", value);
             fileExtensions[ext] = value;
-        } else {
+        }
+        else {
             apf.xmldb.removeAttribute(file, "customtype", "");
 
             delete fileExtensions[ext];
@@ -221,7 +223,7 @@ module.exports = ext.register("ext/code/code", {
                     fileExtensions[ext] = mode;
                     break;
                 }
-        }
+            }
         }
 
         var mime = this.setCustomType(dotI ? ext : file, value);
@@ -232,8 +234,8 @@ module.exports = ext.register("ext/code/code", {
             mime: mime,
             customType: value
         });
-        if (self.ceEditor)
-            self.ceEditor.setAttribute("syntax", this.getSyntax(file));
+        if (this.amlEditor)
+            this.amlEditor.setAttribute("syntax", this.getSyntax(file));
     },
 
     getContentType : function(node) {
@@ -259,16 +261,16 @@ module.exports = ext.register("ext/code/code", {
     setDocument : function(doc, actiontracker, isLazy){
         var _self = this;
 
-        var ceEditor = this.amlEditor;
+        var amlEditor = this.amlEditor;
 
         if (doc.acesession) {
-            ceEditor.setProperty("value", doc.acesession);
+            amlEditor.setProperty("value", doc.acesession);
         }
         else {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             var syntax = _self.getSyntax(doc.getNode());
-            var mode = ceEditor.getMode(syntax);
+            var mode = amlEditor.getMode(syntax);
             doc.acesession = new EditSession(doc.acedoc, mode);
             doc.acesession.syntax = syntax;
             doc.acedoc = doc.acesession.getDocument();
@@ -288,7 +290,6 @@ module.exports = ext.register("ext/code/code", {
 
                 doc.acesession.setValue(e.value || "");
 
-
                 if (doc.state)
                     _self.setState(doc, doc.state);
 
@@ -297,15 +298,15 @@ module.exports = ext.register("ext/code/code", {
                 if (this.$page.id != this.$page.parentNode.activepage)
                     return;
 
-                ceEditor.setAttribute("syntax", syntax);
-                ceEditor.setAttribute("value", doc.acesession);
+                amlEditor.setAttribute("syntax", syntax);
+                amlEditor.setAttribute("value", doc.acesession);
                 // force tokenize first visible rows
                 var rowCount = Math.min(50, doc.acesession.getLength());
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
 
             if (!isLazy)
-                ceEditor.setProperty("value", doc.acesession || "");
+                amlEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self || !doc)
@@ -452,8 +453,8 @@ module.exports = ext.register("ext/code/code", {
             };
 
             command.findEditor = function(editor) {
-                if (editor && editor.ceEditor)
-                    return editor.ceEditor.$editor;
+                if (editor && editor.amlEditor)
+                    return editor.amlEditor.$editor;
                 return editor;
             };
         };
@@ -604,7 +605,7 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Syntax/", new apf.menu({
                 "onprop.visible" : function(e){
                     if (e.value) {
-                        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+                        if (!editors.currentEditor || !editors.currentEditor.amlEditor)
                             this.disable();
                         else {
                             this.enable();
@@ -662,7 +663,7 @@ module.exports = ext.register("ext/code/code", {
                 type    : "check",
                 checked : "[{tabEditors.activepage && tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
-                    return editor && editor.ceEditor;
+                    return editor && editor.amlEditor;
                 }
             }), 500000),
 
@@ -671,7 +672,7 @@ module.exports = ext.register("ext/code/code", {
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
                 isAvailable : function(editor){
-                    if (!editor || !editor.ceEditor)
+                    if (!editor || !editor.amlEditor)
                         return false;
 
                     var page = tabEditors.getPage();
@@ -759,18 +760,21 @@ module.exports = ext.register("ext/code/code", {
 
     init: function(amlPage) {
         var _self = this;
+        
+        if (window.__defineGetter__)
+            window.__defineGetter__("ceEditor", function() { window.location.href = "http://goo.gl/tTLGJ"; });
 
-        _self.ceEditor = _self.amlEditor = codeEditor_dontEverUseThisVariable;
+        _self.amlEditor = codeEditor_dontEverUseThisVariable;
         _self.amlEditor.show();
 
-        _self.amlEditor.$editor.$nativeCommands = _self.ceEditor.$editor.commands;
+        _self.amlEditor.$editor.$nativeCommands = _self.amlEditor.$editor.commands;
         _self.amlEditor.$editor.commands = commands;
 
         // preload common language modes
         var noop = function() {};
-        _self.ceEditor.getMode("javascript", noop);
-        _self.ceEditor.getMode("html", noop);
-        _self.ceEditor.getMode("css", noop);
+        _self.amlEditor.getMode("javascript", noop);
+        _self.amlEditor.getMode("html", noop);
+        _self.amlEditor.getMode("css", noop);
 
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
@@ -804,7 +808,7 @@ module.exports = ext.register("ext/code/code", {
                 var syntax = _self.getSyntax(doc.getNode());
                 // This event is triggered also when closing files, so session may be gone already.
                 if(doc.acesession) {
-                    doc.acesession.setMode(_self.ceEditor.getMode(syntax));
+                    doc.acesession.setMode(_self.amlEditor.getMode(syntax));
                     doc.acesession.syntax = syntax;
                 }
             });
@@ -819,28 +823,28 @@ module.exports = ext.register("ext/code/code", {
         });
 
         ide.addEventListener("animate", function(e){
-            if (!_self.ceEditor.$ext.offsetHeight)
+            if (!_self.amlEditor.$ext.offsetHeight)
                 return;
 
             var renderer, delta;
             if (e.type == "editor") {
-                renderer = _self.ceEditor.$editor.renderer;
-                renderer.onResize(true, null, null, _self.ceEditor.getHeight() + e.delta);
+                renderer = _self.amlEditor.$editor.renderer;
+                renderer.onResize(true, null, null, _self.amlEditor.getHeight() + e.delta);
             }
             else if (e.type == "splitbox") {
-                if (e.options.height !== undefined && apf.isChildOf(e.other, _self.ceEditor, true)) {
+                if (e.options.height !== undefined && apf.isChildOf(e.other, _self.amlEditor, true)) {
                     delta = e.which.getHeight() - Number(e.options.height);
                     if (delta < 0) return;
 
-                    renderer = _self.ceEditor.$editor.renderer;
-                    renderer.onResize(true, null, null, _self.ceEditor.getHeight() + delta);
+                    renderer = _self.amlEditor.$editor.renderer;
+                    renderer.onResize(true, null, null, _self.amlEditor.getHeight() + delta);
                 }
-                else if (e.options.width !== undefined && apf.isChildOf(e.other, _self.ceEditor, true)) {
+                else if (e.options.width !== undefined && apf.isChildOf(e.other, _self.amlEditor, true)) {
                     delta = e.which.getWidth() - Number(e.options.width);
                     if (delta < 0) return;
 
-                    renderer = _self.ceEditor.$editor.renderer;
-                    renderer.onResize(true, null, _self.ceEditor.getWidth() + delta);
+                    renderer = _self.amlEditor.$editor.renderer;
+                    renderer.onResize(true, null, _self.amlEditor.getWidth() + delta);
                 }
             }
         });
@@ -848,10 +852,10 @@ module.exports = ext.register("ext/code/code", {
         // display feedback while loading files
         var isOpen, bgMessage;
         var checkLoading = function(e) {
-            if (!_self.ceEditor.xmlRoot)
+            if (!_self.amlEditor.xmlRoot)
                 return;
-            var loading = _self.ceEditor.xmlRoot.hasAttribute("loading");
-            var container = _self.ceEditor.$editor.container;
+            var loading = _self.amlEditor.xmlRoot.hasAttribute("loading");
+            var container = _self.amlEditor.$editor.container;
 
             if (loading) {
                 if (!bgMessage || !bgMessage.parentNode) {
@@ -861,7 +865,7 @@ module.exports = ext.register("ext/code/code", {
                 var isDark = container.className.indexOf("ace_dark")!=-1;
                 bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
                 
-                bgMessage.textContent = "Loading " + _self.ceEditor.xmlRoot.getAttribute("name");
+                bgMessage.textContent = "Loading " + _self.amlEditor.xmlRoot.getAttribute("name");
                 container.style.transitionProperty = "opacity";
                 container.style.transitionDuration = "300ms";
                 container.style.pointerEvents = "none";

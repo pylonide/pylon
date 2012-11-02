@@ -60,7 +60,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
             hint: "search for a string inside the active document and replace it",
             isAvailable : function(editor){
-                return editor && editor.name === "Code Editor";
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 _self.toggleDialog(1, true);
@@ -72,7 +72,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             bindKey : {mac: "", win: ""},
             hint: "search for a string inside the active document and replace all",
             isAvailable : function(editor){
-                return editor && editor.name === "Code Editor";
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 _self.replaceAll();//toggleDialog(1, true);
@@ -82,7 +82,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         commands.addCommand({
             name: "replacenext",
             isAvailable : function(editor){
-                return editor && editor.name === "Code Editor";
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 commands.exec("findnext");
@@ -93,7 +93,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         commands.addCommand({
             name: "replaceprevious",
             isAvailable : function(editor){
-                return editor && editor.name === "Code Editor";
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 commands.exec("findprevious");
@@ -113,7 +113,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
             isAvailable : function(editor){
-                return editor && editor.name === "Code Editor";
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(env, args, request) {
                 _self.toggleDialog(1, false);
@@ -734,7 +734,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.amlEditor)
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
 
         return editor.amlEditor.$editor;
