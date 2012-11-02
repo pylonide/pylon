@@ -85,7 +85,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Initializes the plugin if it is not initialized yet, and shows/hides its UI.
      **/
     toggle: function() {
-        if (!editors.currentEditor.path != "ext/code/code")
+        if (editors.currentEditor.path !== "ext/code/code")
             return;
 
         ext.initExtension(this);
