@@ -72,8 +72,11 @@ module.exports = {
         modelName = "mdlDbgStack";
         model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
-        dbgCallStack.addEventListener("afterrender", function(){
+        dbgCallStack.addEventListener("afterrender", function() {
             dgStack.addEventListener("afterselect", function(e) {
+                // afterselect can be called after setting value, without user interaction
+                if (!dgStack.hasFocus())
+                    return;
                 e.selected && _self.showDebugFrame(e.selected);
                 updateMarker(e.selected);
             });
