@@ -182,7 +182,7 @@ module.exports = ext.register("ext/code/code", {
 
         var mode = node.getAttribute("customtype");
         var ext;
-        
+
         if (mode) {
             ext = contentTypes[mode.split(";")[0]] ;
             if (ext)
@@ -661,31 +661,18 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{tabEditors.activepage && tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
-                isAvailable : function(editor){
-                    return editor && editor.amlEditor;
-                }
+                checked : "[{tabEditors.activepage && tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]"
             }), 500000),
 
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
                 id : "mnuWrapView",
                 type     : "check",
-                checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
-                isAvailable : function(editor){
-                    if (!editor || !editor.amlEditor)
-                        return false;
-
-                    var page = tabEditors.getPage();
-                    if (page.$model)
-                        return apf.isTrue(page.$model.queryValue("@wrapmode"));
-
-                    return false;
-                }
+                checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
             }), 600000)
         );
 
         c = 0;
-        
+
         var otherGrpSyntax;
         this.menus.push(
             grpSyntax = new apf.group(),
@@ -713,6 +700,18 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
         );
 
+        function onModeClick(e) {
+            if (!_self.prevSelection)
+                _self.prevSelection = this;
+            else {
+                _self.prevSelection.uncheck();
+                if (_self.prevSelection.group.selectedItem.caption == "Other") {
+                    _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu");
+                }
+                _self.prevSelection = this;
+            }
+        }
+
         for (var mode in ModesCaption) {
             if (hiddenMode[mode])
                 continue;
@@ -722,17 +721,7 @@ module.exports = ext.register("ext/code/code", {
                     type: "radio",
                     value: ModesCaption[mode],
                     group : otherMode[mode] ? otherGrpSyntax : grpSyntax,
-                    onclick : function (e) {
-                        if (!_self.prevSelection)
-                            _self.prevSelection = this;
-                        else {
-                            _self.prevSelection.uncheck();
-                            if (_self.prevSelection.group.selectedItem.caption == "Other") {
-                                _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu");
-                            }
-                            _self.prevSelection = this;
-                        }
-                    }
+                    onclick : onModeClick
                 }), c += 100)
             );
         }
@@ -756,11 +745,26 @@ module.exports = ext.register("ext/code/code", {
 
             addEditorMenu("Goto/Scroll to Selection", "centerselection")
         );
+
+        ide.addEventListener("tab.afterswitch", function(e) {
+            var method = e.nextPage.$editor.path != "ext/code/code" ? "disable" : "enable";
+
+            menus.menus["Edit"][method]();
+            menus.menus["Selection"][method]();
+            menus.menus["Find"][method]();
+            menus.menus["View/Syntax"][method]();
+            menus.menus["View/Font Size"][method]();
+            menus.menus["View/Syntax/Other"][method]();
+            menus.menus["View/Syntax"][method]();
+            menus.menus["View/Newline Mode"][method]();
+            // WY U NO WORK??
+            menus.menus["Goto"][method]();
+        });
     },
 
     init: function(amlPage) {
         var _self = this;
-        
+
         if (window.__defineGetter__ && !window.cloud9config.packed)
             window.__defineGetter__("ceEditor", function() { 
                 var d = document.createElement("div");
@@ -861,7 +865,7 @@ module.exports = ext.register("ext/code/code", {
                 }
             }
         });
-        
+
         // display feedback while loading files
         var isOpen, bgMessage;
         var checkLoading = function(e) {
@@ -872,12 +876,12 @@ module.exports = ext.register("ext/code/code", {
 
             if (loading) {
                 if (!bgMessage || !bgMessage.parentNode) {
-                    bgMessage = bgMessage|| document.createElement("div");                    
+                    bgMessage = bgMessage|| document.createElement("div");
                     container.parentNode.appendChild(bgMessage);
                 }
                 var isDark = container.className.indexOf("ace_dark")!=-1;
                 bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
-                
+
                 bgMessage.textContent = "Loading " + _self.amlEditor.xmlRoot.getAttribute("name");
                 container.style.transitionProperty = "opacity";
                 container.style.transitionDuration = "300ms";

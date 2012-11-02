@@ -129,7 +129,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
             isAvailable : function(editor){
-                if (editor && editor.amlEditor) {
+                if (editor && editor.path == "ext/code/code") {
                     var range = editor.amlEditor.$editor.getSelectionRange();
                     return range.start.row != range.end.row
                       || range.start.column != range.end.column;

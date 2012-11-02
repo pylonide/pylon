@@ -172,17 +172,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     onAfterSwitch : function (editor) {
         var _self = this;
         
-        if (!editor) {
+        if (!editor)
             return;
-        }
         
         // update the model so we can use this info in the XML
         apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.path === "ext/code/code");
         
         // if we dont have a code editor then continue
-        if (!editor.amlEditor) {
+        if (editor.path != "ext/code/code")
             return;
-        }
         
         editor = editor.amlEditor.$editor;
     
