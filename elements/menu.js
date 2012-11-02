@@ -23,15 +23,13 @@
 /**
  * This element displays a skinnable menu of items which can be choosen.
  * 
- * Based on the context of the menu, items can be shown and hidden. That's
- * why this element is often called a contextmenu.
+ * Based on the context of the menu, items can be shown and hidden. 
  * 
- *
  *
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:menu id="menu1">
  *       <a:item>Tutorials</a:item>
@@ -60,14 +58,13 @@
  *       </a:toolbar>
  *   </a:window>
  *   <!-- endcontent -->
- * </a:application>
+ *  </a:application>
  * ```
  *
  * @class apf.menu
  * @define menu
  * @selection
  * @allowchild item, divider, check, radio
- * @see apf.GuiElement@contextmenu
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%

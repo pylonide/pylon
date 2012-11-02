@@ -25,7 +25,7 @@
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
- * *
+ *
  * #### Example: Working with Events
  * 
  * ```xml, demo

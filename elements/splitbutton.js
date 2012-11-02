@@ -25,7 +25,7 @@
  * This element displays a skinnable rectangle that can contain other
  * AML elements. 
  * 
- * This element is used by other elements, such as the
+ * It's used by other elements, such as the
  * toolbar and statusbar elements, to specify sections.
  *
  * ```xml, demo

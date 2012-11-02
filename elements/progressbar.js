@@ -30,7 +30,7 @@
  * 
  * #### Example: A Simple Progressbar
  * 
- * ```xml. demo
+ * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:progressbar 
@@ -44,7 +44,7 @@
  *
  * #### Example: Progressbars with Varying Speeds
  * 
- * ```xml. demo
+ * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:progressbar 
@@ -71,7 +71,7 @@
  * 
  * #### Example: Dynmically Controlling the Progressbar
  * 
- * ```xml. demo
+ * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:progressbar

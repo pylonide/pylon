@@ -23,10 +23,6 @@
 /**
  * A container that stacks its children vertically.
  * 
- * @class apf.vbox
- * @layout
- * @define vbox 
- * 
  * #### Example
  * 
  * ```xml, demo
@@ -40,6 +36,11 @@
  *   <!-- endcontent -->
  * </a:application>
  * ```
+ * 
+ * @class apf.vbox
+ * @layout
+ * @define vbox 
+ * 
  * 
  * @see element.hbox
  * 
@@ -65,11 +66,11 @@
  * </a:application>
  * ```
  * 
- * @see element.vbox
  * 
  * #### Remarks
  * 
- * Firefox has some issues. 
+ * Firefox has some issues:
+ * 
  * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
  * height value.
  * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
@@ -81,6 +82,7 @@
  * @define hbox
  * @layout
  * 
+ * @see element.vbox
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9

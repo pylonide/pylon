@@ -40,7 +40,7 @@
  * 
  * #### Example: Loading Data
  * 
- * ```xml
+ * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:model id="mdlSpinner">

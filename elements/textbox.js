@@ -93,7 +93,7 @@
  * </a:application>
  * ```
  *
- * #### Example
+ * #### Example: A Regular Box
  *
  * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
@@ -102,8 +102,7 @@
  *       width     = "500" 
  *       skin      = "winGoToFile"
  *       minheight = "35"
- *       maxheight = "400"
- *       >
+ *       maxheight = "400">
  *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
  *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
  *             <a:list id="dgGoToFile"

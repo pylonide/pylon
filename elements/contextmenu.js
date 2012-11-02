@@ -32,7 +32,7 @@
  * shown.
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:menu id="ctxMenu">
  *       <a:item>Choice 1!</a:item>
@@ -46,12 +46,12 @@
  *   </a:list>
  *   <!-- endcontent -->
  *   Right-click on the list to reveal the context menu!
- * </a:application>
+ *  </a:application>
  * ```
  *
  * @class apf.contextmenu
- * @inherits apf.AmlElement
  * @define contextmenu
+ * @inherits apf.AmlElement
  * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
