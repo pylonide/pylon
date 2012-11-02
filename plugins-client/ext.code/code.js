@@ -7,7 +7,7 @@
 
 define(function(require, exports, module) {
 
-/*global tabEditors ceEditor mnuSyntax*/
+/*global tabEditors mnuSyntax codeEditor_dontEverUseThisVariable */
 
 require("apf/elements/codeeditor");
 
@@ -180,17 +180,17 @@ module.exports = ext.register("ext/code/code", {
             return "";
 
         var mode = node.getAttribute("customtype");
-
+        var ext;
+        
         if (mode) {
-            var ext = contentTypes[mode.split(";")[0]] ;
+            ext = contentTypes[mode.split(";")[0]] ;
             if (ext)
                 mode = fileExtensions[contentTypes[mode]];
         }
-
-        if (!mode) {
+        else {
             var fileName = node.getAttribute("name");
             var dotI = fileName.lastIndexOf(".") + 1;
-            var ext = dotI ? fileName.substr(dotI).toLowerCase() : "*" + fileName;
+            ext = dotI ? fileName.substr(dotI).toLowerCase() : "*" + fileName;
             mode = fileExtensions[ext];
         }
 
@@ -684,6 +684,8 @@ module.exports = ext.register("ext/code/code", {
         );
 
         c = 0;
+        
+        var otherGrpSyntax;
         this.menus.push(
             grpSyntax = new apf.group(),
 
@@ -711,7 +713,6 @@ module.exports = ext.register("ext/code/code", {
         );
 
         for (var mode in ModesCaption) {
-            var path;
             if (hiddenMode[mode])
                 continue;
 
@@ -721,12 +722,12 @@ module.exports = ext.register("ext/code/code", {
                     value: ModesCaption[mode],
                     group : otherMode[mode] ? otherGrpSyntax : grpSyntax,
                     onclick : function (e) {
-                        if (_self.prevSelection == null)
+                        if (!_self.prevSelection)
                             _self.prevSelection = this;
                         else {
                             _self.prevSelection.uncheck();
                             if (_self.prevSelection.group.selectedItem.caption == "Other") {
-                                _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu")
+                                _self.prevSelection.group.selectedItem.$ext.setAttribute("class", "menu_item submenu");
                             }
                             _self.prevSelection = this;
                         }
@@ -759,17 +760,17 @@ module.exports = ext.register("ext/code/code", {
     init: function(amlPage) {
         var _self = this;
 
-        this.ceEditor = this.amlEditor = ceEditor;
-        this.amlEditor.show();
+        _self.ceEditor = _self.amlEditor = codeEditor_dontEverUseThisVariable;
+        _self.amlEditor.show();
 
-        this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
-        this.amlEditor.$editor.commands = commands;
+        _self.amlEditor.$editor.$nativeCommands = _self.ceEditor.$editor.commands;
+        _self.amlEditor.$editor.commands = commands;
 
         // preload common language modes
         var noop = function() {};
-        ceEditor.getMode("javascript", noop);
-        ceEditor.getMode("html", noop);
-        ceEditor.getMode("css", noop);
+        _self.ceEditor.getMode("javascript", noop);
+        _self.ceEditor.getMode("html", noop);
+        _self.ceEditor.getMode("css", noop);
 
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
@@ -803,7 +804,7 @@ module.exports = ext.register("ext/code/code", {
                 var syntax = _self.getSyntax(doc.getNode());
                 // This event is triggered also when closing files, so session may be gone already.
                 if(doc.acesession) {
-                    doc.acesession.setMode(ceEditor.getMode(syntax));
+                    doc.acesession.setMode(_self.ceEditor.getMode(syntax));
                     doc.acesession.syntax = syntax;
                 }
             });
@@ -818,27 +819,28 @@ module.exports = ext.register("ext/code/code", {
         });
 
         ide.addEventListener("animate", function(e){
-            if (!ceEditor.$ext.offsetHeight)
+            if (!_self.ceEditor.$ext.offsetHeight)
                 return;
 
+            var renderer, delta;
             if (e.type == "editor") {
-                var renderer = ceEditor.$editor.renderer;
-                renderer.onResize(true, null, null, ceEditor.getHeight() + e.delta);
+                renderer = _self.ceEditor.$editor.renderer;
+                renderer.onResize(true, null, null, _self.ceEditor.getHeight() + e.delta);
             }
             else if (e.type == "splitbox") {
-                if (e.options.height != undefined && apf.isChildOf(e.other, ceEditor, true)) {
-                    var delta = e.which.getHeight() - parseInt(e.options.height);
+                if (e.options.height !== undefined && apf.isChildOf(e.other, _self.ceEditor, true)) {
+                    delta = e.which.getHeight() - Number(e.options.height);
                     if (delta < 0) return;
 
-                    var renderer = ceEditor.$editor.renderer;
-                    renderer.onResize(true, null, null, ceEditor.getHeight() + delta);
+                    renderer = _self.ceEditor.$editor.renderer;
+                    renderer.onResize(true, null, null, _self.ceEditor.getHeight() + delta);
                 }
-                else if (e.options.width != undefined && apf.isChildOf(e.other, ceEditor, true)) {
-                    var delta = e.which.getWidth() - parseInt(e.options.width);
+                else if (e.options.width !== undefined && apf.isChildOf(e.other, _self.ceEditor, true)) {
+                    delta = e.which.getWidth() - Number(e.options.width);
                     if (delta < 0) return;
 
-                    var renderer = ceEditor.$editor.renderer;
-                    renderer.onResize(true, null, ceEditor.getWidth() + delta);
+                    renderer = _self.ceEditor.$editor.renderer;
+                    renderer.onResize(true, null, _self.ceEditor.getWidth() + delta);
                 }
             }
         });
@@ -846,10 +848,10 @@ module.exports = ext.register("ext/code/code", {
         // display feedback while loading files
         var isOpen, bgMessage;
         var checkLoading = function(e) {
-            if (!ceEditor.xmlRoot)
+            if (!_self.ceEditor.xmlRoot)
                 return;
-            var loading = ceEditor.xmlRoot.hasAttribute("loading");
-            var container = ceEditor.$editor.container;
+            var loading = _self.ceEditor.xmlRoot.hasAttribute("loading");
+            var container = _self.ceEditor.$editor.container;
 
             if (loading) {
                 if (!bgMessage || !bgMessage.parentNode) {
@@ -859,7 +861,7 @@ module.exports = ext.register("ext/code/code", {
                 var isDark = container.className.indexOf("ace_dark")!=-1;
                 bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
                 
-                bgMessage.textContent = "Loading " + ceEditor.xmlRoot.getAttribute("name");
+                bgMessage.textContent = "Loading " + _self.ceEditor.xmlRoot.getAttribute("name");
                 container.style.transitionProperty = "opacity";
                 container.style.transitionDuration = "300ms";
                 container.style.pointerEvents = "none";
