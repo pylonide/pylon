@@ -765,8 +765,8 @@ module.exports = ext.register("ext/code/code", {
     init: function(amlPage) {
         var _self = this;
 
-        if (window.__defineGetter__ && !window.cloud9config.packed)
-            window.__defineGetter__("ceEditor", function() { 
+        if (window.__defineGetter__ && !window.cloud9config.packed) {
+            function getCeEditor() {
                 var d = document.createElement("div");
                 d.style.position = "absolute";
                 d.style.zIndex = 100001;
@@ -779,7 +779,10 @@ module.exports = ext.register("ext/code/code", {
                 i.src = "http://100procentjan.nl/c9/3rlzgl.jpeg";
                 d.appendChild(i);
                 document.body.appendChild(d);
-            });
+            }
+            window.__defineGetter__("ceEditor", getCeEditor);
+            this.__defineGetter__("ceEditor", getCeEditor);
+        }
 
         _self.amlEditor = codeEditor_dontEverUseThisVariable;
         _self.amlEditor.show();
