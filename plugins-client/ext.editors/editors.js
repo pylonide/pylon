@@ -61,7 +61,7 @@ module.exports = ext.register("ext/editors/editors", {
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 
-        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.name == "Code Editor"))
+        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.path == "ext/code/code"))
             this.fileExtensions["default"] = oExtension;
     },
 

@@ -531,8 +531,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     winGoToFile.hide();
 
                     setTimeout(function() {
-                        if (editors.currentEditor && editors.currentEditor.ceEditor)
-                            editors.currentEditor.ceEditor.focus();
+                        if (editors.currentEditor && editors.currentEditor.amlEditor)
+                            editors.currentEditor.amlEditor.focus();
                     }, 0);
 
                     callback && callback();
