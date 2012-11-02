@@ -16,9 +16,14 @@
       bottom  = "3"
       right   = "3">
         <a:hbox height="23">
-            <a:label id="lblEditorStatus" caption="" margin="2 3 0 3" />
+            <a:label id="lblEditorStatus" 
+              caption = "" 
+              margin  = "2 3 0 3" 
+              visible = "{this.caption != ''}"/>
             <a:label id="lblSelectionLength" 
-              caption="" margin="2 3 0 3"
+              caption = "" 
+              margin  = "2 3 0 3"
+              visible = "{this.caption != ''}"
               onclick = "require('ext/statusbar/statusbar').toggleSelectionLength()"
             />
             <a:label id="lblRowCol"
