@@ -762,7 +762,20 @@ module.exports = ext.register("ext/code/code", {
         var _self = this;
         
         if (window.__defineGetter__ && !window.cloud9config.packed)
-            window.__defineGetter__("ceEditor", function() { window.location.href = "http://goo.gl/tTLGJ"; });
+            window.__defineGetter__("ceEditor", function() { 
+                var d = document.createElement("div");
+                d.style.position = "absolute";
+                d.style.zIndex = 100001;
+                d.style.left = ((apf.getWindowWidth() / 2) - 200) + "px";
+                d.style.top = ((apf.getWindowHeight() / 2) - 200) + "px";
+                d.addEventListener("click", function () {
+                    document.body.removeChild(d);
+                });
+                var i = document.createElement("img");
+                i.src = "http://100procentjan.nl/c9/3rlzgl.jpeg";
+                d.appendChild(i);
+                document.body.appendChild(d);
+            });
 
         _self.amlEditor = codeEditor_dontEverUseThisVariable;
         _self.amlEditor.show();
