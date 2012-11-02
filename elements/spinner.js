@@ -84,10 +84,10 @@
  *
  */
 /**
- * @attribute {Number}   max=64000       Sets or gets the maximum allowed value
+ * @attribute {Number}   [max=64000]       Sets or gets the maximum allowed value
  */
 /**
- * @attribute {Number}   min=-64000      Sets or gets the minimal allowed value
+ * @attribute {Number}   [min=-64000]      Sets or gets the minimal allowed value
  */
 /**
  *  @attribute {Number}   value     Sets or gets the actual value displayed in component

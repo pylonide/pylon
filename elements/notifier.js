@@ -58,11 +58,11 @@
  *                                      element will be displayed. Defaults to 300px.
  */
 /**
- * @attribute   {String}   arrange="vertical"      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
+ * @attribute   {String}   [arrange="vertical"]      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
  *                                      or columns (`"horizontal"`).
  */
 /**
- * @attribute   {String}   timeout=2     After the timeout has passed, the popup
+ * @attribute   {String}   [timeout=2]     After the timeout has passed, the popup
  *                                      disappears automatically. When the
  *                                      mouse is hovering over the popup, it doesn't
  *                                      disappears.
@@ -135,7 +135,7 @@ apf.notifier = function(struct, tagName){
     /**
      * Creates a new notification popup.
      * 
-     * @param {String}  message=""  The message content displayed in the popup element
+     * @param {String}  [message=""]  The message content displayed in the popup element
      * @param {String}  [icon]     The path to the icon file ,relative to "icon-path" which
      *                           is set in the skin declaration
      * 

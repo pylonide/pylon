@@ -63,7 +63,7 @@
  * @attribute {String} icon Sets or gets the url pointing to the icon image.
  */
 /**
- * @attribute {Boolean} collapsed=false  Sets or gets collapse panel on load.
+ * @attribute {Boolean} [collapsed=false]  Sets or gets collapse panel on load.
  */
 /**
  * @attribute {String} title   Describes the content in a panel

@@ -82,10 +82,10 @@ apf.vsplitbox = function(struct, tagName){
     this.$layout     = true;
     
     /**
-     * @attribute {String}  padding="2"      Sets or gets the space between each element.
+     * @attribute {String}  [padding="2"]      Sets or gets the space between each element.
      */
     /**
-     * @attribute {String}  edge="5 5 5 5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * @attribute {String}  [edge="5 5 5 5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      */
     this.$booleanProperties["splitter"] = true;
     this.$supportedProperties.push("padding", "edge", "splitter");

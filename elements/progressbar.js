@@ -91,7 +91,6 @@
  *       <a:button onclick="pb3.enable()">Enable</a:button>
  *       <a:button onclick="pb3.disable()">Disable</a:button>
  *   </a:table>
- *   </a:progressbar>
  * </a:application>
  * ```
  * 
@@ -289,7 +288,7 @@ apf.progressbar = function(struct, tagName){
     /**
      * Stops the progress indicator from moving.
      * @param {Boolean} restart Specifies whether a `this.$timer` should start with a new indicative progress indicator.
-     * @param {Number} time=500 The internal (in milliseconds)
+     * @param {Number} [time=500] The internal (in milliseconds)
      * @param {Number} [restart_time] The time for the next restart to occur
      */
     this.stop = function(restart, time, restart_time){

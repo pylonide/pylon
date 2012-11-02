@@ -109,13 +109,13 @@ apf.vbox = function(struct, tagName){
     var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
-     * @attribute {String}  padding=2      Sets or gets the space between each element.
+     * @attribute {String}  [padding=2]      Sets or gets the space between each element.
      */
     /**
      * @attribute {Boolean} reverse      Sets or gets whether the sequence of the elements is in reverse order.
      */
     /**
-     * @attribute {String}  edge="5,5,5,5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
+     * @attribute {String}  [edge="5,5,5,5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
      * 
      * #### Example
      * 
