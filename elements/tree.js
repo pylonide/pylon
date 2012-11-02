@@ -30,46 +30,80 @@
  * can grow by fetching more data when the user requests it.
  *
  *
- * #### Example
+ * #### Example: A Simple Tree
  *
- * A tree with inline items:
- *
- * ```xml
- *  <a:tree id="tree" align="right">
- *      <a:item caption="root" icon="icoUsers.gif">
- *          <a:item icon="icoUsers.gif" caption="test">
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *          </a:item>
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *      </a:item>
- *  </a:tree>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:tree id="tree" align="right">
+ *       <a:item caption="root" icon="../resources/icons/icoUsers.gif">
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test">
+ *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           </a:item>
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *       </a:item>
+ *   </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * #### Example
+ * #### Example: Using a Model
  *
  * A tree using a model:
  *
- * ```xml
- *  <a:tree model="filesystem.xml">
- *      <a:caption match="[@caption]" />
- *      <a:caption match="[@filename]" />
- *      <a:icon match="[@icon]" />
- *      <a:each match="[drive|file|folder]" />
- *  </a:tree>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
+ *   <a:tree model="filesystem">
+ *        <a:caption match="[@caption]" />
+ *        <a:caption match="[@filename]" />
+ *        <a:each match="[drive|file|folder]" />
+ *    </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * An inline tree description that draws the same as the above example:
+ * #### Example: An Inline Tree
+ * 
+ * An inline tree that draws the same as the above example:
  *
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
  *  <a:tree 
- *    model   = "filesystem.xml"
+ *    model   = "filesystem"
  *    caption = "[@caption|@filename]"
- *    icon    = "[@icon]"
  *    each    = "[drive|file|folder]" />
+ *  <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.tree

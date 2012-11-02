@@ -22,7 +22,7 @@
 //#ifdef __PARSER_URL
 
 /**
- * Object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
+ * An object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
  *
  * All parts are publicly accessible after parsing, like 'url.port' or 'url.host'.
  * 

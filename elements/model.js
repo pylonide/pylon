@@ -22,40 +22,73 @@
 //#ifdef __WITH_MODEL
 
 /**
- * An element functioning as the central access point for XML data. Data can be
- * retrieved from any data source using data instructions. Data can be
- * submitted using data instructions in a similar way to html form posts. 
+ * This element functions as the central access point for XML data. Data can be
+ * retrieved from any data source using data instructions. Data can also be
+ * submitted using data instructions in a similar way to HTML form posts. 
  *
  * The modal can be reset to its original state. It has support for offline use and
  * synchronization between multiple clients.
  * 
- * #### Example
- *
- * ```xml
- *  <a:model src="products.xml" />
- * ```
+ * #### Example: Loading A Model 
  * 
- * #### Example
- *
- * A small form where the bound data is submitted to a server using a model.
- * 
- * ```xml
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data name="Lukasz" address="Poland"></data>
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:model id="mdl1">
+ *      <data>
+ *          <row content="This is a row 1" />
+ *          <row content="This is a row 2" />
+ *          <row content="This is a row 3" />
+ *      </data>
  *  </a:model>
+ *  <a:hbox height="20">
+ *      <a:label>List component:</a:label>
+ *  </a:hbox>
+ *  <a:list 
+ *    model    = "mdl1" 
+ *    each     = "[row]"
+ *    caption  = "[@content]" 
+ *    icon     = "[@icon]" 
+ *    width    = "400">
+ *  </a:list>
+ *  <a:hbox height="30" margin="7 0 3 0">
+ *      <a:label>Datagrid component:</a:label>
+ *  </a:hbox>
+ *  <a:datagrid width="400" height="100" model="mdl1">
+ *      <a:each match="[row]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@content]" 
+ *            width   = "100%" />
+ *      </a:each>
+ *  </a:datagrid>
+ *  <!-- endcontent -->
+ * </a:application>
  * 
- *  <a:frame model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[@name]" />
- *      <a:label>Address</a:label>
- *      <a:textarea 
- *        value  = "[@address]" 
- *        width  = "100" 
- *        height = "50" />
- *      <a:button 
- *        default = "true" 
- *        action  = "submit">Submit</a:button>
- *  </a:frame>
+ * #### Example
+ *
+ * A small form where the bound data is submitted to a server using a model:
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlForm" submission="save_form.asp">
+ *       <data name="Lukasz" address="Poland"></data>
+ *   </a:model>
+ *  
+ *   <a:frame model="mdlForm">
+ *       <a:label>Name</a:label>
+ *       <a:textbox value="[@name]" />
+ *       <a:label>Address</a:label>
+ *       <a:textarea 
+ *         value  = "[@address]" 
+ *         width  = "100" 
+ *         height = "50" />
+ *       <a:button 
+ *         default = "true" 
+ *         action  = "submit">Submit</a:button>
+ *   </a:frame>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.model

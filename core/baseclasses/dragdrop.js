@@ -41,7 +41,6 @@ apf.__DRAGDROP__ = 1 << 5;
  * This is a simple example, enabling drag & drop for a list:
  *
  * ```xml
- *
  *  <a:list
  *    drag     = "true"
  *    drop     = "true"
@@ -131,6 +130,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *      </a:model>
  *  </a:datagrid>
  *```
+ * 
  * @class apf.DragDrop
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)

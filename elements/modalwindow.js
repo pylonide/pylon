@@ -93,30 +93,33 @@ apf.WinServer = {
 }
 
 /**
- * An element displaying a skinnable, draggable window with optionally
- * a min, max, edit and close button. This element is also used
- * as a portal widget container. Furthermore, this element supports
- * docking in an alignment layout.
+ * This element displays a skinnable, draggable window. It can be given
+ * a minimum and miximum width and height, as well as keybindings and various buttons. 
+ * 
  * 
  * #### Example
  * 
- * ```xml
- *  <a:window 
- *    id        = "winMail"
- *    modal     = "false"
- *    buttons   = "min|max|close"
- *    title     = "Mail message"
- *    icon      = "icoMail.gif"
- *    visible   = "true"
- *    resizable = "true"
- *    minwidth  = "300"
- *    minheight = "290"
- *    width     = "500"
- *    height    = "400">
- *  </a:window>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:window 
+ *     id        = "winMail"
+ *     modal     = "false"
+ *     buttons   = "min|max|close"
+ *     title     = "Mail message"
+ *     icon      = "../resources/icons/email.png"
+ *     visible   = "true"
+ *     resizable = "true"
+ *     minwidth  = "300"
+ *     minheight = "290"
+ *     width     = "500"
+ *     height    = "400">
+ *   </a:window>
+ *   <!-- endcontent -->
+ * </a:application> 
  * ```
  *
- * @class apf.modalwindow 
+ * @class apf.window 
  * @define window
  * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}

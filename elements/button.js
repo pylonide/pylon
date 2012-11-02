@@ -25,6 +25,53 @@
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
+ * *
+ * #### Example: Working with Events
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 100" cellheight="24">
+ *     <!-- startcontent -->
+ *      <a:label>Onclick event</a:label>
+ *      <a:button
+ *        width   = "120"
+ *        onclick = "alert('Button has been clicked')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseover event</a:label>
+ *      <a:button 
+ *        width       = "120"
+ *        onmouseover = "alert('Button has been hovered')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseout event</a:label>
+ *      <a:button 
+ *        width      = "120"
+ *        onmouseout = "alert('Mouse hover out button')">
+ *          Example button</a:button>
+ *     <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Interactions and Colors
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="250" cellheight="24">
+ *  <!-- startcontent -->
+ *  <a:button
+ *    onclick = "b1.setAttribute('width', '200')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 200px</a:button>
+ *  <a:button 
+ *    onclick = "b1.setAttribute('width', '50')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 50px</a:button>
+ *  <a:button id="b1" color="#FF8203">Test</a:button>
+ *  <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
  * @class apf.button
  * @inherits apf.BaseButton
  * @define button

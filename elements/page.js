@@ -24,6 +24,35 @@
 /**
  * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
  *
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *      <a:tab anchors="10 10 10 10"> 
+ *          <a:page caption="General"> 
+ *              <a:checkbox>Example</a:checkbox> 
+ *              <a:button>Example</a:button> 
+ *          </a:page> 
+ *          <a:page caption="Advanced"> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *          </a:page> 
+ *          <a:page caption="Ajax.org"> 
+ *              <a:checkbox>This ok?</a:checkbox> 
+ *              <a:checkbox>This better?</a:checkbox> 
+ *          </a:page> 
+ *      </a:tab> 
+ *  </a:window>
+ *  <!-- endcontent -->
+ * </a:application>
+ * 
  * @class apf.page
  * @define  page
  * @container

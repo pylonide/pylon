@@ -21,26 +21,24 @@
 // #ifdef __AMLITEM || __INC_ALL
 
 /**
- * An item in a menu, displaying a clickable area.
+ * Represents an item in a menu, displaying a clickable area.
  * 
  * #### Example
  * 
- * ```xml
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2" />
- *  <a:menu id="menu1">
- *      <a:item icon="tbicons:1">Tutorials</a:item>
- *      <a:item icon="tbicons:5">Contact</a:item>
- *  </a:menu>
- *  <a:toolbar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *      <a:item>Tutorials</a:item>
+ *      <a:item>Contact</a:item>
+ *   </a:menu>
+ *   <a:toolbar>
  *      <a:menubar>
  *          <a:button submenu="menu1">File</a:button>
  *      </a:menubar>
- *  </a:toolbar>
+ *   </a:toolbar>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
  * @class apf.item

@@ -21,40 +21,45 @@
 // #ifdef __AMLTOOLBAR || __INC_ALL
 
 /**
- * An element displaying a bar containing buttons and other AML elements.
+ * This element displays a bar containing buttons and other AML elements.
+ * 
  * This element is usually positioned in the top of an application allowing
  * the user to choose from grouped buttons.
  *
  * #### Example
  *
- * ```xml
- *  <a:menu id="menu5">
- *      <a:item>About us</a:item>
- *      <a:item>Help</a:item>
- *  </a:menu>
- *  <a:menu id="menu6">
- *      <a:item icon="email.png">Tutorials</a:item>
- *      <a:item>Live Helps</a:item>
- *      <a:divider></a:divider>
- *      <a:item>Visit Ajax.org</a:item>
- *      <a:item>Exit</a:item>
- *  </a:menu>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
  *  <a:window 
  *    id          = "winMail"
- *    contextmenu = "menu6"
+ *    contextmenu = "fileMenu"
  *    width       = "300"
  *    height      = "200" 
  *    visible     = "true"
  *    resizable   = "true" 
- *    title       = "Mail message"
- *    icon        = "email.png">
+ *    title       = "An App">
+ *  <!-- startcontent -->
  *      <a:toolbar>
  *          <a:menubar>
- *              <a:button submenu="menu6">File</a:button>
- *              <a:button submenu="menu5">Edit</a:button>
+ *              <a:button submenu="fileMenu">File</a:button>
+ *              <a:button submenu="editMenu">Edit</a:button>
  *          </a:menubar>
  *      </a:toolbar>
+ * 
+ *     <a:menu id="editMenu">
+ *          <a:item>About us</a:item>
+ *          <a:item>Help</a:item>
+ *      </a:menu>
+ *      <a:menu id="fileMenu">
+ *          <a:item icon="email.png">Tutorials</a:item>
+ *          <a:item>Live Helps</a:item>
+ *          <a:divider></a:divider>
+ *          <a:item>Visit Ajax.org</a:item>
+ *          <a:item>Exit</a:item>
+ *      </a:menu>
+ *  <!-- endcontent -->
  *  </a:window>
+ * </a:application>
  * ```
  *
  * @class apf.toolbar

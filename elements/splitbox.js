@@ -22,7 +22,12 @@
 
 /**
  * 
- * A container that stacks two children vertically.
+ * A container that stacks two children vertically. 
+ * 
+ * Programatically, this is identical to a regular [[vbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:vbox>`; however,
+ * the performance improvements in using a `<a:vsplitbox>` are massive.
  *
  * @class apf.vsplitbox
  * @define vsplitbox
@@ -38,6 +43,11 @@
 /**
  *
  * A container that stacks two children horizontally.
+ * 
+ * Programatically, this is identical to a regular [[hbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:hbox>`; however,
+ * the performance improvements in using a `<a:hsplitbox>` are massive.
  *
  * @class apf.hsplitbox
  * @define hsplitbox 

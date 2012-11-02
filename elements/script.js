@@ -22,8 +22,7 @@
 // #ifdef __AMLSCRIPT || __INC_ALL
 
 /**
- * An element that loads JavaScript into the application,
- * either from its first child or from a file.
+ * This element loads JavaScript into the application.
  * 
  * #### Example
  *

@@ -21,7 +21,7 @@
 // #ifdef __AMLMENU || __INC_ALL
 
 /**
- * An element displaying a skinnable menu of items which can be choosen.
+ * This element displays a skinnable menu of items which can be choosen.
  * 
  * Based on the context of the menu, items can be shown and hidden. That's
  * why this element is often called a contextmenu.
@@ -30,42 +30,37 @@
  *
  * #### Example
  * 
- * ```xml
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2"></a:iconmap>
- * 
- *  <a:menu id="msub">
- *      <a:item icon="tbicons:12">test</a:item>
- *      <a:item icon="tbicons:14">test2</a:item>
- *  </a:menu>
- * 
- *  <a:menu id="mmain">
- *      <a:item icon="tbicons:1">table_wizard</a:item>
- *      <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
- *      <a:divider></a:divider>
- *      <a:radio>item 1</a:radio>
- *      <a:radio>item 2</a:radio>
- *      <a:radio>item 3</a:radio>
- *      <a:radio>item 4</a:radio>
- *      <a:divider></a:divider>
- *      <a:check hotkey="Ctrl+T">item check 1</a:check>
- *      <a:check hotkey="F3">item check 2</a:check>
- *      <a:divider></a:divider>
- *      <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
- *      <a:item icon="tbicons:10">table_wizard</a:item>
- *  </a:menu>
- * 
- *  <a:window 
- *    visible     = "true" 
- *    width       = "200"
- *    height      = "190"
- *    contextmenu = "mmain"
- *    center      = "true">
- *  </a:window>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *       <a:item>Tutorials</a:item>
+ *       <a:item icon="email.png">Contact</a:item>
+ *       <a:divider></a:divider>
+ *       <a:item 
+ *         icon    = "application_view_icons.png"
+ *         hotkey  = "Ctrl+T"
+ *         onclick = "setTimeout(function(){alert('You did it');}, 1000)">
+ *         Tutorials</a:item>
+ *       <a:divider />
+ *       <a:item disabled="true">Visit Ajax.org</a:item>
+ *       <a:item>Exit</a:item>
+ *   </a:menu>
+ *   <a:window
+ *     width     = "400"
+ *     height    = "150"
+ *     visible   = "true"
+ *     resizable = "true"
+ *     title     = "Mail message">
+ *       <a:toolbar>
+ *           <a:menubar>
+ *               <a:button submenu="menu1">File</a:button>
+ *               <a:button submenu="menu1" disabled="true">Edit</a:button>
+ *           </a:menubar>
+ *       </a:toolbar>
+ *   </a:window>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.menu

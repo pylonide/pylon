@@ -23,23 +23,9 @@
 
 
 /**
- * Defines some rules containing all the action rules for the data 
+ * This element allows you to define some rules containing all the action rules for the data 
  * bound elements referencing this element.
  * 
- * #### Example 
- *
- * ```xml
- *  <a:actions id="actPerson" >
- *      <a:add set="{comm.addPerson([.])}">
- *          <person name="New person" />
- *      </a:add
- *      <a:rename set="{comm.renamePerson([@id], [@name])}" />
- *      <a:remove match="[@new]" set="{comm.removePerson([@id])}"/>
- *  </a:actions>
- *
- *  <a:tree actions="actPerson" />
- * ```
- *
  * @allowchild {actions}
  *
  * @class apf.actions

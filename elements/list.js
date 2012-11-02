@@ -21,7 +21,7 @@
 // #ifdef __AMLLIST || __AMLSELECT || __AMLSELECT1 || __INC_ALL
 
 /**
- * An element displaying a skinnable list of options which can be selected.
+ * This element displays a skinnable list of options which can be selected.
  * 
  * Selection of multiple items is allowed. Items can be renamed
  * and removed. The list can be used as a collection of checkboxes or 
@@ -31,50 +31,53 @@
  * of items in a CMS-style interface, or display a list of search results in 
  * a more website like interface.
  * 
- * #### Example
+ * #### Example: A Simple List
  * 
- * A simple list with inline items.
- * 
- * ```xml
- *  <a:list multimatch="[false]">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list>
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:list>
+ *      <a:item>United Kingdom</a:item> 
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Loading from a Model
  * 
- * A databound list with items loaded from an xml file.
- * 
- * ```xml
- *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list 
+ *     model   = "../resources/xml/friends.xml"
+ *     each    = "[friend]"
+ *     caption = "[@name]"
+ *     icon    = "[@icon]"
+ *     width   = "300">
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Using XPaths
  * 
- * A databound list using the bindings element
- * 
- * ```xml
- *  <a:model id="mdlList">
- *      <data>
- *          <item date="2009-11-12" deleted="0"></item>
- *          <item date="2009-11-11" deleted="0"></item>
- *          <item date="2009-11-10" deleted="0"></item>
- *          <item date="2009-11-09" deleted="1"></item>
- *          <item date="2009-11-08" deleted="1"></item>
- *      </data>
- *  </a:model>
- *  <a:list id="list" width="200" height="200" model="mdlList">
- *      <a:bindings>
- *          <a:caption match="[@date]" />
- *          <a:each match="[item[not(@deleted='1')]]" />
- *      </a:bindings>
- *  </a:list>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list model="../resources/xml/friends.xml" width="300">
+ *       <a:each match="[friend]">
+ *           <a:caption match="[@name]" />
+ *           <a:icon 
+ *             match = "[node()[@name='Ruben' or @name='Matt']]" 
+ *             value = "../resources/icons/medal_gold_1.png" />
+ *           <a:icon value="../resources/icons/medal_silver_1.png" />
+ *       </a:each>
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
- *
- * 
  * @class apf.list
  * @define list
  * @allowchild {smartbinding}

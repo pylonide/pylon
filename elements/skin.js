@@ -21,17 +21,20 @@
 //#ifdef __WITH_PRESENTATION || __INC_ALL
 
 /**
- * An element specifying the skin of an application.
+ * This element specifies the skin of an application.
  *
- * #### Example
- *
- * ```xml
- *  <a:skin src="perspex.xml"
- *    name       = "perspex"
- *    media-path = "http://example.com/images"
- *    icon-path  = "http://icons.example.com" />
- * ```
+ * For Cloud9, the skin is provided for you, and thus, you generally won't need
+ * to provide a new skin for a piece of AML.
  * 
+ * #### Example
+ * 
+ * ```xml
+ * <a:skin src="perspex.xml"
+ *  name       = "perspex"
+ *  media-path = "http://example.com/images"
+ *  icon-path  = "http://icons.example.com" />
+ * ```
+ *  
  * @class apf.skin
  * @inherits apf.AmlElement
  * @define skin

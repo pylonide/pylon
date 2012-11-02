@@ -21,34 +21,24 @@
 // #ifdef __AMLRADIOBUTTON || __INC_ALL
 
 /**
- * An element displaying a two state button which is one of a grouped set.
+ * This element displays a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be selected at the same time.
  * 
- * #### Example
+ * #### Example: Settings Groups
  *
- * ```xml
- *  <a:frame caption="Options">
- *      <a:radiobutton>Option 1</a:radiobutton>
- *      <a:radiobutton>Option 2</a:radiobutton>
- *      <a:radiobutton>Option 3</a:radiobutton>
- *      <a:radiobutton>Option 4</a:radiobutton>
- *  </a:frame>
- * ```
- * 
- * #### Example
- *
- * This example shows radio buttons with an explicit group set:
- *
- * ```xml
- *  <a:label>Options</a:label>
- *  <a:radiobutton group="g1">Option 1</a:radiobutton>
- *  <a:radiobutton group="g1">Option 2</a:radiobutton>
- *
- *  <a:label>Choices</a:label>
- *  <a:group id="g2" value="[mdlForm::choice]">
- *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
- *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
- *  </a:group>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 150" cellheight="20">
+ *   <!-- startcontent -->
+ *     <a:label>Options</a:label> 
+ *     <a:label>Choices</a:label> 
+ *     <a:radiobutton group="g2">Option 1</a:radiobutton> 
+ *     <a:radiobutton group="g3">Choice 1</a:radiobutton> 
+ *     <a:radiobutton group="g2">Option 2</a:radiobutton>
+ *     <a:radiobutton group="g3">Choice 2</a:radiobutton>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
  * ```
  *
  * @class apf.radiobutton

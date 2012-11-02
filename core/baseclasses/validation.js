@@ -119,22 +119,26 @@ apf.validator.validityState = function(){
  *
  * #### Example
  * 
- * ```xml
- *  <a:bar validgroup="vgExample">
- *      <a:label>Number</a:label>
- *      <a:textbox required="true" min="3" max="10" 
- *        invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
- *      <a:label>Name</a:label>
- *      <a:textbox required="true" minlength="3" 
- *        invalidmsg="Invalid Entry;Please enter your name" />
- *      <a:label>Message</a:label>
- *      <a:textarea required="true" 
- *        invalidmsg="Invalid Message;Please enter a message!" />
- *
- *      <a:button onclick="if(vgExample.isValid()) alert('valid!')">
- *          Validate
- *      </a:button>
- *  </a:bar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:bar validgroup="vgExample">
+ *        <a:label>Number</a:label>
+ *        <a:textbox required="true" min="3" max="10" 
+ *          invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox required="true" minlength="3" 
+ *          invalidmsg="Invalid Entry;Please enter your name" />
+ *        <a:label>Message</a:label>
+ *        <a:textarea required="true" 
+ *          invalidmsg="Invalid Message;Please enter a message!" />
+ *   
+ *        <a:button onclick="if(vgExample.isValid()) alert('valid!')">
+ *            Validate
+ *        </a:button>
+ *    </a:bar>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
  * @class apf.Validation

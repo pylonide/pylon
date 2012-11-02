@@ -22,7 +22,7 @@
 // #ifdef __AMLCONTEXTMENU || __INC_ALL
 
 /**
- * An element specifying which menu is shown when a
+ * This element specifies which menu is shown when a
  * contextmenu is requested by a user for a AML node.
  * 
  * #### Example
@@ -31,11 +31,22 @@
  * right clicks on the root {@link term.datanode data node}. Otherwise the `mnuItem` menu is
  * shown.
  *
- * ```xml
- *  <a:list>
- *      <a:contextmenu menu="mnuRoot" match="[root]" />
- *      <a:contextmenu menu="mnuItem" />
- *  </a:list>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="ctxMenu">
+ *       <a:item>Choice 1!</a:item>
+ *       <a:item>Choice 2!</a:item>
+ *   </a:menu>
+ *   <a:list width="300" id="list1">
+ *       <a:contextmenu menu="ctxMenu" />
+ *       <a:item>The Netherlands</a:item>
+ *       <a:item>United States of America</a:item>
+ *       <a:item>Poland</a:item>
+ *   </a:list>
+ *   <!-- endcontent -->
+ *   Right-click on the list to reveal the context menu!
+ * </a:application>
  * ```
  *
  * @class apf.contextmenu

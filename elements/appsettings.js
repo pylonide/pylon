@@ -22,7 +22,8 @@
 //#ifdef __WITH_APPSETTINGS
 
 /**
- * An element specifying the settings of the APF application.
+ * This element specifies the settings of the APF application.
+ * 
  * @class apf.appsettings
  * @define appsettings
  * @logic

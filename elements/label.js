@@ -22,15 +22,24 @@
 
 /**
  * An element displaying a text in the user interface, usually specifying
- * a description of another element. When the user clicks on the label it 
+ * a description of another element. When the user clicks on the label, it 
  * can set the focus to the connected AML element.
  * 
- * #### Example
- * This example uses the `for` attribute to connect the label to the form element.
+ * #### Example: Connecting with "For"
  * 
- * ```xml
- *  <a:label for="txtAddress">Address</a:label>
- *  <a:textbox id="txtAddress" value="Some text" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label 
+ *     for       = "txtAddress"
+ *     disabled  = "true" 
+ *     caption   = "Disabled label"></a:label>
+ *   <a:textbox id="txtAddress" />
+ *   <a:label 
+ *     for   = "txtAddress2">Not Disabled</a:label>
+ *   <a:textbox id="txtAddress2" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.label

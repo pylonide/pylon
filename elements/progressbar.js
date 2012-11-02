@@ -22,26 +22,81 @@
 // #ifdef __AMLPROGRESSBAR || __INC_ALL
 
 /**
- * An element that graphically represents a percentage value which increases
+ * This element graphically represents a percentage value which increases
  * automatically with time. 
  *
  * This element is most often used to show the progress
  * of a process. The progress can be either indicative or exact.
  * 
- * #### Example
+ * #### Example: A Simple Progressbar
  * 
- * This example shows a progress bar that is only visible when an application is
- * synchronizing it's offline changes. When in this process it shows the exact
- * progress of the sync process.
- * 
- * ```xml
- *  <a:progressbar
- *    value   = "{apf.offline.progress}"
- *    visible = "{apf.offline.syncing}" />
+ * ```xml. demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * @class apf.progress
- * @define progress
+ * #### Example: Progressbars with Varying Speeds
+ * 
+ * ```xml. demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     id    = "pb1"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb1.start();
+ *   //--></a:script>
+ *   </a:progressbar>
+ * 
+ *   <a:progressbar 
+ *     id    = "pb2"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb2.start(50);
+ *   //--></a:script>
+ *   </a:progressbar>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Dynmically Controlling the Progressbar
+ * 
+ * ```xml. demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar
+ *     id    = "pb3"
+ *     min   = "0"
+ *     max   = "100"
+ *     value = "0"
+ *     width = "300" />
+ *   <a:table 
+ *     columns    = "80, 80, 80, 80"
+ *     cellheight = "24" 
+ *     margin     = "15 0">
+ *       <a:button onclick="pb3.start()">Start</a:button>
+ *       <a:button onclick="pb3.pause()">Pause</a:button>
+ *       <a:button onclick="pb3.stop()">Stop</a:button>
+ *       <a:button onclick="pb3.clear()">Clear</a:button>
+ *       <a:button onclick="pb3.enable()">Enable</a:button>
+ *       <a:button onclick="pb3.disable()">Disable</a:button>
+ *   </a:table>
+ *   </a:progressbar>
+ * </a:application>
+ * ```
+ * 
+ * @class apf.progressbar
+ * @define progressbar
  * @allowchild {smartbinding}
  *
  * @form

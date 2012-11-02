@@ -22,37 +22,35 @@
 // #ifdef __AMLIMG || __INC_ALL
 
 /**
- * An element displaying a picture. This element can read databound resources.
+ * The element displays a picture. This element can read databound resources.
  * 
  * #### Example
  * 
  * This example shows a list with pictures. When one is selected its displayed
- * in the `img` element.
+ * in the `<a:img>` element:
  * 
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
  *  <a:model id="mdlPictures"> 
- *      <pictures> 
- *          <picture title="Landscape" src="img1.jpg" />
- *          <picture title="Animal" src="img2.jpg" />
- *          <picture title="River" src="img3.jpg" />
- *      </pictures> 
- *  </a:model>
- *  <a:list 
- *    id     = "lstPics" 
- *    skin   = "thumbnail" 
- *    height = "200" 
- *    width  = "400" 
- *    model  = "mdlPictures">
- *      <a:each match = "[picture]" >
- *          <a:name match="[@title]" />
- *          <a:image match="[@src]">path/to/image/[@src]</a:image>
- *      </a:each>
- *  </a:list>
- *  <a:img 
- *    model  = "{lstPics.selected}" 
- *    value  = "path/to/image/[@src]" 
- *    width  = "200" 
- *    height = "200" />
+ *       <data> 
+ *           <picture title="Ceiling Cat" src="http://htstatic.ibsrv.net/forums/honda-tech/ceiling-cat/ceiling-cat-6.jpg" />
+ *           <picture title="Maru" src="http://1.bp.blogspot.com/_4Cb_t7BLaIA/TCY3jyIx4SI/AAAAAAAAAbw/K-Ey_u36y8o/s400/maru+the+japanese+cat.jpg" />
+ *           <picture title="Lime Cat" src="http://www.cs.brown.edu/orgs/artemis/2012/catsoftheworld/lime-cat.jpg" />
+ *       </data> 
+ *   </a:model>
+ *   <a:list 
+ *     id     = "lstPics" 
+ *     model  = "mdlPictures">
+ *       <a:each match="[picture]" >
+ *           <a:caption match="[@title]" />
+ *       </a:each>
+ *   </a:list>
+ *   <a:img 
+ *     model  = "{lstPics.selected}" 
+ *     value  = "[@src]" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.img

@@ -22,11 +22,42 @@
 // #ifdef __AMLTEXT || __INC_ALL
 
 /**
- * An element that displays a rectangle containing arbitrary (X)HTML.
+ * This element displays a rectangle containing arbitrary (X)HTML.
  *
  * This element can be databound and use databounding rules to
  * convert data into (X)HTML using--for instance--XSLT or JSLT.
  *
+ * #### Example: Some simple text
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text width="300">
+ *   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. 
+ *   </a:text>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Using Scrolldown
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text id="txtExample"
+ *     width      = "300"
+ *     height     = "100" 
+ *     scrolldown = "true">
+ *       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. Quisque semper sem dignissim quam ullamcorper et lobortis arcu eleifend. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce ac commodo mi. Pellentesque sit amet magna sed velit volutpat volutpat. Nam lobortis sem sed tortor accumsan dictum. Donec scelerisque rhoncus cursus. Mauris dui dolor, vehicula quis lacinia quis, facilisis et eros. Nulla facilisi. Donec urna velit, adipiscing non sollicitudin at, sodales id lorem. Fusce fringilla, magna id pellentesque egestas, neque risus luctus mauris, vel porttitor libero tortor et augue. Integer euismod porttitor mi, at viverra nulla pharetra vel. Etiam odio elit, volutpat a porttitor eu, posuere nec augue. Phasellus placerat lacus ut augue tempor consectetur. 
+ *   </a:text>
+ *   <a:button 
+ *     onclick="txtExample.setValue(txtExample.getValue() + '&lt;br />A new line!')">
+ *       Add a line
+ *   </a:button>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.text
  * @define text
  *

@@ -25,68 +25,87 @@
  * An element allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
  * 
- * #### Example
- *
- * A simple dropdown with inline items.
+ * #### Example: Simple Dropdown
  * 
- * ```xml
- *  <a:dropdown>
- *      <a:item>The Netherlands</a:item>
- *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:dropdown>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown initial-message="Choose a country">
+ *       <a:item>America</a:item>
+ *       <a:item>Armenia</a:item>
+ *       <a:item>The Netherlands</a:item>
+ *   </a:dropdown>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
- *
- * A databound dropdown with items loaded from an xml file.
+ * #### Example: Loading Items From XML
  * 
- * ```xml
- *  <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Capturing and Emitting Events
  *
  * A databound dropdown using the bindings element
  * 
- * ```xml
- *  <a:dropdown model="friends.xml">
- *      <a:bindings>
- *          <a:caption  match = "[@name]" />
- *          <a:css      match = "[self::node()[@type='best']]" value="bestfriend" />
- *          <a:each     match = "[friend]" />
- *      </a:bindings>
- *  </a:dropdown>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <a:table columns="100, 100, 100, 100" cellheight="19" padding="5">
+ *   <!-- startcontent -->
+ *       <a:model id="mdlDD5">
+ *           <data>
+ *               <friend name="Arnold"></friend>
+ *               <friend name="Carmen"></friend>
+ *               <friend name="Giannis"></friend>
+ *               <friend name="Mike"></friend>
+ *               <friend name="Rik"></friend>
+ *               <friend name="Ruben"></friend>
+ *           </data>
+ *       </a:model>
+ *       <a:textbox id="txtAr"></a:textbox>
+ *       <a:dropdown
+ *         id          = "friendDD"
+ *         model       = "mdlDD5"
+ *         each        = "[friend]"
+ *         caption     = "[@name]"
+ *         onslidedown = "txtAr.setValue('slide down')"
+ *         onslideup   = "txtAr.setValue('slide up')" />
+ *       <a:button onclick="friendDD.slideDown()">Slide Down</a:button>
+ *       <a:button onclick="friendDD.slideUp()">Slide Up</a:button>
+ *   <!-- endcontent -->
+ *   </a:table>
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Dynamically Adding Entries
  *
- * A small form:
- * 
- * ```xml
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data>
- *          <name>Mike</name>
- *          <city>amsterdam</city>
- *      </data>
- *  </a:model>
- * 
- *  <a:bar model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[name]" />
- *    
- *      <a:label>City</a:label>
- *      <a:dropdown value="[mdlForm::city]" model="cities.xml">
- *          <a:bindings>
- *              <a:caption match="[text()]" />
- *              <a:value match="[@value]" />
- *              <a:each match="[city]" />
- *          </a:bindings>
- *      </a:dropdown>
- *    
- *      <a:button default="true" action="submit">Submit</a:button>
- *  </a:bar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="friendMdl">
+ *       <data>
+ *           <friend name="Arnold" />
+ *           <friend name="Carmen" />
+ *           <friend name="Giannis" />
+ *           <friend name="Mike" />
+ *           <friend name="Rik" />
+ *           <friend name="Ruben" />
+ *       </data>
+ *   </a:model>
+ *   <a:dropdown
+ *     id      = "dd"
+ *     model   = "friendMdl"
+ *     each    = "[friend]"
+ *     caption = "[@name]">
+ *   </a:dropdown>
+ *   <a:button width="110" onclick="dd.add('&lt;friend name=&quot;Lucas&quot; />')">New Name?</a:button>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.dropdown

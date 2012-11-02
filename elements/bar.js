@@ -25,37 +25,32 @@
  * This element displays a skinnable rectangle which can contain other 
  * AML elements. Often, it's also used in place of a regular HTML `<div>`.
  *
- * This element is used by other elements such as the 
- * [[apf.toolbar]] and `apf.statusbar` elements to specify sections within those elements
- * which in turn can contain other AML elements.
  *
  * #### Example
  *
  * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
- * <!-- startcontent -->
- *     <a:toolbar width="400">
- *         <a:bar>
- *             <a:button
- *               icon    = "../resources/icons/database_save.png"
- *               tooltip = "Save">Save</a:button>
- *             <a:divider />
- *             <a:button 
- *               icon    = "../resources/icons/arrow_undo.png"
- *               tooltip = "Undo">Undo</a:button>
- *             <a:button 
- *               icon    = "../resources/icons/arrow_redo.png"
- *               tooltip = "Redo">Redo</a:button>
- *             <a:divider />
- *             <a:button 
- *               icon    = "../resources/icons/textfield_add.png"
- *               tooltip = "Add row">Add row</a:button>
- *             <a:button 
- *               icon    = "../resources/icons/textfield_delete.png"
- *               tooltip = "Remove row">Remove row</a:button>
- *         </a:bar>
- *     </a:toolbar>
- * <!-- endcontent -->
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400"
+ *       >
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
  * </a:application>
  * ```
  * 

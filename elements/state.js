@@ -82,8 +82,8 @@ apf.StateServer = {
 }
 
 /**
- * An element that specifies a certain state of (a part of) the application. With
- * state we mean a collection of properties on objects that have a certain
+ * This element specifies a certain state of (a part of) the application. By
+ * "state", we mean a collection of properties on objects that have a certain
  * value at one time. 
  * 
  * This element allows you to specify which properties on
@@ -91,81 +91,32 @@ apf.StateServer = {
  * belong to a state-group containing multiple elements with a default state.
  * 
  * #### Example
- *
- * This example shows a log in window and four state elements in a state-group.
  * 
- * ```xml
- *   <a:appsettings>
- *       <a:auth 
- *         login         = "{comm.login(username, password)}" 
- *         logout        = "{comm.logout()}"
- *         autostart     = "false"
- *         window        = "winLogin"
- *         fail-state    = "stFail"
- *         error-state   = "stError"
- *         login-state   = "stIdle"
- *         logout-state  = "stLoggedOut"
- *         waiting-state = "stLoggingIn" />
- *   </a:appsettings>
- *   <a:teleport>
- *       <a:rpc id="comm" protocol="cgi">
- *           <a:method name="login" url="http://localhost/login.php">
- *               <a:param name="username" />
- *               <a:param name="password" />
- *           </a:method>
- *           <a:method name="logout" url="http://localhost/logout.php" />
- *       </a:rpc>
- *   </a:teleport>
- *  
- *   <a:state-group
- *     loginMsg.visible  = "false"
- *     winLogin.disabled = "false">
- *       <a:state id="stFail"
- *         loginMsg.value    = "Username or password incorrect"
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stError"
- *         loginMsg.value    = "An error has occurred. Please check your network."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stLoggingIn"
- *         loginMsg.value    = "Please wait whilst logging in..."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "true"
- *         btnLogout.visible = "false" />
- *       <a:state id="stIdle"
- *         btnLogout.visible = "true" />
- *       <a:state id="stLoggedOut"
- *         btnLogout.visible = "false"
- *         loginMsg.visible  = "false"
- *         winLogin.disabled = "false" />
- *  </a:state-group>
- * 
- *  <a:window id="winLogin" visible="true" width="400" height="400">
- *      <a:label>Username</a:label>
- *      <a:textbox type="username" value="Lukasz" />
- *  
- *      <a:label>Password</a:label>
- *      <a:textbox type="password" value="ppp" />
- * 
- *      <a:label id="loginMsg" />
- *      <a:button action="login">Log in</a:button>
- *  </a:window>
- *  <a:button id="btnLogout" visible="false" action="logout">Log out</a:button>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:state 
+ *     group   = "stRole" 
+ *     id      = "stUser" 
+ *     caption = "You are a user" 
+ *     active  = "true" />
+ *   <a:state 
+ *      group   = "stRole" 
+ *      id      = "stAdmin" 
+ *      caption = "You have super powers" />
+ *   <a:label caption="{stRole.caption}" />
+ *   <a:hbox height="34" width="200" margin="10 0 0 0">
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stUser.activate()">State - User</a:button>
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stAdmin.activate()">State - Admin</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * #### Example
- *
- * This example shows a label using property binding to get it's caption
- * based on the current state.
- * 
- * ```xml
- *  <a:state group="stRole" id="stUser" caption="You are a user" active="true" />
- *  <a:state group="stRole" id="stAdmin" caption="You have super powers" />
- *
- *  <a:label value="{stRole.caption}" />
- *  <a:button onclick="stAdmin.activate()">Become admin</a:button>
- * ```
  * @class apf.state
  * @define state
  *

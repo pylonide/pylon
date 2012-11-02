@@ -22,26 +22,21 @@
 // #ifdef __WITH_ACTIONTRACKER
 
 /**
- * Element the keeps track of all user actions that are triggered in GUI
+ * This element the keeps track of all user actions that are triggered in GUI
  * elements. 
  * 
- * This element maintains a stack of actions and knows how to
- * undo & redo them. It is aware of how to synchronize the changes to the
+ * This element maintains a stack of actions, and knows how to
+ * undo and redo them. It is also aware of how to synchronize the changes to the
  * backend data store.
  * 
- * #### Example
- *
- * ```javascript
- *   datagrid.getActionTracker().undo();
- * ```
  * 
  * #### Remarks
  *
- * With offline support enabled the actiontracker can
+ * With offline support enabled, the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
- * be kept in between application sessions. This means that a user will be able
+ * be kept in-between application sessions. This means that a user will be able
  * to close the application and start it at a later date whilst keeping his or
- * her entire undo/redo stack. Furthermore all changes done whilst being offline
+ * her entire undo/redo stack. Furthermore, all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
  * @class apf.actiontracker

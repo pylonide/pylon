@@ -28,43 +28,49 @@
  * 
  * Max and min attributes define the range of allowed values.
  * 
- * #### Example
+ * #### Example: Setting Maximum and Minimum Ranges
  *
- * Here's a spinner element with  a start value equal to `6` and allowed values from range
- * (-100, 200)
- * 
- * ```xml
- *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *    <a:spinner value="6" min="-6" max="12" width="200"></a:spinner>
+ *  <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
- *
- * Setting the value based on data loaded into this component:
+ * #### Example: Loading Data
  * 
  * ```xml
- *  <a:model id="mdlSpinner">
- *      <data value="56"></data>
- *  </a:model>
- *  <a:spinner value="[@value]" model="mdlSpinner" />
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlSpinner">
+ *       <data value="56"></data>
+ *   </a:model>
+ *   <a:spinner value="[@value]" model="mdlSpinner" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Connecting to a Textbox
  *
- * Showing the usage of a model in a spinner connected with a textbox:
  * 
- * ```xml
- *  <a:model id="mdlTest">
- *      <overview page="1" pages="50" />
- *  </a:model>
- *  <a:spinner 
- *    id      = "spinner" 
- *    min     = "0" 
- *    max     = "[@pages]" 
- *    model   = "mdlTest" 
- *    value   = "[@page]" 
- *    caption = "[@page] of [@pages]">
- *  </a:spinner>
- *  <a:textbox value="{spinner.caption}"></a:textbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlTest">
+ *     <overview page="1" pages="10" />
+ *   </a:model>
+ *   <a:spinner 
+ *     id      = "spinner" 
+ *     min     = "0" 
+ *     max     = "[@pages]" 
+ *     model   = "mdlTest" 
+ *     value   = "[@page]" 
+ *     caption = "[@page] of [@pages]">
+ *   </a:spinner>
+ *   <a:textbox value="{spinner.caption}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.spinner

@@ -22,11 +22,26 @@
 // #ifdef __AMLSPLITBUTTON || __INC_ALL
 
 /**
- * An element displaying a skinnable rectangle which can contain other
- * AML elements. This element is used by other elements such as the
- * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other AML elements.
+ * This element displays a skinnable rectangle that can contain other
+ * AML elements. 
+ * 
+ * This element is used by other elements, such as the
+ * toolbar and statusbar elements, to specify sections.
  *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *  <!-- startcontent -->
+ *    <a:splitbutton id="btnTestRun" caption  = "Run tests"/>
+ *  <!-- endcontent -->
+ *  </a:window>
+ * </a:application>
+ * ```
+ * 
  * #### Remarks
  *
  * This component is used in the accordian element to create its sections. In

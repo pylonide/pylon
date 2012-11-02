@@ -29,7 +29,17 @@
  * 
  * #### Example
  * 
- * {:hboxExample}
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:vbox width="100">
+ *       <a:button height="28" edge="5">Button 1</a:button>
+ *       <a:button height="28" edge="5">Button 2</a:button>
+ *       <a:button height="28" edge="5">Button 3</a:button>
+ *   </a:vbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  * 
  * @see element.hbox
  * 
@@ -43,19 +53,17 @@
  * 
  * #### Example
  * 
- * ```xml
- *  <a:hbox height="500" width="600">
- *      <a:vbox height="500" width="500">
- *          <a:bar height="250" caption="Top bar" />
- *          <a:hbox width="500" height="250">
- *              <a:bar width="150" caption="Bottom left bar"/>
- *              <a:bar width="350" caption="Bottom Right bar"/>
- *          </a:hbox>
- *      </a:vbox>
- *      <a:bar width="100" caption="Right bar"/>
- *  </a:hbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:hbox height="29" width="300" lean="right" margin="5 0 0 0">
+ *       <a:button width="100" edge="5">Button 1</a:button>
+ *       <a:button width="100">Button 2</a:button>
+ *       <a:button width="100">Button 3</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
- * {: #hboxExample}
  * 
  * @see element.vbox
  * 

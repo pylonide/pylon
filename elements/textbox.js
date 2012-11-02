@@ -25,7 +25,7 @@
 
 
 /**
- * An element that displays a rectangular area which allows a
+ * This element displays a rectangular area which allows a
  * user to type information. 
  *
  * The information typed can be
@@ -35,8 +35,91 @@
  * By adding an 
  * autocomplete element as a child, the 
  * value for the textbox can be looked up as you type. By setting the 
- * {@link apf.textbox.mask mask atribute}, complex data input 
+ * {@link apf.textbox.mask mask attribute}, complex data input 
  * validation is done while the user types.
+ *
+ * #### Example: Simple Boxes
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="150">
+ *   <!-- startcontent -->
+ *   <a:textbox value="Text"></a:textbox>
+ *   <a:textbox value="Text" disabled="true" initial-message="I'm disabled!"></a:textbox>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ *
+ * #### Example: Validation
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label for="lbl2">Please enter a minimum of three characters</a:label>
+ *   <a:textbox 
+ *     id         = "lbl2"
+ *     minlength  = "3" 
+ *     maxlength  = "5" 
+ *     invalidmsg = "Invalid! Please enter a minimum of three characters" />
+ *     <a:label for="lbl3">Enter your email address</a:label>
+ *   <a:textbox 
+ *     id         = "lbl3"
+ *     datatype   = "a:email" 
+ *     invalidmsg = "Invalid! Please enter a proper email address" />
+ *   <a:label 
+ *     caption = "A US Phone Number" 
+ *     for     = "txt71">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask = "(000)0000-0000;;_" 
+ *     id   = "txt71" />
+ *   <a:label 
+ *     caption = "A Date"
+ *     for     = "txt73">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask       = "00-00-0000;;_"
+ *     datatype   = "xsd:date"
+ *     invalidmsg = "Invalid date; Please enter a correct date"
+ *     id         = "txt73" />
+ *   <a:label 
+ *     caption = "A MAC Address" 
+ *     for     = "txt75" ></a:label>
+ *   <a:textbox 
+ *     mask = "XX-XX-XX-XX-XX-XX;;_"
+ *     id   = "txt75" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400"
+ *       >
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
  * 
  * @class apf.textbox
  * @define textbox

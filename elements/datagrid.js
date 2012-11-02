@@ -22,30 +22,55 @@
 // #ifdef __AMLDATAGRID || __INC_ALL || __AMLPROPEDIT
 
 /**
- * Element providing a sortable, selectable grid containing scrollable 
- * information. Grid columns can be reordered and resized.
+ * This element  provides a sortable, selectable grid containing scrollable 
+ * information. The grid columns can be reordered and resized.
  * 
  * #### Example
- *
- * This example shows a datagrid width several columns mixing percentage and
- * fixed size columns.
  * 
- * ```xml
- *  <a:model id="mdlNews">
- *      <data>
- *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
- *          <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
- *          <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
- *      </data>
- *  </a:model>
- *  <a:datagrid model="mdlNews" options="move|size">
- *      <a:each match="[news]">
- *          <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
- *          <a:column caption="Date" value="[@date]" width="70" />
- *          <a:column caption="Title" width="180" value="[@title]" />
- *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
- *      </a:each>
- *  </a:datagrid>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdl">
+ *         <data>
+ *             <news name="Ajax" icon="note.png" count="54"></news>
+ *             <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+ *             </news>
+ *             <news name="Android" icon="note.png" count="2"></news>
+ *             <news name="Apple" icon="note.png" count="11"></news>
+ *             <news name="Aptana" icon="note.png" count="30"></news>
+ *             <news name="Canvas" icon="note.png" count="115"></news>
+ *             <news name="Chrome" icon="note.png" count="9"></news>
+ *             <news name="ColdFusion" icon="note.png" count="10"></news>
+ *             <news name="CSS" icon="note.png" count="176"></news>
+ *             <news name="Dojo" icon="note.png" count="224"></news>
+ *             <news name="JavaScript" icon="note.png" count="1218"></news>
+ *             <news name="JSON" icon="note.png" count="59"></news>
+ *             <news name="Mac" icon="note.png" count="1"></news>
+ *             <news name="Mozilla" icon="note.png" count="11"></news>
+ *         </data>
+ *   </a:model>
+ *   <a:datagrid 
+ *     width    = "500" 
+ *     id       = "dg1"
+ *     model    = "mdl"
+ *     height   = "150"> 
+ *       <a:each match="[news]"> 
+ *           <a:column 
+ *             type   = "icon" 
+ *             width  = "16" 
+ *             value  = "[@icon]" />
+ *           <a:column 
+ *             caption = "Name" 
+ *             value   = "[@name]"
+ *             width   = "100%" /> 
+ *           <a:column 
+ *             caption = "Article counter" 
+ *             width   = "180" 
+ *             value   = "[@count]" />
+ *       </a:each> 
+ *   </a:datagrid>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.datagrid

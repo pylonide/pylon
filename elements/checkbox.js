@@ -22,15 +22,38 @@
 // #ifdef __AMLCHECKBOX || __INC_ALL
 
 /**
- * Element displaying a clickable rectangle having two states which
+ * This element displays a clickable rectangle with two states that
  * can be toggled by user interaction.
  * 
- * #### Example
+ * #### Example: Setting and Retrieving Values
  *
- * ```xml
- *  <a:checkbox values="full|empty">the glass is full</a:checkbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox 
+ *   id      = "ch1" 
+ *   values  = "full|empty" 
+ *   checked = "true">Full</a:checkbox>
+ *   <a:textbox value="the glass is {ch1.value}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
+ * #### Example: Disabled Values
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox checked="true">Option 1</a:checkbox>
+ *   <a:checkbox>Option 2</a:checkbox>
+ *   <a:checkbox checked="true" disabled="true">Option 3</a:checkbox>
+ *   <a:checkbox disabled="true">Option 4</a:checkbox>
+ *   <a:checkbox label="Option 5" />
+ *   <a:checkbox label="Option 6" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.checkbox
  *
  * @define checkbox
