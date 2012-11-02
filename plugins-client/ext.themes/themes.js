@@ -203,8 +203,8 @@ module.exports = ext.register("ext/themes/themes", {
             }
         }), 350000);
 
-        ide.addEventListener("init.ext/code/code", function() {
-            if (ceEditor && ceEditor.$editor)
+        ide.addEventListener("init.ext/code/code", function(code) {
+            if (code.amlEditor && code.amlEditor.$editor)
                 mnuThemes.select(null, _self.defaultTheme);
         });
         

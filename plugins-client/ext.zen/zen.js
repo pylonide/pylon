@@ -8,6 +8,8 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+ 
+/*global Firmin vbZen tabEditors btnZenFullscreen vbMain */
 
 define(function(require, exports, module) {
 
@@ -18,7 +20,7 @@ var settings = require("ext/settings/settings");
 var markup = require("text!ext/zen/zen.xml");
 var skin = require("text!ext/zen/skin.xml");
 var menus = require("ext/menus/menus");
-var commands = require("ext/commands/commands");
+var commands = require("ext/commands/commands"); 
 
 module.exports = ext.register("ext/zen/zen", {
     name     : "Zen mode",
@@ -181,13 +183,13 @@ module.exports = ext.register("ext/zen/zen", {
     },
 
     updateButtonPosition : function() {
-        if (!window["btnZenFullscreen"])
+        if (!window.btnZenFullscreen)
             return;
 
         // Extra safe default width
         var sbWidth = 20;
-        if (ceEditor.$editor)
-            sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+        if (editors.currentEditor.name === "Code Editor")
+            sbWidth = editors.currentEditor.amlEditor.$editor.renderer.scrollBar.width;
 
         btnZenFullscreen.setAttribute("right", sbWidth + this.offsetWidth);
     },
@@ -494,12 +496,12 @@ module.exports = ext.register("ext/zen/zen", {
                 iframelist[i].parentNode,
                 iframelist[i].nextSibling,
                 document.adoptNode(iframelist[i]),
-            ]
+            ];
         }
 
         this.animateZen.appendChild(tabEditors.parentNode.$ext);
 
-        for (var i = reappendlist.length - 1; i >= 0; i--) {
+        for (i = reappendlist.length - 1; i >= 0; i--) {
             reappendlist[i][0].insertBefore(
                 reappendlist[i][2],
                 reappendlist[i][1]);
@@ -527,7 +529,7 @@ module.exports = ext.register("ext/zen/zen", {
      * Called during the onmouseout event from the zen button
      */
     fadeZenButtonOut : function() {
-        if (self["btnZenFullscreen"]) {// for the guided tour
+        if (window.btnZenFullscreen) {// for the guided tour
             apf.tween.single(btnZenFullscreen, {
                 type     : "opacity",
                 anim     : apf.tween.easeInOutCubic,
