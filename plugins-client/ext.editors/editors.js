@@ -56,6 +56,8 @@ module.exports = ext.register("ext/editors/editors", {
         }), 40000);
 
         oExtension.fileExtensions.each(function(mime){
+            // force lower-case, to account for other LowerCase checks below
+            mime = mime.toLowerCase();
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 

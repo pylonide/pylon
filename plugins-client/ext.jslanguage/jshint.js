@@ -91,6 +91,8 @@ handler.analyzeSync = function(value, ast) {
  * like / * global foo: true * /
  */
 handler.getGlobals = function() {
+    if (!lint.errors || !this.isFeatureEnabled("jshint"))
+        return {};
     var array = lint.data().globals;
     if (!array) // no data (yet?)
         return {};
