@@ -36,7 +36,7 @@ function getSyntaxRegions(doc, originalSyntax) {
             syntax: originalSyntax,
             sl: 0,
             sc: 0,
-            el: doc.getLength(),
+            el: doc.getLength()-1,
             ec: doc.getLine(doc.getLength()-1).length
         }];
 
