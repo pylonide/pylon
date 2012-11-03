@@ -717,8 +717,10 @@ function asyncParForEach(array, fn, callback) {
         }
         var oldPath = this.$path;
         code = code || "";
-        linereport.workspaceDir = this.$workspaceDir = workspaceDir = workspaceDir.replace(/\/$/, "");
-        linereport.path = this.$path = path.replace(/\/workspace/, workspaceDir);
+        workspaceDir = workspaceDir.replace(/\/$/, "");
+        linereport.workspaceDir = this.$workspaceDir = workspaceDir;
+        path = path.replace(/^\/((?!workspace)[^\/]+\/[^\/]+\/)?workspace/, workspaceDir);
+        linereport.path = this.$path = path;
         this.$language = language;
         this.cachedAst = null;
         this.isParserCalled = false;
