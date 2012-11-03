@@ -22,24 +22,23 @@
 // #ifdef __AMLCOLORPICKER || __INC_ALL
 
 /**
- * Element giving the user a visual choice of several colors presented in a
- * grid.
+ * Element giving the user a visual choice to pick a color just like Photoshop
+ * does it!
  *
  * @constructor
  * @define colorpicker
  *
  *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
- * @since       0.4
+ * @since       3.0
  *
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inheritsElsewhere apf.XForms
  *
- * @attribute {String} color the color that is selected in the color picker.
+ * @attribute {String} value the color that is selected in the color picker.
  *
- * @binding value  Determines the way the value for the element is retrieved 
+ * @binding value  Determines the way the value for the element is retrieved
  * from the bound data.
  * Example:
  * Sets the color based on data loaded into this component.
@@ -51,328 +50,371 @@
  *    model = "mdlColor" 
  *    value = "[@color]" />
  * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker value="[mdlColor::@color]" />
- * </code>
  */
 apf.colorpicker = function(struct, tagName){
     this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
 };
 
 (function(){
-    this.implement(
-        // #ifdef __WITH_DATABINDING
-        apf.StandardBinding
-        // #endif
-        //#ifdef __WITH_DATAACTION
-        ,apf.DataAction
-        //#endif
-        //#ifdef __WITH_XFORMS
-       // ,apf.XForms
-        //#endif
-    );
-    //Options
-    this.$focussable = true; // This object can get the focus
+    this.value       = "ff0000";
+    this.changeTimer = null;
 
-    // PUBLIC METHODS
-    this.setValue = function(value, type){
-        //this.value = value;
-        if (!type) type = "RGBHEX";
-        var a;
-        switch (type) {
-            case "HSL":
-                this.fill(value[0], value[1], value[2]);
-                break;
-            case "RGB":
-                a = RGBtoHLS(value[0], value[1], value[2]);
-                this.fill(a[0], a[1], a[2]);
-                break;
-            case "RGBHEX":
-                var RGB = arguments[0].match(/(..)(..)(..)/);
-                a = RGBtoHLS(Math.hexToDec(RGB[0]),
-                    Math.hexToDec(RGB[1]), Math.hexToDec(RGB[2]));
-                this.fill(a[0], a[1], a[2]);
-                break;
-        }
-    };
+    var c = apf.color;
 
-    this.getValue = function(type){
-        return HSLRangeToRGB(cH, cS, cL);
-    };
+    this.$supportedProperties.push("color", "red", "green", "blue", "hue",
+        "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
 
-    // PRIVATE METHODS
-    var cL       = 120,
-        cS       = 239,
-        cH       = 0,
-        cHex     = "#FF0000",
-        HSLRange = 240;
-
-    function HSLRangeToRGB(H, S, L){
-        return HSLtoRGB(H / (HSLRange - 1), S / HSLRange,
-            Math.min(L / HSLRange, 1))
-    };
-
-    function RGBtoHLS(R,G,B){
-        var RGBMAX = 255,
-            HLSMAX = HSLRange,
-            UNDEF  = (HLSMAX*2/3),
-
-        /* calculate lightness */
-             cMax = Math.max(Math.max(R,G), B),
-             cMin = Math.min(Math.min(R,G), B);
-        L = (((cMax + cMin) * HLSMAX) + RGBMAX) / (2 * RGBMAX);
-
-        if (cMax == cMin) {           /* r=g=b --> achromatic case */
-            S = 0;                    /* saturation */
-            H = UNDEF;                /* hue */
-        }
-        /* chromatic case */
-        else {
-            /* saturation */
-            if (L <= (HLSMAX/2))
-                S = (((cMax - cMin) * HLSMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
-            else
-                S = (((cMax - cMin) * HLSMAX) + ((2 * RGBMAX - cMax - cMin) / 2))
-                  / (2 * RGBMAX - cMax - cMin);
-
-            /* hue */
-            Rdelta = (((cMax - R) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Gdelta = (((cMax - G) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Bdelta = (((cMax - B) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-
-            if (R == cMax)
-                H = Bdelta - Gdelta;
-            else if (G == cMax)
-                H = (HLSMAX / 3) + Rdelta - Bdelta;
-            else
-                H = ((2 * HLSMAX) / 3) + Gdelta - Rdelta;
-
-            if (H < 0)
-                H += HLSMAX;
-            if (H > HLSMAX)
-                H -= HLSMAX;
-        }
-
-        return [H, S, L];
-    }
-
-    function hueToColorValue(hue){
-        var V;
-
-        if (hue < 0)
-            hue = hue + 1
-        else if (hue > 1)
-            hue = hue - 1;
-
-        if (6 * hue < 1)
-            V = M1 + (M2 - M1) * hue * 6
-        else if (2 * hue < 1)
-            V = M2
-        else if (3 * hue < 2)
-            V = M1 + (M2 - M1) * (2 / 3 - hue) * 6
-        else
-            V = M1;
-
-        return Math.max(Math.floor(255 * V), 0);
-    };
-
-    function HSLtoRGB(H, S, L){
-        var R,  G,  B;
-
-        if (S == 0)
-            G = B = R = Math.round (255 * L);
-        else {
-            M2 = (L <= 0.5) ? (L * (1 + S)) : (L + S - L * S);
-
-            M1 = 2 * L - M2;
-            R = hueToColorValue(H + 1 / 3);
-            G = hueToColorValue(H);
-            B = hueToColorValue(H - 1 / 3);
-        }
-
-        return Math.decToHex(R) + "" + Math.decToHex(G) + "" + Math.decToHex(B);
-    };
-
-    this.fill = function(H, S, L){
-        var Hex    = HSLRangeToRGB(H,S,L);
-        this.value = Hex;
-
-        //RGB
-        var RGB            = Hex.match(/(..)(..)(..)/);
-        this.tbRed.value   = Math.hexToDec(RGB[1]);
-        this.tbGreen.value = Math.hexToDec(RGB[2]);
-        this.tbBlue.value  = Math.hexToDec(RGB[3]);
-
-        //HSL
-        this.tbHue.value       = Math.round(H);
-        this.tbSatern.value    = Math.round(S);
-        this.tbLuminance.value = Math.round(L);
-
-        //HexRGB
-        this.tbHexColor.value  = Hex;
-
-        //Shower
-        this.shower.style.backgroundColor = Hex;
-
-        //Luminance
-        var HSL120                        = HSLRangeToRGB(H, S, 120);
-        this.bar1.style.backgroundColor   = HSL120;
-        this.bgBar1.style.backgroundColor = HSLRangeToRGB(H, S, 240);
-        this.bar2.style.backgroundColor   = HSLRangeToRGB(H, S, 0);
-        this.bgBar2.style.backgroundColor = HSL120;
-    };
-
-    this.movePointer = function(e){
-        e = e || event;
-
-        var ty = this.pHolder.ty;
-        if ((e.clientY - ty >= 0) && (e.clientY - ty
-          <= this.pHolder.offsetHeight - this.pointer.offsetHeight + 22))
-            this.pointer.style.top = e.clientY - ty;
-        if (e.clientY - ty < 21)
-            this.pointer.style.top = 21;
-        if (e.clientY - ty
-          > this.pHolder.offsetHeight - this.pointer.offsetHeight + 19)
-            this.pointer.style.top = this.pHolder.offsetHeight
-                - this.pointer.offsetHeight + 19;
-
-        // 255 - posY:
-        cL = (255 - (this.pointer.offsetTop - 22)) / 2.56 * 2.4;
-        this.fill(cH, cS, cL);
-
-        e.returnValue  = false;
-        e.cancelBubble = true;
-    };
-
-    this.setLogic = function(){
+    this.$propHandlers["red"]        =
+    this.$propHandlers["green"]      =
+    this.$propHandlers["blue"]       =
+    this.$propHandlers["hue"]        =
+    this.$propHandlers["saturation"] = 
+    this.$propHandlers["brightness"] = 
+    this.$propHandlers["hex"]        = function(val, prop) {
+        clearTimeout(this.changeTimer);
         var _self = this;
-        this.pHolder.style.zIndex = 10;
-        this.pHolder.onmousedown  = function(){
-            this.ty = apf.getAbsolutePosition(this)[1] - 20;
+        this.changeTimer = $setTimeout(function() {
+            _self.$change(prop);
+        });
+    };
 
-            _self.movePointer();
-            document.onmousemove = _self.movePointer
-            document.onmouseup   = function(){ this.onmousemove = function(){}; };
+    this.$propHandlers["value"] = function(val) {
+        this.$restoreOriginal();
+    };
+
+    this.$restoreOriginal = function() {
+        var hsb = c.hexToHSB(this.value);
+        this.hue = hsb.h;
+        this.saturation = hsb.s;
+        this.brightness = hsb.b;
+        this.$change();
+        this.oCustomColor.style.backgroundColor = 
+            (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
+    };
+
+    this.$change = function(prop) {
+        var hsb = c.fixHSB({
+            h: this.hue,
+            s: this.saturation,
+            b: this.brightness
+        });
+        
+        var hex = c.HSBToHex(hsb);
+        var rgb = c.HSBToRGB(hsb);
+
+        this.oNewColor.style.backgroundColor = "#" + hex;
+
+        if (prop != "red" && prop != "green" && prop != "blue") {
+            this.setProperty("red", rgb.r);
+            this.setProperty("green", rgb.g);
+            this.setProperty("blue", rgb.b);
         }
-
-        this.container.onmousedown = function(e){
-            e = e || event;
-
-            this.active = true;
-            if (e.srcElement == this) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-            _self.point.style.display = "none";
-
-            e.cancelBubble = true;
+        if (prop != "hue" && prop != "saturation" && prop != "brightness") {
+            this.setProperty("hue", hsb.h);
+            this.setProperty("saturation", hsb.s);
+            this.setProperty("brightness", hsb.b);
         }
+        if (prop != "hex")
+            this.setProperty("hex", hex);
 
-        this.container.onmouseup = function(e){
-            e = e || event;
-            this.active               = false;
-            _self.point.style.top     = e.offsetY - _self.point.offsetHeight - 2;
-            _self.point.style.left    = e.offsetX - _self.point.offsetWidth - 2;
-            _self.point.style.display = "block";
+        this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
+        this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
+        this.oSelectorInd.style.left = parseInt(150 * hsb.s / 100, 10) + "px";
+        this.oSelectorInd.style.top  = parseInt(150 * (100 - hsb.b) / 100, 10) + "px";
+    };
 
-            _self.change(_self.tbHexColor.value);
-        }
+    this.$draw = function() {
+        if (!this.id)
+            this.setProperty("id", "colorpicker" + this.$uniqueId);
 
-        this.container.onmousemove = function(e){
-            e = e || event;
-            if (this.active) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-        }
-
-        /*this.tbHexColor.host =
-        this.tbRed.host =
-        this.tbGreen.host =
-        this.tbBlue.host = this;
-        this.tbHexColor.onblur = function(){_self.setValue("RGBHEX", this.value);}
-        this.tbRed.onblur = function(){_self.setValue("RGB", this.value, _self.tbGreen.value, _self.tbBlue.value);}
-        this.tbGreen.onblur = function(){_self.setValue("RGB", _self.tbRed.value, this.value, _self.tbBlue.value);}
-        this.tbBlue.onblur = function(){_self.setValue("RGB", _self.tbRed.value, _self.tbGreen.value, this.value);}
-        */
-    }
-
-    // Databinding
-    this.$mainBind = "color";
-
-    this.$draw = function(parentNode, clear){
         //Build Main Skin
-        this.$ext    = this.$getExternal();
+        this.$ext          = this.$getExternal();
+        this.oSelector     = this.$getLayoutNode("main", "selector", this.$ext);
+        this.oSelectorInd  = this.$getLayoutNode("main", "selector_indic", this.$ext);
+        this.oHue          = this.$getLayoutNode("main", "hue", this.$ext);
+        this.oNewColor     = this.$getLayoutNode("main", "newcolor", this.$ext);
+        this.oCustomColor  = this.$getLayoutNode("main", "customcolor", this.$ext);
+        this.oInputs       = this.$getLayoutNode("main", "inputs", this.$ext);
 
-        this.tbRed   = this.$getLayoutNode("main", "red", this.$ext);
-        this.tbGreen = this.$getLayoutNode("main", "green", this.$ext);
-        this.tbBlue  = this.$getLayoutNode("main", "blue", this.$ext);
+        this.$restoreOriginal();
 
-        this.tbHue       = this.$getLayoutNode("main", "hue", this.$ext);
-        this.tbSatern    = this.$getLayoutNode("main", "satern", this.$ext);
-        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.$ext);
-
-        this.tbHexColor  = this.$getLayoutNode("main", "hex", this.$ext);
-        var _self = this;
-        this.tbHexColor.onchange = function(){
-            _self.setValue(this.value, "RGBHEX");
-        };
-
-        this.shower = this.$getLayoutNode("main", "shower", this.$ext);
-
-        this.bar1   = this.$getLayoutNode("main", "bar1", this.$ext);
-        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.$ext);
-        this.bar2   = this.$getLayoutNode("main", "bar2", this.$ext);
-        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.$ext);
-
-        this.pHolder   = this.$getLayoutNode("main", "pholder", this.$ext);
-        this.pointer   = this.$getLayoutNode("main", "pointer", this.$ext);
-        this.container = this.$getLayoutNode("main", "container", this.$ext);
-        this.point     = this.$getLayoutNode("main", "point", this.$ext);
-
-        var nodes = this.$ext.getElementsByTagName("input");
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].onselectstart = function(e){
+        //attach behaviours
+        var _self = this,
+            doc   = (!document.compatMode || document.compatMode == 'CSS1Compat')
+                ? document.html : document.body;
+        function stopMoving() {
+            document.onmousemove = document.onmouseup = null;
+            _self.$change();
+            return false;
+        }
+        function selectorDown() {
+            var el  = this,
+                pos = apf.getAbsolutePosition(el);
+            
+            function selectorMove(e) {
                 e = e || event;
-                e.cancelBubble = true;
+                var pageX = e.pageX || e.clientX + (doc ? doc.scrollLeft : 0),
+                    pageY = e.pageY || e.clientY + (doc ? doc.scrollTop  : 0);
+                // only the saturation and brightness change...
+                _self.brightness = parseInt(100 * (150 - Math.max(0, Math.min(150,
+                    (pageY - pos[1])))) / 150, 10);
+                _self.saturation = parseInt(100 * (Math.max(0, Math.min(150,
+                    (pageX - pos[0])))) / 150, 10);
+                _self.$change();
+                pos = apf.getAbsolutePosition(el);
+                return false;
+            }
+            document.onmousemove = selectorMove;
+            document.onmouseup   = function(e) {
+                selectorMove(e);
+                return stopMoving(e);
             };
         }
+        
+        function hueDown(e) {
+            var el  = this,
+                pos = apf.getAbsolutePosition(el);
 
-        this.setLogic();
+            function hueMove(e) {
+                e = e || event;
+                var pageY = e.pageY || e.clientY + (doc ? doc.scrollTop : 0);
+                _self.hue  = parseInt(360 * (150 - Math.max(0,
+                    Math.min(150, (pageY - pos[1])))) / 150, 10);
+                _self.$change();
+                pos = apf.getAbsolutePosition(el);
+            }
+            document.onmousemove = hueMove;
+            document.onmouseup   = function(e) {
+                hueMove(e);
+                return stopMoving(e);
+            };
+        }
+        this.oSelector.onmousedown       = selectorDown;
+        this.oHue.parentNode.onmousedown = hueDown;
+        this.oCustomColor.onmousedown    = function() {
+            _self.$restoreOriginal();
+        };
 
-        this.setValue("ffffff");
-        //this.fill(cH, cS, cL);
-    }
+        function spinnerChange(e) {
+            var o     = e.currentTarget;
+            var isRGB = false;
+            if (o.id.indexOf("hue") > -1) {
+                _self.hue = e.value;
+            }
+            else if (o.id.indexOf("saturation") > -1) {
+                _self.saturation = e.value;
+            }
+            else if (o.id.indexOf("brightness") > -1) {
+                _self.brightness = e.value;
+            }
+            else if (o.id.indexOf("red") > -1) {
+                _self.red = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("green") > -1) {
+                _self.green = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("blue") > -1) {
+                _self.blue = e.value;
+                isRGB = true;
+            }
 
-    this.$loadAml = function(x){
-        if (x.getAttribute("color"))
-            this.setValue(x.getAttribute("color"));
-    }
+            if (isRGB) {
+                var hsb = c.RGBToHSB({r: _self.red, g: _self.green, b: _self.blue});
+                _self.hex = c.HSBToHex(hsb);
+                _self.hue = hsb.h;
+                _self.saturation = hsb.s;
+                _self.brightness = hsb.b;
+            }
+            else {
+                _self.hex = c.HSBToHex({h: _self.hue, s: _self.saturation, b: _self.brightness});
+            }
 
-    this.$destroy = function(){
-        this.container.host  =
-        this.tbRed.host      =
-        this.tbGreen.host    =
-        this.tbBlue.host     =
-        this.tbHexColor.host =
-        this.pHolder.host    = null;
-    }
-}).call(apf.colorpicker.prototype = new apf.GuiElement());
+            _self.$change(isRGB ? "red" : "hue");
+        }
+
+        //append APF widgets for additional controls
+        var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
+        new apf.hbox({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            left: 212,
+            top: 52,
+            width: 150,
+            padding: 3,
+            childNodes: [
+                new apf.vbox({
+                    padding: 3,
+                    edge: "0 10 0 0",
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "R:",
+                                    "for": this.id + "_red"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_red",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".red}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "G:",
+                                    "for": this.id + "_green"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_green",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".green}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_blue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_blue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".blue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new apf.vbox({
+                    padding: 3,
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "H:",
+                                    "for": this.id + "_hue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_hue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 360,
+                                    value: "{" + this.id + ".hue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "S:",
+                                    "for": this.id + "_saturation"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_saturation",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".saturation}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_brightness"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_brightness",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".brightness}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        });
+
+        new apf.label({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            left: 212,
+            top: 144,
+            width: 14,
+            caption: "#",
+            "for": this.id + "_hex"
+        });
+
+        this.$input = new apf.textbox({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            skin: this["skin-textbox"],
+            mask: "<XXXXXX;;_",
+            left: 222,
+            top: 140,
+            width: 60,
+            value: "{" + this.id + ".hex}",
+            onafterchange: function(e) {
+                _self.hex = c.fixHex(e.value);
+                var hsb   = c.hexToHSB(_self.hex);
+                _self.hue = hsb.h;
+                _self.saturation = hsb.s;
+                _self.brightness = hsb.b;
+                _self.$change();
+            }
+        });
+    };
+
+    this.$destroy = function() {
+        this.$ext = this.oSelector = this.oSelectorInd = this.oHue =
+            this.oNewColor = this.oCustomColor = this.oInputs = null;
+    };
+// #ifdef __WITH_DATABINDING
+}).call(apf.colorpicker.prototype = new apf.StandardBinding());
+/* #else
+}).call(apf.colorpicker.prototype = new apf.Presentation());
+#endif */
 
 apf.aml.setElement("colorpicker", apf.colorpicker);
 
