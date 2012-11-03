@@ -17,7 +17,7 @@ module.exports = {
         emitter.emit = emitter._dispatchEvent;
         emitter.on("markers", function(markers) {
             // false color & empty selector
-            assert.equal(markers.length, 4);
+            assert.equal(markers.length, 2);
             next();
         });
         var worker = new LanguageWorker(emitter);
