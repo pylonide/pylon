@@ -82,7 +82,7 @@ function isPopupVisible() {
 }
 
 function retrievePreceedingIdentifier(text, pos) {
-    regex = ID_REGEXES[getSyntax()] || ID_REGEX;
+    var regex = ID_REGEXES[getSyntax()] || ID_REGEX;
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
         if(regex.test(text[i]))
