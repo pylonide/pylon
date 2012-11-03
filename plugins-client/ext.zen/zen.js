@@ -513,7 +513,7 @@ module.exports = ext.register("ext/zen/zen", {
         apf.tween.single(btnZenFullscreen, {
             type     : "opacity",
             anim     : apf.tween.easeInOutCubic,
-            from     : 0.01,
+            from     : 0,
             to       : 1,
             steps    : 8,
             interval : 20,
@@ -532,7 +532,7 @@ module.exports = ext.register("ext/zen/zen", {
                 type     : "opacity",
                 anim     : apf.tween.easeInOutCubic,
                 from     : 1,
-                to       : 0.01,
+                to       : 0,
                 steps    : 8,
                 interval : 20,
                 control  : (this.control = {}),
