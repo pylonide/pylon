@@ -18,7 +18,7 @@ completer.handlesLanguage = function(language) {
     return ["css", "php"].indexOf(language) !== -1;
 };
 
-var CSS_ID_REGEX = /[a-zA-Z_0-9\$\-]/;
+var CSS_ID_REGEX = /[a-zA-Z-]/;
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var language = this.language;
@@ -59,17 +59,21 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var matches = [];
     types.forEach(function (type) {
         var icon = getIcon(type);
-        var append = type.indexOf("function") === -1 ? "" : "()";
+        var nameAppend = "", replaceAppend = "";
+        if (type.indexOf("function") !== -1) {
+            nameAppend = "()";
+            replaceAppend = "(^^)";
+        }
         var deprecated = type.indexOf("deprecated") === -1 ? 0 : 1;
         var compls = completeUtil.findCompletions(identifier, mode[type]);
         matches.push.apply(matches, compls.map(function(m) {
             return {
-              name        : m,
-              replaceText : m + append,
-              doc         : deprecated ? ("Deprecated: <del>" + m+append + "</del>") : null,
-              icon        : icon,
-              meta        : type,
-              priority    : 2 - deprecated
+                name        : m + nameAppend,
+                replaceText : m + replaceAppend,
+                doc         : deprecated ? ("Deprecated: <del>" + m + nameAppend + "</del>") : null,
+                icon        : icon,
+                meta        : type,
+                priority    : 2 - deprecated
             };
         }));
     });

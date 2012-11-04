@@ -22,8 +22,10 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
-// Adding HAML to HTML syntax completion
-var HTML_REGEX = /[a-zA-Z_0-9\$\_.#]/;
+var ID_REGEXES = {
+    "html": /[a-zA-Z_0-9\$\_.#]/, // Jade-typing regex
+    "css": /[a-zA-Z-]/
+};
 
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
@@ -77,8 +79,8 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos, regex) {
-    regex = regex || (isHtml() && HTML_REGEX) || ID_REGEX;
+function retrievePreceedingIdentifier(text, pos) {
+    var regex = ID_REGEXES[editors.currentEditor.amlEditor.syntax] || ID_REGEX;
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
         if(regex.test(text[i]))
