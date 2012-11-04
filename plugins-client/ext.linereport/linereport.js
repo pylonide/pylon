@@ -40,8 +40,10 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onWorkerMessage : function(event) {
-        if (ide.readonly)
+        if (ide.readonly || this.isCollabSlave()) {
+            this.disabled = true;
             return;
+        }
         
         if (!this.firstUsed && event.data.path) {
             this.firstUsed = true;
@@ -59,6 +61,11 @@ module.exports = ext.register("ext/linereport/linereport", {
             send();
         else
             this.saveTriggers[path] = send;
+    },
+    
+    isCollabSlave : function() {
+         var collab = require("core/ext").extLut["ext/collaborate/collaborate"];
+         return collab && collab.ownerUid && collab.myUserId !== collab.ownerUid;
     },
     
     onServerMessage : function(event) {
