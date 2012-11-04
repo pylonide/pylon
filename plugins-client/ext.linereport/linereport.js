@@ -40,6 +40,9 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onWorkerMessage : function(event) {
+        if (ide.readonly)
+            return;
+        
         if (!this.firstUsed && event.data.path) {
             this.firstUsed = true;
             this.onFirstUse(event);
