@@ -250,6 +250,9 @@ function asyncParForEach(array, fn, callback) {
 
 (function() {
     
+    this.cachedAst = null;
+    this.isParserCalled = false;
+    
     this.getLastAggregateActions = function() {
         if(!this.$lastAggregateActions[this.$path])
             this.$lastAggregateActions[this.$path] = {markers: [], hint: null};
@@ -324,37 +327,18 @@ function asyncParForEach(array, fn, callback) {
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
-                try {
-                    handler.parse(_self.doc.getValue(), function(ast) {
-                        if(ast)
-                            _self.cachedAst = ast;
-                        next();
-                    });
-                } catch(e) {
-                    if (e instanceof TypeError || e instanceof ReferenceError || typeof e === 'AssertionError')
-                        throw e;
-                    // Ignore parse errors
+                handler.parse(_self.doc.getValue(), function(ast) {
+                    if (ast)
+                        _self.cachedAst = ast;
                     next();
-                }
+                });
             } else {
                 next();
             }
         }, function() {
+            _self.isParserCalled = true;
             callback(_self.cachedAst);
         });
-    };
-
-    this.isParsingSupported = function() {
-        if (this.cachedAst)
-            return true;
-        var result;
-        var _self = this;
-        this.handlers.forEach(function(handler) {
-            if (handler.handlesLanguage(_self.$language) &&
-                handler.isParsingSupported())
-                result = true;
-        });
-        return result;
     };
     
     /**
@@ -468,7 +452,7 @@ function asyncParForEach(array, fn, callback) {
         this.parse(function(ast) {
             var markers = [];
             asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language) && (ast || !_self.isParsingSupported())) {
+                if (handler.handlesLanguage(_self.$language)) {
                     handler.analyze(_self.doc, ast, function(result) {
                         if (result)
                             markers = markers.concat(result);
@@ -521,7 +505,7 @@ function asyncParForEach(array, fn, callback) {
     this.inspect = function (event) {
         var _self = this;
         
-        if (this.cachedAst || !this.isParsingSupported()) {
+        if (this.isParserCalled) {
             // find the current node based on the ast and the position data
             this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
                 // find a handler that can build an expression for this language
@@ -598,7 +582,7 @@ function asyncParForEach(array, fn, callback) {
         }
         
         var currentPos = {line: pos.row, col: pos.column};
-        if (this.cachedAst) {
+        if (this.isParserCalled) {
             var ast = this.cachedAst;
             this.findNode(ast, currentPos, function(currentNode) {
                 if (currentPos != _self.lastCurrentPos || currentNode !== _self.lastCurrentNode || pos.force) {
@@ -621,8 +605,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var ast = this.cachedAst;
         
-        if (!ast && this.isParsingSupported())
-            return;
+        if (!this.isParserCalled)
+            return callback();
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             if (!currentNode) 
                 return callback();
@@ -638,7 +622,7 @@ function asyncParForEach(array, fn, callback) {
                 }
                 else {
                     next();
-            }
+                }
             }, function () {
                 callback(endResult);
             });
@@ -649,7 +633,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
         
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
+        _self.$getDefinitionDeclaration(pos.row, pos.column, function(result) {
             if (result)
                 _self.sender.emit("definition", result);
         });
@@ -669,7 +653,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var ast = this.cachedAst;
         
-        if (!ast && this.isParsingSupported())
+        if (!this.isParserCalled)
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
             asyncForEach(_self.handlers, function(handler, next) {
@@ -748,14 +732,21 @@ function asyncParForEach(array, fn, callback) {
         });
     };
     
+    // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
+        if (!this.$analyzeInterval) {
+            this.$analyzeInterval = setInterval(function() {
+                _self.analyze(function(){});
+            }, 2000);
+        }
         var oldPath = this.$path;
         code = code || "";
-        linereport.path = this.$path = path;
+        linereport.path = this.$path = path.replace(/^\/(?!workspace)[^\/]+\/[^\/]+/, "");
         this.$language = language;
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
         this.cachedAst = null;
+        this.isParserCalled = false;
         this.lastCurrentNode = null;
         this.lastCurrentPos = null;
         this.setValue(code);
@@ -783,15 +774,11 @@ function asyncParForEach(array, fn, callback) {
         }
     };
     
-    this.documentOpen = function(path, language, code) {
-        var _self = this;
-        var doc = {getValue: function() {return code;} };
-        asyncForEach(this.handlers, function(handler, next) {
-            handler.onDocumentOpen(path, doc, _self.path, next);
-        });
-    };
-    
     this.documentClose = function(event) {
+        if (this.$analyzeInterval) {
+            clearInterval(this.$analyzeInterval);
+            this.$analyzeInterval = null;
+        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
