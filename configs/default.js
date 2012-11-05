@@ -104,7 +104,7 @@ var config = [
             "ext/imgview/imgview",
             //"ext/preview/preview",
             "ext/extmgr/extmgr",
-            //"ext/game/game",
+            "ext/game/game",
             //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
