@@ -145,7 +145,6 @@ var config = [
             "ext/language/liveinspect"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
-            //"ext/acebugs/acebugs"
         ]
     }, {
         packagePath: "vfs-architect/local",
