@@ -58,7 +58,7 @@ module.exports = ext.register("ext/language/language", {
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
             var Worker = useUIWorker ? UIWorkerClient : WorkerClient;
-            var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
+            var worker = _self.worker = new Worker(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
             
             ide.addEventListener("afteropenfile", function(event){
