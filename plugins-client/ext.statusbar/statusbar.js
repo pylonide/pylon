@@ -206,22 +206,18 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
     updateStatus : function(ace) {
         if (!ace.selection.isEmpty()) {
-            var selectionLength;
             var range = ace.getSelectionRange();
             if (this.$showRange) {
-                selectionLength = "(" +
+                this.$lblSelectionLength = "(" +
                     (range.end.row - range.start.row) + ":" +
                     (range.end.column - range.start.column) + ")";
-            } 
-            else {
+            } else {
                 var value = ace.session.getTextRange(range);
-                selectionLength = "(" + value.length + " Bytes)";
+                this.$lblSelectionLength = "(" + value.length + " Bytes)";
             }
-            
-            lblSelectionLength.setAttribute("caption", selectionLength);
-        } 
-        else {
-            lblSelectionLength.setAttribute("caption", "");
+            lblSelectionLength.$ext.textContent = this.$lblSelectionLength;
+        } else if (this.$lblSelectionLength) {            
+            lblSelectionLength.$ext.textContent = this.$lblSelectionLength = "";
         }
 
         var cursor = ace.selection.lead;
@@ -237,8 +233,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             status = ace.$vimModeHandler.getStatusText();
         else if (ace.commands.recording)
             status = "REC";
-            
-        lblEditorStatus.setAttribute("caption", status);
+        lblEditorStatus.$ext.textContent = status;
     },
     
     toggleSelectionLength: function(){

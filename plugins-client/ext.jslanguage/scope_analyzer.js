@@ -621,13 +621,9 @@ handler.analyze = function(doc, ast, callback) {
         jshintGlobals = jshint.getGlobals();
     }
     
-    if (ast) {
-        var rootScope = new Scope();
-        scopeAnalyzer(rootScope, ast);
-        callback(markers.concat(jshintMarkers));
-    } else {
-        callback(jshintMarkers);
-    }
+    var rootScope = new Scope();
+    scopeAnalyzer(rootScope, ast);
+    callback(markers.concat(jshintMarkers));
 };
 
 var isCallbackCall = function(node) {
@@ -726,8 +722,6 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 };
 
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
-    if (!fullAst)
-        return callback();
     var v;
     var mainNode;
     currentNode.rewrite(
@@ -794,8 +788,6 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
 };
 
 handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
-    if (!fullAst)
-        return callback();
     handler.getVariablePositions(doc, fullAst, pos, currentNode, function (data) {
         if (!data || !data.declarations || data.declarations.length === 0) {
             return callback(null);

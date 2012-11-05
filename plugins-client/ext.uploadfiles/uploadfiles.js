@@ -123,7 +123,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         });
 
         function handleFileSelect(e){
-            var files = Array.prototype.slice.call(e.target.files);
+            var files = e.target.files;
             _self.startUpload(files);
             e.target.value = "";
         };
@@ -174,19 +174,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     _self.onProgress(data.value);
                     break;
                 case "paused":
-                    if (!ide.onLine || data.error === 500) {
-                        ide.addEventListener("afteronline", function(e) {
-                            // upload current file again
-                            _self.upload();
-                        });
-                    }
-                    // so when we have 404's or something, we'll show this to the users
-                    else {
-                        util.alert("Upload failed", "Uploading " + data.filepath + " failed",
-                            "The server responded with error code " + data.error);
-
-                        _self.removeCurrentUploadFile();
-                    }
+                    ide.addEventListener("afteronline", function(e) {
+                        // upload current file again
+                        _self.upload();
+                    });
                     break;
                 case "debug":
                     console.log(JSON.stringify(data));
@@ -250,14 +241,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
         var files = e.dataTransfer.files;
         // Dropped item is a folder, second condition is for FireFox
-        if (!files.length || !files[0].size ||
-                // because this isnt a super check it also triggers on a file that the
-                // browser doesn't recognize (no mime-type), so... let's check on file name
-                // containing a . as well, it will only change behavior in Chrome a.t.m.
-                // and as of Chrome 21 folder upload is available there
-                (files.length == 1 && files[0].type == "" && 
-                    files[0].name.indexOf(".") === -1)) {
-                    
+        if (!files.length || !files[0].size || (files.length == 1 && files[0].type == "")) {
             ext.initExtension(this);
 
             winNoFolderSupport.show();
@@ -293,8 +277,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     onDrop: function(e) {
         ext.initExtension(this);
 
-        var files = Array.prototype.slice.call(e.dataTransfer.files);
-        this.startUpload(files);
+        this.startUpload(e.dataTransfer.files);
     },
 
     startUpload: function(files) {

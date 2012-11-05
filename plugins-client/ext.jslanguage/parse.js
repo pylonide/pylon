@@ -17,17 +17,10 @@ handler.handlesLanguage = function(language) {
 };
     
 handler.parse = function(code, callback) {
-    var result;
-    try {
-        code = code.replace(/^(#!.*\n)/, "//$1");
-        result = parser.parse(code);
-        traverse.addParentPointers(result);
-    } catch (e) {
-        // Ignore any *fatal* parse errors; JSHint will report them
-        result = null;
-    }
-    
-    callback(result);
+    code = code.replace(/^(#!.*\n)/, "//$1");
+    var ast = parser.parse(code);
+    traverse.addParentPointers(ast);
+    callback(ast);
 };
 
 handler.isParsingSupported = function() {

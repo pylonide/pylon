@@ -45,8 +45,7 @@ handler.analyzeSync = function(doc, ast) {
         laxcomma: true,
         loopfunc: true,
         lastsemic: true,
-        multistr: true,
-        onecase: true
+        multistr: true
     });
     
     lint.errors.forEach(function(warning) {
@@ -89,8 +88,6 @@ handler.analyzeSync = function(doc, ast) {
  * like / * global foo: true * /
  */
 handler.getGlobals = function() {
-    if (!lint.errors || !this.isFeatureEnabled("jshint"))
-        return {};
     var array = lint.data().globals;
     if (!array) // no data (yet?)
         return {};
