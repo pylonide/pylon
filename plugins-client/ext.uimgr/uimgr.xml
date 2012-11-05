@@ -237,7 +237,7 @@ APF doesn't generate usefull errors when for example it fallsback to a default s
                             <div class="toolbar">
                                 <div class="subbar">
                                     <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
-                                        <a:button id="btnVBox" skin="toolbarbutton"icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                                        <a:button id="btnVBox" skin="toolbarbutton" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
                                         <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
                                         <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
                                         <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />

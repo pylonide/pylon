@@ -44,10 +44,8 @@
 }
 #winUIExtContent {
     margin-top: 32px;
+    max-height: 100% !important;
     padding: 20px;
-}
-.lightsOff {
-    background: #2B2B2B;
 }
 
 #winUIExtContent h1 {
@@ -111,4 +109,24 @@
 .position-static {
     position: static !important;
     margin: 0 !important;
+}
+
+
+
+.lightsOff {
+    background: #2B2B2B;
+}
+#winUIExtContent.lightsOff h3 {
+    color: #ccc;
+}
+#winUIExtContent.lightsOff h4 ,
+#winUIExtContent.lightsOff .winUIExtCode {
+    background: #222;
+    color: #aaa;
+}
+#winUIExtContent.lightsOff h4 {
+    border-top-color: #111;
+}
+#winUIExtContent.lightsOff .winUIExtCode {
+    box-shadow: 0 0 0 1px #111;
 }

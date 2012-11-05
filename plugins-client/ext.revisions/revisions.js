@@ -56,7 +56,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     markup: markup,
     offline: true,
     nodes: [],
-    skin: skin,
+    skin: {
+        id   : "revisions",
+        data : skin
+    },
 
     /**
      * Revisions#rawRevisions -> Object

@@ -746,175 +746,839 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             versions: [
                                 { //version
                                     settings: {
-                                        width: "100"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "c9-logo",
-                                        width: "100"
+                                        "class": "c9-logo"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "toggle-black-menu-bar",
-                                        width: "100"
+                                        "class": "toggle-black-menu-bar"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "spacer",
-                                        width: "100"
+                                        "class": "spacer"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "rundebug",
-                                        width: "100"
+                                        "class": "rundebug"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "project_files",
-                                        width: "100"
+                                        "class": "project_files"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "open_files",
-                                        width: "100"
+                                        "class": "open_files"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "testing",
-                                        width: "100"
+                                        "class": "testing"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "visual_editor",
-                                        width: "100"
+                                        "class": "visual_editor"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "preferences",
-                                        width: "100"
+                                        "class": "preferences"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "github_corner",
-                                        width: "100"
+                                        "class": "github_corner"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "deploy",
-                                        width: "100"
+                                        "class": "deploy"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "the_store",
-                                        width: "100"
+                                        "class": "the_store"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "shop",
-                                        width: "100"
+                                        "class": "shop"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "shop1",
-                                        width: "100"
+                                        "class": "shop1"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "shop2",
-                                        width: "100"
+                                        "class": "shop2"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "shop3",
-                                        width: "100"
+                                        "class": "shop3"
                                     }
                                 },
                                 { //version
                                     settings: {
-                                        "class": "shop4",
-                                        width: "100"
+                                        "class": "shop4"
                                     }
                                 }
                             ]
                         },
                         { //skin
-                            name: "",
+                            name: "toolbarbutton",
                             versions: [
                                 { //version
                                     settings: {
-                                        caption: "Button",
-                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        icon: "arrow_left.png"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "revisions",
+                    skins: [
+                        { //skin
+                            name: "revisionsbutton",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "ui-btn-red"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "quicksearch",
+                    skins: [
+                        { //skin
+                            name: "btnsearchicon",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        icon: "rounded_close.png"
                                     }
                                 }
                             ]
                         },
                         { //skin
-                            name: "",
+                            name: "btnquicksearchnav",
                             versions: [
                                 { //version
                                     settings: {
-                                        caption: "Button",
-                                        width: "100"
+                                        "class": "btnquicksearchnavLeft"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "btnquicksearchnavLeft withDivider"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "btnquicksearchnavRight"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "searchinfiles",
+                    skins: [
+                        { //skin
+                            name: "btnquicksearchnav",
+                            note: "remove",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "searchreplace",
+                    note: "duplicate in quicksearch",
+                    skins: [
+                        { //skin
+                            name: "btnquicksearchnav",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "class": "btnquicksearchnavLeft"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "btnquicksearchnavRight"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "c9statusbar",
+                    skins: [
+                        { //skin
+                            name: "btn-expand-statusbar",
+                            note: "not used",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        icon: "statusbar-arrow.png"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        icon: "statusbar-arrow.png"
+                                    },
+                                    wrapperClass: "dark"
+                                },
+                                { //version
+                                    settings: {
+                                        icon: "statusbar-arrow.png"
+                                    },
+                                    wrapperClass: "expanded"
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "btn-statusbar-icon",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        icon: "pref-ico.png",
+                                        height: "23"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "uploadfiles",
+                    skins: [
+                        { //skin
+                            name: "btn-expand-statusbar",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "cancel"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "zen",
+                    skins: [
+                        { //skin
+                            name: "zenbutton",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "class": "notfull",
+                                        height: "26",
+                                        width: "26"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "full",
+                                        height: "26",
+                                        width: "26"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                }
+            ],
+            checkbox: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "checkbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        label: "checkbox"
                                     }
                                 }
                             ]
                         },
                         { //skin
-                            name: "",
+                            name: "cboffline",
                             versions: [
                                 { //version
                                     settings: {
-                                        caption: "Button",
-                                        width: "100"
+                                        width: "55"
                                     }
                                 }
                             ]
                         },
                         { //skin
-                            name: "",
+                            name: "checkbox-menu",
                             versions: [
                                 { //version
                                     settings: {
-                                        caption: "Button",
-                                        width: "100"
+                                        label: "Checkbox"
                                     }
                                 }
                             ]
                         },
                         { //skin
-                            name: "",
+                            name: "checkbox_black",
                             versions: [
                                 { //version
                                     settings: {
-                                        caption: "Button",
-                                        width: "100"
+                                        label: "Checkbox"
                                     }
                                 }
                             ]
                         },
                         { //skin
-                            name: "",
+                            name: "checkbox_grey",
                             versions: [
                                 { //version
                                     settings: {
-                                        caption: "Button",
-                                        width: "100"
+                                        label: "Checkbox"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "db-checkbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        label: "Checkbox"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "bluecheck",
+                                        label: "Checkbox"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                },
+                { //skinset
+                    name: "uploadfiles",
+                    skins: [
+                        { //skin
+                            name: "uploadactivity-switch",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "cancel"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                    
+                }
+            ],
+            divider: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "divider",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "c9-divider",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "c9-divider-double",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "c9-divider-hor",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "divider-debugpanel",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "divider_console",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            dropdown: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "dropdown",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "black_dropdown",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "dropdown-dark-glossy",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "light_dropdown",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            errorbox: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "errorbox",
+                            innerHTML: "Error",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        visible: "true",
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            frame: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "frame",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "frame",
+                                        visible: "true",
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            img: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "img",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        value: "http://siliconangle.com/files/2012/04/Cloud9_logo.jpg"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            label: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "label",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Label",
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "black_label",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Label",
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "tooltipLabel",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Label",
+                                        width: "200"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            list: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "list",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "breakpoints",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "lineselect",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "searchresults"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "gotoline",
+                    skins: [
+                        { //skin
+                            name: "gotoline",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "revisions",
+                    skins: [
+                        { //skin
+                            name: "revisions-list",
+                            note: "ask Sergi for info on how to display the icons",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "uploadfiles",
+                    skins: [
+                        { //skin
+                            name: "list-uploadactivity",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            modalwindow: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "bk-win-noisebg",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "bk-window",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "bk-window2",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "change_photo",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "dockwin",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "fm-window",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "authskin",
+                    skins: [
+                        { //skin
+                            name: "win-auth",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "guidedtour",
+                    skins: [
+                        { //skin
+                            name: "win-controls",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: "help-skin",
+                    skins: [
+                        { //skin
+                            name: "win-help-about",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
                                     }
                                 }
                             ]
@@ -933,6 +1597,10 @@ module.exports = ext.register("ext/uimgr/uimgr", {
             else
                 document.body.className = "";
         });
+        // dependent elemnets
+        var modelString = '<cars id="mdlCars">\n\t<car modelno="1" name="Model 1"/>\n\t<car modelno="2" name="Model 2"/>\n\t<car modelno="3" name="Model 3"/>\n\t<car modelno="4" name="Model 4"/>\n\t<car modelno="5" name="Model 5"/>\n</cars>\n\n';
+        var mdlCars = new apf.model({"id": "mdlCars"});
+        mdlCars.load( modelString );
         
         
         //Elements
@@ -951,35 +1619,60 @@ module.exports = ext.register("ext/uimgr/uimgr", {
             //Skinsets
             for( var skinset = 0; skinset < elements[el].length; skinset++ ) {
                 var cskinset = elements[el][skinset];
-                var barSkinset = bar.appendChild( new apf.bar() ); barSkinset.$ext.setAttribute("class", "skinset"); barSkinset.$ext.setAttribute("id", el); barSkinset.$ext.removeAttribute("style");
+                var barSkinset = bar.appendChild( new apf.bar() ); barSkinset.$ext.setAttribute("class", "skinset"); barSkinset.$ext.removeAttribute("style");
                 barSkinset.$ext.innerHTML = "<h3 class='title'>Skinset: " + cskinset.name + "</h3>";
                 
                 //skin
                 for( var skin = 0; skin < cskinset.skins.length; skin++ ) {
                     var cskin = cskinset.skins[skin];
                     
-                    var barSkin = barSkinset.appendChild( new apf.bar() ); barSkin.$ext.setAttribute("class", "skin"); barSkin.$ext.setAttribute("id", el); barSkin.$ext.removeAttribute("style");
-                    barSkin.$ext.innerHTML = "<h4 class='title'>Skin: " + cskin.name + "</h3>";
+                    var barSkin = barSkinset.appendChild( new apf.bar() ); barSkin.$ext.setAttribute("class", "skin"); barSkin.$ext.removeAttribute("style");
+                    barSkin.$ext.innerHTML = "<h4 class='title'>Skin: " + cskin.name + ( cskin.note ? " - " + cskin.note : "" ) + "</h3>";
                     
                     //version
                     for( var v = 0; v < cskinset.skins[skin].versions.length; v++ ) {
-                        console.log(el, skinset, skin, v);
+//                      console.log(el, skinset, skin, v);
                         var cv = cskinset.skins[skin].versions[v];
                         var barVersion = barSkin.appendChild( new apf.bar() ); barVersion.$ext.setAttribute("class", "version" + (cv.wrapperClass ? " " + cv.wrapperClass : "") ); barVersion.$ext.setAttribute("id", el); barVersion.$ext.removeAttribute("style");
 
                         cv.settings.skin = cskin.name;
                         cv.settings.skinset = cskinset.name;
                         
+                        if( el === "dropdown" ) {
+                            cv.settings.caption = "[@name]";
+                            cv.settings.each = "[car]";
+                            cv.settings.eachvalue = "[@value]";
+                            cv.settings.model = "mdlCars";
+                            cv.settings["initial-message"] = "Choose a model";
+                        } else if( el === "list" ) {
+                            cv.settings.caption = "[@name]";
+                            cv.settings.each = "[car]";
+                            cv.settings.model = "mdlCars";
+                        }
+                        
                         var o = barVersion.appendChild( new apf[el]( cv.settings ) );
                         
                         //embed code
                         var embed = "<a:" + el + " ";
+                        if( cv.settings.model ) {
+                            embed = modelString + embed;
+                        }
+                        if( el === "img") {
+                            cv.settings.src = cv.settings.value;
+                            delete cv.settings.value;
+                        }
                         for( s in cv.settings ) {
                             embed += s + '="' + cv.settings[s] + '" ';
                         }
-                        embed += "/>";
+                        if( cskin.innerHTML ){
+                            o.setMessage(cskin.innerHTML);
+                            embed += ">"+cskin.innerHTML + "</a:" + el + ">";
+                        } else {
+                            embed += "/>";
+                        }
                         var src = barVersion.appendChild( new apf.textarea({ width: "530" }) ); src.$ext.setAttribute("class", "winUIExtCode");
                         src.setValue( embed );
+                        src.$ext.style.height = ( src.$ext.scrollHeight - 20 ) + "px"; //20px is the vertical padding
                     }
                 }
             }
@@ -991,7 +1684,18 @@ module.exports = ext.register("ext/uimgr/uimgr", {
     },
     
     loadSkins: function() {
-        var includeSkins = ["searchinfiles", "statusbar", "zen", "quicksearch"];
+        var includeSkins = [
+            "gotoline",
+            "guidedtour",
+            "help-skin",
+            "quicksearch",
+            "revisions",
+            "searchinfiles",
+            "searchreplace",
+            "statusbar",
+            "uploadfiles",
+            "zen"
+        ];
         
         for(var i = 0; i < includeSkins.length; i++) {
             var includeSkin = includeSkins[i];
