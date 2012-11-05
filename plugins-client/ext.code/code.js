@@ -844,7 +844,7 @@ module.exports = ext.register("ext/code/code", {
         });
         
         // display feedback while loading files
-        var isOpen, bgMessage;
+        var isOpen, bgMessage, animationEndTimeout;
         var checkLoading = function(e) {
             if (!ceEditor.xmlRoot)
                 return;
@@ -856,7 +856,7 @@ module.exports = ext.register("ext/code/code", {
                     bgMessage = bgMessage|| document.createElement("div");                    
                     container.parentNode.appendChild(bgMessage);
                 }
-                var isDark = container.className.indexOf("ace_dark")!=-1;
+                var isDark = container.className.indexOf("ace_dark") != -1;
                 bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
                 
                 bgMessage.textContent = "Loading " + ceEditor.xmlRoot.getAttribute("name");
@@ -865,10 +865,15 @@ module.exports = ext.register("ext/code/code", {
                 container.style.pointerEvents = "none";
                 container.style.opacity = 0;
                 isOpen = true;
+                clearTimeout(animationEndTimeout);
             } else if (isOpen) {
                 isOpen = false;
                 container.style.opacity = 1;
                 container.style.pointerEvents = "";
+                animationEndTimeout = setTimeout(function() {
+                    if (bgMessage.parentNode)
+                        bgMessage.parentNode.removeChild(bgMessage);
+                }, 350);
             }
         };
 
