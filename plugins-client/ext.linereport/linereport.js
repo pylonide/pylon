@@ -65,7 +65,8 @@ module.exports = ext.register("ext/linereport/linereport", {
     
     isCollabSlave : function() {
          var collab = require("core/ext").extLut["ext/collaborate/collaborate"];
-         return collab && collab.ownerUid && collab.myUserId !== collab.ownerUid;
+         // Use != here instead of !== since we may compare numbers and strings. Yup.
+         return collab && collab.ownerUid && collab.myUserId != collab.ownerUid;
     },
     
     onServerMessage : function(event) {
