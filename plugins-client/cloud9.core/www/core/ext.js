@@ -33,9 +33,9 @@ var util = require("core/util");
 //};
 
 // used for local
-var OFFLINE = 1 << 2;
-var LOCAL = 1 << 4;
-var ONLINE = 1 << 6;
+const OFFLINE = 1 << 2;
+const LOCAL = 1 << 4;
+const ONLINE = 1 << 6;
 
 var ext;
 module.exports = ext = {
