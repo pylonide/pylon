@@ -436,13 +436,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * Resets the notification count to 0
      */
     resetNotificationCount: function(windowIdent){
-        if (windowIdent == -1) return;
-
-        for(var doi = 0; doi < this.dockObjects.length; doi++) {
-            if (this.dockObjects[doi].ident == windowIdent) {
-                this.dockObjects[doi].notCount = 0;
-                this.updateNotificationElement(this.dockObjects[doi].btn, 0);
-                return true;
+        if (windowIdent !== -1) 
+            return false;
+        
+        if (this.dockObjects && this.dockObjects.length) {
+            for (var doi = 0; doi < this.dockObjects.length; doi++) {
+                if (this.dockObjects[doi].ident == windowIdent) {
+                    this.dockObjects[doi].notCount = 0;
+                    this.updateNotificationElement(this.dockObjects[doi].btn, 0);
+                    return true;
+                }
             }
         }
         

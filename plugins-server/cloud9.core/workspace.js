@@ -1,8 +1,8 @@
-var util  = require("./util");
+var util = require("./util");
 
 var Workspace = module.exports = function(ide) {
     this.ide = ide;
-    this.workspaceId  = ide.options.workspaceId;
+    this.workspaceId = ide.options.workspaceId;
     this.workspaceDir = ide.options.workspaceDir;
 };
 
@@ -22,13 +22,16 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.getServerExclude = function(user) {
+        var serverExclude = "";
         // We assume `user` has been passed. Otherwise it is fine to throw.
         if (!user.permissions) {
             console.error("Error: Couldn't retrieve permissions for user ", user);
             console.trace();
         }
+        else {
+            serverExclude = user.permissions.server_exclude;
+        }
 
-        var serverExclude = (user.permissions && user.permissions.server_exclude) || "";
         return util.arrayToMap(serverExclude.split("|"));
     };
 
@@ -78,11 +81,13 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.getExt = function(name) {
-        return this.plugins[name] || null;
+        if (!this.plugins || !this.plugins[name])
+            return null
+        return this.plugins[name];
     };
 
     this.send = function(msg, replyTo, scope) {
-        if (replyTo)
+        if (msg && replyTo)
             msg.sid = replyTo.sid;
         this.ide.broadcast(msg, scope);
     };
