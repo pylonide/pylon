@@ -64,6 +64,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             name: "searchinfiles",
             hint: "search for a string through all files in the current workspace",
             bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
+            isAvailable: function(editor) {
+                return editor && editor.path == "ext/code/code";
+            },
             exec: function () {
                 _self.toggleDialog(1);
             }
@@ -311,7 +314,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                     if (!noselect && editors.currentEditor)
-                        editors.currentEditor.ceEditor.focus();
+                        editors.currentEditor.amlEditor.focus();
 
                     setTimeout(function(){
                         callback
@@ -438,7 +441,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
                 _self.searchPage = tabEditors.getPage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
-                _self.apfeditor = _self.searchPage.$editor.ceEditor;
+                _self.apfeditor = _self.searchPage.$editor.amlEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
                 _self.tabacedoc.node = node;
 
@@ -471,8 +474,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (path.indexOf(ide.davPrefix) == 0)
             path = path.slice(ide.davPrefix.length).replace(/^\//,"");
 
-        options.command = "search";
-        options.type = "codesearch";
+        options.command = "codesearch";
         options.path = path;
         ide.send(options);
 
@@ -487,33 +489,40 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (message.extra != "codesearch")
             return false;
 
-        if (!chkSFConsole.checked) {
-            if (this.firstRun) {
-                var currLength = this.tabacedoc.getLength() - 2; // the distance to the last message
-                this.searcheditor.scrollToLine(currLength, false, true);
-                this.firstRun = false;
-            }
+        var doc = !chkSFConsole.checked ? this.tabacedoc : this.consoleacedoc;
+        var editor = !chkSFConsole.checked ? this.searcheditor : this.searchConsole.$editor;
+        if (this.firstRun) {
+            var currLength = doc.getLength() - 2; // the distance to the last message
+            editor.scrollToLine(currLength, false, true);
+            this.firstRun = false;
 
-            this.appendLines(this.tabacedoc, message.data);
         }
-        else {
-            if (this.firstRun) {
-                var currLength = this.consoleacedoc.getLength() - 2; // the distance to the last message
-                this.searchConsole.$editor.scrollToLine(currLength, false, true);
-                this.firstRun = false;
-            }
-
-            this.appendLines(this.consoleacedoc, message.data);
-        }
+        this.appendLines(doc, message.data);
 
         // finish
-        if (message.type == "shell-exit") {
+        if (message.type == "exit") {
+            var footer = ["\n"];
+            // if process failed add that info to the message
+            if (message.code && message.stderr) {
+                footer.push("Search in files failed with code " + message.code + 
+                    " (" + message.stderr + ")");
+            }
+            else {
+                // add info about the result of this search
+                var footerData = { count: message.count, filecount: message.filecount };
+                footer.push(this.messageFooter(footerData));
+            }
+            
+            footer.push("\n", "\n", "\n");
+            doc.insertLines(doc.getLength(), footer);
+            
             if (!chkSFConsole.checked) {
-                var node = this.tabacedoc.node;
+                var node = doc.node;
                 node.setAttribute("saving", "0");
                 node.setAttribute("changed", "0");
             }
             btnSFFind.$ext.innerText = "Find";
+            this.appendLines(doc, message);
         }
         return true;
     },
@@ -556,15 +565,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     appendLines : function(doc, content) {
-        if (content.length == 0) // blank lines can get through
+        if (!content || (!content.length && !content.count)) // blank lines can get through
             return;
 
-        if (typeof content == "string") {
+        if (typeof content == "string")
             content = content.split("\n");
-        } else if (typeof content.count == "number") {
-            // final message
-            content = ["\n", this.messageFooter(content), "\n", "\n", "\n"];
-        }
 
         if (content.length > 0)
             doc.insertLines(doc.getLength(), content);
