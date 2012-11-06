@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window
       id        = "winExt"
-      title     = "Extensions Manager"
+      title     = "Extension Manager"
       icon      = ""
       center    = "true"
       resizable = "true"

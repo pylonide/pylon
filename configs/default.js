@@ -124,7 +124,7 @@ var config = [
             "ext/beautify/beautify",
             "ext/offline/offline",
             "ext/stripws/stripws",
-            "ext/testpanel/testpanel",
+            //"ext/testpanel/testpanel",
             "ext/nodeunit/nodeunit",
             "ext/zen/zen",
             "ext/codecomplete/codecomplete",
@@ -145,7 +145,6 @@ var config = [
             "ext/language/liveinspect"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
-            //"ext/acebugs/acebugs"
         ]
     }, {
         packagePath: "vfs-architect/local",

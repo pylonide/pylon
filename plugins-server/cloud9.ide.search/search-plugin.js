@@ -50,8 +50,8 @@ module.exports = function setup(options, imports, register) {
                 },
                 // exit
                 function(code, stderr, msg) {
-                    if (code)
-                        self.error(stderr, 1, "Could not spawn grep process for codesearch", client);
+                    msg.code = code;
+                    msg.stderr = stderr;
                     msg.extra = "codesearch";
                     msg.type = "exit";
                     self.ide.broadcast(JSON.stringify(msg), self.name);
