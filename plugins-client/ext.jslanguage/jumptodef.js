@@ -8,7 +8,11 @@ define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var handler = module.exports = Object.create(baseLanguageHandler);
-var scopes = require("ext/jslanguage/scopes");
+var scopes = require("ext/jslanguage/scope_analyzer");
+
+handler.handlesLanguage = function(language) {
+    return language === 'javascript';
+};
 
 handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
     if (!fullAst)
