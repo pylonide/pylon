@@ -79,6 +79,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         });
 
+        commands.addCommand({
+            name: "runthisfile",
+            "hint": "run or debug this file (stops the app if running)",
+            exec: function () {
+                _self.runThisFile();
+            }
+        });
+
+        commands.addCommand({
+            name: "runthistab",
+            "hint": "run or debug current file (stops the app if running)",
+            exec: function () {
+                _self.runThisTab();
+            }
+        });
+
+
         this.nodes.push(
             this.model = new apf.model().load("<configurations />"),
 
@@ -95,7 +112,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 "disabled-split": "{stProcessRunning.active and 1}",
                 submenu         : "mnuRunCfg"/*,
                 "onsubmenu.init" : "require('core/ext').initExtension(require('ext/runpanel/runpanel'))"*/
-            }), 100)
+            }), 100),
+            
+            menus.addItemByPath("View/Tabs/Run This File", new apf.item({
+                command : "runthistab"
+            }), 400),
+            menus.addItemByPath("View/Tabs/~", new apf.divider(), 300),
+            menus.addItemByPath("~", new apf.divider(), 800, mnuContext),
+            menus.addItemByPath("Run This File", new apf.item({
+                command : "runthistab"
+            }), 850, mnuContext)
+
         );
 
         tooltip.add(btnRun.$button1, {
@@ -229,12 +256,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         mnuRunCfg.show();
     },
 
-    addConfig : function(temp) {
-        var path, name, value, args, debug, file = ide.getActivePageModel();
+    addConfig : function(temp, runfile) {
+        var path, name, value, args, debug, file = runfile || ide.getActivePageModel();
         var extension = "";
 
         var tempNode = settings.model.queryNode("auto/configurations/tempconfig");
-        if (tempNode) {
+        if (tempNode && !runfile) {
             path = tempNode.getAttribute("path");
             name = tempNode.getAttribute("name");
             value = tempNode.getAttribute("value");
@@ -281,7 +308,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (window.mnuRunCfg && mnuRunCfg.visible)
             node = lstRunCfg.selected;
         else {
-            node = this.model.queryNode("node()[@last='true']");
+            node = this.model.queryNode("config[@last='true']");
         }
         
         if (!node) {
@@ -295,7 +322,25 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
+    
+    runThisFile : function() {
+        var file = trFiles.selected;
+        var node = this.addConfig(true, file);
+        
+        this.runConfig(node, this.shouldRunInDebugMode());
 
+        ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
+    },
+    
+    runThisTab : function() {
+        var file = ide.getActivePageModel();
+        var node = this.addConfig(true, file);
+        
+        this.runConfig(node, this.shouldRunInDebugMode());
+
+        ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
+    },
+    
     runConfig : function(config, debug) {
         //ext.initExtension(this);
         var model = settings.model;
