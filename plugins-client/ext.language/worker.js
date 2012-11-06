@@ -810,6 +810,7 @@ function asyncParForEach(array, fn, callback) {
                 asyncForEach(_self.handlers, function(handler, next) {
                     if (handler.handlesLanguage(_self.$language)) {
                             handler.staticPrefix = data.staticPrefix;
+                            handler.workspaceDir = _self.$workspaceDir;
                             handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
                             if (completions)
                                 matches = matches.concat(completions);
