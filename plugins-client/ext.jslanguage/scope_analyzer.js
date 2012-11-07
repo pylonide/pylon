@@ -793,17 +793,4 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
     });
 };
 
-handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
-    if (!fullAst)
-        return callback();
-    handler.getVariablePositions(doc, fullAst, pos, currentNode, function (data) {
-        if (!data || !data.declarations || data.declarations.length === 0) {
-            return callback(null);
-        }
-        
-        // invoke the callback with the position of the last declared variable
-        callback(data.declarations[data.declarations.length - 1]);
-    });
-};
-
 });
