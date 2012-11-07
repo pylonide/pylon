@@ -5,13 +5,25 @@ var ID_REGEX = /[a-zA-Z_0-9\$]/;
 function retrievePreceedingIdentifier(text, pos, regex) {
     regex = regex || ID_REGEX;
     var buf = [];
-    for (var i = pos-1; i >= 0; i--) {
+    for(var i = pos-1; i >= 0; i--) {
         if(regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
     }
     return buf.reverse().join("");
+}
+
+function retrieveFollowingIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
+    var buf = [];
+    for (var i = pos; i < text.length; i++) {
+        if (regex.test(text[i]))
+            buf.push(text[i]);
+        else
+            break;
+    }
+    return buf;
 }
 
 function prefixBinarySearch(items, prefix) {
@@ -61,6 +73,7 @@ function fetchText(staticPrefix, path) {
 }
 
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
+exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;
 exports.findCompletions = findCompletions;
 exports.fetchText = fetchText;
 

@@ -13,6 +13,7 @@ var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
+var completeUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
 var language;
@@ -78,30 +79,6 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos, regex) {
-    regex = regex || ID_REGEX;
-    var buf = [];
-    for(var i = pos-1; i >= 0; i--) {
-        if(regex.test(text[i]))
-            buf.push(text[i]);
-        else
-            break;
-    }
-    return buf.reverse().join("");
-}
-
-function retrieveFollowingIdentifier(text, pos, regex) {
-    regex = regex || ID_REGEX;
-    var buf = [];
-    for (var i = pos; i < text.length; i++) {
-        if (regex.test(text[i]))
-            buf.push(text[i]);
-        else
-            break;
-    }
-    return buf;
-}
-
 function isJavaScript() {
     return editors.currentEditor.amlEditor.syntax === "javascript";
 }
@@ -119,7 +96,7 @@ function isHtml() {
 function replaceText(editor, match) {
     // Replace text asynchronously in case Concorde didn't update the editor yet
     setTimeout(function() {
-        asyncReplaceText(editor, prefix, match);
+        asyncReplaceText(editor, match);
     }, CONCORDE_DELAY);
 }
 
@@ -128,7 +105,7 @@ function asyncReplaceText(editor, match) {
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
-    var prefix = retrievePreceedingIdentifier(line, pos.column, match.idRegex);
+    var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.idRegex);
     
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
@@ -148,11 +125,11 @@ function asyncReplaceText(editor, match) {
     var prefixWhitespace = line.substring(0, i);
     
     // Remove HTML duplicate '<' completions
-    var preId = retrievePreceedingIdentifier(line, pos.column, match.idRegex);
+    var preId = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.idRegex);
     if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
         newText = newText.substring(1);
 
-    var postfix = retrieveFollowingIdentifier(line, pos.column, match.idRegex) || "";
+    var postfix = completeUtil.retrieveFollowingIdentifier(line, pos.column, match.idRegex) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -321,7 +298,7 @@ module.exports = {
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
                 }
             }
-            var prefix = retrievePreceedingIdentifier(line, pos.column, match.idRegex);
+            var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.idRegex);
             var trim = match.meta ? " maintrim" : "";
             if (!isInferAvailable || match.icon) {
                 html += '<span class="main' + trim + '"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span>';
@@ -550,7 +527,7 @@ module.exports = {
         // Remove out-of-date matches
         for (var i = 0; i < matches.length; i++) {
             idRegex = idRegex || matches[i].idRegex;
-            identifier = retrievePreceedingIdentifier(line, pos.column, matches[i].idRegex);
+            identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, matches[i].idRegex);
             if(matches[i].name.indexOf(identifier) !== 0) {
                 matches.splice(i, 1);
                 i--;
@@ -562,7 +539,7 @@ module.exports = {
             replaceText(editor, matches[0]);
         }
         else if (matches.length > 0) {
-            identifier = retrievePreceedingIdentifier(line, pos.column, idRegex);
+            identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, idRegex);
             this.showCompletionBox(matches, identifier);
         }
         else {
