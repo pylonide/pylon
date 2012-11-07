@@ -51,7 +51,7 @@
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:list 
- *     model   = "../resources/xml/friends.xml"
+ *     model   = "/api/resources/xml/friends.xml"
  *     each    = "[friend]"
  *     caption = "[@name]"
  *     icon    = "[@icon]"
@@ -66,13 +66,13 @@
  * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
- *   <a:list model="../resources/xml/friends.xml" width="300">
+ *   <a:list model="/api/apf/resources/xml/friends.xml" width="300">
  *       <a:each match="[friend]">
  *           <a:caption match="[@name]" />
  *           <a:icon 
  *             match = "[node()[@name='Ruben' or @name='Matt']]" 
- *             value = "../resources/icons/medal_gold_1.png" />
- *           <a:icon value="../resources/icons/medal_silver_1.png" />
+ *             value = "/api/apf/resources/icons/medal_gold_1.png" />
+ *           <a:icon value="/api/apf/resources/icons/medal_silver_1.png" />
  *       </a:each>
  *   </a:list>
  *   <!-- endcontent -->

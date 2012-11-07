@@ -107,7 +107,6 @@ apf.WinServer = {
  *     modal     = "false"
  *     buttons   = "min|max|close"
  *     title     = "Mail message"
- *     icon      = "../resources/icons/email.png"
  *     visible   = "true"
  *     resizable = "true"
  *     minwidth  = "300"

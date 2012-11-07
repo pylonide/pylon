@@ -36,15 +36,15 @@
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
  *   <a:tree id="tree" align="right">
- *       <a:item caption="root" icon="../resources/icons/icoUsers.gif">
- *           <a:item icon="../resources/icons/icoUsers.gif" caption="test">
- *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
- *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
- *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *       <a:item caption="root" icon="/api/apf/resources/icons/icoUsers.gif">
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test">
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
  *           </a:item>
- *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
- *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
- *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
  *       </a:item>
  *   </a:tree>
  *   <!-- endcontent -->
