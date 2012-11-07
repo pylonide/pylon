@@ -18,13 +18,15 @@ completer.handlesLanguage = function(language) {
     return ["css", "php"].indexOf(language) !== -1;
 };
 
-var CSS_ID_REGEX = /[a-zA-Z-]/;
+var ID_REGEXES = {
+    "css": /[a-zA-Z-]/
+};
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var language = this.language;
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column,
-             language === "css" ? CSS_ID_REGEX : null);
+    var idRegex = ID_REGEXES[language];
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, idRegex);
     if(!identifier.length) // No completion after "."
         return callback([]);
 
@@ -73,6 +75,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 doc         : deprecated ? ("Deprecated: <del>" + m + nameAppend + "</del>") : null,
                 icon        : icon,
                 meta        : type,
+                idRegex     : idRegex,
                 priority    : 2 - deprecated
             };
         }));

@@ -17,6 +17,7 @@ completer.handlesLanguage = function(language) {
 };
 
 var JADE_REGEX = /.*?([a-zA-Z]*)([.#])([\w]+)/;
+var JADE_ID_REGEX = /[a-zA-Z_0-9\$\_.#]/;
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
@@ -40,6 +41,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
               doc         : "<pre>" + replaceText.replace("\^\^", "&#9251;") + "</pre>",
               icon        : null,
               meta        : "Jade-Haml",
+              idRegex     : JADE_ID_REGEX,
               priority    : 100
         }]);
     }

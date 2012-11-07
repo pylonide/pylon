@@ -22,10 +22,6 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
-var ID_REGEXES = {
-    "html": /[a-zA-Z_0-9\$\_.#]/, // Jade-typing regex
-    "css": /[a-zA-Z-]/
-};
 
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
@@ -39,16 +35,18 @@ var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
 var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
+    var completer = module.exports;
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
     if (keyhandler.preceededByIdentifier(line, pos.column) ||
        (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(ID_REGEX))) ||
+       (completer.idRegex && line[pos.column-1].match(completer.idRegex)) ||
        keyhandler.isRequireJSCall(line, pos.column)) {
-        module.exports.invoke(true);
+        completer.invoke(true);
     }
     else {
-        module.exports.closeCompletionBox();
+        completer.closeCompletionBox();
     }
     isInvokeScheduled = false;
 });
@@ -79,8 +77,8 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos) {
-    var regex = ID_REGEXES[editors.currentEditor.amlEditor.syntax] || ID_REGEX;
+function retrievePreceedingIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
     var buf = [];
     for(var i = pos-1; i >= 0; i--) {
         if(regex.test(text[i]))
@@ -91,10 +89,11 @@ function retrievePreceedingIdentifier(text, pos) {
     return buf.reverse().join("");
 }
 
-function retrieveFollowingIdentifier(text, pos) {
+function retrieveFollowingIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
     var buf = [];
     for (var i = pos; i < text.length; i++) {
-        if (ID_REGEX.test(text[i]))
+        if (regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
@@ -116,11 +115,12 @@ function isHtml() {
  * If the prefix is already followed by an identifier substring, that string
  * is deleted.
  */
-function replaceText(editor, prefix, match) {
+function replaceText(editor, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
+    var prefix = retrievePreceedingIdentifier(line, pos.column, match.idRegex);
     
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
@@ -140,11 +140,11 @@ function replaceText(editor, prefix, match) {
     var prefixWhitespace = line.substring(0, i);
     
     // Remove HTML duplicate '<' completions
-    var preId = retrievePreceedingIdentifier(line, pos.column);
+    var preId = retrievePreceedingIdentifier(line, pos.column, match.idRegex);
     if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
         newText = newText.substring(1);
 
-    var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
+    var postfix = retrieveFollowingIdentifier(line, pos.column, match.idRegex) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -215,7 +215,6 @@ module.exports = {
         this.selectedIdx = 0;
         this.scrollIdx = 0;
         this.matchEls = [];
-        this.prefix = prefix;
         this.matches = matches;
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
@@ -294,6 +293,9 @@ module.exports = {
             if (match.icon)
                 hasIcons = true;
         });
+        var editor = editors.currentEditor.amlEditor.$editor;
+        var pos = editor.getCursorPosition();
+        var line = editor.getSession().getLine(pos.row);
         var isInferAvailable = language.isInferAvailable();
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
@@ -311,16 +313,16 @@ module.exports = {
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
                 }
             }
-            
+            var prefix = retrievePreceedingIdentifier(line, pos.column, match.idRegex);
             var trim = match.meta ? " maintrim" : "";
             if (!isInferAvailable || match.icon) {
-                html += '<span class="main' + trim + '"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
+                html += '<span class="main' + trim + '"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span>';
             }
             else if (hasIcons) {
                 html += '<span class="main' + trim + '"><span class="deferred">' + match.name + '</span></span>';
             }
             else {
-                html += '<span class="main' + trim + '"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span></span>';
+                html += '<span class="main' + trim + '"><span class="deferred"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span></span>';
             }
             
             if (match.meta)
@@ -347,7 +349,7 @@ module.exports = {
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
-                replaceText(amlEditor.$editor, _self.prefix, match);
+                replaceText(amlEditor.$editor, match);
                 amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + EXTRA_LINE_HEIGHT + "px";
@@ -391,7 +393,7 @@ module.exports = {
             this.docElement.innerHTML += selected.doc + '</span>';
         }
         else {
-            txtCompleterDoc.parentNode.hide();   
+            txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
             this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
@@ -402,10 +404,14 @@ module.exports = {
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
         oldOnTextInput.apply(keyBinding, arguments);
         if (!pasted) {
-            if (!text.match(ID_REGEX))
-                this.closeCompletionBox();
-            else
+            var matched = false;
+            var matches = this.matches;
+            for (var i = 0; i < matches.length && !matched; i++)
+                matched = (matches[i].idRegex || ID_REGEX).test(text);
+            if (matched)
                 this.deferredInvoke();
+            else
+                this.closeCompletionBox();
         }
     },
 
@@ -442,7 +448,7 @@ module.exports = {
             case 13: // Enter
             case 9: // Tab
                 var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
+                replaceText(editor, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
                 e.preventDefault();
                 break;
@@ -471,7 +477,7 @@ module.exports = {
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.selectedIdx <= 0)
-                    return; 
+                    return;
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
@@ -522,28 +528,33 @@ module.exports = {
         var pos = editor.getCursorPosition();
         var eventPos = event.data.pos;
         var line = editor.getSession().getLine(pos.row);
-        var identifier = retrievePreceedingIdentifier(line, pos.column);
+        var idRegex;
     
         editor.removeEventListener("change", this.$onChange);
         killCrashedCompletionInvoke.cancel();
 
         if (pos.column !== eventPos.column || pos.row !== eventPos.row)
             return;
-    
+
         var matches = event.data.matches;
-        
+        var identifier;
+
         // Remove out-of-date matches
         for (var i = 0; i < matches.length; i++) {
+            idRegex = idRegex || matches[i].idRegex;
+            identifier = retrievePreceedingIdentifier(line, pos.column, matches[i].idRegex);
             if(matches[i].name.indexOf(identifier) !== 0) {
                 matches.splice(i, 1);
                 i--;
             }
         }
+        this.idRegex = idRegex;
         
         if (matches.length === 1 && !this.forceBox) {
-            replaceText(editor, identifier, matches[0]);
+            replaceText(editor, matches[0]);
         }
         else if (matches.length > 0) {
+            identifier = retrievePreceedingIdentifier(line, pos.column, idRegex);
             this.showCompletionBox(matches, identifier);
         }
         else {
