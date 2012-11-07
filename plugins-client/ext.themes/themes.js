@@ -134,12 +134,14 @@ module.exports = ext.register("ext/themes/themes", {
             apf.setStyleClass(tabsDiv, "", ["dark"]);
         }
         
-        var cssClass = theme.cssClass;
+        // !important puting ace into more divs with theme.cssClass makes it slower
+        var aceClass = theme.cssClass;
+        var cssClass = aceClass.replace(/^ace/, "c9");
         
         if (_self.lastTheme) {
             apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
             apf.setStyleClass(editorHolder, "", [_self.lastTheme]);
-             apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
         _self.lastTheme = cssClass;
@@ -153,12 +155,10 @@ module.exports = ext.register("ext/themes/themes", {
             
         _self.loaded[path] = true;
         
-        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "backgroundColor");
-        var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
+        var bg = apf.getStyleRule("." + aceClass + " .ace_gutter", "backgroundColor");
+        var fg = apf.getStyleRule("." + aceClass + " .ace_gutter", "color");
         
         apf.importStylesheet([
-            ["." + cssClass + " .ace_editor",
-             "border: 0 !important;"],
             (apf.isGecko ? [] : 
                 ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
                  (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
@@ -203,8 +203,8 @@ module.exports = ext.register("ext/themes/themes", {
             }
         }), 350000);
 
-        ide.addEventListener("init.ext/code/code", function() {
-            if (ceEditor && ceEditor.$editor)
+        ide.addEventListener("init.ext/code/code", function(e) {
+            if (e.ext.amlEditor && e.ext.amlEditor.$editor)
                 mnuThemes.select(null, _self.defaultTheme);
         });
         

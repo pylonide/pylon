@@ -95,7 +95,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         };
         
         // code editor not loaded yet? then wait for it...
-        if (typeof window.ceEditor === "undefined") {
+        if (!code.inited) {
             ide.addEventListener("init.ext/code/code", doIt);
         }
         else {
@@ -142,12 +142,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             });
         });
 
-        this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+        this.sbWidth = code.amlEditor.$editor.renderer.scrollBar.width;
         barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
         barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
-        ceEditor.$ext.parentNode.appendChild(barIdeStatus.$ext)
+        code.amlEditor.$ext.parentNode.appendChild(barIdeStatus.$ext);
 
-        ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
+        code.amlEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
             if (e.changed) {
                 _self.horScrollAutoHide = !!e.value;
                 _self.setPosition();
@@ -156,7 +156,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         // load model with initial values
         var state = mdlStatusBar.data.selectSingleNode("//state");
-        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.ceEditor));
+        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.path == "ext/code/code"));
         apf.xmldb.setAttribute(state, "showStatusbar", apf.isTrue(settings.model.queryValue("auto/statusbar/@show")));
         
         // if we assign this before the plugin has been init'ed it will create some empty model
@@ -172,19 +172,17 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     onAfterSwitch : function (editor) {
         var _self = this;
         
-        if (!editor) {
+        if (!editor)
             return;
-        }
         
         // update the model so we can use this info in the XML
-        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", !!editor.ceEditor);
+        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.path === "ext/code/code");
         
         // if we dont have a code editor then continue
-        if (!editor.ceEditor) {
+        if (editor.path != "ext/code/code")
             return;
-        }
         
-        editor = editor.ceEditor.$editor;
+        editor = editor.amlEditor.$editor;
     
         _self.updateStatus(editor);
 
@@ -206,18 +204,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
     updateStatus : function(ace) {
         if (!ace.selection.isEmpty()) {
+            var selectionLength;
             var range = ace.getSelectionRange();
             if (this.$showRange) {
-                this.$lblSelectionLength = "(" +
+                selectionLength = "(" +
                     (range.end.row - range.start.row) + ":" +
                     (range.end.column - range.start.column) + ")";
-            } else {
+            } 
+            else {
                 var value = ace.session.getTextRange(range);
-                this.$lblSelectionLength = "(" + value.length + " Bytes)";
+                selectionLength = "(" + value.length + " Bytes)";
             }
-            lblSelectionLength.$ext.textContent = this.$lblSelectionLength;
-        } else if (this.$lblSelectionLength) {            
-            lblSelectionLength.$ext.textContent = this.$lblSelectionLength = "";
+            
+            lblSelectionLength.setAttribute("caption", selectionLength);
+        } 
+        else {
+            lblSelectionLength.setAttribute("caption", "");
         }
 
         var cursor = ace.selection.lead;
@@ -233,12 +235,13 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             status = ace.$vimModeHandler.getStatusText();
         else if (ace.commands.recording)
             status = "REC";
-        lblEditorStatus.$ext.textContent = status;
+            
+        lblEditorStatus.setAttribute("caption", status);
     },
     
     toggleSelectionLength: function(){
         this.$showRange = !this.$showRange;
-        this.updateStatus(ceEditor.$editor);
+        this.updateStatus(code.amlEditor.$editor);
     },
 
     toggleStatusBar: function(){
