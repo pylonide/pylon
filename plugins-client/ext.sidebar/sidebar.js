@@ -237,13 +237,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 }
             }
             
-            if (panels.currentPanel) {
-                setTimeout(function(){
-                    panels.currentPanel.panel.setTitle(
-                        panels.currentPanel.button.caption);
-                });
-            }
-
             panels.activate(panelExt, true);
         });
         

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
@@ -54,7 +55,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 }
 
                 _self.clearMenu();
-                
+
                 for (var i = currentSettings.length - 1; i >= 0; i--) {
                     _self.$add(currentSettings[i]);
                 }
@@ -130,9 +131,10 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                     caption : def.caption,
                     value   : def.value,
                     onclick : function(){
-                        var node = apf.getXml("<file />");
-                        node.setAttribute("name", def.caption);
-                        node.setAttribute("path", def.value);
+                        var node = apf.n("<file/>")
+                            .attr("name", def.caption)
+                            .attr("path", def.value)
+                            .node();
 
                         editors.gotoDocument({doc: ide.createDocument(node), origin: "recentfiles"});
                     }
@@ -145,7 +147,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         }
 
         this.changed = true;
-        var itemNodes = this.menu.selectNodes('item');
+        var itemNodes = this.menu.selectNodes("item");
         if (itemNodes.length == 1)
             itemNodes[0].disable();
         else
@@ -159,7 +161,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 nodes[0].destroy(true, true);
             else break;
         }
-        this.menu.selectNodes('item')[0].disable();
+        this.menu.selectNodes("item")[0].disable();
     },
 
     enable : function(){

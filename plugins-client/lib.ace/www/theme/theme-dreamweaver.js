@@ -1,63 +1,52 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ * Distributed under the BSD license:
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Adam Jimenez <adam AT shiftcreate DOT com>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * ***** END LICENSE BLOCK ***** */
 
 define('ace/theme/dreamweaver', ['require', 'exports', 'module', 'ace/lib/dom'], function(require, exports, module) {
 exports.isDark = false;
 exports.cssClass = "ace-dreamweaver";
-exports.cssText = ".ace-dreamweaver .ace_editor {\
-  border: 2px solid rgb(159, 159, 159);\
-}\
-\
-.ace-dreamweaver .ace_editor.ace_focus {\
-  border: 2px solid #327fbd;\
-}\
-\
-.ace-dreamweaver .ace_gutter {\
+exports.cssText = ".ace-dreamweaver .ace_gutter {\
   background: #e8e8e8;\
   color: #333;\
 }\
 \
-.ace-dreamweaver .ace_print_margin {\
+.ace-dreamweaver .ace_print-margin {\
   width: 1px;\
   background: #e8e8e8;\
 }\
 \
+.ace-dreamweaver .ace_scroller {\
+  background-color: #FFFFFF;\
+}\
+\
 .ace-dreamweaver .ace_fold {\
-    background-color: #00F;\
+    background-color: #757AD8;\
 }\
 \
 .ace-dreamweaver .ace_text-layer {\
@@ -143,7 +132,7 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
   color: #06F\
 }\
 \
-.ace-dreamweaver .ace_line .ace_xml_pe {\
+.ace-dreamweaver .ace_line .ace_xml-pe {\
   color: rgb(104, 104, 91);\
 }\
 \
@@ -151,9 +140,6 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
   color: #00F;\
 }\
 \
-.ace-dreamweaver .ace_markup.ace_markupine {\
-    text-decoration:underline;\
-}\
 \
 .ace-dreamweaver .ace_markup.ace_heading {\
   color: rgb(12, 7, 255);\
@@ -180,11 +166,11 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
   border: 1px solid rgb(192, 192, 192);\
 }\
 \
-.ace-dreamweaver .ace_marker-layer .ace_active_line {\
+.ace-dreamweaver .ace_marker-layer .ace_active-line {\
   background: rgba(0, 0, 0, 0.07);\
 }\
 \
-.ace-dreamweaver .ace_marker-layer .ace_selected_word {\
+.ace-dreamweaver .ace_marker-layer .ace_selected-word {\
   background: rgb(250, 250, 255);\
   border: 1px solid rgb(200, 200, 250);\
 }\
@@ -219,6 +205,10 @@ exports.cssText = ".ace-dreamweaver .ace_editor {\
 \
 .ace-dreamweaver .ace_string.ace_regex {\
   color: rgb(255, 0, 0)\
+}\
+\
+.ace-dreamweaver .ace_indent-guide {\
+  background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }";
 
 var dom = require("../lib/dom");

@@ -86,7 +86,7 @@ this.tour = {
             require("ext/tree/tree").refresh();
         },
         el: undefined,
-        div: "ceEditor",
+        div: "editor",
         desc: "Here's a quick Node.js example, saved as \"helloWorld-guidedTour.js.\"",
         extra: -40,
         pos: "left",
@@ -99,7 +99,7 @@ this.tour = {
             }
         },
         el: undefined,
-        div: "ceEditorGutter",
+        div: "editorGutter",
         desc: "The gutter does more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging a Node.js application, you can also set breakpoints here.",
         extraTop: -40,
         pos: "right",
@@ -171,11 +171,11 @@ this.tour = {
         before: function() {
             //winRunCfgNew.hide();
             //ideConsole.disable();
-            var doc = require("ext/editors/editors").currentEditor.ceEditor.getSession();
+            var doc = require("ext/code/code").amlEditor.getSession();
             doc.setBreakpoints([1]);
         },
         el: undefined,
-        div: "ceEditorGutter",
+        div: "editorGutter",
         extraTop: -40,
         desc: "We're ready to test our code, so we've inserted a breakpoint on this line by clicking in the gutter. Before debugging, though, we'll need to set up a debugging scenario.",
         pos: "right",
@@ -263,7 +263,7 @@ this.tour = {
     }, {
         before: function() {
             dbgCallStack && dbgCallStack.parentNode && dbgCallStack.parentNode.parentNode.hide();
-            dbg.main.continueScript();
+            dbg.main.step();
             txtConsoleInput.setValue("git status");
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),

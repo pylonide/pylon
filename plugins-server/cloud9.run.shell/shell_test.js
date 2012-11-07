@@ -3,12 +3,14 @@
 var assert = require("assert");
 var EventEmitter = require("events").EventEmitter;
 var shell = require("./shell");
+var vfsLocal = require("vfs-local");
 
 module.exports = {
 
     setUp: function() {
         this.eventEmitter = new EventEmitter();
-        this.factory = shell.factory();
+        var vfs = vfsLocal({ root: "/" });
+        this.factory = shell.factory(vfs);
     },
 
     "test spawn ls": function(next) {
@@ -17,7 +19,7 @@ module.exports = {
             args: ["-l"],
             cwd: __dirname,
             env: {}
-        }, this.eventEmitter, "shell");
+        }, this.eventEmitter, "shell", function () {});
 
         var self = this;
         var pid;
@@ -41,7 +43,7 @@ module.exports = {
 
                 assert.equal(events[1].type, "shell-data");
                 assert.equal(events[1].stream, "stdout");
-                assert.ok(events[1].data.indexOf(__filename.split("/").pop()) !== -1);
+                assert.ok(events[1].data.toString().indexOf(__filename.split("/").pop()) !== -1);
                 assert.equal(events[1].pid, pid);
 
                 assert.equal(events[2].type, "shell-exit");
@@ -59,7 +61,7 @@ module.exports = {
             args: ["-l"],
             cwd: __dirname,
             env: {}
-        }, this.eventEmitter, "shell");
+        }, this.eventEmitter, "shell", function () {});
 
         child.exec(function(err, pid) {
             assert.equal(err, null);

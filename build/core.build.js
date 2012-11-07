@@ -17,8 +17,8 @@
     packages: [
         {
             "name": "engine.io",
-            "location": "node_modules/smith.io/node_modules/engine.io-client/dist",
-            "main": "engine.io.js"
+            "location": "node_modules/smith.io/node_modules/engine.io/node_modules/engine.io-client/dist",
+            "main": "engine.io-dev.js"
         },
         {
             "name": "smith.io",
@@ -46,7 +46,7 @@
         "node_modules/ace/build/src/theme-dawn",
         "node_modules/ace/build/src/theme-eclipse",
         "node_modules/ace/build/src/theme-idle_fingers",
-        "node_modules/ace/build/src/theme-kr_theme",
+        "node_modules/ace/build/src/theme-kr",
         "node_modules/ace/build/src/theme-merbivore",
         "node_modules/ace/build/src/theme-merbivore_soft",
         "node_modules/ace/build/src/theme-mono_industrial",

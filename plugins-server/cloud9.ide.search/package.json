@@ -2,14 +2,12 @@
     "name": "cloud9.ide.search",
     "version": "0.0.1",
 
-    "main": "./search.js",
+    "main": "./search-plugin.js",
 
     "plugin": {
         "consumes": [
             "ide",
-            "process-manager",
-            "run-shell",
-            "eventbus"
+            "vfs"
         ]
     }
 }

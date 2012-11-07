@@ -84,9 +84,9 @@ var mouseHandler = function(e) {
 };
 
 var hintLink = function(data) {
-    var dataAttr = [data.base, data.cmdName, data.cursorPos, !!data.cmd].join(",");
+    var dataAttr = apf.escapeXML([data.base, data.cmdName, data.cursorPos, !!data.cmd].join(","));
     if (!data.cmd)
-        return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + '</a>';
+        return '<a href="#" data-hint="'+ dataAttr + '">' + apf.escapeXML(data.cmdName) + '</a>';
 
     var spanHotkey = "";
     var key = data.cmd.hotkey;
@@ -103,9 +103,9 @@ var hintLink = function(data) {
 
     var cmdText = "";
     if (data.showHelperText)
-        cmdText = '<span>' + (data.cmd.hint || '') + '</span>';
+        cmdText = '<span>' + apf.escapeXML(data.cmd.hint || '') + '</span>';
     cmdText += spanHotkey;
-    return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + cmdText + '</a>';
+    return '<a href="#" data-hint="'+ dataAttr + '">' + apf.escapeXML(data.cmdName) + cmdText + '</a>';
 };
 
 module.exports = ext.register("ext/consolehints/consolehints", {
@@ -123,10 +123,10 @@ module.exports = ext.register("ext/consolehints/consolehints", {
 
     hook : function(){
         var _self = this;
-        
+
         ide.addEventListener("init.ext/console/console", function(e){
             ext.initExtension(_self);
-            
+
             var hideInput = e.ext.hideInput;
             e.ext.hideInput = function(){
                 _self.hide();
@@ -143,7 +143,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             hintsContent = document.getElementById("consoleHintsContent");
             apf.addListener(winHints, "mousemove", mouseHandler.bind(_self));
             apf.addListener(winHints, "click", _self.click.bind(_self));
-            
+
             c9console.onMessageMethods.commandhints = function(message) {
                 var cmds = message.body;
                 for (var cmd in cmds)
@@ -153,7 +153,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 var cmds = message.body;
                 _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
             };
-    
+
             // Asynchronously retrieve commands that other plugins may have
             // registered, hence the (relatively) long timeout.
             setTimeout(function() {
@@ -183,7 +183,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                         _self.hide();
                     }
                 };
-                
+
                 var cliValue = txtConsoleInput.getValue();
 
                 if (_self.lastCliValue === cliValue)
@@ -196,7 +196,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 else
                     _self.hide();
             }, false);
-    
+
             // Below we are overwriting the Console default key events in function of
             // whether the hints are being displayed or not.
             var redefinedKeys = {
@@ -206,24 +206,24 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 "esc": "hide",
                 "return": "onEnterKey"
             };
-            
+
             txtConsoleInput.ace.keyBinding.addKeyboardHandler({
                 handleKeyboard: function(data, hashId, keyString) {
                     if (hashId == -1 || !redefinedKeys[keyString] || winHints.style.display === "none")
                         return;
-                    
+
                     if (_self[redefinedKeys[keyString]].call(_self) !== false)
                         return {command: "null"};
                 }
             });
         };
-        
+
         if (c9console && c9console.onMessageMethods)
             initConsoleDeps();
         else
             ide.addEventListener("init.ext/console/console", initConsoleDeps);
     },
-    
+
     show: function(textbox, base, hints, cursorPos) {
         if (txtConsolePrompt.visible)
             return;
@@ -353,7 +353,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         txtConsoleInput.setValue(cliValue);
         // In order to avoid default blurring behavior for TAB
         setTimeout(function() { txtConsoleInput.focus(); }, 50);
-        
+
         return true;
     },
     onEnterKey: function() {

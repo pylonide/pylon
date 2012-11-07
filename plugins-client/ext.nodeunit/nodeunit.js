@@ -30,7 +30,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
     nodes           : [],
     template        : template,
     autodisable     : ext.ONLINE | ext.LOCAL,
-    
+
     hook : function(){
         var _self = this;
         ide.addEventListener("init.ext/testpanel/testpanel", function(){
@@ -64,30 +64,31 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             var subProjects = {}, mainProject = [];
             tests.join("\n").replace(
                 new RegExp("^\\/node_modules\\/([^\\/]*)\\/.*$|^.*$", "gm"),
-                function(m, name, generic) { 
+                function(m, name, generic) {
                     if (name)
-                        (subProjects[name] || (subProjects[name] = [])).push(m) 
+                        (subProjects[name] || (subProjects[name] = [])).push(m)
                     else
                         mainProject.push(m);
                 }
             );
-            
+
             function addFiles(project, parent){
                 var str = [];
                 for (var i = project.length - 1; i >= 0; i--) {
-                    str.push("<file path='" 
-                        + apf.escapeXML(ide.davPrefix + project[i])
-                        + "' name='" + apf.escapeXML(project[i].split("/").pop()) 
-                        + "' type='nodeunit' />");
+                    str.push(util.toXmlTag("file", {
+                        path: ide.davPrefix + project[i],
+                        name: project[i].split("/").pop(),
+                        type: "nodeunit"
+                    }));
                 }
-                
+
                 mdlTests.insert("<files>" + str.join("") + "</files>", {
                     insertPoint : parent
                 });
             }
-            
+
             addFiles(mainProject, mdlTests.queryNode("repo[1]"));
-            
+
             for (var name in subProjects) {
                 var parent = testpanel.addRepo(name);
                 addFiles(subProjects[name], parent);
@@ -230,7 +231,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         }
                         //fileNode.addNode();
                         testpanel.setError(testNode, "Test Failed");
-                        testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
+                        testpanel.setLog(fileNode, "completed test " + parseInt(match[2], 10) +
+                            " of " + parseInt(match[1], 10));
 
                         var errorNode = testNode.ownerDocument
                             .createElement("error");
@@ -241,10 +243,10 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                             completed();
                     }
                     //PASS
-                    //[32m[4/1] test basic addition OK[0m
+                    //[32m[4/1] test basic addition OK [0m
                     else if (part.substr(0, 3) == "[32") {
                         match = part.match(/^\[32m\[(\d+)\/(\d+)\]\s+(.*?)\sOK[\s\S]{4,6}/);
-                        if(!match)
+                        if (!match)
                             continue;
 
                         var testNode = fileNode.selectSingleNode("test[@name=" + util.escapeXpathString(match[3]) + "]");
@@ -255,7 +257,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                             apf.xmldb.appendChild(fileNode, testNode);
                         }
                         testpanel.setPass(testNode);
-                        testpanel.setLog(fileNode, "completed test " + match[2] + " of " + match[1]);
+                        testpanel.setLog(fileNode, "completed test " + parseInt(match[2], 10) +
+                            " of " + parseInt(match[1], 10));
 
                         if (match[2] == match[1])
                             completed();
@@ -291,7 +294,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                     break;
                 case "change":
                     //Reread file and put tests update in model
-                    var xmlNode = mdlTests.selectSingleNode("//file[@path='" + message.path + "']");
+                    var xmlNode = mdlTests.selectSingleNode("//file[@path=" +  util.escapeXpathString(message.path) + "]");
                     _self.reloadTestFile(xmlNode);
                     break;
             }

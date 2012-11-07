@@ -1,4 +1,4 @@
-/*global winQuestionRev winQuestionRevMsg ceEditor revisionsPanel mnuContextTabs
+/*global winQuestionRev winQuestionRevMsg revisionsPanel mnuContextTabs
  * mnuCtxEditor tabEditors mnuCtxEditorCut pgRevisions lstRevisions revisionsInfo
  */
 
@@ -33,6 +33,7 @@ markup = markup.replace("{ide.staticPrefix}", ide.staticPrefix);
 var skin = require("text!ext/revisions/skin.xml");
 var Util = require("ext/revisions/revisions_util");
 var cssString = require("text!ext/revisions/style.css");
+var Code = require("ext/code/code");
 
 var beautify = require("ext/beautify/beautify");
 var quicksearch = require("ext/quicksearch/quicksearch");
@@ -84,7 +85,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Initializes the plugin if it is not initialized yet, and shows/hides its UI.
      **/
     toggle: function() {
-        if (!editors.currentEditor.ceEditor)
+        if (editors.currentEditor.path !== "ext/code/code")
             return;
 
         ext.initExtension(this);
@@ -100,7 +101,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             name: "revisionpanel",
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
-            isAvailable: function(editor) { return editor && !!editor.ceEditor; },
+            isAvailable: function(editor) {
+                return editor && editor.path == "ext/code/code";
+            },
             exec: function () { self.toggle(); }
         });
 
@@ -187,7 +190,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.offlineQueue = JSON.parse(localStorage.offlineQueue);
             }
             catch(e) {
-                console.error("Error loading revisions from local storage", e);
+                this.offlineQueue = [];
             }
         }
 
@@ -227,7 +230,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         ide.addEventListener("init.ext/code/code", function(e) {
-            self.panel = ceEditor.parentNode.appendChild(self.panel);
+            self.panel = e.ext.amlEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
 
@@ -265,14 +268,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && window.lstRevisions && !CoreUtil.isNewPage(page)) {
-            var selection = lstRevisions.selection;
-            var node = model.data.firstChild;
-            if (selection && selection.length === 0 && page.$selectedRevision) {
-                node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
-            }
-            lstRevisions.select(node);
-        }
+        if (page.$showRevisions !== true || !window.lstRevisions || CoreUtil.isNewPage(page))
+            return;
+
+        var selection = lstRevisions.selection;
+        var node = model.data.firstChild;
+
+        if (selection && selection.length === 0 && page.$selectedRevision)
+            node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
+
+        lstRevisions.select(node);
     },
 
     $getRevisionObject: function(path) {
@@ -282,6 +287,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revObj.useCompactList = true;
             revObj.groupedRevisionIds = [];
             revObj.previewCache = {};
+            revObj.usersChanged = [];
         }
         return revObj;
     },
@@ -318,6 +324,9 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
+        if (e.action == "remove")
+            return;
+        
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -346,6 +355,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         var doc = data.doc;
+        if (!doc.acedoc)
+            return;
+
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
@@ -356,6 +368,29 @@ module.exports = ext.register("ext/revisions/revisions", {
                 path: CoreUtil.getDocPath(page)
             });
         }
+
+        var _self = this;
+        (doc.acedoc || doc).addEventListener("change", function(e) {
+            _self.onDocChange(e, doc);
+        });
+    },
+
+    onDocChange: function(e, doc) {
+        if (!e.data || !e.data.delta || !e.data.delta[0])
+            return;
+
+        var _self = this;
+        setTimeout(function() {
+            var suffix = e.data.delta[0].suffix;
+            if (!suffix)
+                return;
+
+            var user = _self.getUser(suffix, doc);
+            if (!user)
+                return;
+
+            _self.addUserToDocChangeList(user, doc);
+        }, 50);
     },
 
     onFileUpdate: function(data) {
@@ -837,17 +872,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revision) { return; }
 
         var contributorToXml = function(c) {
-            return "<contributor email='" + c + "' />";
+            return apf.n("<contributor />").attr("email", c).node().xml;
         };
 
         var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
         var restoring = revision.restoring || "";
 
-        var xmlString = "<revision " +
-                "id='" + revision.ts + "' " +
-                "name='" + friendlyDate + "' " +
-                "silentsave='" + revision.silentsave + "' " +
-                "restoring='" + restoring + "'>";
+        var xmlString = CoreUtil.toXmlTag("revision", {
+            id: revision.ts,
+            name: friendlyDate,
+            silentsave: revision.silentsave,
+            restoring: restoring
+        }, true);
 
         var contributors = "";
         if (revision.contributors && revision.contributors.length) {
@@ -870,20 +906,19 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc.$isTree;
+        return doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
     /**
      * Revisions#iAmMaster(path) -> Boolean
-     * - path(String): Path for the document to be checked
+     * - fullPath(String): Path for the document to be checked
      *
      * Returns true if the current user is the "master" document in a collab
      * session. That means that the contents of his document will be the ones
      * saved in the collab session.
      **/
-    iAmMaster: function(path) {
-        // Has to be implemented.
-        return true;
+    isMaster: function(fullPath) {
+        return this.getConcorde().isMaster(fullPath);
     },
 
     getRevision: function(id, content) {
@@ -1072,7 +1107,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * read-only session.
      **/
     previewRevision: function(id, value, ranges, newSession) {
-        var editor = ceEditor.$editor;
+        var editor = Code.amlEditor.$editor;
         var session = editor.getSession();
         var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
 
@@ -1088,9 +1123,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             ranges.forEach(function(range) {
                 Util.addCodeMarker(newSession, doc, range[4], {
-                    fromRow: range[0],
+                    fromRow: range[0] - 1,
                     fromCol: range[1],
-                    toRow: range[2],
+                    toRow: range[2] - 1,
                     toCol: range[3]
                 });
             });
@@ -1128,15 +1163,15 @@ module.exports = ext.register("ext/revisions/revisions", {
      * contains the latest content.
      **/
     goToEditView: function() {
-        if (typeof ceEditor === "undefined")
+        if (!Code.amlEditor)
             return;
 
         var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
         if (revObj.realSession) {
-            ceEditor.$editor.setSession(revObj.realSession);
+            Code.amlEditor.$editor.setSession(revObj.realSession);
         }
-        ceEditor.$editor.setReadOnly(false);
-        ceEditor.show();
+        Code.amlEditor.$editor.setReadOnly(false);
+        Code.amlEditor.show();
     },
 
     /**
@@ -1174,7 +1209,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.offlineQueue.push(data);
         }
         else {
-            if (this.isCollab() && !this.iAmMaster(docPath)) {
+            if (this.isCollab() && !this.isMaster(page.name)) {
                 // We are not master, so we want to tell the server to tell
                 // master to save for us. For now, since the master is saving
                 // every .5 seconds and auto-save is mandatory, we are not
@@ -1216,14 +1251,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (user && doc) {
             var path = CoreUtil.getDocPath(doc.$page);
             var stack = this.rawRevisions[path];
-            if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
-                stack.usersChanged.push(user.user.email);
+            if (stack && (stack.usersChanged.indexOf(user.email) === -1)) {
+                stack.usersChanged.push(user.email);
             }
         }
     },
 
     getCollab: function() {
-        return require("core/ext").extLut["ext/collab/collab"];
+        return require("core/ext").extLut["ext/collaborate/collaborate"];
+    },
+
+    getConcorde: function() {
+        return require("core/ext").extLut["ext/concorde/concorde"];
     },
 
     getUser: function(suffix, doc) {
@@ -1237,14 +1276,17 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     getUserColorByEmail: function(email) {
-        var color;
         var collab = this.getCollab();
-        if(!collab)
+        if (!collab)
             return;
+
+        var color;
         var user = collab.model.queryNode("group[@name='members']/user[@email='" + email + "']");
         if (user) {
             color = user.getAttribute("color");
         }
+
+        return color;
     },
 
     /**
@@ -1301,7 +1343,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.model.setQueryValue("general/@revisionsvisible", true);
 
         if (!this.panel.visible) {
-            ceEditor.$ext.style.right = BAR_WIDTH + "px";
+            Code.amlEditor.$ext.style.right = BAR_WIDTH + "px";
             page.$showRevisions = true;
             this.panel.show();
             ide.dispatchEvent("revisions.visibility", {
@@ -1341,7 +1383,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hide: function() {
         settings.model.setQueryValue("general/@revisionsvisible", false);
-        ceEditor.$ext.style.right = "0";
+        Code.amlEditor.$ext.style.right = "0";
         var page = tabEditors.getPage();
         if (!page) {
             return;

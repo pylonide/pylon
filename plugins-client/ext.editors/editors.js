@@ -15,6 +15,9 @@ var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var anims = require("ext/anims/anims");
 
+/*global tabEditors colMiddle barButtonContainer barButtons tabExtMgr tabmenubtn
+  trfiles logobar*/
+
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
@@ -53,10 +56,12 @@ module.exports = ext.register("ext/editors/editors", {
         }), 40000);
 
         oExtension.fileExtensions.each(function(mime){
+            // force lower-case, to account for other LowerCase checks below
+            mime = mime.toLowerCase();
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 
-        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.name == "Code Editor"))
+        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.path == "ext/code/code"))
             this.fileExtensions["default"] = oExtension;
     },
 
@@ -84,6 +89,10 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     toggleTabs : function(force, preview, noAnim, mouse){
+        if (typeof noAnim == "undefined") {
+            noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
+        }
+        
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
@@ -112,7 +121,7 @@ module.exports = ext.register("ext/editors/editors", {
         var tab = new apf.bar({
             skin     : "basic",
             "class"  : "codeditorHolder",
-            style    : "position:absolute;", 
+            style    : "position:absolute;",
             childNodes: [
                 new apf.tab({
                     id      : "tabEditors",
@@ -160,14 +169,12 @@ module.exports = ext.register("ext/editors/editors", {
                 }),
 
                 btnMenu = new apf.button({
+                    id : "btnEditorTabsBehavior",
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
-                    onmousedown : function(){
-                        apf.setStyleClass(window[menus.getMenuId('View/Tabs')].$ext, 'tabsContextMenu');
-                    },
                     skin : "btn_icon_only",
-                    "class" : "tabmenubtn",
+                    "class" : "tabmenubtn"
                 }) /*,
                 new apf.hbox({
                     id      : "barButtons",
@@ -272,17 +279,17 @@ module.exports = ext.register("ext/editors/editors", {
 
                         return;
                     }
-                    
+
                     apf.setStyleClass(tabEditors.$buttons.parentNode,
                         "step" + (dir ? --i : ++i),
                         ["step" + (dir ? i + 1 : i-1)]);
 
                 }, ++j * (duration / 6) * 1000);
             });
-            
+
             anims.animateMultiple([
                 { duration : duration, node: ext, top : (this.showTabs || preview ? 0 : -16) + "px"},
-                //{ duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
+                // { duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
                 { duration : duration, node: tabEditors.$buttons, height: (this.showTabs || preview ? 22 : 7) + "px"},
                 { duration : duration, node: this.buttons.add, opacity : dir ? 1 : 0},
                 { duration : duration, node: this.buttons.add, height : (dir ? 17 : 10) + "px"},
@@ -291,8 +298,8 @@ module.exports = ext.register("ext/editors/editors", {
             ], function(e){
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
                     _self.animating = false;
-                
-                tabEditors.parentNode.setAttribute("margin", 
+
+                tabEditors.parentNode.setAttribute("margin",
                     (this.showTabs || preview ? "0 0 0 0" : "-16 0 0 0"));
 
                 tabEditors.$buttons.style.overflow = "";
@@ -304,7 +311,7 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
-                
+
                 tabEditors.parentNode.setAttribute("margin", "0 0 0 0");
             }
             else {
@@ -312,7 +319,7 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
-                
+
                 tabEditors.parentNode.setAttribute("margin", "-16 0 0 0");
             }
         }
@@ -422,13 +429,13 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$buttons.style.overflow = "";
 
         var model = new apf.model();
-        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + %[.].getAttribute('name')}", filepath, editor.path, null, function(page){
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
             page.$editor = editor;
             page.setAttribute("autofocus", false);
-            page.setAttribute("tooltip", "[@path]");
+            page.setAttribute("tooltip", "{%[.].getAttribute('path')}");
             page.setAttribute("class",
                 "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                 ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
@@ -456,6 +463,8 @@ module.exports = ext.register("ext/editors/editors", {
             doc: doc
         });
 
+        apf.setStyleClass(tabEditors.$ext, "", ["empty"])
+
         if (active === false) // init && !
             return {editor: editor, page: fake};
 
@@ -477,7 +486,7 @@ module.exports = ext.register("ext/editors/editors", {
         }, 100);
 
         settings.save();
-        
+
         return {editor: editor, page: fake};
     },
 
@@ -569,6 +578,8 @@ module.exports = ext.register("ext/editors/editors", {
 
             editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
+
+            apf.setStyleClass(tabEditors.$ext, "empty")
         }
 
         //Destroy the app page if it has no application instance
@@ -585,7 +596,7 @@ module.exports = ext.register("ext/editors/editors", {
     beforeswitch : function(e) {
         var page       = e.nextPage;
         var editorPage = tabEditors.getPage(page.type);
-        
+
         if (!editorPage) return;
 
         // fire this event BEFORE editor sessions are swapped.
@@ -600,16 +611,16 @@ module.exports = ext.register("ext/editors/editors", {
         if (editorPage.actiontracker != page.$at)
             editorPage.setAttribute("actiontracker", page.$at);
 
-            page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
+        page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
     },
 
     afterswitch : function(e) {
         var _self = this;
         var page = e.nextPage;
-        
+
         if (this.switchLoop == page.id)
             return;
-        
+
         var fromHandler, toHandler = ext.extLut[page.type];
 
         if (e.previousPage && e.previousPage != e.nextPage)
@@ -673,12 +684,12 @@ module.exports = ext.register("ext/editors/editors", {
         clearTimeout(this.afterswitchTimeout);
         this.afterswitchTimeout = setTimeout(function(){
             _self.switchLoop = page.id;
-            
+
             ide.dispatchEvent("tab.afterswitch", {
                 previousPage: e.previousPage,
                 nextPage: e.nextPage
             });
-            
+
             delete _self.switchLoop;
         }, 150);
     },
@@ -748,15 +759,15 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         menus.addItemByPath("View/Font Size/", null, 290001),
-        
+
         menus.addItemByPath("View/Font Size/Increase Font Size", new apf.item({
             command : "largerfont"
         }), 1);
-        
+
         menus.addItemByPath("View/Font Size/Decrease Font Size", new apf.item({
             command : "smallerfont"
         }), 2);
-        
+
         menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
             checked : "[{require('core/settings').model}::auto/tabs/@show]",
@@ -836,7 +847,7 @@ module.exports = ext.register("ext/editors/editors", {
                             // if the file has been loaded from the tree
                             if (doc.getNode().getAttribute("newfile") != 1) {
                                 // databind the node from the tree to the document
-                                doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                                doc.setNode(e.xmlNode.selectSingleNode("node()[@path=" + util.escapeXpathString(path) + "]"));
                             }
                             else {
                                 // if not? then keep it this way, but invoke setNode() anyway because
@@ -875,7 +886,7 @@ module.exports = ext.register("ext/editors/editors", {
                         if (node.getAttribute("path").split("/")[2] !== ide.workspaceId)
                             continue;
                     }
-                    
+
                     try {
                         if (state)
                             doc.state = JSON.parse(state);
@@ -885,7 +896,7 @@ module.exports = ext.register("ext/editors/editors", {
                     // node.firstChild is not always present (why?)
                     if ((node.getAttribute("changed") == 1) && node.firstChild) {
                         doc.cachedValue = node.firstChild.nodeValue
-                            .replace(/\n]\n]/g, "]]")
+                            .replace(/\n\]\n\]/g, "]]")
                             .replace(/\\r/g, "\r")
                             .replace(/\\n/g, "\n");
                     }
@@ -999,7 +1010,7 @@ module.exports = ext.register("ext/editors/editors", {
                 active : true,
                 origin : "hash"
             });
-            
+
             // and expand the tree
             checkExpand(path, doc);
 
@@ -1041,13 +1052,13 @@ module.exports = ext.register("ext/editors/editors", {
         var path    = options.path || (node && node.getAttribute("path"));
         var page    = options.page || (path && tabs.getPage(path));
         var hasData = !!( page && page.$doc);
-        
+
         function select() {
             var ace = _self.currentEditor.amlEditor.$editor;
             row -= 1;
             var endRow = typeof options.endRow == "number" ? options.endRow - 1 : row;
             var endColumn = options.endColumn;
-            
+
             ace.session.unfold({row: row, column: column || 0});
             if (typeof endColumn == "number")
                 ace.session.unfold({row: endRow, column: endColumn});
@@ -1064,8 +1075,10 @@ module.exports = ext.register("ext/editors/editors", {
             if (options.animate !== false)
                 ace.renderer.animateScrolling(initialScroll);
         }
-        
+
         function focus() {
+            if (!_self.currentEditor.amlEditor)
+                return;
             var ace = _self.currentEditor.amlEditor.$editor;
             if (!ace.$isFocused) {
                 setTimeout(f = function() {
@@ -1074,7 +1087,7 @@ module.exports = ext.register("ext/editors/editors", {
                 }, 1);
             }
         }
-        
+
         function jumpTo() {
             row && select();
             focus();
@@ -1083,18 +1096,19 @@ module.exports = ext.register("ext/editors/editors", {
                 _self.currentEditor.$pendingJumpTo = null
             }
         };
-        
-        
+
+
         if (hasData) {
             tabs.set(page);
             jumpTo();
-        } else {
+        }
+        else {
             options.origin = "jump";
             if (!options.doc)
                 options.doc = ide.createDocument(options.node);
 
             var extraOptions = this.openEditor(options.doc, options.init, options.active, options.forceOpen);
-            
+
             if (row) {
                 if (!path)
                     path = options.node.getAttribute("path");
@@ -1104,7 +1118,7 @@ module.exports = ext.register("ext/editors/editors", {
                     var node = e.doc.getNode();
                     if (node.getAttribute("path") == path)
                         jumpTo();
-                }
+                };
                 ide.addEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
             }
 
@@ -1113,21 +1127,14 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     enable : function(){
-//        this.hbox.show();
-        //this.splitter.show();
     },
 
     disable : function(){
-//        this.hbox.hide();
-        //this.splitter.hide();
     },
 
     destroy : function(){
         menus.remove("View/Tab Bar");
         menus.remove("View/Editors/");
-
-//        this.hbox.destroy(true, true);
-        //this.splitter.destroy(true, true);
     }
 });
 
