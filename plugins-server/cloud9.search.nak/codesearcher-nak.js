@@ -1,5 +1,5 @@
 /**
- * Search module for the Cloud9 IDE
+ * Codesearcher module for the Cloud9 IDE that uses nak
  *
  * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -7,16 +7,41 @@
 
 "use strict";
 
-var Path = require("path");
+var path = require("path");
 
-module.exports = function(nakCmd) {
-    this.assembleCommand = function(options) {
+module.exports = function setup(options, imports, register) {
+  var nakCmd = options.nakCmd;
+
+  var codesearcher = {
+      assembleFilelistCommand: function (options) {
+        var args;
+
+        args = ["-l",                                                     // filenames only   
+                "-p", path.join(__dirname, "..", "cloud9.ide.search", ".agignore")]; // use the Cloud9 ignore file                     
+        
+        if (options.showHiddenFiles)
+            args.push("-H");
+
+        if (options.maxdepth)
+            args.push("-m", options.maxdepth);
+
+        args.push(options.path);
+
+        args.unshift(nakCmd);
+        args = ["-c", args.join(" ")];
+
+        args.command = "bash";
+
+        return args;
+    },
+
+      assembleSearchCommand: function(options) {
         var args, query = options.query;
 
         if (!query)
             return;
 
-        args = ["-p", Path.join(__dirname, ".agignore"),  // use the Cloud9 ignore file
+        args = ["-p", path.join(__dirname, "..", "cloud9.ide.search", ".agignore"),  // use the Cloud9 ignore file
                 "--c9Format"];                            // format for parseResult to consume
 
         if (!options.casesensitive)
@@ -74,5 +99,12 @@ module.exports = function(nakCmd) {
         args.command = "bash";
 
         return args;
-    }
+      }
+   };
+
+  if (!options.test) {
+    register(null, {codesearcher: codesearcher});
+  }
+  else
+    return codesearcher;
 };

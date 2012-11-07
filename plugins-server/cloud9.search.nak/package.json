@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.search.nak",
+    "version": "0.0.1",
+    "main": "codesearcher-nak.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "codesearcher"
+        ]
+    }
+}

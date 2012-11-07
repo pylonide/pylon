@@ -33,7 +33,7 @@ module.exports = function() {
         if (Path.relative(this.env.basePath, options.path).indexOf("../") === 0)
             return false;
 
-        var args = this.env.searchType.assembleCommand(options);
+        var args = this.env.searchType.assembleSearchCommand(options);
 
         if (!args)
             return false;

@@ -33,7 +33,7 @@ module.exports = function() {
         if (Path.relative(this.env.basePath, options.path).indexOf("../") === 0)
             return onExit(1, "Invalid path");
 
-        var args = this.env.searchType.assembleCommand(options);
+        var args = this.env.searchType.assembleFilelistCommand(options);
 
         if (!args)
             return onExit(1, "Invalid arguments");

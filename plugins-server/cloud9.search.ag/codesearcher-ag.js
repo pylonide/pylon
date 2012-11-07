@@ -1,5 +1,5 @@
 /**
- * Search module for the Cloud9 IDE
+ * Codesearcher module for the Cloud9 IDE that uses ag
  *
  * @copyright 2012, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -7,17 +7,65 @@
 
 "use strict";
 
-var Path = require("path");
+var path = require("path");
 
-module.exports = function(agCmd, nakCmd) {
-    this.assembleCommand = function(options) {
+module.exports = function setup(options, imports, register) {
+  var agCmd = options.agCmd, nakCmd = options.nakCmd,
+
+  // taken from http://xregexp.com/
+  $escapeRegExp = function(str) {
+    return str.replace(/[[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
+  },
+
+  $convertFromWildcard = function(pattern) {
+    // remove all whitespace
+    pattern = pattern.replace(/\s/g, "");
+
+    pattern = $escapeRegExp(pattern);
+
+    // convert wildcard norms to regex ones     
+    pattern = pattern.replace(/\\\*/g, ".*");
+    pattern = pattern.replace(/\\\?/g, ".");
+
+    // we wants pipe seperation, not commas
+    // (this is a regexp list with ORs)
+    pattern = pattern.replace(/\\,/g, "|");
+
+    return pattern;
+  }
+
+  var codesearcher = {
+      assembleFilelistCommand: function (options) {
+        var args;
+
+        args = ["--nocolor", 
+               "-p", path.join(__dirname, "..", "cloud9.ide.search", ".agignore"), // use the Cloud9 ignore file
+               "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
+               "-l",                                    // filenames only
+               "--search-binary"]                       // list binary files
+
+        if (options.showHiddenFiles)
+            args.push("--hidden");
+
+        if (options.maxdepth)
+            args.push("--depth", options.maxdepth);
+
+        // any non-null file
+        args.push("[^\\0]", options.path);
+
+        args.command = agCmd;
+
+        return args;
+    
+      },
+      assembleSearchCommand: function(options) {
         var args, query = options.query;
 
         if (!query)
             return;
 
         args = ["--nocolor",                             // don't color items
-                "-p", Path.join(__dirname, ".agignore"), // use the Cloud9 ignore file
+                "-p", path.join(__dirname, "..", "cloud9.ide.search", ".agignore"), // use the Cloud9 ignore file
                 "-U",                                    // skip VCS ignores (.gitignore, .hgignore), but use root .agignore
                 "--search-files"];                       // formats output in "grep-like" manner                               
         
@@ -89,27 +137,12 @@ module.exports = function(agCmd, nakCmd) {
         }
 
         return args;
-    }
+      }
+   };
 
-    // taken from http://xregexp.com/
-    var $escapeRegExp = function(str) {
-        return str.replace(/[[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
-    };
-
-    var $convertFromWildcard = function(pattern) {
-        // remove all whitespace
-        pattern = pattern.replace(/\s/g, "");
-
-        pattern = $escapeRegExp(pattern);
-
-        // convert wildcard norms to regex ones     
-        pattern = pattern.replace(/\\\*/g, ".*");
-        pattern = pattern.replace(/\\\?/g, ".");
-
-        // we wants pipe seperation, not commas
-        // (this is a regexp list with ORs)
-        pattern = pattern.replace(/\\,/g, "|");
- 
-        return pattern;
-    }
+  if (!options.test) {
+    register(null, {codesearcher: codesearcher});
+  }
+  else
+    return codesearcher;
 };
