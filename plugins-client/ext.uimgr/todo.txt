@@ -1,0 +1,26 @@
+<a:colorpicker name="colorpicker" skinset="colorpicker"> - throws error TypeError: Object [Colorpicker Element Node, <a:colorpicker color="#ff0000" value="#0099cc" skin="colorpicker" skinset="default" /> : 1162] has no method '$getExternal'
+<a:datagrid name="datagrid"> - I don't know how to create one with JS
+<a:datagrid name="dgcheck"> - I don't know how to create one with JS
+<a:menu name="dockwin_runbtns"> - I don't know how to show a static menu
+<a:menu name="dockwindowbasic"> - I don't know how to show a static menu
+<a:menu name="dockwindowblack"> - I don't know how to show a static menu
+<a:menu name="menu"> - I don't know how to show a static menu
+<a:menu name="menu-bk"> - I don't know how to show a static menu
+<a:pages name="pages"> - similar to TAB
+<a:scrollbar name="console_scrollbar"> - I don't know how to show a statick scrollbar
+<a:scrollbar name="sbios"> - I don't know how to show a statick scrollbar
+<a:scrollbar name="scrollbar"> - I don't know how to show a statick scrollbar
+<a:slider name="slider"> - doesn't seem to be used
+<a:statusbar name="status"> - doesn't seem to be used
+<a:statusbar name="statusbar"> - doesn't seem to be used
+<a:toolbar - how do you make it a password field
+<a:toolbar name="toolbar"> - is this similar to bar?
+<a:tree name="tree"> - Lazy
+<a:window name="guidetool">
+<a:window name="qsImage">
+<a:window name="win-quickstart">
+
+
+// A good way to determine all the skins in the cloud9
+
+// Look at the collaborate skinset in infra

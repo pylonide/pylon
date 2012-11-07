@@ -37,7 +37,9 @@
     display: inline-block;
     margin-bottom: 30px;
 }
-
+#toggleLight {
+    margin-left: 50px;
+}
 .winUIExt .wn_cp_content {
     background: white;
     overflow: scroll;

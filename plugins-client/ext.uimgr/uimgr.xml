@@ -1815,9 +1815,9 @@ console.log("Type: " + apf.skins.skins[skinset].templates[name].localName + " Sk
 * Type: bar Skinset: default Skin: winGoToFile
 * Type: bar Skinset: inlinedg Skin: bar-liveinspect
 * Type: button Skinset: authskin Skin: btn-blue-noise
-* Type: button Skinset: collaborate Skin: btn-collab-send
-* Type: button Skinset: collaborate Skin: collaboratorbutton
-* Type: button Skinset: collaborate Skin: permissions-button
+    * Type: button Skinset: collaborate Skin: btn-collab-send
+    * Type: button Skinset: collaborate Skin: collaboratorbutton
+    * Type: button Skinset: collaborate Skin: permissions-button
 * Type: button Skinset: default Skin: blackbutton
 * Type: button Skinset: default Skin: browser-btn
 * Type: button Skinset: default Skin: btn-access_request
@@ -1863,14 +1863,14 @@ x Type: codebox Skinset: default Skin: codebox
 * Type: dropdown Skinset: default Skin: dropdown-dark-glossy
 * Type: dropdown Skinset: default Skin: light_dropdown
 * Type: errorbox Skinset: default Skin: errorbox
-* Type: frame Skinset: default Skin: fieldset
+    * Type: frame Skinset: default Skin: fieldset
 * Type: frame Skinset: default Skin: frame
 * Type: img Skinset: default Skin: img
 * Type: label Skinset: default Skin: black_label
 * Type: label Skinset: default Skin: label
 * Type: label Skinset: default Skin: tooltipLabel
-* Type: list Skinset: collaborate Skin: lstCollaboratorsRoom
-* Type: list Skinset: collaborate Skin: members-list
+    * Type: list Skinset: collaborate Skin: lstCollaboratorsRoom
+    * Type: list Skinset: collaborate Skin: members-list
 * Type: list Skinset: default Skin: breakpoints
 * Type: list Skinset: default Skin: lineselect
 * Type: list Skinset: default Skin: list
@@ -1881,8 +1881,8 @@ x Type: codebox Skinset: default Skin: codebox
 ? Type: menu Skinset: default Skin: menu
 ? Type: menu Skinset: default Skin: menu-bk
 * Type: modalwindow Skinset: authskin Skin: win-auth
-* Type: modalwindow Skinset: collaborate Skin: dockextwin
-? Type: modalwindow Skinset: collaborate Skin: todowin - this breaks the IDE
+    * Type: modalwindow Skinset: collaborate Skin: dockextwin
+    ? Type: modalwindow Skinset: collaborate Skin: todowin - this breaks the IDE
 * Type: modalwindow Skinset: default Skin: bk-win-noisebg
 * Type: modalwindow Skinset: default Skin: bk-window
 * Type: modalwindow Skinset: default Skin: bk-window2

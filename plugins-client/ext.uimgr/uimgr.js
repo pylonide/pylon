@@ -29,26 +29,26 @@ module.exports = ext.register("ext/uimgr/uimgr", {
     type   : ext.GENERAL,
     markup : markup,
     css    : css,
-    desp   : [panels],
+    deps   : [panels],
     requireFailed : false,
 
     nodes : [],
 
     hook : function(){
         var _self = this;
-        this.loadSkins();
     },
 
     init : function(amlNode){
         // Save the manually-loaded extensions
         var _self = this;
         apf.importCssString(this.css || "");
-        
     },
 
     show : function(){
+        this.loadSkins();
+        
         ext.initExtension(this);
-        // winUIExt.show(); return ;
+//        winUIExt.show(); return ;
         document.getElementsByTagName("html")[0].setAttribute("style", "overflow: scroll");
         document.body.innerHTML = "";
         document.body.setAttribute("id", "winUIExtContent");
@@ -852,24 +852,19 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                     ]
                 },
                 { //skinset
-                    name: "revisions",
+                    name: "authskin",
                     skins: [
                         { //skin
-                            name: "revisionsbutton",
+                            name: "btn-blue-noise",
                             versions: [
                                 { //version
                                     settings: {
-                                    }
-                                },
-                                { //version
-                                    settings: {
-                                        "class": "ui-btn-red"
+                                        caption: "Button"
                                     }
                                 }
                             ]
                         }
                     ]
-                    
                 },
                 { //skinset
                     name: "quicksearch",
@@ -906,6 +901,25 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                         }
                     ]
                     
+                },
+                { //skinset
+                    name: "revisions",
+                    skins: [
+                        { //skin
+                            name: "revisionsbutton",
+                            versions: [
+                                { //version
+                                    settings: {
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "ui-btn-red"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
                 },
                 { //skinset
                     name: "searchinfiles",
@@ -1116,7 +1130,25 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                     ]
                     
                 }
-            ],
+            ],/*
+            colorpicker: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "colorpicker",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        color: "#ff0000",
+                                        value: "#0099cc"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],*/
             divider: [
                 { //skinset
                     name: "default",
@@ -1513,6 +1545,42 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                                     }
                                 }
                             ]
+                        },
+                        { //skin
+                            name: "panel",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "window",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        buttons: "min|max|close",
+                                        height: "400",
+                                        minheight: "290",
+                                        minwidth: "300",
+                                        modal: "false",
+                                        resizable: "true",
+                                        title: "Static modal window",
+                                        visible: "true",
+                                        width: "500"
+                                    }
+                                }
+                            ]
                         }
                     ]
                 },
@@ -1544,15 +1612,12 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                     skins: [
                         { //skin
                             name: "win-controls",
+                            note: "problem with this one. should investigate further",
                             versions: [
                                 { //version
                                     settings: {
-                                        buttons: "min|max|close",
                                         height: "400",
-                                        minheight: "290",
-                                        minwidth: "300",
                                         modal: "false",
-                                        resizable: "true",
                                         title: "Static modal window",
                                         visible: "true",
                                         width: "500"
@@ -1563,7 +1628,7 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                     ]
                 },
                 {
-                    name: "help-skin",
+                    name: "help",
                     skins: [
                         { //skin
                             name: "win-help-about",
@@ -1585,12 +1650,502 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                         }
                     ]
                 }
+            ],
+            progressbar: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "progressbar",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        max: "10",
+                                        min: "0",
+                                        value: "70"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "progressbar-green",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        max: "10",
+                                        min: "0",
+                                        value: "70"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            radiobutton: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "radiobutton",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        label: "Option"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "classic",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        label: "Option"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "radio_black",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        label: "Option"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "radio_grey",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        label: "Option"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            spinner: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "spinner",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        max: "10",
+                                        min: "0",
+                                        value: "70",
+                                        width: "100"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            splitbutton: [
+                { //skinset
+                    name: "skinset",
+                    skins: [
+                        { //skin
+                            name: "splitbutton",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Split Button"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            splitter: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "splitter",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        height: "10",
+                                        width: "2"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        height: "10",
+                                        width: "2"
+                                    },
+                                    wrapperClass: "dockcol"
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "splitterMoving",
+                                        height: "10",
+                                        width: "2"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "splitterRealtime",
+                                        height: "10",
+                                        width: "2"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "vertical",
+                                        height: "10",
+                                        width: "2"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "splitter-editor-right",
+                                        height: "10",
+                                        width: "2"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "splitter-editor-right panelsplitter",
+                                        height: "10",
+                                        width: "2"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "darksplitter",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                },
+                                { //version
+                                    settings: {
+                                    "class": "darksplitterMoving"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                    "class": "darksplitterRealtime"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                    "class": "vertical"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            tab: [
+                { //skinset
+                    name: "skinset",
+                    skins: [
+                        { //skin
+                            name: "tab",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "dockbar",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "docktab",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                },
+                                { //version
+                                    settings: {},
+                                    wrapperClass: "dockcol"
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "editor_tab",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "extensions_tab",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "tab_console",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        height: "50"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            text: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "text",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        value: "Text"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "language",
+                    skins: [
+                        { //skin
+                            name: "codecomplete_text",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        value: "Text"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "codecompletedoc_text",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        value: "Text"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            textarea: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "textarea",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        value: "Textarea"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "textarea_ide",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        value: "Textarea"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            textbox: [
+                { //skinset
+                    name: "default",
+                    skins: [
+                        { //skin
+                            name: "textbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder",
+                                        type: "password"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "black_textbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "input",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "searchbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "searchbox_textbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "small-font",
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "secret",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "tb_console",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "tbsimple",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "textarea",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "textbox-modal",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        "class": "required-tb",
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "authskin",
+                    skins: [
+                        { //skin
+                            name: "auth-tb",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                { //skinset
+                    name: "gotoline",
+                    skins: [
+                        { //skin
+                            name: "textbox",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        "initial-message": "Placeholder"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             ]
         };
         
-        var menubar = apf.document.firstChild.appendChild( new apf.bar() ); menubar.$ext.setAttribute("id", "menubar"); menubar.$ext.removeAttribute("style");
+        var menubar = apf.document.firstChild.appendChild( new apf.bar() ); 
+        menubar.$ext.setAttribute("id", "menubar");
+        menubar.$ext.removeAttribute("style");
         
-        var toggleLight = menubar.appendChild( new apf.button({ "caption":"Toggle Light", "class":"fright" }) ); toggleLight.$ext.setAttribute("id", "toggleLight"); toggleLight.$ext.removeAttribute("style");
+        var toggleLight = menubar.appendChild( new apf.button({
+            "caption":"Toggle Light",
+            "class":"fright" }) );
+        toggleLight.$ext.setAttribute("id", "toggleLight");
+        toggleLight.$ext.removeAttribute("style");
+        
         toggleLight.addEventListener("click", function(){
             if( document.body.className.indexOf("lightsOff") < 0 )
                 document.body.className = " lightsOff ";
@@ -1605,9 +2160,11 @@ module.exports = ext.register("ext/uimgr/uimgr", {
         
         //Elements
         for ( var el in elements ) {
+            var bar = apf.document.firstChild.appendChild( new apf.bar() );
+            bar.$ext.setAttribute("class", "element");
+            bar.$ext.setAttribute("id", el); bar.$ext.removeAttribute("style");
             
-            var bar = apf.document.firstChild.appendChild( new apf.bar() ); bar.$ext.setAttribute("class", "element"); bar.$ext.setAttribute("id", el); bar.$ext.removeAttribute("style");
-            bar.$ext.innerHTML = "<a class='anchor' name='" + el + "'></a><h2 class='title'><a href='http://ui.ajax.org/#docs/element." + el + "' target='_blank'>" + el + "</a></h2>";
+            bar.$ext.innerHTML = "<a class='anchor' name='" + el + "'></a><h2 class='title'><a href='http://developer.c9.io/api/apf/" + el + ".html' target='_blank'>" + el + "</a></h2>";
             
             var link = document.createElement('a');
             link.innerHTML = el;
@@ -1619,21 +2176,25 @@ module.exports = ext.register("ext/uimgr/uimgr", {
             //Skinsets
             for( var skinset = 0; skinset < elements[el].length; skinset++ ) {
                 var cskinset = elements[el][skinset];
-                var barSkinset = bar.appendChild( new apf.bar() ); barSkinset.$ext.setAttribute("class", "skinset"); barSkinset.$ext.removeAttribute("style");
+                var barSkinset = bar.appendChild( new apf.bar() );
+                barSkinset.$ext.setAttribute("class", "skinset"); barSkinset.$ext.removeAttribute("style");
                 barSkinset.$ext.innerHTML = "<h3 class='title'>Skinset: " + cskinset.name + "</h3>";
                 
                 //skin
                 for( var skin = 0; skin < cskinset.skins.length; skin++ ) {
                     var cskin = cskinset.skins[skin];
                     
-                    var barSkin = barSkinset.appendChild( new apf.bar() ); barSkin.$ext.setAttribute("class", "skin"); barSkin.$ext.removeAttribute("style");
+                    var barSkin = barSkinset.appendChild( new apf.bar() );
+                    barSkin.$ext.setAttribute("class", "skin"); barSkin.$ext.removeAttribute("style");
                     barSkin.$ext.innerHTML = "<h4 class='title'>Skin: " + cskin.name + ( cskin.note ? " - " + cskin.note : "" ) + "</h3>";
                     
                     //version
                     for( var v = 0; v < cskinset.skins[skin].versions.length; v++ ) {
 //                      console.log(el, skinset, skin, v);
                         var cv = cskinset.skins[skin].versions[v];
-                        var barVersion = barSkin.appendChild( new apf.bar() ); barVersion.$ext.setAttribute("class", "version" + (cv.wrapperClass ? " " + cv.wrapperClass : "") ); barVersion.$ext.setAttribute("id", el); barVersion.$ext.removeAttribute("style");
+                        var barVersion = barSkin.appendChild( new apf.bar() );
+                        barVersion.$ext.setAttribute("class", "version" + (cv.wrapperClass ? " " + cv.wrapperClass : "") );
+                        barVersion.$ext.setAttribute("id", el); barVersion.$ext.removeAttribute("style");
 
                         cv.settings.skin = cskin.name;
                         cv.settings.skinset = cskinset.name;
@@ -1648,9 +2209,24 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             cv.settings.caption = "[@name]";
                             cv.settings.each = "[car]";
                             cv.settings.model = "mdlCars";
+                        } else if( el === "radiobutton" ) {
+                            cv.settings.group = "g" + ( skin + 1 );
+                        } else if( el === "tab" ) {
+                            cskin.innerHTML = '\n\t<a:page caption="Tab1" />\n\t<a:page caption="Tab2" />\n\t<a:page caption="Tab3" />\n'
                         }
                         
+                        //console.log("Type: " + el + " Skinset: " + cskinset.name + " Skin: " + cskin.name + " Version: " + JSON.stringify( cv ));
+                        
                         var o = barVersion.appendChild( new apf[el]( cv.settings ) );
+                        if( el ==="radiobutton" ) {
+                            o = barVersion.appendChild( new apf[el]( cv.settings ) );
+                            o = barVersion.appendChild( new apf[el]( cv.settings ) );
+                            o = barVersion.appendChild( new apf[el]( cv.settings ) );
+                            o = barVersion.appendChild( new apf[el]( cv.settings ) );                        
+                        } else if( el === "tab" ) {
+                            o.appendChild( new apf.page( {caption: "Tab"} ) );
+                            o.appendChild( new apf.page( {caption: "Tab"} ) );
+                        }
                         
                         //embed code
                         var embed = "<a:" + el + " ";
@@ -1665,12 +2241,14 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             embed += s + '="' + cv.settings[s] + '" ';
                         }
                         if( cskin.innerHTML ){
-                            o.setMessage(cskin.innerHTML);
+                            if( o.setMessage )
+                                o.setMessage(cskin.innerHTML);
                             embed += ">"+cskin.innerHTML + "</a:" + el + ">";
                         } else {
                             embed += "/>";
                         }
-                        var src = barVersion.appendChild( new apf.textarea({ width: "530" }) ); src.$ext.setAttribute("class", "winUIExtCode");
+                        var src = barVersion.appendChild( new apf.textarea({ width: "530" }) );
+                        src.$ext.setAttribute("class", "winUIExtCode");
                         src.setValue( embed );
                         src.$ext.style.height = ( src.$ext.scrollHeight - 20 ) + "px"; //20px is the vertical padding
                     }
@@ -1687,7 +2265,7 @@ module.exports = ext.register("ext/uimgr/uimgr", {
         var includeSkins = [
             "gotoline",
             "guidedtour",
-            "help-skin",
+            "help",
             "quicksearch",
             "revisions",
             "searchinfiles",
@@ -1697,14 +2275,21 @@ module.exports = ext.register("ext/uimgr/uimgr", {
             "zen"
         ];
         
-        for(var i = 0; i < includeSkins.length; i++) {
-            var includeSkin = includeSkins[i];
+        var requireStatement = includeSkins.map(function (k) {
+            return "text!ext/" + k + "/skin.xml";
+        });
+        
+        require(requireStatement, function () {
+            var skins = Array.prototype.slice.call(arguments);
             
-            var skinData = require("text!ext/" + includeSkin + "/skin.xml");
-            var skinNode = new apf.skin(apf.extend({}, {id: includeSkin, data: skinData, "media-path": ide.staticPrefix + "/ext/" + includeSkin + "/images/"}, {data: null}));
-            skinNode.setProperty("src", skinData);
-            apf.document.documentElement.appendChild(skinNode);
-        }
+            skins.forEach(function (skinData, ix) {
+                var skinNode = new apf.skin(apf.extend({}, {id: includeSkins[ix], data: skinData, "media-path": ide.staticPrefix + "/ext/" + includeSkins[ix] + "/images/"}, {data: null}));
+                skinNode.setProperty("src", skinData);
+                apf.document.documentElement.appendChild(skinNode);
+            });
+            
+            // done
+        });
     },
     
     enable : function(){
