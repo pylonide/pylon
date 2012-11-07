@@ -19,7 +19,7 @@ completer.handlesLanguage = function(language) {
 };
 
 var ID_REGEXES = {
-    "css": /[a-zA-Z-]/
+    "css": /[a-zA-Z_0-9-]/
 };
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
