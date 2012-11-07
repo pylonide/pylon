@@ -9,7 +9,7 @@
  */
 
 var async = require("asyncjs");
-var Plugin = require("cloud9/plugins-server/cloud9.core/plugin");
+var Plugin = require("../cloud9.core/plugin");
 var c9util = require("../cloud9.core/util");
 var util = require("util");
 var Path = require("path");
@@ -38,61 +38,53 @@ util.inherits(RunPlugin, Plugin);
 
 (function() {
     this.command = function(user, message, client) {
-        console.log("GOT MSG", message, message.type);
         if (message && message.type === "run") {
             this.exec(message);
         }
     };
 
     this.exec = function (message) {
-        console.log("EXEC");
         var self = this;
-
         function send(obj) {
             self.send(c9util.extend(obj, {
                 command: message.type,
                 uniqueId: message.uniqueId
             }));
         }
-/*
-        var runOptions = {
-            type: "run-shell",
-            wsId: workspace.workspaceId,
-            cmd: options.line,
-            cwd: options.cwd
-        };
-*/
+
         this.createChild(message.line, message, function(err, process) {
-            if (err) {
+            if (err)
                 return send({ type: "error", err: err });
-            }
         });
     };
 
     this.createChild = function(cmd, runOptions, callback) {
         var self = this;
-        console.log("CREATECHILD");
         this.vfs.spawn(cmd, runOptions, function(err, meta) {
-            console.log("AFTERSPAWN", cmd, runOptions);
             if (err) return callback(err);
 
-            var processList = [];
-            for (var process in self.processes) {
-                if (process.ideRun)
-                    processList.push(process.pid);
-            }
+            self.processes[meta.process.pid] = meta.process;
 
-            // Synchronize process list with the client.
-            self.ide.broadcast({
-                type: "processlist-change",
-                command: "processlist-change",
-                action: "add",
-                pid: meta.process.pid,
-                list: Object.keys(self.processes)
+            var fullPidList = Object.keys(self.processes);
+
+            // This returns an array with the pids of the processes that have been
+            // run from the 'Run' dialog in the ide.
+            var processList = fullPidList.filter(function(pid) {
+                return !!self.processes[pid].ideRun;
             });
 
-            self.processes[meta.process.pid] = meta.process;
             self.attachEvents(runOptions, meta.process);
+            console.log("PROCESSES", fullPidList);
+
+            var pid = meta && meta.process && meta.process.pid;
+            // Synchronize process list with the client.
+            self.send({
+                type: "processlist",
+                subtype: "add",
+                pid: pid,
+                list: fullPidList
+            });
+
             callback(err, meta && meta.process);
         });
     };
@@ -118,7 +110,7 @@ util.inherits(RunPlugin, Plugin);
                 send({
                     "type": type + "-data",
                     "stream": stream,
-                    "data": data
+                    "data": data.toString()
                 });
             };
         }
@@ -131,11 +123,7 @@ util.inherits(RunPlugin, Plugin);
             });
         });
 
-        process.nextTick(function() {
-            send({
-                "type": type + "-start",
-            });
-        });
+        process.nextTick(function() { send({ "type": type + "-start" }); });
     };
 
     this.destroy = function() {
@@ -159,35 +147,6 @@ util.inherits(RunPlugin, Plugin);
             if (!processCount)
                 return callback();
         }, 100);
-    };
-
-    this.execCommands = function(cmds, callback) {
-        var _self = this;
-        var out = "";
-        var err = "";
-        async.list(cmds)
-            .each(function(cmd, next) {
-                _self.exec(
-                    cmd,
-                    function(err, pid) {
-                        if (err) {
-                            return next(err);
-                        }
-                    },
-                    function(code, stdout, stderr) {
-                        //console.log(code, stdout, stderr)
-                        out += stdout;
-                        err += stderr;
-                        if (code) {
-                            return next("Error: " + code + " " + stderr, stdout);
-                        }
-                        next();
-                    }
-                );
-            })
-            .end(function(err) {
-                callback(err, out);
-            });
     };
 
     this.ps = function() {

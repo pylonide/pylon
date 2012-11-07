@@ -104,7 +104,6 @@ var config = [
             "ext/imgview/imgview",
             //"ext/preview/preview",
             "ext/extmgr/extmgr",
-            //"ext/run/run", //Add location rule
             "ext/runpanel/runpanel", //Add location rule
             "ext/debugger/debugger", //Add location rule
             "ext/dbg-node/dbg-node",
@@ -145,7 +144,8 @@ var config = [
             "ext/language/liveinspect",
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
-            "ext/run/run"
+            "ext/runner/runner",
+            "ext/shell/shell"
         ]
     }, {
         packagePath: "vfs-architect/local",
@@ -176,7 +176,8 @@ var config = [
     "./cloud9.eventbus",
     "./cloud9.process-manager",
     "./cloud9.routes",
-    "./cloud9.run.shell",
+    //"./cloud9.run.shell",
+    /*
     {
         packagePath: "./cloud9.run.node",
         listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
@@ -191,14 +192,18 @@ var config = [
     "./cloud9.run.python",
     "./cloud9.run.apache",
     "./cloud9.run.php",
+    */
     "architect/plugins/architect.log",
     "./cloud9.ide.auth",
+    /*
     "./cloud9.ide.git",
     "./cloud9.ide.gittools",
     "./cloud9.ide.hg",
     "./cloud9.ide.npm",
+    */
     "./cloud9.ide.filelist",
     "./cloud9.ide.search",
+    /*
     "./cloud9.ide.run-node",
     {
         packagePath: "./cloud9.ide.run-npm-module",
@@ -209,6 +214,7 @@ var config = [
     "./cloud9.ide.run-ruby",
     "./cloud9.ide.run-php",
     "./cloud9.run.python",
+    */
     "./cloud9.ide.revisions",
     {
         packagePath: "./cloud9.ide.settings",

@@ -13,36 +13,29 @@ var ext = require("core/ext");
 
 var processes = [];
 
-module.exports = ext.register("ext/run/run", {
+module.exports = ext.register("ext/runner/runner", {
     dev   : "Ajax.org",
-    name  : "Run",
+    name  : "Runner",
     alone : true,
     type  : ext.GENERAL,
 
     processes: [],
 
-    hook: function(){},
+    init: function(){},
 
-    init : function(){
-        //ide.addEventListener("process-start", function() {});
-        //ide.addEventListener("process-stop", function() {});
-        ide.addEventListener("socketMessage", function(message) {
-            console.log("MSG", message);
-            if (message.type === "processlist-change") {
-                console.log("processlist-change", message.pid);
+    hook: function() {
+        ide.addEventListener("socketMessage", function(e) {
+            var message = e.message;
+            if (message.type === "processlist") {
+                console.log("processlist-change", message.subtype, message.pid);
                 processes = message.list;
             }
         });
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
-    }
+    enable: function() {},
+    disable: function() {},
+    destroy: function() {}
 });
 
 });
