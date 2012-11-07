@@ -24,6 +24,7 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
         // indirectly invoked by scope_analyzer: 'ext/jslanguage/jshint'
         language.registerLanguageHandler('ext/jslanguage/debugger');
         language.registerLanguageHandler('ext/jslanguage/outline');
+        language.registerLanguageHandler('ext/jslanguage/jumptodef');
     },
     
     enable : function() {

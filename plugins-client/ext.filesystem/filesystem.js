@@ -22,7 +22,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
     autodisable : ext.ONLINE | ext.LOCAL,
-
+    
     createFileNodeFromPath : function (path, attributes) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
@@ -320,21 +320,21 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
     },
 
-    beforeStopRename : function(name) {
-        // Returning false from this function will cancel the rename. We do this
-        // when the name to which the file is to be renamed contains invalid
-        // characters
-        var match = name.match(/^(?:\w|[.])(?:\w|[.-])*$/);
-
-        return match !== null && match[0] == name;
-    },
-
     beforeRename : function(node, name, newPath, isCopyAction, isReplaceAction) {
         var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
-
-        if (name)
+        
+        if (name) {
+            // Returning false from this function will cancel the rename. We do this
+            // when the name to which the file is to be renamed contains invalid
+            // characters
+            var match = name.match(/^(?:\w|[.])(?:\w|[.-])*$/);
+            if (!(match !== null && match[0] == name)) {
+                return false;
+            }
+            
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
+        }
         else
             name = newPath.match(/[^\/]+$/);
 
@@ -367,6 +367,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             replace: isReplaceAction,
             isFolder: node.getAttribute("type") === "folder"
         });
+        
+        // let us continue!
+        return true;
     },
 
     beforeMove: function(parent, node) {

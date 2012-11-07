@@ -45,7 +45,7 @@ var ServerProxy = function(sender) {
   this.send = function(data) {
       sender.emit("serverProxy", data);
   };
-  
+
   this.once = function(messageType, messageSubtype, callback) {
     var channel = messageType;
     if (messageSubtype)
@@ -59,7 +59,7 @@ var ServerProxy = function(sender) {
        channel += (":" + messageSubtype);
     this.emitter.addEventListener(channel, callback);
   };
-  
+
   this.unsubscribe = function(messageType, messageSubtype, f) {
     var channel = messageType;
     if (messageSubtype)
@@ -84,11 +84,11 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.$warningLevel = "info";
     sender.once = EventEmitter.once;
     this.serverProxy = new ServerProxy(sender);
-    
+
     Mirror.call(this, sender);
     linereport.sender = sender;
     this.setTimeout(500);
-    
+
     sender.on("hierarchy", function(event) {
         _self.hierarchy(event);
     });
@@ -212,57 +212,57 @@ function applyEventOnce(eventHandler) {
 oop.inherits(LanguageWorker, Mirror);
 
 function asyncForEach(array, fn, callback) {
-	array = array.slice(0); // Just to be sure
-	function processOne() {
-		var item = array.pop();
-		fn(item, function(result, err) {
-			if (array.length > 0) {
-				processOne();
-			}
+    array = array.slice(0); // Just to be sure
+    function processOne() {
+        var item = array.pop();
+        fn(item, function(result, err) {
+            if (array.length > 0) {
+                processOne();
+            }
             else if (callback) {
-				callback(result, err);
-			}
-		});
-	}
-	if (array.length > 0) {
-		processOne();
-	}
+                callback(result, err);
+            }
+        });
+    }
+    if (array.length > 0) {
+        processOne();
+    }
     else if (callback) {
-		callback();
-	}
+        callback();
+    }
 }
 
 function asyncParForEach(array, fn, callback) {
-	var completed = 0;
-	var arLength = array.length;
-	if (arLength === 0) {
-		callback();
-	}
-	for (var i = 0; i < arLength; i++) {
-		fn(array[i], function(result, err) {
-			completed++;
+    var completed = 0;
+    var arLength = array.length;
+    if (arLength === 0) {
+        callback();
+    }
+    for (var i = 0; i < arLength; i++) {
+        fn(array[i], function(result, err) {
+            completed++;
             if (completed === arLength && callback) {
-				callback(result, err);
-			}
-		});
-	}
+                callback(result, err);
+            }
+        });
+    }
 }
 
 (function() {
-    
+
     this.cachedAst = null;
     this.isParserCalled = false;
-    
+
     this.getLastAggregateActions = function() {
         if(!this.$lastAggregateActions[this.$path])
             this.$lastAggregateActions[this.$path] = {markers: [], hint: null};
         return this.$lastAggregateActions[this.$path];
     };
-    
+
     this.setLastAggregateActions = function(actions) {
         this.$lastAggregateActions[this.$path] = actions;
     };
-    
+
     this.enableFeature = function(name) {
         disabledFeatures[name] = false;
     };
@@ -270,11 +270,11 @@ function asyncParForEach(array, fn, callback) {
     this.disableFeature = function(name) {
         disabledFeatures[name] = true;
     };
-    
+
     this.setWarningLevel = function(level) {
         this.$warningLevel = level;
     };
-    
+
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
@@ -286,7 +286,7 @@ function asyncParForEach(array, fn, callback) {
             handler.sender = _self.sender;
             _self.$initHandler(handler, null, function() {
                 _self.handlers.push(handler);
-            });    
+            });
         }
         if (contents) {
             // In the context of this worker, we can't use the standard
@@ -340,7 +340,7 @@ function asyncParForEach(array, fn, callback) {
             callback(_self.cachedAst);
         });
     };
-    
+
     /**
      * Finds the current node using the language handler.
      * This should always be preferred over the treehugger findNode()
@@ -352,7 +352,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var result;
         asyncForEach(_self.handlers, function(handler, next) {
-            if (handler.handlesLanguage(_self.$language) && handler.findNode) {
+            if (handler.handlesLanguage(_self.$language)) {
                 handler.findNode(ast, pos, function(node) {
                     if (node)
                         result = node;
@@ -425,12 +425,12 @@ function asyncParForEach(array, fn, callback) {
     this.scheduleEmit = function(messageType, data) {
         this.sender.emit(messageType, data);
     };
-    
+
     /**
      * If the program contains a syntax error, the parser will try its best to still produce
      * an AST, although it will contain some problems. To avoid that those problems result in
      * invalid warning, let's filter out warnings that appear within a line or too after the
-     * syntax error. 
+     * syntax error.
      */
     function filterMarkersAroundError(ast, markers) {
         if (!ast || !ast.getAnnotation)
@@ -446,7 +446,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }
     }
-    
+
     this.analyze = function(callback) {
         var _self = this;
         this.parse(function(ast) {
@@ -487,7 +487,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }
     };
-    
+
     this.filterMarkersBasedOnLevel = function(markers) {
         for (var i = 0; i < markers.length; i++) {
             var marker = markers[i];
@@ -498,13 +498,13 @@ function asyncParForEach(array, fn, callback) {
         }
         return markers;
     };
-    
+
     /**
      * Request the AST node on the current position
      */
     this.inspect = function (event) {
         var _self = this;
-        
+
         if (this.isParserCalled) {
             // find the current node based on the ast and the position data
             this.findNode(this.cachedAst, { line: event.data.row, col: event.data.col }, function(node) {
@@ -512,7 +512,7 @@ function asyncParForEach(array, fn, callback) {
                 var handler = _self.handlers.filter(function (h) {
                     return h.handlesLanguage(_self.$language) && h.buildExpression;
                 });
-            
+
                 // then invoke it and build an expression out of this
                 if (node && handler && handler.length) {
                     var expression = {
@@ -534,9 +534,9 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
-        
+
         var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
-        
+
         function cursorMoved(currentNode, currentPos) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
@@ -580,7 +580,7 @@ function asyncParForEach(array, fn, callback) {
             });
 
         }
-        
+
         var currentPos = {line: pos.row, col: pos.column};
         if (this.isParserCalled) {
             var ast = this.cachedAst;
@@ -593,7 +593,7 @@ function asyncParForEach(array, fn, callback) {
             cursorMoved(null, currentPos);
         }
     };
-    
+
     this.$getDefinitionDeclaration = function (row, col, callback) {
         var pos = { row: row, column: col };
         // because the asyncforeach iterates over all handlers
@@ -601,22 +601,21 @@ function asyncParForEach(array, fn, callback) {
         // any of the handlers returned a positive result that
         // we can reuse in the callback
         var endResult;
-        
+
         var _self = this;
         var ast = this.cachedAst;
-        
+
         if (!this.isParserCalled)
             return callback();
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
-            if (!currentNode) 
+            if (!currentNode)
                 return callback();
-            
+
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
-                        if (result) {
+                        if (result)
                             endResult = result;
-                        }
                         next();
                     });
                 }
@@ -632,17 +631,17 @@ function asyncParForEach(array, fn, callback) {
     this.jumpToDefinition = function(event) {
         var _self = this;
         var pos = event.data;
-        
+
         _self.$getDefinitionDeclaration(pos.row, pos.column, function(result) {
             if (result)
                 _self.sender.emit("definition", result);
         });
     };
-    
+
     this.isJumpToDefinitionAvailable = function(event) {
         var _self = this;
         var pos = event.data;
-        
+
         _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
             _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!result });
         });
@@ -652,7 +651,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         var ast = this.cachedAst;
-        
+
         if (!this.isParserCalled)
             return;
         this.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
@@ -670,13 +669,13 @@ function asyncParForEach(array, fn, callback) {
             });
         });
     };
-    
+
     this.onRenameBegin = function(event) {
         var _self = this;
         this.handlers.forEach(function(handler) {
-			if (handler.handlesLanguage(_self.$language))
-				handler.onRenameBegin(_self.doc, function() {});
-		});
+            if (handler.handlesLanguage(_self.$language))
+                handler.onRenameBegin(_self.doc, function() {});
+        });
     };
 
     this.commitRename = function(event) {
@@ -722,7 +721,7 @@ function asyncParForEach(array, fn, callback) {
     this.onUpdate = function() {
         this.scheduledUpdate = false;
         var _self = this;
-        asyncForEach(this.handlers, function(handler, next) { 
+        asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language))
                 handler.onUpdate(_self.doc, next);
             else
@@ -731,12 +730,18 @@ function asyncParForEach(array, fn, callback) {
             _self.analyze(function() {});
         });
     };
-    
+
+    // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
+        if (!this.$analyzeInterval) {
+            this.$analyzeInterval = setInterval(function() {
+                _self.analyze(function(){});
+            }, 2000);
+        }
         var oldPath = this.$path;
         code = code || "";
-        linereport.path = this.$path = path;
+        linereport.path = this.$path = path.replace(/^\/(?!workspace)[^\/]+\/[^\/]+/, "");
         this.$language = language;
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
         this.cachedAst = null;
@@ -748,7 +753,7 @@ function asyncParForEach(array, fn, callback) {
             _self.$initHandler(handler, oldPath, next);
         });
     };
-    
+
     this.$initHandler = function(handler, oldPath, callback) {
         if (!this.$path) // switchFile not called yet
             return callback();
@@ -767,22 +772,18 @@ function asyncParForEach(array, fn, callback) {
             handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
         }
     };
-    
-    this.documentOpen = function(path, language, code) {
-        var _self = this;
-        var doc = {getValue: function() {return code;} };
-        asyncForEach(this.handlers, function(handler, next) {
-            handler.onDocumentOpen(path, doc, _self.path, next);
-        });
-    };
-    
+
     this.documentClose = function(event) {
+        if (this.$analyzeInterval) {
+            clearInterval(this.$analyzeInterval);
+            this.$analyzeInterval = null;
+        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
         });
     };
-    
+
     // For code completion
     function removeDuplicateMatches(matches) {
         // First sort
@@ -813,10 +814,10 @@ function asyncParForEach(array, fn, callback) {
             }
         }
     }
-    
+
     this.complete = function(event) {
         var _self = this;
-        
+
         this.parse(function(ast) {
         var data = event.data;
         var pos = data.pos;
@@ -824,7 +825,7 @@ function asyncParForEach(array, fn, callback) {
             _self.findNode(ast, currentPos, function(node) {
                 var currentNode = node;
                 var matches = [];
-        
+
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                         handler.staticPrefix = data.staticPrefix;

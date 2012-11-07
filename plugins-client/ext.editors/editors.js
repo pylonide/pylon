@@ -56,10 +56,12 @@ module.exports = ext.register("ext/editors/editors", {
         }), 40000);
 
         oExtension.fileExtensions.each(function(mime){
+            // force lower-case, to account for other LowerCase checks below
+            mime = mime.toLowerCase();
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 
-        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.name == "Code Editor"))
+        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.path == "ext/code/code"))
             this.fileExtensions["default"] = oExtension;
     },
 
@@ -287,7 +289,7 @@ module.exports = ext.register("ext/editors/editors", {
 
             anims.animateMultiple([
                 { duration : duration, node: ext, top : (this.showTabs || preview ? 0 : -16) + "px"},
-                //{ duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
+                // { duration : duration, node: ext, height : ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px"},
                 { duration : duration, node: tabEditors.$buttons, height: (this.showTabs || preview ? 22 : 7) + "px"},
                 { duration : duration, node: this.buttons.add, opacity : dir ? 1 : 0},
                 { duration : duration, node: this.buttons.add, height : (dir ? 17 : 10) + "px"},
@@ -461,6 +463,8 @@ module.exports = ext.register("ext/editors/editors", {
             doc: doc
         });
 
+        apf.setStyleClass(tabEditors.$ext, "", ["empty"])
+
         if (active === false) // init && !
             return {editor: editor, page: fake};
 
@@ -574,6 +578,8 @@ module.exports = ext.register("ext/editors/editors", {
 
             editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
+
+            apf.setStyleClass(tabEditors.$ext, "empty")
         }
 
         //Destroy the app page if it has no application instance
