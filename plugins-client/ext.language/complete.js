@@ -22,7 +22,7 @@ var complete;
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
-var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
