@@ -21,7 +21,7 @@ var apfhook = require("./apfhook");
 
 require("ext/debugger/inspector");
 
-/*global dbInteractive txtCode dbg
+/*global dbInteractive txtCode dbg ceEditor
   dbgVariable pgDebugNav tabDebug dgVars*/
 
 module.exports = ext.register("ext/debugger/debugger", {
@@ -99,13 +99,13 @@ module.exports = ext.register("ext/debugger/debugger", {
                 if (dbg.state != "stopped")
                     return false;
                 if (event instanceof KeyboardEvent &&
-                  (!apf.activeElement || !apf.activeElement.$editor || apf.activeElement.$editor.path != "ext/code/code"))
+                 (!apf.activeElement || apf.activeElement != ceEditor))
                     return false;
                 return true;
             },
             findEditor: function(editor) {
-                if (editor && editor.amlEditor)
-                    return editor.amlEditor.$editor;
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
                 return editor;
             }
         });

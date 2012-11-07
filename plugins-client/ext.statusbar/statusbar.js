@@ -95,7 +95,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         };
         
         // code editor not loaded yet? then wait for it...
-        if (!code.inited) {
+        if (typeof window.ceEditor === "undefined") {
             ide.addEventListener("init.ext/code/code", doIt);
         }
         else {
@@ -142,12 +142,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             });
         });
 
-        this.sbWidth = code.amlEditor.$editor.renderer.scrollBar.width;
+        this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
         barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
         barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
-        code.amlEditor.$ext.parentNode.appendChild(barIdeStatus.$ext);
+        ceEditor.$ext.parentNode.appendChild(barIdeStatus.$ext)
 
-        code.amlEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
+        ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
             if (e.changed) {
                 _self.horScrollAutoHide = !!e.value;
                 _self.setPosition();
@@ -156,7 +156,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         // load model with initial values
         var state = mdlStatusBar.data.selectSingleNode("//state");
-        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.path == "ext/code/code"));
+        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.ceEditor));
         apf.xmldb.setAttribute(state, "showStatusbar", apf.isTrue(settings.model.queryValue("auto/statusbar/@show")));
         
         // if we assign this before the plugin has been init'ed it will create some empty model
@@ -172,17 +172,19 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     onAfterSwitch : function (editor) {
         var _self = this;
         
-        if (!editor)
+        if (!editor) {
             return;
+        }
         
         // update the model so we can use this info in the XML
-        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.path === "ext/code/code");
+        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", !!editor.ceEditor);
         
         // if we dont have a code editor then continue
-        if (editor.path != "ext/code/code")
+        if (!editor.ceEditor) {
             return;
+        }
         
-        editor = editor.amlEditor.$editor;
+        editor = editor.ceEditor.$editor;
     
         _self.updateStatus(editor);
 
@@ -241,7 +243,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     
     toggleSelectionLength: function(){
         this.$showRange = !this.$showRange;
-        this.updateStatus(code.amlEditor.$editor);
+        this.updateStatus(ceEditor.$editor);
     },
 
     toggleStatusBar: function(){

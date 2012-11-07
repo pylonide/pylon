@@ -64,9 +64,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             name: "searchinfiles",
             hint: "search for a string through all files in the current workspace",
             bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
-            isAvailable: function(editor) {
-                return editor && editor.path == "ext/code/code";
-            },
             exec: function () {
                 _self.toggleDialog(1);
             }
@@ -314,7 +311,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                     if (!noselect && editors.currentEditor)
-                        editors.currentEditor.amlEditor.focus();
+                        editors.currentEditor.ceEditor.focus();
 
                     setTimeout(function(){
                         callback
@@ -441,7 +438,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
                 _self.searchPage = tabEditors.getPage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
-                _self.apfeditor = _self.searchPage.$editor.amlEditor;
+                _self.apfeditor = _self.searchPage.$editor.ceEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
                 _self.tabacedoc.node = node;
 

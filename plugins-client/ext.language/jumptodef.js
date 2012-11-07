@@ -24,7 +24,7 @@ module.exports = {
             bindKey: {mac: "F3", win: "F3"},
             hint: "jump to the definition of the variable or function that is under the cursor",
             isAvailable : function(editor){
-                return editor && editor.path == "ext/code/code";
+                return editor && editor.ceEditor;
             },
             exec: function(){
                 _self.jumptodef();
@@ -85,7 +85,7 @@ module.exports = {
      */
     checkIsJumpToDefAvailable: function () {
         var editor = editors.currentEditor;
-        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+        if (!editor || !editor.ceEditor)
             return;
 
         this.worker.emit("isJumpToDefinitionAvailable", { data: editor.getSelection().getCursor() });
@@ -93,7 +93,7 @@ module.exports = {
 
     jumptodef: function() {
         var editor = editors.currentEditor;
-        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+        if (!editor || !editor.ceEditor)
             return;
 
         var sel = editor.getSelection();

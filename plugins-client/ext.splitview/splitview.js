@@ -788,10 +788,11 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
 
     isSupportedEditor: function() {
-        var editor;
+        var editor, name;
         for (var i = 0, l = arguments.length; i < l; ++i) {
             editor = arguments[i];
-            if (!editor || editor.path != "ext/code/code")
+            name = editor && editor.name && editor.name.toLowerCase() || "";
+            if (name.indexOf("code editor") === -1)
                 return false;
         }
         return true;

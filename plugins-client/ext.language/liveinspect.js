@@ -8,7 +8,7 @@ var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword
 var debuggerPlugin = require("ext/debugger/debugger"); 
-var code = require("ext/code/code");
+var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 
 module.exports = (function () {
@@ -67,14 +67,14 @@ module.exports = (function () {
         ide.addEventListener("afteropenfile", function (e) {
             var editor = e.doc.$page && e.doc.$page.$editor;
 
-            if (editor && editor.path == "ext/code/code" && editor.amlEditor) {
-                var amlEditor = editor.amlEditor;
+            if (editor && editor.ceEditor) {
+                var ceEditor = editor.ceEditor;
                 
-                amlEditor.$editor.addEventListener("mousemove", onEditorMouseMove);
+                ceEditor.$editor.addEventListener("mousemove", onEditorMouseMove);
                 
                 // when you click, or change the cursor position, then hide the window
-                amlEditor.$editor.addEventListener("mousedown", onEditorClick);
-                amlEditor.getSession().getSelection().addEventListener("changeCursor", onEditorClick);
+                ceEditor.$editor.addEventListener("mousedown", onEditorClick);
+                ceEditor.getSession().getSelection().addEventListener("changeCursor", onEditorClick);
             }
         });
         
@@ -289,7 +289,7 @@ module.exports = (function () {
         // see whether we hover over the editor or the quickwatch window
         var mouseMoveAllowed = false;
         
-        var eles = [ code.amlEditor, winLiveInspect ];
+        var eles = [ ceEditor, winLiveInspect ];
         // only the visible ones
         eles.filter(function (ele) { return ele.visible; })
             .map(function (ele) { return ele.$ext; }) // then get the HTML counterpart
@@ -399,7 +399,7 @@ module.exports = (function () {
             marker.session.removeMarker(marker.id);
         }
         
-        var session = code.amlEditor.$editor.session;
+        var session = ceEditor.$editor.session;
         if (pos.el != pos.sl && data.value.indexOf("\n") == -1) {
             pos.el = pos.sl;
             pos.ec = session.getLine(pos.sl).length;

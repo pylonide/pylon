@@ -52,8 +52,8 @@ var _loadKeyboardHandler = function(path, callback) {
 var enableVim = function enableVim() {
     ext.initExtension(this);
 
-    ide.addEventListener("init.ext/code/code", function(e){
-        var editor = e.ext.amlEditor.$editor;
+    ide.addEventListener("init.ext/code/code", function(){
+        var editor = ceEditor.$editor;
         VIM_ENABLED = true;
 
         if (vimHandler) {
@@ -85,7 +85,7 @@ var enableVim = function enableVim() {
 };
 
 var disableVim = function() {
-    var editor = code.amlEditor.$editor;
+    var editor = ceEditor.$editor;
     if (editor) {
         editor.keyBinding.removeKeyboardHandler(vimHandler);
         editor.removeEventListener("vimMode", vimHandler.$statusListener);
@@ -140,8 +140,8 @@ module.exports = ext.register("ext/vim/vim", {
 
     toggle: function() {
         this.enable(VIM_ENABLED === false);
-        if (code.amlEditor) {
-            code.amlEditor.focus();
+        if (typeof ceEditor !== "undefined") {
+            ceEditor.focus();
         }
     },
 

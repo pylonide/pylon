@@ -10,7 +10,6 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
-var Code = require("ext/code/code");
 var Map = require("ext/minimap/map");
 var css = require("text!ext/minimap/style.css");
 
@@ -84,8 +83,8 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         apf.importCssString((this.css || ""));
 
-        this.editor = Code.amlEditor.$editor;
-        this.panel = Code.amlEditor.parentNode.appendChild(new apf.bar({
+        this.editor = ceEditor.$editor;
+        this.panel = ceEditor.parentNode.appendChild(new apf.bar({
             id : "minimapPanel",
             visible : false,
             top : 2,
@@ -103,7 +102,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         tabPlaceholder.addEventListener("resize", function() {
             if (_self.panel.visible)
-                _self.map.resize(_self.map_width, Code.amlEditor.getHeight());
+                _self.map.resize(_self.map_width, ceEditor.getHeight());
         });
 
         if (apf.isTrue(this.map_enabled)) {
@@ -118,8 +117,8 @@ return module.exports = ext.register("ext/minimap/minimap", {
             this.editorSession.removeEventListener("change", this.$changeEvent);
 
         var _self = this;
-        if (editors.currentEditor.path == "ext/code/code") {
-            this.editorSession = Code.amlEditor.$editor.session;
+        if(editors.currentEditor.ceEditor) {
+            this.editorSession = editors.currentEditor.ceEditor.$editor.session;
             this.editorSession.addEventListener("change", this.$changeEvent = function() {
                 if (_self.$updateTimer)
                     clearTimeout(_self.$updateTimer);
