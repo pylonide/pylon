@@ -463,7 +463,7 @@ function createEditorClones(editor) {
         if (previousEditor.$editor.getKeyboardHandler())
             EditorClones.cloneEditor.$editor.setKeyboardHandler(previousEditor.$editor.getKeyboardHandler());
 
-        // add listeners to ceEditor properties that also need to be applied to
+        // add listeners to amlEditor properties that also need to be applied to
         // other editor instances:
         function setProp(which, value) {
             if (EditorClones[id] && EditorClones[id].length) {
@@ -560,7 +560,7 @@ var previousEditor;
 
 function onEditorFocus(editor) {
     var splits = exports.get(editor);
-    if (Editors.currentEditor && Editors.currentEditor.name.indexOf("Code Editor") > -1) {
+    if (Editors.currentEditor && Editors.currentEditor.path == "ext/code/code") {
         if (!previousEditor)
             previousEditor = Editors.currentEditor.amlEditor;
         Editors.currentEditor.amlEditor = editor;

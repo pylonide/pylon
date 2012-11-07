@@ -61,6 +61,11 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
      * @return string
      */
     this.getRealPath = function(publicPath) {
+        // if we already start with the basepath, let it go :-)
+        if (publicPath.indexOf(this.basePath) === 0) {
+            return publicPath;
+        }
+        
         return Path.join(this.basePath, publicPath);
     };
 

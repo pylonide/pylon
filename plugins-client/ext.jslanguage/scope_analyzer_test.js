@@ -178,6 +178,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/jumptodef");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
     },
@@ -197,6 +198,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/jumptodef");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);                            ");
         
@@ -224,6 +226,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/jumptodef");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
     },
@@ -245,6 +248,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
+        worker.register("ext/jslanguage/jumptodef");
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
     },

@@ -11,6 +11,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var language = require("ext/language/language");
 var editors = require("ext/editors/editors");
+var settings = require("ext/settings/settings");
+var autosave = require("ext/autosave/autosave");
 
 module.exports = ext.register("ext/linereport/linereport", {
     name     : "linereport",
@@ -21,8 +23,9 @@ module.exports = ext.register("ext/linereport/linereport", {
     deps     : [language, editors],
     nodes    : [],
     
-    buffers : {},
+    buffers      : {},
     saveTriggers : {},
+    firstUsed    : false,
     
     hook: function() {
         var _self = this;
@@ -36,6 +39,11 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onWorkerMessage : function(event) {
+        if (!this.firstUsed && event.data.path) {
+            this.firstUsed = true;
+            this.onFirstUse(event);
+        }
+            
         var doc = window.tabEditors.getPage().$doc;
         var path = event.data.path;
         if (ext.disabled || !doc || (path && path !== doc.getNode().getAttribute("path")))
@@ -73,6 +81,17 @@ module.exports = ext.register("ext/linereport/linereport", {
             this.saveTriggers[event.oldpath]();
             delete this.saveTriggers[event.oldpath];
         }
+    },
+    
+    onFirstUse: function(event) {
+        // Enable autosave since it makes linereport trigger automatically
+        autosave.isAutoSaveEnabled = true;
+        settings.model.setQueryValue("general/@autosaveenabled", true);
+        ide.dispatchEvent("track_action", {
+            type: "linereport_firstuse",
+            language: event.data.language,
+            source: event.data.source
+        });
     },
     
     enable: function() {

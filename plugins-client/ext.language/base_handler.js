@@ -10,6 +10,8 @@
  */
 define(function(require, exports, module) {
 
+/*global disabledFeatures*/
+
 module.exports = {
     
     language: null,

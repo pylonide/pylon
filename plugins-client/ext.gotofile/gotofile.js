@@ -4,6 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+/*global winGoToFile winBlockGotoFile tabEditors txtGoToFile dgGoToFile vboxGoToFile*/
 
 define(function(require, exports, module) {
 
@@ -16,6 +17,7 @@ var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
 var filelist = require("ext/filelist/filelist");
 var anims = require("ext/anims/anims");
+var themes = require("ext/themes/themes");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -24,7 +26,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     offline : false,
     type    : ext.GENERAL,
     markup  : markup,
-    offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
 
     eventsEnabled : true,
@@ -65,15 +66,29 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             this.model = new apf.model()
         );
 
-        ide.addEventListener("init.ext/editors/editors", function(){
+        ide.addEventListener("init.ext/editors/editors", this.$initEditorExt = function(){
             _self.markupInsertionPoint = tabEditors;
             //tabEditors.appendChild(winGoToFile);
         });
 
-        ide.addEventListener("extload", function(){
+        ide.addEventListener("extload", this.$extLoad = function(){
             if (!_self.isGeneric) {
                 _self.updateFileCache();
             }
+        });
+        
+        ide.addEventListener("closefile", this.$closeFile = function() {
+            setTimeout(function(){
+                _self.updateWinPos();
+            });
+        });
+        
+        ide.addEventListener("newfile", this.$newFile = function() {
+            _self.updateFileCache(true);
+        });
+        
+        ide.addEventListener("removefile", this.$removeFile = function() {
+            _self.updateFileCache(true);
         });
     },
 
@@ -164,26 +179,90 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
+        
+        winGoToFile.addEventListener("prop.visible", function(e){
+            if (e.value) {
+                _self.updateWinPos();
+            }
+        });
+        
         txtGoToFile.addEventListener("blur", function(e){
             if (self.winGoToFile && winGoToFile.visible
               && !apf.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
 
-        ide.addEventListener("closepopup", function(e){
+        ide.addEventListener("closepopup", this.$closepopup = function(e){
             if (e.element != _self)
                 _self.toggleDialog(-1, true);
         });
 
-        ide.addEventListener("beforewatcherchange", function(){
+        ide.addEventListener("beforewatcherchange", this.$beforewatcherchange = function(){
             _self.dirty = true;
         });
 
         this.updateDatagrid(true);
 
         this.nodes.push(winGoToFile);
+        
+        this.updateWinPos();
     },
+    
+    updateWinPos : function(){
+        if (!window.winGoToFile)
+            return;
+        
+        if (!tabEditors.getPage() || !themes.isDark) {
+            winGoToFile.setProperty("top", 0);
+            vboxGoToFile.setProperty("edge", "5 5 5 5");
+            
+            winGoToFile.$ext.style.top = 0;
+        }
+        else {
+            winGoToFile.setProperty("top", 6);
+            vboxGoToFile.setProperty("edge", "1 5 5 5");
+            
+            winGoToFile.$ext.style.top = "6px";
+        }
+    },
+    
+    windowVisible : function(winValue, data){
+        var _self = this;
+        if (winValue) {
+            var search = _self.lastSearch;
+            _self.lastSearch = null; //invalidate cache
 
+            var sel = [];
+            dgGoToFile.getSelection().forEach(function(node){
+                var i = node.firstChild.nodeValue;
+                sel.push(_self.arraySearchResults[i]);
+            })
+
+            var state = {
+                sel : sel, //store previous selection
+                caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
+                scrollTop : dgGoToFile.$viewport.getScrollTop()
+            };
+
+            _self.model.load(data);
+            _self.filter(search, state.sel.length);
+
+            if (state.sel.length && state.sel.length < 100) {
+                var list = [];
+                sel = state.sel;
+                for (var i = 0, l = sel.length; i < l; i++) {
+                    list.push(dgGoToFile.queryNode("//d:href[text()='"
+                        + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                }
+                dgGoToFile.selectList(list);
+                if (state.caret)
+                    dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='"
+                        + _self.arraySearchResults.indexOf(state.caret) + "']"));
+                dgGoToFile.$viewport.setScrollTop(state.scrollTop);
+            }
+        }
+    },
+    
     updateFileCache : function(isDirty){
         var _self = this;
 
@@ -206,44 +285,19 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
 
             _self.arrayCache = array;
-
+            
             if (self.winGoToFile && _self.lastSearch) {
-                winGoToFile.addEventListener("prop.visible", function(e){
-                    if (e.value) {
-                        var search = _self.lastSearch;
-                        _self.lastSearch = null; //invalidate cache
+                if (!winGoToFile.visible) {
+                    var $winGoToFileProVisible;
+                    winGoToFile.addEventListener("prop.visible", $winGoToFileProVisible = function(e){
+                        _self.windowVisible(e.value, data);
 
-                        var sel = [];
-                        dgGoToFile.getSelection().forEach(function(node){
-                            var i = node.firstChild.nodeValue;
-                            sel.push(_self.arraySearchResults[i]);
-                        })
-
-                        var state = {
-                            sel : sel, //store previous selection
-                            caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
-                            scrollTop : dgGoToFile.$viewport.getScrollTop()
-                        };
-
-                        _self.model.load(data);
-                        _self.filter(search, state.sel.length);
-
-                        if (state.sel.length && state.sel.length < 100) {
-                            var list = [], sel = state.sel;
-                            for (var i = 0, l = sel.length; i < l; i++) {
-                                list.push(dgGoToFile.queryNode("//d:href[text()='"
-                                    + _self.arraySearchResults.indexOf(sel[i]) + "']"));
-                            }
-                            dgGoToFile.selectList(list);
-                            if (state.caret)
-                                dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='"
-                                    + _self.arraySearchResults.indexOf(state.caret) + "']"));
-                            dgGoToFile.$viewport.setScrollTop(state.scrollTop);
-                        }
-                    }
-
-                    winGoToFile.removeEventListener("prop.visible", arguments.callee);
-                });
+                        winGoToFile.removeEventListener("prop.visible", $winGoToFileProVisible);
+                    });
+                 }
+                 else {
+                     _self.windowVisible(true, data);
+                 }
             }
             else {
                 _self.arraySearchResults = array;
@@ -299,6 +353,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
 
         var nodes = dgGoToFile.getTraverseNodes();
+        if (!nodes)
+            return;
+        
         for (var i = Math.max(dgGoToFile.$viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
             if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
                 dgGoToFile.select(nodes[i]);
@@ -315,7 +372,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (!value)
             return "";
         keyword = keyword.replace(/\*/g, "");
-        var i, j;
+        var i;
         if ((i = value.lastIndexOf(keyword)) !== -1)
             return value.substring(0, i) + "<strong>" + keyword + "</strong>" + value.substring(i+keyword.length);
         var result = search.matchPath(value, keyword);
@@ -338,7 +395,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         if (!this.arraySearchResults.length) {
             if (init || !txtGoToFile.value) {
-                dgGoToFile.clear("loading")
+                dgGoToFile.clear("loading");
                 this.filter("");
             }
             else {
@@ -359,7 +416,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             vp.change(0, vp.limit, true);
 
             setTimeout(function(){
-                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+                dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
                 txtGoToFile.focus();
             });
         }
@@ -385,7 +442,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     openFile: function(noanim){
         var nodes = dgGoToFile.getSelection();
 
-        if (nodes.length == 0)
+        if (nodes.length === 0)
             return false;
 
         var _self = this;
@@ -474,8 +531,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     winGoToFile.hide();
 
                     setTimeout(function() {
-                        if (editors.currentEditor && editors.currentEditor.ceEditor)
-                            editors.currentEditor.ceEditor.focus();
+                        if (editors.currentEditor && editors.currentEditor.amlEditor)
+                            editors.currentEditor.amlEditor.focus();
                     }, 0);
 
                     callback && callback();
@@ -512,6 +569,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         winGoToFile.destroy(true, true);
         this.nodes = [];
+        
+        ide.removeEventListener("init.ext/editors/editors", this.$initEditorExt);
+        ide.removeEventListener("extload", this.$extLoad);
+        ide.removeEventListener("closefile", this.$closeFile);
+        ide.removeEventListener("newfile", this.$newFile);
+        ide.removeEventListener("removefile", this.$removeFile);
+        
+        ide.removeEventListener("closepopup", this.$closepopup);
+        ide.removeEventListener("beforewatcherchange", this.$beforewatcherchange);
     }
 });
 

@@ -148,11 +148,11 @@ module.exports = ext.register("ext/clipboard/clipboard", {
 
     $getAce : function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
+        var amlEditor = editor.amlEditor;
+        return amlEditor.$editor;
     },
     
     enable : function(){

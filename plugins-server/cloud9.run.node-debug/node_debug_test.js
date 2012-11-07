@@ -18,7 +18,7 @@ var fsnode = require("vfs-nodefs-adapter");
 
 module.exports = {
 
-    timeout: 15000,
+    timeout: 5000,
     vfs: null,
     home: __dirname + "/../fixtures/node_env",
 
@@ -58,6 +58,10 @@ module.exports = {
         var service = new WSV8DebuggerService({
             send: function(msg) {
                 msg = JSON.parse(msg);
+                // Fix the race condition between the debug client waiting
+                // for the event and the start time of the debug process
+                if (msg.command === "DebugAttachNode")
+                    return service.$onMessage('{"type": "node-debug-ready"}');
                 if (msg.runner === "node" && msg.body) {
                     // console.log("send", msg);
                     child.debugCommand(msg.body);
@@ -96,6 +100,7 @@ module.exports = {
                 assert.equal(err, null);
                 console.log("Runner created");
 
+                // patiently wait for the debugee process to init
                 setTimeout(function () {
                     _self.createDebugClient(child, "node-d", function (err, debug) {
                         debug.version(function(version) {
@@ -112,7 +117,7 @@ module.exports = {
                             }
                         });
                     });
-                }, 50);
+                }, 1000);
             });
         });
     }

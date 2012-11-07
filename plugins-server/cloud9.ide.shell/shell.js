@@ -155,6 +155,31 @@ util.inherits(ShellPlugin, Plugin);
              });
     };
 
+    this["command-mv"] =
+    this["command-mkdir"] =
+    this["command-rm"] =
+    this["command-pwd"] =
+    this["command-ls"] = function(message) {
+        var self = this;
+        this.processCount += 1;
+        this.pm.exec("shell", {
+            command: message.command,
+            args: message.argv.slice(1),
+            cwd: message.cwd || this.workspaceDir,
+            extra: message.extra
+        }, function(code, out, err) {
+            self.processCount -= 1;
+
+            self.sendResult(0, message.command, {
+                code    : code,
+                argv    : message.argv,
+                err     : err,
+                out     : out,
+                extra   : message.extra
+            });
+        });
+    };
+
     this["command-cd"] = function(message) {
         var to = message.argv.pop();
         var path = message.cwd || this.workspaceDir;

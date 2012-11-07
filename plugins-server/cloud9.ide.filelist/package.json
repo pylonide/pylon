@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.ide.filelist",
+    "version": "0.0.1",
+
+    "main": "./filelist-plugin.js",
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "vfs",
+            "ide-routes",
+            "workspace-permissions"
+        ]
+    }
+}

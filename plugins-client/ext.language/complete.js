@@ -6,11 +6,11 @@
  */
 define(function(require, exports, module) {
 
-/*global txtCompleter txtCompleterDoc txtCompleterHolder barCompleterCont
-  ceEditor sbCompleter*/
+/*global txtCompleter txtCompleterDoc txtCompleterHolder barCompleterCont sbCompleter*/
 
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var code = require("ext/code/code");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
 
@@ -35,7 +35,7 @@ var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
 var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
-    var editor = editors.currentEditor.ceEditor.$editor;
+    var editor = editors.currentEditor.amlEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
     if (keyhandler.preceededByIdentifier(line, pos.column) ||
@@ -281,7 +281,7 @@ module.exports = {
     populateCompletionBox: function (matches) {
         var _self = this;
         _self.completionElement.innerHTML = "";
-        var cursorConfig = ceEditor.$editor.renderer.$cursorLayer.config;
+        var cursorConfig = code.amlEditor.$editor.renderer.$cursorLayer.config;
         var hasIcons = false;
         matches.forEach(function(match) {
             if (match.icon)
@@ -394,7 +394,7 @@ module.exports = {
     },
 
     onTextInput : function(text, pasted) {
-        var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        var keyBinding = code.amlEditor.$editor.keyBinding;
         oldOnTextInput.apply(keyBinding, arguments);
         if (!pasted) {
             if (!text.match(ID_REGEX))

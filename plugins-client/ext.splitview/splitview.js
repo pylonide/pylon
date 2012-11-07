@@ -25,6 +25,7 @@ var mnuCloneView, mnuSplitAlign;
 
 var restoring = false;
 var restoreQueue = [];
+var SUPPORTED_EDITORS = ["ext/code/code", "ext/preview/preview"];
 
 module.exports = ext.register("ext/splitview/splitview", {
     name     : "Split View",
@@ -786,11 +787,10 @@ console.log("showing split?");
     },
 
     isSupportedEditor: function() {
-        var editor, name;
+        var editor;
         for (var i = 0, l = arguments.length; i < l; ++i) {
             editor = arguments[i];
-            name = editor && editor.name && editor.name.toLowerCase() || "";
-            if (name.indexOf("code editor") === -1 && name.indexOf("preview") === -1)
+            if (!editor || SUPPORTED_EDITORS.indexOf(editor.path) === -1)
                 return false;
         }
         return true;

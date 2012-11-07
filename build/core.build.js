@@ -46,7 +46,7 @@
         "node_modules/ace/build/src/theme-dawn",
         "node_modules/ace/build/src/theme-eclipse",
         "node_modules/ace/build/src/theme-idle_fingers",
-        "node_modules/ace/build/src/theme-kr_theme",
+        "node_modules/ace/build/src/theme-kr",
         "node_modules/ace/build/src/theme-merbivore",
         "node_modules/ace/build/src/theme-merbivore_soft",
         "node_modules/ace/build/src/theme-mono_industrial",

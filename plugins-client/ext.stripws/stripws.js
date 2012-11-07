@@ -57,7 +57,7 @@ module.exports = ext.register("ext/stripws/stripws", {
             name: "stripws",
             hint: "strip whitespace at the end of each line",
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(){
                 ext.initExtension(self);

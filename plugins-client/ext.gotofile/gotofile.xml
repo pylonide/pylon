@@ -9,13 +9,12 @@
       showtab   = "[{require('ext/settings/settings').model}::auto/tabs/@show]"
       top       = "6"
       >
-        <a:vbox edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+        <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
               class           = "searchresults noscrollbar"
               skin            = "lineselect"
               maxheight       = "350"
-              model           = "{require('ext/gotofile/gotofile').model}"
               scrollbar       = "sbShared 32 7 7"
               viewport        = "virtual"
               multiselect     = "true"

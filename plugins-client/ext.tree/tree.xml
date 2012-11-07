@@ -11,7 +11,7 @@
     <a:window id="winFilesViewer"
       flex     = "1"
       skin     = "fm-window"
-      title    = "Project Files"
+      title    = "Workspace Files"
       modal    = "false"
       buttons  = "close"
       minwidth = "130"

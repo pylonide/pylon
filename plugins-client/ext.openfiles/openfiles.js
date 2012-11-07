@@ -259,7 +259,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         this.nodes = [];
 
         panels.unregister(this);
-    },
+    }
 });
 
 });

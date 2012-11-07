@@ -14,7 +14,9 @@ var NOT_EVENT_HANDLERS = {
     traverseUp : true,
     traverse : true,
     topdown : true,
-    traverseTopDown : true
+    traverseTopDown : true,
+    rewrite : true,
+    traverseAll : true
 };
 
 outlineHandler.handlesLanguage = function(language) {
@@ -22,6 +24,8 @@ outlineHandler.handlesLanguage = function(language) {
 };
     
 outlineHandler.outline = function(doc, ast, callback) {
+    if (!ast)
+        return callback();
     callback({ body : extractOutline(doc, ast) });
 };
     

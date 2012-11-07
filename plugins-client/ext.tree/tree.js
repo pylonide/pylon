@@ -43,7 +43,7 @@ function $cancelWhenOffline() {
 }
 
 module.exports = ext.register("ext/tree/tree", {
-    name             : "Project Files",
+    name             : "Workspace Files",
     dev              : "Cloud9 IDE, Inc.",
     alone            : true,
     type             : ext.GENERAL,
@@ -74,7 +74,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Register this panel on the left-side panels
         panels.register(this, {
             position : 1000,
-            caption: "Project Files",
+            caption: "Workspace Files",
             "class": "project_files",
             command: "opentreepanel"
         });
@@ -409,21 +409,14 @@ module.exports = ext.register("ext/tree/tree", {
                 rename(args[1], args[0], filename, count > 0);
             }
         });
-
-        trFiles.addEventListener("beforestoprename", this.$beforestoprename = function(e) {
-            if (!ide.onLine && !ide.offlineFileSystemSupport)
-                return false;
-
-            return fs.beforeStopRename(e.value);
-        });
-
+        
         trFiles.addEventListener("beforerename", this.$beforerename = function(e){
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
 
             if (trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
-
+            
             // check for a path with the same name, which is not allowed to rename to:
             var path = e.args[0].getAttribute("path"),
                 newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]).toLowerCase();
@@ -444,7 +437,9 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
             }
 
-            fs.beforeRename(e.args[0], e.args[1]);
+            if (fs.beforeRename(e.args[0], e.args[1]) === false) {
+                return false;
+            }
         });
 
         trFiles.addEventListener("beforemove", this.$beforemove = function(e){

@@ -54,7 +54,7 @@ module.exports = {
         iSearchHandler.handleKeyboard = function(data, hashId, keyString, keyCode) {
             if (keyString == "\x00")
                 return;
-            var command = this.findKeyCommand(hashId, keyString)
+            var command = this.findKeyCommand(hashId, keyString);
             var editor = data.editor;
             if (!command)
                 return;
@@ -66,6 +66,7 @@ module.exports = {
         txtFind.ace.setKeyboardHandler(iSearchHandler);
         return iSearchHandler;
     },
+
     navigateList : function(type, codebox){
         var listName = codebox.session.listName;
         var model = settings.model;
@@ -115,9 +116,13 @@ module.exports = {
             search.removeChild(words[i]);
         }
 
+        var json;
         try {
-            var json = JSON.parse(model.queryValue(prefix + listName + "/text()"));
-        } catch(e) { json = [] }
+            json = JSON.parse(model.queryValue(prefix + listName + "/text()"));
+        }
+        catch(e) {
+            json = [];
+        }
 
         if (json[0] != searchTxt) {
             json.unshift(searchTxt);
@@ -131,9 +136,9 @@ module.exports = {
         var searchTxt = txtFind.getValue();
         try {
             new RegExp(searchTxt);
-        } catch(e) {
-            tooltip.$ext.innerHTML
-                = apf.escapeXML(e.message.replace(": /" + searchTxt + "/", ""));
+        }
+        catch(e) {
+            tooltip.$ext.innerHTML = apf.escapeXML(e.message.replace(": /" + searchTxt + "/", ""));
             apf.setOpacity(tooltip.$ext, 1);
 
             var pos = apf.getAbsolutePosition(win.$ext);
@@ -247,7 +252,7 @@ module.exports = {
 
             // End Sub Matches
             if (c == ")") {
-                if (sub == 0) {
+                if (sub === 0) {
                     out.push([")", "error"]);
                     value = value.substr(1);
                 }
@@ -298,7 +303,7 @@ module.exports = {
                 m = value.match(re.range);
                 if (m) {
                     push(m[0], "error");
-                    continue
+                    continue;
                 }
                 continue;
             }
@@ -324,13 +329,13 @@ module.exports = {
             if (out[i+1] != last) {
                 token.value && res.push(token);
                 last = out[i+1];
-                token = {type: "r_" + last, value: ""}
+                token = {type: "r_" + last, value: ""};
             }
            token.value += out[i];
         }
         token.value && res.push(token);
         return res;
     }
-}
+};
 
 });

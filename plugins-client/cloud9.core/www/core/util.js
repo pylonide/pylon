@@ -13,6 +13,9 @@ var ide = require("core/ide");
 var markup = require("text!core/util.xml");
 
 exports.escapeXpathString = function(name){
+    if (!name)
+        return "";
+    
     if (name.indexOf('"') > -1) {
         var out = [];
         var parts = name.split('"');

@@ -53,7 +53,7 @@ for (var p = 2; p < process.argv.length; p++) {
        if (process.argv[p + 1] && process.argv[p + 1].indexOf("-") < 0) // use this specific packed file
             packedName = process.argv[++p];
        else
-            packedName = "packed.js";
+            packedName = "c9os.min.js";
 
        configName = "packed";
 

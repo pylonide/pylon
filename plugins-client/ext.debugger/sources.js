@@ -93,8 +93,8 @@ module.exports = {
         }
 
         function updateMarker(frame) {
-            var ceEditor = editors.currentEditor && editors.currentEditor.ceEditor;
-            var session = ceEditor && ceEditor.$editor.session;
+            var amlEditor = editors.currentEditor && editors.currentEditor.amlEditor;
+            var session = amlEditor && amlEditor.$editor.session;
             if (!session)
                 return;
 
@@ -102,7 +102,7 @@ module.exports = {
             session.$stepMarker && removeMarker(session, "step");
 
             if (frame) {
-                var path = ceEditor.xmlRoot.getAttribute("path");
+                var path = amlEditor.xmlRoot.getAttribute("path");
                 var framePath = frame.getAttribute("scriptPath");
                 var row = parseInt(frame.getAttribute("line"), 10);
                 if (frame.hasAttribute("istop")) {
