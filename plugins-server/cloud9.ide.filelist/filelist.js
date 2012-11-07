@@ -50,7 +50,7 @@ module.exports = function() {
             meta.process.stderr.on("data", function(data) {
                 stderr += data;
             });
-
+            
             meta.process.on("exit", function(code) {
                 onExit(code, stderr);
             });

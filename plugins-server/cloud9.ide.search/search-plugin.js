@@ -23,7 +23,8 @@ module.exports = function setup(options, imports, register) {
         Plugin.call(this, ide, workspace);
         this.hooks = ["command"];
         this.name = name;
-        this.processCount = 0;
+        this.processCount = 0;     
+        
         Search.setEnv({ searchType: imports["codesearcher"], basePath: ide.workspace.workspaceDir });
     };
 

@@ -188,7 +188,7 @@ describe("search", function() {
 
     it("should find matches without regexp, case-sensitive ON and word boundaries OFF",  function(next) {
         var out = "", agCount = "", agFileCount = "", agLines = "";
-        
+
         o.setEnv({ 
             searchType: AgLib
         });

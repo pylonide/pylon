@@ -17,5 +17,5 @@ core.packed.js
 loader.crush.js
 diff_match_patch.js
 
-# only for testing purposes
-file7_ignorable.rb
+# the only purpose of this is to test this default agignore file
+dir/file7_ignorable.rb

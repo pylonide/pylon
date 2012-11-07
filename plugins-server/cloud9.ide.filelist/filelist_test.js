@@ -98,7 +98,6 @@ describe("filelist", function() {
                     },
                     // exit
                     function(code, stderr) {
-                        console.log(stderr)
                         Assert.equal(code, 0);
                         var files = out.split("\n").filter(function(file) { return !!file; }).sort();
 
