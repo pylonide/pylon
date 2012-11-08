@@ -18,7 +18,7 @@ var callbacks = {};
 var resultCache = {}; // // map command to doc to result array
 var inProgress = {}; // map command to boolean
 var nextJob = {}; // map command to function
-    
+
 worker.init = function() {
     worker.$isInited = false; // allow children to still be inited
     worker.sender.on("linereport_invoke_result", function(event) {

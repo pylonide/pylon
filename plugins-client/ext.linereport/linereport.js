@@ -70,10 +70,11 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onServerMessage : function(event) {
-        var id = event.message.extra && event.message.extra.linereport_id;
+        var message = event.message;
+        var id = message.extra && message.extra.linereport_id;
         if (!id)
             return;
-        switch (event.message.type) {
+        switch (message.type) {
             case "npm-module-data":
                 if (event.message.stream === "stdout")
                     this.stdoutBuffers[id] = (this.stdoutBuffers[id] || "") + event.message.data;

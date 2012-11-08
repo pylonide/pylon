@@ -11,6 +11,8 @@ var handler = module.exports = Object.create(baseLanguageHandler);
 
 handler.disabled = false;
 
+handler.$isInited = false;
+
 handler.handlesLanguage = function(language) {
     return language === 'php';
 };
