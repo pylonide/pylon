@@ -151,17 +151,18 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             if (value.nodeType) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
+                //@todo replace this by a proper function
+                if (value.nodeType > 1 && value.nodeType < 5)
+                    value = value.nodeValue;
+                else
+                    value = value.firstChild && value.firstChild.nodeValue;
             }
 
-            doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
-              ? value
-              : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
-                    ? value.nodeValue
-                    : value.firstChild && value.firstChild.nodeValue || ""))));
+            doc = new EditSession(new ProxyDocument(new Document(value || "")));
+            doc.setUndoManager(new UndoManager());
+            doc.setMode(this.getMode(this.syntax));
 
             doc.cacheId = key;
-            doc.setUndoManager(new UndoManager());
-
             if (key)
                 this.$cache[key] = doc;
         }
@@ -199,7 +200,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setSession(doc);
     };
-
+    
     this.afterOpenFile = function(doc, path) {
     };
 
@@ -606,10 +607,10 @@ apf.codebox = function(struct, tagName) {
         // ace.on("resize", function(){apf.layout.forceResize();});
     };
     this.getValue = function() {
-        return this.ace.session.getValue();
+        return this.ace.getValue();
     };
     this.setValue = function(val) {
-        return this.ace.session.doc.setValue(val);
+        return this.ace.setValue(val);
     };
     this.select = function() {
         return this.ace.selectAll();

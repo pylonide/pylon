@@ -76,6 +76,7 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
 	ln -s `pwd`/plugins-client/ext.csslanguage /tmp/c9_worker_build/ext/csslanguage
 	ln -s `pwd`/plugins-client/ext.htmllanguage /tmp/c9_worker_build/ext/htmllanguage
 	ln -s `pwd`/plugins-client/ext.linereport /tmp/c9_worker_build/ext/linereport
+	ln -s `pwd`/plugins-client/ext.linereport_php /tmp/c9_worker_build/ext/linereport_php
 	node Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 

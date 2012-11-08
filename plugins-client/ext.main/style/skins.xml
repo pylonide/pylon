@@ -3967,7 +3967,6 @@
         .datagrid .offline{
             padding : 5px;
             margin : 0;
-            white-space : normal;
         }
 
         .datagrid .loading span,
@@ -10251,6 +10250,14 @@
     .editor_tab.hidetabs .btnsesssioncontainer:hover .tab_middle{
         text-indent: 0;
     }*/
+    
+    .editor_tab:not(.empty) .editor_bg {
+        display: none;
+    }
+    
+    .editor_tab:not(.empty) {
+        background: #F0F0F0 none;
+    }
 ]]></a:style>
 <a:style condition="apf.isGecko">
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
@@ -10384,7 +10391,7 @@
 
 <a:presentation>
     <a:main pages="." buttons="div[1]">
-        <div class="editor_tab">
+        <div class="editor_tab empty">
             <div class="btnsesssioncontainer">
 
             </div>

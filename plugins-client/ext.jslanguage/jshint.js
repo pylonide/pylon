@@ -45,7 +45,8 @@ handler.analyzeSync = function(doc, ast) {
         laxcomma: true,
         loopfunc: true,
         lastsemic: true,
-        multistr: true
+        multistr: true,
+        onecase: true
     });
     
     lint.errors.forEach(function(warning) {
@@ -57,7 +58,7 @@ handler.analyzeSync = function(doc, ast) {
             type = "error";
         if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
             type = "error";
-        if (reason.indexOf("Missing semicolon") !== -1)
+        if (reason.indexOf("Missing semicolon") !== -1 || reason.indexOf("Unnecessary semicolon") !== -1)
             type = "info";
         if (reason.indexOf("better written in dot") !== -1)
             type = "info";
@@ -88,6 +89,8 @@ handler.analyzeSync = function(doc, ast) {
  * like / * global foo: true * /
  */
 handler.getGlobals = function() {
+    if (!lint.errors || !this.isFeatureEnabled("jshint"))
+        return {};
     var array = lint.data().globals;
     if (!array) // no data (yet?)
         return {};
