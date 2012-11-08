@@ -49,8 +49,8 @@ module.exports = ext.register("ext/linereport/linereport", {
             this.firstUsed = true;
             this.onFirstUse(event);
         }
-            
-        var doc = window.tabEditors.getPage().$doc;
+        
+        var doc = window.tabEditors.getPage() && window.tabEditors.getPage().$doc;
         var path = event.data.path;
         if (ext.disabled || !doc || (path && path !== doc.getNode().getAttribute("path")))
             return;
