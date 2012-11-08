@@ -846,7 +846,7 @@ function asyncParForEach(array, fn, callback) {
                     _self.sender.emit("complete", {
                         pos: pos,
                         matches: matches,
-                        isUpdate: event.isUpdate,
+                        isUpdate: event.data.isUpdate,
                         line: _self.doc.getLine(pos.row)
                     });
                 });
