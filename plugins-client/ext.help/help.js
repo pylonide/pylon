@@ -80,31 +80,26 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/Facebook", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
 
             if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
-                mnuHelp.addEventListener("prop.visible", function(e) {
-                    if (e.value) {
-                        var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
+                var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
 
-                        var response = apf.ajax(blogURL, {
-                            method: "GET",
-                            contentType: "application/json",
-                            async: true,
-                            data: JSON.stringify({
-                                agent: navigator.userAgent,
-                                type: "C9 SERVER EXCEPTION"
-                            }),
-                            callback: function( data, state) {
-                                if (state == apf.SUCCESS) {
-                                    if (data !== undefined) {
-                                        var jsonBlog = JSON.parse(data);
-                                        var latestDate = jsonBlog.posts[0].date;
+                apf.ajax(blogURL, {
+                    method: "GET",
+                    contentType: "application/json",
+                    async: true,
+                    data: JSON.stringify({
+                        agent: navigator.userAgent,
+                        type: "C9 SERVER EXCEPTION"
+                    }),
+                    callback: function(data, state) {
+                        if (state == apf.SUCCESS) {
+                            if (data !== undefined) {
+                                // fixes a potential issue with a stupid "WP Super Cache" comment
+                                var jsonBlog = JSON.parse(data.replace(/<!-- .+? -->/, ""));
+                                var latestDate = jsonBlog.posts[0].date;
 
-                                        mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
-                                    }
-                                }
+                                mnuChangelog.setAttribute("caption",  "Changelog (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
                             }
-                        });
-
-                        mnuHelp.removeEventListener("prop.visible", arguments.callee);
+                        }
                     }
                 });
             }
