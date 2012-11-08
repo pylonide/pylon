@@ -2,7 +2,7 @@ var util  = require("./util");
 
 var Workspace = module.exports = function(ide) {
     this.ide = ide;
-    this.workspaceId  = ide.options.workspaceId;
+    this.workspaceId = ide.options.workspaceId;
     this.workspaceDir = ide.options.workspaceDir;
 };
 
@@ -27,7 +27,7 @@ var Workspace = module.exports = function(ide) {
             console.error("Error: Couldn't retrieve permissions for user ", user);
             console.trace();
         }
-        
+
         var serverExclude = (user.permissions && user.permissions.server_exclude) || "";
         return util.arrayToMap(serverExclude.split("|"));
     };
@@ -54,6 +54,7 @@ var Workspace = module.exports = function(ide) {
         // handle this command
         var message = args.length > 1 && args[1];
         if (message && message.requireshandling === true) {
+            console.log("MSG", message)
             function sendCommandNotFound(err) {
                 self.send({
                     type: "result",
@@ -62,7 +63,7 @@ var Workspace = module.exports = function(ide) {
                     extra: message.extra
                 }, message);
             }
-            
+
             if (this.plugins["npm-runtime"]) {
                 this.plugins["npm-runtime"].searchAndRunModuleHook(message, user, function(err, found) {
                     if (err || !found)
@@ -71,7 +72,7 @@ var Workspace = module.exports = function(ide) {
             }
             else
                 sendCommandNotFound();
-        }
+            }
     };
 
     this.getExt = function(name) {

@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
+var Runner = require("ext/runner/runner");
 var name = "apache-runtime";
 
 var ApacheRuntimePlugin = function(ide, workspace) {
@@ -41,16 +41,20 @@ var ApacheRuntimePlugin = function(ide, workspace) {
     };
 
     this.command = function(user, message, client) {
-        var cmd = (message.command || "").toLowerCase();
+        if (!message.command || typeof message.command !== "string")
+            return false;
+
         if (!(/apache/.test(message.runner)))
             return false;
 
+        var cmd = message.command.toLowerCase();
         var res = true;
+
         switch (cmd) {
             case "run":
             case "rundebug":
             case "rundebugbrk":
-                this.$run(message.file, message.args || [], message.env || {}, message.version, message, client);
+                this.$run(message, client);
                 break;
             case "kill":
                 this.$kill(message.pid, message, client);
@@ -61,24 +65,24 @@ var ApacheRuntimePlugin = function(ide, workspace) {
         return res;
     };
 
-    this.$run = function(file, args, env, version, message, client) {
+    this.$run = function(message, client) {
         var self = this;
-        var runningProcesses = //get Processes  that were started from 'run' button
+        var runningProcesses = Runner.getIdeProcesses();
 
         if (runningProcesses.length > 0) {
             return self.error("Child process already running!", 1, message);
         }
 
         self.pm.spawn("apache", {
-            file: file,
-            args: args,
-            env: env,
-            nodeVersion: version,
+            file: message.file,
+            args: message.args,
+            env: message.env,
+            nodeVersion: message.version,
             extra: message.extra,
             encoding: "ascii"
         }, self.channel, function(err, pid, child) {
             if (err)
-                self.error(err, 1, message, client);
+                return self.error(err, 1, message, client);
         });
     };
 

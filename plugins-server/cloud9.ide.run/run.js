@@ -3,9 +3,11 @@
 /**
  * Run Process Manager
  *
- * manages all running subprocesses like git, npm and node and all debug sessions
+ * Manages all running subprocesses. Takes care of executing/spawning them, keeps
+ * a list of running processes that keeps synced with the client, and contains
+ * some utility functions such as `ps` or `kill` to deal with operations on processes
  *
- * @param runners {Map} maps runner ids to runner factories
+ *
  */
 
 var async = require("asyncjs");
@@ -45,50 +47,71 @@ util.inherits(RunPlugin, Plugin);
 
     this.exec = function (message) {
         var self = this;
-        function send(obj) {
-            self.send(c9util.extend(obj, {
-                command: message.type,
-                uniqueId: message.uniqueId
-            }));
-        }
-
         this.createChild(message.line, message, function(err, process) {
-            if (err)
-                return send({ type: "error", err: err });
+            if (err) {
+                self.send({
+                    type: "error",
+                    err: err,
+                    command: message.type,
+                    uniqueId: message.uniqueId
+                });
+            }
         });
     };
 
+    /**
+     * Sends out the current list of processes to the client, in order to have a
+     * synchronized list.
+     *
+     * @param [subtype] Extra information about the nature of the operation
+     * @return {Void}
+     */
+    this.updateProcessList = function(subtype) {
+        var processes = this.processes
+        var fullPidList = Object.keys(processes).map(function(pid) {
+            return { pid: pid, ideRun: processes[pid].ideRun };
+        });
+
+        // Synchronize process list with the client.
+        self.send({
+            type: "processlist",
+            subtype: subtype || "",
+            pid: meta && meta.process && meta.process.pid,
+            list: fullPidList
+        });
+    };
+
+    /**
+     * Spawns a new process and attaches events to its stream of data if succesful.
+     *
+     * @param {String} cmd Command line command to spawn
+     * @param {Object} runOptions Extra configuration options
+     * @param {Function} callback Function to execute after spawning
+     * @returns {Void}
+     */
     this.createChild = function(cmd, runOptions, callback) {
         var self = this;
         this.vfs.spawn(cmd, runOptions, function(err, meta) {
             if (err) return callback(err);
+            if (!meta.process)
+                return callback(new Error("No process metadata returned"));
 
             self.processes[meta.process.pid] = meta.process;
 
-            var fullPidList = Object.keys(self.processes);
-
-            // This returns an array with the pids of the processes that have been
-            // run from the 'Run' dialog in the ide.
-            var processList = fullPidList.filter(function(pid) {
-                return !!self.processes[pid].ideRun;
-            });
-
+            self.updateProcessList("add");
             self.attachEvents(runOptions, meta.process);
-            console.log("PROCESSES", fullPidList);
-
-            var pid = meta && meta.process && meta.process.pid;
-            // Synchronize process list with the client.
-            self.send({
-                type: "processlist",
-                subtype: "add",
-                pid: pid,
-                list: fullPidList
-            });
-
-            callback(err, meta && meta.process);
+            callback(err, meta.process);
         });
     };
 
+    /**
+     * Attaches events to a running process and sends them to the client. It ends
+     * up sending `start`, `end`, `stderr` and `stdout` events.
+     *
+     * @param {Object} runOptions Configuration options
+     * @param {Object} child Process to attach events to
+     * @returns {Void}
+     */
     this.attachEvents = function(runOptions, child) {
         var self = this;
         var type = runOptions.type;
@@ -170,13 +193,11 @@ util.inherits(RunPlugin, Plugin);
 
     this.debug = function(pid, debugMessage, callback) {
         var child = this.processes[pid];
-        if (!child || !child.pid) {
+        if (!child || !child.pid)
             return callback("Process is not running: " + pid);
-        }
 
-        if (!child.debugCommand) {
+        if (!child.debugCommand)
             return callback("Process does not support debugging: " + pid);
-        }
 
         child.debugCommand(debugMessage);
         callback();

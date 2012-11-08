@@ -19,9 +19,7 @@ module.exports = ext.register("ext/shell/shell", {
     alone      : true,
     type       : ext.GENERAL,
     offline    : true,
-
     nodes      : [],
-    saveBuffer : {},
 
     commands: {
         cd : {

@@ -12,6 +12,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 
 var processes = [];
+var runners = {};
 
 module.exports = ext.register("ext/runner/runner", {
     dev   : "Ajax.org",
@@ -20,8 +21,6 @@ module.exports = ext.register("ext/runner/runner", {
     type  : ext.GENERAL,
 
     processes: [],
-
-    init: function(){},
 
     hook: function() {
         ide.addEventListener("socketMessage", function(e) {
@@ -33,7 +32,31 @@ module.exports = ext.register("ext/runner/runner", {
         });
     },
 
-    enable: function() {},
+    addRunner: function(name, runner) {
+        runners[name] = runner;
+    },
+
+    init: function(){},
+
+    getRunningProcesses: function() {
+        return this.processes;
+    },
+
+    getRunningPids: function() {
+        return this.processes.map(function(ps) { return ps.pid; });
+    },
+
+    /**
+     * Returns an array with the pids of the processes that have been
+     * run from the 'Run' dialog in the ide.
+     */
+    getIdeProcesses: function() {
+        return this.getRunningProcesses.filter(function(ps) {
+            return !!ps.ideRun;
+        });
+    }
+
+    enable:  function() {},
     disable: function() {},
     destroy: function() {}
 });
