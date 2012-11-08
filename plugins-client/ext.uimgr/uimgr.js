@@ -264,6 +264,111 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                                         caption: "Button",
                                         width: "100"
                                     }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-green",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-green smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-red",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-red smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-blue",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-blue smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-blue2",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-blue2 smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-blue3",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-blue3 smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-orange",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-orange smallbtn",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-yellow",
+                                        width: "100"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        "class": "ui-btn-yellow smallbtn",
+                                        width: "100"
+                                    }
                                 }
                             ]
                         },
