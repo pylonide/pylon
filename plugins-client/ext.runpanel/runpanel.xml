@@ -2,7 +2,8 @@
 
     <a:menu id="mnuRunCfg" 
       skin  = "mnuRunCfg"
-      class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}">
+      class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}"
+      ondisplay = "require('ext/runpanel/runpanel').removeTempConfig();">
         <div class="window">
             <div class="tooltip"></div>
             <div class="fbox">
@@ -21,7 +22,7 @@
                           model   = "{require('ext/runpanel/runpanel').model}"
                           border  = "0"
                           each    = "[config]"
-                          caption = "[@path]"
+                          caption = "{[@path] or 'Select a file'}"
                           flex    = "1"
                           skin    = "runconfigurations"
                           class   = "openfile rundebug"
@@ -160,7 +161,7 @@
                                       width   = "170"
                                       skin    = "btn-default-css3"
                                       class   = "btn-green2 no-bold size-13"
-                                      onclick = "require('ext/runpanel/runpanel').run()" />
+                                      command = "run" />
                                 </a:hbox>
                             </a:vbox>
                         </a:bar>
