@@ -166,8 +166,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 if (a) {
                     apf.removeEventListener("keydown", a.listeners.onKeyDown);
                     a.editor.removeEventListener("mousewheel", a.listeners.onScroll);
+                    a.editor.removeEventListener("mousedown", a.listeners.onScroll);
                     ide.removeEventListener("codetools.cursorchange", a.listeners.onCursorChange);
-                    ide.removeEventListener("codetools.selectionchange", a.listeners.onSelectionChange);
                     delete _self.$activeColor;
                     _self.hideColorTooltips(a.editor);
                     _self.colorpicker.$input.blur();
@@ -223,8 +223,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg"
-              || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
+            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" ||
+                (line && line.indexOf("<a:skin") > -1)))
                 return;
 
             line = doc.getLine(pos.row);
@@ -432,7 +432,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         // set appropriate event listeners, that will be removed when the colorpicker
         // hides.
-        var onKeyDown, onScroll, onCursorChange, onSelectionChange;
+        var onKeyDown, onScroll, onCursorChange;
         var _self = this;
         apf.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
@@ -458,8 +458,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
             var pos = e.pos.start;
             var range = a.marker[0];
-            if (pos.row < range.start.row || pos.row > range.end.row
-              || pos.column < range.start.column || pos.column > range.end.column)
+            if (!range.contains(pos))
                 menu.hide();
         });
 
@@ -471,6 +470,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
             menu.hide();
         });
+        
+        editor.addEventListener("mousedown", onScroll);
 
         var id = "colorpicker" + parsed.hex + pos.row;
         delete this.$activeColor;
@@ -492,8 +493,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             listeners: {
                 onKeyDown: onKeyDown,
                 onScroll: onScroll,
-                onCursorChange: onCursorChange,
-                onSelectionChange: onSelectionChange
+                onCursorChange: onCursorChange
             }
         };
         if (parsed.type == "rgb") {
@@ -610,7 +610,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             if (!range)
                 return;
             a.marker[0] = range;
-            doc.replace(range, newColor);
+            range.end = doc.replace(range, newColor);
             a.current = newColor;
         }, 200);
     },

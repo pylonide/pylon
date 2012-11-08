@@ -251,6 +251,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     // forwards and back, so we DRY
     commonStepOps: function(step){
         function getCurrentEl(){
+            var amlEditor = require("ext/code/code").amlEditor;
             if (step.el !== undefined) {
                 if(typeof step.el == "string")
                     step.el = self[step.el];
@@ -259,8 +260,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 _self.currentEl = step.el;
             }
             // All of these fix issues with elements not being available when this plugin loads
-            else if (step.div == "ceEditor"){
-                _self.currentEl = ceEditor;
+            else if (step.div == "editor"){
+                _self.currentEl = amlEditor;
             }
             else if (step.div == "barIdeStatus") {
                 _self.currentEl = barIdeStatus;
@@ -272,14 +273,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 else if (step.div == "expandedDbg") {
                     _self.currentEl = expandedDbg;
                 }
-                else if (step.div == "ceEditorGutter") {
-                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', ceEditor.$ext);
+                else if (step.div == "editorGutter") {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', amlEditor.$ext);
                 }
                 else if (step.node !== undefined) {
                     _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
                 }
                 else {
-                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, ceEditor.$ext);
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, amlEditor.$ext);
                 }
             }
             else {

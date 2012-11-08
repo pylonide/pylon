@@ -142,7 +142,7 @@ var config = [
             "ext/beautify/beautify",
             "ext/offline/offline",
             "ext/stripws/stripws",
-            "ext/testpanel/testpanel",
+            //"ext/testpanel/testpanel",
             "ext/nodeunit/nodeunit",
             "ext/zen/zen",
             "ext/codecomplete/codecomplete",
@@ -151,6 +151,8 @@ var config = [
             "ext/guidedtour/guidedtour",
             "ext/quickstart/quickstart",
             "ext/jslanguage/jslanguage",
+            "ext/csslanguage/csslanguage",
+            "ext/htmllanguage/htmllanguage",
             "ext/autotest/autotest",
             "ext/closeconfirmation/closeconfirmation",
             "ext/codetools/codetools",
@@ -163,7 +165,6 @@ var config = [
             "ext/language/liveinspect"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"
-            //"ext/acebugs/acebugs"
         ]
     }, {
         packagePath: "vfs-architect/local",
