@@ -30,7 +30,7 @@
  * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
- *   <a:dropdown initial-message="Choose a country">
+ *   <a:dropdown initial-message="Choose a country" skin="black_dropdown">
  *       <a:item>America</a:item>
  *       <a:item>Armenia</a:item>
  *       <a:item>The Netherlands</a:item>
@@ -44,7 +44,7 @@
  * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
- *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" />
+ *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" skin="black_dropdown" />
  *   <!-- endcontent -->
  * </a:application>
  * ```

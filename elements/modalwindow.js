@@ -102,18 +102,31 @@ apf.WinServer = {
  * ```xml, demo
  * <a:application xmlns:a="http://ajax.org/2005/aml">
  *   <!-- startcontent -->
- *   <a:window 
- *     id        = "winMail"
- *     modal     = "false"
- *     buttons   = "min|max|close"
- *     title     = "Mail message"
- *     visible   = "true"
- *     resizable = "true"
- *     minwidth  = "300"
- *     minheight = "290"
- *     width     = "500"
- *     height    = "400">
- *   </a:window>
+ *   <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <a:window 
+ *       id        = "winMail"
+ *       modal     = "false"
+ *       buttons   = "min|max|close"
+ *       title     = "Mail Message"
+ *       visible   = "true"
+ *       resizable = "true"
+ *       width     = "500"
+ *       modal     = "true
+ *       height    = "400"
+ *       skin      = "bk-window2">
+ *       <a:vbox>
+ *           <a:hbox margin="5px">
+ *               <a:label for="to" caption="To:"/>
+ *               <a:textbox id="to" margin="0 0 0 5" width="140" />
+ *           </a:hbox>
+ *           <a:hbox margin="5">
+ *               <a:label for="subject" caption="Subject:" />
+ *               <a:textbox id="subject" width="140" />
+ *           </a:hbox>
+ *           <a:textarea height="200" width="400"/>
+ *       </a:vbox>
+ *     </a:window>
+ *   </a:application>
  *   <!-- endcontent -->
  * </a:application> 
  * ```

@@ -49,7 +49,8 @@
  *     height    = "150"
  *     visible   = "true"
  *     resizable = "true"
- *     title     = "Mail message">
+ *     title     = "Mail message"
+ *     skin      = "bk-window2">
  *       <a:toolbar>
  *           <a:menubar>
  *               <a:button submenu="menu1">File</a:button>
