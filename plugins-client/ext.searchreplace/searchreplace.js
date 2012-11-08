@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 /*global searchRow txtFind winSearchReplace hboxReplace txtReplace 
             tooltipSearchReplace chkRegEx winSearchInFiles chkSearchSelection 
             divSearchCount hboxFind chkHighlightMatches chkSearchBackwards 
@@ -367,7 +367,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (!editor || !editor.amlEditor)
             return;
 
-        var wasVisible  = !!winSearchReplace.parentNode;//visible;
+        var wasVisible  = winSearchReplace.visible;//visible;
         var stateChange = isReplace !== undefined && this.$lastState != isReplace;
 
         tooltipSearchReplace.$ext.style.display = "none";

@@ -97,7 +97,6 @@
                   realtime          = "true"
                   syntax            = "javascript"
                   border            = "0" 
-                  model             = "{require('core/settings').model}" 
                   value             = "[auto/console/input]"
                   softtabs          = "[editors/code/@softtabs]"
                   tabsize           = "[editors/code/@tabsize]"
@@ -109,6 +108,7 @@
                   animatedscroll    = "[editors/code/@animatedscroll]"
                   fontsize          = "[editors/code/@fontsize]"
                   showprintmargin   = "false"
+                  caching           = "false"
                   highlightselectedword = "[editors/code/@highlightselectedword]"
                   printmargincolumn = "0" />
                 <a:text id="txtInteractiveOutput"
