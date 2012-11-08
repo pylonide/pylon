@@ -6,12 +6,24 @@ function retrievePreceedingIdentifier(text, pos, regex) {
     regex = regex || ID_REGEX;
     var buf = [];
     for (var i = pos-1; i >= 0; i--) {
-        if(regex.test(text[i]))
+        if (regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
     }
     return buf.reverse().join("");
+}
+
+function retrieveFollowingIdentifier(text, pos, regex) {
+    regex = regex || ID_REGEX;
+    var buf = [];
+    for (var i = pos; i < text.length; i++) {
+        if (regex.test(text[i]))
+            buf.push(text[i]);
+        else
+            break;
+    }
+    return buf;
 }
 
 function prefixBinarySearch(items, prefix) {
@@ -54,13 +66,14 @@ function fetchText(staticPrefix, path) {
     catch(e) {
         return false;
     }
-    if(xhr.status === 200)
+    if (xhr.status === 200)
         return xhr.responseText;
     else
         return false;
 }
 
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
+exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;
 exports.findCompletions = findCompletions;
 exports.fetchText = fetchText;
 

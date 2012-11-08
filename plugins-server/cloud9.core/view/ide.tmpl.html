@@ -100,7 +100,7 @@
                     "ace/editor"];
                 }
                 else {
-                    var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "packed.js")];
+                    var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "c9os.min.js")];
                 }
                 
                 require(list, function(ide, ext, util){

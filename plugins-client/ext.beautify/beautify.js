@@ -37,8 +37,8 @@ module.exports = ext.register("ext/beautify/beautify", {
         if (!editor)
             editor = editors.currentEditor;
 
-        if (editor.ceEditor)
-            editor = editor.ceEditor.$editor;
+        if (editor.amlEditor)
+            editor = editor.amlEditor.$editor;
 
         var sel = editor.selection;
         var session = editor.session;
@@ -129,8 +129,8 @@ module.exports = ext.register("ext/beautify/beautify", {
             msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
             isAvailable : function(editor){
-                if (editor && editor.ceEditor) {
-                    var range = editor.ceEditor.$editor.getSelectionRange();
+                if (editor && editor.path == "ext/code/code") {
+                    var range = editor.amlEditor.$editor.getSelectionRange();
                     return range.start.row != range.end.row
                       || range.start.column != range.end.column;
                 }
