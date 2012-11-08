@@ -5,8 +5,8 @@ var ID_REGEX = /[a-zA-Z_0-9\$]/;
 function retrievePreceedingIdentifier(text, pos, regex) {
     regex = regex || ID_REGEX;
     var buf = [];
-    for(var i = pos-1; i >= 0; i--) {
-        if(regex.test(text[i]))
+    for (var i = pos-1; i >= 0; i--) {
+        if (regex.test(text[i]))
             buf.push(text[i]);
         else
             break;
@@ -66,7 +66,7 @@ function fetchText(staticPrefix, path) {
     catch(e) {
         return false;
     }
-    if(xhr.status === 200)
+    if (xhr.status === 200)
         return xhr.responseText;
     else
         return false;
