@@ -838,59 +838,60 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
 
         this.parse(null, function(ast) {
-        var data = event.data;
-        var pos = data.pos;
+            var data = event.data;
+            var pos = data.pos;
             var currentPos = { line: pos.row, col: pos.column };
+
             _self.findNode(ast, currentPos, function(node) {
                 var currentNode = node;
                 var matches = [];
 
-            var language = SyntaxDetector.getContextSyntax(_self.doc, data.pos, _self.$language);
-            asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(language)) {
-                        handler.staticPrefix = data.staticPrefix;
-                        handler.language = language;
-                        handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
-                        if (completions)
-                            matches = matches.concat(completions);
-                        next();
-                    });
-                }
-                else
-                    next();
-            }, function() {
-                removeDuplicateMatches(matches);
-                // Sort by priority, score
-                matches.sort(function(a, b) {
-                    if (a.priority < b.priority)
-                        return 1;
-                    else if (a.priority > b.priority)
-                        return -1;
-                    else if (a.score < b.score)
-                        return 1;
-                    else if (a.score > b.score)
-                        return -1;
-                    else if (a.id && a.id === b.id) {
-                        if (a.isFunction)
-                            return -1;
-                        else if (b.isFunction)
-                            return 1;
+                var language = SyntaxDetector.getContextSyntax(_self.doc, data.pos, _self.$language);
+                asyncForEach(_self.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(language)) {
+                            handler.staticPrefix = data.staticPrefix;
+                            handler.language = language;
+                            handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
+                            if (completions)
+                                matches = matches.concat(completions);
+                            next();
+                        });
                     }
-                    if (a.name < b.name)
-                        return -1;
-                    else if(a.name > b.name)
-                        return 1;
                     else
-                        return 0;
-                });
+                        next();
+                }, function() {
+                    removeDuplicateMatches(matches);
+                    // Sort by priority, score
+                    matches.sort(function(a, b) {
+                        if (a.priority < b.priority)
+                            return 1;
+                        else if (a.priority > b.priority)
+                            return -1;
+                        else if (a.score < b.score)
+                            return 1;
+                        else if (a.score > b.score)
+                            return -1;
+                        else if (a.id && a.id === b.id) {
+                            if (a.isFunction)
+                                return -1;
+                            else if (b.isFunction)
+                                return 1;
+                        }
+                        if (a.name < b.name)
+                            return -1;
+                        else if(a.name > b.name)
+                            return 1;
+                        else
+                            return 0;
+                    });
                     // Removed for the java completion result caching cases
                     // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", {
-                    pos: pos,
-                    matches: matches
+                    _self.sender.emit("complete", {
+                        pos: pos,
+                        matches: matches
+                    });
                 });
             });
-        });
         });
     };
 
