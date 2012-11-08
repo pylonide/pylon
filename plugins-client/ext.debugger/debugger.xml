@@ -92,6 +92,7 @@
             </a:toolbar>
             <a:vsplitbox anchors="29 0 0 0" splitter="true" class="topsplitter">
                 <a:codeeditor id="txtCode" 
+                  disabled          = "{!dbg.state}"
                   onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime          = "true"
                   syntax            = "javascript"
