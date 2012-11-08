@@ -1,0 +1,14 @@
+{
+    "name": "ext.dashboard",
+    "version": "0.0.1",
+    "main": "dashboard-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.dashboard"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

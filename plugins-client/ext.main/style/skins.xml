@@ -588,6 +588,27 @@
         </a:main>
     </a:presentation>
 </a:bar>
+
+<a:bar name="dark-opaque">
+    <a:style><![CDATA[
+        .dark-opaque {
+            background-color: #2D2D2D;
+            background-image: -webkit-linear-gradient(top, #2B2B2B, #292929);
+            background-image:    -moz-linear-gradient(top, #2B2B2B, #292929);
+            background-image:         linear-gradient(top, #2B2B2B, #292929);
+            border-top: 1px solid black;
+            box-shadow: 0 1px 0 0 #353535 inset;
+            color: #EDEDED;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main containter=".">
+            <div class="dark-opaque">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+
 <a:button name="btn-access_request">
     <a:style><![CDATA[
         .btn-access_request {
@@ -3338,7 +3359,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main label="span/text()" minheight="18" minwidth="18">
+        <a:main label="span" minheight="18" minwidth="18" title="span/text()">
             <div class='cbcontainer cbblack'>
                 <div class='checkbox'> </div>
                 <span>-</span>
@@ -5068,7 +5089,7 @@
         .dropdown-dark-glossy {
             background: #292929 url(images/dropdown-dark-glossy/background.png) repeat-x 50% 0;
             border: 1px solid #010910;
-            border-radius: 3px;
+            border-radius: 4px;
             box-shadow: 0 1px 0 0 rgba(255, 255, 255, .10) inset,
                         0 0 0 1px rgba(236, 245, 255, .10) inset,
                         0 1px 0 0 rgba(237,237,237,.1);
@@ -5081,7 +5102,7 @@
             color: #C0DABE;
             display: inline-block;
             font-size: 12px;
-            line-height: 27px;
+            line-height: 23px;
             overflow: hidden;
             padding: 0 0 0 8px;
         }
@@ -5092,7 +5113,7 @@
             position: absolute;
             right: 0;
             top: 0;
-            width: 16px;
+            width: 18px;
         }
         .dropdown-dark-glossy .button:before {
             background: url(images/dropdown-dark-glossy/divider.png) no-repeat 50% 0;
@@ -5659,6 +5680,57 @@
     <a:presentation>
         <a:main caption="." for="@for" minheight="17">
             <div class="black_label"> </div>
+        </a:main>
+    </a:presentation>
+</a:label>
+<a:label name="label-tooltip">
+    <a:style><![CDATA[
+        .label-tooltip {
+            color: #6F6F6F;
+            font-size: 11px;
+            line-height: 14px;
+            text-shadow: 0 1px 0 #000000;
+        }
+        .success.label-tooltip {
+            color: #B8FFB1;
+        }
+        .error.label-tooltip {
+            color: #FF636F;
+        }
+        .left.label-tooltip {
+            background: url("images/label-tooltip/left.png") 0 50% no-repeat;
+            padding: 4px 0 3px 16px;
+        }
+        .top.label-tooltip {
+            background: url("images/label-tooltip/top.png") 50% 0 no-repeat;
+            padding: 12px 0 0;
+            text-align: center;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." for="@for">
+            <div class="label-tooltip"> </div>
+        </a:main>
+    </a:presentation>
+</a:label>
+<a:label name="label-dashboard">
+    <a:style><![CDATA[
+        .label-dashboard{
+            color: #C9C9C9;
+            cursor: default;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            line-height: 27px;
+            overflow: hidden;
+            white-space : nowrap;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." for="@for">
+            <div class="label-dashboard"> </div>
         </a:main>
     </a:presentation>
 </a:label>
@@ -11261,6 +11333,68 @@
         </a:main>
     </a:presentation>
 </a:textbox>
+
+
+<a:textbox name="textbox-on-dark">
+    <a:style><![CDATA[
+        .textbox-on-dark {
+            background-color: #f2f2f2;
+            border: 1px solid #000000;
+            border-radius: 4px;
+            box-shadow: 0 1px 8px 0 rgba(0,0,0,.6),
+                        0 1px 4px 0 #7E7E7E inset;
+            overflow: hidden;
+
+        }
+        .textbox-on-dark .textbox-on-dark-middle,
+        .textbox-on-dark input {
+            height: inherit;
+            width: 100%;
+        }
+        .textbox-on-dark .textbox-on-dark-middle {
+            box-sizing: border-box;
+            padding: 0 8px;
+            margin-top: -1px;
+        }
+        .textbox-on-dark input {
+            background-color: transparent;
+            border: 0 none;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            outline: 0 !important;
+            padding: 0;
+        }
+    /*
+     * Initial
+     */
+    .textbox-on-darkInitial input {
+        color: #BABABA;
+        text-shadow: 0 1px 0 #FFFFFF;
+    }
+    /*
+     * Focus
+     */
+    .textbox-on-darkFocus {
+        box-shadow: 0px 0px 6px #03DC7D;
+        border-color: #03DC7D;
+    }
+    .textbox-on-darkFocus input {
+        outline-width: 0;
+    }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[1]/input">
+            <div class="textbox-on-dark">
+                <div class="textbox-on-dark-middle">
+                    <input type="text"/>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
 <a:textbox name="tbsimple">
     <a:style><![CDATA[
         .tbsimple{
@@ -11282,6 +11416,111 @@
         </a:main>
     </a:presentation>
 </a:textbox>
+
+<a:textbox name="chromeless">
+    <a:style><![CDATA[
+        .chromeless input {
+            background: none;
+            border: 0 none;
+            box-sizing: border-box;
+            color: #ededed;
+            font-family: Helvetica, Arial, sans;
+            font-size: inherit;
+            height: 1.3em;
+            line-height: 1.3em;
+            margin: 0;
+            outline: 0;
+            padding-right: 2px;
+            width: 100%;
+        }
+        .chromeless:hover {
+            background-color: rgba(255, 255, 255, .1);
+        }
+        .chromelessFocus {
+            background: #000 !important;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="input">
+            <div class="chromeless">
+                <input type="text"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
+<a:textbox name="simple-dark">
+    <a:style><![CDATA[
+        .simple-dark input {
+            background: rgba(0,0,0,.2);
+            border: 0 none;
+            box-sizing: border-box;
+            color: #81AFCD;
+            font-size: 11px;
+            height: inherit;
+            margin: 0;
+            outline: 0;
+            overflow: hidden;
+            padding: 0 5px;
+            width: 100%;
+            -webkit-transition: all .1s linear;
+               -moz-transition: all .1s linear;
+                    transition: all .1s linear;
+        }
+        .simple-darkFocus input {
+            color: #D1D1D1
+        }
+        .simple-darkInitial input {
+            color: #5d5d5d;
+        }
+        .simple-darkError input {
+            background-color: #A42733;
+            color: #FFA9AF;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="input">
+            <div class="simple-dark">
+                <input type="text"/>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
+<a:textbox name="large-textarea">
+    <a:style><![CDATA[
+        
+
+        .large-textarea {
+            background-color: #fff;
+            border: 1px solid #B6B6B6;
+            box-shadow: 0 1px 4px 0 rgba(0,0,0,.1) inset,
+                        0 1px 0 0 #000;
+            font-size: 10px;
+            line-height: 14px;
+            outline: 0;
+            padding: 8px 11px;
+            height: inherit;
+            width: inherit;
+        }
+        .dark.large-textarea {
+            background-color: #3E3E40;
+            border-color: #202020;
+            box-shadow: 0 1px 4px 0 rgba(0,0,0,.15) inset,
+                        0 1px 0 0 rgba(255,255,255,.2);
+            color: #D2D2D2;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input=".">
+            <textarea class="large-textarea"></textarea>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
 <a:textbox name="textbox">
     <a:alias>input</a:alias>
     <a:alias>secret</a:alias>
@@ -12542,7 +12781,7 @@
                 background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
                 border: 1px solid rgba(0,0,0,.1);
                 border-radius: 4px;
-                box-shadow: 0 1px 0px 0 rgba(237,237,237,.37) inset,
+                box-shadow: 0 1px 0px 0 rgba(237,237,237,.2) inset,
                             0 1px 0 0 rgba(0,0,0,.08),
                             0 1px 2px 1px rgba(0,0,0,.1);
                 color: #FFFFFF;
@@ -12580,7 +12819,7 @@
              */
             .button-colorless.dark {
                 border: 1px solid rgba(0,0,0,.89);
-                box-shadow: 0 1px 0 0 rgba(237,237,237,.37) inset,0 1px 0 0 rgba(0,0,0,.23);
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.2) inset,0 1px 0 0 rgba(0,0,0,.23);
             }
             /*
              * Colors
@@ -12609,6 +12848,163 @@
         <a:presentation>
             <a:main caption = ".">
                 <div class="button-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+
+    <a:button name="button-social">
+        <a:style><![CDATA[
+            .button-social {
+                background-position: 0 0;
+                background-repeat: no-repeat;
+                border-radius: 4px;
+                box-shadow:
+                    0 2px 3px rgba(29,27,23,.3),
+                    inset 0 1px 0 rgba(255, 255, 255, .25),
+                    0 0 0 1px rgba(0,0,0,.2);
+                cursor: pointer;
+                overflow: hidden;
+                text-indent: -999px;
+
+
+
+            }
+            .button-socialOver {
+                background-position: -21px 0;
+            }
+            .twitter.button-social {
+                background-image: url(images/button-social/twitter.png);
+            }
+            .google-plus.button-social {
+                background-image: url(images/button-social/google-plus.png);
+            }
+            .facebook.button-social {
+                background-image: url(images/button-social/facebook.png);
+            }
+            .mail.button-social {
+                background-image: url(images/button-social/mail.png);
+            }
+
+
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-social"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+
+    <a:button name="thumbnail-colorless">
+        <a:style><![CDATA[
+            .thumbnail-colorless {
+                background-color: #373839;
+                background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.09) 100%);
+                background-image:    -moz-linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.09) 100%);
+                background-image:         linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.09) 100%);
+                border: 1px solid #191F19;
+                border-radius: 5px;
+                box-shadow: 0 1px 5px 1px rgba(0,0,0,.332),
+                            inset 0 0 0 1px rgba(255,255,255,.12);
+                cursor: pointer;
+                position: relative;
+                -webkit-transition: background-color .1s linear;
+                   -moz-transition: background-color .1s linear;
+                        transition: background-color .1s linear;
+            }
+            .thumbnail-colorlessOver {
+                background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:    -moz-linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:         linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+            }
+            .thumbnail-colorlessDown {
+                background-image: -webkit-linear-gradient(-90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:    -moz-linear-gradient(-90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+                background-image:         linear-gradient(-90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.14) 100%);
+            }
+            .thumbnail-colorlessDisabled {
+                cursor: default;
+                opacity: 0.2;
+            }
+            
+            /********************************************************************************
+             * Icon
+             *******************************************************************************/
+            .thumbnail-colorless:after {
+                background-position: 50% 50%;
+                background-repeat: no-repeat;
+                content: "";
+                display: block;
+                height: inherit;
+                left: 0;
+                position: absolute;
+                top: 0;
+                width: inherit;
+            }
+            .java.thumbnail-colorless:after {
+                background-image: url(images/project/java.png);
+            }
+            .cloud9.thumbnail-colorless:after {
+                background-image: url(images/project/cloud9.png);
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="thumbnail-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+
+    <a:button name="button-close">
+        <a:style><![CDATA[
+            .button-close {
+                background: url(images/button-close.png) no-repeat -1px 50%;
+                height: 18px;
+                overflow: hidden;
+                text-indent: 100%;
+                width: 18px;
+            }
+            .button-closeOver {
+                background-position: -20px 50%;
+            }
+            .button-closeDown {
+                background-position: -40px 50%;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-close" height="18" width="18"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+
+    <a:button name="button-link-dark">
+        <a:style><![CDATA[
+            .button-link-dark {
+                color: #DDDCDC;
+                cursor: pointer;
+                font-size: 11px;
+                text-shadow: 0 1px 1px #242424;
+                
+            }
+
+            .button-link-darkFocus,
+            .button-link-darkOver {
+                color: #eee;
+            }
+            .button-link-darkDown {
+                color: #aaa;   
+            }
+            
+            .button-link-darkDisabled {
+                color: #555555;
+            }
+            .button-link-dark.selected {
+                color: #C0DABF;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-link-dark"> </div>
             </a:main>
         </a:presentation>
     </a:button>
