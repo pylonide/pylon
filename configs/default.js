@@ -4,6 +4,7 @@ var fs = require("fs");
 var argv = require('optimist').argv;
 var path = require("path");
 var os = require("os");
+fs.existsSync = fs.existsSync || path.existsSync;
 
 var clientExtensions = {};
 var clientDirs = fs.readdirSync(__dirname + "/../plugins-client");
