@@ -11,7 +11,6 @@
 ~.plst
 .hg
 .pc
-.svn
 *.min.js
 core.packed.js
 loader.crush.js

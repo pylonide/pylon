@@ -11,8 +11,6 @@ var Url = require("url");
 var Plugin = require("../cloud9.core/plugin");
 var FilelistLib = require("./filelist");
 var util = require("util");
-var fs = require("fs");
-var path = require("path");
 var Connect = require("connect");
 var error = require("http-error");
 

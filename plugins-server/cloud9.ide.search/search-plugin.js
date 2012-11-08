@@ -9,7 +9,6 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var fs = require("fs");
 var SearchLib = require("./search");
 
 var name = "search";
