@@ -85,19 +85,20 @@ define(function(require, exports, module) {
                 apf.ajax(blogURL, {
                     method: "GET",
                     contentType: "application/json",
-                    async: true,
-                    data: JSON.stringify({
-                        agent: navigator.userAgent,
-                        type: "C9 SERVER EXCEPTION"
-                    }),
                     callback: function(data, state) {
                         if (state == apf.SUCCESS) {
                             if (data !== undefined) {
-                                // fixes a potential issue with a stupid "WP Super Cache" comment
-                                var jsonBlog = JSON.parse(data.replace(/<!-- .+? -->/, ""));
-                                var latestDate = jsonBlog.posts[0].date;
+                                var latestDate = "";
 
-                                mnuChangelog.setAttribute("caption",  "Changelog (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
+                                try {
+                                    // fixes a potential issue with a stupid "WP Super Cache" comment
+                                    var jsonBlog = JSON.parse(data.replace(/<!-- .+? -->/, ""));
+                                    var latestDate = "(" + jsonBlog.posts[0].date + ")";
+                                } catch (e) {
+                                    console.error("Changelog JSON parse failed: " + e);
+                                }
+
+                                mnuChangelog.setAttribute("caption",  "Changelog " + latestDate.split(" ")[0].replace(/-/g, "."));
                             }
                         }
                     }
