@@ -122,8 +122,8 @@ function setup (NodeRunner) {
             function send(msg) {
                 self.eventEmitter.emit(self.eventName, msg);
             }
-            this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
-            this.nodeDebugProxy.on("message", function(body) {
+            var nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
+            nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
                 send({
                     "type": "node-debug",
@@ -133,27 +133,29 @@ function setup (NodeRunner) {
                 });
             });
 
-            this.nodeDebugProxy.on("connection", function() {
+            nodeDebugProxy.on("connection", function() {
                 // console.log("Debug proxy connected");
                 send({
                     "type": "node-debug-ready",
                     "pid": self.pid,
                     "extra": self.extra
                 });
+                self.nodeDebugProxy = nodeDebugProxy;
                 self._flushSendQueue();
             });
 
-            this.nodeDebugProxy.on("end", function(err) {
+            nodeDebugProxy.on("end", function(err) {
                 // console.log("nodeDebugProxy terminated");
                 if (err) {
                     // TODO send the error message back to the client
                     // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);
                     console.error(err);
                 }
-                delete self.nodeDebugProxy;
+                if (self.nodeDebugProxy)
+                    delete self.nodeDebugProxy;
             });
 
-            this.nodeDebugProxy.connect();
+            nodeDebugProxy.connect();
         };
     }
 
