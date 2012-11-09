@@ -77,19 +77,19 @@ function setup (NodeRunner) {
 
         proto.createChild = function(callback) {
              
-            var self = this;
+            var _self = this;
 
             var port = this.debugPort;
 
-            if (self.breakOnStart)
-                self.nodeArgs.push("--debug-brk=" + port);
+            if (_self.breakOnStart)
+                _self.nodeArgs.push("--debug-brk=" + port);
             else
-                self.nodeArgs.push("--debug=" + port);
+                _self.nodeArgs.push("--debug=" + port);
             
-            Parent.prototype.createChild.call(self, callback);
+            Parent.prototype.createChild.call(_self, callback);
 
             setTimeout(function() {
-                self._startDebug(port);
+                _self._startDebug(port);
             }, 100);
         };
 
@@ -118,18 +118,18 @@ function setup (NodeRunner) {
         };
 
         proto._startDebug = function(port) {
-            var self = this;
+            var _self = this;
             function send(msg) {
-                self.eventEmitter.emit(self.eventName, msg);
+                _self.eventEmitter.emit(_self.eventName, msg);
             }
             var nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
             nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
                 send({
                     "type": "node-debug",
-                    "pid": self.pid,
+                    "pid": _self.pid,
                     "body": body,
-                    "extra": self.extra
+                    "extra": _self.extra
                 });
             });
 
@@ -137,11 +137,11 @@ function setup (NodeRunner) {
                 // console.log("Debug proxy connected");
                 send({
                     "type": "node-debug-ready",
-                    "pid": self.pid,
-                    "extra": self.extra
+                    "pid": _self.pid,
+                    "extra": _self.extra
                 });
-                self.nodeDebugProxy = nodeDebugProxy;
-                self._flushSendQueue();
+                _self.nodeDebugProxy = nodeDebugProxy;
+                _self._flushSendQueue();
             });
 
             nodeDebugProxy.on("end", function(err) {
@@ -151,8 +151,8 @@ function setup (NodeRunner) {
                     // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);
                     console.error(err);
                 }
-                if (self.nodeDebugProxy)
-                    delete self.nodeDebugProxy;
+                if (_self.nodeDebugProxy)
+                    delete _self.nodeDebugProxy;
             });
 
             nodeDebugProxy.connect();
