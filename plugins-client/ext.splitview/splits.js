@@ -115,7 +115,7 @@ exports.create = function(page, gridLayout) {
 
 exports.set = function(splits) {
     if (!apf.isArray(splits))
-        return;
+        return this;
     Splits = [].concat(splits);
     for (var split, i = 0, l = Splits.length; i < l; ++i) {
         split = Splits[i];
@@ -124,12 +124,12 @@ exports.set = function(splits) {
         if (!split.zManager)
             split.zManager = new ZManager();
     }
+    return this;
 };
 
 exports.show = function(split) {
     if (!split || split === ActiveSplit)
         return this;
-
     if (ActiveSplit)
         this.hide(ActiveSplit, ActiveSplit.gridLayout == split.gridLayout);
     this.update(split);
@@ -157,15 +157,17 @@ exports.show = function(split) {
 };
 
 exports.hide = function(split, notGrid) {
-    split = split || ActiveSplit;
     if (!notGrid)
         Grids.hide(split.gridLayout);
     var i, l;
+    var isActive = (split === ActiveSplit);
     for (i = 0, l = split.pairs.length; i < l; ++i) {
         split.pairs[i].page.$deactivateButton();
-        split.pairs[i].editor.hide();
+        // never hide the active editor!
+        if (isActive || split.pairs[i].editor !== Editors.currentEditor.amlEditor)
+            split.pairs[i].editor.hide();
     }
-    if (split === ActiveSplit)
+    if (isActive)
         ActiveSplit = null;
 
     if (previousEditor) {
@@ -185,13 +187,16 @@ exports.update = function(split, gridLayout) {
     var page = split.pairs[0].page;
     var amlPage = page.fake ? page.relPage : page;
     var isActive = (split === ActiveSplit);
+    var activePage = tabEditors.getPage();
     split.gridLayout = gridLayout;
 
     // destroy the split view if it contains NOT more than 1 editor.
     if (split.pairs.length === 1) {
         var editor = page.$editor.amlEditor;
-        if (EditorClones[editor.localName]) {
-            var editors = [EditorClones[editor.localName].original].concat(EditorClones[editor.localName]);
+        if (isActive && EditorClones[editor.localName]) {
+            var editors = [].concat(EditorClones[editor.localName]);
+            if (activePage !== page)
+                editors.unshift(EditorClones[editor.localName].original);
             for (var clone, i = 0, l = editors.length; i < l; ++i) {
                 clone = editors[i];
                 clone.hide();
@@ -261,16 +266,16 @@ exports.mutate = function(split, page, type) {
         var editor = split.pairs[pairIdx].editor;
 
         split.pairs.splice(pairIdx, 1);
-
-        editor.removeAttribute("model");
-        editor.removeAttribute("actiontracker");
-        //removeEditorListeners(editor);
-        editor.hide();
-        apf.document.documentElement.appendChild(editor);
+        if (split === ActiveSplit || editor !== Editors.currentEditor.amlEditor) {
+            editor.removeAttribute("model");
+            editor.removeAttribute("actiontracker");
+            //removeEditorListeners(editor);
+            editor.hide();
+            apf.document.documentElement.appendChild(editor);
+            split.zManager.clear(editor.$ext);
+        }
         page.$deactivateButton();
         clearSplitViewStyles(page);
-        editor.hide();
-        split.zManager.clear(editor.$ext);
         if (split === ActiveSplit && tabs.getPage() !== split.pairs[0].page)
             tabs.set(split.pairs[0].page);
 
@@ -375,14 +380,16 @@ exports.setActivePage = function(split, page) {
         : !!page
             ? exports.indexOf(split, page)
             : split.activePage);
-    if (idx == -1)
+    if (idx == -1) {
+        split.activePage = 0;
         return;
+    }
 
     if (split === ActiveSplit) {
         var pair = split.pairs[idx] ? split.pairs[idx] : split.pairs[0];
         pair.editor.focus();
         if (idx !== old)
-            ide.dispatchEvent("pageswitch", { page: pair.page });
+            ide.dispatchEvent("tab.afterswitch", { previousPage: split.pairs[old].page, nextPage: pair.page });
     }
 };
 
@@ -546,7 +553,7 @@ function onEditorFocus(editor) {
 
     splits.forEach(function(split) {
         var activePage = split.pairs[exports.indexOf(split, editor)].page;
-        for (var page, session, i = 0, l = split.pairs.length; i < l; ++i) {
+        for (var page, previous, session, i = 0, l = split.pairs.length; i < l; ++i) {
             page = split.pairs[i].page;
             session = exports.getEditorSession(page);
             var isClone = session && exports.isClone(split, page);
@@ -556,9 +563,12 @@ function onEditorFocus(editor) {
                 // for clone views, the UndoManagers need to be swapped.
                 if (isClone && editor.getUndoManager() !== page.$at)
                     session.setUndoManager(page.$at);
-                if (split.activePage !== i) {
+                if (split === ActiveSplit && split.activePage !== i) {
+                    previous = split.pairs[split.activePage]
+                        ? split.pairs[split.activePage].page
+                        : split.pairs[0].page;
                     split.activePage = i;
-                    ide.dispatchEvent("pageswitch", { page: page });
+                    ide.dispatchEvent("tab.afterswitch", { previousPage: previous, nextPage: page });
                 }
                 apf.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
             }

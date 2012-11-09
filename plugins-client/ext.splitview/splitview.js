@@ -153,6 +153,9 @@ module.exports = ext.register("ext/splitview/splitview", {
         ide.addEventListener("tab.beforeswitch", function(e) {
             // the return value actually does something!
             var cancelSwitch = _self.updateSplitView(e.previousPage, e.nextPage);
+            var split = Splits.get(e.nextPage)[0];
+            if (split)
+                Splits.update(split);
 
             if (cancelSwitch) {
                 var page       = e.nextPage;
@@ -167,7 +170,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             return cancelSwitch;
         });
 
-        ide.addEventListener("pageswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
+            var page = e.nextPage
             if (!Splits.getActive())
                 return;
             _self.save();
@@ -177,7 +181,7 @@ module.exports = ext.register("ext/splitview/splitview", {
 
             var item;
             var syntax = mnuSyntax;
-            var value = Code.getContentType(e.page.$model.data);
+            var value = Code.getContentType(page.$model.data);
             for (var i = 0, l = syntax.childNodes.length; i < l; ++i) {
                 item = syntax.childNodes[i];
                 if (!item || !item.localName || item.localName != "item")
@@ -229,7 +233,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         });
 
         tabs.addEventListener("tabselectclick", function(e) {
-            return _self.onTabClick(e);
+            return _self.onTabClick(e.page, e.htmlEvent.shiftKey);
         });
 
         tabs.addEventListener("tabselectmouseup", function(e) {
@@ -470,11 +474,10 @@ module.exports = ext.register("ext/splitview/splitview", {
      *
      * @param {AmlEvent} e
      */
-    onTabClick: function(e) {
-        var page = e.page;
+    onTabClick: function(page, shiftKey) {
         var tabs = tabEditors;
         var activePage = tabs.getPage();
-        var shiftKey = e.htmlEvent.shiftKey;
+
         var ret = null;
         var split = Splits.get(activePage)[0];
 
