@@ -14,10 +14,12 @@ var VfsLocal = require("vfs-local");
 var Filelist = require("./filelist");
 
 var Os = require("os");
+var Fs = require("fs");
 var Path = require("path");
 
 var agModule = require("../cloud9.search.ag");
 var nakModule = require("../cloud9.search.nak");
+Fs.exists = Fs.exists || Path.exists;
 
 var basePath = Path.join(__dirname, "fixtures");
 
@@ -47,20 +49,23 @@ describe("filelist", function() {
 
     var AgLib = agModule({
         agCmd: agCmd,
-        nakCmd: nakCmd,
         test: true
     });
 
     var NakLib = nakModule({
-        agCmd: agCmd,
         nakCmd: nakCmd,
         test: true
     });
 
-    beforeEach(function() {
-        o = new Filelist();
-        o.setEnv({ 
-            basePath: basePath
+    var useAg;
+
+    Fs.exists(agCmd, function(exists) {
+        useAg = exists;
+        beforeEach(function() {
+            o = new Filelist();
+            o.setEnv({ 
+                basePath: basePath
+            });
         });
     });
 
@@ -77,18 +82,20 @@ describe("filelist", function() {
                 out += data;
             },
             // exit
-            function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                var files = out.split("\n").filter(function(file) { return !!file; }).sort();
+            function(code, stderr) {
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    var files = out.split("\n").filter(function(file) { return !!file; }).sort();
 
-                Assert.equal(files[2], basePath + "/level1/Toasty.gif");
-                Assert.equal(files[3], basePath + "/level1/level2/.hidden");
-                Assert.equal(files[4], basePath + "/level1/level2/.level3a/.hidden");
+                    Assert.equal(files[2], basePath + "/level1/Toasty.gif");
+                    Assert.equal(files[3], basePath + "/level1/level2/.hidden");
+                    Assert.equal(files[4], basePath + "/level1/level2/.level3a/.hidden");
+                }  
 
                 o.setEnv({ 
                     searchType: NakLib
                 });
-                        
+
                 out = options1.path = "";
 
                 o.exec(options1, vfs,
@@ -126,16 +133,19 @@ describe("filelist", function() {
             },
             // exit
             function(code, stderr) {
-                Assert.equal(code, 0);
-                var files = out.split("\n").filter(function(file) { return !!file; }).sort();
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    var files = out.split("\n").filter(function(file) { return !!file; }).sort();
 
-                Assert.equal(files[3], basePath + "/level1/level2/level2.rb");
-                Assert.equal(files[4], basePath + "/level1/level2/level3/level4/level4.txt");
-                
+                    Assert.equal(files[3], basePath + "/level1/level2/level2.rb");
+                    Assert.equal(files[4], basePath + "/level1/level2/level3/level4/level4.txt");
+                }
+
+                    
                 o.setEnv({ 
                     searchType: NakLib
                 });
-                        
+
                 out = options2.path = "";
 
                 o.exec(options2, vfs,

@@ -11,10 +11,12 @@
 
 var Assert = require("assert");
 var Path = require("path");
+var Fs = require("fs");
 var Os = require("os");
 
 var agModule = require("../cloud9.search.ag");
 var nakModule = require("../cloud9.search.nak");
+Fs.exists = Fs.exists || Path.exists;
 
 var VfsLocal = require("vfs-local");
 var Search = require("./search");
@@ -124,20 +126,23 @@ describe("search", function() {
     });
 
     var NakLib = nakModule({
-        agCmd: agCmd,
         nakCmd: nakCmd,
         test: true
     });
+    var useAg;
 
-    beforeEach(function() {
-        o = new Search();
-        o.setEnv({ 
-            basePath: basePath
+    Fs.exists(agCmd, function(exists) {
+        useAg = exists;
+        beforeEach(function() {
+            o = new Search();
+            o.setEnv({ 
+                basePath: basePath
+            });
         });
     });
 
     it("should find matches without regexp, case-sensitive OFF and word boundaries OFF",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
         
         o.setEnv({ 
             searchType: AgLib
@@ -150,15 +155,13 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 6);
-                Assert.equal(msg.filecount, 4);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 13);
-
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 6);
+                    Assert.equal(msg.filecount, 4);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 13);
+                }
 
                 o.setEnv({ 
                     searchType: NakLib
@@ -174,10 +177,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 6);
+                        Assert.equal(msg.filecount, 4);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 13);
                         
                         next();
                     }
@@ -187,7 +190,7 @@ describe("search", function() {
     });
 
     it("should find matches without regexp, case-sensitive ON and word boundaries OFF",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
 
         o.setEnv({ 
             searchType: AgLib
@@ -200,16 +203,14 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 2);
-                Assert.equal(msg.filecount, 2);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 5);
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 2);
+                    Assert.equal(msg.filecount, 2);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 5);
+                }
 
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
-                
                 o.setEnv({ 
                     searchType: NakLib
                 });
@@ -224,10 +225,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 2);
+                        Assert.equal(msg.filecount, 2);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 5);
                         
                         next();
                     }
@@ -237,7 +238,7 @@ describe("search", function() {
     });
 
     it("should find matches without regexp, case-sensitive OFF and word boundaries ON",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
         
         o.setEnv({ 
             searchType: AgLib
@@ -250,16 +251,14 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 3);
-                Assert.equal(msg.filecount, 3);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 8);
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 3);
+                    Assert.equal(msg.filecount, 3);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 8);
+                }
 
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
-                
                 o.setEnv({ 
                     searchType: NakLib
                 });
@@ -274,10 +273,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 3);
+                        Assert.equal(msg.filecount, 3);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 8);
                         
                         next();
                     }
@@ -287,7 +286,7 @@ describe("search", function() {
     });
 
     it("should find matches with a regexp, case-sensitive OFF",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
         
         o.setEnv({ 
             searchType: AgLib
@@ -300,16 +299,14 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 8);
-                Assert.equal(msg.filecount, 4);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 15);
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 8);
+                    Assert.equal(msg.filecount, 4);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 15);
+                }
 
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
-                
                 o.setEnv({ 
                     searchType: NakLib
                 });
@@ -324,10 +321,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 8);
+                        Assert.equal(msg.filecount, 4);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 15);
                         
                         next();
                     }
@@ -337,7 +334,7 @@ describe("search", function() {
     });
     
     it("should find matches with a regexp, case-sensitive ON, including the default .agignore file, and hidden files",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
         
         o.setEnv({ 
             searchType: AgLib
@@ -350,15 +347,13 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 14);
-                Assert.equal(msg.filecount, 7);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 27);
-
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 14);
+                    Assert.equal(msg.filecount, 7);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 27);
+                }
                 
                 o.setEnv({ 
                     searchType: NakLib
@@ -374,10 +369,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 14);
+                        Assert.equal(msg.filecount, 7);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 27);
                         
                         next();
                     }
@@ -387,7 +382,7 @@ describe("search", function() {
     });
  
     it("should find matches without regexp, only two file types, and no hidden files (even if they contain the string)",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
         
         o.setEnv({ 
             searchType: AgLib
@@ -400,20 +395,18 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 2);
-                Assert.equal(msg.filecount, 2);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 5);
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 2);
+                    Assert.equal(msg.filecount, 2);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 5);
 
-                // contains the query, has the right extension,
-                // but we're not searching hidden files
-                Assert.equal(/.file8_hidden.txt/.test(lines), false);
+                    // contains the query, has the right extension,
+                    // but we're not searching hidden files
+                    Assert.equal(/.file8_hidden.txt/.test(lines), false);
+                }
 
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
-                
                 o.setEnv({ 
                     searchType: NakLib
                 });
@@ -428,10 +421,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 2);
+                        Assert.equal(msg.filecount, 2);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 5);
 
                         Assert.equal(/.file8_hidden.txt/.test(lines), false);
                         
@@ -443,7 +436,7 @@ describe("search", function() {
     });
 
     it("should find matches without regexp, excluding txt files",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
+        var out = "";
         
         o.setEnv({ 
             searchType: AgLib
@@ -456,20 +449,18 @@ describe("search", function() {
             },
             // exit
             function(code, stderr, msg) {
-                Assert.equal(code, 0);
-                Assert.equal(msg.count, 10);
-                Assert.equal(msg.filecount, 4);
-                var lines = out.split("\n");
-                Assert.equal(lines.length, 17);
-
-                agCount = msg.count;
-                agFileCount = msg.filecount;
-                agLines = lines.length;
-                
+                if (useAg) {
+                    Assert.equal(code, 0);
+                    Assert.equal(msg.count, 10);
+                    Assert.equal(msg.filecount, 4);
+                    var lines = out.split("\n");
+                    Assert.equal(lines.length, 17);
+                }
+                    
                 o.setEnv({ 
                     searchType: NakLib
                 });
-                
+
                 out = options7.path = "";
                 
                 o.exec(options7, vfs,
@@ -480,10 +471,10 @@ describe("search", function() {
                     // exit
                     function(code, stderr, msg) {
                         Assert.equal(code, 0);
-                        Assert.equal(msg.count, agCount);
-                        Assert.equal(msg.filecount, agFileCount);
+                        Assert.equal(msg.count, 10);
+                        Assert.equal(msg.filecount, 4);
                         var lines = out.split("\n");
-                        Assert.equal(lines.length, agLines);
+                        Assert.equal(lines.length, 17);
                         
                         next();
                     }
