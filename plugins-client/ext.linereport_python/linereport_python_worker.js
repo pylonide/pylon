@@ -4,8 +4,8 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define("ext/linereport_php/linereport_php_worker", ["require", "exports", "module"], function(require, exports, module) {
-    
+define("ext/linereport_python/linereport_python_worker", ["require", "exports", "module"], function(require, exports, module) {
+
 var baseLanguageHandler = require("ext/linereport/linereport_base");
 var handler = module.exports = Object.create(baseLanguageHandler);
 
@@ -13,13 +13,13 @@ handler.disabled = false;
 handler.$isInited = false;
 
 handler.handlesLanguage = function(language) {
-    return language === 'php';
+    return language === 'python';
 };
 
 handler.init = function(callback) {
-    handler.initReporter("php --version", "exit 1 # can't really install php", function(err, output) {
+    handler.initReporter("pylint --version", "exit 1 # pylint isn't installed", function(err, output) {
         if (err) {
-            console.log("Unable to lint PHP\n" + output);
+            console.log("Unable to lint Python\n" + output);
             handler.disabled = true;
         }
         callback();
@@ -29,17 +29,17 @@ handler.init = function(callback) {
 handler.analyze = function(doc, fullAst, callback) {
     if (handler.disabled)
         return callback();
-    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, handler.workspaceDir),
+    handler.invokeReporter("pylint -i y -E " + handler.path.replace(/^\/workspace/, handler.workspaceDir),
         this.$postProcess, callback);
 };
 
 /**
- * Postprocess PHP output to match the expected format
+ * Postprocess Python output to match the expected format
  * line:column: error message.
  */
 handler.$postProcess = function(line) {
-    return line.replace(/(.*) (in .*? )?on line ([0-9]+)$/, "$3:1: $1/")
-        .replace(/parse error in (.*)\/(.+?)\/?$/, "parse error in $2");
+    var pylintRegex = /^E\d{4}:\s*(\d+),(\d+):(.*)$/;
+    return pylintRegex.test(line) && line.replace(pylintRegex, "$1:$2: $3/");
 };
 
 });

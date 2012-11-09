@@ -98,6 +98,7 @@ var config = [
             "ext/help/help",
             "ext/linereport/linereport",
             "ext/linereport_php/linereport_php",
+            "ext/linereport_python/linereport_python",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
