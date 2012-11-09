@@ -77,19 +77,19 @@ function setup (NodeRunner) {
 
         proto.createChild = function(callback) {
              
-            var self = this;
+            var _self = this;
 
             var port = this.debugPort;
 
-            if (self.breakOnStart)
-                self.nodeArgs.push("--debug-brk=" + port);
+            if (_self.breakOnStart)
+                _self.nodeArgs.push("--debug-brk=" + port);
             else
-                self.nodeArgs.push("--debug=" + port);
+                _self.nodeArgs.push("--debug=" + port);
             
-            Parent.prototype.createChild.call(self, callback);
+            Parent.prototype.createChild.call(_self, callback);
 
             setTimeout(function() {
-                self._startDebug(port);
+                _self._startDebug(port);
             }, 100);
         };
 
@@ -118,42 +118,44 @@ function setup (NodeRunner) {
         };
 
         proto._startDebug = function(port) {
-            var self = this;
+            var _self = this;
             function send(msg) {
-                self.eventEmitter.emit(self.eventName, msg);
+                _self.eventEmitter.emit(_self.eventName, msg);
             }
-            this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
-            this.nodeDebugProxy.on("message", function(body) {
+            var nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
+            nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
                 send({
                     "type": "node-debug",
-                    "pid": self.pid,
+                    "pid": _self.pid,
                     "body": body,
-                    "extra": self.extra
+                    "extra": _self.extra
                 });
             });
 
-            this.nodeDebugProxy.on("connection", function() {
+            nodeDebugProxy.on("connection", function() {
                 // console.log("Debug proxy connected");
                 send({
                     "type": "node-debug-ready",
-                    "pid": self.pid,
-                    "extra": self.extra
+                    "pid": _self.pid,
+                    "extra": _self.extra
                 });
-                self._flushSendQueue();
+                _self.nodeDebugProxy = nodeDebugProxy;
+                _self._flushSendQueue();
             });
 
-            this.nodeDebugProxy.on("end", function(err) {
+            nodeDebugProxy.on("end", function(err) {
                 // console.log("nodeDebugProxy terminated");
                 if (err) {
                     // TODO send the error message back to the client
                     // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);
                     console.error(err);
                 }
-                delete self.nodeDebugProxy;
+                if (_self.nodeDebugProxy)
+                    delete _self.nodeDebugProxy;
             });
 
-            this.nodeDebugProxy.connect();
+            nodeDebugProxy.connect();
         };
     }
 
