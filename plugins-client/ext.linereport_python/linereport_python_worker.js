@@ -29,7 +29,7 @@ handler.init = function(callback) {
 handler.analyze = function(doc, fullAst, callback) {
     if (handler.disabled)
         return callback();
-    handler.invokeReporter("pylint -i y -E " + handler.path.replace(/^\/workspace/, handler.workspaceDir),
+    handler.invokeReporter("pylint -i y -E " + handler.workspaceDir + "/" + handler.path,
         this.$postProcess, callback);
 };
 
