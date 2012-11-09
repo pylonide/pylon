@@ -123,7 +123,8 @@ exports.consoleTextHandler = function(e) {
                     refs.push(props[i].ref);
 
                 var pre = "<a class='xmlhl' href='javascript:void(0)' onclick='require(\"ext/debugger/inspector\").showObject(\""
-                    + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
+                    // replace angle brackets by unicode equivalents because apf doesn't accept angle brackets in attribute values
+                    + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"").replace(/&lt;/g, "\u3008").replace(/&gt;/, "\u3009")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 

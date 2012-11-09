@@ -64,9 +64,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             name: "searchinfiles",
             hint: "search for a string through all files in the current workspace",
             bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
-            isAvailable: function(editor) {
-                return editor && editor.path == "ext/code/code";
-            },
             exec: function () {
                 _self.toggleDialog(1);
             }
