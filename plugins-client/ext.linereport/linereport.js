@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var language = require("ext/language/language");
 var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
@@ -26,7 +27,7 @@ module.exports = ext.register("ext/linereport/linereport", {
     buffers      : {},
     saveTriggers : {},
     firstUsed    : false,
-    
+
     hook: function() {
         var _self = this;
         ide.addEventListener("init.ext/language/language", function() {
@@ -46,7 +47,7 @@ module.exports = ext.register("ext/linereport/linereport", {
             
         var doc = window.tabEditors.getPage().$doc;
         var path = event.data.path;
-        if (ext.disabled || !doc || (path && path !== doc.getNode().getAttribute("path")))
+        if (ext.disabled || !doc || (path && path !== util.stripWSFromPath(doc.getNode().getAttribute("path"))))
             return;
         function send() {
             window.ide.send(event.data.command);
@@ -77,9 +78,10 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onFileSave: function(event) {
-        if (this.saveTriggers[event.oldpath]) {
-            this.saveTriggers[event.oldpath]();
-            delete this.saveTriggers[event.oldpath];
+        var oldPath = util.stripWSFromPath(event.oldpath);
+        if (this.saveTriggers[oldPath]) {
+            this.saveTriggers[oldPath]();
+            delete this.saveTriggers[oldPath];
         }
     },
     

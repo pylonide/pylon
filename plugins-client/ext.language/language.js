@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var util = require("core/util");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var EditSession = require("ace/edit_session").EditSession;
@@ -76,7 +77,7 @@ module.exports = ext.register("ext/language/language", {
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
+                worker.call("switchFile", [util.stripWSFromPath(path), editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
                 event.doc.addEventListener("close", function() {
                     worker.emit("documentClose", {data: path});
                 });
@@ -223,7 +224,7 @@ module.exports = ext.register("ext/language/language", {
         if(!editors.currentEditor || editors.currentEditor.path != "ext/code/code" || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
+        this.worker.call("switchFile", [util.stripWSFromPath(currentPath), editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
     },
 
     onEditorClick: function(event) {

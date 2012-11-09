@@ -28,7 +28,7 @@ handler.init = function(callback) {
 handler.analyze = function(doc, fullAst, callback) {
     if (handler.disabled)
         return callback();
-    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, handler.workspaceDir),
+    handler.invokeReporter("php -l " + handler.workspaceDir + "/" + handler.path,
         this.$postProcess, callback);
 };
 
