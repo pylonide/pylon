@@ -80,7 +80,7 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/Facebook", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
 
             if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
-                var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
+                var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog&count=1";
 
                 apf.ajax(blogURL, {
                     method: "GET",
@@ -93,12 +93,14 @@ define(function(require, exports, module) {
                                 try {
                                     // fixes a potential issue with a stupid "WP Super Cache" comment
                                     var jsonBlog = JSON.parse(data.replace(/<!-- .+? -->/, ""));
-                                    var latestDate = "(" + jsonBlog.posts[0].date + ")";
+                                    
+                                    // date format is 2012-11-06 21:41:07; convert it to something better lookin'
+                                    var latestDate = " (" + jsonBlog.posts[0].date.split(" ")[0].replace(/-/g, ".") + ")";
                                 } catch (e) {
                                     console.error("Changelog JSON parse failed: " + e);
                                 }
 
-                                mnuChangelog.setAttribute("caption",  "Changelog " + latestDate.split(" ")[0].replace(/-/g, "."));
+                                mnuChangelog.setAttribute("caption",  "Changelog" + latestDate);
                             }
                         }
                     }
