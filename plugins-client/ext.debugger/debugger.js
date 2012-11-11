@@ -125,53 +125,48 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.addDockable({
             expanded : -1,
             width    : 300,
-            sections : [
-                {
-                    height     : 30,
-                    width      : 150,
-                    minHeight  : 30,
-                    noflex     : true,
-                    draggable  : false,
-                    resizable  : false,
-                    skin       : "dockwin_runbtns",
-                    noTab      : true,
-                    position   : 1,
+            sections : [{
+                height     : 30,
+                width      : 150,
+                minHeight  : 30,
+                noflex     : true,
+                draggable  : false,
+                resizable  : false,
+                skin       : "dockwin_runbtns",
+                noTab      : true,
+                position   : 1,
 
-                    buttons : [{
-                        id      : "btnRunCommands",
-                        caption : "Run Commands",
-                        "class" : "btn-runcommands",
-                        ext     : [name, "pgDebugNav"],
-                        draggable: false,
-                        hidden  : true
-                    }]
-                },
-                {
-                    width : 410,
-                    height : 230,
-                    flex : 3,
-                    buttons : [
-                        { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
-                    ]
-                },
-                {
-                    width : 380,
-                    height : 300,
-                    flex : 3,
-                    buttons : [
-                        { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
-                        { caption: "Variables", ext : [name, "dbgVariable"], hidden: true}
-                    ]
-                },
-                {
-                    width : 350,
-                    height : 230,
-                    flex : 2,
-                    buttons : [
-                        { caption: "Breakpoints", ext : [name, "dbgBreakpoints"], hidden: true}
-                    ]
-                }
-            ]
+                buttons : [{
+                    id      : "btnRunCommands",
+                    caption : "Run Commands",
+                    "class" : "btn-runcommands",
+                    ext     : [name, "pgDebugNav"],
+                    draggable: false,
+                    hidden  : true
+                }]
+            }, {
+                width : 410,
+                height : 230,
+                flex : 3,
+                buttons : [
+                    { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
+                ]
+            }, {
+                width : 380,
+                height : 300,
+                flex : 3,
+                buttons : [
+                    { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
+                    { caption: "Variables", ext : [name, "dbgVariable"], hidden: true}
+                ]
+            }, {
+                width : 350,
+                height : 230,
+                flex : 2,
+                buttons : [
+                    { caption: "Breakpoints", ext : [name, "dbgBreakpoints"], hidden: true}
+                ]
+            }]
         });
 
         dock.register(name, "pgDebugNav", {
