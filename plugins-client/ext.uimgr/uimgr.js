@@ -1220,16 +1220,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
-                            name: "checkbox-menu",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        label: "Checkbox"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
                             name: "checkbox_black",
                             versions: [
                                 { //version
