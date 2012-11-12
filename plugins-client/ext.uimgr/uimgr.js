@@ -1220,16 +1220,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
-                            name: "cboffline",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        width: "55"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
                             name: "checkbox-menu",
                             versions: [
                                 { //version
