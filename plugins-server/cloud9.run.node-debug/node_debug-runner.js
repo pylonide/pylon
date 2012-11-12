@@ -88,28 +88,31 @@ function setup (NodeRunner) {
             
             Parent.prototype.createChild.call(_self, callback);
 
-            setTimeout(function() {
+            this.msgQueue = [];
+            if (!this.nodeDebugProxy)
                 _self._startDebug(port);
-            }, 100);
         };
 
         proto.debugCommand = function(msg) {
             this.msgQueue.push(msg);
 
-            if (!this.nodeDebugProxy)
+            if (!this.nodeDebugProxy || !this.nodeDebugProxy.connected)
                 return;
 
             this._flushSendQueue();
         };
 
         proto._flushSendQueue = function() {
-            if (this.msgQueue.length) {
+            if (this.msgQueue.length && this.nodeDebugProxy.connected) {
                 for (var i = 0; i < this.msgQueue.length; i++) {
                     // console.log("SEND", this.msgQueue[i])
                     try {
                         this.nodeDebugProxy.send(this.msgQueue[i]);
                     } catch(e) {
                         console.log("Sending node debug message failed: " + e.message);
+                        // do not silently discard unsent messages
+                        this.msgQueue.splice(0, i);
+                        return;
                     }
                 }
             }
@@ -122,8 +125,9 @@ function setup (NodeRunner) {
             function send(msg) {
                 _self.eventEmitter.emit(_self.eventName, msg);
             }
-            var nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
-            nodeDebugProxy.on("message", function(body) {
+
+            this.nodeDebugProxy = new NodeDebugProxy(this.vfs, port);
+            this.nodeDebugProxy.on("message", function(body) {
                 // console.log("REC", body)
                 send({
                     "type": "node-debug",
@@ -133,18 +137,17 @@ function setup (NodeRunner) {
                 });
             });
 
-            nodeDebugProxy.on("connection", function() {
+            this.nodeDebugProxy.on("connection", function() {
                 // console.log("Debug proxy connected");
                 send({
                     "type": "node-debug-ready",
                     "pid": _self.pid,
                     "extra": _self.extra
                 });
-                _self.nodeDebugProxy = nodeDebugProxy;
                 _self._flushSendQueue();
             });
 
-            nodeDebugProxy.on("end", function(err) {
+            this.nodeDebugProxy.on("end", function(err) {
                 // console.log("nodeDebugProxy terminated");
                 if (err) {
                     // TODO send the error message back to the client
@@ -155,7 +158,7 @@ function setup (NodeRunner) {
                     delete _self.nodeDebugProxy;
             });
 
-            nodeDebugProxy.connect();
+            this.nodeDebugProxy.connect();
         };
     }
 
