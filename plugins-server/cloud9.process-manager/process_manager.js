@@ -8,8 +8,6 @@
  * @param runners {Map} maps runner ids to runner factories
  */
 
-var async = require("asyncjs");
-
 var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.runners = runners;
     this.eventEmitter = eventEmitter;
@@ -92,34 +90,6 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
 
             }, onExit);
         });
-    };
-
-    this.execCommands = function(runnerId, cmds, callback) {
-        var _self = this;
-        var out = "";
-        var err = "";
-        async.list(cmds)
-            .each(function(cmd, next) {
-                //console.log("CMD", cmd)
-                _self.exec(
-                    runnerId, cmd,
-                    function(err, pid) {
-                        if (err)
-                            next(err);
-                    },
-                    function(code, stdout, stderr) {
-                        //console.log(code, stdout, stderr)
-                        out += stdout;
-                        err += stderr;
-                        if (code)
-                            return next("Error: " + code + " " + stderr, stdout);
-                        next();
-                    }
-                );
-            })
-            .end(function(err) {
-                callback(err, out);
-            });
     };
 
     this.ps = function() {

@@ -95,7 +95,11 @@ define(function(require, exports, module) {
                             callback: function( data, state) {
                                 if (state == apf.SUCCESS) {
                                     if (data !== undefined) {
-                                        var jsonBlog = JSON.parse(data);
+                                        try {
+                                            var jsonBlog = JSON.parse(data);
+                                        } catch(e) {
+                                            return;
+                                        }
                                         var latestDate = jsonBlog.posts[0].date;
 
                                         mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
