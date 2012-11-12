@@ -1,3 +1,5 @@
+//regex to find the skins - <a.*? name=
+
 <a:colorpicker name="colorpicker" skinset="colorpicker"> - throws error TypeError: Object [Colorpicker Element Node, <a:colorpicker color="#ff0000" value="#0099cc" skin="colorpicker" skinset="default" /> : 1162] has no method '$getExternal'
 <a:datagrid name="datagrid"> - I don't know how to create one with JS
 <a:datagrid name="dgcheck"> - I don't know how to create one with JS

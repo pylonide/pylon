@@ -120,6 +120,14 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
+                            name: "dark-opaque",
+                            versions: [
+                                { //version
+                                    settings: {}
+                                }
+                            ]
+                        },
+                        { //skin
                             name: "debug-panel",
                             versions: [
                                 { //version
@@ -527,6 +535,17 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
+                            name: "button-close",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        width: "100"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
                             name: "button-colorless",
                             versions: [
                                 { //version
@@ -582,6 +601,54 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                                         caption: "Button",
                                         "class": "green",
                                         width: "100"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "button-link-dark",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Button",
+                                        width: "100"
+                                    }
+                                }
+                            ]
+                        },
+                        { //skin
+                            name: "button-social",
+                            versions: [
+                                { //version
+                                    settings: {
+                                        caption: "Facebook",
+                                        "class": "facebook",
+                                        height: "20",
+                                        width: "20"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Google Plus",
+                                        "class": "google-plus",
+                                        height: "20",
+                                        width: "20"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Mail",
+                                        "class": "mail",
+                                        height: "20",
+                                        width: "20"
+                                    }
+                                },
+                                { //version
+                                    settings: {
+                                        caption: "Twitter",
+                                        "class": "twitter",
+                                        height: "20",
+                                        width: "20"
                                     }
                                 }
                             ]
