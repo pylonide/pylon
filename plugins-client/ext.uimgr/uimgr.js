@@ -1778,16 +1778,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
-                            name: "classic",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        label: "Option"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
                             name: "radio_black",
                             versions: [
                                 { //version
@@ -2046,16 +2036,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                                     }
                                 }
                             ]
-                        },
-                        { //skin
-                            name: "textarea_ide",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        value: "Textarea"
-                                    }
-                                }
-                            ]
                         }
                     ]
                 }
@@ -2138,16 +2118,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                         },
                         { //skin
                             name: "tb_console",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        "initial-message": "Placeholder"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
-                            name: "tbsimple",
                             versions: [
                                 { //version
                                     settings: {

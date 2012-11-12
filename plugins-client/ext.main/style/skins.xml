@@ -7193,76 +7193,6 @@
     </a:presentation>
 </a:pages>
 
-<a:radiobutton name="classic">
-    <a:style><![CDATA[
-        .rbclassic {
-            height   : 15px;
-            position : relative;
-            overflow : hidden;
-            color    : #333;
-            cursor   : default;
-            padding-left:14px;
-            margin-bottom:1px;
-        }
-
-        .rbclassic .radio {
-            width      : 12px;
-            height     : 12px;
-            position   : absolute;
-            top:1px;
-            left:0;
-            background : url("images/radio.png") no-repeat 0 -12px;
-        }
-
-        .rbclassic span {
-            font-family : Tahoma, Arial;
-            font-size   : 11px;
-            padding     : 0 2px 0px 2px;
-            height      : 15px;
-            margin      : 0;
-            overflow    : hidden;
-            position:relative;
-        }
-
-        .rbclassicFocus span {
-            border : 1px dotted #BBB;
-        }
-
-        .rbclassicDown .radio{
-            background-position: 0 -36px;
-        }
-
-        .rbclassicSelected .radio{
-            background-position: 0 -24px;
-        }
-
-        .rbclassicDisabled .radio{
-            background-position: 0 -0px;
-        }
-
-        .rbclassicDisabled span{
-            color: #bebebe;
-        }
-
-        .rbclassicError span{
-            background-color : #ffb500;
-            color: #fbfbfb;
-        }
-
-        .rbclassic br{
-            display: none;
-        }
-    ]]></a:style>
-
-    <a:presentation>
-        <a:main label="span">
-            <div class="rbclassic">
-                <div class="radio"> </div>
-                <span>-</span>
-            </div>
-        </a:main>
-    </a:presentation>
-</a:radiobutton>
 <a:radiobutton name="radiobutton">
     <a:style><![CDATA[
         .rbcontainer {
@@ -10833,28 +10763,6 @@
     </a:presentation>
 </a:textbox>
 
-<a:textbox name="tbsimple">
-    <a:style><![CDATA[
-        .tbsimple{
-            border : 0;
-            padding : 1px 1px 2px 1px;
-            margin : 1px 0 0 2px;
-            font-family : Tahoma, Arial;
-            outline : none;
-        }
-
-        .tbsimple.tbtree{
-            margin : -1px 0 0 -2px;
-        }
-    ]]></a:style>
-
-    <a:presentation>
-        <a:main input=".">
-            <input type="text" class="tbsimple" />
-        </a:main>
-    </a:presentation>
-</a:textbox>
-
 <a:textbox name="chromeless">
     <a:style><![CDATA[
         .chromeless input {
@@ -11227,49 +11135,6 @@
         </a:main>
     </a:presentation>
 </a:textbox>
-
-<a:textarea name="textarea_ide">
-    <a:style><![CDATA[
-        .textarea_ide {
-            font-family: Arial;
-            font-size: 10px;
-            color: #202020;
-            padding: 5px;
-            word-wrap: break-word;
-            line-height: 14px;
-            margin-left: 70px;
-            border-top: 1px solid #737373;
-            border-bottom: 1px solid #999999;
-            border-left: 1px solid #999999;
-            border-right: 1px solid #999999;
-            overflow    : auto;
-            outline     : none;
-            background-color: #ffffff;
-        }
-
-        .textarea_ideFocus {
-
-        }
-
-        .textarea_ideDisabled{
-
-        }
-
-        .textarea_ideInitial{
-
-        }
-
-        .textarea_ideError{
-
-        }
-    ]]></a:style>
-
-    <a:presentation>
-        <a:main input=".">
-            <textarea type='text' class="textarea_ide" />
-        </a:main>
-    </a:presentation>
-</a:textarea>
 
 <a:textbox name="textbox-modal">
     <a:style><![CDATA[
