@@ -1759,18 +1759,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                                     }
                                 }
                             ]
-                        },
-                        { //skin
-                            name: "progressbar-green",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        max: "10",
-                                        min: "0",
-                                        value: "70"
-                                    }
-                                }
-                            ]
                         }
                     ]
                 }
