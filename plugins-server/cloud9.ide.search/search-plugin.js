@@ -43,13 +43,15 @@ module.exports = function setup(options, imports, register) {
 
             var self = this;
             return Search.exec(message, Vfs,
-                // data
+                // data 
                 function(msg) {
                     msg.extra = "codesearch";
                     self.ide.broadcast(JSON.stringify(msg), self.name);
                 },
                 // exit
                 function(code, stderr, msg) {
+                    msg = msg || {};
+                    
                     msg.code = code;
                     msg.stderr = stderr;
                     msg.extra = "codesearch";
