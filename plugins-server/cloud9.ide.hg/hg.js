@@ -114,7 +114,7 @@ util.inherits(HgPlugin, Plugin);
                     }
                 };
 
-                out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
+                out.replace(/([\w]+)[\s]{3,9}([\w].+)\n/gi, function(m, sub, hint) {
                     if (self.banned.indexOf(sub) > -1)
                         return;
                     hghelp.hg.commands[sub] = self.augmentCommand(sub, {"hint": hint});
