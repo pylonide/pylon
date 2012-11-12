@@ -1387,16 +1387,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                                     }
                                 }
                             ]
-                        },
-                        { //skin
-                            name: "light_dropdown",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        width: "200"
-                                    }
-                                }
-                            ]
                         }
                     ]
                 }
@@ -1637,24 +1627,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
-                            name: "change_photo",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        buttons: "min|max|close",
-                                        height: "400",
-                                        minheight: "290",
-                                        minwidth: "300",
-                                        modal: "false",
-                                        resizable: "true",
-                                        title: "Static modal window",
-                                        visible: "true",
-                                        width: "500"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
                             name: "dockwin",
                             versions: [
                                 { //version
@@ -1710,29 +1682,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                         },
                         { //skin
                             name: "window",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        buttons: "min|max|close",
-                                        height: "400",
-                                        minheight: "290",
-                                        minwidth: "300",
-                                        modal: "false",
-                                        resizable: "true",
-                                        title: "Static modal window",
-                                        visible: "true",
-                                        width: "500"
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    name: "authskin",
-                    skins: [
-                        { //skin
-                            name: "win-auth",
                             versions: [
                                 { //version
                                     settings: {
