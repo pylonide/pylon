@@ -657,6 +657,8 @@ apf.BaseList = function(){
                     o.stopRename();\
                  else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
+                 if (event.button == 2 && isSelected)\
+                    return;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
