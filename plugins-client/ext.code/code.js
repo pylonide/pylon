@@ -395,6 +395,7 @@ module.exports = ext.register("ext/code/code", {
                 ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
                 ["behaviors", "true"],
+                ["wrapbehaviors", "false"],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],
@@ -418,6 +419,7 @@ module.exports = ext.register("ext/code/code", {
             if (defaulted !== "true") {
                 e.model.setQueryValue("editors/code/@behaviorsdefaulted", "true");
                 e.model.setQueryValue("editors/code/@behaviors", "true");
+                e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
             }
 
             // pre load theme
