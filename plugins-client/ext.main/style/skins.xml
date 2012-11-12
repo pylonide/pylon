@@ -63,22 +63,6 @@
         </a:main>
     </a:presentation>
 </a:bar>
-<a:bar name="deprecated">
-    <a:style><![CDATA[
-        .bar{
-            overflow : hidden;
-            position : relative;
-        }
-    ]]></a:style>
-    <a:presentation>
-        <a:main container="div">
-            <div class="bar">
-                <div class="contents"> </div>
-                <div class="barFooter"><div><div> </div></div></div>
-            </div>
-        </a:main>
-    </a:presentation>
-</a:bar>
 <a:bar name="winGoToFile">
     <a:style><![CDATA[
         .winGoToFile {

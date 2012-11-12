@@ -138,14 +138,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
-                            name: "deprecated",
-                            versions: [
-                                { //version
-                                    settings: {}
-                                }
-                            ]
-                        },
-                        { //skin
                             name: "dock-panel",
                             versions: [
                                 { //version
