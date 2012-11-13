@@ -81,7 +81,8 @@ module.exports = ext.register("ext/language/language", {
 
                 var path = event.node.getAttribute("path");
                 var editor = editors.currentEditor.amlEditor;
-                // workaround for concorde firing changesession with empty document
+                // background tabs=open document, foreground tab=switch to file
+                // this is needed because with concorde changeSession event is fired when document is still empty 
                 var isVisible = editor.xmlRoot == event.node;
                 worker.call(isVisible ? "switchFile" : "documentOpen", [
                     util.stripWSFromPath(path),
