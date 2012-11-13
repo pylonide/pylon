@@ -115,8 +115,9 @@ util.inherits(Ide, EventEmitter);
 
             var staticUrl = _self.options.staticUrl;
             var workerUrl = _self.options.workerUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
-                + staticUrl + '/ace/build/ace'
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" '
+                + 'data-ace-suffix=".js?staticUrl=' + staticUrl + '" '
+                + 'src="' + staticUrl + '/ace/build/ace'
                 + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
             var loadedDetectionScript = "";
