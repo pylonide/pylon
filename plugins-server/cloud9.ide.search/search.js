@@ -53,7 +53,10 @@ module.exports = function() {
 
         vfs.spawn(args.command, { args: args, cwd: options.path, stdoutEncoding: "utf8", stderrEncoding: "utf8" }, function(err, meta) {
             if (err || !meta.process)
-                return onExit(1, err);
+                return onExit(1, err, {
+                    count: 0,
+                    filecount: 0
+                });
 
             var child = meta.process;
             self.activeProcess = child;

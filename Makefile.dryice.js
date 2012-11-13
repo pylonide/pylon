@@ -66,8 +66,12 @@ function worker(project) {
                     'ext/jslanguage/parse',
                     'ext/jslanguage/scope_analyzer',
                     'ext/jslanguage/jshint',
+                    'ext/jslanguage/jumptodef',
                     'ext/jslanguage/debugger',
                     'ext/jslanguage/outline',
+                    'ext/csslanguage/css_handler',
+                    'ext/htmllanguage/html_completer',
+                    'ext/codecomplete/mode_completer',
                     'ext/linereport/linereport_base',
                     'ext/linereport_php/linereport_php_worker',
                 ]
