@@ -115,10 +115,6 @@ module.exports = ext.register("ext/language/language", {
     isInferAvailable : function() {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
-    
-    isWorkerEnabled : function() {
-        return isWorkerEnabled();
-    },
 
     init : function() {
         var _self = this;
