@@ -10,7 +10,7 @@ var mixedLanguages = {
     php: {
         "default": "html",
         "php-start": /<\?(?:php|\=)?/,
-        "php-end": /\\?>/,
+        "php-end": /\?>/,
         "css-start": /<style[^>]*>/,
         "css-end": /<\/style>/,
         "javascript-start": /<script(?:\"[^\"]*\"|'[^']*'|[^'">\/])*>/,
