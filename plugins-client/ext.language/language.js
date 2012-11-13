@@ -66,7 +66,7 @@ module.exports = ext.register("ext/language/language", {
             }
             else {
                 worker = _self.worker = new WorkerClient(
-                    ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
+                    ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker", "?staticUrl=" + window.cloud9config.staticUrl);
             }
             complete.setWorker(worker);
 
