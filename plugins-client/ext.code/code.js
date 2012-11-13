@@ -394,7 +394,8 @@ module.exports = ext.register("ext/code/code", {
                 ["showprintmargin", "true"],
                 ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
-                ["behaviors", ""],
+                ["behaviors", "true"],
+                ["wrapbehaviors", "false"],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],
@@ -411,6 +412,15 @@ module.exports = ext.register("ext/code/code", {
                 ["fadefoldwidgets", "true"],
                 ["animatedscroll", "true"]
             ]);
+            
+            // Enable bracket insertion by default, even if it was disabled before,
+            // migrating old users that had it disabled by default
+            var defaulted = e.model.queryValue("editors/code/@behaviorsdefaulted");
+            if (defaulted !== "true") {
+                e.model.setQueryValue("editors/code/@behaviorsdefaulted", "true");
+                e.model.setQueryValue("editors/code/@behaviors", "true");
+                e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
+            }
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");

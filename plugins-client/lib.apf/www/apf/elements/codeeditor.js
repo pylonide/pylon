@@ -85,6 +85,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["highlightselectedword"]    = true;
     this.$booleanProperties["autohidehorscrollbar"]     = true;
     this.$booleanProperties["behaviors"]                = true;
+    this.$booleanProperties["wrapbehaviors"]            = true;
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
@@ -96,7 +97,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "scrollspeed", "showindentguides",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
+        "behaviors", "wrapbehaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
         "gutterline");
 
     this.$getCacheKey = function(value) {
@@ -324,6 +325,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["behaviors"] = function(value, prop, initial) {
         this.$editor.setBehavioursEnabled(value);
     };
+    this.$propHandlers["wrapbehaviors"] = function(value, prop, initial) {
+        this.$editor.setWrapBehavioursEnabled(value);
+    };
 
     var propModelHandler = this.$propHandlers["model"];
     this.$propHandlers["model"] = function(value) {
@@ -507,6 +511,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
         this.highlightselectedword = ed.getHighlightSelectedWord();
         this.behaviors = !ed.getBehavioursEnabled();
+        this.wrapbehaviors = ed.getWrapBehavioursEnabled();
             
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;

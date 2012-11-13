@@ -125,6 +125,7 @@
                     aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
+                    aceConfig.set("suffix", ".js?staticUrl=" + cloud9config.staticUrl);
                     
                     //Load extensions
                     if (!cloud9config.packed) {
