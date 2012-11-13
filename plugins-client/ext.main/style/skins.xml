@@ -6154,12 +6154,12 @@
             overflow: hidden;
             position: relative;
             cursor: default;
-            color      : #cecece;
-            text-shadow   : #000 0px 1px 0px;
-            /*background: rgba(24, 24, 24, .4) url(images/c9-noise-dark.png);*/
+            height: 197px;
         }
 
         .listRC .rcItem{
+            color      : #cecece;
+            text-shadow   : #000 0px 1px 0px;
             padding    : 0 2px 0 29px;
             position   : relative;
             height     : 20px;
@@ -6205,7 +6205,7 @@
             background-position : 0 -17px;
         }
 
-        .listRC .selected .radiobutton:active {
+        .listRC .active .radiobutton:active {
             background-position : 0 -51px !important;
         }
 
@@ -6219,11 +6219,11 @@
             color: #ffffff;
         }
 
-        .listRC .selected .radiobutton {
+        .listRC .active .radiobutton {
             background-position : 0 -34px;
         }
 
-        .listRC .selected .radiobutton:hover{
+        .listRC .active .radiobutton:hover{
             background-position : 0 -102px;
         }
 
@@ -6265,6 +6265,21 @@
         .listRC .selected .btnDelete:active {
             background-position : -31px 0;
         }
+        
+        .listRC #txt_rename{
+            border: 1px solid #bbb;
+            padding: 0px 15px 1px 1px;
+            color: black;
+            text-shadow   : none;
+            word-break: keep-all;
+            overflow: visible;
+            margin-top : 0px;
+            cursor: text;
+            height: 13px;
+            width: 100px;
+            display: block;
+            
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -6275,6 +6290,7 @@
         <a:item class="." caption="div" icon="div" select="." check="span">
             <div class="rcItem">
                 <span class="radiobutton"> </span>
+                <!--div contenteditable="true" id="txt_rename"> </div-->
                 <div class="content"> </div>
                 <div class="btnDelete"> </div>
             </div>
@@ -6297,7 +6313,7 @@
             border: 1px solid black;
             border-bottom-width: 6px;
             background-color: #3C3C3C;
-            box-shadow: 0 5px 8px rgba(0,0,0,.55);
+            box-shadow: 0 5px 15px rgba(0,0,0,.55);
             height: 226px;
             margin: -13px 0 0 -64px;
             position: relative;
@@ -12027,7 +12043,7 @@
             line-height      : 15px;
             font-size        : 12px;
             color            : #303030;
-            font-family      : menlo,courier new,fixed,swiss,sans-serif;
+            font-family      : Arial;
             outline          : none;
             background-color : transparent;
             width: 100%;

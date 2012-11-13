@@ -122,7 +122,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 command : "runthistab",
                 disabled : "{!tabEditors.activepage}"
             }), 850, mnuContext)
-
         );
 
         tooltip.add(btnRun.$button1, {
@@ -136,7 +135,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
 
         settings.addSettings("General", markupSettings);
-
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/node-version", [
                 ["version", "auto"]
@@ -152,13 +150,27 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 ["showruncfglist", "false"]
             ]);
 
+            var changed = false;
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
-                var config = e.model.queryNode("auto/configurations/config")
-                if (config)
-                    apf.xmldb.setAttribute(config, "last", "true");
+            var activeCfg = e.model.queryNode("auto/configurations/config[@active='true']");
+            if (!activeCfg) {
+                activeCfg = e.model.queryNode("auto/configurations/config")
+                if (activeCfg) {
+                    apf.xmldb.setAttribute(activeCfg, "active", "true");
+                    changed = true;
+                }
+            }
+            var lastCfg = e.model.queryNode("auto/configurations/config[@last='true']");
+            if (!lastCfg) {
+                var lastCfg = activeCfg;
+                if (lastCfg) {
+                    apf.xmldb.setAttribute(lastCfg, "last", "true");
+                    changed = true;
+                }
             }
             
+            if (changed)
+                settings.save();
             _self.model.load(runConfigs);
         });
         
@@ -170,6 +182,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (tabEditors.getPages().length == 1)
                     _self.disable();
             });
+        });
+        
+        ide.addEventListener("init.ext/code/code", function() {
+            _self.nodes.push(
+                mnuCtxEditor.insertBefore(new apf.item({
+                    id : "mnuCtxEditorRunThisFile",
+                    caption : "Run This File",
+                    command: "runthistab",
+                    disabled : "{!tabEditors.activepage}"
+                }), mnuCtxEditorRevisions),
+                mnuCtxEditor.insertBefore(new apf.divider(), mnuCtxEditorRevisions)
+            )
         });
         
         var hasBreaked = false;
@@ -245,9 +269,27 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.importCssString(cssString);
 
         lstRunCfg.addEventListener("click", function(e){
+            if (e.htmlEvent.target.className == "radiobutton") {
+                var active = _self.model.queryNode("config[@active='true']");
+                if (active)
+                    apf.xmldb.removeAttribute(active, "active");
+                
+                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
+                apf.xmldb.setAttribute(xmlNode, "active", "true");
+            }
+            
             if (e.htmlEvent.target.className == "btnDelete") {
                 var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
                 this.remove(xmlNode);
+                
+                // set new active config if active config was deleted
+                xmlNode = lstRunCfg.$model.queryNode("config");
+                if (xmlNode) {
+                    apf.xmldb.setAttribute(xmlNode, "active", "true");
+                    setTimeout(function() {
+                        lstRunCfg.select(xmlNode);
+                    });
+                }
             }
         });
 
@@ -287,7 +329,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 function(full, ext){ extension = ext; return ""; });
         }
         else {
-            extension = name = path = "";
+            name = "Untitled";
+            extension = path = "";
+        }
+        
+        var hasConfigs = require("ext/runpanel/runpanel").model.queryNodes("config").length;
+        if (hasConfigs) {
+            // check if name already exists
+            var idx = 1, newname;
+            if (this.model.queryNode("config[@name='" + name + "']")) {
+                newname = name + " (" + idx + ")";
+                while (this.model.queryNode("config[@name='" + newname + "']")) {
+                    idx++;
+                    newname = name + " (" + idx + ")";
+                }
+                
+                name = newname;
+            }
         }
         
         var tagName = !temp ? "config" : "tempconfig";
@@ -301,15 +359,27 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         var node = this.model.appendXml(cfg);
 
-        var prevCfg = settings.model.queryNode("auto/configurations/config[@last='true']");
-        if (prevCfg)
-            apf.xmldb.setAttribute(prevCfg, "prevlast", "true");
+        // if this is the only config, make it active
+        if (tagName == "config" && !hasConfigs) {
+            apf.xmldb.setAttribute(node, "active", "true");
+            //apf.setStyleClass(apf.xmldb.findHtmlNode(node, lstRunCfg), "active");
+        }
         
         lstRunCfg.select(node);
+        
+        if (!temp)
+            lstRunCfg.startRename(node);
         
         return node;
     },
 
+    onOpenMenuRunCfg : function() {
+        this.removeTempConfig();
+        var lastCfg = this.model.queryNode("config[@last='true']");
+        if (lastCfg)
+            lstRunCfg.select(lastCfg);
+    },
+        
     removeTempConfig : function() {
         var tempNode = settings.model.queryNode("auto/configurations/tempconfig[@last='true']");
         if (tempNode)
@@ -338,7 +408,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 node = this.addConfig(true);}
         }
         else {
-            node = this.model.queryNode("config[@last='true']");
+            node = this.model.queryNode("config[@active='true']");
         }
         
         if (!node) {
@@ -380,14 +450,20 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         if (debug === undefined)
             debug = config.getAttribute("debug") == "true";
-
+/*
         if (config.tagName == "config") {
             var lastNode = apf.queryNode(config, "../node()[@last]");
             if (lastNode)
                 apf.xmldb.removeAttribute(lastNode, "last");
             apf.xmldb.setAttribute(config, "last", "true");
         }
-        mnuRunCfg.hide();
+*/
+        if (mnuRunCfg.visible)
+            mnuRunCfg.hide();
+        
+        if (config.tagName == "tempconfig") {
+            this.removeTempConfig();
+        }
         
         self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations
