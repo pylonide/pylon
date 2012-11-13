@@ -81,12 +81,17 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 
 ace_mode_theme:
-	# copies built ace modes
+	# copies and minifies built ace modes
 	mkdir -p plugins-client/lib.ace/www/mode
-	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`  plugins-client/lib.ace/www/mode
-	# copies built ace themes
+	for i in `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`; do \
+		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/mode/`basename $$i` baseUrl=. paths.ace=./node_modules/ace/lib/ace ; \
+	done
+	
+	# copies and minifies built ace themes
 	mkdir -p plugins-client/lib.ace/www/theme
-	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"`  plugins-client/lib.ace/www/theme
+	for i in `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"`; do \
+		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/theme/`basename $$i` baseUrl=. paths.ace=./node_modules/ace/lib/ace ; \
+	done
 
 gzip_safe:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
