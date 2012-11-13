@@ -2049,6 +2049,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                   before ? sections.indexOf(before.$dockData) : sections.length);
         }
         else {
+            console.log(sectionOpt)
+            console.log(sectionOpt.draggable)
             var section = bar.insertBefore(new apf.vbox({
                 padding : 0,
                 edge    : "0 0 3 0",
