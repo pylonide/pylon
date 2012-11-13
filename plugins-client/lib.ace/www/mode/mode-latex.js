@@ -15,10 +15,7 @@ oop.inherits(Mode, TextMode);
 
 (function() {
     this.toggleCommentLines = function(state, doc, startRow, endRow) {
-        // This code is adapted from ruby.js
         var outdent = true;
-        
-        // LaTeX comments begin with % and go to the end of the line
         var commentRegEx = /^(\s*)\%/;
 
         for (var i = startRow; i <= endRow; i++) {
@@ -43,9 +40,6 @@ oop.inherits(Mode, TextMode);
             doc.indentRows(startRow, endRow, "%");
         }
     };
-    
-    // There is no universally accepted way of indenting a tex document
-    // so just maintain the indentation of the previous line
     this.getNextLineIndent = function(state, line, tab) {
         return this.$getIndent(line);
     };
@@ -64,24 +58,18 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var LatexHighlightRules = function() {   
     this.$rules = {
         "start" : [{
-            // A tex command e.g. \foo
             token : "keyword",
-            regex : "\\\\(?:[^a-zA-Z]|[a-zA-Z]+)",
+            regex : "\\\\(?:[^a-zA-Z]|[a-zA-Z]+)"
         }, {
-            // Curly and square braces
             token : "lparen",
             regex : "[[({]"
         }, {
-            // Curly and square braces
             token : "rparen",
             regex : "[\\])}]"
         }, {
-            // Inline math between two $ symbols
             token : "string",
             regex : "\\$(?:(?:\\\\.)|(?:[^\\$\\\\]))*?\\$"
         }, {
-            // A comment. Tex comments start with % and go to 
-            // the end of the line
             token : "comment",
             regex : "%.*$"
         }]

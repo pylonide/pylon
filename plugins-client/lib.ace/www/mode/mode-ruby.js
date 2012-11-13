@@ -172,9 +172,6 @@ var RubyHighlightRules = function() {
         "invalid.deprecated": "debugger" // TODO is this a remnant from js mode?
     }, "identifier");
 
-    // regexp must not have capturing parentheses. Use (?:) instead.
-    // regexps are ordered -> the first match is used
-
     this.$rules = {
         "start" : [
             {
@@ -201,11 +198,11 @@ var RubyHighlightRules = function() {
                 token : "text", // namespaces aren't symbols
                 regex : "::"
             }, {
-                token : "variable.instancce", // instance variable
-                regex : "@{1,2}(?:[a-zA-Z_]|\d)+"
+                token : "variable.instance", // instance variable
+                regex : "@{1,2}[a-zA-Z_\\d]+"
             }, {
                 token : "variable.class", // class name
-                regex : "[A-Z](?:[a-zA-Z_]|\d)+"
+                regex : "[A-Z][a-zA-Z_\\d]+"
             }, {
                 token : "string", // symbol
                 regex : "[:](?:[A-Za-z_]|[@$](?=[a-zA-Z0-9_]))[a-zA-Z0-9_]*[!=?]?"
@@ -220,8 +217,6 @@ var RubyHighlightRules = function() {
                 regex : "(?:true|false)\\b"
             }, {
                 token : keywordMapper,
-                // TODO: Unicode escape sequences
-                // TODO: Unicode identifiers
                 regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
             }, {
                 token : "keyword.operator",

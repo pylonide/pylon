@@ -118,27 +118,19 @@ var xmlUtil = require("./xml_util");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 var LiquidHighlightRules = function() {
-
-    // see: https://developer.mozilla.org/en/Liquid/Reference/Global_Objects
     var functions = (
-      // Standard Filters
         "date|capitalize|downcase|upcase|first|last|join|sort|map|size|escape|" +
          "escape_once|strip_html|strip_newlines|newline_to_br|replace|replace_first|" +
          "truncate|truncatewords|prepend|append|minus|plus|times|divided_by|split"
     );
 
     var keywords = (
-      // Standard Tags
         "capture|endcapture|case|endcase|when|comment|endcomment|" +
         "cycle|for|endfor|in|reversed|if|endif|else|elsif|include|endinclude|unless|endunless|" +
-      // Commonly used tags
         "style|text|image|widget|plugin|marker|endmarker|tablerow|endtablerow"
     );
 
     var builtinVariables = 'forloop|tablerowloop';
-        // "forloop\\.(length|index|index0|rindex|rindex0|first|last)|limit|offset|range" +
-        // "tablerowloop\\.(length|index|index0|rindex|rindex0|first|last|col|col0|"+
-        // "col_first|col_last)"
 
     var definitions = ("assign");
 
@@ -148,9 +140,6 @@ var LiquidHighlightRules = function() {
         "support.function": functions,
         "keyword.definition": definitions
     }, "identifier");
-
-    // regexp must not have capturing parentheses. Use (?:) instead.
-    // regexps are ordered -> the first match is used
 
     this.$rules = {
         start : [{
@@ -299,9 +288,6 @@ var CssHighlightRules = function() {
         "support.constant.color": "aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow",
         "support.constant.fonts": "arial|century|comic|courier|garamond|georgia|helvetica|impact|lucida|symbol|system|tahoma|times|trebuchet|utopia|verdana|webdings|sans-serif|serif|monospace"
     }, "text", true);
-
-    // regexp must not have capturing parentheses. Use (?:) instead.
-    // regexps are ordered -> the first match is used
 
     var numRe = "\\-?(?:(?:[0-9]+)|(?:[0-9]*\\.[0-9]+))";
     var pseudoElements = "(\\:+)\\b(after|before|first-letter|first-line|moz-selection|selection)\\b";
@@ -455,16 +441,14 @@ exports.CssHighlightRules = CssHighlightRules;
 
 });
 
-define('ace/mode/javascript_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/unicode', 'ace/mode/doc_comment_highlight_rules', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
+define('ace/mode/javascript_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/doc_comment_highlight_rules', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
 
 
 var oop = require("../lib/oop");
-var unicode = require("../unicode");
 var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 var JavaScriptHighlightRules = function() {
-    // see: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects
     var keywordMapper = this.createKeywordMapper({
         "variable.language":
             "Array|Boolean|Date|Function|Iterator|Number|Object|RegExp|String|Proxy|"  + // Constructors
@@ -478,11 +462,11 @@ var JavaScriptHighlightRules = function() {
             "JSON|Math|"                                                               + // Other
             "this|arguments|prototype|window|document"                                 , // Pseudo
         "invalid.deprecated":
-            "__parent__|__count__|escape|unescape|with|__proto__|debugger",
+            "__parent__|__count__|escape|unescape|with|__proto__",
         "keyword":
-            "const|yield|import|get|set" +
+            "const|yield|import|get|set|" +
             "break|case|catch|continue|default|delete|do|else|finally|for|function|" +
-            "if|in|instanceof|new|return|switch|throw|try|typeof|let|var|while|with|",
+            "if|in|instanceof|new|return|switch|throw|try|typeof|let|var|while|with|debugger",
         "storage.type":
             "const|let|var|function",
         "invalid.illegal":
@@ -490,13 +474,10 @@ var JavaScriptHighlightRules = function() {
             "public|interface|package|protected|static",
         "constant.language":
             "null|Infinity|NaN|undefined",
+        "support.function":
+            "alert"
     }, "identifier");
-
-
-    // keywords which can be followed by regular expressions
     var kwBeforeRe = "case|do|else|finally|in|instanceof|return|throw|try|typeof|yield";
-
-    // TODO: Unicode escape sequences
     var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*\\b";
 
     var escapedRe = "\\\\(?:x[0-9a-fA-F]{2}|" + // hex
@@ -506,9 +487,6 @@ var JavaScriptHighlightRules = function() {
         "37[0-7]?|" + // oct
         "[4-7][0-7]?|" + //oct
         ".)";
-
-    // regexp must not have capturing parentheses. Use (?:) instead.
-    // regexps are ordered -> the first match is used
 
     this.$rules = {
         "start" : [
@@ -537,7 +515,6 @@ var JavaScriptHighlightRules = function() {
                 token : "constant.numeric", // float
                 regex : /[+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b/
             }, {
-                // Sound.prototype.play =
                 token : [
                     "storage.type", "punctuation.operator", "support.function",
                     "punctuation.operator", "entity.name.function", "text","keyword.operator"
@@ -545,7 +522,6 @@ var JavaScriptHighlightRules = function() {
                 regex : "(" + identifierRe + ")(\\.)(prototype)(\\.)(" + identifierRe +")(\\s*)(=)",
                 next: "function_arguments"
             }, {
-                // Sound.play = function() {  }
                 token : [
                     "storage.type", "punctuation.operator", "entity.name.function", "text",
                     "keyword.operator", "text", "storage.type", "text", "paren.lparen"
@@ -553,7 +529,6 @@ var JavaScriptHighlightRules = function() {
                 regex : "(" + identifierRe + ")(\\.)(" + identifierRe +")(\\s*)(=)(\\s*)(function)(\\s*)(\\()",
                 next: "function_arguments"
             }, {
-                // play = function() {  }
                 token : [
                     "entity.name.function", "text", "keyword.operator", "text", "storage.type",
                     "text", "paren.lparen"
@@ -561,7 +536,6 @@ var JavaScriptHighlightRules = function() {
                 regex : "(" + identifierRe +")(\\s*)(=)(\\s*)(function)(\\s*)(\\()",
                 next: "function_arguments"
             }, {
-                // Sound.play = function play() {  }
                 token : [
                     "storage.type", "punctuation.operator", "entity.name.function", "text",
                     "keyword.operator", "text",
@@ -570,14 +544,12 @@ var JavaScriptHighlightRules = function() {
                 regex : "(" + identifierRe + ")(\\.)(" + identifierRe +")(\\s*)(=)(\\s*)(function)(\\s+)(\\w+)(\\s*)(\\()",
                 next: "function_arguments"
             }, {
-                // function myFunc(arg) { }
                 token : [
                     "storage.type", "text", "entity.name.function", "text", "paren.lparen"
                 ],
                 regex : "(function)(\\s+)(" + identifierRe + ")(\\s*)(\\()",
                 next: "function_arguments"
             }, {
-                // foobar: function() { }
                 token : [
                     "entity.name.function", "text", "punctuation.operator",
                     "text", "storage.type", "text", "paren.lparen"
@@ -585,7 +557,6 @@ var JavaScriptHighlightRules = function() {
                 regex : "(" + identifierRe + ")(\\s*)(:)(\\s*)(function)(\\s*)(\\()",
                 next: "function_arguments"
             }, {
-                // : function() { } (this is for issues with 'foo': function() { })
                 token : [
                     "text", "text", "storage.type", "text", "paren.lparen"
                 ],
@@ -640,8 +611,6 @@ var JavaScriptHighlightRules = function() {
                 regex : /\s+/
             }
         ],
-        // regular expressions are only allowed after certain tokens. This
-        // makes sure we don't mix up regexps with the divison operator
         "regex_allowed": [
             DocCommentHighlightRules.getStartRule("doc-start"),
             {
@@ -661,8 +630,6 @@ var JavaScriptHighlightRules = function() {
                 token : "text",
                 regex : "\\s+"
             }, {
-                // immediately return to the start mode without matching
-                // anything
                 token: "empty",
                 regex: "",
                 next: "start"
@@ -670,26 +637,22 @@ var JavaScriptHighlightRules = function() {
         ],
         "regex": [
             {
-                // escapes
                 token: "regexp.keyword.operator",
                 regex: "\\\\(?:u[\\da-fA-F]{4}|x[\\da-fA-F]{2}|.)"
             }, {
-                // flag
                 token: "string.regexp",
                 regex: "/\\w*",
                 next: "start",
                 merge: true
             }, {
-                // invalid operators
                 token : "invalid",
-                regex: /\{\d+,?(?:\d+)?}[+*]|[+*^$?][+*]|\?\?/ // |[^$][?]
+                regex: /\{\d+,?(?:\d+)?}[+*]|[+*$^?][+*]|[$^][?]|\?{3,}/
             }, {
-                // operators
                 token : "constant.language.escape",
-                regex: /\(\?[:=!]|\)|\{\d+,?(?:\d+)?}|[+*]\?|[(|)$^+*?]/
+                regex: /\(\?[:=!]|\)|{\d+,?(?:\d+)?}|{,\d+}|[+*]\?|[(|)$^+*?]/
             }, {
                 token: "string.regexp",
-                regex: /{|[^\[\\{()$^+*?\/]+/,
+                regex: /{|[^{\[\/\\(|)$^+*?]+/,
                 merge: true
             }, {
                 token: "constant.language.escape",
@@ -713,7 +676,7 @@ var JavaScriptHighlightRules = function() {
                 merge: true
             }, {
                 token: "constant.language.escape",
-                regex: "-",
+                regex: "-"
             }, {
                 token: "string.regexp.charachterclass",
                 regex: /[^\]\-\\]+/,
@@ -915,7 +878,6 @@ exports.tag = function(states, name, nextState, tagMap) {
         token : "text",
         regex : "\\s+"
     }, {
-        //token : "meta.tag",
         
     token : !tagMap ? "meta.tag.tag-name" : function(value) {
             if (tagMap[value])
