@@ -6,6 +6,7 @@
       overwrite         = "[{require('core/settings').model}::editors/code/@overwrite]"
       folding           = "[{require('core/settings').model}::editors/code/@folding]"
       behaviors         = "[{require('core/settings').model}::editors/code/@behaviors]"
+      wrapbehaviors     = "[{require('core/settings').model}::editors/code/@wrapbehaviors]"
       selectstyle       = "[{require('core/settings').model}::editors/code/@selectstyle]"
       activeline        = "[{require('core/settings').model}::editors/code/@activeline]"
       gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"
