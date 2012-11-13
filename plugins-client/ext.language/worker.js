@@ -709,11 +709,6 @@ function asyncParForEach(array, fn, callback) {
 
     this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
-        if (!this.$analyzeInterval) {
-            this.$analyzeInterval = setInterval(function() {
-                _self.analyze(function(){});
-            }, 2000);
-        }
         var oldPath = this.$path;
         code = code || "";
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
@@ -760,10 +755,6 @@ function asyncParForEach(array, fn, callback) {
     };
     
     this.documentClose = function(event) {
-        if (this.$analyzeInterval) {
-            clearInterval(this.$analyzeInterval);
-            this.$analyzeInterval = null;
-        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
