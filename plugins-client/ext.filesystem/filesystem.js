@@ -367,6 +367,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             replace: isReplaceAction,
             isFolder: node.getAttribute("type") === "folder"
         });
+        
+        // let us continue!
+        return true;
     },
 
     beforeMove: function(parent, node) {

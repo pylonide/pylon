@@ -1,11 +1,11 @@
 {
-    "fun": "function ^^() {\n    \n}",
-    "fn": "function() {\n    ^^\n}",
-    "sc": "(function() {\n    ^^\n})();",
-    "if ": "if (^^) {\n    \n}",
-    "while ": "while (^^) {\n    \n}",
-    "switch ": "switch (^^) {\n    default:\n}",
-    "for ": "for (var i = 0; i < ^^.length; i++) {\n    \n}",
+    "fun": "function ^^() {\n\t\n}",
+    "fn": "function() {\n\t^^\n}",
+    "sc": "(function() {\n\t^^\n})();",
+    "if ": "if (^^) {\n\t\n}",
+    "while ": "while (^^) {\n\t\n}",
+    "switch ": "switch (^^) {\n\tdefault:\n}",
+    "for ": "for (var i = 0; i < ^^.length; i++) {\n\t\n}",
     "log": "console.log(^^);",
-    "setTimeout ": "setTimeout(function() {\n    ^^\n}, 0);"
+    "setTimeout ": "setTimeout(function() {\n\t^^\n}, 0);"
 }

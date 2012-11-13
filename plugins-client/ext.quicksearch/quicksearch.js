@@ -241,7 +241,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                         winQuickSearch.visible = true;
                         winQuickSearch.hide();
 
-                        editor.ceEditor.focus();
+                        editor.amlEditor.focus();
                     }
                 });
             }

@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var util = require("core/util");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var EditSession = require("ace/edit_session").EditSession;
@@ -49,7 +50,7 @@ module.exports = ext.register("ext/language/language", {
 
     hook : function() {
         var _self = this;
-        
+
         if (!createUIWorkerClient || !isWorkerEnabled)
             throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
 
@@ -76,7 +77,7 @@ module.exports = ext.register("ext/language/language", {
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
+                worker.call("switchFile", [util.stripWSFromPath(path), editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
                 event.doc.addEventListener("close", function() {
                     worker.emit("documentClose", {data: path});
                 });
@@ -97,7 +98,7 @@ module.exports = ext.register("ext/language/language", {
                 callback({worker: worker});
             });
         }, true);
-        
+
         ide.addEventListener("settings.load", function() {
             settings.setDefaults("language", [
                 ["jshint", "true"],
@@ -123,7 +124,7 @@ module.exports = ext.register("ext/language/language", {
     isInferAvailable : function() {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
-    
+
     isWorkerEnabled : function() {
         return isWorkerEnabled();
     },
@@ -132,8 +133,8 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-        
-        if (!editors.currentEditor || !editors.currentEditor.amlEditor)
+
+        if (!editors.currentEditor || editors.currentEditor.path != "ext/code/code")
             return;
 
         this.editor = editors.currentEditor.amlEditor.$editor;
@@ -143,12 +144,12 @@ module.exports = ext.register("ext/language/language", {
         this.setPath();
 
         this.updateSettings();
-        
+
         var defaultHandler = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
         var defaultCommandHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
         this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.onTextInput, defaultHandler);
         this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.onCommandKey, defaultCommandHandler);
-    
+
         this.editor.on("changeSession", function() {
             // Time out a litle, to let the page path be updated
             setTimeout(function() {
@@ -158,7 +159,7 @@ module.exports = ext.register("ext/language/language", {
                 oldSelection = _self.editor.selection;
             }, 100);
         });
-        
+
 
         this.editor.on("change", function(e) {
             e.range = {
@@ -174,19 +175,19 @@ module.exports = ext.register("ext/language/language", {
         });
 
         settings.model.addEventListener("update", this.updateSettings.bind(this));
-        
+
         this.editor.addEventListener("mousedown", this.onEditorClick.bind(this));
-        
+
     },
-    
+
     isContinuousCompletionEnabled: function() {
         return isContinuousCompletionEnabled;
     },
-    
+
     setContinuousCompletionEnabled: function(value) {
         isContinuousCompletionEnabled = value;
     },
-    
+
     updateSettings: function(e) {
         // check if some other setting was changed
         if (e && e.xmlNode && e.xmlNode.tagName != "language")
@@ -220,15 +221,15 @@ module.exports = ext.register("ext/language/language", {
 
     setPath: function() {
         // Currently no code editor active
-        if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage() || !this.editor)
+        if(!editors.currentEditor || editors.currentEditor.path != "ext/code/code" || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
+        this.worker.call("switchFile", [util.stripWSFromPath(currentPath), editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
     },
-    
+
     onEditorClick: function(event) {
     },
-    
+
     /**
      * Method attached to key combo for complete
      */

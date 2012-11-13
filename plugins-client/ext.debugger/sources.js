@@ -72,8 +72,11 @@ module.exports = {
         modelName = "mdlDbgStack";
         model = apf.nameserver.register("model", modelName, new apf.model());
         apf.setReference(modelName, model);
-        dbgCallStack.addEventListener("afterrender", function(){
+        dbgCallStack.addEventListener("afterrender", function() {
             dgStack.addEventListener("afterselect", function(e) {
+                // afterselect can be called after setting value, without user interaction
+                if (!dgStack.hasFocus())
+                    return;
                 e.selected && _self.showDebugFrame(e.selected);
                 updateMarker(e.selected);
             });
@@ -93,8 +96,8 @@ module.exports = {
         }
 
         function updateMarker(frame) {
-            var ceEditor = editors.currentEditor && editors.currentEditor.ceEditor;
-            var session = ceEditor && ceEditor.$editor.session;
+            var amlEditor = editors.currentEditor && editors.currentEditor.amlEditor;
+            var session = amlEditor && amlEditor.$editor.session;
             if (!session)
                 return;
 
@@ -102,7 +105,7 @@ module.exports = {
             session.$stepMarker && removeMarker(session, "step");
 
             if (frame) {
-                var path = ceEditor.xmlRoot.getAttribute("path");
+                var path = amlEditor.xmlRoot.getAttribute("path");
                 var framePath = frame.getAttribute("scriptPath");
                 var row = parseInt(frame.getAttribute("line"), 10);
                 if (frame.hasAttribute("istop")) {

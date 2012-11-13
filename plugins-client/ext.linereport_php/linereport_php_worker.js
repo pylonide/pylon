@@ -11,6 +11,8 @@ var handler = module.exports = Object.create(baseLanguageHandler);
 
 handler.disabled = false;
 
+handler.$isInited = false;
+
 handler.handlesLanguage = function(language) {
     return language === 'php';
 };
@@ -28,7 +30,7 @@ handler.init = function(callback) {
 handler.analyze = function(doc, fullAst, callback) {
     if (handler.disabled)
         return callback();
-    handler.invokeReporter("php -l " + handler.path.replace(/^\/workspace/, handler.workspaceDir),
+    handler.invokeReporter("php -l " + handler.workspaceDir + "/" + handler.path,
         this.$postProcess, callback);
 };
 

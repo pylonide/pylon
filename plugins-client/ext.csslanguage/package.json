@@ -1,11 +1,11 @@
 {
-    "name": "ext.acebugs",
+    "name": "ext.csslanguage",
     "version": "0.0.1",
-    "main": "acebugs-ext.js",
+    "main": "csslanguage-ext.js",
     "private": true,
     "plugin": {
         "provides": [
-            "ext.acebugs"
+            "ext.csslanguage"
         ],
         "consumes": [
             "client-plugins"
