@@ -20,10 +20,7 @@ module.exports = ext.register("ext/linereport_php/linereport_php", {
     alone   : true,
 
     init : function() {
-        language.registerLanguageHandler(
-            'ext/linereport_php/linereport_php_worker',
-            language.isWorkerEnabled()
-        );
+        language.registerLanguageHandler('ext/linereport_php/linereport_php_worker');
     },
     
     enable : function() {
