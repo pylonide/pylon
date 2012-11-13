@@ -11,7 +11,6 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 
-var processes = [];
 var runners = {};
 
 module.exports = ext.register("ext/runner/runner", {
@@ -23,11 +22,12 @@ module.exports = ext.register("ext/runner/runner", {
     processes: [],
 
     hook: function() {
+        var self = this;
         ide.addEventListener("socketMessage", function(e) {
             var message = e.message;
             if (message.type === "processlist") {
                 console.log("processlist-change", message.subtype, message.pid);
-                processes = message.list;
+                self.processes = message.list;
             }
         });
     },
@@ -54,7 +54,7 @@ module.exports = ext.register("ext/runner/runner", {
         return this.getRunningProcesses.filter(function(ps) {
             return !!ps.ideRun;
         });
-    }
+    },
 
     enable:  function() {},
     disable: function() {},
