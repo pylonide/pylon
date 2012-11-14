@@ -11,13 +11,6 @@ var completeUtil = require("ext/codecomplete/complete_util");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var getFilePath = function(filePath) {
-    var idx;
-    if ((idx = filePath.indexOf("/workspace/")) != -1)
-        filePath = filePath.substr(idx + 11);
-    return filePath;
-};
-
 var calculateOffset = function(doc, cursorPos) {
     var offset = 0, newLineLength = doc.getNewLineCharacter().length;
     var prevLines = doc.getLines(0, cursorPos.row - 1);
@@ -130,7 +123,7 @@ this.complete = function(doc, fullAst, pos, currentNode, callback) {
         var command = {
             command : "jvmfeatures",
             subcommand : "complete",
-            file : getFilePath(_self.path),
+            file : _self.path,
             offset: offset
         };
         _self.proxy.once("result", "jvmfeatures:complete", function(message) {
@@ -172,7 +165,7 @@ this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode 
     var command = {
         command : "jvmfeatures",
         subcommand : "get_locations",
-        file : getFilePath(_self.path),
+        file : _self.path,
         offset: offset,
         length: length
     };
@@ -189,7 +182,7 @@ this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode 
             enableRefactorings.push("renameVariable");
             doneHighlighting();
         });
-        console.log("command: " + JSON.stringify(command));
+        // console.log("command: " + JSON.stringify(command));
         _self.proxy.send(command);
     };
 
@@ -240,7 +233,7 @@ this.getVariablePositions = function(doc, fullAst /*null*/, pos, currentNode /*n
     var command = {
         command : "jvmfeatures",
         subcommand : "get_locations",
-        file : getFilePath(_self.path),
+        file : _self.path,
         offset: offset,
         length: identifier.text.length
     };
@@ -286,7 +279,7 @@ this.commitRename = function(doc, oldId, newName, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "refactor",
-        file : getFilePath(_self.path),
+        file : _self.path,
         offset: offset,
         newname: newName,
         length: oldId.text.length
@@ -315,7 +308,7 @@ this.outline = function(doc, fullAst /*null*/, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "outline",
-        file : getFilePath(_self.path)
+        file : _self.path
     };
 
     var doGetOutline = function() {
@@ -340,7 +333,7 @@ this.hierarchy = function(doc, cursorPos, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "hierarchy",
-        file : getFilePath(_self.path),
+        file : _self.path,
         offset: offset
     };
 
@@ -374,17 +367,15 @@ this.analyze = function(doc, fullAst /* null */, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "analyze_file",
-        file : getFilePath(this.path)
+        file : this.path
     };
-
-    // console.log("analyze_file called");
 
     var doAnalyzeFile = function() {
         _self.proxy.once("result", "jvmfeatures:analyze_file", function(message) {
             if (message.success) {
                 callback(message.body.map(function(marker) {
-                    var start = calculatePosition(doc, marker.offset);
-                    var end = calculatePosition(doc, marker.offset + marker.length);
+                    var start = calculatePosition(_self.doc, marker.offset);
+                    var end = calculatePosition(_self.doc, marker.offset + marker.length);
                     return {
                         pos: {
                             sl: start.row,
@@ -413,7 +404,7 @@ this.codeFormat = function(doc, callback) {
     var command = {
         command : "jvmfeatures",
         subcommand : "code_format",
-        file : getFilePath(_self.path)
+        file : _self.path
     };
 
     var doGetNewSource = function() {

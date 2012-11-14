@@ -162,12 +162,12 @@ util.inherits(JVMFeatures, Plugin);
     };
 
     this.disconnect = function(user, client) {
+        return true;
         if (this.eclipseClient) {
             this.eclipseClient.disconnect();
             this.eclipseClient = null;
             console.log("Eclipse session disposed");
         }
-        return true;
     };
 
     this.dispose = function(callback) {

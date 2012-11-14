@@ -172,7 +172,7 @@ oop.inherits(v8DebugClient, DebugHandler);
             path: this.getLocalScriptPath(script),
             text: this.$strip(script.text || "anonymous"),
             lineoffset: script.lineOffset,
-            native: !! script.native
+            native: !! script.native,
             debug: "true"
         });
     };
