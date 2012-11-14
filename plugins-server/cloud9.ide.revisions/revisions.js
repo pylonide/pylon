@@ -259,11 +259,21 @@ module.exports = function setup(options, imports, register) {
                             // This is blocking. Perhaps we should look into
                             // JSONStream
                             var revision = JSON.parse(line);
-                            revObj[revision.ts] = revision;
+
+                            // This check is for earlier versions of revisions,
+                            // in which the format of every revision line could
+                            // (wrongly) be `{ "112387987987": { real revision obj } }`
+                            // Ugly, but better than losing data.
+                            if (!revision.ts) {
+                                revision = revision[Object.keys(revision)[0]];
+                                if (!revision.ts)
+                                    error = new Error("Could not read revision. Bad format:", line);
+                            }
+                            else {
+                                revObj[revision.ts] = revision;
+                            }
                         }
-                        catch(e) {
-                            error = e;
-                        }
+                        catch(e) { error = e; }
                     }
                     lineCount++;
                     next();
