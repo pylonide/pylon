@@ -15,20 +15,10 @@ module.exports = ext.register("ext/csslanguage/csslanguage", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, language],
-    nodes   : [],
     alone   : true,
 
     init : function() {
         language.registerLanguageHandler("ext/csslanguage/css_handler");
-    },
-
-    enable : function() {
-    },
-
-    disable : function() {
-    },
-
-    destroy : function() {
     }
 });
 

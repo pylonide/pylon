@@ -821,18 +821,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("View/Tabs");
         menus.remove(mnuContextTabs);
@@ -842,11 +830,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.commands.each(function(item){
             commands.removeCommandByName(item[0]);
         });
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 
