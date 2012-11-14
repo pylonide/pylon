@@ -11461,6 +11461,8 @@
         .docs_searchbox.searchbox_textbox .sbtb_middle INPUT {
             margin-top: 6px;
             margin-left: 5px;
+            font-size: 14px;
+            color: #acacac;
         }
 
         .searchbox_textbox.small_font .sbtb_middle,
@@ -11497,6 +11499,7 @@
             right: 9px;
             width: 20px;
             left: auto;
+            display: block !important;
         }
 
         .docs_searchbox.searchbox_textboxFocus .sbtb_icon {
