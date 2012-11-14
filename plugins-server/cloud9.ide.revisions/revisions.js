@@ -220,7 +220,7 @@ module.exports = function setup(options, imports, register) {
                     break;
 
                 case "moveRevision":
-                    _self.onmoveRevision.call(_self, user, message, _error);
+                    _self.onMoveRevision.call(_self, user, message, _error);
                     break;
             }
             return true;
