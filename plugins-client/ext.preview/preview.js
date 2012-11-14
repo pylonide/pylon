@@ -42,6 +42,10 @@ module.exports = ext.register(_name, {
             return buttons[0].cache;
     },
 
+    _getDockBar: function () {
+        return dock.getBars(this._name, "pgPreview")[0];
+    },
+
     onLoad: function () {
         
     },
@@ -111,6 +115,7 @@ module.exports = ext.register(_name, {
     preview : function (url) {
         // window.open(url, "_blank");
         pgPreview.setCaption(apf.getFilename(url));
+        dock.showSection(this._name, "pgPreview");
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
@@ -130,7 +135,7 @@ module.exports = ext.register(_name, {
     },
 
     close: function () {
-        
+        dock.hideSection(this._name, "pgPreview");
     },
 
     init : function() {
