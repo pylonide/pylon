@@ -223,7 +223,7 @@ module.exports = {
     
     renderOutline: function(ignoreFilter) {
         var editor = editors.currentEditor;
-        if (!editor || editor.path != "ext/code" || !editor.amlEditor)
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
             
         ext.initExtension(gotofile);

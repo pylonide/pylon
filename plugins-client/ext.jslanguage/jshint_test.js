@@ -22,7 +22,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/jshint");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "hello();");
+        worker.switchFile("test.js", "javascript", "hello();", null, "");
     },
     
     "test integration JSHint" : function(next) {
@@ -36,7 +36,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/jshint");
-        worker.switchFile("test.js", "javascript", "console.log(1);\nhello()");
+        worker.switchFile("test.js", "javascript", "console.log(1);\nhello()", null, "");
     },
     
     "test JSHint output filtering" : function(next) {
@@ -49,7 +49,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/jshint");
-        worker.switchFile("no-errors.js", "javascript", "var foo = function() {};\nfoo && foo();");
+        worker.switchFile("no-errors.js", "javascript", "var foo = function() {};\nfoo && foo();", null, "");
     },
     
     "test JSHint const support" : function(next) {
@@ -62,7 +62,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/jshint");
-        worker.switchFile("no-errors.js", "javascript", "const foo = 1;");
+        worker.switchFile("no-errors.js", "javascript", "const foo = 1;", null, "");
     },
     
     "test JSHint globals" : function(next) {
@@ -75,7 +75,7 @@ module.exports = {
         });
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/jshint");
-        worker.switchFile("no-errors.js", "javascript", "/*global foo:true*/ foo;");
+        worker.switchFile("no-errors.js", "javascript", "/*global foo:true*/ foo;", null, "");
     }
 };
 
