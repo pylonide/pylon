@@ -268,7 +268,7 @@ module.exports = ext = {
         this.disabled = true;
         this.enabled = false;
         delete this.inited;
-    }
+    },
 
     enableExt : function(path) {
         var ext = require(path);
