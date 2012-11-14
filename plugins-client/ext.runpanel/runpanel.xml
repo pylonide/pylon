@@ -28,14 +28,13 @@
                           onafterselect = "
                             require('ext/runpanel/runpanel').saveSelection();
                           "
-                          canrename = "true"
-                          onrename = "console.log('rename')"
-                          onstartrename = "console.log('startrename')"
-                          scrollbar="sbShared 2 2 2">
+                          scrollbar="sbShared 2 2 31">
                             <a:each match="[config]">
                                 <a:caption match="[@name]"></a:caption>
                                 <a:css match="[@active]" value="active"/>
+                                <a:rename match="[@name]"></a:rename>
                             </a:each>
+                            
                         </a:list>
                     </div>
                 </div>

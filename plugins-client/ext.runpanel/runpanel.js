@@ -460,6 +460,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 */
         if (mnuRunCfg.visible)
             mnuRunCfg.hide();
+            //mnuRunCfg.$ext.style.display = "none";
         
         if (config.tagName == "tempconfig") {
             this.removeTempConfig();
