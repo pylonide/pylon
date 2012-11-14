@@ -16,20 +16,10 @@ module.exports = ext.register("ext/linereport_php/linereport_php", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, language, linereport],
-    nodes   : [],
     alone   : true,
 
     init : function() {
         language.registerLanguageHandler('ext/linereport_php/linereport_php_worker');
-    },
-    
-    enable : function() {
-    },
-
-    disable : function() {
-    },
-
-    destroy : function() {
     }
 });
 

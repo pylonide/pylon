@@ -57,24 +57,8 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
         }
     },
 
-    enable : function() {
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-    
-    disable : function() {
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function() {
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-        
+        this.$destroy();
         // clean out the event handler
         if (window.onbeforeunload === this.onBeforeUnloadHandler) {
             window.onbeforeunload = null;

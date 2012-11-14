@@ -740,29 +740,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         return editor.amlEditor.$editor;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("Find/Find...");
         menus.remove("Find/~", 200);
         menus.remove("Find/Replace...");
 
         commands.removeCommandsByName(["replace", "replacenext", "replaceprevious"]);
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 }, libsearch));
 

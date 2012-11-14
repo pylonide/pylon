@@ -27,8 +27,6 @@ module.exports = ext.register("ext/filelist/filelist", {
     queue : [],
     autodisable : ext.ONLINE | ext.LOCAL,
 
-    init : function(){},
-
     getFileList : function(retrieveNewFromServer, callback){
         var _self = this;
 
@@ -53,15 +51,6 @@ module.exports = ext.register("ext/filelist/filelist", {
             }
         });
         this.retrieving = true;
-    },
-
-    enable : function() {
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
     }
 });
 });

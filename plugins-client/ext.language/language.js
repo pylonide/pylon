@@ -250,20 +250,12 @@ module.exports = ext.register("ext/language/language", {
     },
 
     enable: function () {
-        this.nodes.each(function (item) {
-            item.enable();
-        });
-
-        this.disabled = false;
+        this.$enable();
         this.setPath();
     },
 
     disable: function () {
-        this.nodes.each(function (item) {
-            item.disable();
-        });
-
-        this.disabled = true;
+        this.$disable();
         marker.addMarkers({data:[]}, this.editor);
     },
 
@@ -272,11 +264,7 @@ module.exports = ext.register("ext/language/language", {
         marker.destroy();
         complete.destroy();
         refactor.destroy();
-
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 
