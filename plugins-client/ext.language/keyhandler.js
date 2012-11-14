@@ -9,6 +9,9 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var completionUtil = require("ext/codecomplete/complete_util");
 var editors = require("ext/editors/editors");
+
+var REQUIRE_ID_REGEX = /(?!["'])./;
+
 var language;
 
 function hook(ext) {
@@ -53,7 +56,7 @@ function typeAlongComplete(e) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
-        if(!preceededByIdentifier(line, pos.column))
+        if (!preceededByIdentifier(line, pos.column))
             return false;
         complete.deferredInvoke();
     }
@@ -78,12 +81,12 @@ function isJavaScript() {
 }
 
 function handleChar(ch) {
-    if(ch.match(/[A-Za-z0-9_\$\.]/)) {
+    if (ch.match(/[A-Za-z0-9_\$\.\"\'\/]/)) {
         var ext = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
-        if(!preceededByIdentifier(line, pos.column, ch))
+        if (!preceededByIdentifier(line, pos.column, ch))
             return false;
         ext.deferredInvoke();
     }
@@ -130,16 +133,19 @@ function inCompletableCodeContext(line, column, id) {
 function preceededByIdentifier(line, column, postfix) {
     var id = completionUtil.retrievePreceedingIdentifier(line, column);
     if(postfix) id += postfix;
-    return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column, id);
+    return id !== "" && !(id[0] >= '0' && id[0] <= '9') &&
+        (inCompletableCodeContext(line, column, id) || isRequireJSCall(line, column, id));
 }
 
-function isRequireJSCall(line, column) {
+function isRequireJSCall(line, column, identifier) {
     if (editors.currentEditor.amlEditor.syntax !== "javascript" || !language.isInferAvailable())
         return false;
-    var id = completionUtil.retrievePreceedingIdentifier(line, column);
+    var id = identifier || completionUtil.retrievePreceedingIdentifier(line, column, REQUIRE_ID_REGEX);
     var LENGTH = 'require("'.length;
     var start = column - id.length - LENGTH;
-    return start >= 0 && line.substr(start, LENGTH) === 'require("';
+
+    return start >= 0 && line.substr(start, LENGTH).match(/require\(["']/)
+        || line.substr(start + 1, LENGTH).match(/require\(["']/);
 }
 
 exports.hook = hook;

@@ -85,6 +85,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["highlightselectedword"]    = true;
     this.$booleanProperties["autohidehorscrollbar"]     = true;
     this.$booleanProperties["behaviors"]                = true;
+    this.$booleanProperties["wrapbehaviors"]            = true;
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
@@ -96,7 +97,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "scrollspeed", "showindentguides",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
+        "behaviors", "wrapbehaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
         "gutterline");
 
     this.$getCacheKey = function(value) {
@@ -151,17 +152,18 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             if (value.nodeType) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
+                //@todo replace this by a proper function
+                if (value.nodeType > 1 && value.nodeType < 5)
+                    value = value.nodeValue;
+                else
+                    value = value.firstChild && value.firstChild.nodeValue;
             }
 
-            doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
-              ? value
-              : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
-                    ? value.nodeValue
-                    : value.firstChild && value.firstChild.nodeValue || ""))));
+            doc = new EditSession(new ProxyDocument(new Document(value || "")));
+            doc.setUndoManager(new UndoManager());
+            doc.setMode(this.getMode(this.syntax));
 
             doc.cacheId = key;
-            doc.setUndoManager(new UndoManager());
-
             if (key)
                 this.$cache[key] = doc;
         }
@@ -199,7 +201,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setSession(doc);
     };
-
+    
     this.afterOpenFile = function(doc, path) {
     };
 
@@ -322,6 +324,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     this.$propHandlers["behaviors"] = function(value, prop, initial) {
         this.$editor.setBehavioursEnabled(value);
+    };
+    this.$propHandlers["wrapbehaviors"] = function(value, prop, initial) {
+        this.$editor.setWrapBehavioursEnabled(value);
     };
 
     var propModelHandler = this.$propHandlers["model"];
@@ -506,7 +511,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
         this.highlightselectedword = ed.getHighlightSelectedWord();
         this.behaviors = !ed.getBehavioursEnabled();
-
+        this.wrapbehaviors = ed.getWrapBehavioursEnabled();
+            
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
         if (this.showinvisibles === undefined)
@@ -606,10 +612,10 @@ apf.codebox = function(struct, tagName) {
         // ace.on("resize", function(){apf.layout.forceResize();});
     };
     this.getValue = function() {
-        return this.ace.session.getValue();
+        return this.ace.getValue();
     };
     this.setValue = function(val) {
-        return this.ace.session.doc.setValue(val);
+        return this.ace.setValue(val);
     };
     this.select = function() {
         return this.ace.selectAll();
