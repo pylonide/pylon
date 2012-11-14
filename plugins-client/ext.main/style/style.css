@@ -71,6 +71,17 @@ BODY {
     top: 0;
     left: 10px;
 }
+#loadingide .footer {
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    text-align: right;
+    margin: 0;
+}
+#loadingide .footer > a:link, a:visited, a:hover, a:active {
+    color: #AAA;
+    text-decoration: none;
+}
 #loadscreen{
     background : white;
     padding : 10px;
