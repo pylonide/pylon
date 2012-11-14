@@ -11458,11 +11458,14 @@
             width: 100%;
         }
 
+        .docs_searchbox.searchbox_textbox.searchbox_textboxInitial .sbtb_middle INPUT {
+            color: #acacac;
+        }
+
         .docs_searchbox.searchbox_textbox .sbtb_middle INPUT {
             margin-top: 6px;
             margin-left: 5px;
             font-size: 14px;
-            color: #acacac;
         }
 
         .searchbox_textbox.small_font .sbtb_middle,
@@ -11506,6 +11509,10 @@
             background-position: 0 0;
         }
 
+        .docs_searchbox.searchbox_textbox.searchbox_hasValue .sbtb_icon {
+            display: none !important;
+        }
+
         .searchbox_textboxFocus .btnclose {
             position : absolute;
             right : 8px;
@@ -11514,11 +11521,21 @@
             height : 14px;
             background : url(images/btnclose.gif) no-repeat 0 0;
             display : none;
-            cursor: pointer;
         }
 
         .searchbox_textboxFocus .btnclose:hover{
             background-position : 0 -14px;
+        }
+
+        .docs_searchbox.searchbox_textbox .btnclose {
+            top: 11px;
+            right: 8px;
+            background : url(images/close-search-icon.png) no-repeat 0 0;
+            display: none;
+        }
+
+        .docs_searchbox.searchbox_textbox .btnclose:hover {
+            background-position: 0 -20px;
         }
     ]]></a:style>
 
@@ -11529,8 +11546,8 @@
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
-                <div class="sbtb_icon"/>
                 <div class="btnclose"> </div>
+                <div class="sbtb_icon"/>
             </div>
         </a:main>
     </a:presentation>
