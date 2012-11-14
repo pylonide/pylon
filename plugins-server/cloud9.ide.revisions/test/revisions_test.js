@@ -110,6 +110,38 @@ module.exports = {
         assert.ok(R.broadcastError.called);
         next();
     },
+    
+    "test onCommand": function(next) {
+        var R = this.revisionsPlugin;
+        R.onSaveRevision = sinon.spy();
+        R.onGetRevisionHistory = sinon.spy();
+        R.onGetRealFileContents = sinon.spy();
+        R.onRemoveRevision = sinon.spy();
+        R.onMoveRevision = sinon.spy();
+
+        // no 'path'
+        var msg1 = { command: "revisions", subCommand: "saveRevision"  };
+        var msg2 = { command: "revisions", subCommand: "getRevisionHistory"  };
+        var msg3 = { command: "revisions", subCommand: "getRealFileContents"  };
+        var msg4 = { command: "revisions", subCommand: "removeRevision"  };
+        var msg5 = { command: "revisions", subCommand: "moveRevision"  };
+        
+        R.command(null, msg1, null);
+        assert.ok(R.onSaveRevision.called);
+        
+        R.command(null, msg2, null);
+        assert.ok(R.onGetRevisionHistory.called);
+        
+        R.command(null, msg3, null);
+        assert.ok(R.onGetRealFileContents.called);
+        
+        R.command(null, msg4, null);
+        assert.ok(R.onRemoveRevision.called);
+        
+        R.command(null, msg5, null);
+        assert.ok(R.onMoveRevision.called);
+        next();
+    },
 
     "test getRevisions with a valid path": function(next) {
         var file = Path.join(___dirname, ".c9revisions", Path.basename(__filename) + ".c9save");
