@@ -128,7 +128,7 @@ module.exports = function setup(options, imports, register) {
             if (!message.path) {
                 return _error("No path sent for the file to be removed");
             }
-            
+
             cb = cb || function() {};
 
             var path = this.getRevisionsPath(message.path);
@@ -268,7 +268,7 @@ module.exports = function setup(options, imports, register) {
                     lineCount++;
                     next();
                 },
-                function (e) {
+                function() {
                     callback(error, revObj);
                 }
             );
@@ -278,7 +278,6 @@ module.exports = function setup(options, imports, register) {
             var _self = this;
             fs.readFile(absPath, "utf8", function(err, data) {
                 if (err) return callback(err);
-
                 _self.extractRevisions(data, callback);
             });
         };
@@ -312,6 +311,7 @@ module.exports = function setup(options, imports, register) {
             // Path of the final backup file inside the workspace
             var revPath = this.getRevisionsPath(filePath + "." + FILE_SUFFIX);
             var _self = this;
+
             // does the revisions file exists?
             fs.exists(revPath, function(exists) {
                 if (exists)
@@ -467,7 +467,6 @@ module.exports = function setup(options, imports, register) {
             }
 
             var revPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
-
             var _self = this;
             function writeRevFile(aContent, aRevision) {
                 _self._writeRevisionFile.call(_self, {
@@ -479,24 +478,24 @@ module.exports = function setup(options, imports, register) {
                 });
             }
 
+            // Let's check if the revision file is already there
             fs.exists(revPath, function(exists) {
                 if (!exists) {
+                    // Ok, no revision file. Let's read the original file and
+                    // make that the first revision.
                     fs.readFile(path, "utf8", function(err, data) {
                         if (err) return callback(err);
 
                         // We just created the revisions file. Since we
                         // don't have a previous revision, our first revision will
                         // consist of the previous contents of the file.
-                        var ts = Date.now();
-                        revision = {};
-                        revision[ts] = {
-                            ts: ts,
+                        writeRevFile("", {
+                            ts: Date.now(),
                             silentsave: true,
                             restoring: false,
                             patch: [Diff.patch_make("", data)],
                             length: data.length
-                        };
-                        writeRevFile("", revision);
+                        });
                     });
                 }
                 else if (revision) {
@@ -514,11 +513,11 @@ module.exports = function setup(options, imports, register) {
         this._writeRevisionFile = function(data) {
             var _self = this;
             data.content += JSON.stringify(data.revision) + "\n";
+
             fs.mkdirP(Path.dirname(data.revPath), function(err) {
                 if (err) return data.cb(err);
                 fs.writeFile(data.revPath, data.content, "utf8", function(err) {
-                    if (err)
-                        return data.cb(err);
+                    if (err) return data.cb(err);
 
                     data.cb.call(_self, null, {
                         absPath: data.revPath,

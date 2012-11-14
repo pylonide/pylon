@@ -49,7 +49,7 @@ module.exports = {
             root: ___dirname,
             checkSymlinks: true
         });
-        
+
         Fs.mkdirSync(Path.join(___dirname, ".c9revisions"));
 
         RevisionsModule(null, {
@@ -110,7 +110,7 @@ module.exports = {
         assert.ok(R.broadcastError.called);
         next();
     },
-    
+
     "test onCommand": function(next) {
         var R = this.revisionsPlugin;
         R.onSaveRevision = sinon.spy();
@@ -125,19 +125,19 @@ module.exports = {
         var msg3 = { command: "revisions", subCommand: "getRealFileContents"  };
         var msg4 = { command: "revisions", subCommand: "removeRevision"  };
         var msg5 = { command: "revisions", subCommand: "moveRevision"  };
-        
+
         R.command(null, msg1, null);
         assert.ok(R.onSaveRevision.called);
-        
+
         R.command(null, msg2, null);
         assert.ok(R.onGetRevisionHistory.called);
-        
+
         R.command(null, msg3, null);
         assert.ok(R.onGetRealFileContents.called);
-        
+
         R.command(null, msg4, null);
         assert.ok(R.onRemoveRevision.called);
-        
+
         R.command(null, msg5, null);
         assert.ok(R.onMoveRevision.called);
         next();
@@ -146,11 +146,11 @@ module.exports = {
     "test getRevisions with a valid path": function(next) {
         var file = Path.join(___dirname, ".c9revisions", Path.basename(__filename) + ".c9save");
         try {
-            
+
             Fs.writeFileSync(file, "", "utf8");
         }
-        catch(e) { 
-            assert(false, e); 
+        catch(e) {
+            assert(false, e);
         }
 
         var R = this.revisionsPlugin;
@@ -199,6 +199,9 @@ module.exports = {
             assert.ok(!err, err);
             assert.ok(typeof revObj === "object");
             assert.ok(Object.keys(revObj).length === 34, util.inspect(revObj, false, null));
+
+            var randomRev = revObj[Object.keys(revObj)[12]];
+            assert.equal(randomRev.hasOwnProperty("ts"), true);
             next();
         });
     },
@@ -274,14 +277,12 @@ module.exports = {
 
                         var first = JSON.parse(lines[0]);
                         var secondRev = JSON.parse(lines[1]);
-                        var firstKey = Object.keys(first)[0];
                         assert.equal(data2.revision, secondRev.ts);
-                        var firstRev = first[firstKey];
 
-                        assert.equal(firstRev.silentsave, true);
-                        assert.equal(firstRev.restoring, false);
-                        assert.equal(firstRev.length, 8);
-                        assert.equal(firstRev.patch[0][0].diffs[0][1], firstContent);
+                        assert.equal(first.silentsave, true);
+                        assert.equal(first.restoring, false);
+                        assert.equal(first.length, 8);
+                        assert.equal(first.patch[0][0].diffs[0][1], firstContent);
                         assert.equal(secondRev.ts, secondTime);
 
                         next();
@@ -289,12 +290,12 @@ module.exports = {
                 });
         });
     },
-    
+
     "test onRemoveRevision empty path": function(next) {
         var R = this.revisionsPlugin;
         R.onRemoveRevision(
             null,
-            { path: "" }, 
+            { path: "" },
             function(err) {
                 assert.ok(err);
                 next();
@@ -305,12 +306,12 @@ module.exports = {
             }
         );
     },
-    
+
     "test onRemoveRevision invalid filepath": function(next) {
         var R = this.revisionsPlugin;
         R.onRemoveRevision(
             null,
-            { path: "madeup/path/test.js" }, 
+            { path: "madeup/path/test.js" },
             function(err) {
                 assert.ok(false, "Should never get here: " + err);
                 next();
@@ -321,12 +322,12 @@ module.exports = {
             }
         );
     },
-    
+
     "test onRemoveRevision invalid folderpath": function(next) {
         var R = this.revisionsPlugin;
         R.onRemoveRevision(
             null,
-            { path: "madeup/path", isFolder: true }, 
+            { path: "madeup/path", isFolder: true },
             function(err) {
                 assert.ok(false, "Should never get here: " + err);
                 next();
@@ -341,13 +342,13 @@ module.exports = {
     "test onRemoveRevision valid filepath": function(next) {
         var R = this.revisionsPlugin;
         var fileName = ___dirname + "/.c9revisions/test_rev.js.c9save";
-        
+
         Fs.writeFile(fileName, "ABCDEFGH", function(err) {
             assert.ok(!err);
-            
+
             R.onRemoveRevision(
                 null,
-                { path: "test_rev.js.c9save", isFolder: true }, 
+                { path: "test_rev.js.c9save", isFolder: true },
                 function(err) {
                     assert.ok(false, "Should never get here: " + err);
                     next();
@@ -359,7 +360,7 @@ module.exports = {
             );
         });
     },
-         
+
     "test retrieve revision for a new file [flow]": function(next) {
         var revPath = Path.join(___dirname, ".c9revisions");
         var savePath = Path.join(revPath, "package.json.c9save");
