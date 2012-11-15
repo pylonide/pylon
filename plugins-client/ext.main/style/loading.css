@@ -31,6 +31,16 @@
     margin: 0 auto;
     top: 35%;
 }
+#loadingide .loading-progress #progress-msg {
+    position: relative;
+    width: 190px;
+    margin: 0 auto;
+}
+#loadingide .loading-progress #progress-msg span {
+    position: absolute;
+    left: 191px;
+    top: 0;
+}
 #loadingide .loading-msg {
     color: #909090;
 }

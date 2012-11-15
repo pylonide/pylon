@@ -36,12 +36,13 @@
                 msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
                 var header = '<div class="header"></div>';
                 var footer = '<div class="footer"><a href="https://docs.c9.io">Documentation</a> | <a href="https://status.c9.io">Server Status</a> | <a href="http://support.cloud9ide.com">Support</a>';
-                loadingIde.innerHTML = header + '<div class="loading-progress"><div id="progress-msg">Preparing your workspace .</div><div class="loading-seperator"></div><div class="loading-msg">' + msg + '</div></div>' + footer;
+                loadingIde.innerHTML = header + '<div class="loading-progress"><div id="progress-msg">Preparing your workspace <span> .</span></div><div class="loading-seperator"></div><div class="loading-msg">' + msg + '</div></div>' + footer;
                 document.body.appendChild(loadingIde);
                 var progressInterval = setInterval(function () {
                     var progressMsg = document.getElementById("progress-msg");
                     if (!progressMsg)
                         return clearInterval(progressInterval);
+                    progressMsg = progressMsg.getElementsByTagName('span')[0];
                     var parts = progressMsg.innerHTML.split(" ");
                     var dots = parts[parts.length-1];
                     parts[parts.length-1] = dots.length === 3 ? "." : (dots + ".");
@@ -112,20 +113,20 @@
             else {
                var apfLoc = "";
             }
-            
+
             var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
 
                 if (!cloud9config.packed) {
-                    var list = ["core/ide", "core/ext", "core/util", 
+                    var list = ["core/ide", "core/ext", "core/util",
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
                 }
                 else {
                     var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "c9os.min.js")];
                 }
-                
+
                 require(list, function(ide, ext, util){
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
@@ -149,7 +150,7 @@
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
                     aceConfig.set("suffix", ".js?staticUrl=" + cloud9config.staticUrl);
-                    
+
                     //Load extensions
                     if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
@@ -174,7 +175,7 @@
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time " 
+                console.log("Total Load Time "
                     + (cloud9config.totalTime) + "ms");
 
                 clearSplash();
