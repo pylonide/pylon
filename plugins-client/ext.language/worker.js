@@ -17,7 +17,6 @@ var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 var linereport = require("ext/linereport/linereport_base");
-var SyntaxDetector = require("ext/language/syntax_detector");
 
 var isInWebWorker = typeof window == "undefined" || !window.location || !window.document;
 
@@ -267,24 +266,21 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.parse = function(part, callback, allowCached) {
+    this.parse = function(callback, allowCached) {
         var _self = this;
-        part = part || {
-            language: _self.$language,
-            value: _self.doc.getValue()
-        };
-        if (allowCached && this.cachedAst)
-            return callback(this.cachedAst);
+        if (allowCached && this.cachedAst) {
+            callback(_self.cachedAst);
+            return;
+        }
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
-            if (handler.handlesLanguage(part.language)) {
-                handler.parse(part.value, function(ast) {
-                    if(ast)
-                        _self.cachedAst = ast;
-                    next();
-                });
-            }
-            else {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.parse(_self.doc.getValue(), function onParse(ast) {
+                        if(ast)
+                            _self.cachedAst = ast;
+                        next();
+                    });
+            } else {
                 next();
             }
         }, function() {
@@ -320,7 +316,7 @@ function asyncParForEach(array, fn, callback) {
     this.outline = function(event) {
         var _self = this;
         var foundHandler = false;
-        this.parse(null, function(ast) {
+        this.parse(function(ast) {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.outline(_self.doc, ast, function(outline) {
@@ -401,48 +397,32 @@ function asyncParForEach(array, fn, callback) {
     
     this.analyze = function(callback) {
         var _self = this;
-        var parts = SyntaxDetector.getCodeParts(this.doc, this.$language);
-        var markers = [];
-        asyncForEach(parts, function(part, nextPart) {
-            var partMarkers = [];
-            _self.parse(part, function(ast) {
-                asyncForEach(_self.handlers, function(handler, next) {
-                    if (handler.handlesLanguage(part.language)) {
-                        handler.analyze(part.value, ast, function(result) {
-                            if (result)
-                                partMarkers = partMarkers.concat(result);
-                            next();
-                        });
-                    }
-                    else {
+        this.parse(function(ast) {
+            var markers = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.analyze(_self.doc, ast, function(result) {
+                        if (result)
+                            markers = markers.concat(result);
                         next();
-                    }
-                }, function () {
-                    filterMarkersAroundError(ast, partMarkers);
-                    var region = part.region;
-                    partMarkers.forEach(function (marker) {
-                        var pos = marker.pos;
-                        pos.sl = pos.el = pos.sl + region.sl;
-                        if (pos.sl === region.sl) {
-                            pos.sc +=  region.sc;
-                            pos.ec += region.sc;
-                        }
                     });
-                    markers = markers.concat(partMarkers);
-                    nextPart();
-                });
+                }
+                else {
+                    next();
+                }
+            }, function() {
+                var extendedMakers = markers;
+                filterMarkersAroundError(ast, markers);
+                if (_self.getLastAggregateActions().markers.length > 0)
+                    extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
+                _self.currentMarkers = markers;
+                if (_self.postponedCursorMove) {
+                    _self.onCursorMove(_self.postponedCursorMove);
+                    _self.postponedCursorMove = null;
+                }
+                callback();
             });
-        }, function() {
-            var extendedMakers = markers;
-            if (_self.getLastAggregateActions().markers.length > 0)
-                extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
-            _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
-            _self.currentMarkers = markers;
-            if (_self.postponedCursorMove) {
-                _self.onCursorMove(_self.postponedCursorMove);
-                _self.postponedCursorMove = null;
-            }
-            callback();
         });
     };
 
@@ -787,65 +767,60 @@ function asyncParForEach(array, fn, callback) {
     
     this.complete = function(event) {
         var _self = this;
-
-        this.parse(null, function(ast) {
-            var data = event.data;
-            var pos = data.pos;
+        
+        this.parse(function(ast) {
+        var data = event.data;
+        var pos = data.pos;
             var currentPos = { line: pos.row, col: pos.column };
-
             _self.findNode(ast, currentPos, function(node) {
                 var currentNode = node;
                 var matches = [];
-
-                var language = SyntaxDetector.getContextSyntax(_self.doc, data.pos, _self.$language);
-                asyncForEach(_self.handlers, function(handler, next) {
-                    if (handler.handlesLanguage(language)) {
-                            handler.staticPrefix = data.staticPrefix;
-                            handler.language = language;
-                            handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
-                            if (completions)
-                                matches = matches.concat(completions);
-                            next();
-                        });
-                    }
-                    else {
+        
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                        handler.staticPrefix = data.staticPrefix;
+                            handler.workspaceDir = _self.$workspaceDir;
+                        handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
+                        if (completions)
+                            matches = matches.concat(completions);
                         next();
-                    }
-                }, function() {
-                    removeDuplicateMatches(matches);
-                    // Sort by priority, score
-                    matches.sort(function(a, b) {
-                        if (a.priority < b.priority)
-                            return 1;
-                        else if (a.priority > b.priority)
-                            return -1;
-                        else if (a.score < b.score)
-                            return 1;
-                        else if (a.score > b.score)
-                            return -1;
-                        else if (a.id && a.id === b.id) {
-                            if (a.isFunction)
-                                return -1;
-                            else if (b.isFunction)
-                                return 1;
-                        }
-                        if (a.name < b.name)
-                            return -1;
-                        else if(a.name > b.name)
-                            return 1;
-                        else
-                            return 0;
                     });
-                    // Removed for the java completion result caching cases
-                    // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                    _self.sender.emit("complete", {
-                        pos: pos,
+                }
+                else
+                    next();
+            }, function() {
+                removeDuplicateMatches(matches);
+                // Sort by priority, score
+                matches.sort(function(a, b) {
+                    if (a.priority < b.priority)
+                        return 1;
+                    else if (a.priority > b.priority)
+                        return -1;
+                    else if (a.score < b.score)
+                        return 1;
+                    else if (a.score > b.score)
+                        return -1;
+                    else if (a.id && a.id === b.id) {
+                        if (a.isFunction)
+                            return -1;
+                        else if (b.isFunction)
+                            return 1;
+                    }
+                    if (a.name < b.name)
+                        return -1;
+                    else if(a.name > b.name)
+                        return 1;
+                    else
+                        return 0;
+                });
+                _self.sender.emit("complete", {
+                    pos: pos,
                         matches: matches,
                         isUpdate: event.data.isUpdate,
                         line: _self.doc.getLine(pos.row)
-                    });
                 });
             });
+        });
         });
     };
 
