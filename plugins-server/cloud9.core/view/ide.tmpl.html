@@ -13,6 +13,54 @@
         </script>
         <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
+        <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/loading.css" />
+
+        <script type="text/javascript">
+            function createSplash() {
+                var loadingMsgs = ["Cloning weapon...",
+                    "Red 5, standing by...",
+                    "Making sure all systems are operational...",
+                    "Turning you to the dark side--we have cookies...",
+                    "Assembling the alliance...",
+                    "Copy, Gold Leader. We are already on our way out...",
+                    "Dispatching war rocket Ajax to bring back his body...",
+                    "Making you strong with the force, we are...",
+                    "The Shield is down! Commencing attack on the Death star's main reactor...",
+                    "Your precious awaits...",
+                    "I am Gandalf the White. And I come back to you now, at the turn of the tide...",
+                    "Reticulating splines..."];
+                var loadingIde = document.createElement('div');
+                loadingIde.setAttribute("id", "loadingide");
+                var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
+
+                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
+                var header = '<div class="header"></div>';
+                var footer = '<div class="footer"><a href="https://docs.c9.io">Documentation</a> | <a href="https://status.c9.io">Server Status</a> | <a href="http://support.cloud9ide.com">Support</a>';
+                loadingIde.innerHTML = header + '<div class="loading-progress"><div id="progress-msg">Preparing your workspace .</div><div class="loading-seperator"></div><div class="loading-msg">' + msg + '</div></div>' + footer;
+                document.body.appendChild(loadingIde);
+                var progressInterval = setInterval(function () {
+                    var progressMsg = document.getElementById("progress-msg");
+                    if (!progressMsg)
+                        return clearInterval(progressInterval);
+                    var parts = progressMsg.innerHTML.split(" ");
+                    var dots = parts[parts.length-1];
+                    parts[parts.length-1] = dots.length === 3 ? "." : (dots + ".");
+                    progressMsg.innerHTML = parts.join(" ");
+                }, 500);
+            }
+            function clearSplash () {
+                var loadingDiv = document.getElementById("loadingide");
+                if (loadingDiv)
+                    document.body.removeChild(loadingDiv);
+            }
+            var createSplashInterval = setInterval(function() {
+                if (document.body) {
+                    createSplash();
+                    clearInterval(createSplashInterval);
+                }
+            }, 10);
+        </script>
+
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
         [%loadedDetectionScript%]
@@ -65,49 +113,9 @@
                var apfLoc = "";
             }
             
-            var config = <%requirejsConfig%>; 
-
-            function createSplash() {
-                var loadingMsgs = ["Cloning weapon...",
-                    "Red 5, standing by...",
-                    "Making sure all systems are operational...",
-                    "Turning you to the dark side--we have cookies...",
-                    "Assembling the alliance...",
-                    "Copy, Gold Leader. We are already on our way out...",
-                    "Dispatching war rocket Ajax to bring back his body...",
-                    "Making you strong with the force, we are...",
-                    "The Shield is down! Commencing attack on the Death star's main reactor...",
-                    "Your precious awaits...",
-                    "I am Gandalf the White. And I come back to you now, at the turn of the tide...",
-                    "Reticulating splines..."];
-                var loadingIde = document.createElement('div');
-                loadingIde.setAttribute("id", "loadingide");
-                var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
-
-                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
-                var header = '<div class="header"></div>';
-                var footer = '<div class="footer"><a href="https://docs.c9.io">Documentation</a> | <a href="https://status.c9.io">Server Status</a> | <a href="http://support.cloud9ide.com">Support</a>';
-                loadingIde.innerHTML = header + '<div class="loading-progress"><div id="progress-msg">Preparing your workspace .</div><div class="loading-seperator"></div><div class="loading-msg">' + msg + '</div></div>' + footer;
-                document.body.appendChild(loadingIde);
-                var progressInterval = setInterval(function () {
-                    var progressMsg = document.getElementById("progress-msg");
-                    if (!progressMsg)
-                        return clearInterval(progressInterval);
-                    var parts = progressMsg.innerHTML.split(" ");
-                    var dots = parts[parts.length-1];
-                    parts[parts.length-1] = dots.length === 3 ? "." : (dots + ".");
-                    progressMsg.innerHTML = parts.join(" ");
-                }, 500);
-            }
-
-            function clearSplash () {
-                var loadingDiv = document.getElementById("loadingide");
-                if (loadingDiv);
-                    document.body.removeChild(loadingDiv);
-            }
+            var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
-                setTimeout(createSplash);
 
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
@@ -183,9 +191,7 @@
                     "[%staticUrl%]/ext/main/style/images/cover-logo.png",
                     "[%staticUrl%]/ext/main/style/images/panelBg.png",
                     "[%staticUrl%]/ext/main/style/images/editor_tab.png",
-                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png",
-                    "[%staticUrl%]/ext/main/style/images/loading-your-editor.png",
-                    "[%staticUrl%]/ext/main/style/images/loaderide.gif"
+                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
                 ];
                 if (document.images) {
                     var img;

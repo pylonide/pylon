@@ -41,57 +41,6 @@ BODY {
     font-family : Arial, Helvetica, sans-serif;
     line-height : 16px;
 }
-#loadingide {
-    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
-    background: url(images/ide_loading_bg_pattern.png) repeat;
-    color: #5e924a;
-    font-size: 18px;
-    background-color: #f1f9fc;
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    text-align: center;
-    z-index: 2000;
-    left: 0;
-    top: 0;
-}
-#loadingide .header {
-    background: url(images/loader_logo.png) no-repeat top center;
-    position:absolute;
-    top:10px;
-    right:10px;
-    height: 40px;
-    width: 40px;
-}
-#loadingide .loading-progress {
-    height: 37px;
-    position: relative;
-    margin: 0 auto;
-    top: 35%;
-}
-#loadingide .loading-msg {
-    font-size: 16px;
-    color: #AAA;
-}
-#loadingide .loading-seperator {
-    background: url(images/footer-line.png) no-repeat center center;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    margin: 0 auto;
-    width: 180px;
-    height: 12px;
-}
-#loadingide .footer {
-    position:absolute;
-    bottom:10px;
-    right:10px;
-    text-align: right;
-    margin: 0;
-}
-#loadingide .footer > a:link, a:visited, a:hover, a:active {
-    color: #AAA;
-    text-decoration: none;
-}
 #loadscreen{
     background : white;
     padding : 10px;
