@@ -1,11 +1,11 @@
 {
-    "name": "ext.acebugs",
+    "name": "ext.htmllanguage",
     "version": "0.0.1",
-    "main": "acebugs-ext.js",
+    "main": "htmllanguage-ext.js",
     "private": true,
     "plugin": {
         "provides": [
-            "ext.acebugs"
+            "ext.htmllanguage"
         ],
         "consumes": [
             "client-plugins"

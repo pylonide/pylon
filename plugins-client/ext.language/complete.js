@@ -6,13 +6,15 @@
  */
 define(function(require, exports, module) {
 
-/*global txtCompleter txtCompleterDoc txtCompleterHolder barCompleterCont
-  ceEditor sbCompleter*/
+/*global txtCompleter txtCompleterDoc txtCompleterHolder barCompleterCont sbCompleter*/
 
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var code = require("ext/code/code");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
+var SyntaxDetector = require("ext/language/syntax_detector");
+var completeUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
 var language;
@@ -21,7 +23,8 @@ var complete;
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
 
-var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+var ID_REGEX = /[a-zA-Z_0-9\$\/]/;
+
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 1500;
@@ -35,21 +38,24 @@ var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
 var EXTRA_LINE_HEIGHT = 3;
 var deferredInvoke = lang.deferredCall(function() {
-    var editor = editors.currentEditor.ceEditor.$editor;
+    var completer = module.exports;
+    var editor = editors.currentEditor.amlEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
     if (keyhandler.preceededByIdentifier(line, pos.column) ||
        (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(ID_REGEX))) ||
+       (lastIdentifierRegex && line[pos.column-1].match(lastIdentifierRegex)) ||
        keyhandler.isRequireJSCall(line, pos.column)) {
-        module.exports.invoke(true);
+        completer.invoke(true);
     }
     else {
-        module.exports.closeCompletionBox();
+        completer.closeCompletionBox();
     }
     isInvokeScheduled = false;
 });
 var isInvokeScheduled = false;
 var ignoreMouseOnce = false;
+var lastIdentifierRegex;
 
 var drawDocInvoke = lang.deferredCall(function() {
     if (isPopupVisible() && complete.matches[complete.selectedIdx].doc) {
@@ -75,30 +81,20 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function retrievePreceedingIdentifier(text, pos) {
-    var buf = [];
-    for(var i = pos-1; i >= 0; i--) {
-        if(ID_REGEX.test(text[i]))
-            buf.push(text[i]);
-        else
-            break;
-    }
-    return buf.reverse().join("");
-}
-
-function retrieveFollowingIdentifier(text, pos) {
-    var buf = [];
-    for (var i = pos; i < text.length; i++) {
-        if (ID_REGEX.test(text[i]))
-            buf.push(text[i]);
-        else
-            break;
-    }
-    return buf;
+function getSyntax() {
+    var editor = editors.currentEditor.amlEditor.$editor;
+    return SyntaxDetector.getContextSyntax(
+        editor.getSession().getDocument(),
+        editor.getCursorPosition(),
+        editors.currentEditor.amlEditor.syntax);
 }
 
 function isJavaScript() {
-    return editors.currentEditor.amlEditor.syntax === "javascript";
+    return getSyntax() === "javascript";
+}
+
+function isHtml() {
+    return getSyntax() === "html";
 }
 
 /**
@@ -107,25 +103,29 @@ function isJavaScript() {
  * If the prefix is already followed by an identifier substring, that string
  * is deleted.
  */
-function replaceText(editor, prefix, match) {
+function replaceText(editor, match) {
     // Replace text asynchronously in case Concorde didn't update the editor yet
     setTimeout(function() {
-        asyncReplaceText(editor, prefix, match);
+        asyncReplaceText(editor, match);
     }, CONCORDE_DELAY);
 }
 
-function asyncReplaceText(editor, prefix, match) {
+function asyncReplaceText(editor, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
-    var line = editor.getSession().getLine(pos.row);
-    var doc = editor.getSession().getDocument();
+    var session = editor.getSession();
+    var line = session.getLine(pos.row);
+    var doc = session.getDocument();
+    var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
     
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
             setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
         isInvokeScheduled = true;
-    }   
+    }
+
+    newText = newText.replace(/\t/g, session.getTabString());
     
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
@@ -134,10 +134,15 @@ function asyncReplaceText(editor, prefix, match) {
     // Find prefix whitespace of current line
     for (var i = 0; i < line.length && (line[i] === ' ' || line[i] === "\t");)
         i++;
-    
+
     var prefixWhitespace = line.substring(0, i);
     
-    var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
+    // Remove HTML duplicate '<' completions
+    var preId = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+    if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
+        newText = newText.substring(1);
+
+    var postfix = completeUtil.retrieveFollowingIdentifier(line, pos.column, match.identifierRegex) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -150,12 +155,12 @@ function asyncReplaceText(editor, prefix, match) {
     }
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
-    
+
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    
-    var cursorCol = pos.column + colOffset - prefix.length;
-    
+
+    var cursorCol = rowOffset ? colOffset : pos.column + colOffset - prefix.length;
+
     if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
             cursorCol++;
@@ -201,14 +206,13 @@ module.exports = {
         this.ext = ext;
     },
     
-    showCompletionBox: function(matches, prefix) {
+    showCompletionBox: function(matches, prefix, line, column) {
         var _self = this;
         this.editor = editors.currentEditor;
         var ace = this.editor.amlEditor.$editor;
         this.selectedIdx = 0;
         this.scrollIdx = 0;
         this.matchEls = [];
-        this.prefix = prefix;
         this.matches = matches;
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
@@ -278,15 +282,18 @@ module.exports = {
         undrawDocInvoke.schedule(HIDE_DOC_DELAY);
     },
         
-    populateCompletionBox: function (matches) {
+    populateCompletionBox: function(matches) {
         var _self = this;
         _self.completionElement.innerHTML = "";
-        var cursorConfig = ceEditor.$editor.renderer.$cursorLayer.config;
+        var cursorConfig = code.amlEditor.$editor.renderer.$cursorLayer.config;
         var hasIcons = false;
         matches.forEach(function(match) {
             if (match.icon)
                 hasIcons = true;
         });
+        var editor = editors.currentEditor.amlEditor.$editor;
+        var pos = editor.getCursorPosition();
+        var line = editor.getSession().getLine(pos.row);
         var isInferAvailable = language.isInferAvailable();
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
@@ -304,16 +311,16 @@ module.exports = {
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
                 }
             }
-            
+            var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
             var trim = match.meta ? " maintrim" : "";
             if (!isInferAvailable || match.icon) {
-                html += '<span class="main' + trim + '"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span>';
+                html += '<span class="main' + trim + '"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span>';
             }
             else if (hasIcons) {
                 html += '<span class="main' + trim + '"><span class="deferred">' + match.name + '</span></span>';
             }
             else {
-                html += '<span class="main' + trim + '"><span class="deferred"><u>' + _self.prefix + "</u>" + match.name.substring(_self.prefix.length) + '</span></span>';
+                html += '<span class="main' + trim + '"><span class="deferred"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span></span>';
             }
             
             if (match.meta)
@@ -323,7 +330,7 @@ module.exports = {
                 match.doc = '<p>' + match.doc + '</p>';
                 
             if (match.icon || match.type)
-                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "")
+                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "");
                 
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
@@ -340,7 +347,7 @@ module.exports = {
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
-                replaceText(amlEditor.$editor, _self.prefix, match);
+                replaceText(amlEditor.$editor, match);
                 amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + EXTRA_LINE_HEIGHT + "px";
@@ -384,7 +391,7 @@ module.exports = {
             this.docElement.innerHTML += selected.doc + '</span>';
         }
         else {
-            txtCompleterDoc.parentNode.hide();   
+            txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
             this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
@@ -392,13 +399,17 @@ module.exports = {
     },
 
     onTextInput : function(text, pasted) {
-        var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        var keyBinding = code.amlEditor.$editor.keyBinding;
         oldOnTextInput.apply(keyBinding, arguments);
         if (!pasted) {
-            if (!text.match(ID_REGEX))
-                this.closeCompletionBox();
-            else
+            var matched = false;
+            var matches = this.matches;
+            for (var i = 0; i < matches.length && !matched; i++)
+                matched = (matches[i].identifierRegex || ID_REGEX).test(text);
+            if (matched)
                 this.deferredInvoke();
+            else
+                this.closeCompletionBox();
         }
     },
 
@@ -435,7 +446,7 @@ module.exports = {
             case 13: // Enter
             case 9: // Tab
                 var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
+                replaceText(editor, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
                 e.preventDefault();
                 break;
@@ -464,7 +475,7 @@ module.exports = {
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.selectedIdx <= 0)
-                    return; 
+                    return;
                 this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 this.selectedIdx--;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
@@ -515,28 +526,27 @@ module.exports = {
         var pos = editor.getCursorPosition();
         var eventPos = event.data.pos;
         var line = editor.getSession().getLine(pos.row);
-        var identifier = retrievePreceedingIdentifier(line, pos.column);
     
         editor.removeEventListener("change", this.$onChange);
         killCrashedCompletionInvoke.cancel();
 
-        if (pos.column !== eventPos.column || pos.row !== eventPos.row)
+        if (pos.column !== eventPos.column || pos.row !== eventPos.row || event.data.line != line)
             return;
-    
+        if (event.data.isUpdate && !isPopupVisible())
+            return;
+
         var matches = event.data.matches;
-        
-        // Remove out-of-date matches
+
+        lastIdentifierRegex = null;
         for (var i = 0; i < matches.length; i++) {
-            if(matches[i].name.indexOf(identifier) !== 0) {
-                matches.splice(i, 1);
-                i--;
-            }
-        }        
+            lastIdentifierRegex = lastIdentifierRegex || matches[i].identifierRegex;
+        }
         
         if (matches.length === 1 && !this.forceBox) {
-            replaceText(editor, identifier, matches[0]);
+            replaceText(editor, matches[0]);
         }
         else if (matches.length > 0) {
+            var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, matches[0].identifierRegex);
             this.showCompletionBox(matches, identifier);
         }
         else {

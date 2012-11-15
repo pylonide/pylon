@@ -8,12 +8,13 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var util = require("core/util");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var EditSession = require("ace/edit_session").EditSession;
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
-var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
-var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
+var UIWorkerClient = require("ace/worker/worker_client").UIWorkerClient;
+var useUIWorker = window.location && /[?&]noworker=1/.test(window.location.search);
 
 var complete = require("ext/language/complete");
 var marker = require("ext/language/marker");
@@ -49,9 +50,6 @@ module.exports = ext.register("ext/language/language", {
 
     hook : function() {
         var _self = this;
-        
-        if (!createUIWorkerClient || !isWorkerEnabled)
-            throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
 
         var deferred = lang.deferredCall(function() {
             _self.setPath();
@@ -59,16 +57,10 @@ module.exports = ext.register("ext/language/language", {
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
-            var worker;
-            if (!isWorkerEnabled()) {
-                worker = _self.worker = createUIWorkerClient();
-            }
-            else {
-                worker = _self.worker = new WorkerClient(
-                    ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
-            }
+            var Worker = useUIWorker ? UIWorkerClient : WorkerClient;
+            var worker = _self.worker = new Worker(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
-
+            
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
                     return;
@@ -76,10 +68,10 @@ module.exports = ext.register("ext/language/language", {
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
+                worker.call("switchFile", [util.stripWSFromPath(path), editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
                 event.doc.addEventListener("close", function() {
                     worker.emit("documentClose", {data: path});
-                });
+            });
                 // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
                 deferred.cancel().schedule(100);
             });
@@ -123,17 +115,13 @@ module.exports = ext.register("ext/language/language", {
     isInferAvailable : function() {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
-    
-    isWorkerEnabled : function() {
-        return isWorkerEnabled();
-    },
 
     init : function() {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
         
-        if (!editors.currentEditor || !editors.currentEditor.amlEditor)
+        if (!editors.currentEditor || editors.currentEditor.path != "ext/code/code")
             return;
 
         this.editor = editors.currentEditor.amlEditor.$editor;
@@ -158,7 +146,7 @@ module.exports = ext.register("ext/language/language", {
                 oldSelection = _self.editor.selection;
             }, 100);
         });
-        
+
 
         this.editor.on("change", function(e) {
             e.range = {
@@ -220,10 +208,10 @@ module.exports = ext.register("ext/language/language", {
 
     setPath: function() {
         // Currently no code editor active
-        if(!editors.currentEditor || !editors.currentEditor.ceEditor || !tabEditors.getPage() || !this.editor)
+        if(!editors.currentEditor || editors.currentEditor.path != "ext/code/code" || !tabEditors.getPage() || !this.editor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
+        this.worker.call("switchFile", [util.stripWSFromPath(currentPath), editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
     },
     
     onEditorClick: function(event) {

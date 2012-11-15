@@ -1,11 +1,12 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:codeeditor id="ceEditor"
+    <a:codeeditor id="codeEditor_dontEverUseThisVariable"
       flex              = "1"
       anchors           = "6 0 0 0"
       theme             = "[{require('core/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('core/settings').model}::editors/code/@overwrite]"
       folding           = "[{require('core/settings').model}::editors/code/@folding]"
       behaviors         = "[{require('core/settings').model}::editors/code/@behaviors]"
+      wrapbehaviors     = "[{require('core/settings').model}::editors/code/@wrapbehaviors]"
       selectstyle       = "[{require('core/settings').model}::editors/code/@selectstyle]"
       activeline        = "[{require('core/settings').model}::editors/code/@activeline]"
       gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"

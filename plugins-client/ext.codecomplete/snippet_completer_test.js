@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 var Document = require("ace/document").Document;
 var assert = require("ace/test/assertions");
 var completer = require("ext/codecomplete/snippet_completer");
+var completeUtil = require("ext/codecomplete/complete_util");
 
 function matchSorter(matches) {
     matches.sort(function(a, b) {
@@ -20,7 +21,7 @@ function matchSorter(matches) {
     });
 }
 
-completer.fetchText = function(staticPrefix, path) {
+completeUtil.fetchText = function(staticPrefix, path) {
     return require('fs').readFileSync(__dirname + "/../" + path.replace("ext/", "ext."), 'ascii');
 };
 

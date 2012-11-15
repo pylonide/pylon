@@ -1,9 +1,9 @@
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/jpack_begin.js)SIZE(0)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/apf.js)SIZE(97610)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1433,7 +1433,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/class.js)SIZE(38834)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2339,7 +2339,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/color.js)SIZE(10920)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2582,7 +2582,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2608,7 +2608,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/async.js)SIZE(4232)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2748,7 +2748,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/cookie.js)SIZE(2999)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2832,7 +2832,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/ecmaext.js)SIZE(28963)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3723,7 +3723,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/flash.js)SIZE(22981)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3749,7 +3749,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/hook.js)SIZE(10086)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3775,7 +3775,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/hotkey.js)SIZE(6672)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -3989,33 +3989,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/json.js)SIZE(27346)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4043,7 +4017,33 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/nameserver.js)SIZE(5790)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4156,7 +4156,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/o3.js)SIZE(8157)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4181,7 +4181,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/plane.js)SIZE(8624)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4413,7 +4413,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/popup.js)SIZE(13344)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4796,7 +4796,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/silverlight.js)SIZE(25645)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4822,7 +4822,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/style.js)SIZE(21396)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5382,32 +5382,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/syntax.js)SIZE(12610)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/textdiff.js)SIZE(89298)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5433,7 +5408,32 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/utilities.js)SIZE(14555)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5917,7 +5917,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6079,7 +6079,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/xml.js)SIZE(51804)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7592,7 +7592,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/xml_test.js)SIZE(1411)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7617,7 +7617,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7642,7 +7642,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/zmanager.js)SIZE(2531)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7723,7 +7723,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/history.js)SIZE(10110)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8012,7 +8012,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/config.js)SIZE(8137)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8162,7 +8162,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline.js)SIZE(20158)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8192,7 +8192,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/application.js)SIZE(11733)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8218,7 +8218,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/gears.js)SIZE(4771)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8244,7 +8244,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/detector.js)SIZE(4827)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8270,7 +8270,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/models.js)SIZE(5471)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8296,7 +8296,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/queue.js)SIZE(7009)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8322,7 +8322,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/state.js)SIZE(7979)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8348,7 +8348,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8374,7 +8374,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/data.js)SIZE(14011)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8712,7 +8712,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/date.js)SIZE(40499)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9772,31 +9772,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw.js)SIZE(66997)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/flow.js)SIZE(71072)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9822,7 +9798,31 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/flow2.js)SIZE(70650)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9848,7 +9848,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/geolocation.js)SIZE(11303)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9874,7 +9874,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/html.js)SIZE(15340)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9900,7 +9900,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/language.js)SIZE(8586)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9926,7 +9926,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/layout.js)SIZE(16567)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10442,7 +10442,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 };
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/printer.js)SIZE(5120)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10468,7 +10468,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/queue.js)SIZE(3632)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10592,7 +10592,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/resize.js)SIZE(13119)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10988,7 +10988,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/resize2.js)SIZE(10403)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11013,7 +11013,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/selection.js)SIZE(32158)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11038,7 +11038,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/skins.js)SIZE(12406)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11376,7 +11376,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/sort.js)SIZE(8266)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11605,7 +11605,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage.js)SIZE(9127)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11631,7 +11631,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/tween.js)SIZE(36753)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12647,13 +12647,13 @@ return {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder.js)SIZE(397)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/vector.js)SIZE(46289)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12679,7 +12679,7 @@ return {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/xmldb.js)SIZE(40983)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13773,7 +13773,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13797,7 +13797,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13822,106 +13822,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw/vml.js)SIZE(20284)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/air.js)SIZE(9669)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13947,7 +13848,30 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/flash.js)SIZE(15459)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13973,7 +13897,6 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/gears.js)SIZE(12314)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13999,7 +13922,6 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/html5.js)SIZE(8229)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14025,7 +13947,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/memory.js)SIZE(10210)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14051,7 +13973,85 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/teleport/http.js)SIZE(37408)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14935,7 +14935,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14960,7 +14960,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/teleport/socket.js)SIZE(19208)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14986,24 +14986,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/capture.js)SIZE(21928)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/selenium.js)SIZE(9163)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/domparser.js)SIZE(18352)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15465,7 +15465,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml.js)SIZE(1454)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15508,7 +15508,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/node.js)SIZE(22933)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16114,7 +16114,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/element.js)SIZE(24492)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16738,7 +16738,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16802,7 +16802,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/text.js)SIZE(3974)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16902,7 +16902,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/attr.js)SIZE(4674)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17031,7 +17031,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17068,7 +17068,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/comment.js)SIZE(1509)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17114,7 +17114,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17155,7 +17155,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/document.js)SIZE(13336)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17419,7 +17419,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17453,7 +17453,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/event.js)SIZE(2099)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17524,7 +17524,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17635,7 +17635,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/processinginstruction.js)SIZE(4178)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17744,7 +17744,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/range.js)SIZE(15808)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17769,7 +17769,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/selection.js)SIZE(8861)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17794,7 +17794,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17838,7 +17838,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml.js)SIZE(1532)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17889,7 +17889,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18046,7 +18046,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18097,7 +18097,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18178,7 +18178,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18214,7 +18214,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18275,7 +18275,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18318,7 +18318,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18380,7 +18380,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd.js)SIZE(12998)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18406,7 +18406,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/element.js)SIZE(1869)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18431,7 +18431,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18456,7 +18456,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18481,7 +18481,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/length.js)SIZE(1527)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18506,7 +18506,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/list.js)SIZE(1215)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18531,7 +18531,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18556,7 +18556,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18581,7 +18581,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18606,7 +18606,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18631,7 +18631,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18656,7 +18656,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18681,7 +18681,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18706,7 +18706,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18731,7 +18731,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18756,7 +18756,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18781,7 +18781,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18806,7 +18806,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18831,7 +18831,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18856,7 +18856,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/union.js)SIZE(2331)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18881,7 +18881,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/html5.js)SIZE(3214)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18916,7 +18916,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xforms.js)SIZE(4191)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18949,7 +18949,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xinclude.js)SIZE(1325)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18991,7 +18991,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19016,7 +19016,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xinclude/include.js)SIZE(7124)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19208,7 +19208,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19234,7 +19234,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit.js)SIZE(34625)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19261,293 +19261,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/richtext.js)SIZE(53487)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19574,7 +19288,6 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19600,7 +19313,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19626,7 +19339,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19652,7 +19365,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19678,7 +19391,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19704,7 +19417,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19730,7 +19443,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19756,7 +19469,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19782,7 +19495,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19808,7 +19521,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19834,7 +19547,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19860,7 +19573,8 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19886,7 +19600,293 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/anchoring.js)SIZE(19870)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20432,7 +20432,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20458,7 +20458,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/guielement.js)SIZE(36091)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20614,6 +20614,13 @@ apf.GuiElement = function(){
     
     this.$booleanProperties["visible"]          = true;
     
+    /**
+     * @attribute {Boolean} draggable If true, the element can be dragged around the screen.
+     */    
+    /**
+     * @attribute {Boolean} resizable If true, the element can by resized by the user.
+     * 
+     */
     
     this.$supportedProperties.push("draggable", "resizable");
     
@@ -21347,7 +21354,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/presentation.js)SIZE(21187)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21963,7 +21970,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/validation.js)SIZE(26182)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22083,22 +22090,26 @@ apf.validator.validityState = function(){
  *
  * #### Example
  * 
- * ```xml
- *  <a:bar validgroup="vgExample">
- *      <a:label>Number</a:label>
- *      <a:textbox required="true" min="3" max="10" 
- *        invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
- *      <a:label>Name</a:label>
- *      <a:textbox required="true" minlength="3" 
- *        invalidmsg="Invalid Entry;Please enter your name" />
- *      <a:label>Message</a:label>
- *      <a:textarea required="true" 
- *        invalidmsg="Invalid Message;Please enter a message!" />
- *
- *      <a:button onclick="if(vgExample.isValid()) alert('valid!')">
- *          Validate
- *      </a:button>
- *  </a:bar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:bar validgroup="vgExample">
+ *        <a:label>Number</a:label>
+ *        <a:textbox required="true" min="3" max="10" 
+ *          invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox required="true" minlength="3" 
+ *          invalidmsg="Invalid Entry;Please enter your name" />
+ *        <a:label>Message</a:label>
+ *        <a:textarea required="true" 
+ *          invalidmsg="Invalid Message;Please enter a message!" />
+ *   
+ *        <a:button onclick="if(vgExample.isValid()) alert('valid!')">
+ *            Validate
+ *        </a:button>
+ *    </a:bar>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
  * @class apf.Validation
@@ -22698,7 +22709,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/databinding.js)SIZE(60781)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22848,7 +22859,7 @@ apf.DataBinding = function(){
      */
         return apf.queryValue(this[type || 'xmlRoot'], xpath );
     };
-    /**
+	/**
      * Queries the bound data for an array of string values
      *
      * @param {String} xpath The XPath statement which queries on the data this element is bound on.
@@ -24193,7 +24204,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/databinding/multiselect.js)SIZE(47092)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25406,7 +25417,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/databinding/standard.js)SIZE(6616)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25579,7 +25590,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/multiselect.js)SIZE(71174)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27402,7 +27413,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27508,7 +27519,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/dataaction.js)SIZE(24626)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27992,7 +28003,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/cache.js)SIZE(12504)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28355,7 +28366,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/rename.js)SIZE(15149)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28778,7 +28789,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28805,7 +28816,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basebutton.js)SIZE(10485)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29128,7 +29139,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/baselist.js)SIZE(39812)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30110,7 +30121,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30167,7 +30178,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basestatebuttons.js)SIZE(27335)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30838,7 +30849,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basetab.js)SIZE(61609)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32332,7 +32343,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basetree.js)SIZE(53472)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33755,7 +33766,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/delayedrender.js)SIZE(5467)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33923,7 +33934,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/dragdrop.js)SIZE(56406)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33968,7 +33979,6 @@ apf.__DRAGDROP__ = 1 << 5;
  * This is a simple example, enabling drag & drop for a list:
  *
  * ```xml
- *
  *  <a:list
  *    drag     = "true"
  *    drop     = "true"
@@ -34058,6 +34068,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *      </a:model>
  *  </a:datagrid>
  *```
+ * 
  * @class apf.DragDrop
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -35449,7 +35460,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/focussable.js)SIZE(3550)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35563,7 +35574,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/interactive.js)SIZE(30776)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36381,7 +36392,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/media.js)SIZE(18903)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36409,7 +36420,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/multicheck.js)SIZE(17053)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36771,7 +36782,7 @@ apf.MultiCheck = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/teleport.js)SIZE(8811)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37019,7 +37030,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/transaction.js)SIZE(23705)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37046,7 +37057,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/virtualviewport.js)SIZE(31710)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37794,7 +37805,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/xforms.js)SIZE(9387)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37822,7 +37833,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3488)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37931,7 +37942,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37957,57 +37968,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38033,32 +37994,6 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18160)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/window-o3.js)SIZE(5463)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38084,7 +38019,83 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/window.js)SIZE(50906)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39234,11 +39245,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/gears.js)SIZE(1391)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/gecko.js)SIZE(6754)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39427,7 +39438,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/ie.js)SIZE(14082)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39679,7 +39690,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/iphone.js)SIZE(11827)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39704,7 +39715,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/non_ie.js)SIZE(24359)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40061,12 +40072,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/o3.js)SIZE(9131)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/opera.js)SIZE(6583)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40092,7 +40103,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/webkit.js)SIZE(8461)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40270,11 +40281,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/barrett.js)SIZE(2649)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -40295,7 +40306,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/base64.js)SIZE(6758)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40508,7 +40519,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/bigint.js)SIZE(20438)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -40562,7 +40573,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/blowfish.js)SIZE(26046)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40588,7 +40599,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/md4.js)SIZE(9799)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40614,7 +40625,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/md5.js)SIZE(10997)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40872,7 +40883,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/rsa.js)SIZE(5047)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -40894,7 +40905,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/sha1.js)SIZE(5258)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41077,7 +41088,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/debug/debug.js)SIZE(9811)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41103,7 +41114,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/debug/debugwin.js)SIZE(42737)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41129,12 +41140,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/debug/profiler.js)SIZE(24788)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/js.js)SIZE(9016)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41160,7 +41171,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/livemarkup.js)SIZE(108359)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43530,7 +43541,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/url.js)SIZE(4598)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43556,7 +43567,7 @@ apf.lm_exec = new (function(){
 
 
 /**
- * Object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
+ * An object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
  *
  * All parts are publicly accessible after parsing, like 'url.port' or 'url.host'.
  * 
@@ -43652,7 +43663,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/xpath.js)SIZE(21972)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 
 /**
@@ -44278,7 +44289,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingrule.js)SIZE(8835)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44531,7 +44542,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/accordion.js)SIZE(22355)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44556,7 +44567,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actionrule.js)SIZE(4282)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44707,7 +44718,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actions.js)SIZE(3282)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44734,23 +44745,9 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 /**
- * Defines some rules containing all the action rules for the data 
+ * This element allows you to define some rules containing all the action rules for the data 
  * bound elements referencing this element.
  * 
- * #### Example 
- *
- * ```xml
- *  <a:actions id="actPerson" >
- *      <a:add set="{comm.addPerson([.])}">
- *          <person name="New person" />
- *      </a:add
- *      <a:rename set="{comm.renamePerson([@id], [@name])}" />
- *      <a:remove match="[@new]" set="{comm.removePerson([@id])}"/>
- *  </a:actions>
- *
- *  <a:tree actions="actPerson" />
- * ```
- *
  * @allowchild {actions}
  *
  * @class apf.actions
@@ -44816,7 +44813,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actiontracker.js)SIZE(37506)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44842,26 +44839,21 @@ apf.aml.setElement("actions", apf.actions);
 
 
 /**
- * Element the keeps track of all user actions that are triggered in GUI
+ * This element the keeps track of all user actions that are triggered in GUI
  * elements. 
  * 
- * This element maintains a stack of actions and knows how to
- * undo & redo them. It is aware of how to synchronize the changes to the
+ * This element maintains a stack of actions, and knows how to
+ * undo and redo them. It is also aware of how to synchronize the changes to the
  * backend data store.
  * 
- * #### Example
- *
- * ```javascript
- *   datagrid.getActionTracker().undo();
- * ```
  * 
  * #### Remarks
  *
- * With offline support enabled the actiontracker can
+ * With offline support enabled, the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
- * be kept in between application sessions. This means that a user will be able
+ * be kept in-between application sessions. This means that a user will be able
  * to close the application and start it at a later date whilst keeping his or
- * her entire undo/redo stack. Furthermore all changes done whilst being offline
+ * her entire undo/redo stack. Furthermore, all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
  * @class apf.actiontracker
@@ -45433,7 +45425,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/application.js)SIZE(1834)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45488,7 +45480,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/appsettings.js)SIZE(9709)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45514,7 +45506,8 @@ apf.aml.setElement("application", apf.application);
 
 
 /**
- * An element specifying the settings of the APF application.
+ * This element specifies the settings of the APF application.
+ * 
  * @class apf.appsettings
  * @define appsettings
  * @logic
@@ -45719,7 +45712,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/audio.js)SIZE(12934)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45745,7 +45738,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/auth.js)SIZE(24084)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46352,7 +46345,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/axis.js)SIZE(13985)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46377,7 +46370,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bar.js)SIZE(4226)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46403,13 +46396,38 @@ apf.aml.setElement("auth", apf.auth);
 
 
 /**
- * Element displaying a skinnable rectangle which can contain other 
- * AML elements. 
+ * This element displays a skinnable rectangle which can contain other 
+ * AML elements. Often, it's also used in place of a regular HTML `<div>`.
  *
- * This element is used by other elements such as the 
- * [[apf.toolbar]] and `apf.statusbar` elements to specify sections within those elements
- * which in turn can contain other AML elements.
  *
+ * #### Example
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400"
+ *       >
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * #### Remarks
  *
  * This component is used in the accordion element to create its sections. In
@@ -46431,7 +46449,7 @@ apf.aml.setElement("auth", apf.auth);
  * @attribute {String} icon Sets or gets the URL pointing to the icon image.
  */
 /**
- *  @attribute {Boolean} collapsed=false  Sets or gets the collapse panel on load
+ *  @attribute {Boolean} [collapsed=false]  Sets or gets the collapse panel on load
  * 
  */
 /**
@@ -46514,7 +46532,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingcolorrule.js)SIZE(2905)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46585,7 +46603,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingcolumnrule.js)SIZE(21717)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47192,7 +47210,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingdndrule.js)SIZE(3623)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47310,7 +47328,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingeachrule.js)SIZE(11515)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47670,7 +47688,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingloadrule.js)SIZE(1528)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47719,7 +47737,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingquicksandrule.js)SIZE(12332)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48026,7 +48044,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindings.js)SIZE(8678)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48297,7 +48315,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingseriesrule.js)SIZE(1957)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48360,7 +48378,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/body.js)SIZE(1861)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48416,7 +48434,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/browser.js)SIZE(6449)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48629,7 +48647,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/button.js)SIZE(31663)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48658,6 +48676,53 @@ apf.aml.setElement("browser", apf.browser);
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
+ *
+ * #### Example: Working with Events
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 100" cellheight="24">
+ *     <!-- startcontent -->
+ *      <a:label>Onclick event</a:label>
+ *      <a:button
+ *        width   = "120"
+ *        onclick = "alert('Button has been clicked')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseover event</a:label>
+ *      <a:button 
+ *        width       = "120"
+ *        onmouseover = "alert('Button has been hovered')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseout event</a:label>
+ *      <a:button 
+ *        width      = "120"
+ *        onmouseout = "alert('Mouse hover out button')">
+ *          Example button</a:button>
+ *     <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Interactions and Colors
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="250" cellheight="24">
+ *  <!-- startcontent -->
+ *  <a:button
+ *    onclick = "b1.setAttribute('width', '200')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 200px</a:button>
+ *  <a:button 
+ *    onclick = "b1.setAttribute('width', '50')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 50px</a:button>
+ *  <a:button id="b1" color="#FF8203">Test</a:button>
+ *  <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
  * @class apf.button
  * @inherits apf.BaseButton
  * @define button
@@ -49274,7 +49339,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/caldropdown.js)SIZE(36416)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49300,32 +49365,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/calendar.js)SIZE(28852)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/calendarlist.js)SIZE(15129)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49351,7 +49391,6 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/chart.js)SIZE(9663)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49376,7 +49415,33 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/checkbox.js)SIZE(8257)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49402,15 +49467,38 @@ apf.aml.setElement("button",  apf.button);
 
 
 /**
- * Element displaying a clickable rectangle having two states which
+ * This element displays a clickable rectangle with two states that
  * can be toggled by user interaction.
  * 
- * #### Example
+ * #### Example: Setting and Retrieving Values
  *
- * ```xml
- *  <a:checkbox values="full|empty">the glass is full</a:checkbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox 
+ *   id      = "ch1" 
+ *   values  = "full|empty" 
+ *   checked = "true">Full</a:checkbox>
+ *   <a:textbox value="the glass is {ch1.value}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
+ * #### Example: Disabled Values
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox checked="true">Option 1</a:checkbox>
+ *   <a:checkbox>Option 2</a:checkbox>
+ *   <a:checkbox checked="true" disabled="true">Option 3</a:checkbox>
+ *   <a:checkbox disabled="true">Option 4</a:checkbox>
+ *   <a:checkbox label="Option 5" />
+ *   <a:checkbox label="Option 6" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.checkbox
  *
  * @define checkbox
@@ -49654,7 +49742,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/collection.js)SIZE(2365)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49679,388 +49767,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/colorpicker.js)SIZE(12727)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/**
- * Element giving the user a visual choice of several colors presented in a
- * grid.
- *
- * @constructor
- * @define colorpicker
- *
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.4
- *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- * @inheritsElsewhere apf.XForms
- *
- * @attribute {String} color the color that is selected in the color picker.
- *
- * @binding value  Determines the way the value for the element is retrieved 
- * from the bound data.
- * Example:
- * Sets the color based on data loaded into this component.
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker 
- *    model = "mdlColor" 
- *    value = "[@color]" />
- * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker value="[mdlColor::@color]" />
- * </code>
- */
-apf.colorpicker = function(struct, tagName){
-    this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
-};
-
-(function(){
-    this.implement(
-        
-        apf.StandardBinding
-        
-        
-        ,apf.DataAction
-        
-        
-    );
-    //Options
-    this.$focussable = true; // This object can get the focus
-
-    // PUBLIC METHODS
-    this.setValue = function(value, type){
-        //this.value = value;
-        if (!type) type = "RGBHEX";
-        var a;
-        switch (type) {
-            case "HSL":
-                this.fill(value[0], value[1], value[2]);
-                break;
-            case "RGB":
-                a = RGBtoHLS(value[0], value[1], value[2]);
-                this.fill(a[0], a[1], a[2]);
-                break;
-            case "RGBHEX":
-                var RGB = arguments[0].match(/(..)(..)(..)/);
-                a = RGBtoHLS(Math.hexToDec(RGB[0]),
-                    Math.hexToDec(RGB[1]), Math.hexToDec(RGB[2]));
-                this.fill(a[0], a[1], a[2]);
-                break;
-        }
-    };
-
-    this.getValue = function(type){
-        return HSLRangeToRGB(cH, cS, cL);
-    };
-
-    // PRIVATE METHODS
-    var cL       = 120,
-        cS       = 239,
-        cH       = 0,
-        cHex     = "#FF0000",
-        HSLRange = 240;
-
-    function HSLRangeToRGB(H, S, L){
-        return HSLtoRGB(H / (HSLRange - 1), S / HSLRange,
-            Math.min(L / HSLRange, 1))
-    };
-
-    function RGBtoHLS(R,G,B){
-        var RGBMAX = 255,
-            HLSMAX = HSLRange,
-            UNDEF  = (HLSMAX*2/3),
-
-        /* calculate lightness */
-             cMax = Math.max(Math.max(R,G), B),
-             cMin = Math.min(Math.min(R,G), B);
-        L = (((cMax + cMin) * HLSMAX) + RGBMAX) / (2 * RGBMAX);
-
-        if (cMax == cMin) {           /* r=g=b --> achromatic case */
-            S = 0;                    /* saturation */
-            H = UNDEF;                /* hue */
-        }
-        /* chromatic case */
-        else {
-            /* saturation */
-            if (L <= (HLSMAX/2))
-                S = (((cMax - cMin) * HLSMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
-            else
-                S = (((cMax - cMin) * HLSMAX) + ((2 * RGBMAX - cMax - cMin) / 2))
-                  / (2 * RGBMAX - cMax - cMin);
-
-            /* hue */
-            Rdelta = (((cMax - R) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Gdelta = (((cMax - G) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Bdelta = (((cMax - B) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-
-            if (R == cMax)
-                H = Bdelta - Gdelta;
-            else if (G == cMax)
-                H = (HLSMAX / 3) + Rdelta - Bdelta;
-            else
-                H = ((2 * HLSMAX) / 3) + Gdelta - Rdelta;
-
-            if (H < 0)
-                H += HLSMAX;
-            if (H > HLSMAX)
-                H -= HLSMAX;
-        }
-
-        return [H, S, L];
-    }
-
-    function hueToColorValue(hue){
-        var V;
-
-        if (hue < 0)
-            hue = hue + 1
-        else if (hue > 1)
-            hue = hue - 1;
-
-        if (6 * hue < 1)
-            V = M1 + (M2 - M1) * hue * 6
-        else if (2 * hue < 1)
-            V = M2
-        else if (3 * hue < 2)
-            V = M1 + (M2 - M1) * (2 / 3 - hue) * 6
-        else
-            V = M1;
-
-        return Math.max(Math.floor(255 * V), 0);
-    };
-
-    function HSLtoRGB(H, S, L){
-        var R,  G,  B;
-
-        if (S == 0)
-            G = B = R = Math.round (255 * L);
-        else {
-            M2 = (L <= 0.5) ? (L * (1 + S)) : (L + S - L * S);
-
-            M1 = 2 * L - M2;
-            R = hueToColorValue(H + 1 / 3);
-            G = hueToColorValue(H);
-            B = hueToColorValue(H - 1 / 3);
-        }
-
-        return Math.decToHex(R) + "" + Math.decToHex(G) + "" + Math.decToHex(B);
-    };
-
-    this.fill = function(H, S, L){
-        var Hex    = HSLRangeToRGB(H,S,L);
-        this.value = Hex;
-
-        //RGB
-        var RGB            = Hex.match(/(..)(..)(..)/);
-        this.tbRed.value   = Math.hexToDec(RGB[1]);
-        this.tbGreen.value = Math.hexToDec(RGB[2]);
-        this.tbBlue.value  = Math.hexToDec(RGB[3]);
-
-        //HSL
-        this.tbHue.value       = Math.round(H);
-        this.tbSatern.value    = Math.round(S);
-        this.tbLuminance.value = Math.round(L);
-
-        //HexRGB
-        this.tbHexColor.value  = Hex;
-
-        //Shower
-        this.shower.style.backgroundColor = Hex;
-
-        //Luminance
-        var HSL120                        = HSLRangeToRGB(H, S, 120);
-        this.bar1.style.backgroundColor   = HSL120;
-        this.bgBar1.style.backgroundColor = HSLRangeToRGB(H, S, 240);
-        this.bar2.style.backgroundColor   = HSLRangeToRGB(H, S, 0);
-        this.bgBar2.style.backgroundColor = HSL120;
-    };
-
-    this.movePointer = function(e){
-        e = e || event;
-
-        var ty = this.pHolder.ty;
-        if ((e.clientY - ty >= 0) && (e.clientY - ty
-          <= this.pHolder.offsetHeight - this.pointer.offsetHeight + 22))
-            this.pointer.style.top = e.clientY - ty;
-        if (e.clientY - ty < 21)
-            this.pointer.style.top = 21;
-        if (e.clientY - ty
-          > this.pHolder.offsetHeight - this.pointer.offsetHeight + 19)
-            this.pointer.style.top = this.pHolder.offsetHeight
-                - this.pointer.offsetHeight + 19;
-
-        // 255 - posY:
-        cL = (255 - (this.pointer.offsetTop - 22)) / 2.56 * 2.4;
-        this.fill(cH, cS, cL);
-
-        e.returnValue  = false;
-        e.cancelBubble = true;
-    };
-
-    this.setLogic = function(){
-        var _self = this;
-        this.pHolder.style.zIndex = 10;
-        this.pHolder.onmousedown  = function(){
-            this.ty = apf.getAbsolutePosition(this)[1] - 20;
-
-            _self.movePointer();
-            document.onmousemove = _self.movePointer
-            document.onmouseup   = function(){ this.onmousemove = function(){}; };
-        }
-
-        this.container.onmousedown = function(e){
-            e = e || event;
-
-            this.active = true;
-            if (e.srcElement == this) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-            _self.point.style.display = "none";
-
-            e.cancelBubble = true;
-        }
-
-        this.container.onmouseup = function(e){
-            e = e || event;
-            this.active               = false;
-            _self.point.style.top     = e.offsetY - _self.point.offsetHeight - 2;
-            _self.point.style.left    = e.offsetX - _self.point.offsetWidth - 2;
-            _self.point.style.display = "block";
-
-            _self.change(_self.tbHexColor.value);
-        }
-
-        this.container.onmousemove = function(e){
-            e = e || event;
-            if (this.active) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-        }
-
-        /*this.tbHexColor.host =
-        this.tbRed.host =
-        this.tbGreen.host =
-        this.tbBlue.host = this;
-        this.tbHexColor.onblur = function(){_self.setValue("RGBHEX", this.value);}
-        this.tbRed.onblur = function(){_self.setValue("RGB", this.value, _self.tbGreen.value, _self.tbBlue.value);}
-        this.tbGreen.onblur = function(){_self.setValue("RGB", _self.tbRed.value, this.value, _self.tbBlue.value);}
-        this.tbBlue.onblur = function(){_self.setValue("RGB", _self.tbRed.value, _self.tbGreen.value, this.value);}
-        */
-    }
-
-    // Databinding
-    this.$mainBind = "color";
-
-    this.$draw = function(parentNode, clear){
-        //Build Main Skin
-        this.$ext    = this.$getExternal();
-
-        this.tbRed   = this.$getLayoutNode("main", "red", this.$ext);
-        this.tbGreen = this.$getLayoutNode("main", "green", this.$ext);
-        this.tbBlue  = this.$getLayoutNode("main", "blue", this.$ext);
-
-        this.tbHue       = this.$getLayoutNode("main", "hue", this.$ext);
-        this.tbSatern    = this.$getLayoutNode("main", "satern", this.$ext);
-        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.$ext);
-
-        this.tbHexColor  = this.$getLayoutNode("main", "hex", this.$ext);
-        var _self = this;
-        this.tbHexColor.onchange = function(){
-            _self.setValue(this.value, "RGBHEX");
-        };
-
-        this.shower = this.$getLayoutNode("main", "shower", this.$ext);
-
-        this.bar1   = this.$getLayoutNode("main", "bar1", this.$ext);
-        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.$ext);
-        this.bar2   = this.$getLayoutNode("main", "bar2", this.$ext);
-        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.$ext);
-
-        this.pHolder   = this.$getLayoutNode("main", "pholder", this.$ext);
-        this.pointer   = this.$getLayoutNode("main", "pointer", this.$ext);
-        this.container = this.$getLayoutNode("main", "container", this.$ext);
-        this.point     = this.$getLayoutNode("main", "point", this.$ext);
-
-        var nodes = this.$ext.getElementsByTagName("input");
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].onselectstart = function(e){
-                e = e || event;
-                e.cancelBubble = true;
-            };
-        }
-
-        this.setLogic();
-
-        this.setValue("ffffff");
-        //this.fill(cH, cS, cL);
-    }
-
-    this.$loadAml = function(x){
-        if (x.getAttribute("color"))
-            this.setValue(x.getAttribute("color"));
-    }
-
-    this.$destroy = function(){
-        this.container.host  =
-        this.tbRed.host      =
-        this.tbGreen.host    =
-        this.tbBlue.host     =
-        this.tbHexColor.host =
-        this.pHolder.host    = null;
-    }
-}).call(apf.colorpicker.prototype = new apf.GuiElement());
-
-apf.aml.setElement("colorpicker", apf.colorpicker);
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/colorpicker2.js)SIZE(15991)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50135,6 +49842,8 @@ apf.colorpicker = function(struct, tagName){
     this.$propHandlers["saturation"] = 
     this.$propHandlers["brightness"] = 
     this.$propHandlers["hex"]        = function(val, prop) {
+        if (this.$ignoreSetProperty)
+            return;
         clearTimeout(this.changeTimer);
         var _self = this;
         this.changeTimer = $setTimeout(function() {
@@ -50157,30 +49866,40 @@ apf.colorpicker = function(struct, tagName){
     };
 
     this.$change = function(prop) {
-        var hsb = c.fixHSB({
-            h: this.hue,
-            s: this.saturation,
-            b: this.brightness
-        });
-        
-        var hex = c.HSBToHex(hsb);
-        var rgb = c.HSBToRGB(hsb);
+        if (!prop || /hsb|hue|saturation|brightness/.test(prop)) {
+            prop = "hsb";
+            var hsb = c.fixHSB({h: this.hue, s: this.saturation, b: this.brightness});
+            var hex = c.HSBToHex(hsb);
+            var rgb = c.HSBToRGB(hsb);
+        } else if (/red|green|blue|rgb/.test(prop)) {
+            prop = "rgb";
+            var rgb = c.fixRGB({r: this.red, g: this.green, b: this.blue});
+            var hex = c.RGBToHex(rgb);
+            var hsb = c.RGBToHSB(rgb);
+        } else {
+            prop = "hex";
+            var hex = c.fixHex(this.hex);
+            var hsb = c.hexToHSB(hex);
+            var rgb = c.hexToRGB(hex);
+        }
 
         this.oNewColor.style.backgroundColor = "#" + hex;
 
-        if (prop != "red" && prop != "green" && prop != "blue") {
+        this.$ignoreSetProperty = true;
+        if (prop != "rgb") {
             this.setProperty("red", rgb.r);
             this.setProperty("green", rgb.g);
             this.setProperty("blue", rgb.b);
         }
-        if (prop != "hue" && prop != "saturation" && prop != "brightness") {
+        if (prop != "hsb") {
             this.setProperty("hue", hsb.h);
             this.setProperty("saturation", hsb.s);
             this.setProperty("brightness", hsb.b);
         }
         if (prop != "hex")
             this.setProperty("hex", hex);
-
+        this.$ignoreSetProperty = false;
+        
         this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
         this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
         this.oSelectorInd.style.left = parseInt(150 * hsb.s / 100, 10) + "px";
@@ -50282,17 +50001,6 @@ apf.colorpicker = function(struct, tagName){
             else if (o.id.indexOf("blue") > -1) {
                 _self.blue = e.value;
                 isRGB = true;
-            }
-
-            if (isRGB) {
-                var hsb = c.RGBToHSB({r: _self.red, g: _self.green, b: _self.blue});
-                _self.hex = c.HSBToHex(hsb);
-                _self.hue = hsb.h;
-                _self.saturation = hsb.s;
-                _self.brightness = hsb.b;
-            }
-            else {
-                _self.hex = c.HSBToHex({h: _self.hue, s: _self.saturation, b: _self.brightness});
             }
 
             _self.$change(isRGB ? "red" : "hue");
@@ -50483,7 +50191,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/comment.js)SIZE(1367)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50527,7 +50235,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/contextmenu.js)SIZE(2725)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50553,7 +50261,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 /**
- * An element specifying which menu is shown when a
+ * This element specifies which menu is shown when a
  * contextmenu is requested by a user for a AML node.
  * 
  * #### Example
@@ -50562,16 +50270,27 @@ apf.aml.setElement("comment", apf.comment);
  * right clicks on the root {@link term.datanode data node}. Otherwise the `mnuItem` menu is
  * shown.
  *
- * ```xml
- *  <a:list>
- *      <a:contextmenu menu="mnuRoot" match="[root]" />
- *      <a:contextmenu menu="mnuItem" />
- *  </a:list>
+ * ```xml, demo
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="ctxMenu">
+ *       <a:item>Choice 1!</a:item>
+ *       <a:item>Choice 2!</a:item>
+ *   </a:menu>
+ *   <a:list width="300" id="list1">
+ *       <a:contextmenu menu="ctxMenu" />
+ *       <a:item>The Netherlands</a:item>
+ *       <a:item>United States of America</a:item>
+ *       <a:item>Poland</a:item>
+ *   </a:list>
+ *   <!-- endcontent -->
+ *   Right-click on the list to reveal the context menu!
+ *  </a:application>
  * ```
  *
  * @class apf.contextmenu
- * @inherits apf.AmlElement
  * @define contextmenu
+ * @inherits apf.AmlElement
  * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -50617,7 +50336,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/datagrid.js)SIZE(54098)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50643,30 +50362,55 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 /**
- * Element providing a sortable, selectable grid containing scrollable 
- * information. Grid columns can be reordered and resized.
+ * This element  provides a sortable, selectable grid containing scrollable 
+ * information. The grid columns can be reordered and resized.
  * 
  * #### Example
- *
- * This example shows a datagrid width several columns mixing percentage and
- * fixed size columns.
  * 
- * ```xml
- *  <a:model id="mdlNews">
- *      <data>
- *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
- *          <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
- *          <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
- *      </data>
- *  </a:model>
- *  <a:datagrid model="mdlNews" options="move|size">
- *      <a:each match="[news]">
- *          <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
- *          <a:column caption="Date" value="[@date]" width="70" />
- *          <a:column caption="Title" width="180" value="[@title]" />
- *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
- *      </a:each>
- *  </a:datagrid>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdl">
+ *         <data>
+ *             <news name="Ajax" icon="note.png" count="54"></news>
+ *             <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+ *             </news>
+ *             <news name="Android" icon="note.png" count="2"></news>
+ *             <news name="Apple" icon="note.png" count="11"></news>
+ *             <news name="Aptana" icon="note.png" count="30"></news>
+ *             <news name="Canvas" icon="note.png" count="115"></news>
+ *             <news name="Chrome" icon="note.png" count="9"></news>
+ *             <news name="ColdFusion" icon="note.png" count="10"></news>
+ *             <news name="CSS" icon="note.png" count="176"></news>
+ *             <news name="Dojo" icon="note.png" count="224"></news>
+ *             <news name="JavaScript" icon="note.png" count="1218"></news>
+ *             <news name="JSON" icon="note.png" count="59"></news>
+ *             <news name="Mac" icon="note.png" count="1"></news>
+ *             <news name="Mozilla" icon="note.png" count="11"></news>
+ *         </data>
+ *   </a:model>
+ *   <a:datagrid 
+ *     width    = "500" 
+ *     id       = "dg1"
+ *     model    = "mdl"
+ *     height   = "150"> 
+ *       <a:each match="[news]"> 
+ *           <a:column 
+ *             type   = "icon" 
+ *             width  = "16" 
+ *             value  = "[@icon]" />
+ *           <a:column 
+ *             caption = "Name" 
+ *             value   = "[@name]"
+ *             width   = "100%" /> 
+ *           <a:column 
+ *             caption = "Article counter" 
+ *             width   = "180" 
+ *             value   = "[@count]" />
+ *       </a:each> 
+ *   </a:datagrid>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.datagrid
@@ -51857,7 +51601,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/defaults.js)SIZE(1838)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51883,7 +51627,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/divider.js)SIZE(2918)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51977,7 +51721,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/dropdown.js)SIZE(15543)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52006,68 +51750,87 @@ apf.aml.setElement("divider", apf.divider);
  * An element allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
  * 
- * #### Example
- *
- * A simple dropdown with inline items.
+ * #### Example: Simple Dropdown
  * 
- * ```xml
- *  <a:dropdown>
- *      <a:item>The Netherlands</a:item>
- *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:dropdown>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown initial-message="Choose a country">
+ *       <a:item>America</a:item>
+ *       <a:item>Armenia</a:item>
+ *       <a:item>The Netherlands</a:item>
+ *   </a:dropdown>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
- *
- * A databound dropdown with items loaded from an xml file.
+ * #### Example: Loading Items From XML
  * 
- * ```xml
- *  <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Capturing and Emitting Events
  *
  * A databound dropdown using the bindings element
  * 
- * ```xml
- *  <a:dropdown model="friends.xml">
- *      <a:bindings>
- *          <a:caption  match = "[@name]" />
- *          <a:css      match = "[self::node()[@type='best']]" value="bestfriend" />
- *          <a:each     match = "[friend]" />
- *      </a:bindings>
- *  </a:dropdown>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <a:table columns="100, 100, 100, 100" cellheight="19" padding="5">
+ *   <!-- startcontent -->
+ *       <a:model id="mdlDD5">
+ *           <data>
+ *               <friend name="Arnold"></friend>
+ *               <friend name="Carmen"></friend>
+ *               <friend name="Giannis"></friend>
+ *               <friend name="Mike"></friend>
+ *               <friend name="Rik"></friend>
+ *               <friend name="Ruben"></friend>
+ *           </data>
+ *       </a:model>
+ *       <a:textbox id="txtAr"></a:textbox>
+ *       <a:dropdown
+ *         id          = "friendDD"
+ *         model       = "mdlDD5"
+ *         each        = "[friend]"
+ *         caption     = "[@name]"
+ *         onslidedown = "txtAr.setValue('slide down')"
+ *         onslideup   = "txtAr.setValue('slide up')" />
+ *       <a:button onclick="friendDD.slideDown()">Slide Down</a:button>
+ *       <a:button onclick="friendDD.slideUp()">Slide Up</a:button>
+ *   <!-- endcontent -->
+ *   </a:table>
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Dynamically Adding Entries
  *
- * A small form:
- * 
- * ```xml
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data>
- *          <name>Mike</name>
- *          <city>amsterdam</city>
- *      </data>
- *  </a:model>
- * 
- *  <a:bar model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[name]" />
- *    
- *      <a:label>City</a:label>
- *      <a:dropdown value="[mdlForm::city]" model="cities.xml">
- *          <a:bindings>
- *              <a:caption match="[text()]" />
- *              <a:value match="[@value]" />
- *              <a:each match="[city]" />
- *          </a:bindings>
- *      </a:dropdown>
- *    
- *      <a:button default="true" action="submit">Submit</a:button>
- *  </a:bar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="friendMdl">
+ *       <data>
+ *           <friend name="Arnold" />
+ *           <friend name="Carmen" />
+ *           <friend name="Giannis" />
+ *           <friend name="Mike" />
+ *           <friend name="Rik" />
+ *           <friend name="Ruben" />
+ *       </data>
+ *   </a:model>
+ *   <a:dropdown
+ *     id      = "dd"
+ *     model   = "friendMdl"
+ *     each    = "[friend]"
+ *     caption = "[@name]">
+ *   </a:dropdown>
+ *   <a:button width="110" onclick="dd.add('&lt;friend name=&quot;Lucas&quot; />')">New Name?</a:button>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.dropdown
@@ -52447,7 +52210,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/editor.js)SIZE(18526)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52473,7 +52236,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/errorbox.js)SIZE(6160)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52665,7 +52428,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/event.js)SIZE(2192)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52733,7 +52496,7 @@ apf.event = function(struct, tagName){
 apf.aml.setElement("event", apf.event);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/filler.js)SIZE(1385)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52774,32 +52537,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/flashplayer.js)SIZE(5844)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/flowchart.js)SIZE(50799)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52825,7 +52563,6 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/flowchart2.js)SIZE(45889)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52851,7 +52588,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/frame.js)SIZE(4957)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52877,18 +52640,22 @@ apf.aml.setElement("filler", apf.filler);
 
 
 /**
- * An element displaying a frame with a caption, containing other elements. This
- * element is called a "fieldset" in HTML.
+ * This element displays a frame with a caption that can contain other elements. It's
+ * element is analogous to the `<fieldset>` in HTML.
  * 
  * #### Example
  * 
- * ```xml
- *  <a:frame caption="Options">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *    <!-- startcontent -->
+ *    <a:frame caption="Options">
  *      <a:radiobutton value="1">Option 1</a:radiobutton>
  *      <a:radiobutton value="2">Option 2</a:radiobutton>
  *      <a:radiobutton value="3">Option 3</a:radiobutton>
  *      <a:radiobutton value="4">Option 4</a:radiobutton>
- *  </a:frame>
+ *    </a:frame>
+ *    <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.frame
@@ -53006,7 +52773,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/gallery.js)SIZE(27418)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53031,7 +52798,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/graph.js)SIZE(21505)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53056,7 +52823,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/hbox.js)SIZE(42311)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53083,13 +52850,24 @@ apf.aml.setElement("frame", apf.frame);
 /**
  * A container that stacks its children vertically.
  * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:vbox width="100">
+ *       <a:button height="28" edge="5">Button 1</a:button>
+ *       <a:button height="28" edge="5">Button 2</a:button>
+ *       <a:button height="28" edge="5">Button 3</a:button>
+ *   </a:vbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.vbox
  * @layout
  * @define vbox 
  * 
- * #### Example
- * 
- * {:hboxExample}
  * 
  * @see element.hbox
  * 
@@ -53103,25 +52881,23 @@ apf.aml.setElement("frame", apf.frame);
  * 
  * #### Example
  * 
- * ```xml
- *  <a:hbox height="500" width="600">
- *      <a:vbox height="500" width="500">
- *          <a:bar height="250" caption="Top bar" />
- *          <a:hbox width="500" height="250">
- *              <a:bar width="150" caption="Bottom left bar"/>
- *              <a:bar width="350" caption="Bottom Right bar"/>
- *          </a:hbox>
- *      </a:vbox>
- *      <a:bar width="100" caption="Right bar"/>
- *  </a:hbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:hbox height="29" width="300" lean="right" margin="5 0 0 0">
+ *       <a:button width="100" edge="5">Button 1</a:button>
+ *       <a:button width="100">Button 2</a:button>
+ *       <a:button width="100">Button 3</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
- * {: #hboxExample}
  * 
- * @see element.vbox
  * 
  * #### Remarks
  * 
- * Firefox has some issues. 
+ * Firefox has some issues:
+ * 
  * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
  * height value.
  * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
@@ -53133,6 +52909,7 @@ apf.aml.setElement("frame", apf.frame);
  * @define hbox
  * @layout
  * 
+ * @see element.vbox
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
@@ -53159,13 +52936,13 @@ apf.vbox = function(struct, tagName){
     var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
-     * @attribute {String}  padding=2      Sets or gets the space between each element.
+     * @attribute {String}  [padding=2]      Sets or gets the space between each element.
      */
     /**
      * @attribute {Boolean} reverse      Sets or gets whether the sequence of the elements is in reverse order.
      */
     /**
-     * @attribute {String}  edge="5,5,5,5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
+     * @attribute {String}  [edge="5,5,5,5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
      * 
      * #### Example
      * 
@@ -54097,7 +53874,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/iconmap.js)SIZE(3226)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54123,7 +53900,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/img.js)SIZE(7767)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54149,37 +53926,35 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 /**
- * An element displaying a picture. This element can read databound resources.
+ * The element displays a picture. This element can read databound resources.
  * 
  * #### Example
  * 
  * This example shows a list with pictures. When one is selected its displayed
- * in the `img` element.
+ * in the `<a:img>` element:
  * 
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
  *  <a:model id="mdlPictures"> 
- *      <pictures> 
- *          <picture title="Landscape" src="img1.jpg" />
- *          <picture title="Animal" src="img2.jpg" />
- *          <picture title="River" src="img3.jpg" />
- *      </pictures> 
- *  </a:model>
- *  <a:list 
- *    id     = "lstPics" 
- *    skin   = "thumbnail" 
- *    height = "200" 
- *    width  = "400" 
- *    model  = "mdlPictures">
- *      <a:each match = "[picture]" >
- *          <a:name match="[@title]" />
- *          <a:image match="[@src]">path/to/image/[@src]</a:image>
- *      </a:each>
- *  </a:list>
- *  <a:img 
- *    model  = "{lstPics.selected}" 
- *    value  = "path/to/image/[@src]" 
- *    width  = "200" 
- *    height = "200" />
+ *       <data> 
+ *           <picture title="Ceiling Cat" src="http://htstatic.ibsrv.net/forums/honda-tech/ceiling-cat/ceiling-cat-6.jpg" />
+ *           <picture title="Maru" src="http://1.bp.blogspot.com/_4Cb_t7BLaIA/TCY3jyIx4SI/AAAAAAAAAbw/K-Ey_u36y8o/s400/maru+the+japanese+cat.jpg" />
+ *           <picture title="Lime Cat" src="http://www.cs.brown.edu/orgs/artemis/2012/catsoftheworld/lime-cat.jpg" />
+ *       </data> 
+ *   </a:model>
+ *   <a:list 
+ *     id     = "lstPics" 
+ *     model  = "mdlPictures">
+ *       <a:each match="[picture]" >
+ *           <a:caption match="[@title]" />
+ *       </a:each>
+ *   </a:list>
+ *   <a:img 
+ *     model  = "{lstPics.selected}" 
+ *     value  = "[@src]" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.img
@@ -54380,7 +54155,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/item.js)SIZE(25792)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54405,26 +54180,24 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 /**
- * An item in a menu, displaying a clickable area.
+ * Represents an item in a menu, displaying a clickable area.
  * 
  * #### Example
  * 
- * ```xml
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2" />
- *  <a:menu id="menu1">
- *      <a:item icon="tbicons:1">Tutorials</a:item>
- *      <a:item icon="tbicons:5">Contact</a:item>
- *  </a:menu>
- *  <a:toolbar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *      <a:item>Tutorials</a:item>
+ *      <a:item>Contact</a:item>
+ *   </a:menu>
+ *   <a:toolbar>
  *      <a:menubar>
  *          <a:button submenu="menu1">File</a:button>
  *      </a:menubar>
- *  </a:toolbar>
+ *   </a:toolbar>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
  * @class apf.item
@@ -55128,7 +54901,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/junction.js)SIZE(2555)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55215,7 +54988,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/label.js)SIZE(5189)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55241,15 +55014,24 @@ apf.aml.setElement("junction", apf.junction);
 
 /**
  * An element displaying a text in the user interface, usually specifying
- * a description of another element. When the user clicks on the label it 
+ * a description of another element. When the user clicks on the label, it 
  * can set the focus to the connected AML element.
  * 
- * #### Example
- * This example uses the `for` attribute to connect the label to the form element.
+ * #### Example: Connecting with "For"
  * 
- * ```xml
- *  <a:label for="txtAddress">Address</a:label>
- *  <a:textbox id="txtAddress" value="Some text" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label 
+ *     for       = "txtAddress"
+ *     disabled  = "true" 
+ *     caption   = "Disabled label"></a:label>
+ *   <a:textbox id="txtAddress" />
+ *   <a:label 
+ *     for   = "txtAddress2">Not Disabled</a:label>
+ *   <a:textbox id="txtAddress2" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.label
@@ -55386,7 +55168,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/lineselect.js)SIZE(4754)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55412,7 +55194,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/list.js)SIZE(13255)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55437,7 +55219,7 @@ apf.aml.setElement("label", apf.label);
 
 
 /**
- * An element displaying a skinnable list of options which can be selected.
+ * This element displays a skinnable list of options which can be selected.
  * 
  * Selection of multiple items is allowed. Items can be renamed
  * and removed. The list can be used as a collection of checkboxes or 
@@ -55447,50 +55229,53 @@ apf.aml.setElement("label", apf.label);
  * of items in a CMS-style interface, or display a list of search results in 
  * a more website like interface.
  * 
- * #### Example
+ * #### Example: A Simple List
  * 
- * A simple list with inline items.
- * 
- * ```xml
- *  <a:list multimatch="[false]">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list>
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:list>
+ *      <a:item>United Kingdom</a:item> 
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Loading from a Model
  * 
- * A databound list with items loaded from an xml file.
- * 
- * ```xml
- *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list 
+ *     model   = "../resources/xml/friends.xml"
+ *     each    = "[friend]"
+ *     caption = "[@name]"
+ *     icon    = "[@icon]"
+ *     width   = "300">
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Using XPaths
  * 
- * A databound list using the bindings element
- * 
- * ```xml
- *  <a:model id="mdlList">
- *      <data>
- *          <item date="2009-11-12" deleted="0"></item>
- *          <item date="2009-11-11" deleted="0"></item>
- *          <item date="2009-11-10" deleted="0"></item>
- *          <item date="2009-11-09" deleted="1"></item>
- *          <item date="2009-11-08" deleted="1"></item>
- *      </data>
- *  </a:model>
- *  <a:list id="list" width="200" height="200" model="mdlList">
- *      <a:bindings>
- *          <a:caption match="[@date]" />
- *          <a:each match="[item[not(@deleted='1')]]" />
- *      </a:bindings>
- *  </a:list>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list model="../resources/xml/friends.xml" width="300">
+ *       <a:each match="[friend]">
+ *           <a:caption match="[@name]" />
+ *           <a:icon 
+ *             match = "[node()[@name='Ruben' or @name='Matt']]" 
+ *             value = "../resources/icons/medal_gold_1.png" />
+ *           <a:icon value="../resources/icons/medal_silver_1.png" />
+ *       </a:each>
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
- *
- * 
  * @class apf.list
  * @define list
  * @allowchild {smartbinding}
@@ -55752,7 +55537,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/loader.js)SIZE(3558)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55868,7 +55653,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/loadindicator.js)SIZE(5204)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55894,7 +55679,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/map.js)SIZE(21809)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55920,7 +55705,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/markupedit.js)SIZE(55931)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55946,7 +55731,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/menu.js)SIZE(19685)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55971,58 +55756,50 @@ apf.aml.setElement("loader", apf.loader);
 
 
 /**
- * An element displaying a skinnable menu of items which can be choosen.
+ * This element displays a skinnable menu of items which can be choosen.
  * 
- * Based on the context of the menu, items can be shown and hidden. That's
- * why this element is often called a contextmenu.
+ * Based on the context of the menu, items can be shown and hidden. 
  * 
- *
  *
  * #### Example
  * 
- * ```xml
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2"></a:iconmap>
- * 
- *  <a:menu id="msub">
- *      <a:item icon="tbicons:12">test</a:item>
- *      <a:item icon="tbicons:14">test2</a:item>
- *  </a:menu>
- * 
- *  <a:menu id="mmain">
- *      <a:item icon="tbicons:1">table_wizard</a:item>
- *      <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
- *      <a:divider></a:divider>
- *      <a:radio>item 1</a:radio>
- *      <a:radio>item 2</a:radio>
- *      <a:radio>item 3</a:radio>
- *      <a:radio>item 4</a:radio>
- *      <a:divider></a:divider>
- *      <a:check hotkey="Ctrl+T">item check 1</a:check>
- *      <a:check hotkey="F3">item check 2</a:check>
- *      <a:divider></a:divider>
- *      <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
- *      <a:item icon="tbicons:10">table_wizard</a:item>
- *  </a:menu>
- * 
- *  <a:window 
- *    visible     = "true" 
- *    width       = "200"
- *    height      = "190"
- *    contextmenu = "mmain"
- *    center      = "true">
- *  </a:window>
+ * ```xml, demo
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *       <a:item>Tutorials</a:item>
+ *       <a:item icon="email.png">Contact</a:item>
+ *       <a:divider></a:divider>
+ *       <a:item 
+ *         icon    = "application_view_icons.png"
+ *         hotkey  = "Ctrl+T"
+ *         onclick = "setTimeout(function(){alert('You did it');}, 1000)">
+ *         Tutorials</a:item>
+ *       <a:divider />
+ *       <a:item disabled="true">Visit Ajax.org</a:item>
+ *       <a:item>Exit</a:item>
+ *   </a:menu>
+ *   <a:window
+ *     width     = "400"
+ *     height    = "150"
+ *     visible   = "true"
+ *     resizable = "true"
+ *     title     = "Mail message">
+ *       <a:toolbar>
+ *           <a:menubar>
+ *               <a:button submenu="menu1">File</a:button>
+ *               <a:button submenu="menu1" disabled="true">Edit</a:button>
+ *           </a:menubar>
+ *       </a:toolbar>
+ *   </a:window>
+ *   <!-- endcontent -->
+ *  </a:application>
  * ```
  *
  * @class apf.menu
  * @define menu
  * @selection
  * @allowchild item, divider, check, radio
- * @see apf.GuiElement@contextmenu
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -56521,7 +56298,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/method.js)SIZE(3975)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56629,7 +56406,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/modalwindow.js)SIZE(24919)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56726,30 +56503,33 @@ apf.WinServer = {
 }
 
 /**
- * An element displaying a skinnable, draggable window with optionally
- * a min, max, edit and close button. This element is also used
- * as a portal widget container. Furthermore, this element supports
- * docking in an alignment layout.
+ * This element displays a skinnable, draggable window. It can be given
+ * a minimum and miximum width and height, as well as keybindings and various buttons. 
+ * 
  * 
  * #### Example
  * 
- * ```xml
- *  <a:window 
- *    id        = "winMail"
- *    modal     = "false"
- *    buttons   = "min|max|close"
- *    title     = "Mail message"
- *    icon      = "icoMail.gif"
- *    visible   = "true"
- *    resizable = "true"
- *    minwidth  = "300"
- *    minheight = "290"
- *    width     = "500"
- *    height    = "400">
- *  </a:window>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:window 
+ *     id        = "winMail"
+ *     modal     = "false"
+ *     buttons   = "min|max|close"
+ *     title     = "Mail message"
+ *     icon      = "../resources/icons/email.png"
+ *     visible   = "true"
+ *     resizable = "true"
+ *     minwidth  = "300"
+ *     minheight = "290"
+ *     width     = "500"
+ *     height    = "400">
+ *   </a:window>
+ *   <!-- endcontent -->
+ * </a:application> 
  * ```
  *
- * @class apf.modalwindow 
+ * @class apf.window 
  * @define window
  * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}
@@ -57278,7 +57058,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/model.js)SIZE(44075)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57304,40 +57084,73 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 /**
- * An element functioning as the central access point for XML data. Data can be
- * retrieved from any data source using data instructions. Data can be
- * submitted using data instructions in a similar way to html form posts. 
+ * This element functions as the central access point for XML data. Data can be
+ * retrieved from any data source using data instructions. Data can also be
+ * submitted using data instructions in a similar way to HTML form posts. 
  *
  * The modal can be reset to its original state. It has support for offline use and
  * synchronization between multiple clients.
  * 
- * #### Example
- *
- * ```xml
- *  <a:model src="products.xml" />
- * ```
+ * #### Example: Loading A Model 
  * 
- * #### Example
- *
- * A small form where the bound data is submitted to a server using a model.
- * 
- * ```xml
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data name="Lukasz" address="Poland"></data>
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:model id="mdl1">
+ *      <data>
+ *          <row content="This is a row 1" />
+ *          <row content="This is a row 2" />
+ *          <row content="This is a row 3" />
+ *      </data>
  *  </a:model>
+ *  <a:hbox height="20">
+ *      <a:label>List component:</a:label>
+ *  </a:hbox>
+ *  <a:list 
+ *    model    = "mdl1" 
+ *    each     = "[row]"
+ *    caption  = "[@content]" 
+ *    icon     = "[@icon]" 
+ *    width    = "400">
+ *  </a:list>
+ *  <a:hbox height="30" margin="7 0 3 0">
+ *      <a:label>Datagrid component:</a:label>
+ *  </a:hbox>
+ *  <a:datagrid width="400" height="100" model="mdl1">
+ *      <a:each match="[row]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@content]" 
+ *            width   = "100%" />
+ *      </a:each>
+ *  </a:datagrid>
+ *  <!-- endcontent -->
+ * </a:application>
  * 
- *  <a:frame model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[@name]" />
- *      <a:label>Address</a:label>
- *      <a:textarea 
- *        value  = "[@address]" 
- *        width  = "100" 
- *        height = "50" />
- *      <a:button 
- *        default = "true" 
- *        action  = "submit">Submit</a:button>
- *  </a:frame>
+ * #### Example
+ *
+ * A small form where the bound data is submitted to a server using a model:
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlForm" submission="save_form.asp">
+ *       <data name="Lukasz" address="Poland"></data>
+ *   </a:model>
+ *  
+ *   <a:frame model="mdlForm">
+ *       <a:label>Name</a:label>
+ *       <a:textbox value="[@name]" />
+ *       <a:label>Address</a:label>
+ *       <a:textarea 
+ *         value  = "[@address]" 
+ *         width  = "100" 
+ *         height = "50" />
+ *       <a:button 
+ *         default = "true" 
+ *         action  = "submit">Submit</a:button>
+ *   </a:frame>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.model
@@ -58472,7 +58285,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/notifier.js)SIZE(15608)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58500,49 +58313,6 @@ apf.aml.setElement("model", apf.model);
  * 
  * A notification element, which shows popups when events occur. Similar in concept
  * to [growl](http://growl.info/) on the OSX platform.
- * 
- * #### Example
- *
- * ```xml
- *  <a:notifier position="bottom-right" margin="10 10">
- *      <a:event 
- *        when    = "{offline.onLine}"
- *        message = "You are currently working offline"
- *        icon    = "icoOffline.gif" />
- *      <a:event 
- *        when    = "{!offline.onLine}"
- *        message = "You are online"
- *        icon    = "icoOnline.gif" />
- *      <a:event 
- *        when    = "{offline.syncing}" 
- *        message = "Your changes are being synced" 
- *        icon    = "icoSyncing.gif" />
- *      <a:event 
- *        when    = "{!offline.syncing}"
- *        message = "Syncing done"
- *        icon    = "icoDone.gif" />
- *  </a:notifier>
- * ```
- *
- * #### Example:
- *
- * Notifier with four notifications which appears and stays over three seconds.
- * It begins at the top-right corner and goes to the left. 
- * 
- * First, the notification will
- * be displayed when value in textbox will be bigger than four. In the following two cases, 
- * the notification will be shown when the notifier's `position` or `arrange` attribute is 
- *  changed. In the last case the notification is shown when the date `2008-12-24` 
- * is selected on calendar.
- * 
- * ```xml
- *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
- *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
- *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
- *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
- *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
- *  </a:notifier>
- * ```
  * 
  * @class apf.notifier
  * @define notifier
@@ -58577,11 +58347,11 @@ apf.aml.setElement("model", apf.model);
  *                                      element will be displayed. Defaults to 300px.
  */
 /**
- * @attribute   {String}   arrange="vertical"      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
+ * @attribute   {String}   [arrange="vertical"]      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
  *                                      or columns (`"horizontal"`).
  */
 /**
- * @attribute   {String}   timeout=2     After the timeout has passed, the popup
+ * @attribute   {String}   [timeout=2]     After the timeout has passed, the popup
  *                                      disappears automatically. When the
  *                                      mouse is hovering over the popup, it doesn't
  *                                      disappears.
@@ -58654,7 +58424,7 @@ apf.notifier = function(struct, tagName){
     /**
      * Creates a new notification popup.
      * 
-     * @param {String}  message=""  The message content displayed in the popup element
+     * @param {String}  [message=""]  The message content displayed in the popup element
      * @param {String}  [icon]     The path to the icon file ,relative to "icon-path" which
      *                           is set in the skin declaration
      * 
@@ -58905,7 +58675,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/page.js)SIZE(27729)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58933,6 +58703,36 @@ apf.aml.setElement("event", apf.event);
 /**
  * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
  *
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *      <a:tab anchors="10 10 10 10"> 
+ *          <a:page caption="General"> 
+ *              <a:checkbox>Example</a:checkbox> 
+ *              <a:button>Example</a:button> 
+ *          </a:page> 
+ *          <a:page caption="Advanced"> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *          </a:page> 
+ *          <a:page caption="Ajax.org"> 
+ *              <a:checkbox>This ok?</a:checkbox> 
+ *              <a:checkbox>This better?</a:checkbox> 
+ *          </a:page> 
+ *      </a:tab> 
+ *  </a:window>
+ *  <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.page
  * @define  page
  * @container
@@ -59677,7 +59477,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/pager.js)SIZE(9063)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59703,7 +59503,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/palette.js)SIZE(5942)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59728,7 +59528,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/param.js)SIZE(1681)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59771,7 +59571,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/persist.js)SIZE(17553)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59797,7 +59597,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/portal.js)SIZE(25057)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59822,7 +59622,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/progressbar.js)SIZE(8930)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59848,26 +59648,80 @@ apf.aml.setElement("param", apf.param);
 
 
 /**
- * An element that graphically represents a percentage value which increases
+ * This element graphically represents a percentage value which increases
  * automatically with time. 
  *
  * This element is most often used to show the progress
  * of a process. The progress can be either indicative or exact.
  * 
- * #### Example
+ * #### Example: A Simple Progressbar
  * 
- * This example shows a progress bar that is only visible when an application is
- * synchronizing it's offline changes. When in this process it shows the exact
- * progress of the sync process.
- * 
- * ```xml
- *  <a:progressbar
- *    value   = "{apf.offline.progress}"
- *    visible = "{apf.offline.syncing}" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * @class apf.progress
- * @define progress
+ * #### Example: Progressbars with Varying Speeds
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     id    = "pb1"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb1.start();
+ *   //--></a:script>
+ *   </a:progressbar>
+ * 
+ *   <a:progressbar 
+ *     id    = "pb2"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb2.start(50);
+ *   //--></a:script>
+ *   </a:progressbar>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Dynmically Controlling the Progressbar
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar
+ *     id    = "pb3"
+ *     min   = "0"
+ *     max   = "100"
+ *     value = "0"
+ *     width = "300" />
+ *   <a:table 
+ *     columns    = "80, 80, 80, 80"
+ *     cellheight = "24" 
+ *     margin     = "15 0">
+ *       <a:button onclick="pb3.start()">Start</a:button>
+ *       <a:button onclick="pb3.pause()">Pause</a:button>
+ *       <a:button onclick="pb3.stop()">Stop</a:button>
+ *       <a:button onclick="pb3.clear()">Clear</a:button>
+ *       <a:button onclick="pb3.enable()">Enable</a:button>
+ *       <a:button onclick="pb3.disable()">Disable</a:button>
+ *   </a:table>
+ * </a:application>
+ * ```
+ * 
+ * @class apf.progressbar
+ * @define progressbar
  * @allowchild {smartbinding}
  *
  * @form
@@ -60060,7 +59914,7 @@ apf.progressbar = function(struct, tagName){
     /**
      * Stops the progress indicator from moving.
      * @param {Boolean} restart Specifies whether a `this.$timer` should start with a new indicative progress indicator.
-     * @param {Number} time=500 The internal (in milliseconds)
+     * @param {Number} [time=500] The internal (in milliseconds)
      * @param {Number} [restart_time] The time for the next restart to occur
      */
     this.stop = function(restart, time, restart_time){
@@ -60109,7 +59963,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/propedit.js)SIZE(46645)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60136,7 +59990,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/radiobutton.js)SIZE(17464)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60161,34 +60015,24 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 /**
- * An element displaying a two state button which is one of a grouped set.
+ * This element displays a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be selected at the same time.
  * 
- * #### Example
+ * #### Example: Settings Groups
  *
- * ```xml
- *  <a:frame caption="Options">
- *      <a:radiobutton>Option 1</a:radiobutton>
- *      <a:radiobutton>Option 2</a:radiobutton>
- *      <a:radiobutton>Option 3</a:radiobutton>
- *      <a:radiobutton>Option 4</a:radiobutton>
- *  </a:frame>
- * ```
- * 
- * #### Example
- *
- * This example shows radio buttons with an explicit group set:
- *
- * ```xml
- *  <a:label>Options</a:label>
- *  <a:radiobutton group="g1">Option 1</a:radiobutton>
- *  <a:radiobutton group="g1">Option 2</a:radiobutton>
- *
- *  <a:label>Choices</a:label>
- *  <a:group id="g2" value="[mdlForm::choice]">
- *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
- *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
- *  </a:group>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 150" cellheight="20">
+ *   <!-- startcontent -->
+ *     <a:label>Options</a:label> 
+ *     <a:label>Choices</a:label> 
+ *     <a:radiobutton group="g2">Option 1</a:radiobutton> 
+ *     <a:radiobutton group="g3">Choice 1</a:radiobutton> 
+ *     <a:radiobutton group="g2">Option 2</a:radiobutton>
+ *     <a:radiobutton group="g3">Choice 2</a:radiobutton>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
  * ```
  *
  * @class apf.radiobutton
@@ -60721,7 +60565,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/remote.js)SIZE(20914)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61255,7 +61099,7 @@ apf.aml.setElement("remote", apf.remote);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc.js)SIZE(21108)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61878,7 +61722,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/script.js)SIZE(3774)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61904,8 +61748,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 /**
- * An element that loads JavaScript into the application,
- * either from its first child or from a file.
+ * This element loads JavaScript into the application.
  * 
  * #### Example
  *
@@ -62005,7 +61848,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/scrollbar.js)SIZE(32767)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62945,7 +62788,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/services.js)SIZE(1488)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62971,7 +62814,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/skin.js)SIZE(9841)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62996,17 +62839,20 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 /**
- * An element specifying the skin of an application.
+ * This element specifies the skin of an application.
  *
- * #### Example
- *
- * ```xml
- *  <a:skin src="perspex.xml"
- *    name       = "perspex"
- *    media-path = "http://example.com/images"
- *    icon-path  = "http://icons.example.com" />
- * ```
+ * For Cloud9, the skin is provided for you, and thus, you generally won't need
+ * to provide a new skin for a piece of AML.
  * 
+ * #### Example
+ * 
+ * ```xml
+ * <a:skin src="perspex.xml"
+ *  name       = "perspex"
+ *  media-path = "http://example.com/images"
+ *  icon-path  = "http://icons.example.com" />
+ * ```
+ *  
  * @class apf.skin
  * @inherits apf.AmlElement
  * @define skin
@@ -63183,7 +63029,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/slider.js)SIZE(32340)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63208,7 +63054,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/slideshow.js)SIZE(47073)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63233,7 +63079,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/smartbinding.js)SIZE(13751)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63620,7 +63466,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/source.js)SIZE(1544)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63675,7 +63521,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/spinner.js)SIZE(17209)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63707,43 +63553,49 @@ apf.aml.setElement("source", apf.source);
  * 
  * Max and min attributes define the range of allowed values.
  * 
- * #### Example
+ * #### Example: Setting Maximum and Minimum Ranges
  *
- * Here's a spinner element with  a start value equal to `6` and allowed values from range
- * (-100, 200)
- * 
- * ```xml
- *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *    <a:spinner value="6" min="-6" max="12" width="200"></a:spinner>
+ *  <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
- *
- * Setting the value based on data loaded into this component:
+ * #### Example: Loading Data
  * 
- * ```xml
- *  <a:model id="mdlSpinner">
- *      <data value="56"></data>
- *  </a:model>
- *  <a:spinner value="[@value]" model="mdlSpinner" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlSpinner">
+ *       <data value="56"></data>
+ *   </a:model>
+ *   <a:spinner value="[@value]" model="mdlSpinner" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Connecting to a Textbox
  *
- * Showing the usage of a model in a spinner connected with a textbox:
  * 
- * ```xml
- *  <a:model id="mdlTest">
- *      <overview page="1" pages="50" />
- *  </a:model>
- *  <a:spinner 
- *    id      = "spinner" 
- *    min     = "0" 
- *    max     = "[@pages]" 
- *    model   = "mdlTest" 
- *    value   = "[@page]" 
- *    caption = "[@page] of [@pages]">
- *  </a:spinner>
- *  <a:textbox value="{spinner.caption}"></a:textbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlTest">
+ *     <overview page="1" pages="10" />
+ *   </a:model>
+ *   <a:spinner 
+ *     id      = "spinner" 
+ *     min     = "0" 
+ *     max     = "[@pages]" 
+ *     model   = "mdlTest" 
+ *     value   = "[@page]" 
+ *     caption = "[@page] of [@pages]">
+ *   </a:spinner>
+ *   <a:textbox value="{spinner.caption}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.spinner
@@ -63757,10 +63609,10 @@ apf.aml.setElement("source", apf.source);
  *
  */
 /**
- * @attribute {Number}   max=64000       Sets or gets the maximum allowed value
+ * @attribute {Number}   [max=64000]       Sets or gets the maximum allowed value
  */
 /**
- * @attribute {Number}   min=-64000      Sets or gets the minimal allowed value
+ * @attribute {Number}   [min=-64000]      Sets or gets the minimal allowed value
  */
 /**
  *  @attribute {Number}   value     Sets or gets the actual value displayed in component
@@ -64240,7 +64092,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/splitbox.js)SIZE(20061)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64266,7 +64118,12 @@ apf.aml.setElement("spinner", apf.spinner);
 
 /**
  * 
- * A container that stacks two children vertically.
+ * A container that stacks two children vertically. 
+ * 
+ * Programatically, this is identical to a regular [[vbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:vbox>`; however,
+ * the performance improvements in using a `<a:vsplitbox>` are massive.
  *
  * @class apf.vsplitbox
  * @define vsplitbox
@@ -64282,6 +64139,11 @@ apf.aml.setElement("spinner", apf.spinner);
 /**
  *
  * A container that stacks two children horizontally.
+ * 
+ * Programatically, this is identical to a regular [[apf.hbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:hbox>`; however,
+ * the performance improvements in using a `<a:hsplitbox>` are massive.
  *
  * @class apf.hsplitbox
  * @define hsplitbox 
@@ -64316,10 +64178,10 @@ apf.vsplitbox = function(struct, tagName){
     this.$layout     = true;
     
     /**
-     * @attribute {String}  padding="2"      Sets or gets the space between each element.
+     * @attribute {String}  [padding="2"]      Sets or gets the space between each element.
      */
     /**
-     * @attribute {String}  edge="5 5 5 5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * @attribute {String}  [edge="5 5 5 5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      */
     this.$booleanProperties["splitter"] = true;
     this.$supportedProperties.push("padding", "edge", "splitter");
@@ -64799,7 +64661,7 @@ apf.aml.setElement("vsplitbox", apf.vsplitbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/splitbutton.js)SIZE(6429)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64825,11 +64687,26 @@ apf.aml.setElement("vsplitbox", apf.vsplitbox);
 
 
 /**
- * An element displaying a skinnable rectangle which can contain other
- * AML elements. This element is used by other elements such as the
- * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other AML elements.
+ * This element displays a skinnable rectangle that can contain other
+ * AML elements. 
+ * 
+ * It's used by other elements, such as the
+ * toolbar and statusbar elements, to specify sections.
  *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *  <!-- startcontent -->
+ *    <a:splitbutton id="btnTestRun" caption  = "Run tests"/>
+ *  <!-- endcontent -->
+ *  </a:window>
+ * </a:application>
+ * ```
+ * 
  * #### Remarks
  *
  * This component is used in the accordian element to create its sections. In
@@ -64851,7 +64728,7 @@ apf.aml.setElement("vsplitbox", apf.vsplitbox);
  * @attribute {String} icon Sets or gets the url pointing to the icon image.
  */
 /**
- * @attribute {Boolean} collapsed=false  Sets or gets collapse panel on load.
+ * @attribute {Boolean} [collapsed=false]  Sets or gets collapse panel on load.
  */
 /**
  * @attribute {String} title   Describes the content in a panel
@@ -64996,7 +64873,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/splitter.js)SIZE(25594)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65610,7 +65487,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/state-group.js)SIZE(3215)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65710,7 +65587,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/state.js)SIZE(10967)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65796,8 +65673,8 @@ apf.StateServer = {
 }
 
 /**
- * An element that specifies a certain state of (a part of) the application. With
- * state we mean a collection of properties on objects that have a certain
+ * This element specifies a certain state of (a part of) the application. By
+ * "state", we mean a collection of properties on objects that have a certain
  * value at one time. 
  * 
  * This element allows you to specify which properties on
@@ -65805,81 +65682,32 @@ apf.StateServer = {
  * belong to a state-group containing multiple elements with a default state.
  * 
  * #### Example
- *
- * This example shows a log in window and four state elements in a state-group.
  * 
- * ```xml
- *   <a:appsettings>
- *       <a:auth 
- *         login         = "{comm.login(username, password)}" 
- *         logout        = "{comm.logout()}"
- *         autostart     = "false"
- *         window        = "winLogin"
- *         fail-state    = "stFail"
- *         error-state   = "stError"
- *         login-state   = "stIdle"
- *         logout-state  = "stLoggedOut"
- *         waiting-state = "stLoggingIn" />
- *   </a:appsettings>
- *   <a:teleport>
- *       <a:rpc id="comm" protocol="cgi">
- *           <a:method name="login" url="http://localhost/login.php">
- *               <a:param name="username" />
- *               <a:param name="password" />
- *           </a:method>
- *           <a:method name="logout" url="http://localhost/logout.php" />
- *       </a:rpc>
- *   </a:teleport>
- *  
- *   <a:state-group
- *     loginMsg.visible  = "false"
- *     winLogin.disabled = "false">
- *       <a:state id="stFail"
- *         loginMsg.value    = "Username or password incorrect"
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stError"
- *         loginMsg.value    = "An error has occurred. Please check your network."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stLoggingIn"
- *         loginMsg.value    = "Please wait whilst logging in..."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "true"
- *         btnLogout.visible = "false" />
- *       <a:state id="stIdle"
- *         btnLogout.visible = "true" />
- *       <a:state id="stLoggedOut"
- *         btnLogout.visible = "false"
- *         loginMsg.visible  = "false"
- *         winLogin.disabled = "false" />
- *  </a:state-group>
- * 
- *  <a:window id="winLogin" visible="true" width="400" height="400">
- *      <a:label>Username</a:label>
- *      <a:textbox type="username" value="Lukasz" />
- *  
- *      <a:label>Password</a:label>
- *      <a:textbox type="password" value="ppp" />
- * 
- *      <a:label id="loginMsg" />
- *      <a:button action="login">Log in</a:button>
- *  </a:window>
- *  <a:button id="btnLogout" visible="false" action="logout">Log out</a:button>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:state 
+ *     group   = "stRole" 
+ *     id      = "stUser" 
+ *     caption = "You are a user" 
+ *     active  = "true" />
+ *   <a:state 
+ *      group   = "stRole" 
+ *      id      = "stAdmin" 
+ *      caption = "You have super powers" />
+ *   <a:label caption="{stRole.caption}" />
+ *   <a:hbox height="34" width="200" margin="10 0 0 0">
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stUser.activate()">State - User</a:button>
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stAdmin.activate()">State - Admin</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * #### Example
- *
- * This example shows a label using property binding to get it's caption
- * based on the current state.
- * 
- * ```xml
- *  <a:state group="stRole" id="stUser" caption="You are a user" active="true" />
- *  <a:state group="stRole" id="stAdmin" caption="You have super powers" />
- *
- *  <a:label value="{stRole.caption}" />
- *  <a:button onclick="stAdmin.activate()">Become admin</a:button>
- * ```
  * @class apf.state
  * @define state
  *
@@ -66046,7 +65874,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/statusbar.js)SIZE(3844)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66072,32 +65900,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/style.js)SIZE(1888)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/submitform.js)SIZE(30073)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66123,7 +65926,32 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/tab.js)SIZE(2984)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66156,7 +65984,9 @@ apf.aml.setElement("state", apf.state);
  *
  * #### Example
  *
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <!-- startcontent -->
  *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">
  *          <a:checkbox>Example</a:checkbox>
@@ -66172,6 +66002,8 @@ apf.aml.setElement("state", apf.state);
  *          <a:checkbox>This better?</a:checkbox>
  *      </a:page>
  *  </a:tab>
+ * <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.tab
@@ -66225,7 +66057,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/table.js)SIZE(17314)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66262,41 +66094,48 @@ apf.aml.setElement("tab",    apf.tab);
  * to `'*'`. This means they will span the entire width of all columns, no matter
  * how many columns there are.
  * 
- * ```xml
- *  <a:window visible="true" width="500" height="400">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:window visible="true" width="500" height="260" title="Form">
+ *  <!-- startcontent -->
  *      <a:table id="tableTest" 
  *        columns = "80, *"
  *        edge    = "10 10 10 10"
  *        padding = "5"
  *        bottom  = "35"
  *        top     = "0">
- *          <a:label>Name</a:label>
- *          <a:textbox />
- *          <a:label>Address</a:label>
- *          <a:textarea height="50" />
- *          <a:label>Country</a:label>
- *          <a:dropdown />
- *          
- *          <a:label span="*">Message</a:label>
- *          <a:textarea id="txtMessage" 
- *            height = "*" 
- *            span   = "*" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox />
+ *        <a:label>Address</a:label>
+ *        <a:textarea height="50" />
+ *        <a:label>Country</a:label>
+ *        <a:dropdown>
+ *            <a:item>America</a:item>
+ *            <a:item>Armenia</a:item>
+ *            <a:item>The Netherlands</a:item>
+ *        </a:dropdown>
+ *  
+ *        <a:label span="*">Message</a:label>
+ *        <a:textarea id="txtMessage" 
+ *          height = "*" 
+ *          span   = "*" />
  *      </a:table>
- *      
+ * 
  *      <a:button 
  *        caption = "Two Columns"
  *        bottom  = "10"
  *        left    = "10"
  *        onclick = "tableTest.setAttribute('columns', '80, *');"/>
- *              
+ * 
  *      <a:button 
  *        bottom  = "10"
  *        left    = "125"
  *        caption = "Four Columns"
  *        onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
+ *  <!-- endcontent -->
  *  </a:window>
+ * </a:application>
  * ```
- *
  *
  * @class apf.table
  * @define table
@@ -66338,10 +66177,10 @@ apf.table = function(struct, tagName){
      *
      */
     /**
-     * @attribute {String} padding=2     Sets or gets the space between each element.
+     * @attribute {String} [padding=2]     Sets or gets the space between each element.
      */
     /**
-     * @attribute {String} edge="5 5 5 5"        Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * @attribute {String} [edge="5 5 5 5"]        Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      * 
      * #### Example
      * 
@@ -66715,7 +66554,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/teleport.js)SIZE(1019)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66744,7 +66583,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/template.js)SIZE(2480)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66770,7 +66609,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/text.js)SIZE(12747)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66796,11 +66635,42 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 /**
- * An element that displays a rectangle containing arbitrary (X)HTML.
+ * This element displays a rectangle containing arbitrary (X)HTML.
  *
  * This element can be databound and use databounding rules to
  * convert data into (X)HTML using--for instance--XSLT or JSLT.
  *
+ * #### Example: Some simple text
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text width="300">
+ *   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. 
+ *   </a:text>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Using Scrolldown
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text id="txtExample"
+ *     width      = "300"
+ *     height     = "100" 
+ *     scrolldown = "true">
+ *       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. Quisque semper sem dignissim quam ullamcorper et lobortis arcu eleifend. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce ac commodo mi. Pellentesque sit amet magna sed velit volutpat volutpat. Nam lobortis sem sed tortor accumsan dictum. Donec scelerisque rhoncus cursus. Mauris dui dolor, vehicula quis lacinia quis, facilisis et eros. Nulla facilisi. Donec urna velit, adipiscing non sollicitudin at, sodales id lorem. Fusce fringilla, magna id pellentesque egestas, neque risus luctus mauris, vel porttitor libero tortor et augue. Integer euismod porttitor mi, at viverra nulla pharetra vel. Etiam odio elit, volutpat a porttitor eu, posuere nec augue. Phasellus placerat lacus ut augue tempor consectetur. 
+ *   </a:text>
+ *   <a:button 
+ *     onclick="txtExample.setValue(txtExample.getValue() + '&lt;br />A new line!')">
+ *       Add a line
+ *   </a:button>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.text
  * @define text
  *
@@ -67132,7 +67002,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox.js)SIZE(31325)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67161,7 +67031,7 @@ apf.aml.setElement("text", apf.text);
 
 
 /**
- * An element that displays a rectangular area which allows a
+ * This element displays a rectangular area which allows a
  * user to type information. 
  *
  * The information typed can be
@@ -67171,8 +67041,90 @@ apf.aml.setElement("text", apf.text);
  * By adding an 
  * autocomplete element as a child, the 
  * value for the textbox can be looked up as you type. By setting the 
- * {@link apf.textbox.mask mask atribute}, complex data input 
+ * {@link apf.textbox.mask mask attribute}, complex data input 
  * validation is done while the user types.
+ *
+ * #### Example: Simple Boxes
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="150">
+ *   <!-- startcontent -->
+ *   <a:textbox value="Text"></a:textbox>
+ *   <a:textbox value="Text" disabled="true" initial-message="I'm disabled!"></a:textbox>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ *
+ * #### Example: Validation
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label for="lbl2">Please enter a minimum of three characters</a:label>
+ *   <a:textbox 
+ *     id         = "lbl2"
+ *     minlength  = "3" 
+ *     maxlength  = "5" 
+ *     invalidmsg = "Invalid! Please enter a minimum of three characters" />
+ *     <a:label for="lbl3">Enter your email address</a:label>
+ *   <a:textbox 
+ *     id         = "lbl3"
+ *     datatype   = "a:email" 
+ *     invalidmsg = "Invalid! Please enter a proper email address" />
+ *   <a:label 
+ *     caption = "A US Phone Number" 
+ *     for     = "txt71">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask = "(000)0000-0000;;_" 
+ *     id   = "txt71" />
+ *   <a:label 
+ *     caption = "A Date"
+ *     for     = "txt73">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask       = "00-00-0000;;_"
+ *     datatype   = "xsd:date"
+ *     invalidmsg = "Invalid date; Please enter a correct date"
+ *     id         = "txt73" />
+ *   <a:label 
+ *     caption = "A MAC Address" 
+ *     for     = "txt75" ></a:label>
+ *   <a:textbox 
+ *     mask = "XX-XX-XX-XX-XX-XX;;_"
+ *     id   = "txt75" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example: A Regular Box
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400">
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
  * 
  * @class apf.textbox
  * @define textbox
@@ -68059,7 +68011,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/toc.js)SIZE(8332)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68085,7 +68037,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/toolbar.js)SIZE(2805)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68110,40 +68062,45 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 /**
- * An element displaying a bar containing buttons and other AML elements.
+ * This element displays a bar containing buttons and other AML elements.
+ * 
  * This element is usually positioned in the top of an application allowing
  * the user to choose from grouped buttons.
  *
  * #### Example
  *
- * ```xml
- *  <a:menu id="menu5">
- *      <a:item>About us</a:item>
- *      <a:item>Help</a:item>
- *  </a:menu>
- *  <a:menu id="menu6">
- *      <a:item icon="email.png">Tutorials</a:item>
- *      <a:item>Live Helps</a:item>
- *      <a:divider></a:divider>
- *      <a:item>Visit Ajax.org</a:item>
- *      <a:item>Exit</a:item>
- *  </a:menu>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
  *  <a:window 
  *    id          = "winMail"
- *    contextmenu = "menu6"
+ *    contextmenu = "fileMenu"
  *    width       = "300"
  *    height      = "200" 
  *    visible     = "true"
  *    resizable   = "true" 
- *    title       = "Mail message"
- *    icon        = "email.png">
+ *    title       = "An App">
+ *  <!-- startcontent -->
  *      <a:toolbar>
  *          <a:menubar>
- *              <a:button submenu="menu6">File</a:button>
- *              <a:button submenu="menu5">Edit</a:button>
+ *              <a:button submenu="fileMenu">File</a:button>
+ *              <a:button submenu="editMenu">Edit</a:button>
  *          </a:menubar>
  *      </a:toolbar>
+ * 
+ *     <a:menu id="editMenu">
+ *          <a:item>About us</a:item>
+ *          <a:item>Help</a:item>
+ *      </a:menu>
+ *      <a:menu id="fileMenu">
+ *          <a:item icon="email.png">Tutorials</a:item>
+ *          <a:item>Live Helps</a:item>
+ *          <a:divider></a:divider>
+ *          <a:item>Visit Ajax.org</a:item>
+ *          <a:item>Exit</a:item>
+ *      </a:menu>
+ *  <!-- endcontent -->
  *  </a:window>
+ * </a:application>
  * ```
  *
  * @class apf.toolbar
@@ -68182,7 +68139,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/tree.js)SIZE(17662)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68216,46 +68173,80 @@ apf.aml.setElement("toolbar", apf.toolbar);
  * can grow by fetching more data when the user requests it.
  *
  *
- * #### Example
+ * #### Example: A Simple Tree
  *
- * A tree with inline items:
- *
- * ```xml
- *  <a:tree id="tree" align="right">
- *      <a:item caption="root" icon="icoUsers.gif">
- *          <a:item icon="icoUsers.gif" caption="test">
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *          </a:item>
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *      </a:item>
- *  </a:tree>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:tree id="tree" align="right">
+ *       <a:item caption="root" icon="../resources/icons/icoUsers.gif">
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test">
+ *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           </a:item>
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="../resources/icons/icoUsers.gif" caption="test" />
+ *       </a:item>
+ *   </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * #### Example
+ * #### Example: Using a Model
  *
  * A tree using a model:
  *
- * ```xml
- *  <a:tree model="filesystem.xml">
- *      <a:caption match="[@caption]" />
- *      <a:caption match="[@filename]" />
- *      <a:icon match="[@icon]" />
- *      <a:each match="[drive|file|folder]" />
- *  </a:tree>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
+ *   <a:tree model="filesystem">
+ *        <a:caption match="[@caption]" />
+ *        <a:caption match="[@filename]" />
+ *        <a:each match="[drive|file|folder]" />
+ *    </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * An inline tree description that draws the same as the above example:
+ * #### Example: An Inline Tree
+ * 
+ * An inline tree that draws the same as the above example:
  *
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
  *  <a:tree 
- *    model   = "filesystem.xml"
+ *    model   = "filesystem"
  *    caption = "[@caption|@filename]"
- *    icon    = "[@icon]"
  *    each    = "[drive|file|folder]" />
+ *  <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.tree
@@ -68624,32 +68615,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload.js)SIZE(28978)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/vectorflow.js)SIZE(65710)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68675,7 +68641,6 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video.js)SIZE(20297)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68701,7 +68666,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/viewport.js)SIZE(1796)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68727,7 +68692,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/webdav.js)SIZE(49571)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70013,7 +70004,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp.js)SIZE(100961)TIME(Wed, 31 Oct 2012 09:24:35 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70039,7 +70030,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actiontracker/undodata.js)SIZE(11870)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70197,7 +70188,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70461,57 +70452,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/audio/type_flash.js)SIZE(12927)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/audio/type_native.js)SIZE(10989)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70537,7 +70478,57 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/cgi.js)SIZE(7168)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70750,7 +70741,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/header.js)SIZE(3062)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70776,7 +70767,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/jphp.js)SIZE(5874)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70802,7 +70793,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70828,7 +70819,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/rdb.js)SIZE(8293)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70854,7 +70845,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/rest.js)SIZE(3962)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70981,7 +70972,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/soap.js)SIZE(10943)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71007,7 +70998,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71033,7 +71024,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/yql.js)SIZE(3962)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71059,7 +71050,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71085,12 +71076,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox/autocomplete2.js)SIZE(14485)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox/masking.js)SIZE(12869)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71534,132 +71525,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload/flash.js)SIZE(9539)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload/html4.js)SIZE(9487)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload/html5.js)SIZE(8885)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_flv.js)SIZE(17033)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_native.js)SIZE(10801)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_qt.js)SIZE(23333)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71685,7 +71551,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_silverlight.js)SIZE(15323)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71711,7 +71576,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_vlc.js)SIZE(12469)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71737,7 +71601,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_wmp.js)SIZE(12608)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71763,7 +71626,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp/muc.js)SIZE(18978)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71789,7 +71651,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp/rdb.js)SIZE(21306)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71815,7 +71676,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp/roster.js)SIZE(13712)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71841,7 +71702,137 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71961,7 +71952,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/jpack_end.js)SIZE(773)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 
 
@@ -71993,32 +71984,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/apf-node.js)SIZE(1245)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/apf-o3.js)SIZE(14016)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72044,7 +72010,6 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/loader-o3.js)SIZE(7470)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72070,7 +72035,33 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/loader.js)SIZE(15830)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72103,7 +72094,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/loader2.js)SIZE(18651)TIME(Wed, 31 Oct 2012 09:16:43 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional

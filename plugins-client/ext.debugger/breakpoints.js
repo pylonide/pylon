@@ -97,9 +97,9 @@ module.exports = {
 
         ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage;
-            if (!page || !page.$editor || !page.$editor.ceEditor)
+            if (!page || !page.$editor || page.$editor.path != "ext/code/code")
                 return;
-            var ace = page.$editor.ceEditor.$editor;
+            var ace = page.$editor.amlEditor.$editor;
             if (!ace.$breakpointListener)
                 _self.initEditor(ace);
 
@@ -308,8 +308,8 @@ module.exports = {
     $syncOpenFiles: function() {
         // var tabFiles = ide.getAllPageModels();
         var page = tabEditors.$activepage;
-        if (page && page.$editor && page.$editor.ceEditor) {
-            var session = page.$editor.ceEditor.$editor.session;
+        if (page && page.$editor && page.$editor.path == "ext/code/code") {
+            var session = page.$editor.amlEditor.$editor.session;
             this.updateSession(session);
         }
     }
