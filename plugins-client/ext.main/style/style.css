@@ -43,8 +43,9 @@ BODY {
 }
 #loadingide {
     font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
-    color: #5aacca;
-    font-size: 16px;
+    background: url(images/ide_loading_bg_pattern.png) repeat;
+    color: #5e924a;
+    font-size: 18px;
     background-color: #f1f9fc;
     height: 100%;
     width: 100%;
@@ -54,22 +55,31 @@ BODY {
     left: 0;
     top: 0;
 }
-#loadingide .loader-content {
-    background: url(images/loading-your-editor.png) no-repeat top center;
+#loadingide .header {
+    background: url(images/loader_logo.png) no-repeat top center;
+    position:absolute;
+    top:10px;
+    right:10px;
+    height: 40px;
+    width: 40px;
+}
+#loadingide .loading-progress {
     height: 37px;
     position: relative;
-    width: 390px;
-    padding-top: 50px;
     margin: 0 auto;
-    top: 28%;
+    top: 35%;
 }
-#loadingide .spinner {
-    background: url(images/loaderide.gif) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    position: absolute;
-    top: 0;
-    left: 10px;
+#loadingide .loading-msg {
+    font-size: 16px;
+    color: #AAA;
+}
+#loadingide .loading-seperator {
+    background: url(images/footer-line.png) no-repeat center center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin: 0 auto;
+    width: 180px;
+    height: 12px;
 }
 #loadingide .footer {
     position:absolute;

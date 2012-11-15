@@ -85,15 +85,29 @@
                 var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
 
                 msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
-                var footer = '<div class="footer"><a href="https://docs.c9.io">Documentation</a> | <a href="https://status.c9.io">Server Status</a> | <a href="http://support.cloud9ide.com">Support</a>'
-                loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>' + msg + '</div>' + footer;
+                var header = '<div class="header"></div>';
+                var footer = '<div class="footer"><a href="https://docs.c9.io">Documentation</a> | <a href="https://status.c9.io">Server Status</a> | <a href="http://support.cloud9ide.com">Support</a>';
+                loadingIde.innerHTML = header + '<div class="loading-progress"><div id="progress-msg">Preparing your workspace .</div><div class="loading-seperator"></div><div class="loading-msg">' + msg + '</div></div>' + footer;
                 document.body.appendChild(loadingIde);
+                var progressInterval = setInterval(function () {
+                    var progressMsg = document.getElementById("progress-msg");
+                    if (!progressMsg)
+                        return clearInterval(progressInterval);
+                    var parts = progressMsg.innerHTML.split(" ");
+                    var dots = parts[parts.length-1];
+                    parts[parts.length-1] = dots.length === 3 ? "." : (dots + ".");
+                    progressMsg.innerHTML = parts.join(" ");
+                }, 500);
+            }
+
+            function clearSplash () {
+                var loadingDiv = document.getElementById("loadingide");
+                if (loadingDiv);
+                    document.body.removeChild(loadingDiv);
             }
 
             require(config, [apfLoc], function(){
-                if (!window.localStorage || !localStorage.lastLoadTime ||
-                    parseInt(localStorage.lastLoadTime, 10) > 4000)
-                    setTimeout(createSplash);
+                setTimeout(createSplash);
 
                 if (!cloud9config.packed) {
                     var list = ["core/ide", "core/ext", "core/util", 
@@ -154,12 +168,8 @@
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
                 console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
-                if (window.localStorage)
-                    localStorage.lastLoadTime = cloud9config.totalTime;
 
-                var loadingDiv = document.getElementById("loadingide");
-                if (loadingDiv)
-                    document.body.removeChild(loadingDiv);
+                clearSplash();
 
                 ide.addEventListener("$event.extload", function(cb){
                     cb();
