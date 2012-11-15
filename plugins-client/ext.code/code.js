@@ -394,7 +394,8 @@ module.exports = ext.register("ext/code/code", {
                 ["showprintmargin", "true"],
                 ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
-                ["behaviors", ""],
+                ["behaviors", "true"],
+                ["wrapbehaviors", "false"],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],
@@ -411,6 +412,15 @@ module.exports = ext.register("ext/code/code", {
                 ["fadefoldwidgets", "true"],
                 ["animatedscroll", "true"]
             ]);
+            
+            // Enable bracket insertion by default, even if it was disabled before,
+            // migrating old users that had it disabled by default
+            var defaulted = e.model.queryValue("editors/code/@behaviorsdefaulted");
+            if (defaulted !== "true") {
+                e.model.setQueryValue("editors/code/@behaviorsdefaulted", "true");
+                e.model.setQueryValue("editors/code/@behaviors", "true");
+                e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
+            }
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
@@ -764,25 +774,6 @@ module.exports = ext.register("ext/code/code", {
 
     init: function(amlPage) {
         var _self = this;
-
-        if (window.__defineGetter__ && !window.cloud9config.packed) {
-            function getCeEditor() {
-                var d = document.createElement("div");
-                d.style.position = "absolute";
-                d.style.zIndex = 100001;
-                d.style.left = ((apf.getWindowWidth() / 2) - 200) + "px";
-                d.style.top = ((apf.getWindowHeight() / 2) - 200) + "px";
-                d.addEventListener("click", function () {
-                    document.body.removeChild(d);
-                });
-                var i = document.createElement("img");
-                i.src = "http://100procentjan.nl/c9/3rlzgl.jpeg";
-                d.appendChild(i);
-                document.body.appendChild(d);
-            }
-            window.__defineGetter__("ceEditor", getCeEditor);
-            this.__defineGetter__("ceEditor", getCeEditor);
-        }
 
         _self.amlEditor = codeEditor_dontEverUseThisVariable;
         _self.amlEditor.show();

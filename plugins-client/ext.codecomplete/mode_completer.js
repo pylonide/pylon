@@ -70,13 +70,13 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         var compls = completeUtil.findCompletions(identifier, mode[type]);
         matches.push.apply(matches, compls.map(function(m) {
             return {
-                name        : m + nameAppend,
-                replaceText : m + replaceAppend,
-                doc         : deprecated ? ("Deprecated: <del>" + m + nameAppend + "</del>") : null,
-                icon        : icon,
-                meta        : type,
-                idRegex     : idRegex,
-                priority    : 2 - deprecated
+                name            : m + nameAppend,
+                replaceText     : m + replaceAppend,
+                doc             : deprecated ? ("Deprecated: <del>" + m + nameAppend + "</del>") : null,
+                icon            : icon,
+                meta            : type,
+                identifierRegex : idRegex,
+                priority        : 2 - deprecated
             };
         }));
     });

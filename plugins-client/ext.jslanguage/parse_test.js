@@ -18,8 +18,8 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "hello();");
-        worker.parse(function(ast) {
+        worker.switchFile("test.js", "javascript", "hello();", null, "");
+        worker.parse(null, function(ast) {
             assert.equal(ast, '[Call(Var("hello"),[])]');
         });
     },
@@ -29,8 +29,8 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "hello(");
-        worker.parse(function(ast) {
+        worker.switchFile("test.js", "javascript", "hello(", null, "");
+        worker.parse(null, function(ast) {
             assert.equal(ast, '[Call(Var("hello"),[])]');
         });
     },
@@ -40,8 +40,8 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "console.log\n\n\n\n");
-        worker.parse(function(ast) {
+        worker.switchFile("test.js", "javascript", "console.log\n\n\n\n", null, "");
+        worker.parse(null, function(ast) {
             assert.equal(ast, '[PropAccess(Var("console"),"log")]');
         });
     }

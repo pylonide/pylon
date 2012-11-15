@@ -23,7 +23,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/csslanguage/css_handler");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.css", "css", "#hello { color: 1px; } #nonused{}");
+        worker.switchFile("test.css", "css", "#hello { color: 1px; } #nonused{}", null, "");
     }
 };
 

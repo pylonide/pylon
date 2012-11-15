@@ -10,22 +10,24 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/mode/javascript/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
+var disabledJSHintWarnings = [/Missing radix parameter./,
+    /Bad for in variable '(.+)'./,
+    /use strict/,
+    /Input is an empty string./];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-handler.analyze = function(doc, ast, callback) {
-    callback(handler.analyzeSync(doc, ast));
+handler.analyze = function(value, ast, callback) {
+    callback(handler.analyzeSync(value, ast));
 };
 
-handler.analyzeSync = function(doc, ast) {
+handler.analyzeSync = function(value, ast) {
     var markers = [];
     if (!this.isFeatureEnabled("jshint"))
         return markers;
 
-    var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
     // jshint throws error when called on empty string
     if (!value)

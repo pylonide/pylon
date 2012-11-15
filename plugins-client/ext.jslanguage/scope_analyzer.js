@@ -13,7 +13,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
-    
+
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
@@ -43,7 +43,6 @@ var GLOBALS = {
     "undefined"              : true,
     "null"                   : true,
     "arguments"              : true,
-    self                     : true,
     "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
@@ -384,7 +383,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     }));
 };
 
-handler.analyze = function(doc, ast, callback) {
+handler.analyze = function(value, ast, callback) {
     var handler = this;
     var markers = [];
     
@@ -481,6 +480,15 @@ handler.analyze = function(doc, ast, callback) {
                         scope.get(b.x.value).addUse(node);
                     } else if(handler.isFeatureEnabled("undeclaredVars") &&
                         !GLOBALS[b.x.value] && !jshintGlobals[b.x.value]) {
+                        if (b.x.value === "self") {
+                            markers.push({
+                                pos: this.getPos(),
+                                level: 'warning',
+                                type: 'warning',
+                                message: "Use 'window.self' to refer to the 'self' global."
+                            });
+                            return;
+                        }
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',
@@ -617,10 +625,10 @@ handler.analyze = function(doc, ast, callback) {
     var jshintMarkers = [];
     var jshintGlobals = {};
     if (handler.isFeatureEnabled("jshint")) {
-        jshintMarkers = jshint.analyzeSync(doc, ast);
+        jshintMarkers = jshint.analyzeSync(value, ast);
         jshintGlobals = jshint.getGlobals();
     }
-    
+
     if (ast) {
         var rootScope = new Scope();
         scopeAnalyzer(rootScope, ast);

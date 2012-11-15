@@ -58,7 +58,8 @@
       <a:item type="check" caption="Show Gutter" checked="[editors/code/@gutter]" />
       <a:item type="check" caption="Show Indent Guides" checked="[editors/code/@showindentguides]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[editors/code/@highlightselectedword]" />
-      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[editors/code/@behaviors]" />
+      <a:item type="check" caption="Auto-pair Brackets, Quotes, etc." checked="[editors/code/@behaviors]" />
+      <a:item type="check" caption="Wrap Selection with Brackets, etc." checked="[editors/code/@wrapbehaviors]" />
       <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[editors/code/@autohidehorscrollbar]" />
       <a:item type="check" caption="Wrap Lines" checked="[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]" id="itmSbWrap" />
       <a:item type="check" caption="To Viewport" checked="[editors/code/@wrapmodeViewport]" disabled="{!itmSbWrap.checked}" />
