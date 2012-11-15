@@ -91,9 +91,9 @@ module.exports = ext.register(_name, {
         dock.register(this._name, "pgPreview", {
             menu : "Preview Apps",
             primary : {
-                backgroundImage: ide.staticPrefix + "/ext/preview/style/images/main_icon.png",
-                defaultState: { x: -6, y: 0 },
-                activeState:  { x: -6, y: -40 }
+                backgroundImage: ide.staticPrefix + "/ext/main/style/images/sidebar_preview_icon.png",
+                defaultState: { x: -11, y: -10 },
+                activeState:  { x: -11, y: -46 }
             }
         }, function() {
             ext.initExtension(_self);
