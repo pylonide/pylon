@@ -6,7 +6,7 @@
     width: 100%;
     position: fixed;
     text-align: center;
-    z-index: 2000;
+    z-index: 200000;
     left: 0;
     top: 0;
     -webkit-font-smoothing: antialiased !important;
@@ -46,8 +46,8 @@
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-size: 11px;
     opacity:0.99;
-    text-shadow: 0 1px 0 #eee;
-    filter: dropshadow(color=#eee, offx=0, offy=1);
+    text-shadow: 0 1px 0 #eee;
+    filter: dropshadow(color=#eee, offx=0, offy=1);
     position:absolute;
     bottom:10px;
     right:10px;
@@ -61,4 +61,9 @@
 #loadingide .footer > a:hover {
     color: #3D833C;
     text-decoration: underline;
+}
+#loadingide #dots {
+    width: 30px;
+    display: inline-block;
+    text-align: left;
 }
