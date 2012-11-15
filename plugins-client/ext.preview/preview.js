@@ -116,6 +116,7 @@ module.exports = ext.register(_name, {
         // window.open(url, "_blank");
         pgPreview.setCaption(apf.getFilename(url));
         dock.showSection(this._name, "pgPreview");
+        dock.expandBar(this._getDockBar());
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
