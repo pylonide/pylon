@@ -13,7 +13,6 @@ var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
-var SyntaxDetector = require("ext/language/syntax_detector");
 var completeUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
@@ -81,20 +80,12 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
-function getSyntax() {
-    var editor = editors.currentEditor.amlEditor.$editor;
-    return SyntaxDetector.getContextSyntax(
-        editor.getSession().getDocument(),
-        editor.getCursorPosition(),
-        editors.currentEditor.amlEditor.syntax);
-}
-
 function isJavaScript() {
-    return getSyntax() === "javascript";
+    return editors.currentEditor.amlEditor.syntax === "javascript";
 }
 
 function isHtml() {
-    return getSyntax() === "html";
+    return editors.currentEditor.amlEditor.syntax === "html";
 }
 
 /**
@@ -155,12 +146,12 @@ function asyncReplaceText(editor, match) {
     }
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
-
+    
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-
+    
     var cursorCol = rowOffset ? colOffset : pos.column + colOffset - prefix.length;
-
+    
     if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
             cursorCol++;
