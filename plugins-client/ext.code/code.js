@@ -428,11 +428,6 @@ module.exports = ext.register("ext/code/code", {
                 e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
             }
 
-            // pre load theme
-            var theme = e.model.queryValue("editors/code/@theme");
-            if (theme)
-                require([theme], function() {});
-
             // pre load custom mime types
             _self.getCustomTypes(e.model);
         });
