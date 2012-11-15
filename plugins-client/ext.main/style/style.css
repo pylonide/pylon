@@ -253,6 +253,14 @@ BODY {
     user-select: none;
 }
 
+.selectable {
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -o-user-select: text;
+    user-select: text;
+}
+
 .ace_content { z-index: 0 }
 /**
  * SERVICE SIGNIN BUTTONS
