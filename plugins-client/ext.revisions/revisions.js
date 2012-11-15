@@ -36,7 +36,6 @@ var cssString = require("text!ext/revisions/style.css");
 var Code = require("ext/code/code");
 
 var beautify = require("ext/beautify/beautify");
-var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
@@ -1272,8 +1271,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
 
             beautify.disable();
-            quicksearch.offsetWidth = quicksearch.defaultOffset + BAR_WIDTH;
-            quicksearch.updateBarPosition();
             statusbar.offsetWidth = BAR_WIDTH;
             statusbar.setPosition();
             stripws.disable();
@@ -1314,8 +1311,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
 
         beautify.enable();
-        quicksearch.offsetWidth = quicksearch.defaultOffset;
-        quicksearch.updateBarPosition();
         statusbar.offsetWidth = 0;
         statusbar.setPosition();
         stripws.enable();
