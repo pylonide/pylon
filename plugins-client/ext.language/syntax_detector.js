@@ -110,35 +110,65 @@ function getSyntaxRegions(doc, originalSyntax) {
     return regions;
 }
 
-function getContextSyntax(doc, pos, originalSyntax) {
+function getContextSyntaxPart(doc, pos, originalSyntax) {
      if (! mixedLanguages[originalSyntax])
-        return originalSyntax;
+        return {
+            language: originalSyntax,
+            value: doc.getValue(),
+            region: getSyntaxRegions(doc, originalSyntax)[0]
+        };
     var regions = getSyntaxRegions(doc, originalSyntax);
     for (var i = 0; i < regions.length; i++) {
         var region = regions[i];
         if ((pos.row > region.sl && pos.row < region.el) ||
             (pos.row === region.sl && pos.column >= region.sc) ||
             (pos.row === region.el && pos.column <= region.ec))
-            return region.syntax;
+            return regionToCodePart(doc, region);
     }
     return null; // should never happen
+}
+
+function getContextSyntax(doc, pos, originalSyntax) {
+    var part = getContextSyntaxPart(doc, pos, originalSyntax);
+    return part && part.language; // should never happen
+}
+
+function regionToCodePart (doc, region) {
+    var lines = doc.getLines(region.sl, region.el);
+    return {
+        value: region.sl === region.el ? lines[0].substring(region.sc, region.ec) :
+            [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter()),
+        language: region.syntax,
+        region: region
+    };
 }
 
 function getCodeParts (doc, originalSyntax) {
     var regions = getSyntaxRegions(doc, originalSyntax);
     return regions.map(function (region) {
-        var lines = doc.getLines(region.sl, region.el);
-        return {
-            value: region.sl === region.el ? lines[0].substring(region.sc, region.ec) :
-                [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter()),
-            language: region.syntax,
-            region: region
-        };
+        return regionToCodePart(doc, region);
     });
 }
 
+function posToRegion (region, pos) {
+    return {
+        row: pos.row - region.sl,
+        column: pos.column
+    };
+}
+
+function regionToPos (region, pos) {
+    return {
+        row: pos.row + region.sl,
+        column: pos.column
+    };
+}
+
 exports.getContextSyntax = getContextSyntax;
+exports.getContextSyntaxPart = getContextSyntaxPart;
 exports.getSyntaxRegions = getSyntaxRegions;
 exports.getCodeParts = getCodeParts;
+exports.posToRegion = posToRegion;
+exports.regionToPos = regionToPos;
 
 });

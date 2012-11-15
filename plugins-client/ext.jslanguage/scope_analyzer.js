@@ -383,7 +383,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     }));
 };
 
-handler.analyze = function(value, ast, callback) {
+handler.analyze = function(value, ast, callback, ammendAst) {
     var handler = this;
     var markers = [];
     
@@ -621,7 +621,7 @@ handler.analyze = function(value, ast, callback) {
             }
         }
     }
-    
+
     var jshintMarkers = [];
     var jshintGlobals = {};
     if (handler.isFeatureEnabled("jshint")) {
@@ -632,10 +632,9 @@ handler.analyze = function(value, ast, callback) {
     if (ast) {
         var rootScope = new Scope();
         scopeAnalyzer(rootScope, ast);
-        callback(markers.concat(jshintMarkers));
-    } else {
-        callback(jshintMarkers);
     }
+
+    callback(markers.concat(jshintMarkers));
 };
 
 var isCallbackCall = function(node) {
@@ -672,6 +671,10 @@ var isCallback = function(node) {
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
+
+    // Fill the ast with scopes
+    handler.analyze(doc.getValue(), fullAst, function () {}, true);
+
     var markers = [];
     var enableRefactorings = [];
     
@@ -736,6 +739,10 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!fullAst)
         return callback();
+
+    // Fill the ast with scopes
+    handler.analyze(doc.getValue(), fullAst, function () {}, true);
+
     var v;
     var mainNode;
     currentNode.rewrite(
