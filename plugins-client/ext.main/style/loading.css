@@ -23,7 +23,6 @@
     font-family: Georgia, "Times New Roman", Times, serif;
     font-size: 16px;
     color: #4A8532;
-    opacity:0.99;
     text-shadow: 0 1px 0 #eee;
     filter: dropshadow(color=#eee, offx=0, offy=1);
     height: 37px;
@@ -31,12 +30,12 @@
     margin: 0 auto;
     top: 35%;
 }
-#loadingide .loading-progress #progress-msg {
+#progress-msg {
     position: relative;
     width: 190px;
     margin: 0 auto;
 }
-#loadingide .loading-progress #progress-msg span {
+#progress-msg span {
     position: absolute;
     left: 191px;
     top: 0;
@@ -55,8 +54,7 @@
 #loadingide .footer {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-size: 11px;
-    opacity:0.99;
-    text-shadow: 0 1px 0 #eee;
+    text-shadow: 0 1px 0 #eee;
     filter: dropshadow(color=#eee, offx=0, offy=1);
     position:absolute;
     bottom:10px;
