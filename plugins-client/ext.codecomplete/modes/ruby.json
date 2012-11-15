@@ -44,7 +44,7 @@
     "keyword" : ["alias", "and", "BEGIN", "begin", "break", "case", "class", "def", "defined", "do", "else", "elsif", "END", "end", "ensure", "__FILE__", "finally", "for", "gem", "if", "in", "__LINE__", "module", 
                  "next", "not", "or", "private", "protected", "public", "redo", "rescue", "retry", "return", "super", "then", "undef", "unless", "until", "when", "while", "yield"],
                  
-    "class" : ["ArgumentError", "Array", "Bignum", "Binding", "Class", "Comparable", "Constants", "Continuation", "DTracer", "Data", "Default", "Dir", "Enumerable", "Enumerator", "Errno", "Exception", "FalseClass", 
+    "class" :   ["ArgumentError", "Array", "Bignum", "Binding", "Class", "Comparable", "Constants", "Continuation", "DTracer", "Data", "Default", "Dir", "Enumerable", "Enumerator", "Errno", "Exception", "FalseClass", 
                "File", "FileTest", "Fixnum", "Float", "FloatDomainError", "Hash", "IO", "IOError", "IndexError", "Integer", "Interrupt", "Kernel", "LoadError", "LocalJumpError", "Marshal", "MatchData", "MatchingData", "Math", "Method", 
                "Module", "NameError", "NilClass", "NoMemoryError", "NoMethodError", "NotImplementedError", "Numeric", "Object", "ObjectSpace", "Precision", "Proc", "Process", "Range", "RangeError", "Regexp", "RegexpError", "RuntimeError", 
                "ScriptError", "SecurityError", "Separator", "Signal", "SignalException", "StandardError", "Stat", "Status", "StopIteration", "String", "Struct", "Symbol", "SyntaxError", "Sys", "SystemCallError", "SystemExit", "SystemStackError", 
