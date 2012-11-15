@@ -129,20 +129,20 @@
             else {
                var apfLoc = "";
             }
-            
+
             var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
 
                 if (!cloud9config.packed) {
-                    var list = ["core/ide", "core/ext", "core/util", 
+                    var list = ["core/ide", "core/ext", "core/util",
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
                 }
                 else {
                     var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "c9os.min.js")];
                 }
-                
+
                 require(list, function(ide, ext, util){
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
@@ -166,7 +166,7 @@
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
                     aceConfig.set("suffix", ".js?staticUrl=" + cloud9config.staticUrl);
-                    
+
                     //Load extensions
                     if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
@@ -191,7 +191,7 @@
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time " 
+                console.log("Total Load Time "
                     + (cloud9config.totalTime) + "ms");
 
                 clearSplash();
