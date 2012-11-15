@@ -50,9 +50,6 @@
         "v8debug/util",
         "v8debug/V8Debugger"
     ],
-    exclude: [
-        "text"
-    ],
     out: "./src/core.packed.js",
     inlineText: true,
     findNestedDependencies: true,

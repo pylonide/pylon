@@ -95,22 +95,18 @@
                     setTimeout(createSplash);
 
                 if (!cloud9config.packed) {
-                    main();
+                    var list = ["core/ide", "core/ext", "core/util", 
+                    "core/settings", "ext/main/main", "ext/editors/editors",
+                    "ace/editor"];
                 }
                 else {
-                    var packedFile = "[%staticUrl%]/" + (cloud9config.packedName || "c9os.min.js");
-                    require([packedFile], main);
+                    var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "c9os.min.js")];
                 }
                 
-                preloaderImgs();
-            });
-            
-            function main() {
-                var list = ["core/ide", "core/ext", "core/util", 
-                "core/settings", "ext/main/main", "ext/editors/editors",
-                "ace/editor"];
                 require(list, function(ide, ext, util){
-                    var plugins = <%plugins%>;
+                    if (!cloud9config.packed) {
+                        var plugins = <%plugins%>;
+                    }
 
                     // if you pass `force=true` into the querystring, then
                     // we bypass the browser check
@@ -132,13 +128,24 @@
                     aceConfig.set("suffix", ".js?staticUrl=" + cloud9config.staticUrl);
                     
                     //Load extensions
-                    apf.addEventListener("load", function(){
-                        require(plugins, function() {
-                            loadAndBegin(ide, plugins);
+                    if (!cloud9config.packed) {
+                        apf.addEventListener("load", function(){
+                            require(plugins, function() {
+                                loadAndBegin(ide, plugins);
+                            });
                         });
-                    });
+                    }
+                    else {
+                        apf.addEventListener("load", function() {
+                            var ide = require("core/ide");
+                            window.ide = ide;
+                            loadAndBegin(ide, list);
+                        });
+                    }
+
                 });
-            }
+                preloaderImgs();
+            });
 
             function loadAndBegin(ide, plugins) {
                 ide.dispatchEvent("extload", {modules: plugins});
