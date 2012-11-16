@@ -185,7 +185,7 @@ grids.show = function(gridLayout) {
         if (name == gridLayout)
             grid.node.show();
         else
-            grid.node.removeNode();
+            grid.node.hide();
     });
 };
 
@@ -195,7 +195,7 @@ grids.hide = function(gridLayout) {
     if (!grid || !grid.node)
         return;
 
-    grid.node.removeNode();
+    grid.node.hide();
 };
 
 function createNodes(struct, splitters, parent) {
