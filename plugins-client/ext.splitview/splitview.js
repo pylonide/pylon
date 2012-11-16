@@ -292,7 +292,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!origPage)
                 return;
 
-            //Splits.consolidateEditorSession(origPage, origPage.$editor.amlEditor);
+            Splits.consolidateEditorSession(origPage, origPage.$editor.amlEditor);
             page.$doc = origPage.$doc;
             page.setAttribute("actiontracker", origPage.$at);
             page.$at = origPage.$at;
