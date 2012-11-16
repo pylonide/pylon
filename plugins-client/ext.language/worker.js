@@ -118,12 +118,12 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
     }));
-    sender.on("jumpToDefinition", function(event) {
+    sender.on("jumpToDefinition", applyEventOnce(function(event) {
         _self.jumpToDefinition(event);
-    });
-    sender.on("isJumpToDefinitionAvailable", function(event) {
+    }));
+    sender.on("isJumpToDefinitionAvailable", applyEventOnce(function(event) {
         _self.isJumpToDefinitionAvailable(event);
-    });
+    }));
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
