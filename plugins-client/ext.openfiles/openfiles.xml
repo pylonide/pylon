@@ -46,7 +46,7 @@
             <a:each match="[file]" sort="[@name]" sort-method="filesort">
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + (cbShowFiles.checked ? ' - ' + [../@path].split('/').slice(-2).join('/') : '')}" />
                 <a:icon match="[folder|project]" value="folder.png" />
-                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                <a:icon match="[file]" class="{require('core/util').getFileIcon(%[.])}" />
             </a:each>
             <a:remove match="[file|folder]" />
         </a:list>
