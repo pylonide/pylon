@@ -67,11 +67,12 @@ module.exports = {
                 return;
             // We have no UI for multi jumptodef; we just take the last for now
             var lastResult = results[results.length - 1];
-            editors.jump({
+            editors.gotoDocument({
                 column: lastResult.column != null ? lastResult.column : _self.$getFirstColumn(lastResult.row),
                 row: lastResult.row + 1,
                 node: tabEditors.getPage().xmlRoot,
-                animate: false
+                animate: false,
+                path: lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined
             });
         });
         
