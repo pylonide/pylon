@@ -12,8 +12,12 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var commands = require("ext/commands/commands");
 
+var CRASHED_JOB_TIMEOUT = 30000;
+
 module.exports = {
     nodes : [],
+    
+    removeSpinnerNodes: [],
     
     hook : function(language, worker){
         var _self = this;
@@ -58,28 +62,7 @@ module.exports = {
         
         // listen to the worker's response
         worker.on("definition", function(e) {
-            var results = e.data;
-            if (!results.length)
-                return;
-
-            var editor = editors.currentEditor;
-            if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
-                return;
-            // We have no UI for multi jumptodef; we just take the last for now
-            var lastResult;
-            for (var i = results.length - 1; i >=0; i--) {
-                lastResult = results[results.length - 1];
-                if (!lastResult.isDeferred)
-                    break;
-            }
-            var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
-            editors.gotoDocument({
-                column: lastResult.column != null ? lastResult.column : _self.$getFirstColumn(lastResult.row),
-                row: lastResult.row + 1,
-                node: path ? undefined : tabEditors.getPage().xmlRoot,
-                animate: true,
-                path: path
-            });
+            _self.onDefinitions(e);
         });
         
         // when the analyzer tells us if the jumptodef result is available
@@ -121,6 +104,8 @@ module.exports = {
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
+            
+        this.activateSpinner();
 
         var sel = editor.getSelection();
         var pos = sel.getCursor();
@@ -128,6 +113,55 @@ module.exports = {
         this.worker.emit("jumpToDefinition", {
             data: pos
         });
+    },
+    
+    onDefinitions : function(e) {
+        var results = e.data;
+        if (!results.length)
+            return;
+        
+        this.clearSpinners();
+
+        var editor = editors.currentEditor;
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+            return;
+        // We have no UI for multi jumptodef; we just take the last for now
+        var lastResult;
+        for (var i = results.length - 1; i >=0; i--) {
+            lastResult = results[results.length - 1];
+            if (!lastResult.isDeferred)
+                break;
+        }
+        var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
+        editors.gotoDocument({
+            column: lastResult.column !== undefined ? lastResult.column : this.$getFirstColumn(lastResult.row),
+            row: lastResult.row + 1,
+            node: path ? undefined : tabEditors.getPage().xmlRoot,
+            animate: true,
+            path: path
+        });
+    },
+    
+    activateSpinner : function() {
+        try {
+            var node = tabEditors.getPage().$doc.getNode();
+            apf.xmldb.setAttribute(node, "lookup", "1");
+            this.removeSpinnerNodes.push(node);
+            var _self = this;
+            setTimeout(function() {
+                _self.clearSpinners();
+            }, CRASHED_JOB_TIMEOUT);
+        } catch (e) {
+            // Whatever, some missing non-critical UI
+            console.error(e);
+        }
+    },
+    
+    clearSpinners : function() {
+        this.removeSpinnerNodes.forEach(function(node) {
+            apf.xmldb.removeAttribute(node, "lookup");
+        });
+        this.removeSpinnerNodes = [];
     },
     
     enable : function(){
