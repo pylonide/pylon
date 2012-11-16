@@ -4,6 +4,8 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+ 
+ /*global hboxDockPanel*/
 
 define(function(require, exports, module) {
 
@@ -15,22 +17,22 @@ var settings = require("ext/settings/settings");
 var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/dockpanel/dockpanel", {
-    name           : "Dock Panel",
-    dev            : "Ajax.org",
-    alone          : true,
-    type           : ext.GENERAL,
+    name: "Dock Panel",
+    dev: "Ajax.org",
+    alone: true,
+    type: ext.GENERAL,
 
-    defaultState   : {
-        bars : []
+    defaultState: {
+        bars: []
     },
 
-    nodes          : [],
-    dockpanels     : {},
+    nodes: [],
+    dockpanels: {},
 
-    loaded : false,
+    loaded: false,
 
-    initDocTitle     : document.title,
-    notificationMsgs : {},
+    initDocTitle: document.title,
+    notificationMsgs: {},
 
     /**
      * Standard Extension functionality
@@ -140,7 +142,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                         catch (ex) {}
                         _self.layout.loadState(state);
 
-                        settings.model.setQueryValue("auto/dockpanel/text()", state)
+                        settings.model.setQueryValue("auto/dockpanel/text()", state);
 
                         _self.saveSettings();
 
@@ -167,7 +169,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     saveSettings : function(){
         clearTimeout(this.$timer);
 
-        var _self = this;;
+        var _self = this;
         this.$timer = setTimeout(function(){
             var state = _self.layout.getState();
 
@@ -313,7 +315,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
 
     getBars : function(name, type, state){
-        var state = state || this.layout.getState(true);
+        state = state || this.layout.getState(true);
         var list  = [];
 
         if(!state)
@@ -437,6 +439,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      */
     resetNotificationCount: function(windowIdent){
         if (windowIdent === -1) return;
+        if (!this.dockObjects) return;
 
         for(var doi = 0; doi < this.dockObjects.length; doi++) {
             if (this.dockObjects[doi].ident == windowIdent) {
@@ -486,7 +489,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 caption += " (" + count + ")";
                 apf.setStyleClass(btnPage.$button, "un-read-message");
                 if(notificationType == "chat") {
-                    btnObj.notificationOpt = options
+                    btnObj.notificationOpt = options;
                     if (options.name) {
                         this.notificationMsgs[options.name] = count;
                         this.updateDocTitleNotifications();
@@ -519,7 +522,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
 
     updateDocTitleNotifications: function(){
-        var _self    = this,
+        var _self = this,
             countMsg = 0;
 
         for(var i in this.notificationMsgs) {
@@ -550,6 +553,4 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         }
     }
 });
-
-    }
-);
+});
