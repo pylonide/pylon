@@ -13,6 +13,71 @@
         </script>
         <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
+        <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/loading.css" />
+
+        <script type="text/javascript">
+            function createSplash() {
+                var msg = (function () {
+                    var msgs = [
+                        "Cloning weapon",
+                        "Red 5, standing by",
+                        "Making sure all systems are operational",
+                        "Turning you to the dark side--we have cookies",
+                        "Assembling the alliance",
+                        "Copy, Gold Leader. We are already on our way out",
+                        "Dispatching war rocket Ajax to bring back his body",
+                        "Ola supermercado, telebancos por aqui",
+                        "Making you strong with the force, we are",
+                        "The Shield is down! Commencing attack on the Death star's main reactor",
+                        "Your precious awaits",
+                        "I am Gandalf the White. And I come back to you now, at the turn of the tide",
+                        "Reticulating splines"
+                    ];
+                    return msgs[Math.random() * msgs.length | 0];
+                }());
+                    
+                var loadingIde = document.createElement("div");
+                loadingIde.setAttribute("id", "loadingide");
+                
+                var header = document.createElement("div");
+                header.className = "header";
+                var footer = document.createElement("div");
+                footer.className = "footer";
+                // yes this is bad
+                footer.innerHTML = '<a href="https://docs.c9.io">Documentation</a> | <a href="https://status.c9.io">Server Status</a> | <a href="http://support.cloud9ide.com">Support</a>';
+                
+                var content = document.createElement("div");
+                content.className = "loading-progress";
+                content.innerHTML = '<div id="progress-msg">Preparing your workspace <span id="dots"></div></div><div class="loading-seperator"></div><div class="loading-msg"></div>';
+                content.querySelector(".loading-msg").textContent = msg;
+
+                loadingIde.appendChild(header);
+                loadingIde.appendChild(content);
+                loadingIde.appendChild(footer);
+                document.body.appendChild(loadingIde);
+                
+                var dots = document.getElementById("dots");
+                var cnt  = 0;
+                window.dotsAnim = setInterval(function () {
+                    dots.textContent = "...".split("").slice(0, (++cnt)%4).join("");
+                }, 500);
+            }
+            function clearSplash () {
+                // stop the dots animation
+                clearInterval(window.dotsAnim);
+                
+                var loadingDiv = document.getElementById("loadingide");
+                if (loadingDiv)
+                    document.body.removeChild(loadingDiv);
+            }
+            var createSplashInterval = setInterval(function() {
+                if (document.body) {
+                    createSplash();
+                    clearInterval(createSplashInterval);
+                }
+            }, 10);
+        </script>
+
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
         [%loadedDetectionScript%]
@@ -64,45 +129,20 @@
             else {
                var apfLoc = "";
             }
-            
-            var config = <%requirejsConfig%>; 
 
-            function createSplash() {
-                var loadingMsgs = ["Cloning weapon...",
-                    "Red 5, standing by...",
-                    "Making sure all systems are operational...",
-                    "Turning you to the dark side--we have cookies...",
-                    "Assembling the alliance...",
-                    "Copy, Gold Leader. We are already on our way out...",
-                    "Dispatching war rocket Ajax to bring back his body...",
-                    "Making you strong with the force, we are...",
-                    "The Shield is down! Commencing attack on the Death star's main reactor...",
-                    "Your precious awaits...",
-                    "I am Gandalf the White. And I come back to you now, at the turn of the tide...",
-                    "Reticulating splines..."];
-                var loadingIde = document.createElement('div');
-                loadingIde.setAttribute("id", "loadingide");
-                var msg = loadingMsgs[Math.floor(Math.random() * loadingMsgs.length)];
-
-                msg = msg.replace(/"/g, "&quot;").replace(/'/g, "&#8217;").replace(/</g, "&lt;");
-                loadingIde.innerHTML = '<div class="loader-content"><div class="spinner"></div>' + msg + '</div>';
-                document.body.appendChild(loadingIde);
-            }
+            var config = <%requirejsConfig%>;
 
             require(config, [apfLoc], function(){
-                if (!window.localStorage || !localStorage.lastLoadTime ||
-                    parseInt(localStorage.lastLoadTime, 10) > 4000)
-                    setTimeout(createSplash);
 
                 if (!cloud9config.packed) {
-                    var list = ["core/ide", "core/ext", "core/util", 
+                    var list = ["core/ide", "core/ext", "core/util",
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
                 }
                 else {
                     var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "c9os.min.js")];
                 }
-                
+
                 require(list, function(ide, ext, util){
                     if (!cloud9config.packed) {
                         var plugins = <%plugins%>;
@@ -125,7 +165,8 @@
                     aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
-                    
+                    aceConfig.set("suffix", ".js?staticUrl=" + cloud9config.staticUrl);
+
                     //Load extensions
                     if (!cloud9config.packed) {
                         apf.addEventListener("load", function(){
@@ -150,14 +191,10 @@
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time " 
+                console.log("Total Load Time "
                     + (cloud9config.totalTime) + "ms");
-                if (window.localStorage)
-                    localStorage.lastLoadTime = cloud9config.totalTime;
 
-                var loadingDiv = document.getElementById("loadingide");
-                if (loadingDiv)
-                    document.body.removeChild(loadingDiv);
+                clearSplash();
 
                 ide.addEventListener("$event.extload", function(cb){
                     cb();
@@ -171,9 +208,7 @@
                     "[%staticUrl%]/ext/main/style/images/cover-logo.png",
                     "[%staticUrl%]/ext/main/style/images/panelBg.png",
                     "[%staticUrl%]/ext/main/style/images/editor_tab.png",
-                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png",
-                    "[%staticUrl%]/ext/main/style/images/loading-your-editor.png",
-                    "[%staticUrl%]/ext/main/style/images/loaderide.gif"
+                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
                 ];
                 if (document.images) {
                     var img;
