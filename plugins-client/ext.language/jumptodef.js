@@ -116,11 +116,11 @@ module.exports = {
     },
     
     onDefinitions : function(e) {
+        this.clearSpinners();
+        
         var results = e.data;
         if (!results.length)
             return;
-        
-        this.clearSpinners();
 
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
