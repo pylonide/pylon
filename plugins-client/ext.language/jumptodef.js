@@ -66,13 +66,19 @@ module.exports = {
             if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
                 return;
             // We have no UI for multi jumptodef; we just take the last for now
-            var lastResult = results[results.length - 1];
+            var lastResult;
+            for (var i = results.length - 1; i >=0; i--) {
+                lastResult = results[results.length - 1];
+                if (!lastResult.isDeferred)
+                    break;
+            }
+            var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
             editors.gotoDocument({
                 column: lastResult.column != null ? lastResult.column : _self.$getFirstColumn(lastResult.row),
                 row: lastResult.row + 1,
-                node: tabEditors.getPage().xmlRoot,
-                animate: false,
-                path: lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined
+                node: path ? undefined : tabEditors.getPage().xmlRoot,
+                animate: true,
+                path: path
             });
         });
         
