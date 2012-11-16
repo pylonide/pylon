@@ -90,6 +90,8 @@ exports.init = function(splitView) {
         }
     });
 
+    Grids.init();
+
     return this;
 };
 
