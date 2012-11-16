@@ -6,6 +6,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global tabEditors mnuContextTabs mnuSyntax */
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -773,7 +775,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                 };
             }
 
-            split.activePage = parseInt(node.getAttribute("activepage"), 10)
+            split.activePage = parseInt(node.getAttribute("activepage"), 10);
             if (split.activePage < 0)
                 split.activePage = 0;
 
@@ -820,7 +822,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var editor;
         for (var i = 0, l = arguments.length; i < l; ++i) {
             editor = arguments[i];
-            if (!editor || editor.path != "ext/code/code")
+            if (!editor || editor.path != "ext/code/code" || editor.path != "ext/terminal/terminal")
                 return false;
         }
         return true;
