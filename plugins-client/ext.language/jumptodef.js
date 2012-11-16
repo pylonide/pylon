@@ -46,7 +46,7 @@ module.exports = {
             
             // when the context menu pops up we'll ask the worker whether we've 
             // jumptodef available here
-            apf.addListener(mnuCtxEditor, "prop.visible", function (ev) {
+            apf.addListener(mnuCtxEditor, "prop.visible", function(ev) {
                 // only fire when visibility is set to true        
                 if (ev.value) {
                     // because of delays we'll enable by default
@@ -57,10 +57,15 @@ module.exports = {
         });
         
         // listen to the worker's response
-        worker.on("definition", function(ev) {
+        worker.on("definition", function(e) {
+            var results = e.data;
+            if (!results.length)
+                return;
+            // We have no UI for multi jumptodef; we just take the last for now
+            var lastResult = results[results.length - 1];
             editors.jump({
-                column: ev.data.column,
-                row: ev.data.row + 1,
+                column: lastResult.column,
+                row: lastResult.row + 1,
                 node: tabEditors.getPage().xmlRoot,
                 animate: false
             });
@@ -68,7 +73,7 @@ module.exports = {
         
         // when the analyzer tells us if the jumptodef result is available
         // we'll disable/enable the jump to definition item in the ctx menu
-        worker.on("isJumpToDefinitionAvailableResult", function (ev) {
+        worker.on("isJumpToDefinitionAvailableResult", function(ev) {
             if (ev.data.value) {
                 mnuCtxEditorJumpToDef.enable();
             }
