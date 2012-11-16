@@ -18,6 +18,8 @@ var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 var linereport = require("ext/linereport/linereport_base");
 
+var isInWebWorker = typeof window == "undefined" || !window.location || !window.document;
+
 var WARNING_LEVELS = {
     error: 3,
     warning: 2,
@@ -139,36 +141,6 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     });
 };
 
-exports.createUIWorkerClient = function() {
-    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
-    var result = new LanguageWorker(emitter);
-    result.on = function(name, f) {
-        emitter.on.call(result, name, f);
-    };
-    result.call = function(cmd, args, callback) {
-        if (callback) {
-            var id = this.callbackId++;
-            this.callbacks[id] = callback;
-            args.push(id);
-        }
-        this.send(cmd, args);
-    };
-    result.send = function(cmd, args) {
-        setTimeout(function() { result[cmd].apply(result, args); }, 0);
-    };
-    result.emit = function(event, data) {
-        emitter._dispatchEvent.call(emitter, event, data);
-    };
-    emitter.emit = function(event, data) {
-        emitter._dispatchEvent.call(result, event, { data: data });
-    };
-    return result;
-};
-
-var isWorkerEnabled = exports.isWorkerEnabled = function() {
-    return !window.location || !window.location.search.match(/[?&]noworker=1/);
-};
-
 /**
  * Ensure that an event handler is called only once if multiple
  * events are received at the same time.
@@ -283,7 +255,7 @@ function asyncParForEach(array, fn, callback) {
             var handler = require(path);
             onRegistered(handler);
         } catch (e) {
-            if (isWorkerEnabled())
+            if (isInWebWorker)
                 throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             require([path], function(handler) {
@@ -856,7 +828,7 @@ function asyncParForEach(array, fn, callback) {
      * information is now available.
      */
     this.completeUpdate = function(pos) {
-        if (!isWorkerEnabled()) { // Avoid making the stack too deep in ?noworker=1 mode
+        if (!isInWebWorker) { // Avoid making the stack too deep in ?noworker=1 mode
             var _self = this;
             setTimeout(function onCompleteUpdate() {
                 _self.complete({data: {pos: pos, staticPrefix: _self.staticPrefix, isUpdate: true}});

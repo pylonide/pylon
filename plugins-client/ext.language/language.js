@@ -13,8 +13,8 @@ var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var EditSession = require("ace/edit_session").EditSession;
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
-var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
-var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
+var UIWorkerClient = require("ace/worker/worker_client").UIWorkerClient;
+var useUIWorker = window.location && /[?&]noworker=1/.test(window.location.search);
 
 var complete = require("ext/language/complete");
 var marker = require("ext/language/marker");
@@ -51,19 +51,10 @@ module.exports = ext.register("ext/language/language", {
     hook : function() {
         var _self = this;
 
-        if (!createUIWorkerClient || !isWorkerEnabled)
-            throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
-
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
-            var worker;
-            if (!isWorkerEnabled()) {
-                worker = _self.worker = createUIWorkerClient();
-            }
-            else {
-                worker = _self.worker = new WorkerClient(
-                    ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
-            }
+            var Worker = useUIWorker ? UIWorkerClient : WorkerClient;
+            var worker = _self.worker = new Worker(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
 
             ide.addEventListener("closefile", function(e){
@@ -131,10 +122,6 @@ module.exports = ext.register("ext/language/language", {
 
     isInferAvailable : function() {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
-    },
-
-    isWorkerEnabled : function() {
-        return isWorkerEnabled();
     },
 
     init : function() {
