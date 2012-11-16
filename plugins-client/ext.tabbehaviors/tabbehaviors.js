@@ -54,7 +54,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         ["tab0", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
         ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree", function(){ return ide.onLine && tabEditors.activepage }],
         ["nexttab", "Option-Tab", "Ctrl-Tab", "navigate to the next tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }],
-        ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }]
+        ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }],
+        ["closealltotheright", null, null, "", function(){
+            if (ide.onLine && tabEditors.length > 1) {
+                var page = mnuContextTabs.$page || tabEditors.activepage;
+                return tabEditors.getPages().pop() != page;
+            }
+        }],
+        ["closealltotheleft", null, null, "", function(){
+            if (ide.onLine && tabEditors.length > 1) {
+                var page = mnuContextTabs.$page || tabEditors.activepage;
+                return tabEditors.getPages()[0] != page;
+            }
+        }]
     ],
     
     nodes      : [],
@@ -70,33 +82,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 hint: item[3],
                 msg: item[4],
                 isAvailable : typeof a == "function" && a,
-                exec: function () {
-                    _self[item[0]]();
+                exec: function (editor, arg) {
+                    if (arg && !arg[0] && arg.source == "click")
+                        arg = [mnuContextTabs.$page];
+                    _self[item[0]](arg[0]);
                 }
             });
-        });
-        
-        commands.addCommand({
-            name: "closealltotheright",
-            isAvailable : function(){
-                return ide.onLine && tabEditors.length > 1 
-                  && tabEditors.getPage().nextSibling
-                  && tabEditors.getPage().nextSibling.localName == "page";
-            },
-            exec: function (editor, args) { 
-                _self.closealltotheright(args[0]); 
-            }
-        });
-        
-        commands.addCommand({
-            name: "closealltotheleft",
-            isAvailable : function(){
-                return ide.onLine && tabEditors.length > 1 
-                  && tabEditors.getPages().indexOf(mnuContextTabs.$page) != 0;
-            },
-            exec: function (editor, args) { 
-                _self.closealltotheleft(args[0]); 
-            }
         });
         
         this.nodes.push(
@@ -152,13 +143,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 apf.setStyleClass(_self.mnuTabs.$ext, "", ["tabsContextMenu"]);
         });
         
+        tabEditors.addEventListener("contextmenu", function(e) {
+            if (e.currentTarget && e.currentTarget.tagName == "page")
+                mnuContext.$page = e.currentTarget;
+        });
+        
         mnuContext.addEventListener("prop.visible", function(e) {
-            if (e.value && window.event) {
-                this.$page = apf.findHost(document.elementFromPoint(
-                    window.event.clientX, 
-                    window.event.clientY));
-            }
-        }, true);
+            // use setTimeout because apf closes menu before menuitem onclick event
+            if (!e.value)
+                setTimeout(function(){this.$page = null;})
+        }, false);
         
         menus.addItemByPath("Reveal in File Tree", new apf.item({
             command : "revealtab"
@@ -175,26 +169,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }), 500, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
         menus.addItemByPath("Close Tabs to the Right", new apf.item({
-            //command : "closealltotheright",
-            isAvailable : commands.commands["closealltotheright"].isAvailable,
-            onclick : function(){
-                var page = apf.findHost(document.elementFromPoint(
-                    parseInt(mnuContextTabs.$ext.style.left), 
-                    parseInt(mnuContextTabs.$ext.style.top)));
-
-                commands.exec("closealltotheright", null, [page]);
-            }
+            command : "closealltotheright"
         }), 600, mnuContext);
         menus.addItemByPath("Close Tabs to the Left", new apf.item({
-            //command : "closealltotheleft",
-            isAvailable : commands.commands["closealltotheleft"].isAvailable,
-            onclick : function(){
-                var page = apf.findHost(document.elementFromPoint(
-                    parseInt(mnuContextTabs.$ext.style.left), 
-                    parseInt(mnuContextTabs.$ext.style.top)));
-
-                commands.exec("closealltotheleft", null, [page]);
-            }
+            command : "closealltotheleft"
         }), 700, mnuContext);
 
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
