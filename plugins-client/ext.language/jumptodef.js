@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var commands = require("ext/commands/commands");
+var util = require("ext/codecomplete/complete_util");
 
 var CRASHED_JOB_TIMEOUT = 30000;
 
@@ -117,14 +118,16 @@ module.exports = {
     
     onDefinitions : function(e) {
         this.clearSpinners();
-        
-        var results = e.data;
-        if (!results.length)
-            return;
+
+        var results = e.data.results;
 
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
+            
+        if (!results.length)
+            return this.onJumpFailure(e, editor);
+            
         // We have no UI for multi jumptodef; we just take the last for now
         var lastResult;
         for (var i = results.length - 1; i >=0; i--) {
@@ -140,6 +143,20 @@ module.exports = {
             animate: true,
             path: path
         });
+    },
+    
+    onJumpFailure : function(event, editor) {
+        var cursor = editor.getSelection().getCursor();
+        var oldPos = event.data.pos;
+        if (oldPos.row !== cursor.row || oldPos.column !== cursor.column)
+            return;
+        var line = editor.getDocument().getLine(oldPos.row);
+        if (!line)
+            return;
+        var preceding = util.retrievePreceedingIdentifier(line, cursor.column);
+        var column = cursor.column - preceding.length;
+        var newPos = { row: cursor.row, column: column };
+        editor.getSelection().setSelectionRange({ start: newPos, end: newPos });
     },
     
     activateSpinner : function() {
