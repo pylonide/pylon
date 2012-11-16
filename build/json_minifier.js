@@ -9,6 +9,5 @@ var args = process.argv.slice(2),
             process.exit(1);
         }
         
-        console.log(fileOut)
         fs.writeFileSync(fileOut, JSON.stringify(JSON.parse(json), null));
     });
