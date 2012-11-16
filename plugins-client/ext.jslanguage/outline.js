@@ -87,7 +87,7 @@ function fixStringPos(doc, node) {
 }
 
 // This is where the fun stuff happens
-var outlineSync = outlineHandler.outlineSync = function(doc, node) {
+var outlineSync = outlineHandler.outlineSync = function(doc, node, includeProps) {
     var results = [];
     node.traverseTopDown(
         // e.x = function(...) { ... }  -> name is x
@@ -99,7 +99,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
                 name: name + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 displayPos: b.e.cons === 'PropAccess' && getIdentifierPosBefore(doc, this[1].getPos()) || b.e.getPos(),
-                items: outlineSync(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         },
@@ -110,7 +110,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 displayPos: b.x.getPos(),
-                items: outlineSync(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         },
@@ -121,12 +121,14 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 displayPos: getIdentifierPosBefore(doc, this.getPos()),
-                items: outlineSync(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         },
-        /* UNDONE: properties in outline
         'PropertyInit(x, e)', function(b) {
+            if (!includeProps)
+                return;
+            
             results.push({
                 icon: 'property',
                 name: b.x.value,
@@ -135,9 +137,8 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
             });
             return this;
         },
-        */
         'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
-            var items = outlineSync(doc, b.e);
+            var items = outlineSync(doc, b.e, includeProps);
             if (items.length === 0)
                 return this;
             results.push({
@@ -150,7 +151,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
             return this;
         },
         'PropertyInit(x, e)', function(b) {
-            var items = outlineSync(doc, b.e);
+            var items = outlineSync(doc, b.e, includeProps);
             if (items.length === 0)
                 return this;
             results.push({
@@ -166,7 +167,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
             var name = expressionToName(b.x);
             if (!name)
                 return false;
-            var items = outlineSync(doc, b.e);
+            var items = outlineSync(doc, b.e, includeProps);
             if (items.length === 0)
                 return this;
             results.push({
@@ -188,7 +189,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
                 name: eventHandler.s[0].value,
                 pos: this.getPos(),
                 displayPos: fixStringPos(doc, eventHandler.s),
-                items: eventHandler.body && outlineSync(doc, eventHandler.body)
+                items: eventHandler.body && outlineSync(doc, eventHandler.body, includeProps)
             });
             return this;
         },
@@ -207,7 +208,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
                         icon: 'method',
                         name: name + '[callback]' + fargsToString(b.fargs),
                         pos: this.getPos(),
-                        items: outlineSync(doc, b.body)
+                        items: outlineSync(doc, b.body, includeProps)
                     });
                     foundFunction = true;
                 }
@@ -223,7 +224,7 @@ var outlineSync = outlineHandler.outlineSync = function(doc, node) {
                 name: b.name.value + fargsToString(b.fargs),
                 pos: this.getPos(),
                 displayPos: b.name.getPos(),
-                items: outlineSync(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         }
