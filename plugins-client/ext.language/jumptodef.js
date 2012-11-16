@@ -61,10 +61,14 @@ module.exports = {
             var results = e.data;
             if (!results.length)
                 return;
+
+            var editor = editors.currentEditor;
+            if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+                return;
             // We have no UI for multi jumptodef; we just take the last for now
             var lastResult = results[results.length - 1];
             editors.jump({
-                column: lastResult.column,
+                column: lastResult.column != null ? lastResult.column : _self.$getFirstColumn(lastResult.row),
                 row: lastResult.row + 1,
                 node: tabEditors.getPage().xmlRoot,
                 animate: false
@@ -81,6 +85,16 @@ module.exports = {
                 mnuCtxEditorJumpToDef.disable();
             }
         });
+    },
+    
+    $getFirstColumn: function(row) {
+        var editor = editors.currentEditor;
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+            return 1;
+        var line = editor.getDocument().getLine(row);
+        if (!line)
+            return 1;
+        return line.match(/^(\s*)/)[1].length;
     },
     
     /**
