@@ -171,7 +171,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         });
 
         ide.addEventListener("tab.afterswitch", function(e) {
-            var page = e.nextPage
+            var page = e.nextPage;
             if (!Splits.getActive())
                 return;
             _self.save();
@@ -191,6 +191,16 @@ module.exports = ext.register("ext/splitview/splitview", {
                     break;
                 }
             }
+        });
+
+        ide.addEventListener("tab.close", function(e) {
+            if (!e.page.$clone)
+                return;
+
+            // make sure that the model and actiontracker are NOT cleared when a
+            // cloned tab page is closed, otherwise the original editor will be blank
+            delete e.page.$at;
+            delete e.page.$editor;
         });
 
         ide.addEventListener("closefile", function(e) {
@@ -292,7 +302,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!origPage)
                 return;
 
-            Splits.consolidateEditorSession(origPage, origPage.$editor.amlEditor);
+            var origEditor = origPage.$editor.amlEditor;
+            Splits.consolidateEditorSession(origPage, origEditor);
             page.$doc = origPage.$doc;
             page.setAttribute("actiontracker", origPage.$at);
             page.$at = origPage.$at;
@@ -347,6 +358,8 @@ module.exports = ext.register("ext/splitview/splitview", {
                     editor: editor
                 });
 
+                page.$clone = true;
+
                 if (settings) {
                     var addPage;
                     for (i = 0, l = pages.length; i < l; ++i) {
@@ -363,13 +376,22 @@ module.exports = ext.register("ext/splitview/splitview", {
                     split.activePage = parseInt(settings.getAttribute("activepage"), 10) || 0;
                     split.gridLayout = settings.getAttribute("layout");
                 }
+
+                function syntaxListener(e) {
+                    editor.setAttribute("syntax", e.value);
+                }
+                origEditor.addEventListener("prop.syntax", syntaxListener);
+                editor.setAttribute("syntax", origEditor.syntax);
+
                 Splits.consolidateEditorSession(page, editor);
 
                 page.addEventListener("DOMNodeRemovedFromDocument", function() {
+                    editor.removeEventListener("prop.syntax", syntaxListener);
                     _self.endCloneView(page);
                 });
 
                 origPage.addEventListener("DOMNodeRemovedFromDocument", function() {
+                    tabs.remove(page, null, true);
                     _self.endCloneView(origPage);
                 });
 
@@ -478,11 +500,12 @@ module.exports = ext.register("ext/splitview/splitview", {
         var tabs = tabEditors;
         var activePage = tabs.getPage();
 
+        var i, l;
         var ret = null;
         var split = Splits.get(activePage)[0];
 
         if (split && !shiftKey) {
-            for (var i = 0, l = split.pairs.length; i < l; ++i) {
+            for (i = 0, l = split.pairs.length; i < l; ++i) {
                 if (split.pairs[i].page !== activePage)
                     continue;
                 ret = false;
@@ -494,13 +517,10 @@ module.exports = ext.register("ext/splitview/splitview", {
             // REALLY shown)
             if (ret !== false && page !== split.pairs[0].page) {
                 tabs.set(split.pairs[0].page);
-                ret = false;
+                return false;
             }
 
-            if (!shiftKey)
-                return true;
-
-            return ret;
+            return true;
         }
         else if (shiftKey) {
             // enable split view ONLY for code editors for now...
@@ -509,9 +529,15 @@ module.exports = ext.register("ext/splitview/splitview", {
             // tabs can be merged into and unmerged from a splitview by clicking a
             // tab while holding shift
             //console.log("is clone?",apf.isTrue(page.$doc.getNode().getAttribute("clone")));
-            if (apf.isTrue(page.$doc.getNode().getAttribute("clone"))) {
-                tabs.remove(page, null, true);
-                ret = false;
+            if (split && apf.isTrue(page.$doc.getNode().getAttribute("clone"))) {
+                // close the page that contains the clone editor
+                var cloneEditor = Splits.getCloneEditor(page);
+                for (i = 0, l = split.pairs.length; i < l; ++i) {
+                    if (split.pairs[i].editor !== cloneEditor)
+                        continue;
+                    tabs.remove(split.pairs[i].page, null, true);
+                    return false;
+                }
             }
             else {
                 ret = !Splits.mutate(split, page);

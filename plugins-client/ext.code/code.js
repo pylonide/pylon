@@ -330,12 +330,14 @@ module.exports = ext.register("ext/code/code", {
 
                 //??? destroy doc.acesession
                 setTimeout(function() {
-                    doc.acedoc.doc.$lines = [];
-                    doc.acedoc.doc._eventRegistry = null;
-                    doc.acedoc.doc._defaultHandlers = null;
-                    doc.acedoc._eventRegistry = null;
-                    doc.acedoc._defaultHandlers = null;
-                    doc.acedoc = null;
+                    if (doc.acedoc) {
+                        doc.acedoc.doc.$lines = [];
+                        doc.acedoc.doc._eventRegistry = null;
+                        doc.acedoc.doc._defaultHandlers = null;
+                        doc.acedoc._eventRegistry = null;
+                        doc.acedoc._defaultHandlers = null;
+                        doc.acedoc = null;
+                    }
                     doc.acesession.$stopWorker();
                     doc.acesession.bgTokenizer.lines = [];
                     doc.acesession.bgTokenizer.tokenizer = null;

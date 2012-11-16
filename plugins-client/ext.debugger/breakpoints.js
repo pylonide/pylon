@@ -166,7 +166,7 @@ module.exports = {
     },
     initSession: function(session) {
         session.$breakpointListener = function(e) {
-            if (!this.c9doc.isInited || !this.$breakpoints.length)
+            if (!this.c9doc || !this.c9doc.isInited || !this.$breakpoints.length)
                 return;
             var delta = e.data;
             var range = delta.range;

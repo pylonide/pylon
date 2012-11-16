@@ -132,7 +132,7 @@ exports.show = function(split) {
         return this;
     if (ActiveSplit)
         this.hide(ActiveSplit, ActiveSplit.gridLayout == split.gridLayout);
-    this.update(split);
+
     Grids.show(split.gridLayout);
 
     var i, l;
@@ -152,6 +152,8 @@ exports.show = function(split) {
     }
 
     ActiveSplit = split;
+
+    this.update(split);
 
     return this;
 };

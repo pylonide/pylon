@@ -92,7 +92,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (typeof noAnim == "undefined") {
             noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
         }
-        
+
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
@@ -152,6 +152,8 @@ module.exports = ext.register("ext/editors/editors", {
                             btn.$ext.style.top = "6px";
                             btn.$ext.parentNode.style.overflow = "hidden";
                         }
+
+                        ide.dispatchEvent("tab.close", { page: e.page });
 
                         e.page.addEventListener("afterclose", _self.$close);
                     },
@@ -556,20 +558,26 @@ module.exports = ext.register("ext/editors/editors", {
         var at     = page.$at;
         var editor = page.$editor;
         var mdl    = page.$model;
+        var clearAll = !!(at && editor);
 
-        mdl.setQueryValue("@changed", 0);
-        page.$doc.dispatchEvent("close");
+        if (clearAll) {
+            mdl.setQueryValue("@changed", 0);
+            page.$doc.dispatchEvent("close");
+        }
 
         if (mdl.data) {
-            mdl.removeXml("data");
+            if (clearAll)
+                mdl.removeXml("data");
             ide.dispatchEvent("closefile", {xmlNode: mdl.data, page: page});
         }
 
-        //mdl.unshare();
-        mdl.destroy();
+        if (clearAll) {
+            //mdl.unshare();
+            mdl.destroy();
 
-        at.reset();
-        at.destroy();
+            at.reset();
+            at.destroy();
+        }
 
         //If there are no more pages left, reset location
         if (tabEditors.getPages().length == 1) {
