@@ -124,8 +124,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                     type    : "check",
                     checked : false,
                     isAvailable : function(){
-                        //@todo
-                        return true;
+                        return tabs.contextPage.$editor.path == "ext/code/code";
                     },
                     onclick : function() {
                         if (this.checked)
@@ -822,7 +821,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var editor;
         for (var i = 0, l = arguments.length; i < l; ++i) {
             editor = arguments[i];
-            if (!editor || editor.path != "ext/code/code" || editor.path != "ext/terminal/terminal")
+            if (!editor || (editor.path != "ext/code/code" && editor.path != "ext/terminal/terminal"))
                 return false;
         }
         return true;
