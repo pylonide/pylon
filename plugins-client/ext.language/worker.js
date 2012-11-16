@@ -577,8 +577,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         
         _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
-            if (results.length)
-                _self.sender.emit("definition", results);
+            _self.sender.emit("definition", { pos: pos, results: results });
         });
     };
     
@@ -811,9 +810,9 @@ function asyncParForEach(array, fn, callback) {
                 });
                 _self.sender.emit("complete", {
                     pos: pos,
-                        matches: matches,
-                        isUpdate: event.data.isUpdate,
-                        line: _self.doc.getLine(pos.row)
+                    matches: matches,
+                    isUpdate: event.data.isUpdate,
+                    line: _self.doc.getLine(pos.row)
                 });
             });
         });
