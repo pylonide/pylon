@@ -12064,6 +12064,7 @@
         }
 
         .filemgr-tree .item LABEL .caption {
+            width: 123px;
             font-family : Tahoma, Arial;
             font-size   : 11px;
             display:block;
@@ -12216,6 +12217,49 @@
         .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
             opacity : 0.5;
         }
+
+        .filemgr-tree .item label.sprite-file_icons-page_white_wrench,
+        .filemgr-tree .item label.sprite-file_icons-page_white_text,
+        .filemgr-tree .item label.sprite-file_icons-page_white_ruby,
+        .filemgr-tree .item label.sprite-file_icons-page_white_picture,
+        .filemgr-tree .item label.sprite-file_icons-page_white_php,
+        .filemgr-tree .item label.sprite-file_icons-page_white_h,
+        .filemgr-tree .item label.sprite-file_icons-page_white_go,
+        .filemgr-tree .item label.sprite-file_icons-page_white_flash,
+        .filemgr-tree .item label.sprite-file_icons-page_white_cup,
+        .filemgr-tree .item label.sprite-file_icons-page_white_csharp,
+        .filemgr-tree .item label.sprite-file_icons-page_white_cplusplus,
+        .filemgr-tree .item label.sprite-file_icons-page_white_coldfusion,
+        .filemgr-tree .item label.sprite-file_icons-page_white_code_red,
+        .filemgr-tree .item label.sprite-file_icons-page_white_code,
+        .filemgr-tree .item label.sprite-file_icons-page_white_c,
+        .filemgr-tree .item label.sprite-file_icons-page_white_actionscript,
+        .filemgr-tree .item label.sprite-file_icons-page_white_acrobat,
+        .filemgr-tree .item label.sprite-file_icons-page_white,
+        .filemgr-tree .item label.sprite-file_icons-image,
+        .filemgr-tree .item label.sprite-file_icons-html,
+        .filemgr-tree .item label.sprite-file_icons-css{background-repeat:no-repeat}
+        .filemgr-tree .item label.sprite-file_icons-page_white_wrench{background-position:0px 0px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_text{background-position:-16px 0px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_ruby{background-position:0px -16px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_picture{background-position:-16px -16px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_php{background-position:-32px 0px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_h{background-position:-32px -16px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_go{background-position:0px -32px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_flash{background-position:-16px -32px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_cup{background-position:-32px -32px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_csharp{background-position:-48px 0px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_cplusplus{background-position:-48px -16px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_coldfusion{background-position:-48px -32px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_code_red{background-position:0px -48px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_code{background-position:-16px -48px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_c{background-position:-32px -48px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_actionscript{background-position:-48px -48px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white_acrobat{background-position:-64px 0px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-page_white{background-position:-64px -16px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-image{background-position:-64px -32px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-html{background-position:-64px -48px;width:16px;height:16px;}
+        .filemgr-tree .item label.sprite-file_icons-css{background-position:0px -64px;width:16px;height:16px;}
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
@@ -12253,7 +12297,7 @@
                 <div class="item">
                     <span>x</span>
                     <div class="label-content">
-                        <label>
+                        <label class="sprite-file_icons-css">
                             <u class="caption">-</u>
                         </label>
                     </div>

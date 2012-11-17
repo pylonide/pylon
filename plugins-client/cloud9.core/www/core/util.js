@@ -242,7 +242,7 @@ exports.getFileIcon = function(xmlNode) {
         ext = name.split(".").pop().toLowerCase();
         icon = SupportedIcons[contentTypes[ext]] || "page_white_text";
     }
-    return icon + ".png";
+    return ".sprite-file_icons-" + icon;
 };
 
 

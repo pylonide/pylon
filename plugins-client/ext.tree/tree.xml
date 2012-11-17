@@ -42,7 +42,7 @@
                     <a:selectable match="[folder|file[not(@type='fileupload')]]" />
                     <a:icon match="[file[@type='fileupload']]" value="file-tree-load-spinner.gif" />
                     <a:css match="[file[@type='fileupload']]" value="fileupload" />
-                    <a:class match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                    <a:icon match="[file]" class="{require('core/util').getFileIcon(%[.])}" value="{require('core/ide').staticPrefix}/ext/main/style/icons/file_icons/sprite/file_icons.png" />
                 </a:each>
 
                 <a:add type="folder" get="{davProject.mkdir(%[.].getAttribute('path'), 'New Folder')}" />
