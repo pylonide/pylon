@@ -62,6 +62,6 @@
                "WUNTRACED", "true", "false", "nil", "__attached__", "__autoload__", "__classid__", "__classpath__", "__id__", "__inspect_key__", "__members__", "__method__", "__recursive_key__", "__send__", "__size__", "__tmp_classpath__", 
                "_alloc", "_dump", "_dump_data", "_id2ref", "_load", "_load_data"],
 
-    "variable": ["$DEBUG", "$FILENAME", "$KCODE", "$LOADED_FEATURES", "$LOAD_PATH", "$PROGRAM_NAME", "$SAFE", "$VERBOSE", "$deferr", "$defout", "$stderr", "$stdin", "$stdout", "@signo"],
+    "variable": ["$DEBUG", "$FILENAME", "$KCODE", "$LOADED_FEATURES", "$LOAD_PATH", "$PROGRAM_NAME", "$SAFE", "$VERBOSE", "$deferr", "$defout", "$stderr", "$stdin", "$stdout", "@signo"]
 
 }
