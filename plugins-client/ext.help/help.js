@@ -95,7 +95,7 @@ define(function(require, exports, module) {
                                     var jsonBlog = JSON.parse(data.replace(/<!-- .+? -->/, ""));
                                     
                                     // date format is 2012-11-06 21:41:07; convert it to something better lookin'
-                                    var latestDate = " (" + jsonBlog.posts[0].date.split(" ")[0].replace(/-/g, ".") + ")";
+                                    latestDate = " (" + jsonBlog.posts[0].date.split(" ")[0].replace(/-/g, ".") + ")";
                                 } catch (e) {
                                     console.error("Changelog JSON parse failed: " + e);
                                 }
