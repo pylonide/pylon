@@ -532,10 +532,6 @@ module.exports = {
 
         lastIdentifierRegex = null;
         for (var i = 0; i < matches.length; i++) {
-            if(matches[i].name.indexOf(identifier) !== 0) {
-                matches.splice(i, 1);
-                i--;
-            }
             lastIdentifierRegex = lastIdentifierRegex || matches[i].identifierRegex;
         }
         
