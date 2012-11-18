@@ -134,8 +134,8 @@ oop.inherits(v8DebugClient, DebugHandler);
         var frame = this.activeFrame;
         if (!frame || !this.$v8dbg)
             return callback();
-        var bp = remoteBreakpoints[0];
-        if (bp.number !== 1)
+        var bp = remoteBreakpoints && remoteBreakpoints[0];
+        if (!bp || bp.number !== 1)
             return callback();
 
         var uibp = mdlDbgBreakpoints.queryNode(
