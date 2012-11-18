@@ -123,7 +123,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         var name = "ext/debugger/debugger"; //this.name
 
         dock.addDockable({
-            expanded : -1,
+            expanded : 1,
             width    : 300,
             sections : [{
                 height     : 30,
