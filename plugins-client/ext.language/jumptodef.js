@@ -155,6 +155,8 @@ module.exports = {
             return;
         var preceding = util.retrievePreceedingIdentifier(line, cursor.column);
         var column = cursor.column - preceding.length;
+        if (column === oldPos.column)
+            column = this.$getFirstColumn(cursor.row);
         var newPos = { row: cursor.row, column: column };
         editor.getSelection().setSelectionRange({ start: newPos, end: newPos });
     },
