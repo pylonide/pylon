@@ -26,6 +26,7 @@ var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 var keyhandler = require("ext/language/keyhandler");
 var jumptodef = require("ext/language/jumptodef");
+var menus = require("ext/menus/menus");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
@@ -37,7 +38,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Language Services",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, code],
+    deps    : [editors, code, menus],
     nodes   : [],
     alone   : true,
     markup  : markup,

@@ -12,6 +12,7 @@ var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var commands = require("ext/commands/commands");
 var util = require("ext/codecomplete/complete_util");
+var menus = require("ext/menus/menus");
 
 var CRASHED_JOB_TIMEOUT = 30000;
 
@@ -46,7 +47,11 @@ module.exports = {
                     id : "mnuCtxEditorJumpToDef",
                     caption : "Jump to Definition",
                     command: "jumptodef"
-                }), mnuCtxEditor.firstChild)
+                }), mnuCtxEditor.firstChild),
+                menus.addItemByPath("Goto/Jump to Definition", new apf.item({
+                    caption : "Jump to Definition",
+                    command: "jumptodef"
+                }), 899)
             );
             
             // when the context menu pops up we'll ask the worker whether we've 
