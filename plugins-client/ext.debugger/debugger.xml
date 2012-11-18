@@ -146,8 +146,10 @@
         </a:page>
         <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime" prerender="true">
             <a:list id="lstBreakpoints"
-              autoselect = "false"
               reselectable = "true"
+              contextmenu  = "mnuContextLstBreakpoints"
+              multiselect  ="true"
+              autoselect = "false"
               anchors    = "0 0 0 0"
               skin       = "breakpoints"
               scrollbar  = "sbShared 2 2 2"

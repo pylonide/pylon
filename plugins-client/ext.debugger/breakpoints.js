@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var dock = require("ext/dockpanel/dockpanel");
 var sources = require("ext/debugger/sources");
+var menus = require("ext/menus/menus");
 var util = require("core/util");
 var BREAKPOINT_DELAY = 100;
 
@@ -119,6 +120,29 @@ module.exports = {
                 e.selected && _self.gotoBreakpoint(e.selected);
             });
         });
+        
+        this.menu = new apf.menu({id : "mnuContextLstBreakpoints", "onprop.visible" : function(e){console.log(e)}})
+        menus.addItemByPath("Disable", new apf.item({
+            onclick : function() {
+                lstBreakpoints.selection.forEach(function(bp) {
+                    bp.setAttribute("enabled", false);
+                });
+            }
+        }), 100, this.menu);
+        menus.addItemByPath("Enable", new apf.item({
+            onclick : function() {
+                lstBreakpoints.selection.forEach(function(bp) {
+                    bp.setAttribute("enabled", true);
+                });
+            }
+        }), 200, this.menu);
+        menus.addItemByPath("Remove", new apf.item({
+            onclick : function(){
+                lstBreakpoints.selection.forEach(function(bp) {
+                    apf.xmldb.removeNode(bp);
+                });
+            }
+        }), 300, this.menu);
     },
 
     initEditor: function(editor) {
