@@ -30,6 +30,14 @@
                   command  = "stepout"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:divider skin="c9-divider" />
+                <a:checkbox id="btnEnableBreakpoint" tooltip="Deactivate breakpoints"
+                  skin     = "checkbox_black"
+                  value    = "[{mdlDbgBreakpoints}::@disableBreakpoints]"/>
+                <a:divider skin="c9-divider" />
+                <a:checkbox id="btnBreakOnError" tooltip="Break on Exceptions"
+                  skin     = "checkbox_black"
+                  value    = "[{mdlDbgBreakpoints}::@breakOnExceptions]"/>
+                <a:divider skin="c9-divider" />
                 <!--<a:button id="btnStepThrough" tooltip="Step Through"
                   icon     = "stepthrough.png" 
                   skin     = "c9-sidepanelsbutton"

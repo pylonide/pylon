@@ -124,6 +124,7 @@ var DebugHandler = module.exports = function() {
     this.updateBreakpoints = function() {
         // Call the debugger to actually set/clear breakpoints
         var uiBreakpoints = this.$getUIBreakpoints();
+        var excBreak = this.$getBreakOnExceptions();
     };
 
     /////////////////////////////// Utilities \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/
@@ -132,6 +133,8 @@ var DebugHandler = module.exports = function() {
      * Utility function can be used to easily get the UI breakpoints
      */
     this.$getUIBreakpoints = function (argument) {
+        if (apf.isTrue(mdlDbgBreakpoints.data.getAttribute("disableBreakpoints")))
+            return [];
         return mdlDbgBreakpoints.queryNodes("breakpoint").map(function(bp) {
             return {
                 path: bp.getAttribute("path") || "",
@@ -143,6 +146,10 @@ var DebugHandler = module.exports = function() {
             };
         });
     };
+
+    this.$getBreakOnExceptions = function() {
+        return apf.isTrue(mdlDbgBreakpoints.data.getAttribute("breakOnExceptions"));
+    }
 
 }).call(DebugHandler.prototype);
 

@@ -539,15 +539,19 @@ oop.inherits(v8DebugClient, DebugHandler);
 
     this.updateBreakpoints = function(callback) {
         var _self = this;
+        var createdBreakpoints = this.$v8breakpoints;
+        this.$v8breakpoints = {};
+
+        var excBreak = this.$getBreakOnExceptions() ? "all" : "none";
+        if (createdBreakpoints.excBreak != excBreak)
+            this.$v8dbg.setexceptionbreak(excBreak);
+        this.$v8breakpoints.excBreak = excBreak;
 
         // read all the breakpoints, then call the debugger to actually set them
         var uiBreakpoints = this.$getUIBreakpoints();
 
         // keep track of all breakpoints and check if they're really added
         var counter = 0;
-
-        var createdBreakpoints = this.$v8breakpoints;
-        this.$v8breakpoints = {};
 
         uiBreakpoints.forEach(function(bp) {
             bp.scriptname = _self.getScriptnameFromPath(bp.path);
