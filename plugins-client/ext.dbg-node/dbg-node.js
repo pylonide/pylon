@@ -393,18 +393,16 @@ oop.inherits(v8DebugClient, DebugHandler);
                 return {};
             }
 
-            var i;
-            var l;
-            var frames    = body.frames;
+            var frames = body.frames;
             var xmlFrames = model.queryNodes("frame");
             if (xmlFrames.length && _self.$isSameFrameset(xmlFrames, frames)) {
-                for (i = 0, l = frames.length; i < l; i++)
+                for (var i = 0, l = frames.length; i < l; i++)
                     _self.$updateFrame(xmlFrames[i], frames[i]);
             }
             else {
                 var xml = [];
                 if (frames) {
-                    for (i = 0, l = frames.length; i < l; i++)
+                    for (var i = 0, l = frames.length; i < l; i++)
                         _self.$buildFrame(frames[i], ref, xml);
                 }
                 model.load("<frames>" + xml.join("") + "</frames>");

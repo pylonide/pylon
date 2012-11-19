@@ -13,7 +13,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var dock = require("ext/dockpanel/dockpanel");
 var commands = require("ext/commands/commands");
-var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/debugger/debugger.xml");
 var breakpoints = require("./breakpoints");
 var sources = require("./sources");
@@ -33,7 +32,7 @@ module.exports = ext.register("ext/debugger/debugger", {
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
     buttonClassName : "debug1",
-    deps    : [fs],
+    deps    : [],
 
     nodesAll: [],
     nodes : [],
