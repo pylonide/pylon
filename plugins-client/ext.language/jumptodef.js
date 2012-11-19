@@ -83,13 +83,13 @@ module.exports = {
         });
     },
     
-    $getFirstColumn: function(row) {
+    $getFirstColumn: function(path, row) {
         var editor = editors.currentEditor;
-        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
-            return 1;
+        if (path || !editor || editor.path != "ext/code/code" || !editor.amlEditor)
+            return 0;
         var line = editor.getDocument().getLine(row);
         if (!line)
-            return 1;
+            return 0;
         return line.match(/^(\s*)/)[1].length;
     },
     
@@ -142,7 +142,7 @@ module.exports = {
         }
         var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
         editors.gotoDocument({
-            column: lastResult.column !== undefined ? lastResult.column : this.$getFirstColumn(lastResult.row),
+            column: lastResult.column !== undefined ? lastResult.column : this.$getFirstColumn(path, lastResult.row),
             row: lastResult.row + 1,
             node: path ? undefined : tabEditors.getPage().xmlRoot,
             animate: true,
@@ -161,7 +161,7 @@ module.exports = {
         var preceding = util.retrievePreceedingIdentifier(line, cursor.column);
         var column = cursor.column - preceding.length;
         if (column === oldPos.column)
-            column = this.$getFirstColumn(cursor.row);
+            column = this.$getFirstColumn(null, cursor.row);
         var newPos = { row: cursor.row, column: column };
         editor.getSelection().setSelectionRange({ start: newPos, end: newPos });
     },
