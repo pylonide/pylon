@@ -148,22 +148,11 @@ module.exports = ext.register(_name, {
     },
 
     enable : function() {
-        this.nodes.each(function(item){
-            item.enable && item.enable();
-        });
-    },
-
-    disable : function() {
-        this.nodes.each(function(item){
-            item.disable && item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy && item.destroy(true, true);
-        });
-        this.nodes = [];
+        var page = tabEditors.getPage();
+        var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
+        if(this.disableLut[contentType])
+            return this.disable();
+        this.$enable();
     }
 });
 

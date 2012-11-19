@@ -100,6 +100,15 @@ module.exports = ext = {
 
         oExtension.registered = true;
         oExtension.path = path;
+        var defaultEnable = this.defaultEnable;
+        var defaultDisable = this.defaultDisable;
+        var defaultDestroy = this.defaultDestroy;
+        oExtension.enable = oExtension.enable || defaultEnable;
+        oExtension.disable = oExtension.disable || defaultDisable;
+        oExtension.destroy = oExtension.destroy || defaultDestroy;
+        oExtension.$enable = defaultEnable;
+        oExtension.$disable = defaultDisable;
+        oExtension.$destroy = defaultDestroy;
 
         this.extHandlers[oExtension.type].register(oExtension);
 
@@ -174,10 +183,8 @@ module.exports = ext = {
 
         this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(oExtension.path) + "]/@enabled", 0);
 
-        if (oExtension.inited) {
-            oExtension.destroy();
-            delete oExtension.inited;
-        }
+        if (oExtension.inited)
+            this.destroyExt(oExtension);
 
         return true;
     },
@@ -225,7 +232,7 @@ module.exports = ext = {
                 oExtension.currentKeybindings = keyBindings;
         }
 
-        oExtension.init(amlParent);
+        oExtension.init && oExtension.init(amlParent);
 
         ide.addEventListener("$event.init." + oExtension.path, function(callback){
             callback.call(this, {ext : oExtension});
@@ -237,22 +244,46 @@ module.exports = ext = {
         this.model.queryNode("plugin[@path=" + util.escapeXpathString(oExtension.path) + "]").setAttribute("init", Number(new Date() - dt));
     },
 
+    defaultEnable: function () {
+        (this.nodes || []).each(function(item){
+            item.enable && item.enable();
+        });
+        this.disabled = false;
+        this.enabled = true;
+    },
+
+    defaultDisable: function () {
+        (this.nodes || []).each(function(item) {
+            item.disable && item.disable();
+        });
+        this.disabled = true;
+        this.enabled = false;
+    },
+
+    defaultDestroy: function () {
+        (this.nodes || []).each(function(item) {
+            item.destroy && item.destroy(true, true);
+        });
+        this.nodes = [];
+        this.disabled = true;
+        this.enabled = false;
+        delete this.inited;
+    },
+
     enableExt : function(path) {
         var ext = require(path);
-        if(!ext.enable)
-            return;
-
         ext.enable();
         this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(path) + "]/@enabled", 1);
     },
 
     disableExt : function(path) {
         var ext = require(path);
-        if(!ext.disable)
-            return;
-
         ext.disable();
         this.model.setQueryValue("plugin[@path=" + util.escapeXpathString(path) + "]/@enabled", 0);
+    },
+
+    destroyExt : function(ext) {
+        ext.destroy();
     },
 
     execCommand: function(cmd, data) {

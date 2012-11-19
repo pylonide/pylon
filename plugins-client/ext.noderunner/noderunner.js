@@ -180,15 +180,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         this.queryServerState();
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
-    },
-
     detectRunner: function(path) {
         if (path.match(/\.(php|phtml)$/))
             return "apache";

@@ -761,27 +761,10 @@ module.exports = ext.register("ext/tree/tree", {
         return false;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         commands.removeCommandByName("opentreepanel");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         panels.unregister(this);
+        this.$destroy();
     }
 });
 

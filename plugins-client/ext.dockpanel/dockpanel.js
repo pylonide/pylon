@@ -193,8 +193,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     destroy : function(){
         menus.remove("View/Dock Panels/Restore Default");
         menus.remove("View/Dock Panels/~", 200);
-
         this.layout.clearState();
+        this.$destroy();
     },
 
     register : function(name, type, options, getPage){
