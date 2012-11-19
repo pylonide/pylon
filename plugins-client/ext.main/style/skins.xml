@@ -6513,7 +6513,7 @@
             position: absolute;
             right: -39px;
             top: 1px;
-            width: 184px;
+            width: 286px;
         }
 
         .dockwin_runbtns .dockwin_runbtns-bg .dockwin_runbtns-icon {
