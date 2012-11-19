@@ -20,8 +20,8 @@ module.exports = {
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
         emitter.on("definition", function(def) {
-            assert.equal(def.row, 0);
-            assert.equal(def.column, 4);
+            assert.equal(def.results[0].row, 0);
+            assert.equal(def.results[0].column, 4);
             next();
         });
         emitter.once("markers", function(markers) {
@@ -38,7 +38,7 @@ module.exports = {
         worker.register("ext/jslanguage/parse");
         worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);", null, "");
     },
-    "test jump to definition on a position without code should not throw" : function(next) {
+    "test jump to definition on a position without code should still return a result" : function(next) {
         disabledFeatures = { jshint: true };
         var emitter = Object.create(EventEmitter);
         emitter.emit = emitter._dispatchEvent;
@@ -60,7 +60,7 @@ module.exports = {
         
         // definition listener should not be called
         setTimeout(function () {
-            sinon.assert.callCount(definitionListener, 0);
+            sinon.assert.callCount(definitionListener, 1);
             next();
         }, 500);
     },
