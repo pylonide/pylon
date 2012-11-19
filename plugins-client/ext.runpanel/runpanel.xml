@@ -28,13 +28,13 @@
                           onafterselect = "
                             require('ext/runpanel/runpanel').saveSelection();
                           "
+                          canrename = "true"
                           scrollbar="sbShared 2 2 31">
                             <a:each match="[config]">
                                 <a:caption match="[@name]"></a:caption>
                                 <a:css match="[@active]" value="active"/>
                                 <a:rename match="[@name]"></a:rename>
                             </a:each>
-                            
                         </a:list>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                               skin    = "btn_icon_only" 
                               class   = "dim18-18" 
                               icon    = "info.png" 
-                              onclick = "window.open('https://docs.c9.io')" />
+                              onclick = "window.open('https://docs.c9.io/running_and_debugging_code.html')" />
                         </a:hbox>
                     </div>
                     <div class="gray">
@@ -129,13 +129,13 @@
                                 <a:divider skin="c9-divider-hor" margin="0 -9 0 -8" />
                                 <a:hbox edge="11 0 0 0" pack="end" align="center" padding="17">
                                     <a:button
-                                      id       = "btnDefaultExtEnable"
                                       skin     = "btn-default-simple"
                                       caption  = "Close"
                                       class    = "no-bold size-13"
                                       onclick  = "mnuRunCfg.hide()" />
                                     <a:button
-                                      caption = "{(lstRunCfg.selected.getAttribute('active') == 'true' ? (apf.isTrue(cbRunDbgDebugMode.value) ? 'Run in Debug Mode' : 'Run') : 'Run Once')}"
+                                      id      = "btnRunDbgRun"
+                                      caption = "{([{lstRunCfg.selected}::@active] == 'true' ? (apf.isTrue(cbRunDbgDebugMode.value) ? 'Run in Debug Mode' : 'Run') : 'Run Once')}"
                                       width   = "170"
                                       skin    = "button-colorless"
                                       class   = "green dark"

@@ -6234,7 +6234,7 @@
             color : #bebebe;
         }
 
-        .listRC .rcItem .btnDelete {
+        .listRC .rcItem.hover .btnDelete {
             width               : 16px;
             height              : 19px;
             position            : absolute;
@@ -6245,11 +6245,11 @@
             background-position : 0 0;
         }
 
-        .listRC .rcItem .btnDelete:hover {
+        .listRC .rcItem.hover .btnDelete:hover {
             background-position : -15px 0;
         }
 
-        .listRC .rcItem .btnDelete:active {
+        .listRC .rcItem.hover .btnDelete:active {
             background-position : -31px 0;
         }
 
@@ -6307,6 +6307,7 @@
             -webkit-transition: margin .2s ease;
             -moz-transition: margin .2s ease;
             transition: margin .2s ease;
+            overflow: hidden;
         }
         .mnuRunCfg .window {
             border: 1px solid black;
@@ -6428,6 +6429,10 @@
         */
         .mnuRunCfg.showList .window .col1 {
             width: 175px;
+        }
+        
+        .mnuRunCfg.fromRunBtn .window {
+            margin: -13px 0 0 -104px;
         }
     ]]></a:style>
     <a:presentation>
