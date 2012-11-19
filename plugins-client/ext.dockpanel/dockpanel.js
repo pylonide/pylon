@@ -213,12 +213,14 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             onclick : function(){
                 var page = getPage();
 
-                var uId = _self.getButtons(name, type)[0].uniqueId;
-                layout.show(uId, true);
-                if (layout.isExpanded(uId) < 0)
-                    layout.showMenu(uId);
+                var uId = _self.getButtons(name, type);
+                if (uId.length && (uId = uId[0].uniqueId)) {
+                    layout.show(uId, true);
+                    if (layout.isExpanded(uId) < 0)
+                        layout.showMenu(uId);
 
-                page.parentNode.set(page);
+                    page.parentNode.set(page);
+                }
             }
         }), options.menuIndex);
     },
