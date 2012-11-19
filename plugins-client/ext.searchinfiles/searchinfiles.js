@@ -311,7 +311,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                     if (!noselect && editors.currentEditor)
-                        editors.currentEditor.ceEditor.focus();
+                        editors.currentEditor.amlEditor.focus();
 
                     setTimeout(function(){
                         callback
@@ -438,7 +438,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
                 _self.searchPage = tabEditors.getPage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
-                _self.apfeditor = _self.searchPage.$editor.ceEditor;
+                _self.apfeditor = _self.searchPage.$editor.amlEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
                 _self.tabacedoc.node = node;
 

@@ -61,7 +61,7 @@ module.exports = ext.register("ext/editors/editors", {
             (_self.fileExtensions[mime] || (_self.fileExtensions[mime] = [])).push(oExtension);
         });
 
-        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.name == "Code Editor"))
+        if (!this.fileExtensions["default"] || (oExtension.name && oExtension.path == "ext/code/code"))
             this.fileExtensions["default"] = oExtension;
     },
 
@@ -219,6 +219,12 @@ module.exports = ext.register("ext/editors/editors", {
             }
             }
         });
+
+        // on firefox tabEditors.$buttons are wrapped in additional div
+        // https://github.com/ajaxorg/apf/blob/master/core/baseclasses/basetab.js#L1503
+        if (tabEditors.$gotContainer) {
+            tabEditors.$buttons.parentNode.removeNode();
+        }
 
         barButtonContainer.$int.appendChild(tabEditors.$buttons);
         barButtonContainer.$int.style.paddingRight
