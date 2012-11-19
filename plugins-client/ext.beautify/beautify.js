@@ -110,8 +110,6 @@ module.exports = ext.register("ext/beautify/beautify", {
         sel.setSelectionRange(Range.fromPoints(range.start, end));
     },
 
-    init: function () {},
-
     hook: function () {
         var _self = this;
 
@@ -157,30 +155,10 @@ module.exports = ext.register("ext/beautify/beautify", {
         ext.initExtension(this);
     },
 
-    enable: function () {
-        this.nodes.each(function (item) {
-            item.enable();
-        });
-
-        this.disabled = false;
-    },
-
-    disable: function () {
-        this.nodes.each(function (item) {
-            item.disable();
-        });
-
-        this.disabled = true;
-    },
-
     destroy: function () {
         menus.remove("Tools/Beautify Selection");
         commands.removeCommand("beautify");
-
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

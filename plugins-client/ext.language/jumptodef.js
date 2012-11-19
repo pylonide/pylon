@@ -186,25 +186,7 @@ module.exports = {
             apf.xmldb.removeAttribute(node, "lookup");
         });
         this.removeSpinnerNodes = [];
-    },
-    
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
+    
 };
 });

@@ -748,26 +748,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         form.append("upload", file);
 
         return form;
-    },
-
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

@@ -90,10 +90,6 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         );
     },
 
-    init : function (amlNode) {
-        // do nothing
-    },
-
     cut: function() {
         if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.cutSelection(trFiles);
@@ -154,18 +150,6 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         var amlEditor = editor.amlEditor;
         return amlEditor.$editor;
     },
-    
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
 
     destroy : function(){
         menus.remove("Edit/~", 300);
@@ -173,10 +157,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         menus.remove("Edit/Copy");
         menus.remove("Edit/Paste");
         
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

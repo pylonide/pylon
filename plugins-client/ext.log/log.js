@@ -109,33 +109,6 @@ module.exports = ext.register("ext/log/log", {
             : ""));
 
         return apf.xmldb.appendChild(this.model.data, xmlNode);
-    },
-
-    init : function(amlNode){},
-
-    enable : function(){
-        if (!this.disabled) return;
-
-        this.nodes.each(function(item){
-            item.enable();
-        });
-        this.disabled = false;
-    },
-
-    disable : function(){
-        if (this.disabled) return;
-
-        this.nodes.each(function(item){
-            item.disable();
-        });
-        this.disabled = true;
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

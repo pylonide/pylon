@@ -115,18 +115,6 @@ module.exports = ext.register("ext/linereport/linereport", {
             language: event.data.language,
             source: event.data.source
         });
-    },
-    
-    enable: function() {
-        this.disabled = false;
-    },
-
-    disable: function() {
-        this.disabled = true;
-    },
-
-    destroy: function() {
-        this.disabled = true;
     }
     
 });

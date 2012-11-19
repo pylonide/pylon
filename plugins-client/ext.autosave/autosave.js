@@ -199,9 +199,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     enable: function() {
-        this.nodes.each(function(item) {
-            item.enable();
-        });
+        this.$enable();
 
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
@@ -219,9 +217,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     },
 
     disable: function() {
-        this.nodes.each(function(item){
-            item.disable();
-        });
+        this.$disable();
 
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
@@ -259,10 +255,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             }
         }, this);
 
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });
