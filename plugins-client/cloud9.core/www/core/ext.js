@@ -100,9 +100,9 @@ module.exports = ext = {
 
         oExtension.registered = true;
         oExtension.path = path;
-        var defaultEnable = this.defaultEnable.bind(oExtension);
-        var defaultDisable = this.defaultDisable.bind(oExtension);
-        var defaultDestroy = this.defaultDestroy.bind(oExtension);
+        var defaultEnable = this.defaultEnable;
+        var defaultDisable = this.defaultDisable;
+        var defaultDestroy = this.defaultDestroy;
         oExtension.enable = oExtension.enable || defaultEnable;
         oExtension.disable = oExtension.disable || defaultDisable;
         oExtension.destroy = oExtension.destroy || defaultDestroy;
