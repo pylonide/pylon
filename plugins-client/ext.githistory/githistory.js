@@ -2,7 +2,9 @@
  * File history browser & comparison tool for Cloud9 IDE
  * 
  * TODO:
- * 
+ *
+ * Remove ceEditor (see http://100procentjan.nl/c9/3rlzgl.jpeg)
+ *
  * Implement "Restore" functionality
  *  - Popup about what just happened ("Changes have not been committed")
  *  - Set ceEditor's content

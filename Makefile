@@ -56,6 +56,10 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
         $(wildcard plugins-client/ext.codecomplete/*/*) \
         $(wildcard plugins-client/ext.jslanguage/*) \
         $(wildcard plugins-client/ext.jslanguage/*/*) \
+        $(wildcard plugins-client/ext.csslanguage/*) \
+        $(wildcard plugins-client/ext.csslanguage/*/*) \
+        $(wildcard plugins-client/ext.htmllanguage/*) \
+        $(wildcard plugins-client/ext.htmllanguage/*/*) \
         $(wildcard plugins-client/ext.jsinfer/*) \
         $(wildcard plugins-client/ext.jsinfer/*/*) \
         $(wildcard node_modules/treehugger/lib/*) \
@@ -69,20 +73,25 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
 	ln -s `pwd`/plugins-client/ext.language /tmp/c9_worker_build/ext/language
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
+	ln -s `pwd`/plugins-client/ext.csslanguage /tmp/c9_worker_build/ext/csslanguage
+	ln -s `pwd`/plugins-client/ext.htmllanguage /tmp/c9_worker_build/ext/htmllanguage
 	ln -s `pwd`/plugins-client/ext.linereport /tmp/c9_worker_build/ext/linereport
 	ln -s `pwd`/plugins-client/ext.linereport_php /tmp/c9_worker_build/ext/linereport_php
 	node Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 
-# copies built ace modes
-mode:
+ace_mode_theme:
+	# copies and minifies built ace modes
 	mkdir -p plugins-client/lib.ace/www/mode
-	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`  plugins-client/lib.ace/www/mode
-
-# copies built ace themes
-theme:
+	for i in `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`; do \
+		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/mode/`basename $$i` baseUrl=. paths.ace=./node_modules/ace/lib/ace ; \
+	done
+	
+	# copies and minifies built ace themes
 	mkdir -p plugins-client/lib.ace/www/theme
-	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"` plugins-client/lib.ace/www/theme
+	for i in `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"`; do \
+		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/theme/`basename $$i` baseUrl=. paths.ace=./node_modules/ace/lib/ace ; \
+	done
 
 gzip_safe:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
@@ -94,7 +103,7 @@ gzip:
 		gzip -9 -v -q -f $$i ; \
 	done
 
-c9core: apf ace core worker mode theme
+c9core: apf ace core worker ace_mode_theme
     
 package_clean: helper_clean c9core ext
 

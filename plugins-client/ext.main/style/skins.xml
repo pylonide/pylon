@@ -3967,7 +3967,6 @@
         .datagrid .offline{
             padding : 5px;
             margin : 0;
-            white-space : normal;
         }
 
         .datagrid .loading span,

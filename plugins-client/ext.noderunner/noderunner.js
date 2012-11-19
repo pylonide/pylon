@@ -29,16 +29,17 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     init : function() {
         var _self = this;
-        if (ide.connected) {
+        if (ide.connected)
             this.queryServerState();
-            ide.addEventListener("socketDisconnect", function() {
-                ide.dispatchEvent("dbg.exit");
-            });
-        } else {
-            ide.addEventListener("socketConnect", function() {
-                _self.queryServerState();
-            });
-        }
+
+        ide.addEventListener("socketDisconnect", function() {
+            ide.dispatchEvent("dbg.exit");
+            stProcessRunning.deactivate();
+        });
+        ide.addEventListener("socketConnect", function() {
+            _self.queryServerState();
+        });
+
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 

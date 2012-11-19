@@ -1,0 +1,77 @@
+#loadingide {
+    background: url(images/ide_loading_bg_pattern.png) repeat;
+    background-color: #ddd;
+    font-style: normal;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    text-align: center;
+    z-index: 200000;
+    left: 0;
+    top: 0;
+    -webkit-font-smoothing: antialiased !important;
+}
+#loadingide .header {
+    background: url(images/loader_logo.png) no-repeat top center;
+    position:absolute;
+    top:10px;
+    right:10px;
+    height: 40px;
+    width: 40px;
+}
+#loadingide .loading-progress {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 16px;
+    color: #4A8532;
+    text-shadow: 0 1px 0 #eee;
+    filter: dropshadow(color=#eee, offx=0, offy=1);
+    height: 37px;
+    position: relative;
+    margin: 0 auto;
+    top: 35%;
+}
+#progress-msg {
+    position: relative;
+    width: 190px;
+    margin: 0 auto;
+}
+#progress-msg span {
+    position: absolute;
+    left: 191px;
+    top: 0;
+}
+#loadingide .loading-msg {
+    color: #909090;
+}
+#loadingide .loading-seperator {
+    background: url(images/footer-line.png) no-repeat center center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin: 0 auto;
+    width: 180px;
+    height: 12px;
+}
+#loadingide .footer {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 11px;
+    text-shadow: 0 1px 0 #eee;
+    filter: dropshadow(color=#eee, offx=0, offy=1);
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    text-align: right;
+    margin: 0;
+}
+#loadingide .footer, .footer > a:link, a:visited, a:active {
+    color: #909090;
+    text-decoration: none;
+}
+#loadingide .footer > a:hover {
+    color: #3D833C;
+    text-decoration: underline;
+}
+#loadingide #dots {
+    width: 30px;
+    display: inline-block;
+    text-align: left;
+}

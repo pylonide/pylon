@@ -80,31 +80,29 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/Facebook", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
 
             if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
-                mnuHelp.addEventListener("prop.visible", function(e) {
-                    if (e.value) {
-                        var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
+                var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog&count=1";
 
-                        var response = apf.ajax(blogURL, {
-                            method: "GET",
-                            contentType: "application/json",
-                            async: true,
-                            data: JSON.stringify({
-                                agent: navigator.userAgent,
-                                type: "C9 SERVER EXCEPTION"
-                            }),
-                            callback: function( data, state) {
-                                if (state == apf.SUCCESS) {
-                                    if (data !== undefined) {
-                                        var jsonBlog = JSON.parse(data);
-                                        var latestDate = jsonBlog.posts[0].date;
+                apf.ajax(blogURL, {
+                    method: "GET",
+                    contentType: "application/json",
+                    callback: function(data, state) {
+                        if (state == apf.SUCCESS) {
+                            if (data !== undefined) {
+                                var latestDate = "";
 
-                                        mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
-                                    }
+                                try {
+                                    // fixes a potential issue with a stupid "WP Super Cache" comment
+                                    var jsonBlog = JSON.parse(data.replace(/<!-- .+? -->/, ""));
+                                    
+                                    // date format is 2012-11-06 21:41:07; convert it to something better lookin'
+                                    latestDate = " (" + jsonBlog.posts[0].date.split(" ")[0].replace(/-/g, ".") + ")";
+                                } catch (e) {
+                                    console.error("Changelog JSON parse failed: " + e);
                                 }
-                            }
-                        });
 
-                        mnuHelp.removeEventListener("prop.visible", arguments.callee);
+                                mnuChangelog.setAttribute("caption",  "Changelog" + latestDate);
+                            }
+                        }
                     }
                 });
             }

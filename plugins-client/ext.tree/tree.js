@@ -437,7 +437,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
             }
 
-            if (!fs.beforeRename(e.args[0], e.args[1])) {
+            if (fs.beforeRename(e.args[0], e.args[1]) === false) {
                 return false;
             }
         });

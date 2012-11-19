@@ -1,0 +1,14 @@
+{
+    "name": "ext.htmllanguage",
+    "version": "0.0.1",
+    "main": "htmllanguage-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.htmllanguage"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
