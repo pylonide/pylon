@@ -483,6 +483,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         // dispatch here instead of in the implementation because the implementations
         // will vary over time
         ide.dispatchEvent("beforeRunning");
+        
+        var prevRunNode = this.model.data.selectSingleNode('node()[@running="true"]');
+        if (prevRunNode)
+            prevRunNode.removeAttribute("running");
+        config.setAttribute("running", "true");
+        settings.save();
+        
         var args = config.getAttribute("args");
         noderunner.run(
             config.getAttribute("path"),
