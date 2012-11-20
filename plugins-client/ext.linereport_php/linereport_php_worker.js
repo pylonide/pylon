@@ -10,6 +10,7 @@ var baseLanguageHandler = require("ext/linereport/linereport_base");
 var handler = module.exports = Object.create(baseLanguageHandler);
 
 handler.disabled = false;
+handler.$isInited = false;
 
 handler.$isInited = false;
 

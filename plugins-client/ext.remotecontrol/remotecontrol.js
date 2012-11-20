@@ -20,7 +20,6 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     dev    : "Ajax.org",
     type   : ext.GENERAL,
     alone  : true,
-    deps   : [],
     markup : markup,
 
     init : function(amlNode) {
@@ -120,15 +119,6 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
             }
         });
 
-    },
-
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
     }
 });
 

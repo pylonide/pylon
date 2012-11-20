@@ -59,7 +59,7 @@ worker.invokeReporter = function(command, processLine, callback) {
             var doc = _self.doc.getValue();
             resultCache[command] = resultCache[command] || {};
             var result = resultCache[command]['_' + doc] =
-                _self.parseOutput(stdout, processLine) + _self.parseOutput(stderr, processLine);
+                _self.parseOutput(stdout, processLine).concat(_self.parseOutput(stderr, processLine));
             setTimeout(function() {
                 if (resultCache[command] && resultCache[command]['_' + doc])
                     delete resultCache[command]['_' + doc];
@@ -120,7 +120,7 @@ worker.parseOutput = function(output, processLine) {
         var line = lines[i];
         if (processLine)
             line = processLine(line);
-        var result = line.charAt ? this.$parseOutputLine(line) : line;
+        var result = (line && line.charAt) ? this.$parseOutputLine(line) : line;
         if (result)
             results.push(result);
     }

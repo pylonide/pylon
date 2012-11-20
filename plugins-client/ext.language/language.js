@@ -13,8 +13,8 @@ var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var EditSession = require("ace/edit_session").EditSession;
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
-var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
-var isWorkerEnabled = require("ext/language/worker").isWorkerEnabled;
+var UIWorkerClient = require("ace/worker/worker_client").UIWorkerClient;
+var useUIWorker = window.location && /[?&]noworker=1/.test(window.location.search);
 
 var complete = require("ext/language/complete");
 var marker = require("ext/language/marker");
@@ -26,6 +26,7 @@ var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 var keyhandler = require("ext/language/keyhandler");
 var jumptodef = require("ext/language/jumptodef");
+var menus = require("ext/menus/menus");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
@@ -37,7 +38,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Language Services",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, code],
+    deps    : [editors, code, menus],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -51,24 +52,17 @@ module.exports = ext.register("ext/language/language", {
     hook : function() {
         var _self = this;
 
-        if (!createUIWorkerClient || !isWorkerEnabled)
-            throw new Error("Language worker not loaded or updated; run 'sm install' or 'make worker'");
-
-        var deferred = lang.deferredCall(function() {
-            _self.setPath();
-        });
-
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
-            var worker;
-            if (!isWorkerEnabled()) {
-                worker = _self.worker = createUIWorkerClient();
-            }
-            else {
-                worker = _self.worker = new WorkerClient(
-                    ["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
-            }
+            var Worker = useUIWorker ? UIWorkerClient : WorkerClient;
+            var worker = _self.worker = new Worker(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
+
+            ide.addEventListener("closefile", function(e){
+                var path = e.page && e.page.id;
+                if (path)
+                    worker.emit("documentClose", {data: path});
+            });
 
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
@@ -76,13 +70,19 @@ module.exports = ext.register("ext/language/language", {
                 if (!editors.currentEditor || !editors.currentEditor.amlEditor) // No editor, for some reason
                     return;
                 ext.initExtension(_self);
+
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [util.stripWSFromPath(path), editors.currentEditor.amlEditor.syntax, event.doc.getValue(), null, ide.workspaceDir]);
-                event.doc.addEventListener("close", function() {
-                    worker.emit("documentClose", {data: path});
-                });
-                // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
-                deferred.cancel().schedule(100);
+                var editor = editors.currentEditor.amlEditor;
+                // background tabs=open document, foreground tab=switch to file
+                // this is needed because with concorde changeSession event is fired when document is still empty 
+                var isVisible = editor.xmlRoot == event.node;
+                worker.call(isVisible ? "switchFile" : "documentOpen", [
+                    util.stripWSFromPath(path),
+                    editor.syntax,
+                    event.doc.getValue(),
+                    null,
+                    ide.workspaceDir
+                ]);
             });
 
             // Language features
@@ -125,10 +125,6 @@ module.exports = ext.register("ext/language/language", {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
 
-    isWorkerEnabled : function() {
-        return isWorkerEnabled();
-    },
-
     init : function() {
         var _self = this;
         var worker = this.worker;
@@ -139,8 +135,8 @@ module.exports = ext.register("ext/language/language", {
 
         this.editor = editors.currentEditor.amlEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
-        this.editor.selection.on("changeCursor", this.$onCursorChange);
-        var oldSelection = this.editor.selection;
+        this.editor.session.selection.on("changeCursor", this.$onCursorChange);
+        var oldSession = this.editor.session;
         this.setPath();
 
         this.updateSettings();
@@ -151,15 +147,21 @@ module.exports = ext.register("ext/language/language", {
         this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.onCommandKey, defaultCommandHandler);
 
         this.editor.on("changeSession", function() {
+            oldSession.selection.removeEventListener("changeCursor", _self.$onCursorChange);
+            _self.editor.selection.on("changeCursor", _self.$onCursorChange);
+            oldSession = _self.editor.session;
+            clearTimeout(_self.$timeout);
             // Time out a litle, to let the page path be updated
-            setTimeout(function() {
+            _self.$timeout = setTimeout(function() {
                 _self.setPath();
-                oldSelection.removeEventListener("changeCursor", _self.$onCursorChange);
-                _self.editor.selection.on("changeCursor", _self.$onCursorChange);
-                oldSelection = _self.editor.selection;
             }, 100);
         });
 
+        this.editor.on("changeMode", function() {
+            _self.$timeout = setTimeout(function() {
+                _self.setPath();
+            }, 100);
+        });
 
         this.editor.on("change", function(e) {
             e.range = {
@@ -223,8 +225,14 @@ module.exports = ext.register("ext/language/language", {
         // Currently no code editor active
         if(!editors.currentEditor || editors.currentEditor.path != "ext/code/code" || !tabEditors.getPage() || !this.editor)
             return;
-        var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [util.stripWSFromPath(currentPath), editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition(), ide.workspaceDir]);
+        var path = tabEditors.getPage().getAttribute("id");
+        this.worker.call("switchFile", [
+            util.stripWSFromPath(path),
+            editors.currentEditor.amlEditor.syntax,
+            this.editor.getValue(),
+            this.editor.getCursorPosition(),
+            ide.workspaceDir
+        ]);
     },
 
     onEditorClick: function(event) {
@@ -263,20 +271,12 @@ module.exports = ext.register("ext/language/language", {
     },
 
     enable: function () {
-        this.nodes.each(function (item) {
-            item.enable();
-        });
-
-        this.disabled = false;
+        this.$enable();
         this.setPath();
     },
 
     disable: function () {
-        this.nodes.each(function (item) {
-            item.disable();
-        });
-
-        this.disabled = true;
+        this.$disable();
         marker.addMarkers({data:[]}, this.editor);
     },
 
@@ -285,11 +285,7 @@ module.exports = ext.register("ext/language/language", {
         marker.destroy();
         complete.destroy();
         refactor.destroy();
-
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

@@ -21,8 +21,6 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
     markup  : markup,
     deps   : [noderunner],
 
-    nodes   : [],
-
     hook : function(){
         var _self = this;
         
@@ -100,25 +98,6 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
 
     quickwatch : function(){
         this.toggleDialog(1, true);
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

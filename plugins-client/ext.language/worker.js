@@ -18,6 +18,8 @@ var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 var linereport = require("ext/linereport/linereport_base");
 
+var isInWebWorker = typeof window == "undefined" || !window.location || !window.document;
+
 var WARNING_LEVELS = {
     error: 3,
     warning: 2,
@@ -116,12 +118,12 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
     }));
-    sender.on("jumpToDefinition", function(event) {
+    sender.on("jumpToDefinition", applyEventOnce(function(event) {
         _self.jumpToDefinition(event);
-    });
-    sender.on("isJumpToDefinitionAvailable", function(event) {
+    }));
+    sender.on("isJumpToDefinitionAvailable", applyEventOnce(function(event) {
         _self.isJumpToDefinitionAvailable(event);
-    });
+    }));
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
@@ -137,36 +139,6 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("serverProxy", function(event) {
         _self.serverProxy.onMessage(event.data);
     });
-};
-
-exports.createUIWorkerClient = function() {
-    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
-    var result = new LanguageWorker(emitter);
-    result.on = function(name, f) {
-        emitter.on.call(result, name, f);
-    };
-    result.call = function(cmd, args, callback) {
-        if (callback) {
-            var id = this.callbackId++;
-            this.callbacks[id] = callback;
-            args.push(id);
-        }
-        this.send(cmd, args);
-    };
-    result.send = function(cmd, args) {
-        setTimeout(function() { result[cmd].apply(result, args); }, 0);
-    };
-    result.emit = function(event, data) {
-        emitter._dispatchEvent.call(emitter, event, data);
-    };
-    emitter.emit = function(event, data) {
-        emitter._dispatchEvent.call(result, event, { data: data });
-    };
-    return result;
-};
-
-var isWorkerEnabled = exports.isWorkerEnabled = function() {
-    return !window.location || !window.location.search.match(/[?&]noworker=1/);
 };
 
 /**
@@ -283,7 +255,7 @@ function asyncParForEach(array, fn, callback) {
             var handler = require(path);
             onRegistered(handler);
         } catch (e) {
-            if (isWorkerEnabled())
+            if (isInWebWorker)
                 throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             require([path], function(handler) {
@@ -570,13 +542,9 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.$getDefinitionDeclaration = function (row, col, callback) {
+    this.$getDefinitionDeclarations = function (row, col, callback) {
         var pos = { row: row, column: col };
-        // because the asyncforeach iterates over all handlers
-        // we need a variable in a higher scope to find out if
-        // any of the handlers returned a positive result that
-        // we can reuse in the callback
-        var endResult;
+        var allResults = [];
 
         var _self = this;
         var ast = this.cachedAst;
@@ -589,9 +557,9 @@ function asyncParForEach(array, fn, callback) {
 
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
-                        if (result)
-                            endResult = result;
+                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(results) {
+                        if (results)
+                            allResults = allResults.concat(results);
                         next();
                     });
                 }
@@ -599,7 +567,7 @@ function asyncParForEach(array, fn, callback) {
                     next();
                 }
             }, function () {
-                callback(endResult);
+                callback(allResults);
             });
         });
     };
@@ -608,9 +576,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
 
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function(result) {
-            if (result)
-                _self.sender.emit("definition", result);
+        _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
+            _self.sender.emit("definition", { pos: pos, results: results });
         });
     };
 
@@ -618,8 +585,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
 
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
-            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!result });
+        _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
+            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!results.length });
         });
     };
 
@@ -709,11 +676,6 @@ function asyncParForEach(array, fn, callback) {
 
     this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
-        if (!this.$analyzeInterval) {
-            this.$analyzeInterval = setInterval(function() {
-                _self.analyze(function(){});
-            }, 2000);
-        }
         var oldPath = this.$path;
         code = code || "";
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
@@ -751,11 +713,15 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
+    this.documentOpen = function(path, language, code) {
+        var _self = this;
+        var doc = {getValue: function() {return code;} };
+        asyncForEach(this.handlers, function(handler, next) {
+            handler.onDocumentOpen(path, doc, _self.path, next);
+        });
+    };
+    
     this.documentClose = function(event) {
-        if (this.$analyzeInterval) {
-            clearInterval(this.$analyzeInterval);
-            this.$analyzeInterval = null;
-        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
@@ -857,7 +823,7 @@ function asyncParForEach(array, fn, callback) {
      * information is now available.
      */
     this.completeUpdate = function(pos) {
-        if (!isWorkerEnabled()) { // Avoid making the stack too deep in ?noworker=1 mode
+        if (!isInWebWorker) { // Avoid making the stack too deep in ?noworker=1 mode
             var _self = this;
             setTimeout(function onCompleteUpdate() {
                 _self.complete({data: {pos: pos, staticPrefix: _self.staticPrefix, isUpdate: true}});

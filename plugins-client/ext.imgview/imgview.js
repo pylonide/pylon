@@ -68,26 +68,6 @@ module.exports = ext.register("ext/imgview/imgview", {
 
         this.imgEditor = this.amlEditor = editor;
         //this.nodes.push();
-    },
-
-    enable : function() {
-        this.nodes.each(function(item){
-            item.show();
-        });
-    },
-
-    disable : function() {
-        this.nodes.each(function(item){
-            item.hide();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-
-        this.nodes = [];
     }
 });
 

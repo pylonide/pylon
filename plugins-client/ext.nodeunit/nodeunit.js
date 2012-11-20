@@ -391,42 +391,9 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         });
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-
-//@todo this is much more complex
-//        ide.send({
-//            "command"     : "watcher",
-//            "type"        : "watchFile",
-//            "path"        : this.testpath
-//        });
-
-        this.disabled = false;
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-
-//        ide.send({
-//            "command"     : "watcher",
-//            "type"        : "unwatchFile",
-//            "path"        : this.testpath
-//        });
-
-        this.disabled = true;
-    },
-
     destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         testpanel.unregister(this);
+        this.$destroy();
     }
 });
 

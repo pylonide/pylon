@@ -62,32 +62,8 @@ module.exports = ext.register("ext/html/html", {
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
             return this.disable();
-        
-        if (this.enabled)
-            return;
-        
-        this.enabled = true;
-
-        this.nodes.each(function(item){
-            item.enable && item.enable();
-        });
-    },
-
-    disable : function(){
-        if (!this.enabled)
-            return;
-        this.enabled = false;
-
-        this.nodes.each(function(item){
-            item.disable && item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy && item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$enable();
     }
 });
+
 });
