@@ -5,7 +5,6 @@
     "private": true,
 
     "plugin": {
-        "provides": ["workspace-socket"],
         "consumes": [
             "static",
             "vfs",

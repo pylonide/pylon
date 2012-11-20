@@ -90,9 +90,5 @@ module.exports = function setup(options, imports, register) {
     };
 
 
-    register(null, {
-        // TODO: find out if this empty service is needed for anything.
-        //   and if not remove it.
-        "workspace-socket": {}
-    });
+    register();
 };
