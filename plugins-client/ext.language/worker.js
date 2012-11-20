@@ -339,7 +339,7 @@ function asyncParForEach(array, fn, callback) {
                 if (!foundHandler)
                     _self.sender.emit("outline", { body: [] });
             });
-        }, true);
+        });
     };
 
     this.hierarchy = function(event) {

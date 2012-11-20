@@ -383,7 +383,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     }));
 };
 
-handler.analyze = function(value, ast, callback, ammendAst) {
+handler.analyze = function(value, ast, callback) {
     var handler = this;
     var markers = [];
     
@@ -673,7 +673,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         return callback();
 
     // Fill the ast with scopes
-    handler.analyze(doc.getValue(), fullAst, function () {}, true);
+    handler.analyze(doc.getValue(), fullAst, function () {});
 
     var markers = [];
     var enableRefactorings = [];
@@ -741,7 +741,7 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
         return callback();
 
     // Fill the ast with scopes
-    handler.analyze(doc.getValue(), fullAst, function () {}, true);
+    handler.analyze(doc.getValue(), fullAst, function () {});
 
     var v;
     var mainNode;
