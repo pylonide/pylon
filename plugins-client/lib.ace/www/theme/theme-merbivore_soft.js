@@ -1,1 +1,136 @@
-define("ace/theme/merbivore_soft",["require","exports","module","ace/lib/dom"],function(a,b,c){b.isDark=!0,b.cssClass="ace-merbivore-soft",b.cssText=".ace-merbivore-soft .ace_gutter {background: #262424;color: #E6E1DC}.ace-merbivore-soft .ace_print-margin {width: 1px;background: #262424}.ace-merbivore-soft .ace_scroller {background-color: #1C1C1C}.ace-merbivore-soft .ace_text-layer {color: #E6E1DC}.ace-merbivore-soft .ace_cursor {border-left: 2px solid #FFFFFF}.ace-merbivore-soft .ace_overwrite-cursors .ace_cursor {border-left: 0px;border-bottom: 1px solid #FFFFFF}.ace-merbivore-soft .ace_marker-layer .ace_selection {background: #494949}.ace-merbivore-soft.ace_multiselect .ace_selection.ace_start {box-shadow: 0 0 3px 0px #1C1C1C;border-radius: 2px}.ace-merbivore-soft .ace_marker-layer .ace_step {background: rgb(102, 82, 0)}.ace-merbivore-soft .ace_marker-layer .ace_bracket {margin: -1px 0 0 -1px;border: 1px solid #404040}.ace-merbivore-soft .ace_marker-layer .ace_active-line {background: #333435}.ace-merbivore-soft .ace_gutter-active-line {background-color: #333435}.ace-merbivore-soft .ace_marker-layer .ace_selected-word {border: 1px solid #494949}.ace-merbivore-soft .ace_invisible {color: #404040}.ace-merbivore-soft .ace_entity.ace_name.ace_tag,.ace-merbivore-soft .ace_keyword,.ace-merbivore-soft .ace_meta,.ace-merbivore-soft .ace_meta.ace_tag,.ace-merbivore-soft .ace_storage {color: #FC803A}.ace-merbivore-soft .ace_constant,.ace-merbivore-soft .ace_constant.ace_character,.ace-merbivore-soft .ace_constant.ace_character.ace_escape,.ace-merbivore-soft .ace_constant.ace_other,.ace-merbivore-soft .ace_support.ace_type {color: #68C1D8}.ace-merbivore-soft .ace_constant.ace_character.ace_escape {color: #B3E5B4}.ace-merbivore-soft .ace_constant.ace_language {color: #E1C582}.ace-merbivore-soft .ace_constant.ace_library,.ace-merbivore-soft .ace_string,.ace-merbivore-soft .ace_support.ace_constant {color: #8EC65F}.ace-merbivore-soft .ace_constant.ace_numeric {color: #7FC578}.ace-merbivore-soft .ace_invalid,.ace-merbivore-soft .ace_invalid.ace_deprecated {color: #FFFFFF;background-color: #FE3838}.ace-merbivore-soft .ace_fold {background-color: #FC803A;border-color: #E6E1DC}.ace-merbivore-soft .ace_comment,.ace-merbivore-soft .ace_meta {font-style: italic;color: #AC4BB8}.ace-merbivore-soft .ace_entity.ace_other.ace_attribute-name {color: #EAF1A3}.ace-merbivore-soft .ace_markup.ace_underline {text-decoration: underline}.ace-merbivore-soft .ace_indent-guide {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWOQkZH5zzBz5sz/AA8EBB6crd1rAAAAAElFTkSuQmCC) right repeat-y}";var d=a("../lib/dom");d.importCssString(b.cssText,b.cssClass)}),define("node_modules/ace/build/src/theme-merbivore_soft.js",function(){}),define("ace/lib/dom",["require","exports","module"],function(a,b,c){var d="http://www.w3.org/1999/xhtml";b.createElement=function(a,b){return document.createElementNS?document.createElementNS(b||d,a):document.createElement(a)},b.setText=function(a,b){a.innerText!==undefined&&(a.innerText=b),a.textContent!==undefined&&(a.textContent=b)},b.hasCssClass=function(a,b){var c=a.className.split(/\s+/g);return c.indexOf(b)!==-1},b.addCssClass=function(a,c){b.hasCssClass(a,c)||(a.className+=" "+c)},b.removeCssClass=function(a,b){var c=a.className.split(/\s+/g);for(;;){var d=c.indexOf(b);if(d==-1)break;c.splice(d,1)}a.className=c.join(" ")},b.toggleCssClass=function(a,b){var c=a.className.split(/\s+/g),d=!0;for(;;){var e=c.indexOf(b);if(e==-1)break;d=!1,c.splice(e,1)}return d&&c.push(b),a.className=c.join(" "),d},b.setCssClass=function(a,c,d){d?b.addCssClass(a,c):b.removeCssClass(a,c)},b.hasCssString=function(a,b){var c=0,d;b=b||document;if(b.createStyleSheet&&(d=b.styleSheets)){while(c<d.length)if(d[c++].owningElement.id===a)return!0}else if(d=b.getElementsByTagName("style"))while(c<d.length)if(d[c++].id===a)return!0;return!1},b.importCssString=function(c,e,f){f=f||document;if(e&&b.hasCssString(e,f))return null;var g;if(f.createStyleSheet)g=f.createStyleSheet(),g.cssText=c,e&&(g.owningElement.id=e);else{g=f.createElementNS?f.createElementNS(d,"style"):f.createElement("style"),g.appendChild(f.createTextNode(c)),e&&(g.id=e);var h=f.getElementsByTagName("head")[0]||f.documentElement;h.appendChild(g)}},b.importCssStylsheet=function(a,c){if(c.createStyleSheet)c.createStyleSheet(a);else{var d=b.createElement("link");d.rel="stylesheet",d.href=a;var e=c.getElementsByTagName("head")[0]||c.documentElement;e.appendChild(d)}},b.getInnerWidth=function(a){return parseInt(b.computedStyle(a,"paddingLeft"),10)+parseInt(b.computedStyle(a,"paddingRight"),10)+a.clientWidth},b.getInnerHeight=function(a){return parseInt(b.computedStyle(a,"paddingTop"),10)+parseInt(b.computedStyle(a,"paddingBottom"),10)+a.clientHeight},window.pageYOffset!==undefined?(b.getPageScrollTop=function(){return window.pageYOffset},b.getPageScrollLeft=function(){return window.pageXOffset}):(b.getPageScrollTop=function(){return document.body.scrollTop},b.getPageScrollLeft=function(){return document.body.scrollLeft}),window.getComputedStyle?b.computedStyle=function(a,b){return b?(window.getComputedStyle(a,"")||{})[b]||"":window.getComputedStyle(a,"")||{}}:b.computedStyle=function(a,b){return b?a.currentStyle[b]:a.currentStyle},b.scrollbarWidth=function(a){var c=b.createElement("p");c.style.width="100%",c.style.minWidth="0px",c.style.height="200px";var d=b.createElement("div"),e=d.style;e.position="absolute",e.left="-10000px",e.overflow="hidden",e.width="200px",e.minWidth="0px",e.height="150px",d.appendChild(c);var f=a.body||a.documentElement;f.appendChild(d);var g=c.offsetWidth;e.overflow="scroll";var h=c.offsetWidth;return g==h&&(h=d.clientWidth),f.removeChild(d),g-h},b.setInnerHtml=function(a,b){var c=a.cloneNode(!1);return c.innerHTML=b,a.parentNode.replaceChild(c,a),c},b.setInnerText=function(a,b){var c=a.ownerDocument;c.body&&"textContent"in c.body?a.textContent=b:a.innerText=b},b.getInnerText=function(a){var b=a.ownerDocument;return b.body&&"textContent"in b.body?a.textContent:a.innerText||a.textContent||""},b.getParentWindow=function(a){return a.defaultView||a.parentWindow}})
+/* ***** BEGIN LICENSE BLOCK *****
+ * Distributed under the BSD license:
+ *
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+define('ace/theme/merbivore_soft', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
+
+exports.isDark = true;
+exports.cssClass = "ace-merbivore-soft";
+exports.cssText = ".ace-merbivore-soft .ace_gutter {\
+background: #262424;\
+color: #E6E1DC\
+}\
+.ace-merbivore-soft .ace_print-margin {\
+width: 1px;\
+background: #262424\
+}\
+.ace-merbivore-soft .ace_scroller {\
+background-color: #1C1C1C\
+}\
+.ace-merbivore-soft .ace_text-layer {\
+color: #E6E1DC\
+}\
+.ace-merbivore-soft .ace_cursor {\
+border-left: 2px solid #FFFFFF\
+}\
+.ace-merbivore-soft .ace_overwrite-cursors .ace_cursor {\
+border-left: 0px;\
+border-bottom: 1px solid #FFFFFF\
+}\
+.ace-merbivore-soft .ace_marker-layer .ace_selection {\
+background: #494949\
+}\
+.ace-merbivore-soft.ace_multiselect .ace_selection.ace_start {\
+box-shadow: 0 0 3px 0px #1C1C1C;\
+border-radius: 2px\
+}\
+.ace-merbivore-soft .ace_marker-layer .ace_step {\
+background: rgb(102, 82, 0)\
+}\
+.ace-merbivore-soft .ace_marker-layer .ace_bracket {\
+margin: -1px 0 0 -1px;\
+border: 1px solid #404040\
+}\
+.ace-merbivore-soft .ace_marker-layer .ace_active-line {\
+background: #333435\
+}\
+.ace-merbivore-soft .ace_gutter-active-line {\
+background-color: #333435\
+}\
+.ace-merbivore-soft .ace_marker-layer .ace_selected-word {\
+border: 1px solid #494949\
+}\
+.ace-merbivore-soft .ace_invisible {\
+color: #404040\
+}\
+.ace-merbivore-soft .ace_entity.ace_name.ace_tag,\
+.ace-merbivore-soft .ace_keyword,\
+.ace-merbivore-soft .ace_meta,\
+.ace-merbivore-soft .ace_meta.ace_tag,\
+.ace-merbivore-soft .ace_storage {\
+color: #FC803A\
+}\
+.ace-merbivore-soft .ace_constant,\
+.ace-merbivore-soft .ace_constant.ace_character,\
+.ace-merbivore-soft .ace_constant.ace_character.ace_escape,\
+.ace-merbivore-soft .ace_constant.ace_other,\
+.ace-merbivore-soft .ace_support.ace_type {\
+color: #68C1D8\
+}\
+.ace-merbivore-soft .ace_constant.ace_character.ace_escape {\
+color: #B3E5B4\
+}\
+.ace-merbivore-soft .ace_constant.ace_language {\
+color: #E1C582\
+}\
+.ace-merbivore-soft .ace_constant.ace_library,\
+.ace-merbivore-soft .ace_string,\
+.ace-merbivore-soft .ace_support.ace_constant {\
+color: #8EC65F\
+}\
+.ace-merbivore-soft .ace_constant.ace_numeric {\
+color: #7FC578\
+}\
+.ace-merbivore-soft .ace_invalid,\
+.ace-merbivore-soft .ace_invalid.ace_deprecated {\
+color: #FFFFFF;\
+background-color: #FE3838\
+}\
+.ace-merbivore-soft .ace_fold {\
+background-color: #FC803A;\
+border-color: #E6E1DC\
+}\
+.ace-merbivore-soft .ace_comment,\
+.ace-merbivore-soft .ace_meta {\
+font-style: italic;\
+color: #AC4BB8\
+}\
+.ace-merbivore-soft .ace_entity.ace_other.ace_attribute-name {\
+color: #EAF1A3\
+}\
+.ace-merbivore-soft .ace_markup.ace_underline {\
+text-decoration: underline\
+}\
+.ace-merbivore-soft .ace_indent-guide {\
+background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWOQkZH5zzBz5sz/AA8EBB6crd1rAAAAAElFTkSuQmCC) right repeat-y\
+}";
+
+var dom = require("../lib/dom");
+dom.importCssString(exports.cssText, exports.cssClass);
+});
