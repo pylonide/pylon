@@ -39,10 +39,11 @@
                     <a:insert match="[folder]" get="{davProject.readdir(%[.].getAttribute('path'))}" />
                     <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                     <a:icon match="[folder|project]" value="folder.png" />
-                    <a:selectable match="[folder|file[not(@type='fileupload')]]" />
                     <a:icon match="[file[@type='fileupload']]" value="file-tree-load-spinner.gif" />
-                    <a:css match="[file[@type='fileupload']]" value="fileupload" />
                     <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                    <a:css match="[file[@type='fileupload']]" value="fileupload" />
+                    <a:css match="[folder[@public='true']]" value="public" />
+                    <a:selectable match="[folder|file[not(@type='fileupload')]]" />
                 </a:each>
 
                 <a:add type="folder" get="{davProject.mkdir(%[.].getAttribute('path'), 'New Folder')}" />
@@ -91,7 +92,7 @@
             <a:item match="[file|folder[not(@root)]]" command="copy" visible="{!require('core/ide').readonly}">Copy</a:item>
             <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" visible="{!require('core/ide').readonly}" command="paste">Paste</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
-            <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" visible="{!require('core/ide').readonly}" 
+            <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" visible="{!require('core/ide').readonly}"
               onclick="
                 require('ext/filesystem/filesystem').createFile();
             ">New File</a:item>
