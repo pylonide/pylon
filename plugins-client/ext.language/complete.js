@@ -288,7 +288,7 @@ module.exports = {
             
             var docHead;
             if (match.type) {
-                var shortType = _self.$guidToShortString(match.type)
+                var shortType = _self.$guidToShortString(match.type);
                 if (shortType) {
                     match.meta = shortType;
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
@@ -377,7 +377,9 @@ module.exports = {
             txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
-            this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
+            this.docElement.innerHTML += '<p><a' +
+                ' onclick="require(\'ext/preview/preview\').preview(\'' + selected.docUrl + '\'); return false;"' +
+                ' href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
         this.docElement.innerHTML += '</span>';
     },
 
