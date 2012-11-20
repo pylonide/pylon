@@ -20,10 +20,7 @@ module.exports = ext.register("ext/linereport_python/linereport_python", {
     alone   : true,
 
     init : function() {
-        language.registerLanguageHandler(
-            'ext/linereport_python/linereport_python_worker',
-            language.isWorkerEnabled()
-        );
+        language.registerLanguageHandler('ext/linereport_python/linereport_python_worker');
     },
     
     enable : function() {
