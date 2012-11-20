@@ -28,6 +28,7 @@
         zindex   = "100000"
     />
 
+<<<<<<< HEAD
 
     <a:hbox id="view-mode-box-not-loggedin" visible="false" height="55" class="view-mode-box" align="center" edge="0 10">
         <a href="http://c9.io" class="c9-logo-view-mode"></a>
@@ -68,6 +69,8 @@
         </a>
     </a:hbox>
 
+=======
+>>>>>>> origin/master
     <a:vsplitbox anchors="0 0 0 0" id="vbMain">
         <a:bar skin="c9-menu-bar" id="logobar" height="31" minwidth="900">
             <a:bar class="fakehbox aligncenter padding3" id="barTools" height="25" style="padding-top:1px">

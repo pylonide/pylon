@@ -429,6 +429,7 @@ module.exports = ext.register("ext/menus/menus", {
 
     destroy : function(){
         this.hbox.destroy(true, true);
+        this.$destroy();
         //this.splitter.destroy(true, true);
     }
 });

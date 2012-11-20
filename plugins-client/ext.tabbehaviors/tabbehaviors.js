@@ -35,8 +35,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     menuOffset : 4, //@todo this should use new menus api
 
     commands   : [
-        ["closetab", "Option-W", "Ctrl-W", "close the tab that is currently active", "Closing active tab.", function(){ return ide.onLine && tabEditors.activepage; }],
-        ["closealltabs", "Option-Shift-W", "Ctrl-Shift-W", "close all opened tabs", "Closing all tabs.", function(){ return ide.onLine && tabEditors.activepage; }],
+        ["closetab", "Option-W", "Alt-W", "close the tab that is currently active", "Closing active tab.", function(){ return ide.onLine && tabEditors.activepage; }],
+        ["closealltabs", "Option-Shift-W", "Alt-Shift-W", "close all opened tabs", "Closing all tabs.", function(){ return ide.onLine && tabEditors.activepage; }],
         ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs.", function(){ return ide.onLine && tabEditors.length > 1 }],
         ["gototabright", "Command-]", "Ctrl-]", "navigate to the next tab, right to the tab that is currently active", "Switching to right tab.", function(){ return tabEditors.length > 1 }],
         ["gototableft", "Command-[", "Ctrl-[", "navigate to the next tab, left to the tab that is currently active", "Switching to left tab.", function(){ return tabEditors.length > 1 }],
@@ -821,18 +821,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("View/Tabs");
         menus.remove(mnuContextTabs);
@@ -842,11 +830,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.commands.each(function(item){
             commands.removeCommandByName(item[0]);
         });
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

@@ -1,6 +1,9 @@
 #!/bin/bash -e
      
 npm install amd-loader
+
+which mocha 2>/dev/null || npm install -g mocha
+
 BLACKLIST=`cat test/blacklist.txt`
 for F in `find . -name '*_test.js' | grep -v backup- | grep -v node_modules | grep -v -e "\./\." | sort`; do
   BLACKLISTED=
@@ -14,8 +17,7 @@ for F in `find . -name '*_test.js' | grep -v backup- | grep -v node_modules | gr
     echo $F
     cd `dirname $F` 
     # two cases: either run with mocha or run with node
-    if grep -q "mocha" `basename $F` 
-    then
+    if grep -q "mocha" `basename $F`; then
       # mocha test
       echo "[mocha]"
       echo ------------------

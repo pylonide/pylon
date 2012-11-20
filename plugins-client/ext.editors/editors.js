@@ -220,6 +220,12 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
+        // on firefox tabEditors.$buttons are wrapped in additional div
+        // https://github.com/ajaxorg/apf/blob/master/core/baseclasses/basetab.js#L1503
+        if (tabEditors.$gotContainer) {
+            tabEditors.$buttons.parentNode.removeNode();
+        }
+
         barButtonContainer.$int.appendChild(tabEditors.$buttons);
         barButtonContainer.$int.style.paddingRight
             = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
@@ -1126,15 +1132,10 @@ module.exports = ext.register("ext/editors/editors", {
         }
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
     destroy : function(){
         menus.remove("View/Tab Bar");
         menus.remove("View/Editors/");
+        this.$destroy();
     }
 });
 

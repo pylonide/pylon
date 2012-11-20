@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 /*global searchRow txtFind winSearchReplace hboxReplace txtReplace 
             tooltipSearchReplace chkRegEx winSearchInFiles chkSearchSelection 
             divSearchCount hboxFind chkHighlightMatches chkSearchBackwards 
@@ -164,7 +164,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 ["preservecase", "false"]
             ]);
         });
-
+        
         var isAvailable = commands.commands["findnext"].isAvailable;
         commands.commands["findnext"].isAvailable =
         commands.commands["findprevious"].isAvailable = function(editor){
@@ -198,8 +198,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
 
         var blur = function(e) {
-            if ( self.hboxReplace && !apf.isChildOf(winSearchReplace, e.toElement))
-                _self.toggleDialog(-1, null, true);
+            if (hboxReplace && !apf.isChildOf(winSearchReplace, e.toElement))
+                _self.toggleDialog(-1);
         };
 
         winSearchReplace.addEventListener("blur", blur);
@@ -364,10 +364,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         ext.initExtension(this);
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.amlEditor)
+        if (!editor || editor.path !== "ext/code/code")
             return;
 
-        var wasVisible  = !!winSearchReplace.parentNode;//visible;
+        var wasVisible  = winSearchReplace.visible;//visible;
         var stateChange = isReplace !== undefined && this.$lastState != isReplace;
 
         tooltipSearchReplace.$ext.style.display = "none";
@@ -740,29 +740,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         return editor.amlEditor.$editor;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("Find/Find...");
         menus.remove("Find/~", 200);
         menus.remove("Find/Replace...");
 
         commands.removeCommandsByName(["replace", "replacenext", "replaceprevious"]);
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 }, libsearch));
 

@@ -36,6 +36,7 @@ plugins-client/lib.packed/www/
 plugins-client/lib.ace/www/worker/
 plugins-client/cloud9.core/www/js/
 plugins-client/ext.jsinfer
+plugins-client/ext.jsonalyzer
 node_modules/
 deps/ace/
 plugins-server/fixtures/

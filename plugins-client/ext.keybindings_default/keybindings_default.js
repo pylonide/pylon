@@ -143,25 +143,6 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
         });
         
         return json;
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

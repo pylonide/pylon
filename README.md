@@ -1,12 +1,12 @@
-**UPDATE for May 2012**: If you cloned Cloud9 prior to May 2012, we have upgraded the
-architecture of the codebase. This makes it simpler to maintain Cloud9, but
-it affects the way you pull updates and hack on subcomponents. See the _Installation and Usage_
-section below to grok the changes.
+**Issues on c9.io** If you have questions regarding the hosted service at [c9.io](http://c9.io)
+including issues with accounts or payments,
+please file them at [support.c9.io](http://support.cloud9ide.com/home) rather than as a
+GitHub issue in this repository.
 
 # Cloud9 IDE
 
 Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client.
-It is very actively maintained by about 15 developers in both Amsterdam and San Francisco and is one
+It is very actively maintained by about 20 developers in both Amsterdam and San Francisco and is one
 component of the hosted service at [c9.io](http://c9.io). The version available here runs on your local system.
 
 Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors

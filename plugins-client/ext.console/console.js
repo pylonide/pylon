@@ -1287,21 +1287,11 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    enable: function(){
-        this.nodes.each(function(item) { item.enable(); });
-    },
-
-    disable: function(){
-        this.nodes.each(function(item) { item.disable(); });
-    },
-
     destroy: function(){
         commands.removeCommandsByName(
             ["help", "clear", "switchconsole", "toggleconsole",
              "escapeconsole", "toggleinputbar"]);
-
-        this.nodes.each(function(item) { item.destroy(true, true); });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });

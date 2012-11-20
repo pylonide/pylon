@@ -15,7 +15,6 @@ module.exports = ext.register("ext/themes_default/themes_default", {
     dev     : "Ajax.org",
     alone   : true,
     type    : ext.GENERAL,
-    nodes   : [],
 
     themes  : {
         "Ambiance" : "ace/theme/ambiance",
@@ -58,15 +57,6 @@ module.exports = ext.register("ext/themes_default/themes_default", {
 
     init : function(){
         themes.register(this.themes);
-    },
-
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
     }
 });
 

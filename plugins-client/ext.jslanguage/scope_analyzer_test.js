@@ -7,7 +7,6 @@ if (typeof process !== "undefined") {
 
 define(function(require, exports, module) {
     
-var sinon = require("sinon");
 var assert = require("assert");
 var LanguageWorker = require('../ext.language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
@@ -27,7 +26,7 @@ module.exports = {
         worker.$analyzeInterval = {};
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "/*global foo:true*/ foo;");
+        worker.switchFile("test.js", "javascript", "/*global foo:true*/ foo;", null, "");
     },
     "test unused variable" : function(next) {
         disabledFeatures = { jshint: true };
@@ -46,7 +45,7 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 2);
-        worker.switchFile("test.js", "javascript", "var hello = false;");
+        worker.switchFile("test.js", "javascript", "var hello = false;", null, "");
     },
     "test unused const" : function(next) {
         disabledFeatures = { jshint: true };
@@ -60,7 +59,7 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 2);
-        worker.switchFile("test.js", "javascript", "const hello = false;");
+        worker.switchFile("test.js", "javascript", "const hello = false;", null, "");
     },
     "test unused variable scoped" : function(next) {
         disabledFeatures = { jshint: true };
@@ -75,7 +74,7 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 2);
-        worker.switchFile("test.js", "javascript", "var hello = false; function noName() { var hello = true; hello = false; }");
+        worker.switchFile("test.js", "javascript", "var hello = false; function noName() { var hello = true; hello = false; }", null, "");
     },
     "test unused variable scoped without var decl" : function(next) {
         disabledFeatures = { jshint: true };
@@ -89,7 +88,7 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 2);
-        worker.switchFile("test.js", "javascript", "var hello = false; function noName() { hello = false; }");
+        worker.switchFile("test.js", "javascript", "var hello = false; function noName() { hello = false; }", null, "");
     },
     "test undeclared variable" : function(next) {
         disabledFeatures = { jshint: true };
@@ -104,7 +103,7 @@ module.exports = {
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 2);
-        worker.switchFile("test.js", "javascript", "hello = false;");
+        worker.switchFile("test.js", "javascript", "hello = false;", null, "");
     },
     "test undeclared iteration variable" : function(next) {
         disabledFeatures = { jshint: true };
@@ -118,7 +117,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "for(p in {}) { }");
+        worker.switchFile("test.js", "javascript", "for(p in {}) { }", null, "");
     },
     "test bad this call" : function(next) {
         disabledFeatures = { jshint: true };
@@ -131,7 +130,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var accept = function(){}; accept('evt', function(){this});");
+        worker.switchFile("test.js", "javascript", "var accept = function(){}; accept('evt', function(){this});", null, "");
     },
     "test bad this call (2)" : function(next) {
         disabledFeatures = { jshint: true };
@@ -144,7 +143,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var accept = function(){}; accept(function(err){this});");
+        worker.switchFile("test.js", "javascript", "var accept = function(){}; accept(function(err){this});", null, "");
     },
     "test bad this call (3)" : function(next) {
         disabledFeatures = { jshint: true };
@@ -157,102 +156,8 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "function g(err){this};");
-    },
-    "test jump to definition should point to variable declaration" : function(next) {
-        disabledFeatures = { jshint: true };
-        var emitter = Object.create(EventEmitter);
-        emitter.emit = emitter._dispatchEvent;
-        emitter.on("definition", function(def) {
-            assert.equal(def.row, 0);
-            assert.equal(def.column, 4);
-            next();
-        });
-        emitter.once("markers", function(markers) {
-            worker.jumpToDefinition({
-                data: {
-                    row: 0,
-                    column: 26
-                }
-            });
-        });
-        var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/scope_analyzer");
-        worker.register("ext/jslanguage/jumptodef");
-        worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
-    },
-    "test jump to definition on a position without code should not throw" : function(next) {
-        disabledFeatures = { jshint: true };
-        var emitter = Object.create(EventEmitter);
-        emitter.emit = emitter._dispatchEvent;
-        var definitionListener = sinon.stub();
-        emitter.on("definition", definitionListener);
-        emitter.once("markers", function(markers) {
-            worker.jumpToDefinition({
-                data: {
-                    row: 0,
-                    column: 40
-                }
-            });
-        });
-        var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/scope_analyzer");
-        worker.register("ext/jslanguage/jumptodef");
-        worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);                            ");
-        
-        // definition listener should not be called
-        setTimeout(function () {
-            sinon.assert.callCount(definitionListener, 0);
-            next();
-        }, 500);
-    },
-    "test isJumpToDefinitionAvailable should return true when available" : function(next) {
-        disabledFeatures = { jshint: true };
-        var emitter = Object.create(EventEmitter);
-        emitter.emit = emitter._dispatchEvent;
-        emitter.on("isJumpToDefinitionAvailableResult", function(res) {
-            assert.equal(res.value, true);
-            next();
-        });
-        emitter.once("markers", function(markers) {
-            worker.isJumpToDefinitionAvailable({
-                data: {
-                    row: 0,
-                    column: 26
-                }
-            });
-        });
-        var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/scope_analyzer");
-        worker.register("ext/jslanguage/jumptodef");
-        worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
-    },
-    "test isJumpToDefinitionAvailable should return false when not available" : function(next) {
-        disabledFeatures = { jshint: true };
-        var emitter = Object.create(EventEmitter);
-        emitter.emit = emitter._dispatchEvent;
-        emitter.on("isJumpToDefinitionAvailableResult", function(res) {
-            assert.equal(res.value, false);
-            next();
-        });
-        emitter.once("markers", function(markers) {
-            worker.isJumpToDefinitionAvailable({
-                data: {
-                    row: 0,
-                    column: 15
-                }
-            });
-        });
-        var worker = new LanguageWorker(emitter);
-        worker.register("ext/jslanguage/scope_analyzer");
-        worker.register("ext/jslanguage/jumptodef");
-        worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var ab = 4; console.log(ab);");
-    },
-    
+        worker.switchFile("test.js", "javascript", "function g(err){this};", null, "");
+    },    
     "test missing return in err handler" : function(next) {
         disabledFeatures = { jshint: true };
         var emitter = Object.create(EventEmitter);
@@ -264,7 +169,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) callback(err); }); }");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) callback(err); }); }", null, "");
     },
     "test missing return in err handler without using err in call" : function(next) {
         disabledFeatures = { jshint: true };
@@ -277,7 +182,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } doSomethingElse(function(err) { if(err) console.log('sup'); });");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } doSomethingElse(function(err) { if(err) console.log('sup'); });", null, "");
     },
     "test not reporting error when there is a return in err handler" : function(next) {
         disabledFeatures = { jshint: true };
@@ -290,7 +195,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) return callback(err); }); }");
+        worker.switchFile("test.js", "javascript", "function doSomethingElse() { } function helloAsync(callback) {  doSomethingElse(function(err) { if(err) return callback(err); }); }", null, "");
     },
     "test be less complainy" : function(next) {
         disabledFeatures = { jshint: true };
@@ -303,7 +208,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "var foo = true ? false\n: { a : 1\n b : 2}");
+        worker.switchFile("test.js", "javascript", "var foo = true ? false\n: { a : 1\n b : 2}", null, "");
     },
     "test be less complainy 2" : function(next) {
         disabledFeatures = { jshint: true };
@@ -316,7 +221,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "for(;;) { [].forEach(function() {}) }");
+        worker.switchFile("test.js", "javascript", "for(;;) { [].forEach(function() {}) }", null, "");
     },
     "test be selectively complainy about functions in loops" : function(next) {
         disabledFeatures = { jshint: true };
@@ -329,7 +234,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "for(;;) { [].bar(function() {}) }");
+        worker.switchFile("test.js", "javascript", "for(;;) { [].bar(function() {}) }", null, "");
     },
     "test complain about functions in 'for in'" : function(next) {
         disabledFeatures = { jshint: true };
@@ -342,7 +247,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/scope_analyzer");
         worker.register("ext/jslanguage/parse");
-        worker.switchFile("test.js", "javascript", "for(var x in []) { x.bar(function() {}) }");
+        worker.switchFile("test.js", "javascript", "for(var x in []) { x.bar(function() {}) }", null, "");
     }
 };
 

@@ -43,7 +43,6 @@ var GLOBALS = {
     "undefined"              : true,
     "null"                   : true,
     "arguments"              : true,
-    self                     : true,
     "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
@@ -322,6 +321,11 @@ Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidenc
     return result;
 };
 
+Scope.prototype.declareAlias = function(kind, originalName, newName) {
+    var vars = this.getVars(kind);
+    vars["_" + newName] = vars["_" + originalName];
+};
+
 Scope.prototype.getVars = function(kind) {
     if (kind)
         return this.vars[kind] = this.vars[kind] || {};
@@ -481,6 +485,15 @@ handler.analyze = function(doc, ast, callback) {
                         scope.get(b.x.value).addUse(node);
                     } else if(handler.isFeatureEnabled("undeclaredVars") &&
                         !GLOBALS[b.x.value] && !jshintGlobals[b.x.value]) {
+                        if (b.x.value === "self") {
+                            markers.push({
+                                pos: this.getPos(),
+                                level: 'warning',
+                                type: 'warning',
+                                message: "Use 'window.self' to refer to the 'self' global."
+                            });
+                            return;
+                        }
                         markers.push({
                             pos: this.getPos(),
                             level: 'warning',

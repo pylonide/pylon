@@ -18,6 +18,8 @@ var tree = require('treehugger/tree');
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 var linereport = require("ext/linereport/linereport_base");
 
+var isInWebWorker = typeof window == "undefined" || !window.location || !window.document;
+
 var WARNING_LEVELS = {
     error: 3,
     warning: 2,
@@ -116,12 +118,12 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
     }));
-    sender.on("jumpToDefinition", function(event) {
+    sender.on("jumpToDefinition", applyEventOnce(function(event) {
         _self.jumpToDefinition(event);
-    });
-    sender.on("isJumpToDefinitionAvailable", function(event) {
+    }));
+    sender.on("isJumpToDefinitionAvailable", applyEventOnce(function(event) {
         _self.isJumpToDefinitionAvailable(event);
-    });
+    }));
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
@@ -137,62 +139,6 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("serverProxy", function(event) {
         _self.serverProxy.onMessage(event.data);
     });
-};
-
-exports.createUIWorkerClient = function() {
-    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
-    var result = new LanguageWorker(emitter);
-    result.on = function(name, f) {
-        emitter.on.call(result, name, f);
-    };
-    result.call = function(cmd, args, callback) {
-        if (callback) {
-            var id = this.callbackId++;
-            this.callbacks[id] = callback;
-            args.push(id);
-        }
-        this.send(cmd, args);
-    };
-    result.send = function(cmd, args) {
-        setTimeout(function() { result[cmd].apply(result, args); }, 0);
-    };
-    result.emit = function(event, data) {
-        emitter._dispatchEvent.call(emitter, event, data);
-    };
-    emitter.emit = function(event, data) {
-        emitter._dispatchEvent.call(result, event, { data: data });
-    };
-    return result;
-};
-
-var isWorkerEnabled = exports.isWorkerEnabled = function() {
-    return !window.location || !window.location.search.match(/[?&]noworker=1/);
-};
-
-exports.createUIWorkerClient = function() {
-    var emitter = Object.create(require("ace/lib/event_emitter").EventEmitter);
-    var result = new LanguageWorker(emitter);
-    result.on = function(name, f) {
-        emitter.on.call(result, name, f);
-    };
-    result.call = function(cmd, args, callback) {
-        if (callback) {
-            var id = this.callbackId++;
-            this.callbacks[id] = callback;
-            args.push(id);
-        }
-        this.send(cmd, args);
-    };
-    result.send = function(cmd, args) {
-        setTimeout(function() { result[cmd].apply(result, args); }, 0);
-    };
-    result.emit = function(event, data) {
-        emitter._dispatchEvent.call(emitter, event, data);
-    };
-    emitter.emit = function(event, data) {
-        emitter._dispatchEvent.call(result, event, { data: data });
-    };
-    return result;
 };
 
 /**
@@ -285,6 +231,8 @@ function asyncParForEach(array, fn, callback) {
             handler.proxy = _self.serverProxy;
             handler.sender = _self.sender;
             _self.$initHandler(handler, null, function() {
+                // Note: may not return for a while for asynchronous workers,
+                //       don't use this for queueing other tasks
                 _self.handlers.push(handler);
             });
         }
@@ -307,7 +255,7 @@ function asyncParForEach(array, fn, callback) {
             var handler = require(path);
             onRegistered(handler);
         } catch (e) {
-            if (isWorkerEnabled())
+            if (isInWebWorker)
                 throw new Error("Could not load language handler " + path, e);
             // In ?noworker=1 debugging mode, synchronous require doesn't work
             require([path], function(handler) {
@@ -327,7 +275,7 @@ function asyncParForEach(array, fn, callback) {
         this.cachedAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
-                handler.parse(_self.doc.getValue(), function(ast) {
+                handler.parse(_self.doc.getValue(), function onParse(ast) {
                     if (ast)
                         _self.cachedAst = ast;
                     next();
@@ -594,13 +542,9 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.$getDefinitionDeclaration = function (row, col, callback) {
+    this.$getDefinitionDeclarations = function (row, col, callback) {
         var pos = { row: row, column: col };
-        // because the asyncforeach iterates over all handlers
-        // we need a variable in a higher scope to find out if
-        // any of the handlers returned a positive result that
-        // we can reuse in the callback
-        var endResult;
+        var allResults = [];
 
         var _self = this;
         var ast = this.cachedAst;
@@ -613,9 +557,9 @@ function asyncParForEach(array, fn, callback) {
 
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
-                        if (result)
-                            endResult = result;
+                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(results) {
+                        if (results)
+                            allResults = allResults.concat(results);
                         next();
                     });
                 }
@@ -623,7 +567,7 @@ function asyncParForEach(array, fn, callback) {
                     next();
                 }
             }, function () {
-                callback(endResult);
+                callback(allResults);
             });
         });
     };
@@ -632,9 +576,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
 
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function(result) {
-            if (result)
-                _self.sender.emit("definition", result);
+        _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
+            _self.sender.emit("definition", { pos: pos, results: results });
         });
     };
 
@@ -642,8 +585,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
 
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
-            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!result });
+        _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
+            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!results.length });
         });
     };
 
@@ -731,19 +674,13 @@ function asyncParForEach(array, fn, callback) {
         });
     };
 
-    // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code, pos, workspaceDir) {
         var _self = this;
-        if (!this.$analyzeInterval) {
-            this.$analyzeInterval = setInterval(function() {
-                _self.analyze(function(){});
-            }, 2000);
-        }
         var oldPath = this.$path;
         code = code || "";
-        linereport.path = this.$path = path.replace(/^\/(?!workspace)[^\/]+\/[^\/]+/, "");
-        this.$language = language;
         linereport.workspaceDir = this.$workspaceDir = workspaceDir;
+        linereport.path = this.$path = path;
+        this.$language = language;
         this.cachedAst = null;
         this.isParserCalled = false;
         this.lastCurrentNode = null;
@@ -762,10 +699,13 @@ function asyncParForEach(array, fn, callback) {
         handler.workspaceDir = this.$workspaceDir;
         handler.doc = this.doc;
         handler.sender = this.sender;
+        handler.$completeUpdate = this.completeUpdate.bind(this);
         var _self = this;
         if (!handler.$isInited) {
             handler.$isInited = true;
             handler.init(function() {
+                // Note: may not return for a while for asynchronous workers,
+                //       don't use this for queueing other tasks
                 handler.onDocumentOpen(_self.$path, _self.doc, oldPath, callback);
             });
         } else {
@@ -773,11 +713,15 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
+    this.documentOpen = function(path, language, code) {
+        var _self = this;
+        var doc = {getValue: function() {return code;} };
+        asyncForEach(this.handlers, function(handler, next) {
+            handler.onDocumentOpen(path, doc, _self.path, next);
+        });
+    };
+    
     this.documentClose = function(event) {
-        if (this.$analyzeInterval) {
-            clearInterval(this.$analyzeInterval);
-            this.$analyzeInterval = null;
-        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
@@ -825,52 +769,69 @@ function asyncParForEach(array, fn, callback) {
             _self.findNode(ast, currentPos, function(node) {
                 var currentNode = node;
                 var matches = [];
-
-            asyncForEach(_self.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language)) {
-                        handler.staticPrefix = data.staticPrefix;
-                        handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
-                        if (completions)
-                            matches = matches.concat(completions);
-                        next();
-                    });
-                }
-                else
-                    next();
-            }, function() {
-                removeDuplicateMatches(matches);
-                // Sort by priority, score
-                matches.sort(function(a, b) {
-                    if (a.priority < b.priority)
-                        return 1;
-                    else if (a.priority > b.priority)
-                        return -1;
-                    else if (a.score < b.score)
-                        return 1;
-                    else if (a.score > b.score)
-                        return -1;
-                    else if (a.id && a.id === b.id) {
-                        if (a.isFunction)
-                            return -1;
-                        else if (b.isFunction)
-                            return 1;
+            
+                asyncForEach(_self.handlers, function(handler, next) {
+                    if (handler.handlesLanguage(_self.$language)) {
+                            handler.staticPrefix = data.staticPrefix;
+                            handler.workspaceDir = _self.$workspaceDir;
+                            handler.complete(_self.doc, ast, data.pos, currentNode, function(completions) {
+                            if (completions)
+                                matches = matches.concat(completions);
+                            next();
+                        });
                     }
-                    if (a.name < b.name)
-                        return -1;
-                    else if(a.name > b.name)
-                        return 1;
                     else
-                        return 0;
-                });
-                    // Removed for the java completion result caching cases
-                    // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-                _self.sender.emit("complete", {
-                    pos: pos,
-                    matches: matches
+                        next();
+                }, function() {
+                    removeDuplicateMatches(matches);
+                    // Sort by priority, score
+                    matches.sort(function(a, b) {
+                        if (a.priority < b.priority)
+                            return 1;
+                        else if (a.priority > b.priority)
+                            return -1;
+                        else if (a.score < b.score)
+                            return 1;
+                        else if (a.score > b.score)
+                            return -1;
+                        else if (a.id && a.id === b.id) {
+                            if (a.isFunction)
+                                return -1;
+                            else if (b.isFunction)
+                                return 1;
+                        }
+                        if (a.name < b.name)
+                            return -1;
+                        else if(a.name > b.name)
+                            return 1;
+                        else
+                            return 0;
+                    });
+                    _self.sender.emit("complete", {
+                        pos: pos,
+                        matches: matches,
+                        isUpdate: event.data.isUpdate,
+                        line: _self.doc.getLine(pos.row)
+                    });
                 });
             });
         });
-        });
+    };
+    
+    /**
+     * Retrigger completion if the popup is still open and new
+     * information is now available.
+     */
+    this.completeUpdate = function(pos) {
+        if (!isInWebWorker) { // Avoid making the stack too deep in ?noworker=1 mode
+            var _self = this;
+            setTimeout(function onCompleteUpdate() {
+                _self.complete({data: {pos: pos, staticPrefix: _self.staticPrefix, isUpdate: true}});
+            }, 0);
+        }
+        else {
+            this.complete({data: {pos: pos, staticPrefix: this.staticPrefix, isUpdate: true}});
+        }
     };
 
 }).call(LanguageWorker.prototype);

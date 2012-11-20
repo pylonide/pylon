@@ -363,25 +363,6 @@ module.exports = ext.register("ext/gittools/gittools", {
 
         editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
         editors.currentEditor.amlEditor.$editor.renderer.updateFull();
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

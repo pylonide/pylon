@@ -591,13 +591,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
     },
 
-    enable : function() {},
-
-    disable : function() {},
-
     destroy : function(){
         commands.removeCommandsByName(["open", "c9"]);
-
         this.webdav.destroy(true, true);
         this.model.destroy(true, true);
     }
