@@ -1,1 +1,154 @@
-define("ace/theme/crimson_editor",["require","exports","module","ace/lib/dom"],function(a,b,c){b.isDark=!1,b.cssText='.ace-crimson-editor .ace_gutter {background: #ebebeb;color: #333;overflow : hidden;}.ace-crimson-editor .ace_gutter-layer {width: 100%;text-align: right;}.ace-crimson-editor .ace_print-margin {width: 1px;background: #e8e8e8;}.ace-crimson-editor .ace_scroller {background-color: #FFFFFF;}.ace-crimson-editor .ace_text-layer {color: rgb(64, 64, 64);}.ace-crimson-editor .ace_cursor {border-left: 2px solid black;}.ace-crimson-editor .ace_overwrite-cursors .ace_cursor {border-left: 0px;border-bottom: 1px solid black;}.ace-crimson-editor .ace_invisible {color: rgb(191, 191, 191);}.ace-crimson-editor .ace_identifier {color: black;}.ace-crimson-editor .ace_keyword {color: blue;}.ace-crimson-editor .ace_constant.ace_buildin {color: rgb(88, 72, 246);}.ace-crimson-editor .ace_constant.ace_language {color: rgb(255, 156, 0);}.ace-crimson-editor .ace_constant.ace_library {color: rgb(6, 150, 14);}.ace-crimson-editor .ace_invalid {text-decoration: line-through;color: rgb(224, 0, 0);}.ace-crimson-editor .ace_fold {}.ace-crimson-editor .ace_support.ace_function {color: rgb(192, 0, 0);}.ace-crimson-editor .ace_support.ace_constant {color: rgb(6, 150, 14);}.ace-crimson-editor .ace_support.ace_type,.ace-crimson-editor .ace_support.ace_class {color: rgb(109, 121, 222);}.ace-crimson-editor .ace_keyword.ace_operator {color: rgb(49, 132, 149);}.ace-crimson-editor .ace_string {color: rgb(128, 0, 128);}.ace-crimson-editor .ace_comment {color: rgb(76, 136, 107);}.ace-crimson-editor .ace_comment.ace_doc {color: rgb(0, 102, 255);}.ace-crimson-editor .ace_comment.ace_doc.ace_tag {color: rgb(128, 159, 191);}.ace-crimson-editor .ace_constant.ace_numeric {color: rgb(0, 0, 64);}.ace-crimson-editor .ace_variable {color: rgb(0, 64, 128);}.ace-crimson-editor .ace_xml-pe {color: rgb(104, 104, 91);}.ace-crimson-editor .ace_marker-layer .ace_selection {background: rgb(181, 213, 255);}.ace-crimson-editor .ace_marker-layer .ace_step {background: rgb(252, 255, 0);}.ace-crimson-editor .ace_marker-layer .ace_stack {background: rgb(164, 229, 101);}.ace-crimson-editor .ace_marker-layer .ace_bracket {margin: -1px 0 0 -1px;border: 1px solid rgb(192, 192, 192);}.ace-crimson-editor .ace_marker-layer .ace_active-line {background: rgb(232, 242, 254);}.ace-crimson-editor .ace_gutter-active-line {background-color : #dcdcdc;}.ace-crimson-editor .ace_meta.ace_tag {color:rgb(28, 2, 255);}.ace-crimson-editor .ace_marker-layer .ace_selected-word {background: rgb(250, 250, 255);border: 1px solid rgb(200, 200, 250);}.ace-crimson-editor .ace_string.ace_regex {color: rgb(192, 0, 192);}.ace-crimson-editor .ace_indent-guide {background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;}',b.cssClass="ace-crimson-editor";var d=a("../lib/dom");d.importCssString(b.cssText,b.cssClass)}),define("node_modules/ace/build/src/theme-crimson_editor.js",function(){}),define("ace/lib/dom",["require","exports","module"],function(a,b,c){var d="http://www.w3.org/1999/xhtml";b.createElement=function(a,b){return document.createElementNS?document.createElementNS(b||d,a):document.createElement(a)},b.setText=function(a,b){a.innerText!==undefined&&(a.innerText=b),a.textContent!==undefined&&(a.textContent=b)},b.hasCssClass=function(a,b){var c=a.className.split(/\s+/g);return c.indexOf(b)!==-1},b.addCssClass=function(a,c){b.hasCssClass(a,c)||(a.className+=" "+c)},b.removeCssClass=function(a,b){var c=a.className.split(/\s+/g);for(;;){var d=c.indexOf(b);if(d==-1)break;c.splice(d,1)}a.className=c.join(" ")},b.toggleCssClass=function(a,b){var c=a.className.split(/\s+/g),d=!0;for(;;){var e=c.indexOf(b);if(e==-1)break;d=!1,c.splice(e,1)}return d&&c.push(b),a.className=c.join(" "),d},b.setCssClass=function(a,c,d){d?b.addCssClass(a,c):b.removeCssClass(a,c)},b.hasCssString=function(a,b){var c=0,d;b=b||document;if(b.createStyleSheet&&(d=b.styleSheets)){while(c<d.length)if(d[c++].owningElement.id===a)return!0}else if(d=b.getElementsByTagName("style"))while(c<d.length)if(d[c++].id===a)return!0;return!1},b.importCssString=function(c,e,f){f=f||document;if(e&&b.hasCssString(e,f))return null;var g;if(f.createStyleSheet)g=f.createStyleSheet(),g.cssText=c,e&&(g.owningElement.id=e);else{g=f.createElementNS?f.createElementNS(d,"style"):f.createElement("style"),g.appendChild(f.createTextNode(c)),e&&(g.id=e);var h=f.getElementsByTagName("head")[0]||f.documentElement;h.appendChild(g)}},b.importCssStylsheet=function(a,c){if(c.createStyleSheet)c.createStyleSheet(a);else{var d=b.createElement("link");d.rel="stylesheet",d.href=a;var e=c.getElementsByTagName("head")[0]||c.documentElement;e.appendChild(d)}},b.getInnerWidth=function(a){return parseInt(b.computedStyle(a,"paddingLeft"),10)+parseInt(b.computedStyle(a,"paddingRight"),10)+a.clientWidth},b.getInnerHeight=function(a){return parseInt(b.computedStyle(a,"paddingTop"),10)+parseInt(b.computedStyle(a,"paddingBottom"),10)+a.clientHeight},window.pageYOffset!==undefined?(b.getPageScrollTop=function(){return window.pageYOffset},b.getPageScrollLeft=function(){return window.pageXOffset}):(b.getPageScrollTop=function(){return document.body.scrollTop},b.getPageScrollLeft=function(){return document.body.scrollLeft}),window.getComputedStyle?b.computedStyle=function(a,b){return b?(window.getComputedStyle(a,"")||{})[b]||"":window.getComputedStyle(a,"")||{}}:b.computedStyle=function(a,b){return b?a.currentStyle[b]:a.currentStyle},b.scrollbarWidth=function(a){var c=b.createElement("p");c.style.width="100%",c.style.minWidth="0px",c.style.height="200px";var d=b.createElement("div"),e=d.style;e.position="absolute",e.left="-10000px",e.overflow="hidden",e.width="200px",e.minWidth="0px",e.height="150px",d.appendChild(c);var f=a.body||a.documentElement;f.appendChild(d);var g=c.offsetWidth;e.overflow="scroll";var h=c.offsetWidth;return g==h&&(h=d.clientWidth),f.removeChild(d),g-h},b.setInnerHtml=function(a,b){var c=a.cloneNode(!1);return c.innerHTML=b,a.parentNode.replaceChild(c,a),c},b.setInnerText=function(a,b){var c=a.ownerDocument;c.body&&"textContent"in c.body?a.textContent=b:a.innerText=b},b.getInnerText=function(a){var b=a.ownerDocument;return b.body&&"textContent"in b.body?a.textContent:a.innerText||a.textContent||""},b.getParentWindow=function(a){return a.defaultView||a.parentWindow}})
+/* ***** BEGIN LICENSE BLOCK *****
+ * Distributed under the BSD license:
+ *
+ * Copyright (c) 2010, Ajax.org B.V.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Ajax.org B.V. nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+define('ace/theme/crimson_editor', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
+exports.isDark = false;
+exports.cssText = ".ace-crimson-editor .ace_gutter {\
+background: #ebebeb;\
+color: #333;\
+overflow : hidden;\
+}\
+.ace-crimson-editor .ace_gutter-layer {\
+width: 100%;\
+text-align: right;\
+}\
+.ace-crimson-editor .ace_print-margin {\
+width: 1px;\
+background: #e8e8e8;\
+}\
+.ace-crimson-editor .ace_scroller {\
+background-color: #FFFFFF;\
+}\
+.ace-crimson-editor .ace_text-layer {\
+color: rgb(64, 64, 64);\
+}\
+.ace-crimson-editor .ace_cursor {\
+border-left: 2px solid black;\
+}\
+.ace-crimson-editor .ace_overwrite-cursors .ace_cursor {\
+border-left: 0px;\
+border-bottom: 1px solid black;\
+}\
+.ace-crimson-editor .ace_invisible {\
+color: rgb(191, 191, 191);\
+}\
+.ace-crimson-editor .ace_identifier {\
+color: black;\
+}\
+.ace-crimson-editor .ace_keyword {\
+color: blue;\
+}\
+.ace-crimson-editor .ace_constant.ace_buildin {\
+color: rgb(88, 72, 246);\
+}\
+.ace-crimson-editor .ace_constant.ace_language {\
+color: rgb(255, 156, 0);\
+}\
+.ace-crimson-editor .ace_constant.ace_library {\
+color: rgb(6, 150, 14);\
+}\
+.ace-crimson-editor .ace_invalid {\
+text-decoration: line-through;\
+color: rgb(224, 0, 0);\
+}\
+.ace-crimson-editor .ace_fold {\
+}\
+.ace-crimson-editor .ace_support.ace_function {\
+color: rgb(192, 0, 0);\
+}\
+.ace-crimson-editor .ace_support.ace_constant {\
+color: rgb(6, 150, 14);\
+}\
+.ace-crimson-editor .ace_support.ace_type,\
+.ace-crimson-editor .ace_support.ace_class {\
+color: rgb(109, 121, 222);\
+}\
+.ace-crimson-editor .ace_keyword.ace_operator {\
+color: rgb(49, 132, 149);\
+}\
+.ace-crimson-editor .ace_string {\
+color: rgb(128, 0, 128);\
+}\
+.ace-crimson-editor .ace_comment {\
+color: rgb(76, 136, 107);\
+}\
+.ace-crimson-editor .ace_comment.ace_doc {\
+color: rgb(0, 102, 255);\
+}\
+.ace-crimson-editor .ace_comment.ace_doc.ace_tag {\
+color: rgb(128, 159, 191);\
+}\
+.ace-crimson-editor .ace_constant.ace_numeric {\
+color: rgb(0, 0, 64);\
+}\
+.ace-crimson-editor .ace_variable {\
+color: rgb(0, 64, 128);\
+}\
+.ace-crimson-editor .ace_xml-pe {\
+color: rgb(104, 104, 91);\
+}\
+.ace-crimson-editor .ace_marker-layer .ace_selection {\
+background: rgb(181, 213, 255);\
+}\
+.ace-crimson-editor .ace_marker-layer .ace_step {\
+background: rgb(252, 255, 0);\
+}\
+.ace-crimson-editor .ace_marker-layer .ace_stack {\
+background: rgb(164, 229, 101);\
+}\
+.ace-crimson-editor .ace_marker-layer .ace_bracket {\
+margin: -1px 0 0 -1px;\
+border: 1px solid rgb(192, 192, 192);\
+}\
+.ace-crimson-editor .ace_marker-layer .ace_active-line {\
+background: rgb(232, 242, 254);\
+}\
+.ace-crimson-editor .ace_gutter-active-line {\
+background-color : #dcdcdc;\
+}\
+.ace-crimson-editor .ace_meta.ace_tag {\
+color:rgb(28, 2, 255);\
+}\
+.ace-crimson-editor .ace_marker-layer .ace_selected-word {\
+background: rgb(250, 250, 255);\
+border: 1px solid rgb(200, 200, 250);\
+}\
+.ace-crimson-editor .ace_string.ace_regex {\
+color: rgb(192, 0, 192);\
+}\
+.ace-crimson-editor .ace_indent-guide {\
+background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
+}";
+
+exports.cssClass = "ace-crimson-editor";
+
+var dom = require("../lib/dom");
+dom.importCssString(exports.cssText, exports.cssClass);
+});

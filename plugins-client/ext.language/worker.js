@@ -118,12 +118,12 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
     }));
-    sender.on("jumpToDefinition", function(event) {
+    sender.on("jumpToDefinition", applyEventOnce(function(event) {
         _self.jumpToDefinition(event);
-    });
-    sender.on("isJumpToDefinitionAvailable", function(event) {
+    }));
+    sender.on("isJumpToDefinitionAvailable", applyEventOnce(function(event) {
         _self.isJumpToDefinitionAvailable(event);
-    });
+    }));
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
@@ -542,13 +542,9 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.$getDefinitionDeclaration = function (row, col, callback) {
+    this.$getDefinitionDeclarations = function (row, col, callback) {
         var pos = { row: row, column: col };
-        // because the asyncforeach iterates over all handlers
-        // we need a variable in a higher scope to find out if
-        // any of the handlers returned a positive result that
-        // we can reuse in the callback
-        var endResult;
+        var allResults = [];
 
         var _self = this;
         var ast = this.cachedAst;
@@ -561,9 +557,9 @@ function asyncParForEach(array, fn, callback) {
 
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
-                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(result) {
-                        if (result)
-                            endResult = result;
+                    handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(results) {
+                        if (results)
+                            allResults = allResults.concat(results);
                         next();
                     });
                 }
@@ -571,7 +567,7 @@ function asyncParForEach(array, fn, callback) {
                     next();
                 }
             }, function () {
-                callback(endResult);
+                callback(allResults);
             });
         });
     };
@@ -580,9 +576,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
 
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function(result) {
-            if (result)
-                _self.sender.emit("definition", result);
+        _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
+            _self.sender.emit("definition", { pos: pos, results: results });
         });
     };
 
@@ -590,8 +585,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var pos = event.data;
 
-        _self.$getDefinitionDeclaration(pos.row, pos.column, function (result) {
-            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!result });
+        _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
+            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!results.length });
         });
     };
 
