@@ -1132,15 +1132,10 @@ module.exports = ext.register("ext/editors/editors", {
         }
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
     destroy : function(){
         menus.remove("View/Tab Bar");
         menus.remove("View/Editors/");
+        this.$destroy();
     }
 });
 

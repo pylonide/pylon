@@ -321,6 +321,11 @@ Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidenc
     return result;
 };
 
+Scope.prototype.declareAlias = function(kind, originalName, newName) {
+    var vars = this.getVars(kind);
+    vars["_" + newName] = vars["_" + originalName];
+};
+
 Scope.prototype.getVars = function(kind) {
     if (kind)
         return this.vars[kind] = this.vars[kind] || {};

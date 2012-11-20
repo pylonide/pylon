@@ -168,9 +168,7 @@ module.exports = ext.register("ext/vim/vim", {
 
     destroy: function() {
         menus.remove("Tools/Vim mode");
-
-        this.nodes.forEach(function(item) { item.destroy(); });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });

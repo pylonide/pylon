@@ -272,13 +272,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         for (var path in _self.expandedPaths) {
             _self.sendWatchDirectory(path);
         }
-    },
-
-    disable : function() {
-        this.disabled = true;
-    },
-
-    destroy : function() {}
+    }
 });
 
 });

@@ -68,9 +68,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
             }
         });
         
-        var mnuItem;
         this.nodes.push(
-            mnuItem = menus.addItemByPath("Tools/Format JSON", new apf.item({
+            menus.addItemByPath("Tools/Format JSON", new apf.item({
                 command : "formatjson"
             }), 500)
         );
@@ -80,26 +79,10 @@ module.exports = ext.register("ext/formatjson/formatjson", {
         this.winFormat = winFormat;
     },
     
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-    
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-    
     destroy : function(){
         commands.removeCommandByName("formatjson");
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
         this.winFormat.destroy(true, true);
+        this.$destroy();
     }
 });
 

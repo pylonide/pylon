@@ -37,16 +37,6 @@ module.exports = ext.register("ext/connect/connect", {
             stServerConnected.deactivate();
             winReconnect.show();
         });
-    },
-    
-    enable : function(){
-    },
-    
-    disable : function(){
-    },
-    
-    destroy : function(){
-        //Remove all events
     }
 });
 

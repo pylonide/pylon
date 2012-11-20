@@ -139,33 +139,10 @@ module.exports = ext.register("ext/newresource/newresource", {
         return false;
     },
 
-    enable : function(){
-        if (!this.disabled) return;
-
-        this.nodes.each(function(item){
-            item.enable();
-        });
-        this.disabled = false;
-    },
-
-    disable : function(){
-        if (this.disabled) return;
-
-        this.nodes.each(function(item){
-            item.disable();
-        });
-        this.disabled = true;
-    },
-
     destroy : function(){
         commands.removeCommandsByName(["newfile", "newfiletemplate", "newfolder"]);
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         tabEditors.removeEventListener("close", this.$close);
+        this.$destroy();
     }
 });
 

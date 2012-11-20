@@ -1468,25 +1468,19 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     enable: function() {
-        this.nodes.each(function(item) {
-            item.enable();
-        });
         this.enableEventListeners();
+        this.$enable();
     },
 
     disable: function() {
         this.hide();
-        this.nodes.each(function(item){
-            item.disable();
-        });
-
         tabEditors.getPages().forEach(function(page) {
             if (page.$mdlRevisions) {
                 delete page.$mdlRevisions;
             }
         }, this);
-
         this.disableEventListeners();
+        this.$disable();
     },
 
     destroy: function() {
@@ -1511,11 +1505,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.worker.terminate();
             this.worker = null;
         }
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });
