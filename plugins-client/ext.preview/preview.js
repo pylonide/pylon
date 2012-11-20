@@ -79,7 +79,7 @@ module.exports = ext.register(_name, {
             expanded : -1,
             width : 400,
             "min-width" : 400,
-            barNum: 1,
+            barNum: 2,
             sections : [{
                 width : 360,
                 height: 300,
@@ -121,6 +121,7 @@ module.exports = ext.register(_name, {
         var bar = this._getDockBar();
         dock.showBar(bar);
         dock.expandBar(bar);
+        dock.showSection(this._name, "pgPreview");
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
