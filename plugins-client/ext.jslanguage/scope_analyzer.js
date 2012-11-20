@@ -677,9 +677,6 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     if (!currentNode)
         return callback();
 
-    // Fill the ast with scopes
-    handler.analyze(doc.getValue(), fullAst, function () {});
-
     var markers = [];
     var enableRefactorings = [];
     
@@ -744,9 +741,6 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!fullAst)
         return callback();
-
-    // Fill the ast with scopes
-    handler.analyze(doc.getValue(), fullAst, function () {});
 
     var v;
     var mainNode;

@@ -123,7 +123,7 @@ function getContextSyntaxPart(doc, pos, originalSyntax) {
         if ((pos.row > region.sl && pos.row < region.el) ||
             (pos.row === region.sl && pos.column >= region.sc) ||
             (pos.row === region.el && pos.column <= region.ec))
-            return regionToCodePart(doc, region);
+            return regionToCodePart(doc, region, i);
     }
     return null; // should never happen
 }
@@ -133,20 +133,21 @@ function getContextSyntax(doc, pos, originalSyntax) {
     return part && part.language; // should never happen
 }
 
-function regionToCodePart (doc, region) {
+function regionToCodePart (doc, region, index) {
     var lines = doc.getLines(region.sl, region.el);
     return {
         value: region.sl === region.el ? lines[0].substring(region.sc, region.ec) :
             [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter()),
         language: region.syntax,
+        index: index,
         region: region
     };
 }
 
 function getCodeParts (doc, originalSyntax) {
     var regions = getSyntaxRegions(doc, originalSyntax);
-    return regions.map(function (region) {
-        return regionToCodePart(doc, region);
+    return regions.map(function (region, i) {
+        return regionToCodePart(doc, region, i);
     });
 }
 

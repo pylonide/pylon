@@ -264,12 +264,19 @@ function asyncParForEach(array, fn, callback) {
         }
     };
 
-    this.parse = function(part, callback) {
+    this.parse = function(part, callback, allowCached) {
         var _self = this;
         part = part || {
             language: _self.$language,
             value: _self.doc.getValue()
         };
+
+        if (allowCached && this.cachedAsts) {
+            var cached = this.cachedAsts[part.index];
+            if (cached && cached.part.language === part.language)
+                return callback(cached.ast);
+        }
+
         var resultAst = null;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(part.language)) {
@@ -402,9 +409,12 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var parts = SyntaxDetector.getCodeParts(this.doc, this.$language);
         var markers = [];
+        var cachedAsts = {};
         asyncForEach(parts, function(part, nextPart) {
             var partMarkers = [];
             _self.parse(part, function(ast) {
+                cachedAsts[part.index] = {part: part, ast: ast};
+
                 asyncForEach(_self.handlers, function(handler, next) {
                     if (handler.handlesLanguage(part.language)) {
                         handler.analyze(part.value, ast, function(result) {
@@ -441,6 +451,7 @@ function asyncParForEach(array, fn, callback) {
                 _self.onCursorMove(_self.postponedCursorMove);
                 _self.postponedCursorMove = null;
             }
+            _self.cachedAsts = cachedAsts;
             callback();
         });
     };
@@ -493,7 +504,7 @@ function asyncParForEach(array, fn, callback) {
                     _self.scheduleEmit("inspect", expression);
                 }
             });
-        });
+        }, true);
     };
 
     this.onCursorMove = function(event) {
@@ -572,7 +583,7 @@ function asyncParForEach(array, fn, callback) {
                     cursorMoved(ast, currentNode, posInPart);
                 }
             });
-        });
+        }, true);
     };
 
     this.$getDefinitionDeclarations = function (row, col, callback) {
@@ -601,7 +612,7 @@ function asyncParForEach(array, fn, callback) {
                     callback(allResults);
                 });
             });
-        });
+        }, true);
     };
 
     this.jumpToDefinition = function(event) {
@@ -654,7 +665,7 @@ function asyncParForEach(array, fn, callback) {
                     }
                 });
             });
-        });
+        }, true);
     };
 
     this.onRenameBegin = function(event) {
@@ -727,6 +738,7 @@ function asyncParForEach(array, fn, callback) {
         this.$language = language;
         this.lastCurrentNode = null;
         this.lastCurrentPos = null;
+        this.cachedAsts = null;
         this.setValue(code);
         asyncForEach(this.handlers, function(handler, next) {
             _self.$initHandler(handler, oldPath, next);
