@@ -597,11 +597,12 @@ function asyncParForEach(array, fn, callback) {
                     else {
                         next();
                     }
-            }, function () {
-                callback(allResults);
+                }, function () {
+                    callback(allResults);
+                });
             });
         });
-    });
+    };
 
     this.jumpToDefinition = function(event) {
         var _self = this;
