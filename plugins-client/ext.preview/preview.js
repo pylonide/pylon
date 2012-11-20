@@ -34,6 +34,9 @@ module.exports = ext.register(_name, {
     css     : util.replaceStaticPrefix(css),
     deps    : [editors],
     autodisable : ext.ONLINE | ext.LOCAL,
+    disableLut: {
+        "terminal": true
+    },
     nodes   : [],
 
     _getDockButton: function() {
@@ -115,8 +118,9 @@ module.exports = ext.register(_name, {
     preview : function (url) {
         // window.open(url, "_blank");
         pgPreview.setCaption(apf.getFilename(url));
-        dock.showSection(this._name, "pgPreview");
-        dock.expandBar(this._getDockBar());
+        var bar = this._getDockBar();
+        dock.showBar(bar);
+        dock.expandBar(bar);
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
