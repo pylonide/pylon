@@ -80,18 +80,15 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
 	node Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 
-ace_mode_theme:
-	# copies and minifies built ace modes
+# copies built ace modes
+mode:
 	mkdir -p plugins-client/lib.ace/www/mode
-	for i in `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`; do \
-		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/mode/`basename $$i` baseUrl=. paths.ace=./node_modules/ace/lib/ace ; \
-	done
-	
-	# copies and minifies built ace themes
+	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`  plugins-client/lib.ace/www/mode
+
+# copies built ace themes
+theme:
 	mkdir -p plugins-client/lib.ace/www/theme
-	for i in `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"`; do \
-		node build/r.js -o name=$$i out=./plugins-client/lib.ace/www/theme/`basename $$i` baseUrl=. paths.ace=./node_modules/ace/lib/ace ; \
-	done
+	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"` plugins-client/lib.ace/www/theme
 
 gzip_safe:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
@@ -103,7 +100,7 @@ gzip:
 		gzip -9 -v -q -f $$i ; \
 	done
 
-c9core: apf ace core worker ace_mode_theme
+c9core: apf ace core worker mode theme
     
 package_clean: helper_clean c9core ext
 
