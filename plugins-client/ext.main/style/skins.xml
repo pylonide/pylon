@@ -6077,27 +6077,27 @@
         }
 
         .listBP .bpItem .checkbox:hover{
-            background-position : 0 -85px;
+            background-position : 0 -17px;
         }
 
         .listBP .bpItem .checkbox:active{
-            background-position : 0 -51px;
-        }
-
-        .listBP .checked .checkbox:active {
-            background-position : 0 -17px !important;
-        }
-
-        .listBP .checked .checkbox {
             background-position : 0 -34px;
         }
 
+        .listBP .checked .checkbox:active {
+            background-position : 0 -85px !important;
+        }
+
+        .listBP .checked .checkbox {
+            background-position : 0 -51px;
+        }
+
         .listBP .checked .checkbox:hover{
-            background-position : 0 -102px;
+            background-position : 0 -68px;
         }
 
         .listBPDisabled .checkbox {
-            background-position : 0 -68px;
+            background-position : 0 -102px;
         }
 
         .listBPDisabled .bpItem {

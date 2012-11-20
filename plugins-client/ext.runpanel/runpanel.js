@@ -203,20 +203,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             dock.hideSection(name, false);
             hasBreaked = false;
 
-            /*var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             if (!bar.extended)
-                dock.hideBar(bar);*/
+                dock.hideBar(bar);
         });
-        /*stProcessRunning.addEventListener("activate", function(){
-            if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel())
+        stProcessRunning.addEventListener("activate", function(){
+            var debug = apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
+            if (!debug || !_self.autoHidePanel())
                 return;
 
             var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            delete bar.cache;
             if (!bar.extended)
                 dock.showBar(bar);
-        });*/
+        });
         ide.addEventListener("dbg.break", function(){
-            if (!_self.shouldRunInDebugMode() || !_self.autoHidePanel() || hasBreaked)
+            var debug = apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
+            if (!debug || !_self.autoHidePanel() || hasBreaked)
                 return;
 
             hasBreaked = true;
