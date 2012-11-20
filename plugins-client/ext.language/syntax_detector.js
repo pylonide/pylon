@@ -115,7 +115,8 @@ function getContextSyntaxPart(doc, pos, originalSyntax) {
         return {
             language: originalSyntax,
             value: doc.getValue(),
-            region: getSyntaxRegions(doc, originalSyntax)[0]
+            region: getSyntaxRegions(doc, originalSyntax)[0],
+            index: 0
         };
     var regions = getSyntaxRegions(doc, originalSyntax);
     for (var i = 0; i < regions.length; i++) {
@@ -139,8 +140,8 @@ function regionToCodePart (doc, region, index) {
         value: region.sl === region.el ? lines[0].substring(region.sc, region.ec) :
             [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter()),
         language: region.syntax,
-        index: index,
-        region: region
+        region: region,
+        index: index
     };
 }
 

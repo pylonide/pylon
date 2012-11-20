@@ -445,13 +445,13 @@ function asyncParForEach(array, fn, callback) {
             var extendedMakers = markers;
             if (_self.getLastAggregateActions().markers.length > 0)
                 extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+            _self.cachedAsts = cachedAsts;
             _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
             _self.currentMarkers = markers;
             if (_self.postponedCursorMove) {
                 _self.onCursorMove(_self.postponedCursorMove);
                 _self.postponedCursorMove = null;
             }
-            _self.cachedAsts = cachedAsts;
             callback();
         });
     };
@@ -592,13 +592,14 @@ function asyncParForEach(array, fn, callback) {
 
         var _self = this;
         var part = this.getPart(pos);
+
         this.parse(part, function(ast) {
             _self.findNode(ast, {line: pos.row, col: pos.column}, function(currentNode) {
                 if (!currentNode)
                     return callback();
                 
                 asyncForEach(_self.handlers, function(handler, next) {
-                    if (handler.handlesLanguage(_self.$language)) {
+                    if (handler.handlesLanguage(part.language)) {
                         handler.jumpToDefinition(_self.doc, ast, pos, currentNode, function(results) {
                             if (results)
                                 allResults = allResults.concat(results);
@@ -609,7 +610,9 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     }
                 }, function () {
-                    callback(allResults);
+                    callback(allResults.map(function (pos) {
+                       return SyntaxDetector.regionToPos(part.region, pos);
+                    }));
                 });
             });
         }, true);
