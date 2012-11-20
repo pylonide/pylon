@@ -6327,6 +6327,7 @@
         .mnuRunCfg .window .fbox {
             height: 100%;
             overflow: hidden;
+            white-space: nowrap;
         }
         .mnuRunCfg .window .col {
             float: left;
