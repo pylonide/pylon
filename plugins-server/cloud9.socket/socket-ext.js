@@ -13,8 +13,6 @@ module.exports = function setup(options, imports, register) {
     var PERMISSIONS = imports["workspace-permissions"];
     var TRANSPORT = imports["smith.transport.server"];
 
-    var worker = new Worker(imports.vfs);
-
     imports.static.addStatics([{
         path: dirname(require.resolve("vfs-socket/consumer")),
         mount: "/vfs-socket",
@@ -40,6 +38,7 @@ module.exports = function setup(options, imports, register) {
 //            console.log("<- " + require('util').inspect(message, false, 2, true));
 //        });
 
+        var worker = new Worker(imports.vfs);
         worker.connect(connection.transport);
         worker.on("error", function (err) {
             console.error(err.stack);
