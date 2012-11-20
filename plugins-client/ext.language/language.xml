@@ -2,7 +2,7 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:tab id="tabOutline" skin="docktab" visible="false">
+    <a:tab id="tabOutline" skin="docktab" visible="false" buttons="close">
         <a:model id="mdlOutline2">
             <data>
             </data>

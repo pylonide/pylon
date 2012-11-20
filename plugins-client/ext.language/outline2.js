@@ -127,7 +127,7 @@ module.exports = {
         var bar = dock.getBars(this._name, "pgOutline")[0];
         dock.showBar(bar);
         dock.expandBar(bar);
-        // dock.showSection(this._name, "pgOutline");
+        dock.showSection(this._name, "pgOutline");
     },
 
     renderOutline: function(ignoreFilter) {
