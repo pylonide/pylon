@@ -69,6 +69,7 @@ util.inherits(Ide, EventEmitter);
         this.workspace.createPlugins(exts);
         var statePlugin = this.workspace.getExt("state");
         if (statePlugin) {
+            var self = this;
             statePlugin.on("statechange", function(state) {
                 state.workspaceDir = statePlugin.workspace.workspaceDir;
                 state.davPrefix = statePlugin.ide.davPrefix;
@@ -115,14 +116,14 @@ util.inherits(Ide, EventEmitter);
 
             var staticUrl = _self.options.staticUrl;
             var workerUrl = _self.options.workerUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" '
-                + 'data-ace-suffix=".js?staticUrl=' + staticUrl + '" '
-                + 'src="' + staticUrl + '/ace/build/ace'
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
+                + staticUrl + '/ace/build/ace'
                 + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
             var loadedDetectionScript = "";
             if (_self.options.local) {
-                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' + _self.options.workspaceId + '"></script>';
+                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' +
+                    _self.options.workspaceId + '"></script>';
             }
 
             var replacements = {
@@ -150,7 +151,8 @@ util.inherits(Ide, EventEmitter);
                 packed: _self.options.packed,
                 packedName: _self.options.packedName,
                 local: _self.options.local,
-                loadedDetectionScript: loadedDetectionScript
+                loadedDetectionScript: loadedDetectionScript,
+                _csrf: req.session && req.session._csrf || ""
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");

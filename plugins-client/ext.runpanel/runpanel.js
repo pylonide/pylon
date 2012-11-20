@@ -517,27 +517,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
             return this.disable();
-        
-        this.nodes.each(function(item){
-            item.enable && item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable && item.disable();
-        });
+        this.$enable();
     },
 
     destroy : function(){
         commands.removeCommandsByName(["run", "stop"]);
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         panels.unregister(this);
+        this.$destroy();
     }
 });
 

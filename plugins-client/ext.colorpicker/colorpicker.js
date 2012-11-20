@@ -698,27 +698,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         menu.$ext.style.left = x + "px";
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         // hiding the menu also detaches all event listeners.
         if (this.menu.visible)
             this.menu.hide();
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

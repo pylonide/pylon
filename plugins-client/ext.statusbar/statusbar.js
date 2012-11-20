@@ -293,26 +293,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             }
         }, 50);
     },
-    
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
 
     destroy : function(){
         menus.remove("View/Status Bar");
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

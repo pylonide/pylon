@@ -11,9 +11,15 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var commands = require("ext/commands/commands");
+var util = require("ext/codecomplete/complete_util");
+var menus = require("ext/menus/menus");
+
+var CRASHED_JOB_TIMEOUT = 30000;
 
 module.exports = {
     nodes : [],
+    
+    removeSpinnerNodes: [],
     
     hook : function(language, worker){
         var _self = this;
@@ -41,12 +47,16 @@ module.exports = {
                     id : "mnuCtxEditorJumpToDef",
                     caption : "Jump to Definition",
                     command: "jumptodef"
-                }), mnuCtxEditor.firstChild)
+                }), mnuCtxEditor.firstChild),
+                menus.addItemByPath("Goto/Jump to Definition", new apf.item({
+                    caption : "Jump to Definition",
+                    command: "jumptodef"
+                }), 899)
             );
             
             // when the context menu pops up we'll ask the worker whether we've 
             // jumptodef available here
-            apf.addListener(mnuCtxEditor, "prop.visible", function (ev) {
+            apf.addListener(mnuCtxEditor, "prop.visible", function(ev) {
                 // only fire when visibility is set to true        
                 if (ev.value) {
                     // because of delays we'll enable by default
@@ -57,18 +67,13 @@ module.exports = {
         });
         
         // listen to the worker's response
-        worker.on("definition", function(ev) {
-            editors.jump({
-                column: ev.data.column,
-                row: ev.data.row + 1,
-                node: tabEditors.getPage().xmlRoot,
-                animate: false
-            });
+        worker.on("definition", function(e) {
+            _self.onDefinitions(e);
         });
         
         // when the analyzer tells us if the jumptodef result is available
         // we'll disable/enable the jump to definition item in the ctx menu
-        worker.on("isJumpToDefinitionAvailableResult", function (ev) {
+        worker.on("isJumpToDefinitionAvailableResult", function(ev) {
             if (ev.data.value) {
                 mnuCtxEditorJumpToDef.enable();
             }
@@ -76,6 +81,16 @@ module.exports = {
                 mnuCtxEditorJumpToDef.disable();
             }
         });
+    },
+    
+    $getFirstColumn: function(row) {
+        var editor = editors.currentEditor;
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+            return 1;
+        var line = editor.getDocument().getLine(row);
+        if (!line)
+            return 1;
+        return line.match(/^(\s*)/)[1].length;
     },
     
     /**
@@ -95,6 +110,8 @@ module.exports = {
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
+            
+        this.activateSpinner();
 
         var sel = editor.getSelection();
         var pos = sel.getCursor();
@@ -104,23 +121,72 @@ module.exports = {
         });
     },
     
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
+    onDefinitions : function(e) {
+        this.clearSpinners();
+
+        var results = e.data.results;
+
+        var editor = editors.currentEditor;
+        if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
+            return;
+            
+        if (!results.length)
+            return this.onJumpFailure(e, editor);
+            
+        // We have no UI for multi jumptodef; we just take the last for now
+        var lastResult;
+        for (var i = results.length - 1; i >=0; i--) {
+            lastResult = results[results.length - 1];
+            if (!lastResult.isDeferred)
+                break;
+        }
+        var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
+        editors.gotoDocument({
+            column: lastResult.column !== undefined ? lastResult.column : this.$getFirstColumn(lastResult.row),
+            row: lastResult.row + 1,
+            node: path ? undefined : tabEditors.getPage().xmlRoot,
+            animate: true,
+            path: path
         });
     },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
+    
+    onJumpFailure : function(event, editor) {
+        var cursor = editor.getSelection().getCursor();
+        var oldPos = event.data.pos;
+        if (oldPos.row !== cursor.row || oldPos.column !== cursor.column)
+            return;
+        var line = editor.getDocument().getLine(oldPos.row);
+        if (!line)
+            return;
+        var preceding = util.retrievePreceedingIdentifier(line, cursor.column);
+        var column = cursor.column - preceding.length;
+        if (column === oldPos.column)
+            column = this.$getFirstColumn(cursor.row);
+        var newPos = { row: cursor.row, column: column };
+        editor.getSelection().setSelectionRange({ start: newPos, end: newPos });
     },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
+    
+    activateSpinner : function() {
+        try {
+            var node = tabEditors.getPage().$doc.getNode();
+            apf.xmldb.setAttribute(node, "lookup", "1");
+            this.removeSpinnerNodes.push(node);
+            var _self = this;
+            setTimeout(function() {
+                _self.clearSpinners();
+            }, CRASHED_JOB_TIMEOUT);
+        } catch (e) {
+            // Whatever, some missing non-critical UI
+            console.error(e);
+        }
+    },
+    
+    clearSpinners : function() {
+        this.removeSpinnerNodes.forEach(function(node) {
+            apf.xmldb.removeAttribute(node, "lookup");
         });
-        this.nodes = [];
+        this.removeSpinnerNodes = [];
     }
+    
 };
 });

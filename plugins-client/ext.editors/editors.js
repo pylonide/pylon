@@ -1083,10 +1083,11 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         function focus() {
-            if (!_self.currentEditor.amlEditor)
+            var editor = _self.currentEditor.amlEditor;
+            if (!editor)
                 return;
-            var ace = _self.currentEditor.amlEditor.$editor;
-            if (!ace.$isFocused) {
+            var ace = editor.$editor;
+            if (ace && !ace.$isFocused) {
                 setTimeout(f = function() {
                     ace.focus();
                     ide.dispatchEvent("aftereditorfocus");
@@ -1132,15 +1133,10 @@ module.exports = ext.register("ext/editors/editors", {
         }
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
     destroy : function(){
         menus.remove("View/Tab Bar");
         menus.remove("View/Editors/");
+        this.$destroy();
     }
 });
 

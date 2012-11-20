@@ -737,18 +737,6 @@ module.exports = ext.register("ext/save/save", {
         btnSave.setCaption("Not saved");
     },
     
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("File/~", 1100);
         menus.remove("File/Save All");
@@ -760,12 +748,8 @@ module.exports = ext.register("ext/save/save", {
         commands.removeCommandsByName(
             ["quicksave", "saveas", "saveall", "reverttosaved"]);
 
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         tabEditors.removeEventListener("close", this.$close, true);
+        this.$destroy();
     }
 });
 

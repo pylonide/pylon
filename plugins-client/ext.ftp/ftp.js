@@ -30,13 +30,11 @@ module.exports = ext.register("ext/ftp/ftp", {
     pageId: "ftpConsoleHbox",
 
     hook: function(){
-        ext.initExtension(this);
-
         // hack to hide the dock panel!!
 //        if (window.dockPanelRight)
 //            dockPanelRight.setAttribute("visible", false);
-
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
+        ext.initExtension(this);
     },
 
     init: function(amlNode) {
@@ -101,25 +99,6 @@ module.exports = ext.register("ext/ftp/ftp", {
         }
 
         this.log(message.body, message.subtype);
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

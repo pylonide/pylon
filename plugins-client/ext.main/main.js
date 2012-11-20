@@ -25,15 +25,11 @@ module.exports = ext.register("ext/main/main", {
     alone   : true,
     type    : ext.GENERAL,
     markup  : markup,
-
     skin    : {
         data : skin,
         "media-path" : ide.staticPrefix + "/ext/main/style/images/",
         "icon-path" : ide.staticPrefix + "/ext/main/style/icons/"
     },
-
-    deps    : [],
-    nodes   : [],
 
     init : function(){
         ide.addEventListener("extload", function(){
@@ -41,26 +37,7 @@ module.exports = ext.register("ext/main/main", {
             apf.layout.$onresize();
         });
         
-        self.splitterPanelLeft = hboxMain.$handle; //Intended to be global
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        window.splitterPanelLeft = hboxMain.$handle; //Intended to be global
     }
 });
 
