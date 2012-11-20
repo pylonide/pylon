@@ -1083,10 +1083,11 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         function focus() {
-            if (!_self.currentEditor.amlEditor)
+            var editor = _self.currentEditor.amlEditor;
+            if (!editor)
                 return;
-            var ace = _self.currentEditor.amlEditor.$editor;
-            if (!ace.$isFocused) {
+            var ace = editor.$editor;
+            if (ace && !ace.$isFocused) {
                 setTimeout(f = function() {
                     ace.focus();
                     ide.dispatchEvent("aftereditorfocus");
