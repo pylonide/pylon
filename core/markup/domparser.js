@@ -40,10 +40,10 @@ apf.DOMParser = function(){};
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
-    
+
     this.$waitQueue  = {}
     this.$callCount  = 0;
-    
+
     // privates
     var RE     = [
             /\<\!(DOCTYPE|doctype)[^>]*>/,
@@ -51,7 +51,7 @@ apf.DOMParser.prototype = new (function(){
             /<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g
         ],
         XPATH  = "//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]";
-    
+
     this.parseFromString = function(xmlStr, mimeType, options){
         var xmlNode;
         if (this.caseInsensitive) {
@@ -65,10 +65,10 @@ apf.DOMParser.prototype = new (function(){
             x.ownerDocument.setProperty("SelectionNamespaces",
                                     "xmlns:a='" + apf.ns.aml + "'");
             */
-        
+
             if (!this.supportNamespaces)
                 str = str.replace(/xmlns\=\"[^"]*\"/g, "");
-        
+
             //#ifdef __WITH_EXPLICIT_LOWERCASE
             xmlNode = apf.getXmlDom(str, null, this.preserveWhiteSpace || apf.debug).documentElement;
             var i, l,
@@ -79,7 +79,7 @@ apf.DOMParser.prototype = new (function(){
                     .setAttribute(nodes[i].nodeName.toLowerCase(), nodes[i].nodeValue);
             }
             /* #else
-        
+
             var xmlNode = apf.getXmlDom(str);
             if (apf.xmlParseError) apf.xmlParseError(xmlNode);
             xmlNode = xmlNode.documentElement;
@@ -91,13 +91,13 @@ apf.DOMParser.prototype = new (function(){
 
         return this.parseFromXml(xmlNode, options);
     };
-    
+
     //@todo prevent leakage by not recording .$aml
     this.parseFromXml = function(xmlNode, options){
         var doc, docFrag, amlNode, beforeNode;
-        if (!options) 
+        if (!options)
             options = {};
-        
+
         if (!options.delayedRender && !options.include) {
             //Create a new document
             if (options.doc) {
@@ -111,7 +111,7 @@ apf.DOMParser.prototype = new (function(){
             }
             if (options.host)
                 doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
-            
+
             // #ifdef __DEBUG
             //Check for children in Aml node
             /*if (!xmlNode.childNodes.length) {
@@ -119,7 +119,7 @@ apf.DOMParser.prototype = new (function(){
                 return (docFrag || doc);
             }*/
             // #endif
-            
+
             //Let's start building our tree
             amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
             (docFrag || doc).appendChild(amlNode);
@@ -129,7 +129,7 @@ apf.DOMParser.prototype = new (function(){
         else {
             amlNode    = options.amlNode;
             doc        = options.doc;
-            
+
             if (options.include) {
                 var n = amlNode.childNodes;
                 var p = n.indexOf(options.beforeNode);
@@ -139,7 +139,7 @@ apf.DOMParser.prototype = new (function(){
 
         //Set parse context
         this.$parseContext = [amlNode, options];
-        
+
         this.$addParseState(amlNode, options || {});
 
         //First pass - Node creation
@@ -156,7 +156,7 @@ apf.DOMParser.prototype = new (function(){
                 if (!newNode) continue; //for preserveWhiteSpace support
 
                 cNodes[cL = cNodes.length] = newNode; //Add to children
-                
+
                 //Set tree refs
                 newNode.parentNode = amlNode;
                 if (cL > 0)
@@ -165,17 +165,17 @@ apf.DOMParser.prototype = new (function(){
                 //Create children
                 if (!newNode.render && newNode.canHaveChildren && (nNodes = node.childNodes).length)
                     recur(newNode, nNodes);
-                
+
                 //newNode.$aml = node; //@todo should be deprecated...
-                
+
                 //Store high prio nodes for prio insertion
                 if (newNode.$parsePrio) {
                     if (newNode.$parsePrio == "001") {
                         newNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                         continue;
                     }
-                        
-                    (nodelist[newNode.$parsePrio] || (prios.push(newNode.$parsePrio) 
+
+                    (nodelist[newNode.$parsePrio] || (prios.push(newNode.$parsePrio)
                       && (nodelist[newNode.$parsePrio] = []))).push(newNode); //for second pass
                 }
             }
@@ -183,7 +183,7 @@ apf.DOMParser.prototype = new (function(){
             amlNode.firstChild = cNodes[0];
             amlNode.lastChild  = cNodes[cL];
         })(amlNode, xmlNode.childNodes);
-        
+
         if (options.include && rest.length) {
             var index = n.length - 1;
             n.push.apply(n, rest);
@@ -200,7 +200,7 @@ apf.DOMParser.prototype = new (function(){
             };
             return (docFrag || doc);
         }
-        
+
         //Second pass - Document Insert signalling
         prios.sort();
         var i, j, l, l2;
@@ -211,7 +211,7 @@ apf.DOMParser.prototype = new (function(){
             }
         }
 
-        if (this.$waitQueue[amlNode.$uniqueId] 
+        if (this.$waitQueue[amlNode.$uniqueId]
           && this.$waitQueue[amlNode.$uniqueId].$shouldWait)
             return (docFrag || doc);
 
@@ -226,26 +226,26 @@ apf.DOMParser.prototype = new (function(){
 
         return (docFrag || doc);
     };
-    
+
     this.$isPaused = function(amlNode){
-        return this.$waitQueue[amlNode.$uniqueId] && 
+        return this.$waitQueue[amlNode.$uniqueId] &&
           this.$waitQueue[amlNode.$uniqueId].$shouldWait > 0;
     }
-    
+
     this.$addParseState = function(amlNode, options){
-        var waitQueue = this.$waitQueue[amlNode.$uniqueId] 
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId]
             || (this.$waitQueue[amlNode.$uniqueId] = [])
         waitQueue.pushUnique(options);
-        
+
         return waitQueue;
     }
-    
+
     this.$pauseParsing = function(amlNode, options){
         var waitQueue = this.$waitQueue[amlNode.$uniqueId];
         if (!waitQueue.$shouldWait) waitQueue.$shouldWait = 0;
         waitQueue.$shouldWait++;
     }
-    
+
     this.$continueParsing = function(amlNode, options){
         if (!amlNode)
             amlNode = apf.document.documentElement;
@@ -253,33 +253,33 @@ apf.DOMParser.prototype = new (function(){
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
-            
+
             if (item.$shouldWait && --item.$shouldWait)
                 return false;
-            
+
             var node = amlNode.parentNode;
             while (node && node.nodeType == 1) {
-                if (this.$waitQueue[node.$uniqueId] 
+                if (this.$waitQueue[node.$uniqueId]
                   && this.$waitQueue[node.$uniqueId].$shouldWait)
                     return false;
                 node = node.parentNode;
             }
-            
+
             var parseAmlNode = apf.all[uId];
-            
             delete this.$waitQueue[uId];
-            for (var i = 0; i < item.length; i++) {
-                this.$parseState(parseAmlNode, item[i]);
+            if (parseAmlNode) {
+                for (var i = 0; i < item.length; i++)
+                    this.$parseState(parseAmlNode, item[i]);
             }
-            
+
             //@todo Check for shouldWait here?
         }
         else
             this.$parseState(amlNode, options || {});
-        
+
         delete this.$parseContext;
     }
-    
+
     this.$parseState = function(amlNode, options) {
         this.$callCount++;
 
@@ -288,7 +288,7 @@ apf.DOMParser.prototype = new (function(){
                 nodelist = amlNode.$parseOptions.nodelist,
                 i, j, l, l2, node;
             delete amlNode.$parseOptions;
-            
+
             //Second pass - Document Insert signalling
             prios.sort();
             for (i = 0, l = prios.length; i < l; i++) {
@@ -312,32 +312,32 @@ apf.DOMParser.prototype = new (function(){
                 if (!(node = nodes[i]).$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
-                
+
                 //Create children
                 if (!node.render && (nNodes = node.childNodes).length)
                     _recur(nNodes);
             }
         })(amlNode.childNodes);
-        
+
         if (!--this.$callCount && !options.delay)
             apf.queue.empty();
-        
+
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
     };
-    
+
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){
         var o;
-        
+
         switch (nodeType) {
             case 1:
                 var id, prefix;
                 if (xmlNode) {
-                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml) 
+                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml)
                       && !(prefix = doc.$prefixes[namespaceURI])) {
                         doc.$prefixes[prefix = xmlNode.prefix || xmlNode.scopeName || ""] = namespaceURI;
                         doc.$namespaceURIs[namespaceURI] = prefix;
-                        
+
                         if (!doc.namespaceURI && !prefix) {
                             doc.namespaceURI = namespaceURI;
                             doc.prefix       = prefix;
@@ -356,11 +356,11 @@ apf.DOMParser.prototype = new (function(){
                 if (!apf.namespaces[namespaceURI]) {
                     if (this.allowAnyElement)
                         namespaceURI = apf.ns.xhtml;
-                    else 
+                    else
                         throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo apf3.0 make proper error
                 }
                 //#endif
-                
+
                 var els = apf.namespaces[namespaceURI].elements;
 
                 //#ifdef __DEBUG
@@ -368,13 +368,13 @@ apf.DOMParser.prototype = new (function(){
                     throw new Error("Missing element constructor: " + nodeName); //@todo apf3.0 make proper error
                 }
                 //#endif
-                
+
                 o = new (els[nodeName] || els["@default"])(null, nodeName);
-                
+
                 o.prefix       = prefix || "";
                 o.namespaceURI = namespaceURI;
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
-        
+
                 if (xmlNode) {
                     if ((id = xmlNode.getAttribute("id")) && !self[id])
                         o.$propHandlers["id"].call(o, o.id = id);
@@ -382,7 +382,7 @@ apf.DOMParser.prototype = new (function(){
                     //attributes
                     var attr = xmlNode.attributes, n;
                     for (var a, na, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(na = new apf.AmlAttr(o, 
+                        o.attributes.push(na = new apf.AmlAttr(o,
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         //#ifdef __WITH_DELAYEDRENDER
                         if (n == "render")
@@ -393,7 +393,7 @@ apf.DOMParser.prototype = new (function(){
                             na.$triggerUpdate();
                     }
                 }
-                
+
                 break;
             case 2:
                 o = new apf.AmlAttr();
@@ -408,10 +408,10 @@ apf.DOMParser.prototype = new (function(){
                 else {
                     o.prefix = doc.$prefixes[namespaceURI];
                 }
-                
+
                 break;
             case 3:
-                if (xmlNode) 
+                if (xmlNode)
                     nodeValue = xmlNode && xmlNode.nodeValue;
                 if (!this.preserveWhiteSpace && !(nodeValue || "").trim())
                     return;
@@ -459,10 +459,10 @@ apf.DOMParser.prototype = new (function(){
                 o = new apf.AmlDocumentFragment();
                 break;
         }
-        
-        o.ownerDocument = doc;    
+
+        o.ownerDocument = doc;
         o.$aml          = xmlNode;
-        
+
         return o;
     };
 })();
@@ -482,7 +482,7 @@ apf.AmlNamespace.prototype = {
     setElement : function(tagName, fConstr){
         return this.elements[tagName] = fConstr;
     },
-    
+
     setProcessingInstruction : function(target, fConstr){
         this.processingInstructions[target] = fConstr;
     }
