@@ -281,6 +281,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 
                 var caption = apf.isTrue(cbRunDbgDebugMode.value) ? 'Run in Debug Mode' : 'Run';
                 btnRunDbgRun.setCaption(caption);
+                
+                lstRunCfg.stopRename();
             }
             
             if (e.htmlEvent.target.className == "btnDelete") {
@@ -295,6 +297,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                         lstRunCfg.select(xmlNode);
                     });
                 }
+                
+                lstRunCfg.stopRename();
             }
         });
 

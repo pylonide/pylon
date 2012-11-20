@@ -411,7 +411,7 @@ module.exports = ext.register("ext/console/console", {
         var runningCfg = lstRunCfg.getModel().data && lstRunCfg.getModel().queryNode("node()[@running]");
         if (runningCfg)
             cfgName = runningCfg.getAttribute("name");
-        var command_id = this.createOutputBlock("Running " + lang + " Process" + (cfgName ? " (" + cfgName + ")" : ""), true);
+        var command_id = this.createOutputBlock("Running " + lang + " Process" + (cfgName ? ' ("' + cfgName + '")' : ""), true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
 
