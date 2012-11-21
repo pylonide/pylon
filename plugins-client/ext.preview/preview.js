@@ -25,6 +25,7 @@ module.exports = ext.register(_name, {
     alone   : true,
     markup  : markup,
     _name   : _name,
+    _button : "pgPreview",
     skin    : {
         id   : "previewskin",
         data : skin,
@@ -40,14 +41,8 @@ module.exports = ext.register(_name, {
     nodes   : [],
     live    : null,
 
-    _getDockButton: function() {
-        var buttons = dock.getButtons(this._name);
-        if (buttons)
-            return buttons[0].cache;
-    },
-
     _getDockBar: function () {
-        return dock.getBars(this._name, "pgPreview")[0];
+        return dock.getBars(this._name, this._button)[0];
     },
 
     onLoad: function () {
@@ -87,13 +82,13 @@ module.exports = ext.register(_name, {
                 height: 300,
                 buttons : [{
                     caption: "Preview Apps",
-                    ext : [this._name, "pgPreview"],
+                    ext : [this._name, this._button],
                     hidden : false
                 }]
             }]
         });
 
-        dock.register(this._name, "pgPreview", {
+        dock.register(this._name, this._button, {
             menu : "Preview Apps",
             primary : {
                 backgroundImage: ide.staticPrefix + "/ext/main/style/images/sidebar_preview_icon.png",
@@ -139,7 +134,7 @@ module.exports = ext.register(_name, {
         var bar = this._getDockBar();
         dock.showBar(bar);
         dock.expandBar(bar);
-        dock.showSection(this._name, "pgPreview");
+        dock.showSection(this._name, this._button);
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
@@ -160,7 +155,7 @@ module.exports = ext.register(_name, {
     },
 
     close: function () {
-        dock.hideSection(this._name, "pgPreview");
+        dock.hideSection(this._name, this._button);
     },
 
     init : function() {
