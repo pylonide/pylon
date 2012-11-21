@@ -37,8 +37,8 @@ module.exports = ext.register("ext/beautify/beautify", {
         if (!editor)
             editor = editors.currentEditor;
 
-        if (editor.ceEditor)
-            editor = editor.ceEditor.$editor;
+        if (editor.amlEditor)
+            editor = editor.amlEditor.$editor;
 
         var sel = editor.selection;
         var session = editor.session;
@@ -110,8 +110,6 @@ module.exports = ext.register("ext/beautify/beautify", {
         sel.setSelectionRange(Range.fromPoints(range.start, end));
     },
 
-    init: function () {},
-
     hook: function () {
         var _self = this;
 
@@ -129,8 +127,8 @@ module.exports = ext.register("ext/beautify/beautify", {
             msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
             isAvailable : function(editor){
-                if (editor && editor.ceEditor) {
-                    var range = editor.ceEditor.$editor.getSelectionRange();
+                if (editor && editor.path == "ext/code/code") {
+                    var range = editor.amlEditor.$editor.getSelectionRange();
                     return range.start.row != range.end.row
                       || range.start.column != range.end.column;
                 }
@@ -157,30 +155,10 @@ module.exports = ext.register("ext/beautify/beautify", {
         ext.initExtension(this);
     },
 
-    enable: function () {
-        this.nodes.each(function (item) {
-            item.enable();
-        });
-
-        this.disabled = false;
-    },
-
-    disable: function () {
-        this.nodes.each(function (item) {
-            item.disable();
-        });
-
-        this.disabled = true;
-    },
-
     destroy: function () {
         menus.remove("Tools/Beautify Selection");
         commands.removeCommand("beautify");
-
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

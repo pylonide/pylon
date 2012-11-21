@@ -451,6 +451,7 @@ module.exports = ext.register("ext/save/save", {
             });
 
             apf.xmldb.removeAttribute(node, "new");
+            apf.xmldb.removeAttribute(node, "changed");
             apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
 
             if (_self.saveBuffer[path]) {
@@ -484,10 +485,12 @@ module.exports = ext.register("ext/save/save", {
         var _self = this;
         var value = page.$doc.getValue();
         fs.saveFile(newPath, value, function(value, state, extra) {
-            if (state != apf.SUCCESS) {
-                util.alert("Could not save document",
-                  "An error occurred while saving this document",
-                  "Please see if your internet connection is available and try again.");
+            if (state !== apf.SUCCESS) {
+                apf.xmldb.removeAttribute(file, "saving")
+                return util.alert("Could not save document",
+                    "An error occurred while saving this document",
+                    "Please see if your internet connection is available and try again." +
+                    "The server responded with status " + extra.status + ".");
             }
 
             var model = page.$model;
@@ -734,18 +737,6 @@ module.exports = ext.register("ext/save/save", {
         btnSave.setCaption("Not saved");
     },
     
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("File/~", 1100);
         menus.remove("File/Save All");
@@ -757,12 +748,8 @@ module.exports = ext.register("ext/save/save", {
         commands.removeCommandsByName(
             ["quicksave", "saveas", "saveall", "reverttosaved"]);
 
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         tabEditors.removeEventListener("close", this.$close, true);
+        this.$destroy();
     }
 });
 

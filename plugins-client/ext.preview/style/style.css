@@ -1,0 +1,10 @@
+.previewbar {
+    position : relative;
+    background: url("{ide.staticPrefix}/ext/preview/style/images/c9-preview-repeat.png") repeat-x 0 -244px;
+    border-bottom: 1px solid #000000;
+}
+.preview_iframe {
+    border: none;
+    width:100%;
+    height:100%;
+}

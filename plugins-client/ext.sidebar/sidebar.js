@@ -237,13 +237,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 }
             }
             
-            if (panels.currentPanel) {
-                setTimeout(function(){
-                    panels.currentPanel.panel.setTitle(
-                        panels.currentPanel.button.caption);
-                });
-            }
-
             panels.activate(panelExt, true);
         });
         
@@ -253,25 +246,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         }
         
         panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

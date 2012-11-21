@@ -238,28 +238,11 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         return false;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         commands.removeCommandByName("openfilepanel");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         panels.unregister(this);
-    },
+        this.$destroy();
+    }
 });
 
 });

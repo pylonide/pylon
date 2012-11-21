@@ -75,6 +75,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             oHtml.removeEventListener("mouseout", this.$mouseout);
             oHtml.removeEventListener("mousedown", this.$mousedown);
         }, this);
+        this.$destroy();
     },
 
     $ttmouseover : function(){
@@ -178,25 +179,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
 
             options.tooltip.style.display = "none";
         }
-    },
-
-    enable: function () {
-        this.nodes.each(function(item) {
-            item.enable();
-        });
-    },
-
-    disable: function () {
-        this.nodes.each(function(item) {
-            item.disable();
-        });
-    },
-
-    destroy: function () {
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
+
 });

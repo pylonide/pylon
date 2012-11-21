@@ -97,9 +97,9 @@ module.exports = {
 
         ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage;
-            if (!page || !page.$editor || !page.$editor.ceEditor)
+            if (!page || !page.$editor || page.$editor.path != "ext/code/code")
                 return;
-            var ace = page.$editor.ceEditor.$editor;
+            var ace = page.$editor.amlEditor.$editor;
             if (!ace.$breakpointListener)
                 _self.initEditor(ace);
 
@@ -155,10 +155,12 @@ module.exports = {
 
             var session = editor.session;
             var bp = session.getBreakpoints()[row];
-            var i = bp ? bp.indexOf("disabled") == -1 ? 1 : 2 : 0;
-            if (e.getShiftKey())
-                i = (i + 1) %3;
-            bp = [" ace_breakpoint ", " ace_breakpoint disabled ", null][i];
+            if (e.getShiftKey()) {
+                var isDisabled = bp && bp.indexOf("disabled") != -1;
+                bp = isDisabled ? " ace_breakpoint " : " ace_breakpoint disabled";
+            } else {
+                bp = bp ? "" : " ace_breakpoint ";
+            }
 
             session.setBreakpoint(row, bp);
             _self.addBreakpointToModel(session, row);
@@ -166,7 +168,7 @@ module.exports = {
     },
     initSession: function(session) {
         session.$breakpointListener = function(e) {
-            if (!this.c9doc.isInited || !this.$breakpoints.length)
+            if (!this.c9doc || !this.c9doc.isInited || !this.$breakpoints.length)
                 return;
             var delta = e.data;
             var range = delta.range;
@@ -203,6 +205,8 @@ module.exports = {
         session.on("change", session.$breakpointListener);
     },
     updateSession: function(session) {
+        if (!session.c9doc)
+            return;
         var rows = [];
         var path = session.c9doc.getNode().getAttribute("path");
         var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path=" + util.escapeXpathString(path) + "]");
@@ -306,10 +310,9 @@ module.exports = {
     $syncOpenFiles: function() {
         // var tabFiles = ide.getAllPageModels();
         var page = tabEditors.$activepage;
-        if (page && page.$editor && page.$editor.ceEditor) {
-            var session = page.$editor.ceEditor.$editor.session;
-            if (session.c9doc)
-                this.updateSession(session);
+        if (page && page.$editor && page.$editor.path == "ext/code/code") {
+            var session = page.$editor.amlEditor.$editor.session;
+            this.updateSession(session);
         }
     }
 };

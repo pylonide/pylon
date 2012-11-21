@@ -29,74 +29,98 @@
 
 
 /**
- * Ajax.org Platform
+ * @class apf
+ * The Ajax.org Platform.
  *
  * @author    Ruben Daniels (ruben AT ajax DOT org)
  * @version   3.0
- * @url       http://www.ajax.org
- *
- * @event domready      Fires when the browsers' dom is ready to be manipulated.
- * @event movefocus         Fires when the focus moves from one element to another.
- *   object:
- *   {AMLElement} toElement the element that will receive the focus.
- * @event exit              Fires when the application wants to exit.
- *   cancelable:  Prevents the application from exiting. The returnValue of the
- *   event object is displayed in a popup which asks the user for permission.
- * @event keyup         Fires when the user stops pressing a key.
- *   cancelable: Prevents the behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event mousescroll   Fires when the user scrolls the mouse
- *   cancelable: Prevents the container to scroll
- *   object:
- *   {Number} delta the scroll impulse.
- * @event hotkey        Fires when the user presses a hotkey
- *   bubbles: yes
- *   cancelable: Prevents the default hotkey behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event keydown       Fires when the user presses a key
- *   bubbles: yes
- *   cancelable: Prevents the behaviour.
- *   object:
- *   {Number}  keyCode   the char code of the pressed key.
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Object}  htmlEvent the html event object.
- * @event mousedown     Fires when the user presses a mouse button
- *   object:
- *   {Event}      htmlEvent the char code of the pressed key.
- *   {AMLElement} amlNode   the element on which is clicked.
- * @event onbeforeprint Fires before the application will print.
- * @event onafterprint  Fires after the application has printed.
- * @event load          Fires after the application is loaded.
- * @event error         Fires when a communication error has occured while making a request for this element.
- *   cancelable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
- *   {Number}         state     the state of the call
- *     Possible values:
- *     apf.SUCCESS  the request was successfull
- *     apf.TIMEOUT  the request has timed out.
- *     apf.ERROR    an error has occurred while making the request.
- *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
  * @default_private
+ *
+ */
+/**
+ * @event domready      Fires when the browsers' DOM is ready to be manipulated.
+ */
+/** 
+ * @event movefocus         Fires when the focus moves from one element to another.
+ * @param {apf.AmlElement} toElement The element that receives the focus.
+ */
+/** 
+ * @event exit              Fires when the application wants to exit.
+ * @cancelable  Prevents the application from exiting. The return value of the event object is displayed in a popup, asking the user for permission.
+ */
+/** 
+ * @event keyup         Fires when the user stops pressing a key (by lifting up)
+ * @cancelable Prevents the keypress.
+ * @param {Object} e An object containing the following properties:
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
+ */
+/** 
+ * @event mousescroll   Fires when the user scrolls the mouse
+ * @cancelable Prevents the container from scrolling
+ * @param {Object} e An object containing the following properties:
+ *  - htmlEvent ([[Object]]): The HTML event object
+ *  - amlElement ([[apf.AmlElement]]): The element which was clicked.
+ *  - delta ([[Number]]): The scroll impulse.
+ */
+/** 
+ * @event hotkey        Fires when the user presses a hotkey
+ * @bubbles
+ * @cancelable Prevents the default hotkey behavior.
+ * @param {Object} e An object containing the following properties:
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
+ */
+/** 
+ * @event keydown       Fires when the user presses down on a key
+ * @bubbles
+ * @cancelable Prevents the default hotkey behavior.
+ * @param {Object} e An object containing the following properties:
+ *  - keyCode ([[Number]]): The character code of the pressed key.
+ *  - ctrlKey ([[Boolean]]): Whether the [[keys: Ctrl]] key was pressed.
+ *  - shiftKey ([[Boolean]]): Whether the [[keys: Shift]] key was pressed.
+ *  - altKey ([[Boolean]]): Whether the [[keys: Alt]] key was pressed.
+ *  - htmlEvent ([[Object]]): The html event object.
+ */
+/** 
+ * @event mousedown     Fires when the user presses a mouse button
+ * @param {Object} e An object containing the following properties:
+ *  - htmlEvent ([[Object]]): The HTML event object
+ *  - amlElement ([[apf.AmlElement]]): The element which was clicked.
+ */
+/** 
+ * @event onbeforeprint Fires before the application prints.
+ */
+/** 
+ * @event onafterprint  Fires after the application prints.
+ */
+/** 
+ * @event load          Fires after the application is loaded.
+ */
+/** 
+ * @event error         Fires when a communication error has occured while making a request for this element.
+ * @cancelable Prevents the error from being thrown.
+ * @bubbles
+ * @param {Object} e An object containing the following properties:
+ *   - error ([[Error]]): The error object that is thrown when the event's callback doesn't return `false`.
+ *   - state ([[Number]]): The state of the call. Possible values include:
+ *     - `apf.SUCCESS` : The request was successful
+ *     - `apf.TIMEOUT`:  The request timed out
+ *     - `apf.ERROR`:    An error occurred while making the request
+ *     - `apf.OFFLINE`:  The request was made while the application was offline.
+ *   - userdata (`Mixed`): Data that the caller made available in the callback of the HTTP request.
+ *   - http ([[XMLHttpRequest]]): The object that executed the actual http request
+ *   - url ([[String]]): The url that was requested
+ *   - tpModule ([[apf.http]]): The teleport module that is making the request
+ *   - id ([[Number]]): The id of the request
+ *   - message ([[String]]): The error message
+ * 
  */
  apf = {
 VERSION:'3.0beta',
@@ -110,67 +134,64 @@ VERSION:'3.0beta',
     
 
     /**
-     * Boolean specifying whether apf is ready for dom operations.
+     * Specifies whether apf is ready for DOM operations.
      * @type {Boolean}
      */
     READY          : false,
 
     //AML nodeFunc constants
     /**
-     * Constant for a hidden aml element.
+     * A constant for the hidden AML element.
      * @type {Number}
      */
     NODE_HIDDEN    : 101,
     /**
-     * Constant for a visible aml element.
+     * A constant for a visible AML element.
      * @type {Number}
      */
     NODE_VISIBLE   : 102,
     /**
-     * Constant for an o3 widget.
+     * A constant for an o3 widget.
      * @type {Number}
      */
     NODE_O3 : 103,
 
     /**
-     * Constant for specifying that a widget is using only the keyboard to receive focus.
+     * A constant for specifying that a widget is using only the keyboard to receive focus.
      * @type {Number}
-     * @see baseclass.guielement.method.focus
+     * @see apf.GuiElement@focus
      */
     KEYBOARD       : 2,
     /**
-     * Constant for specifying that a widget is using the keyboard or the mouse to receive focus.
+     * A constant for specifying that a widget is using the keyboard or the mouse to receive focus.
      * @type {Boolean}
-     * @see baseclass.guielement.method.focus
+     * @see apf.GuiElement@focus
      */
     KEYBOARD_MOUSE : true,
     /**
-     * Constant for specifying that a widget is a menu
+     * A constant for specifying that a widget is a menu
+     * @type {Number}
      */
     MENU           : 3,
 
     /**
-     * Constant for specifying success.
+     * A constant for specifying success.
      * @type {Number}
-     * @see element.teleport
      */
     SUCCESS : 1,
     /**
-     * Constant for specifying a timeout.
+     * A constant for specifying a timeout.
      * @type {Number}
-     * @see element.teleport
      */
     TIMEOUT : 2,
     /**
-     * Constant for specifying an error.
+     * A constant for specifying an error.
      * @type {Number}
-     * @see element.teleport
      */
     ERROR   : 3,
     /**
-     * Constant for specifying the application is offline.
+     * A constant for specifying the application is offline.
      * @type {Number}
-     * @see element.teleport
      */
     OFFLINE : 4,
 
@@ -183,17 +204,18 @@ VERSION:'3.0beta',
     AppModules    : [],
     
     /**
-     * Boolean specifying whether apf tries to load a skin from skins.xml when no skin element is specified.
+     * Specifies whether APF tries to load a skin from skins.xml when no skin element is specified.
      * @type {Boolean}
      */
     autoLoadSkin  : false,
     /**
-     * Boolean specifying whether apf has started loading scripts and started the init process.
+     * Specifies whether APF has started loading scripts and started the init process.
      * @type {Boolean}
      */
     started       : false,
     /**
-     * Namespace for all crypto libraries included with Ajax.org Platform.
+     * The namespace for all crypto libraries included with Ajax.org Platform.
+     * @type {Object}
      */
     crypto        : {}, //namespace
     config        : {},
@@ -201,14 +223,15 @@ VERSION:'3.0beta',
     $asyncObjects : {"apf.oHttp" : 1, "apf.ajax": 1},
     
     /**
-     * String specifying the basepath for loading apf from seperate files.
+     * A string specifying the basepath for loading APF from seperate files.
      * @type {String}
      */
     basePath      : "",
 
     
     /**
-     * {Object} contains several known and often used namespace URI's.
+     * Contains several known and often used namespace URI's.
+     * @type {Object}
      * @private
      */
     ns : {
@@ -249,7 +272,7 @@ VERSION:'3.0beta',
         if (this.$bdetect)
             return;
         
-        /** Browser -  platform and feature detection, based on prototype's and mootools 1.3.
+        /* Browser -  platform and feature detection, based on prototype's and mootools 1.3.
          *
          * Major browser/engines flags
          *
@@ -327,18 +350,18 @@ VERSION:'3.0beta',
         this.isIphone      = Browser.Platform.ios || UA.indexOf("aspen simulator") != -1;
         this.isAIR         = Browser.Features.air;
         
-        /** @deprecated, cleanup in apf modules */
+        // @deprecated, cleanup in apf modules 
         this.versionWebkit = this.isWebkit ? Browser.version : null;
         this.versionGecko  = this.isGecko ? Browser.version : null;
-        /** @deprecated, cleanup in apf modules */
+        // @deprecated, cleanup in apf modules 
         this.isGecko3      = Browser.firefox3;
         this.isGecko35     = this.isGecko3 && Browser.version >= 3.5;
-        /** @deprecated, cleanup in apf modules */
+        // @deprecated, cleanup in apf modules 
         this.versionFF     = this.isGecko ? Browser.version : null;
         this.versionSafari = this.isSafari ? Browser.version : null;
         this.versionChrome = this.isChrome ? Browser.version : null;
         this.versionOpera  = this.isOpera ? Browser.version : null;
-        /** bad logic, needs review among apf modules */
+        // bad logic, needs review among apf modules 
         this.isIE6         = this.isIE && Browser.ie6;
         this.isIE7         = this.isIE && Browser.ie7;
         this.isIE8         = this.isIE && Browser.ie8;
@@ -346,7 +369,7 @@ VERSION:'3.0beta',
         this.isIE          = this.isIE ? Browser.version : null;
 
         
-
+        
         
     },
 
@@ -495,11 +518,11 @@ VERSION:'3.0beta',
     
 
     /**
-     * Extends an object with one or more other objects by copying all their
+     * Extends an object with one or more other objects by copying all of its
      * properties.
-     * @param {Object} dest the destination object.
-     * @param {Object} src the object that is copies from.
-     * @return {Object} the destination object.
+     * @param {Object} dest The destination object
+     * @param {Object} src The object that is copied from
+     * @return {Object} The destination object
      */
     extend : function(dest, src){
         var prop, i, x = !dest.notNull;
@@ -531,8 +554,10 @@ VERSION:'3.0beta',
     
     /**
      * Sends and retrieves data from remote locations over http.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```javascript
      *  var content = apf.ajax("http://www.ajax.org", {
      *      method   : "POST",
      *      data     : "<data />",
@@ -545,24 +570,22 @@ VERSION:'3.0beta',
      *      }
      *  });
      *  alert(content);
-     * </code>
+     * ```
      *
-     * @param {String}   url       the url that is accessed.
-     * @param {Object}   options   the options for the http request
-     *   Properties:
-     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
-     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   {Boolean} nocache        whether browser caching is prevented.
-     *   {String}  data           the data sent in the body of the message.
-     *   {Boolean} useXML         whether the result should be interpreted as xml.
-     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-     *   {Boolean} caching        whether the request should use internal caching.
-     *   {Boolean} ignoreOffline  whether to ignore offline catching.
-     *   {String}  contentType    the mime type of the message
-     *   {Function} callback      the handler that gets called whenever the
-     *                            request completes succesfully or with an error,
-     *                            or when the request times out.
+     * @param {String}   url       The url that is accessed.
+     * @param {Object}   options   The options for the HTTP request. It has the following properties:
+     *   - async ([[Boolean]]): Whether the request is sent asynchronously. Defaults to true.
+     *   - userdata (`Mixed`): Custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): The data sent in the body of the message.
+     *   - useXML ([[Boolean]]): Specifies whether the result should be interpreted as xml.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - contentType ([[String]]): The MIME type of the message
+     *   - callback ([[Function]]): The handler that gets called whenever the
+     *                            request completes succesfully, with an error, or times out.
      */
     ajax : (function(){
         var f = function(){
@@ -622,14 +645,14 @@ VERSION:'3.0beta',
             apf.runGecko();
             //this.importClass(apf.runGecko, true, self);
         
-
+        
         
 
         
         // Start HTTP object
         this.oHttp = new this.http();
         
-
+        
         
         // Load user defined includes
         this.Init.addConditional(this.parseAppMarkup, apf, ["body"]);
@@ -739,8 +762,8 @@ VERSION:'3.0beta',
     all : [],
 
     /**
-    * This method implements all properties and methods to this object from another class
-    * @param {Function}    classRef    Class reference
+    * This method implements all the properties and methods to this object from another class
+    * @param {Function}    classRef    The class reference to implement
     * @private
     */
     implement : function(classRef) {
@@ -766,7 +789,7 @@ VERSION:'3.0beta',
     uniqueHtmlIds : 0,
 
     /**
-     * Adds a unique id attribute to an html element.
+     * Adds a unique id attribute to an HTML element.
      * @param {HTMLElement} oHtml the object getting the attribute.
      */
     setUniqueHtmlId : function(oHtml){
@@ -777,23 +800,27 @@ VERSION:'3.0beta',
 
     /**
      * Retrieves a new unique id
+     * @returns {Number} A number representing the new ID.
      */
     getUniqueId : function(){
         return this.uniqueHtmlIds++;
     },
 
     /**
-     * Finds a aml element based on it's uniqueId
+     * Finds an AML element based on its unique id.
+     * @param {Number} uniqueId The unique id to search on.
+     * @returns {apf.AmlElement} The returned element.
      */
     lookup : function(uniqueId){
         return this.all[uniqueId];
     },
 
     /**
-     * Searches in the html tree from a certain point to find the
-     * aml element that is responsible for rendering the specified html
+     * Searches in the HTML tree from a certain point to find the
+     * AML element that is responsible for rendering a specific html
      * element.
-     * @param {HTMLElement} oHtml the html context to start the search from.
+     * @param {HTMLElement} oHtml The html context to start the search from.
+     * @returns {apf.AmlElement} The parent HTML element
      */
     findHost : function(o){
         while (o && o.parentNode) { //!o.host && 
@@ -810,9 +837,9 @@ VERSION:'3.0beta',
     },
 
     /**
-     * Sets a reference to an object by name in the global javascript space.
-     * @param {String} name the name of the reference.
-     * @param {mixed}  o    the reference to the object subject to the reference.
+     * Sets a reference to an object (by name) in the global JavaScript space.
+     * @param {String} name The name of the reference.
+     * @param {Mixed}  o    The reference to the object subject to the reference.
      */
     setReference : function(name, o){
         return self[name] && self[name].hasFeature
@@ -820,7 +847,7 @@ VERSION:'3.0beta',
             : (self[name] = o);
     },
 
-    /**
+    /*
      * The console outputs to the debug screen and offers differents ways to do
      * this.
      */
@@ -829,9 +856,9 @@ VERSION:'3.0beta',
 
         /**
          * Writes a message to the console.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         debug : function(msg, subtype, data){
             
@@ -839,9 +866,9 @@ VERSION:'3.0beta',
 
         /**
          * Writes a message to the console with the time icon next to it.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         time : function(msg, subtype, data){
             
@@ -849,9 +876,9 @@ VERSION:'3.0beta',
 
         /**
          * Writes a message to the console.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         log : function(msg, subtype, data){
             
@@ -860,9 +887,9 @@ VERSION:'3.0beta',
         /**
          * Writes a message to the console with the visual "info" icon and color
          * coding.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         info : function(msg, subtype, data){
             
@@ -871,9 +898,9 @@ VERSION:'3.0beta',
         /**
          * Writes a message to the console with the visual "warning" icon and
          * color coding.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         warn : function(msg, subtype, data){
             
@@ -882,9 +909,9 @@ VERSION:'3.0beta',
         /**
          * Writes a message to the console with the visual "error" icon and
          * color coding.
-         * @param {String} msg      the message to display in the console.
-         * @param {String} subtype  the category for this message. This is used for filtering the messages.
-         * @param {String} data     extra data that might help in debugging.
+         * @param {String} msg      The message to display in the console.
+         * @param {String} subtype  The category for this message. This is used for filtering the messages.
+         * @param {String} data     Extra data that might help in debugging.
          */
         error : function(msg, subtype, data){
             
@@ -892,7 +919,7 @@ VERSION:'3.0beta',
 
         /**
          * Prints a listing of all properties of the object.
-         * @param {mixed} obj the object for which the properties are displayed.
+         * @param {Mixed} obj The object whose properties you want displayed.
          */
         dir : function(obj){
             var s = apf.$debugwin.$serializeObject(obj, "Inspected via apf.console.dir");
@@ -915,12 +942,12 @@ VERSION:'3.0beta',
     htmlentities : function(s){return s},
 
     /**
-     * Formats a Ajax.org Platform error message.
-     * @param {Number}      number      the number of the error. This can be used to look up more information about the error.
-     * @param {AMLElement}  control     the aml element that will throw the error.
-     * @param {String}      process     the action that was being executed.
-     * @param {String}      message     the actual error message.
-     * @param {XMLElement}  amlContext  the xml relevant to the error. For instance a piece of Ajax.org Markup Language xml.
+     * Formats an Ajax.org Platform error message.
+     * @param {Number}      number      The number of the error. This can be used to look up more information about the error.
+     * @param {apf.AmlElement}  control     The aml element that will throw the error.
+     * @param {String}      process     The action that was being executed.
+     * @param {String}      message     The actual error message.
+     * @param {XMLElement}  amlContext  The XML relevant to the error. For instance, this could be a piece of Ajax.org Markup Language XML.
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         
@@ -932,9 +959,9 @@ VERSION:'3.0beta',
     /* Init */
 
     /**
-     * Returns the directory portion of a url
-     * @param {String} url the url to retrieve from.
-     * @return {String} the directory portion of a url.
+     * Returns the directory portion of a URL.
+     * @param {String} url The URL to retrieve from
+     * @returns {String} The directory portion of a URL
      */
     getDirname : function(url){
         //(?:\w+\:\/\/)?
@@ -942,9 +969,9 @@ VERSION:'3.0beta',
     },
     
     /**
-     * Returns the file portion of a url
-     * @param {String} url the url to retrieve from.
-     * @return {String} the file portion of a url.
+     * Returns the file portion of a URL.
+     * @param {String} url The URL to retrieve from.
+     * @return {String} The file portion of a URL.
      */
     getFilename : function(url){
         return ((url || "").split("?")[0].match(/(?:\/|^)([^\/]+)$/) || {})[1];
@@ -952,9 +979,9 @@ VERSION:'3.0beta',
     
     /**
      * Returns an absolute url based on url.
-     * @param {String} base the start of the url to which relative url's work.
-     * @param {String} url  the url to transform.
-     * @return {String} the absolute url.
+     * @param {String} base The start of the URL where relative URLs work.
+     * @param {String} url  The URL to transform.
+     * @return {String} The absolute URL.
      */
     getAbsolutePath : function(base, url){
         return url && url.charAt(0) == "/"
@@ -967,12 +994,14 @@ VERSION:'3.0beta',
     },
 
     /**
-     * Loads javascript from a url.
+     * Loads Javascript from a specific URL.
      * 
-     * @param {String}  sourceFile the url where the javascript is located.
-     * @param {Boolean} [doBase]   check for basePath, otherwise prepend it
-     * @param {String}  [type]     set the type of a script tag, for later use
-     * @type  {void}
+     * @param {String}    sourceFile The URL where the JavaScript is located.
+     * @param {Boolean}   [doBase]   Checks for a base path via [[apf.getAbsolutePath]]
+     * @param {String}    [type]     Sets the type of a script tag, for later use
+     * @param {String}    [text]     
+     * @param {Function}  [callback] Calls this function after the script is loaded
+     * @returns {String} The constructed script tag    
      */
     include : function(sourceFile, doBase, type, text, callback){
         
@@ -984,11 +1013,11 @@ VERSION:'3.0beta',
         if (type)
             elScript.setAttribute("_apf_type", type);
         if (text) {
-			if (apf.isIE)
-				window.execScript(text);
-			else
-				elScript.text = text;
-		}
+            if (apf.isIE)
+                window.execScript(text);
+            else
+                elScript.text = text;
+        }
         else 
             elScript.src   = sSrc;
         head.appendChild(elScript);
@@ -1080,14 +1109,15 @@ VERSION:'3.0beta',
     
 
     /**
-     * Determines the way apf tries to render this application. Set this value
-     * before apf is starts parsing.
-     *   Possible values:
-     *   0    auto
-     *   1    partial
-     *   11   partial from a comment
-     *   2    full from serialized document or file fallback
-     *   21   full from file
+     * Determines the way APF tries to render this application. Set this value
+     * before APF is starts parsing.
+     *   
+     * Possible values include:
+     *   - 0    Auto (The default)
+     *   - 1    Partial
+     *   - 11   Partial from a comment
+     *   - 2    Full from serialized document or file fallback
+     *   - 21   Full from file
      * @type {Number}
      */
     parseStrategy : 0,
@@ -1124,7 +1154,7 @@ VERSION:'3.0beta',
      */
     initialize : function(xmlStr){
         
-
+        
         
 
         apf.console.info("Initializing...");
@@ -1429,197 +1459,26 @@ apf.Init.run("apf");
 
 
 /**
- * @term propertybinding With property binding you can define the way a
- * property is calculated. <img src="http://www.rubendaniels.com/images/propbind.gif" align="right" />
- * This statement is usually based on a javascript
- * expression including one or more properties on other objects. The value of
- * the property will always be kept up to date. This means that when one of the
- * dependent properties changes, the property is recalculated. See the picture
- * for a graphical explanation.
- * Example:
- * Let me give you an example to make it a bit straightforward. This example
- * sets the visibility of the slider based on the state of the checkbox.
- * <code>
- *  <a:slider visible="{myCheckbox.value}" />
- *  <a:checkbox id="myCheckbox">Toggle this</a:checkbox>
- * </code>
- *
- * Expressions:
- * The use of { and } tell Ajax.org Platform(APF) that the visible property will
- * be bound. By specifying myCheckbox.value APF knows that the value of
- * myCheckbox should be retrieved for this property. Whenever the checkbox
- * changes, the slider will show or hide.
- *
- * Bidirectional:
- * Sometimes it's necessary to make a binding from one property to another one,
- * and vice versa. Think of a slider that is connected to the position property
- * of a video element. When the video plays, the value of the slider should be
- * updated. When the slider is dragged the video should be updated. This works
- * in the same way as above, but instead of using curly braces
- * you use brackets: [ and ]. The next example keeps the state of a dropdown in
- * sync with the state of the tab page.
- * <code>
- *  <a:tab activepage="[myDropdown.value]">
- *     <a:page caption="Page 1" />
- *     <!-- etc -->
- *  </a:tab>
- *  <a:dropdown id="myDropdown">
- *     <a:item value="0">Page 1</a:item>
- *     <!-- etc -->
- *  </a:dropdown>
- * </code>
- *
- * For more information visit {@link http://www.rubendaniels.com/2008/07/04/property-binding/ this blog article}.</a>
- *
- * Internals:
- * Property binding in apf is a flavor of a {@link http://en.wikipedia.org/wiki/Publish/subscribe publish/subscribe}
- * system. When a binding is established the element that receives the value sets
- * a listener on the property of another element. There can be any number of
- * elements referenced in a single expression. When any of the properties that
- * are listened to change, the subscriber gets notified to update the value
- * of it's property.
- */
-
-/**
- * @term baseclass A baseclass in Ajax.org Platform (apf) is a class that
- * adds properties, methods, attributes, bindings and actions to the class that
- * inherits from it. Javascript doesn't have most object oriented concepts like
- * classes, class inheritance, interfaces, protected members and so on. When
- * using apf you will find that some of these concepts have
- * been implemented in a way that enables the core developers of apf to think in
- * those concepts. The most important one is class inheritance. Because of the
- * freedoms that javascript allows, it is possible to implement
- * {@link http://en.wikipedia.org/wiki/Inheritance_(computer_science) inheritance}
- * and even {@link http://en.wikipedia.org/wiki/Multiple_inheritance multiple inheritance}.
- *
- * Usage:
- * In apf multiple inheritance is used on all elements to assign specific traits
- * to aml elements. Check the list of baseclasses on the right to familiarize
- * yourself with the traits that are available (i.e. dragdrop, rename, multiselect,
- * databinding, alignment, etc). At the article of each element that inherits
- * from a baseclass you will find an inheritance tree on the right. This tree
- * will show you <strong>from which baseclasses that element has received traits</strong>.
- * Compared to Java and other strict OOP languages, the inheritance tree is
- * inverted. To give an example, in Java for instance, a Lamborghini inherits from
- * Car which inherits from Vehicle. In apf Audi inherits from Engine, Wheels,
- * Seats and Airco. So we can make the latest Lamborghini inherit from Airco too.
- *
- * Class:
- * The apf.Class baseclass provides all basic features a apf element needs, such
- * as event system, property binding and multiple inheritance with state defined
- * by each baseclass.
- * By setting the prototype of a function to an instance of apf.Class
- * these  <i title="an inherited characteristic (merriam-webster)">traits</i> are
- * transferred to your class.
- *
- * API:
- * The first method is the one that tells an object to implement traits from a
- * baseclass.
- * It works as follows:
- * <code>
- *  var myClass = function(){
- *      this.$init();
- *  }
- *  myClass.prototype = new apf.Class();
- * </code>
- * There is a class tree that you can use to create your own elements. For
- * instance to create a visible element that uses skinning you can inherit from
- * apf.Presentation:
- * <code>
- *  var myElement = function(){
- *      this.$init();
- *  }
- *  myElement.prototype = new apf.Presentation();
- * </code>
- * Please find a full description of the inheritance tree below.
- *
- * To check whether an object has inherited from baseclass use the following
- * syntax:
- * <code>
- *  myObj.hasFeature(apf.__PRESENTATION__);
- * </code>
- * Where the constant is the name of the baseclass in all caps.
- *
- * Apf supports multiple inheritance. Use the implement method to add a
- * baseclass to your class that is not part of the inheritance tree:
- * <code>
- *  var myElement = function(){
- *      this.$init();
- *
- *      this.implement(apf.Rename);
- *  }
- *  myElement.prototype = new apf.MultiSelect();
- * </code>
- *
- * Inheritance Tree:
- * <code>
- *  - apf.Class
- *      - apf.AmlNode
- *          - apf.AmlElement
- *              - apf.Teleport
- *              - apf.GuiElement
- *                  - apf.Presentation
- *                      - apf.BaseTab
- *                      - apf.DataBinding
- *                          - apf.StandardBinding
- *                              - apf.BaseButton
- *                              - apf.BaseSimple
- *                              - apf.Media
- *                          - apf.MultiselectBinding
- *                              - apf.MultiSelect
- *                                  - apf.BaseList
- * </code>
- * Generally elements inherit from AmlElement, Presentation, StandardBinding,
- * MultiselectBinding, or one of the leafs.
- *
- * The following classes are implemented using the implement method:
- * <code>
- * - apf.Cache
- * - apf.ChildValue
- * - apf.LiveEdit
- * - apf.DataAction
- * - apf.Media
- * - apf.MultiCheck
- * - apf.Rename
- * - apf.Xforms
- * </code>
- *
- * The following classes are automatically implemented when needed by apf.GuiElement.
- * <code>
- * - apf.Anchoring
- * - apf.DelayedRender
- * - apf.DragDrop
- * - apf.Focussable
- * - apf.Interactive
- * - apf.Transaction
- * - apf.Validation
- * </code>
- *
- * The following class is automatically implemented by apf.MultiselectBinding
- * <code>
- * - apf.VirtualViewport
- * </code>
- */
-
-/**
  * All elements that implemented this {@link term.baseclass baseclass} have
  * {@link term.propertybinding property binding},
  * event handling and constructor & destructor hooks. The event system is
  * implemented following the W3C specification, similar to the
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
  *
- * @constructor
- * @baseclass
+ * @class apf.Class
  *
+ * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
- *
+ */
+
+/**
  * @event propertychange Fires when a property changes.
- *   object:
- *     {String} name          the name of the changed property
- *     {Mixed}  originalvalue the value it had before the change
- *     {Mixed}  value         the value it has after the change
+ * @param {Object} e An object containing the following properties:
+ * - name ([[String]]): The name of the changed property
+ * - originalvalue (`Mixed`): The value it had before the change
+ * - value (`Mixed`): The value it has after the change
  *
  */
 apf.Class = function(){};
@@ -1637,7 +1496,7 @@ apf.Class.prototype = new (function(){
     this.$regbase   = 0;
     /**
      * Tests whether this object has implemented a {@link term.baseclass baseclass}.
-     * @param {Number} test the unique number of the {@link term.baseclass baseclass}.
+     * @param {Number} test The unique number of the {@link term.baseclass baseclass}.
      */
     this.hasFeature = function(test){
         return this.$regbase & test;
@@ -1697,7 +1556,7 @@ apf.Class.prototype = new (function(){
 
     this.implement = apf.implement;
 
-    /**** Property Binding ****/
+    // **** Property Binding **** //
 
     this.$handlePropSet = function(prop, value){
         this[prop] = value;
@@ -1706,19 +1565,19 @@ apf.Class.prototype = new (function(){
     
 
     /**
-     * Bind a property of another compontent to a property of this element.
+     * Binds a property of another compontent to a property of this element.
      *
      * @param  {String} myProp           the name of the property of this element
      *                                   of which the value is communicated to
-     *                                   <code>bObject</code>.
+     *                                   `bObject`.
      * @param  {Class}  bObject          the object which will receive the property
      *                                   change message.
-     * @param  {String} bProp            the property of <code>bObject</code> which
+     * @param  {String} bProp            the property of `bObject` which
      *                                   will be set using the value of
-     *                                   <code>myProp</code> optionally
-     *                                   processed using <code>strDynamicProp</code>.
+     *                                   `myProp` optionally
+     *                                   processed using `strDynamicProp`.
      * @param  {String} [strDynamicProp] a javascript statement which contains the
-     *                                   value of <code>myProp</code>. The string
+     *                                   value of `myProp`. The string
      *                                   is used to calculate a new value.
      * @private
      */
@@ -1791,16 +1650,17 @@ apf.Class.prototype = new (function(){
 
     /**
      * Sets a dynamic property from a string.
+     *
      * The string used for this function is the same as used in AML to set a
      * dynamic property:
-     * <code>
+     * ```xml
      *  <a:button visible="{rbTest.value == 'up'}" />
      *  <a:textbox id="rbTest" value="" />
-     * </code>
+     * ```
      *
-     * @param  {String}  prop   the name of the property of this element to set
+     * @param  {String}  prop   The name of the property of this element to set
      *                          using a dynamic rule.
-     * @param  {String}  pValue the dynamic property binding rule.
+     * @param  {String}  pValue The dynamic property binding rule.
      */
     this.$attrExcludePropBind = false;
     this.$setDynamicProperty = function(prop, pValue){
@@ -2019,6 +1879,7 @@ apf.Class.prototype = new (function(){
 
     /**
      * Gets an array of properties for this element which can be bound.
+     * @returns {Array}
      */
     this.getAvailableProperties = function(){
         return this.$supportedProperties.slice();
@@ -2026,14 +1887,15 @@ apf.Class.prototype = new (function(){
 
     /**
      * Sets the value of a property of this element.
-     * Note: Only the value is set, dynamic properties will remain bound and the
+     *
+     * Note: The value is the only thing set. Dynamic properties remain bound and the
      * value will be overridden.
      *
-     * @param  {String}  prop        the name of the property of this element to
+     * @param  {String}  prop        The name of the property of this element to
      *                               set using a dynamic rule.
-     * @param  {String}  value       the value of the property to set.
-     * @param  {Boolean} [forceOnMe] whether the property should be set even when
-     *                               its the same value.
+     * @param  {String}  value       The value of the property to set.
+     * @param  {Boolean} [forceOnMe] Specifies whether the property should be set even when
+     *                               it has the same value.
      */
     this.setProperty = function(prop, value, forceOnMe, setAttr, inherited){
         var s, r, arr, e, i, l,
@@ -2170,13 +2032,13 @@ apf.Class.prototype = new (function(){
     /**
      * Gets the value of a property of this element.
      *
-     * @param  {String}  prop   the name of the property of this element for which to get the value.
+     * @param  {String}  prop   The name of the property of this element for which to get the value.
      */
     this.getProperty = function(prop){
         return this[prop];
     };
 
-    /**** Event Handling ****/
+    // *** Event Handling ****/
 
     apf.$eventDepth = 0;
     this.$eventDepth = 0;
@@ -2184,15 +2046,14 @@ apf.Class.prototype = new (function(){
     /**
      * Calls all functions that are registered as listeners for an event.
      *
-     * @param  {String}  eventName  the name of the event to dispatch.
-     * @param  {Object}  [options]  the properties of the event object that will be created and passed through.
-     *   Properties:
-     *   {Boolean} bubbles  whether the event should bubble up to it's parent
-     *   {Boolean} captureOnly whether only the captured event handlers should be executed
-     * @return {mixed} return value of the event
+     * @param  {String}  eventName  The name of the event to dispatch.
+     * @param  {Object}  [options]  The properties of the event object that will be created and passed through. These can be:
+     *  - bubbles ([[Boolean]]): Specifies whether the event should bubble up to it's parent
+     *  - captureOnly ([[Boolean]]): Specifies whether only the captured event handlers should be executed
+     * @return {Mixed} return value of the event
      */
-    //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
     this.dispatchEvent = function(eventName, options, e){
+    //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
         var arr, result, rValue, i, l;
 
         if (!apf.AmlEvent)
@@ -2289,11 +2150,11 @@ apf.Class.prototype = new (function(){
     };
 
     /**
-     * Add a function to be called when a event is called.
+     * Adds a function to be called when a event is called.
      *
-     * @param  {String}   eventName the name of the event for which to register
+     * @param  {String}   eventName The name of the event for which to register
      *                              a function.
-     * @param  {function} callback  the code to be called when event is dispatched.
+     * @param  {Function} callback  The code to be called when an event is dispatched.
      */
     this.addEventListener = function(a, b, c){
         this.$bufferEvents.push([a,b,c]);
@@ -2320,11 +2181,11 @@ apf.Class.prototype = new (function(){
     };
 
     /**
-     * Remove a function registered for an event.
+     * Removes a function registered for an event.
      *
-     * @param  {String}   eventName the name of the event for which to unregister
+     * @param  {String}   eventName The name of the event for which to unregister
      *                              a function.
-     * @param  {function} callback  the function to be removed from the event stack.
+     * @param  {Function} callback  The function to be removed from the event stack.
      */
     this.removeEventListener = function(eventName, callback, useCapture){
         var stack = (useCapture ? this.$captureStack : this.$eventsStack)[eventName];
@@ -2343,19 +2204,19 @@ apf.Class.prototype = new (function(){
     /**
      * Checks if there is an event listener specified for the event.
      *
-     * @param  {String}  eventName  the name of the event to check.
-     * @return {Boolean} whether the event has listeners
+     * @param  {String}  eventName  The name of the event to check.
+     * @return {Boolean} Specifies whether the event has listeners
      */
     this.hasEventListener = function(eventName){
         return (this.$eventsStack[eventName] && this.$eventsStack[eventName].length > 0);
     };
 
     /**
-     * Destructor of a Class.
-     * Calls all destructor functions and removes all mem leaking references.
+     * The destructor of a Class.
+     * Calls all the destructor functions, and removes all memory leaking references.
      * This function is called when exiting the application or closing the window.
      * @param {Boolean} deep whether the children of this element should be destroyed.
-     * @method
+     * @param {Boolean} [clean]
      */
     this.destroy = function(deep, clean){
         //Remove from apf.all
@@ -3385,7 +3246,7 @@ apf.popup = {
         //this.popup.document.body.c = null;
         //this.popup.document.body.onmouseover = null;
     }
-}
+};
 
 
 
@@ -3416,10 +3277,10 @@ apf.popup = {
 /**
  * Determines whether a node is a child of another node.
  *
- * @param {DOMNode} pNode      the potential parent element.
- * @param {DOMNode} childnode  the potential child node.
- * @param {Boolean} [orItself] whether the method also returns true when pNode is the childnode.
- * @return  {Number} the child position of the node. Or false if it's not a child.
+ * @param {DOMNode} pNode      The potential parent element.
+ * @param {DOMNode} childnode  The potential child node.
+ * @param {Boolean} [orItself] Whether the method also returns `true` when `pNode` is the `childnode`.
+ * @return {Boolean} `false` if the second argument is not a child of the first.
  */
 apf.isChildOf = function(pNode, childnode, orItself){
     if (!pNode || !childnode)
@@ -3492,34 +3353,81 @@ apf.xmlEntityMap = {
 };
 
 /**
- * Escapes "&amp;", greater than, less than signs, quotation marks and others into
+ * Escapes "&amp;", greater than, less than signs, quotation marks, and others into
  * the proper XML entities.
  * 
- * @param {String} str the xml string to escape.
- * @return {String} the escaped string.
+ * @param {String} str The XML string to escape.
+ * @param {Boolean} strictMode By default, this function attempts to NOT double-escape XML entities. This flag turns that behavior off when set to `true`.
+ * @return {String} The escaped string
  */
-apf.escapeXML = function(str) {
+apf.escapeXML = function(str, strictMode) {
     if (typeof str != "string")
         return str;
-    return (str || "")
-        .replace(/&/g, "&#38;")
+    if (strictMode)
+        str = (str || "").replace(/&/g, "&#38;");
+    else
+        str = (str || "").replace(/&(?!#[0-9]{2,5};|[a-zA-Z]{2,};)/g, "&#38;");
+    var map = apf.xmlEntityMap;
+    var isArray = apf.isArray;
+    return str
         .replace(/"/g, "&#34;")
         .replace(/</g, "&#60;")
         .replace(/>/g, "&#62;")
         .replace(/'/g, "&#39;")
-        .replace(/&([a-z]+);/gi, function(a, m) {
-            var x = apf.xmlEntityMap[m.toLowerCase()];
+        .replace(/&([a-zA-Z]+);/gi, function(a, m) {
+            var x = map[m.toLowerCase()];
             if (x)
-                return "&#" + (apf.isArray(x) ? x[0] : x) + ";";
+                return "&#" + (isArray(x) ? x[0] : x) + ";";
             return a;
         });
 };
 
 /**
- * Determines whether a node is it's parent's only child.
- * @param {DOMNode} node     the potential only child.
- * @param {Array}   nodeType list of the node types that this child can be.
- * @returns {Boolean} whether the node is only child and optionally of one of the specified nodeTypes.
+ * Unescapes `"&#38;"` and other similar XML entities into HTML entities, and then replaces
+ * 'special' ones (`&apos;`, `&gt;`, `&lt;`, `&quot;`, `&amp;`) into characters
+ * (`'`, `>`, `<`, `"`, `&`).
+ *
+ * @param {String} str The XML string to unescape
+ * @return {String} The unescaped string
+ */
+apf.unescapeXML = function(str) {
+    if (typeof str != "string")
+        return str;
+    var map = apf.xmlEntityMapReverse;
+    var isArray = apf.isArray;
+    if (!map) {
+        map = apf.xmlEntityMapReverse = {};
+        var origMap = apf.xmlEntityMap;
+        var keys = Object.keys(origMap);
+        for (var val, j, l2, i = 0, l = keys.length; i < l; ++i) {
+            val = origMap[keys[i]];
+            if (isArray(val)) {
+                for (j = 0, l2 = val.length; j < l2; ++j)
+                    map[val[j]] = keys[i];
+            }
+            else
+                map[val] = keys[i];
+        }
+    }
+    return str
+        .replace(/&#([0-9]{2,5});/g, function(a, m) {
+            var x = map[m];
+            if (x)
+                return "&" + x + ";";
+            return a;
+        })
+        .replace(/&apos;/gi, "'")
+        .replace(/&gt;/gi, ">")
+        .replace(/&lt;/gi, "<")
+        .replace(/&quot;/gi, "\"")
+        .replace(/&amp;/gi, "&");
+};
+
+/**
+ * Determines whether a node is its parent's only child.
+ * @param {DOMNode} node     The potential only child.
+ * @param {Array}   nodeType List of the node types that this child can be.
+ * @returns {Boolean} Whether the node is the only child and of one of the specified node types.
  */
 apf.isOnlyChild = function(node, nodeType){
     if (!node || !node.parentNode || nodeType && nodeType.indexOf(node.nodeType) == -1)
@@ -3538,11 +3446,11 @@ apf.isOnlyChild = function(node, nodeType){
 };
 
 /**
- * Gets the position of a dom node within the list of child nodes of it's
+ * Gets the position of a DOM node within the list of child nodes of its
  * parent.
  *
- * @param {DOMNode} node the node for which the child position is determined.
- * @return {Number} the child position of the node.
+ * @param {DOMNode} node The node for which the child position is being determined.
+ * @return {Number} The child position of the node.
  */
 apf.getChildNumber = function(node, fromList){
     if (!node) return -1;
@@ -3565,21 +3473,22 @@ apf.getChildNumber = function(node, fromList){
     return -1;
 };
 
+
+ // @todo More information will follow....when?
 /**
- * Integrates nodes as children of a parent. Optionally attributes are
+ * Integrates nodes as children of a parent. Optionally, attributes are
  * copied as well.
  *
- * @param {XMLNode} xmlNode the data to merge.
- * @param {XMLNode} parent  the node to merge on.
- * @param {Object}  options
- *   Properties:
- *   {Boolean} [copyAttributes] whether the attributes of xmlNode are copied as well.
- *   {Boolean} [clearContents]  whether the contents of parent is cleared.
- *   {Number}  [start]          This feature is used for the virtual viewport. More information will follow.
- *   {Number}  [length]         This feature is used for the virtual viewport. More information will follow.
- *   {Number}  [documentId]     This feature is used for the virtual viewport. More information will follow.
- *   {XMLElement} [marker]      This feature is used for the virtual viewport. More information will follow.
- * @return  {XMLNode}  the created xml node
+ * @param {XMLNode} xmlNode The data to merge.
+ * @param {XMLNode} parent  The node to merge on.
+ * @param {Object}  options An object with the following optional properties:
+ *   - [copyAttributes] ([[Boolean]]): Whether the attributes of `xmlNode` are copied as well.
+ *   - [clearContents] ([[Boolean]]): Whether the contents of parent is cleared.
+ *   - [start] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [length] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [documentId] ([[Number]]): This feature is used for the virtual viewport. More information will follow.
+ *   - [marker] ([[XMLElement]]): This feature is used for the virtual viewport. More information will follow.
+ * @return  {XMLNode}  The created xml node
  */
 apf.mergeXml = function(XMLRoot, parentNode, options){
     if (typeof parentNode != "object")
@@ -3619,7 +3528,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
         //Start of marker
         if (marker.getAttribute("start") - options.start == 0) {
             marker.setAttribute("start", options.start + options.length);
-            reserved = parseInt(marker.getAttribute("reserved"));
+            reserved = parseInt(marker.getAttribute("reserved"), 10);
             marker.setAttribute("reserved", reserved + options.length);
             beforeNode = marker;
         }
@@ -3627,15 +3536,15 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
         else if (options.start + options.length == marker.getAttribute("end")) {
             marker.setAttribute("end", options.start + options.length);
             beforeNode = marker.nextSibling;
-            reserved = parseInt(marker.getAttribute("reserved"))
-                + parseInt(marker.getAttribute("end")) - options.length;
+            reserved = parseInt(marker.getAttribute("reserved"), 10) +
+                parseInt(marker.getAttribute("end"), 10) - options.length;
         }
         //Middle of marker
         else {
             var m2 = marker.parentNode.insertBefore(marker.cloneNode(true), marker);
             m2.setAttribute("end", options.start - 1);
             marker.setAttribute("start", options.start + options.length);
-            reserved = parseInt(marker.getAttribute("reserved"));
+            reserved = parseInt(marker.getAttribute("reserved"), 10);
             marker.setAttribute("reserved", reserved + options.length);
             beforeNode = marker;
         }
@@ -3686,13 +3595,13 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
 };
 
 /**
- * Sets the nodeValue of a dom node.
+ * Sets the node value of a DOM node.
  *
- * @param {XMLElement} xmlNode       the xml node that should receive the nodeValue.
+ * @param {XMLElement} xmlNode       The XML node that should receive the node value.
  *                                   When an element node is passed the first text node is set.
- * @param {String}     nodeValue     the value to set.
- * @param {Boolean}    applyChanges  whether the changes are propagated to the databound elements.
- * @param {UndoObj}    undoObj       the undo object that is responsible for archiving the changes.
+ * @param {String}     nodeValue     The value to set.
+ * @param {Boolean}    applyChanges  Whether the changes are propagated to the databound elements.
+ * @param {apf.UndoData}    undoObj       The undo object that is responsible for archiving the changes.
  */
 apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
     if (!xmlNode)
@@ -3731,8 +3640,8 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             nodeValue = nodeValue.replace(/&/g, "&amp;");
 
         var oldValue      = xmlNode.nodeValue;
-        xmlNode.nodeValue = nodeValue == undefined || nodeValue == null 
-                              || nodeValue == NaN ? "" : String(nodeValue);
+        xmlNode.nodeValue = nodeValue === undefined || nodeValue === null ||
+            nodeValue == NaN ? "" : String(nodeValue);
 
         if (undoObj) {
             undoObj.name = xmlNode.nodeName;
@@ -3742,10 +3651,10 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         if (xmlNode.$triggerUpdate)
             xmlNode.$triggerUpdate(null, oldValue);
 
-        if (applyChanges)
-            apf.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode
-                || xmlNode.ownerElement || xmlNode.selectSingleNode(".."),
-                undoObj);
+        if (applyChanges) {
+            apf.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode ||
+                xmlNode.ownerElement || xmlNode.selectSingleNode(".."), undoObj);
+        }
     }
 
     
@@ -3770,13 +3679,13 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 };
 
 /**
- * Sets a value of an XMLNode based on an xpath statement executed on a reference XMLNode.
+ * Sets a value of an XML node based on an xpath statement executed on a referenced XMLNode.
  *
- * @param  {XMLNode}  xmlNode  the reference xml node.
- * @param  {String}  xpath  the xpath used to select a XMLNode.
- * @param  {String}  value  the value to set.
- * @param  {Boolean}  local  whether the call updates databound UI.
- * @return  {XMLNode}  the changed XMLNode
+ * @param  {XMLNode}  xmlNode  The reference XML node.
+ * @param  {String}  xpath  The xpath used to select a XML node.
+ * @param  {String}  value  The value to set.
+ * @param  {Boolean}  local  Whether the call updates databound UI.
+ * @return  {XMLNode}  The changed XML node
  */
 apf.setQueryValue = function(xmlNode, xpath, value, local){
     var node = apf.createNodeFromXpath(xmlNode, xpath);
@@ -3789,11 +3698,11 @@ apf.setQueryValue = function(xmlNode, xpath, value, local){
 };
 
 /**
- * Removed an XMLNode based on an xpath statement executed on a reference XMLNode.
+ * Removes an XML node based on an xpath statement executed on a referenced XML node.
  *
- * @param  {XMLNode}  xmlNode  the reference xml node.
- * @param  {String}  xpath  the xpath used to select a XMLNode.
- * @return  {XMLNode}  the changed XMLNode
+ * @param  {XMLNode}  xmlNode  The reference XML node.
+ * @param  {String}  xpath  The xpath used to select a XML node.
+ * @return  {XMLNode}  The changed XML node
  */
 apf.removeQueryNode = function(xmlNode, xpath, local){
     var node = apf.queryNode(xmlNode, xpath);
@@ -3809,10 +3718,10 @@ apf.removeQueryNode = function(xmlNode, xpath, local){
 };
 
 /**
- * Queries an xml node using xpath for a string value.
- * @param {XMLElement} xmlNode the xml element to query.
- * @param {String}     xpath   the xpath query.
- * @return {String} the value of the query result or empty string.
+ * Queries an XML node using xpath for a single string value.
+ * @param {XMLElement} xmlNode The XML element to query
+ * @param {String}     xpath   The xpath query
+ * @return {String} The value of the query result or empty string
  */
 apf.queryValue = function (xmlNode, xpath){
     if (!xmlNode)
@@ -3831,10 +3740,10 @@ apf.queryValue = function (xmlNode, xpath){
 };
 
 /**
- * Queries an xml node using xpath for a string value.
- * @param {XMLElement} xmlNode the xml element to query.
- * @param {String}     xpath   the xpath query.
- * @return {Arary} list of values which are a result of the query.
+ * Queries an xml node using xpath for multiple string value.
+ * @param {XMLElement} xmlNode The xml element to query
+ * @param {String}     xpath   The xpath query
+ * @return {Array} A list of values resulting from the query
  */
 apf.queryValues = function(xmlNode, xpath){
     var out = [];
@@ -3853,13 +3762,13 @@ apf.queryValues = function(xmlNode, xpath){
 };
 
 /**
- * Executes an xpath expression on any dom node. This is especially useful
- * for dom nodes that don't have a good native xpath processor such as html
- * in some versions of internet explorer and xml in webkit.
+ * Executes an xpath expression on any DOM node. This is especially useful
+ * for DOM nodes that don't have a good native xpath processor, such as HTML
+ * in some versions of Internet Explorer and XML in Webkit.
  *
- * @param {DOMNode} contextNode  the xml node that is subject to the query.
- * @param {String}  sExpr        the xpath expression.
- * @returns {Array} list of xml nodes found. The list can be empty.
+ * @param {DOMNode} contextNode  The XML node that is subject to the query
+ * @param {String}  sExpr        The xpath expression
+ * @returns {Array} A list of found XML nodes. The list can be empty
  */
 apf.queryNodes = function(contextNode, sExpr){
     if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
@@ -3867,18 +3776,18 @@ apf.queryNodes = function(contextNode, sExpr){
     //if (contextNode.ownerDocument != document)
     //    return contextNode.selectNodes(sExpr);
 
-    return apf.XPath.selectNodes(sExpr, contextNode)
+    return apf.XPath.selectNodes(sExpr, contextNode);
 };
 
 /**
- * Executes an xpath expression on any dom node. This is especially useful
- * for dom nodes that don't have a good native xpath processor such as html
- * in some versions of internet explorer and xml in webkit. This function
- * Only returns the first node found.
+ * Executes an xpath expression on any DOM node. 
+ * This is especially useful for DOM nodes that don't have a good native 
+ * xpath processor such as html in some versions of internet explorer and XML in
+ * webkit. This function only returns the first node found.
  *
- * @param {DOMNode} contextNode  the dom node that is subject to the query.
- * @param {String}  sExpr        the xpath expression.
- * @returns {XMLNode} the dom node found or null if none was found.
+ * @param {DOMNode} contextNode  The DOM node that is subject to the query.
+ * @param {String}  sExpr        The xpath expression.
+ * @returns {XMLNode} The DOM node, or `null` if none was found.
  */
 apf.queryNode = function(contextNode, sExpr){
     if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
@@ -3892,14 +3801,14 @@ apf.queryNode = function(contextNode, sExpr){
 };
 
 /**
- * Retrieves the attribute of an xml node or the first parent node that has
- * that attribute set. If no attribute is set the value is looked for on
+ * Retrieves the attribute of an XML node, or the first parent node that has
+ * that attribute set. If no attribute is set, the value is searched for on
  * the appsettings element.
  *
- * @param {XMLElement} xml    the xml node that is the starting point of the search.
- * @param {String}     attr   the name of the attribute.
- * @param {Function}   [func] callback that is run for every node that is searched.
- * @return {String} the found value, or empty string if none was found.
+ * @param {XMLElement} xml    The XML node that is the starting point of the search.
+ * @param {String}     attr   The name of the attribute.
+ * @param {Function}   [func] A callback that is run for every node that is searched.
+ * @return {String} The found value, or empty string if none was found.
  */
 apf.getInheritedAttribute = function(xml, attr, func){
     var result, avalue;
@@ -3913,7 +3822,7 @@ apf.getInheritedAttribute = function(xml, attr, func){
       || func && func(xml)))) {
         xml = xml.parentNode;
     }
-    if (avalue == "")
+    if (avalue === "")
         return "";
 
     return !result && attr && apf.config
@@ -3921,17 +3830,18 @@ apf.getInheritedAttribute = function(xml, attr, func){
         : result;
 };
 
+
 /**
- * Creates an xml node based on an xpath statement.
+ * Creates an XML node based on an xpath statement.
  *
- * @param {DOMNode} contextNode  the dom node that is subject to the query.
- * @param {String}  xPath        the xpath query.
- * @param {Array}   [addedNodes] this array is filled with the nodes added.
- * @param {Boolean} [forceNew]   whether a new node is always created.
- * @return {DOMNode} the last element found.
- * @todo generalize this to include attributes in if format []
+ * @param {DOMNode} contextNode  The DOM node that is subject to the query
+ * @param {String}  xPath        The xpath query
+ * @param {Array}   [addedNodes] An array that is filled with the added nodes
+ * @param {Boolean} [forceNew]   Defines whether a new node is always created
+ * @return {DOMNode} The last element found
  */
 apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
+    // @todo generalize this to include attributes in if format []
     var xmlNode, foundpath = "", paths = xPath.replace(/('.*?')|(".*?")|\|/g, function(m, m1, m2){
         if (m1 || m2) return m1 || m2;
         return "-%-|-%-";
@@ -4015,8 +3925,9 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     return newNode;
 };
 
-/**
+/*
  * @private
+ * @class apf.convertMethods
  */
 apf.convertMethods = {
     /**
@@ -4192,25 +4103,24 @@ apf.convertMethods = {
 };
 
 /**
- * Converts xml to another format.
+ * Converts XML to another format.
  *
- * @param {XMLElement} xml  the {@link term.datanode data node} to convert.
- * @param {String}     to   the format to convert the xml to.
- *   Possible values:
- *   json       converts to a json string
- *   cgivars    converts to cgi string.
- *   cgiobjects converts to cgi objects
- * @return {String} the result of the conversion.
+ * @param {XMLElement} xml  The [[term.datanode data node]] to convert.
+ * @param {String}     to   The format to convert the XML to. It can be one of the following values:
+ *   - `"json"`:       converts to a json string
+ *   - `"cgivars"`:    converts to cgi string
+ *   - `"cgiobjects"`: converts to cgi object
+ * @return {String} The result of the conversion.
  */
 apf.convertXml = function(xml, to){
     return apf.convertMethods[to](xml);
 };
 
 /**
- * Returns the first text or cdata child of an {@link term.datanode data node}.
+ * Returns the first text or cdata child of a [[term.datanode data node]].
  *
- * @param {XMLElement} x the xml node to search.
- * @return {XMLNode} the found xml node, or null.
+ * @param {XMLElement} x The XML node to search.
+ * @return {XMLNode} The found XML node, or `null`.
  */
 apf.getTextNode = function(x){
     for (var i = 0, l = x.childNodes.length; i < l; ++i) {
@@ -4241,6 +4151,12 @@ apf.getArrayFromNodelist = function(nodelist){
     return nodes;
 };
 
+/**
+ * Serializes the children of a node into a string.
+ *
+ * @param {XMLElement} xmlNode The XML node to serialize.
+ * @return {String} The children as a string
+ */
 apf.serializeChildren = function(xmlNode){
     var node,
         s     = [],
@@ -4253,13 +4169,13 @@ apf.serializeChildren = function(xmlNode){
             : (node.nodeType == 8 ? "" : node.nodeValue);
     }
     return s.join("");
-}
+};
 
 /**
  * Returns a string version of the {@link term.datanode data node}.
  *
- * @param {XMLElement} xmlNode the {@link term.datanode data node} to serialize.
- * @return {String} the serilized version of the {@link term.datanode data node}.
+ * @param {XMLElement} xmlNode The {@link term.datanode data node} to serialize.
+ * @return {String} The serialized version of the {@link term.datanode data node}.
  */
 apf.getXmlString = function(xmlNode){
     var xml = apf.xmldb.cleanNode(xmlNode.cloneNode(true));
@@ -4267,23 +4183,23 @@ apf.getXmlString = function(xmlNode){
 };
 
 /**
- * Creates xml nodes from an xml string recursively.
+ * Creates XML nodes from an XML string recursively.
  *
- * @param {String}  strXml     the xml definition.
- * @param {Boolean} [noError]  whether an exception should be thrown by the parser
- *                             when the xml is not valid.
- * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between
+ * @param {String}  strXml     The XML definition
+ * @param {Boolean} [noError]  Whether an exception should be thrown by the parser
+ *                             when the XML is not valid
+ * @param {Boolean} [preserveWhiteSpace]  Whether whitespace that is present between
  *                                        XML elements should be preserved
- * @return {XMLNode} the created xml node.
+ * @return {XMLNode} The created XML node
  */
 apf.getXml = function(strXml, noError, preserveWhiteSpace){
     return apf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
 };
 
 /**
- * Formats an xml string with good indentation. Also known as pretty printing.
- * @param {String} strXml the xml to format.
- * @return {String} the formatted string.
+ * Formats an XML string with proper indentation. Also known as pretty printing.
+ * @param {String} strXml The XML string to format.
+ * @return {String} The formatted string.
  */
 apf.formatXml = function(strXml){
     strXml = strXml.trim();
@@ -4358,11 +4274,11 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
             //str.unshift("/");//pfx = "//";
             break;
         }
-        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()")
-            + "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
+        str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") +
+            "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
                 ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1))
-             + "]");
+                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1)) +
+            "]");
         lNode = lNode.parentNode;
     };
 
@@ -4383,37 +4299,41 @@ apf.xpathToXml = function(xpath, xmlNode){
 
 apf.n = function(xml, xpath){
     return new apf.xmlset(xml, xpath, true);
-}
+};
+
 apf.b = function(xml, xpath){
     return new apf.xmlset(xml, xpath);
-}
+};
+
 apf.b.$queue = [];
 apf.b.$state = 0;
-/**
+
+/*
  * Naive jQuery like set implementation
  * @todo add dirty flags
  * @todo add query queue
  * @todo rewrite to use arrays
  */
 apf.xmlset = function(xml, xpath, local, previous){
-    if (typeof(xml) == "string")
+    if (typeof xml == "string")
         xml = apf.getXml(xml);
 
     this.$xml = xml;
     if (xml)
         this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
-    this.$xpath = xpath || "."
+    this.$xpath = xpath || ".";
     this.$local = local;
     this.$previous = previous;
 };
 
 (function(){
-    this.add = function(){} //@todo not implemented
+    this.add = function(){}; //@todo not implemented
 
     this.begin = function(){
         apf.b.$state = 1;
         return this;
-    }
+    };
+
     this.commit = function(at, rmt, uri){
         if (apf.b.$queue.length) {
             if (rmt) {
@@ -4438,15 +4358,17 @@ apf.xmlset = function(xml, xpath, local, previous){
         apf.b.$queue = [];
         apf.b.$state = 0;
         return this;
-    }
+    };
+
     this.rollback = function(){
         apf.b.$queue = [];
         apf.b.$state = 0;
         return this;
-    }
+    };
+
     this.getRDBMessage = function(){
         return this.rdbstack || [];
-    }
+    };
 
     this.before = function(el){
         el = typeof el == "function" ? el(i) : el;
@@ -4459,7 +4381,7 @@ apf.xmlset = function(xml, xpath, local, previous){
                 apf.xmldb.appendChild(node.parentNode, el, node);
         }
         return this;
-    }
+    };
 
     this.after = function(el){
         el = typeof el == "function" ? el(i) : el;
@@ -4473,9 +4395,9 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    }
+    };
 
-    this.andSelf = function(){}
+    this.andSelf = function(){};
 
     this.append = function(el){
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
@@ -4495,31 +4417,35 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    }
+    };
+
     this.appendTo = function(target){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             target.appendChild(this.$nodes[i]);
         }
         return this;
-    }
-    this.prepend = function(content){
+    };
+
+    this.prepend = function(el){
         for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
             node.insertBefore(typeof el == "function" ? el(i, node) : el, node.firstChild);
         }
 
         return this;
-    }
-    this.prependTo = function(content){
+    };
+
+    this.prependTo = function(target){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             target.insertBefore(this.$nodes[i], target.firstChild);
         }
         return this;
-    }
+    };
 
     this.attr = function(attrName, value){
-        if (value === undefined)
+        if (arguments.length === 1) {
             return this.$nodes && this.$nodes[0] && this.$nodes[0].getAttribute(attrName) || "";
+        }
         else {
             for (var i = 0, l = this.$nodes.length; i < l; i++) {
                 if (apf.b.$state)
@@ -4535,7 +4461,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    }
+    };
 
     this.removeAttr = function(attrName){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
@@ -4551,7 +4477,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    }
+    };
 
     this.xml = function(){
         var str = [];
@@ -4559,56 +4485,66 @@ apf.xmlset = function(xml, xpath, local, previous){
             str.push(this.$nodes[i].xml);
         }
         return str.join("\n");
-    }
+    };
 
     this.get   =
     this.index = function(idx){
-        if (idx == undefined)
-            return apf.getChildNumber(this.$nodes[0], this.$nodes[0].parentNode.getElementsByTagName("*"))
-    }
+        idx = idx || 0;
+        return apf.getChildNumber(this.$nodes[idx], this.$nodes[idx].parentNode.getElementsByTagName("*"))
+    };
 
     this.eq    = function(index){
         return index < 0 ? this.$nodes[this.$nodes.length - index] : this.$nodes[index];
-    }
+    };
 
     this.size   =
     this.length = function(){
         return this.$nodes.length;
-    }
+    };
+
     this.load = function(url){
 
-    }
+    };
 
     this.next = function(selector){
-        if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    }
+        if (!selector)
+            selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+            ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    };
 
     this.nextAll = function(selector){
-        if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    }
+        if (!selector)
+            selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+            ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    };
 
-    this.nextUntil = function(){}
+    this.nextUntil = function(){};
 
     this.prev = function(selector){
-        if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    }
-    this.prevAll = function(selector){
-        if (!selector) selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) + ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    }
+        if (!selector)
+            selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+            ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    };
 
-    this.not = function(){}
+    this.prevAll = function(selector){
+        if (!selector)
+            selector = "node()[local-name()]";
+        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+            ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
+    };
+
+    this.not = function(){};
 
     this.parent = function(selector){
         return new apf.xmlset(this.$xml.parentNode, this.$local, this);
-    }
+    };
 
-    this.parents = function(selector){}
-    this.pushStack = function(){}
-    this.replaceAll = function(){}
+    this.parents = function(selector){};
+    this.pushStack = function(){};
+    this.replaceAll = function(){};
     this.replaceWith = function(el){
         for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
             node = this.$nodes[i];
@@ -4627,16 +4563,16 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    }
+    };
 
     this.siblings = function(selector){
         //preceding-sibling::
         //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]");
-    }
+    };
 
     this.text = function(){
 
-    }
+    };
 
     this.toArray = function(){
         var arr = [];
@@ -4644,7 +4580,7 @@ apf.xmlset = function(xml, xpath, local, previous){
             arr.push(this.$nodes[i]);
         }
         return arr;
-    }
+    };
 
     this.detach = function(selector){
         var items = [];
@@ -4668,7 +4604,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return new apf.xmlset(items, "", this.$local, this);
-    }
+    };
 
     this.remove = function(selector){
         for (var node, n = this.$nodes, i = n.length - 1; i >= 0; i--) {
@@ -4688,31 +4624,34 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return this;
-    }
+    };
 
     this.children = function(selector){
         var nodes = [];
-        for (var node, child, i = 0, l = this.$nodes.length; i < l; i++) {
+        for (var node, i = 0, l = this.$nodes.length; i < l; i++) {
             var list = (node = this.$nodes[i]).selectNodes(selector);
             for (var j = 0, jl = list.length; j < jl; j++) {
                 nodes.push(list[j]);
             }
         }
         return new apf.xmlset(nodes, null, this.$local, this);
-    }
+    };
 
     this.children2 = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
-    }
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" +
+            selector.split("|").join("|self::") + "]", this.$local, this);
+    };
 
     this.has  =
     this.find = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" + path.split("|").join("|self::"), this.$local, this);
-    }
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" +
+            path.split("|").join("|self::"), this.$local, this);
+    };
 
     this.query = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" + path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);
-    }
+        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" +
+            path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);
+    };
 
     this.filter = function(filter){
         var newList = [];
@@ -4721,44 +4660,44 @@ apf.xmlset = function(xml, xpath, local, previous){
                 newList.push(this.$nodes[i]);
         }
         return new apf.xmlset(newList, null, this.$local, this);
-    }
+    };
 
     this.end = function(){
         return this.$previous || this;
-    }
+    };
 
     this.is = function(selector) {
         return this.filter(selector) ? true : false;
-    }
+    };
 
     this.contents = function(){
         return this.children("node()");
-    }
+    };
 
     this.has = function(){
         //return this.children(
-    }
+    };
 
     this.val = function(value){
-        if (value !== undefined) {
+        if (arguments.length) {
             apf.setQueryValue(this.$xml, this.$xpath, value);
             return this;
         }
         else
             return apf.queryValue(this.$xml, this.$xpath);
-    }
+    };
 
     this.vals = function(){
         return apf.queryValues(this.$xml, this.$xpath);
-    }
+    };
 
     this.node = function(){
         return apf.queryNode(this.$xml, this.$xpath);
-    }
+    };
 
     this.nodes = function(){
         return apf.queryNodes(this.$xml, this.$xpath);
-    }
+    };
 
     this.clone = function(deep){
         if (this.$nodes.length == 1)
@@ -4770,32 +4709,32 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
 
         return new apf.xmlset(nodes, "", this.$local, this);
-    }
+    };
 
     this.context = function(){
         return this.$xml;
-    }
+    };
 
     this.data = function(data){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             apf.setQueryValue(this.$nodes[i], ".", data);
         }
         return this;
-    }
+    };
 
     this.each = function(func){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             func.call(this.$nodes[i], i);
         }
         return this;
-    }
+    };
 
     this.eachrev = function(func){
         for (var i = this.$nodes.length - 1; i >= 0; i--) {
             func.call(this.$nodes[i], i);
         }
         return this;
-    }
+    };
 
     this.map = function(callback){
         var values = [];
@@ -4803,20 +4742,20 @@ apf.xmlset = function(xml, xpath, local, previous){
             values.push(callback(this.$nodes[i]));
         }
         return new apf.xmlset(values, "", this.$local, this); //blrghhh
-    }
+    };
 
     this.empty  = function(){
         this.children().detach();
         return this;
-    }
+    };
 
     this.first = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]", this.$local, this);
-    }
+    };
 
     this.last = function(){
         return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]", this.$local, this);
-    }
+    };
 }).call(apf.xmlset.prototype);
 
 
@@ -4928,8 +4867,8 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 /**
- * Opens a window with the string in it
- * @param {String} str the html string displayed in the new window.
+ * Opens a window with the string in it.
+ * @param {String} str The HTML string to display in the new window.
  */
 apf.pasteWindow = function(str){
     var win = window.open("about:blank");
@@ -4939,28 +4878,30 @@ apf.pasteWindow = function(str){
 
 
 /**
- * see string#escapeHTML
- * @param {String} str the html to be escaped.
- * @return {String} the escaped string.
+ * Escapes HTML from a string.
+ * @param {String} str The html to be escaped.
+ * @return {String} The escaped string.
  */
 apf.htmlentities = function(str){
     return str.escapeHTML();
 };
 
 /**
- * Escape an xml string making it ascii compatible.
- * @param {String} str the xml string to escape.
- * @return {String} the escaped string.
+ * Escape an XML string, making it ascii compatible.
+ * @param {String} str The xml string to escape.
+ * @return {String} The escaped string.
+ * @method xmlentities
  *
- * @todo This function does something completely different from htmlentities, 
+ */
+ /* @todo This function does something completely different from htmlentities, 
  *       the name is confusing and misleading.
  */
 apf.xmlentities = apf.escapeXML;
 
 /**
- * Unescape an html string.
- * @param {String} str the string to unescape.
- * @return {String} the unescaped string.
+ * Unescape an HTML string.
+ * @param {String} str The string to unescape.
+ * @return {String} The unescaped string.
  */
 apf.html_entity_decode = function(str){
     return (str || "").replace(/\&\#38;/g, "&").replace(/&lt;/g, "<")
@@ -4972,7 +4913,8 @@ apf.html_entity_decode = function(str){
 /**
  * Determines whether the keyboard input was a character that can influence
  * the value of an element (like a textbox).
- * @param {Number} charCode The ascii character code.
+ * @param {Number} charCode The ascii character code
+ * @returns {Boolean} `true` if it was a character
  */
 apf.isCharacter = function(charCode){
     return (charCode < 112 || charCode > 122)
@@ -4983,12 +4925,14 @@ apf.isCharacter = function(charCode){
  * This random number generator has been added to provide a more robust and
  * reliable random number spitter than the native Ecmascript Math.random()
  * function.
- * is an implementation of the Park-Miller algorithm. (See 'Random Number
+ * 
+ * It is an implementation of the Park-Miller algorithm. (See 'Random Number
  * Generators: Good Ones Are Hard to Find', by Stephen K. Park and Keith W.
  * Miller, Communications of the ACM, 31(10):1192-1201, 1988.)
+ * @class apf.randomGenerator
  * @author David N. Smith of IBM's T. J. Watson Research Center.
- * @author Mike de Boer (mike AT javeline DOT com)
- * @class randomGenerator
+ * @author Mike de Boer (mike AT c9 DOT io)
+ * 
  */
 apf.randomGenerator = {
     d: new Date(),
@@ -5000,7 +4944,7 @@ apf.randomGenerator = {
     oneOverM: null,
 
     /**
-     * Generates a random Number between a lower and upper boundary.
+     * Generates a random [[Number]] between a lower and upper boundary.
      * The algorithm uses the system time, in minutes and seconds, to 'seed'
      * itself, that is, to create the initial values from which it will generate
      * a sequence of numbers. If you are familiar with random number generators,
@@ -5008,7 +4952,7 @@ apf.randomGenerator = {
      * you should probably not change it.
      * @param {Number} lnr Lower boundary
      * @param {Number} unr Upper boundary
-     * @result A random number between <i>lnr</i> and <i>unr</i>
+     * @returns A random number between `lnr` and`unr`
      * @type Number
      */
     generate: function(lnr, unr) {
@@ -5022,7 +4966,7 @@ apf.randomGenerator = {
 
     /**
      * Returns a new random number, based on the 'seed', generated by the
-     * <i>generate</i> method.
+     * [[apf.randomGenerator.generate]] method.
      * @type Number
      */
     next: function() {
@@ -5038,9 +4982,9 @@ apf.randomGenerator = {
 };
 
 /**
- * Adds a time stamp to the url to prevent the browser from caching it.
- * @param {String} url the url to add the timestamp to.
- * @return {String} the url with timestamp.
+ * Adds a time stamp to the URL to prevent the browser from caching it.
+ * @param {String} url The URL to add the timestamp to.
+ * @return {String} The url... with a timestamp!
  */
 apf.getNoCacheUrl = function(url){
     return url
@@ -5049,10 +4993,10 @@ apf.getNoCacheUrl = function(url){
 };
 
 /**
- * Checks if the string contains curly braces at the start and end. If so it's
- * processed as javascript, else the original string is returned.
- * @param {String} str the string to parse.
- * @return {String} the result of the parsing.
+ * Checks if the string contains curly braces at the start and end. If so, it's
+ * processed as Javascript via `eval()`. Otherwise, the original string is returned.
+ * @param {String} str The string to parse.
+ * @return {String} The result of the parsing.
  */
 apf.parseExpression = function(str){
     if (!apf.parseExpression.regexp.test(str))
@@ -5083,8 +5027,9 @@ apf.formatNumber = function(num, prefix){
 /**
  * Execute a script in the global scope.
  *
- * @param {String} str  the javascript code to execute.
- * @return {String} the javascript code executed.
+ * @param {String} str  The JavaScript code to execute
+ * @param {Object} [win] A reference to a window
+ * @return {String} The executed JavaScript code
  */
 apf.jsexec = function(str, win){
     if (!str)
@@ -5112,7 +5057,7 @@ apf.jsexec = function(str, win){
     return str;
 };
 
-/**
+/*
  * Shorthand for an empty function.
  */
 apf.K = function(){};
@@ -5122,48 +5067,46 @@ apf.K = function(){};
 /**
  * Reliably determines whether a variable is a Number.
  *
- * @param {mixed}   value The variable to check
- * @type  {Boolean}
+ * @param {Mixed}   value The variable to check
+ * @type  {Boolean} `true` if the argument is a number
  */
 apf.isNumber = function(value){
     return parseFloat(value) == value;
 };
 
 /**
- * Reliably determines whether a variable is an array.
- * @see http://thinkweb2.com/projects/prototype/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+ * Reliably determines whether a variable is an array. For more information, see 
+ * <http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/>
  *
- * @param {mixed}   value The variable to check
- * @type  {Boolean}
+ * @param {Mixed}   value The variable to check
+ * @type  {Boolean} `true` if the argument is an array
  */
 apf.isArray = function(value) {
     return Object.prototype.toString.call(value) === "[object Array]";
 };
 
 /**
- * Determines whether a string is true in the html attribute sense.
- * @param {mixed} value the variable to check
- *   Possible values:
- *   true   The function returns true.
- *   'true' The function returns true.
- *   'on'   The function returns true.
- *   1      The function returns true.
- *   '1'    The function returns true.
- * @return {Boolean} whether the string is considered to imply truth.
+ * Determines whether a string is true (in the HTML attribute sense).
+ * @param {Mixed} value The variable to check. Possible truth values include:
+ *  - true  
+ *  - 'true'
+ *  - 'on'  
+ *  - 1     
+ *  - '1'   
+ * @return {Boolean} Whether the string is considered to imply truth.
  */
 apf.isTrue = function(c){
     return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
 };
 
 /**
- * Determines whether a string is false in the html attribute sense.
- * @param {mixed} value the variable to check
- *   Possible values:
- *   false   The function returns true.
- *   'false' The function returns true.
- *   'off'   The function returns true.
- *   0       The function returns true.
- *   '0'     The function returns true.
+ * Determines whether a string is false (in the HTML attribute sense).
+ * @param {Mixed} value The variable to check. Possible false values include:
+ *   - false   
+ *   - 'false' 
+ *   - 'off'   
+ *   - 0       
+ *   - '0'     
  * @return {Boolean} whether the string is considered to imply untruth.
  */
 apf.isFalse = function(c){
@@ -5171,10 +5114,10 @@ apf.isFalse = function(c){
 };
 
 /**
- * Determines whether a value should be considered false. This excludes amongst
- * others the number 0.
- * @param {mixed} value the variable to check
- * @return {Boolean} whether the variable is considered false.
+ * Determines whether a value should be considered false. This excludes, amongst
+ * others, the number 0.
+ * @param {Mixed} value The variable to check
+ * @return {Boolean} Whether the variable is considered false.
  */
 apf.isNot = function(c){
     // a var that is null, false, undefined, Infinity, NaN and c isn't a string
@@ -5182,10 +5125,10 @@ apf.isNot = function(c){
 };
 
 /**
- * Creates a relative url based on an absolute url.
- * @param {String} base the start of the url to which relative url's work.
- * @param {String} url  the url to transform.
- * @return {String} the relative url.
+ * Creates a relative URL based on an absolute URL.
+ * @param {String} base The start of the URL to which relative URL's work.
+ * @param {String} url  The URL to transform.
+ * @return {String} The relative URL.
  */
 apf.removePathContext = function(base, url){
     if (!url)  return "";
@@ -5196,7 +5139,7 @@ apf.removePathContext = function(base, url){
     return url;
 };
 
-/**
+/*
  * @private
  * @todo why is this done like this?
  */
@@ -5228,7 +5171,7 @@ apf.cancelBubble = function(e, o, noPropagate){
 
 
 
-/**
+/*
  * Attempt to fix memory leaks
  * @private
  */
@@ -5277,11 +5220,11 @@ apf.getRules = function(node){
 
 apf.isCoord = function (n){
     return n || n === 0;
-}
+};
 
 apf.getCoord = function (n, other){
     return n || n === 0 ? n : other;
-}
+};
 
 /**
  * @private
@@ -5339,10 +5282,10 @@ apf.getNode = function(data, tree){
 };
 
 /**
- * Retrieves the first xml node with nodeType 1 from the children of an xml element.
- * @param {XMLElement} xmlNode the xml element that is the parent of the element to select.
- * @return {XMLElement} the first child element of the xml parent.
- * @throw error when no child element is found.
+ * Retrieves the first XML node with a `nodeType` of 1 from the children of an XML element.
+ * @param {XMLElement} xmlNode The XML element that is the parent of the element to select.
+ * @return {XMLElement} The first child element of the XML parent.
+ * @throws An error when no child element is found.
  */
 apf.getFirstElement = function(xmlNode){
     
@@ -5353,10 +5296,10 @@ apf.getFirstElement = function(xmlNode){
 };
 
 /**
- * Retrieves the last xml node with nodeType 1 from the children of an xml element.
- * @param {XMLElement} xmlNode the xml element that is the parent of the element to select.
- * @return {XMLElement} the last child element of the xml parent.
- * @throw error when no child element is found.
+ * Retrieves the last XML node with `nodeType` of 1 from the children of an XML element.
+ * @param {XMLElement} xmlNode The XML element that is the parent of the element to select.
+ * @return {XMLElement} The last child element of the XML parent.
+ * @throw An error when no child element is found.
  */
 apf.getLastElement = function(xmlNode){
     
@@ -5367,9 +5310,9 @@ apf.getLastElement = function(xmlNode){
 };
 
 /**
- * Selects the content of an html element. Currently only works in
- * internet explorer.
- * @param {HTMLElement} oHtml the container in which the content receives the selection.
+ * Selects the content of an HTML element. This currently only works in
+ * Internet Explorer.
+ * @param {HTMLElement} oHtml The container in which the content receives the selection.
  */
 apf.selectTextHtml = function(oHtml){
     if (!apf.hasMsRangeObject) return;// oHtml.focus();
@@ -5571,24 +5514,19 @@ apf.visibilitymanager = function(){
 
 /**
  * Sets a name/value pair which is stored in the browser and sent to the server
- * with every request. This is also known as a cookie. Be careful setting 
- * cookies, because they can take up a lot of bandwidth, especially for Ajax
- * applications.
+ * with every request. This is also known as a cookie. 
+ * Warning: Be careful setting cookies, because they can take up a lot of bandwidth, 
+ * especially for Ajax applications.
  * 
- * @param {String}  name     cookie name
- * @param {String}  value    cookie value
- * @param {Date}    expire   expire date representing the number of milliseconds
- *                           since 1 January 1970 00:00:00 UTC.
- * @param {String}  path     path name
- * @param {String}  domain   domain name
- * @param {Boolean} secure   cookie may benefit all the documents and CGI programs
- *                           meet the requirements as to the path and domain
- *                           compatibility
- *     Possible values:
- *     true   may benefit
- *     false  can not benefit
- *     
- * @return {String} Returns a cookie name.
+ * @param {String}  name     The cookie name
+ * @param {String}  value    The cookie value
+ * @param {Date}    expire   The expiration date representing the number of milliseconds
+ *                            since 1 January 1970 00:00:00 UTC.
+ * @param {String}  path     The path name
+ * @param {String}  domain   The domain name
+ * @param {Boolean} secure   If true, the secure attribute of the cookie will be set and 
+ *                            the cookie transmission will require a secure protocol (like HTTPS)
+ * @return {String} Returns the cookie name.
  */
 apf.setcookie = function(name, value, expire, path, domain, secure) {
     var ck = name + "=" + escape(value) + ";";
@@ -5603,10 +5541,10 @@ apf.setcookie = function(name, value, expire, path, domain, secure) {
 };
 
 /**
- * Gets the value of a stored name/value pair called a cookie.
+ * Gets the value of a stored name/value cookie pair.
  * 
- * @param {String} name the name of the stored cookie.
- * @return {String} Returns a value of the cookie or the empty string if it isn't found
+ * @param {String} name The name of the stored cookie.
+ * @return {String} Returns a value of the cookie, or the empty string if it isn't found
  */
 apf.getcookie = function(name) {
   var aCookie = document.cookie.split("; ");
@@ -5622,8 +5560,8 @@ apf.getcookie = function(name) {
 /**
  * Deletes a stored name/value pair called a cookie.
  * 
- * @param {String} name     the name of the stored cookie
- * @param {String} domain   the name of the domain of stored cookie
+ * @param {String} name     The name of the stored cookie
+ * @param {String} domain   The name of the domain of stored cookie
  */
 apf.delcookie = function (name, domain){
     document.cookie = name + "=blah; expires=Fri, 31 Dec 1999 23:59:59 GMT;"
@@ -5899,21 +5837,26 @@ RegExp.prototype.dataType   = apf.REGEXP;
 Function.prototype.dataType = apf.FUNCTION;
 
 /**
- * Converts a javascript object to a cgi string.
- * @see core.convertXml
+ * Converts a JavaScript object to a CGI string.
+ *
+ * @param {Object} args The object to convert
+ * @param {Boolean} [multicall] Indicates if there will be a function call name
+ * @param {Function} [mcallname] A name to append to the CGI string, prefixed with `func=`
+ * @returns {Object} The converted object, joined with `"&"`
+ *
+ * @see apf.convertXml
  */
 apf.getCgiString = function(args, multicall, mcallname){
-    var vars = [];
+    var prop, vars = [];
 
     function recur(o, stack) {
-        var prop;
         if (apf.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
-        } 
+        }
         else if (typeof o == "object") {
             for (prop in o) {
-                if (apf.isSafariOld && (!o[prop] || typeof p[prop] != "object"))
+                if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
                     continue;
 
                 if (typeof o[prop] == "function")
@@ -5929,7 +5872,8 @@ apf.getCgiString = function(args, multicall, mcallname){
         vars.push("func=" + mcallname);
         for (var i = 0; i < args[0].length; i++)
             recur(args[0][i], "f%5B" + i + "%5D");
-    } else {
+    }
+    else {
         for (prop in args) {
             if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                 continue;
@@ -5939,11 +5883,15 @@ apf.getCgiString = function(args, multicall, mcallname){
     }
 
     return vars.join("&");
-}
+};
 
 /**
- * Converts a cgi string to a javascript object.
- * @see core.convertXml
+ * Converts a CGI string to a JavaScript object.
+ *
+ * @param {String} args The argument string to convert, separated by `"&"`
+ * @returns {Object} The converted object
+ *
+ * @see apf.convertXml
  */
 apf.fromCgiString = function(args) {
     if (!args)
@@ -5980,11 +5928,11 @@ apf.fromCgiString = function(args) {
 
 
 
-/**
+/*
  * Extends a Function object with properties from other objects, specified as
  * arguments.
  *
- * @param {mixed} obj1, obj2, obj3, etc.
+ * @param {Mixed} obj1, obj2, obj3, etc.
  * @type Function
  * @see apf.extend
  */
@@ -5993,19 +5941,19 @@ Function.prototype.extend = function() {
     return this;
 };
 
-/**
+/*
  * Attach a Function object to an event as handler method. If apf.AbstractEvent
  * is available, the active event is extended with convinience accessors as
  * declared in apf.AbstractEvent
  *
  * @param {Object} The context the execute the Function within
  * @param {Boolean} Whether the passed event object should be extended with AbstractEvent
- * @param {mixed}  param1, param2, param3, etc.
+ * @param {Mixed}  param1, param2, param3, etc.
  * @type Function
  * @see apf.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
-    var __method = this, 
+    var __method = this,
         args     = Array.prototype.slice.call(arguments),
         o        = args.shift(),
         ev       = args.shift();
@@ -6018,36 +5966,36 @@ Function.prototype.bindWithEvent = function() {
     }
 };
 
-/**
+/*
  * The bind function creates a new function (a bound function) that calls the
- * function that is its this value (the bound function's target function) with 
- * a specified this parameter, which cannot be overridden. bind also accepts 
- * leading default arguments to provide to the target function when the bound 
- * function is called.  A bound function may also be constructed using the new 
- * operator: doing so acts as though the target function had instead been 
- * constructed.  The provided this value is ignored, while prepended arguments 
+ * function that is its this value (the bound function's target function) with
+ * a specified this parameter, which cannot be overridden. bind also accepts
+ * leading default arguments to provide to the target function when the bound
+ * function is called.  A bound function may also be constructed using the new
+ * operator: doing so acts as though the target function had instead been
+ * constructed.  The provided this value is ignored, while prepended arguments
  * are provided to the emulated function.
- * 
+ *
  * @param {Object} context The 'this' context of the bound function
  * @type Function
  */
-if (!Function.prototype.bind)  
-    Function.prototype.bind = function(context /*, arg1, arg2... */) {  
-        if (typeof this !== 'function') throw new TypeError();  
-        var _arguments = Array.prototype.slice.call(arguments, 1),  
-            _this = this,  
-            _concat = Array.prototype.concat,  
-            _function = function() {  
-                return _this.apply(this instanceof _dummy ? this : context,  
-                    _concat.apply(_arguments, arguments));  
-            },  
-            _dummy = function() {};  
-        _dummy.prototype = _this.prototype;  
-        _function.prototype = new _dummy();  
-        return _function;  
+if (!Function.prototype.bind)
+    Function.prototype.bind = function(context /*, arg1, arg2... */) {
+        if (typeof this !== 'function') throw new TypeError();
+        var _arguments = Array.prototype.slice.call(arguments, 1),
+            _this = this,
+            _concat = Array.prototype.concat,
+            _function = function() {
+                return _this.apply(this instanceof _dummy ? this : context,
+                    _concat.apply(_arguments, arguments));
+            },
+            _dummy = function() {};
+        _dummy.prototype = _this.prototype;
+        _function.prototype = new _dummy();
+        return _function;
 };
 
-/**
+/*
  * Copy an array, like this statement would: 'this.concat([])', but then do it
  * recursively.
  */
@@ -6059,7 +6007,7 @@ Array.prototype.copy = function(){
     return ar;
 };
 
-/**
+/*
  * Concatenate the current Array instance with one (or more) other Arrays, like
  * Array.concat(), but return the current Array instead of a new one that
  * results from the merge.
@@ -6075,7 +6023,7 @@ Array.prototype.merge = function(){
     }
 };
 
-/**
+/*
  * Add the values of one or more arrays to the current instance by using the
  * '+=' operand on each value.
  *
@@ -6094,10 +6042,10 @@ Array.prototype.arrayAdd = function(){
     return s;
 };
 
-/**
+/*
  * Check if an object is contained within the current Array instance.
  *
- * @param {mixed}   obj The value to check for inside the Array
+ * @param {Mixed}   obj The value to check for inside the Array
  * @type  {Boolean}
  */
 Array.prototype.equals = function(obj){
@@ -6107,28 +6055,127 @@ Array.prototype.equals = function(obj){
     return true;
 };
 
-/**
+/*
  * Make sure that an array instance contains only unique values (NO duplicates).
+ * Elaborate implementation to allow for O(n) time complexity compared to O(n^2)
+ * time complexity when using Array.prototype.indexOf.
+ * @see http://bbenvie.com/articles/2012-06-10/Array-prototype-unique-in-O-n-time-complexity
+ * @see http://jsperf.com/array-unique2/9
  *
  * @type {Array}
  */
-Array.prototype.makeUnique = function(){
-    var i, length, newArr = [];
-    for (i = 0, length = this.length; i < length; i++)
-        if (newArr.indexOf(this[i]) == -1)
-            newArr.push(this[i]);
+var uniqueBenvie = function(){
+    var hasOwn = {}.hasOwnProperty,
+        uids = {};
 
-    this.length = 0;
-    for (i = 0, length = newArr.length; i < length; i++)
-        this.push(newArr[i]);
+    // use hash for primitives and tagging for objects
+    function uid(){
+        var chars = [], i = 20, num;
+        while (i--) {
+            num = Math.random() * 52 | 0;
+            chars[i] = String.fromCharCode(num + (num >= 26 ? 71 : 65));
+        }
+        chars = chars.join("");
 
-    return this;
-};
+        if (chars in uids)
+            return uid();
 
-/**
+        uids[chars] = true;
+        return chars;
+    }
+
+    function unique(array){
+        var strings = {}, numbers = {}, others = {},
+            tagged = [], failed = [],
+            count = 0, i = array.length,
+            item, type;
+
+        var id = uid();
+
+        while (i--) {
+            item = array[i];
+            type = typeof item;
+            if (item === null || type !== "object" && type !== "function") {
+                // primitive
+                switch (type) {
+                    case "string":
+                        strings[item] = true;
+                        break;
+                    case "number":
+                        numbers[item] = true;
+                        break;
+                    default:
+                        others[item] = item;
+                        break;
+                }
+            }
+            else {
+                // object
+                if (!hasOwn.call(item, id)) {
+                    try {
+                        item[id] = true;
+                        tagged[count++] = item;
+                    }
+                    catch (e){
+                        if (failed.indexOf(item) === -1)
+                            failed[failed.length] = item;
+                    }
+                }
+            }
+        }
+
+        // remove the tags
+        while (count--)
+            delete tagged[count][id];
+
+        tagged = tagged.concat(failed);
+        count = tagged.length;
+
+        // append primitives to results
+        for (i in strings)
+            if (hasOwn.call(strings, i))
+                tagged[count++] = i;
+
+        for (i in numbers)
+            if (hasOwn.call(numbers, i))
+                tagged[count++] = +i;
+
+        for (i in others)
+            if (hasOwn.call(others, i))
+                tagged[count++] = others[i];
+
+        return tagged;
+    }
+
+    return unique;
+}();
+
+if (typeof Set !== "undefined") {
+    Array.prototype.makeUnique = function(){
+        var out = [],
+            seen = new Set,
+            i = this.length;
+
+        while (i--) {
+            if (!seen.has(this[i])) {
+                out[out.length] = this[i];
+                seen.add(this[i]);
+            }
+        }
+
+        return out;
+    }
+}
+else {
+    Array.prototype.makeUnique = function(){
+        return uniqueBenvie(this);
+    };
+}
+
+/*
  * Check if this array instance contains a value 'obj'.
  *
- * @param {mixed}  obj    The value to check for inside the array
+ * @param {Mixed}  obj    The value to check for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Boolean}
  * @see Array.indexOf
@@ -6137,12 +6184,12 @@ Array.prototype.contains = function(obj, from){
     return this.indexOf(obj, from) != -1;
 };
 
-/**
+/*
  * Search for the index of the first occurence of a value 'obj' inside an array
  * instance.
  * July 29, 2008: added 'from' argument support to indexOf()
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -6155,11 +6202,11 @@ Array.prototype.indexOf = Array.prototype.indexOf || function(obj, from){
     return -1;
 };
 
-/**
+/*
  * Search for the index of the last occurence of a value 'obj' inside an array
  * instance.
  *
- * @param {mixed}  obj    The value to search for inside the array
+ * @param {Mixed}  obj    The value to search for inside the array
  * @param {Number} [from] Left offset index to start the search from
  * @type  {Number}
  */
@@ -6173,11 +6220,11 @@ Array.prototype.lastIndexOf = Array.prototype.lastIndexOf || function(obj, from)
     return -1;
 };
 
-/**
+/*
  * Like Array.push, but only invoked when the value 'item' is already present
  * inside the array instance.
  *
- * @param {mixed} item, item, ...
+ * @param {Mixed} item, item, ...
  * @type  {Array}
  */
 Array.prototype.pushUnique = function(){
@@ -6192,7 +6239,7 @@ Array.prototype.pushUnique = function(){
     return this;
 };
 
-/**
+/*
  * @todo: Ruben: could you please comment on this function? Seems to serve a very
  * specific purpose...
  *
@@ -6211,7 +6258,7 @@ Array.prototype.search = function(){
     }
 };
 
-/**
+/*
  * Iterate through each value of an array instance from left to right (front to
  * back) and execute a callback Function for each value.
  *
@@ -6226,10 +6273,10 @@ Array.prototype.forEach = Array.prototype.forEach || function(fn) {
     return this;
 }
 
-/**
+/*
  * Search for a value 'obj' inside an array instance and remove it when found.
  *
- * @type {mixed} obj
+ * @type {Mixed} obj
  * @type {Array}
  */
 Array.prototype.remove = function(obj){
@@ -6243,21 +6290,21 @@ Array.prototype.remove = function(obj){
     return this;
 };
 
-/**
+/*
  * Remove an item from an array instance which can be identified with key 'i'
  *
  * @param  {Number} i
- * @return {mixed}  The removed item
+ * @return {Mixed}  The removed item
  */
 Array.prototype.removeIndex = function(i){
     if (!this.length) return null;
     return this.splice(i, 1);
 };
 
-/**
+/*
  * Insert a new value at a specific object; alias for Array.splice.
  *
- * @param {mixed}  obj Value to insert
+ * @param {Mixed}  obj Value to insert
  * @param {Number} i   Index to insert 'obj' at
  * @type  {Number}
  */
@@ -6265,7 +6312,7 @@ Array.prototype.insertIndex = function(obj, i){
     this.splice(i, 0, obj);
 };
 
-/**
+/*
  * Reverses the order of the elements of an array; the first becomes the last,
  * and the last becomes the first.
  *
@@ -6291,7 +6338,7 @@ Array.prototype.reverse = Array.prototype.reverse || function(){
  * @link http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array
  */
 
-/**
+/*
  * Creates a new array with all of the elements of this array for which the
  * provided filtering function returns true.
  *
@@ -6308,7 +6355,7 @@ Array.prototype.filter = Array.prototype.filter || function(fn, bind){
     return results;
 };
 
-/**
+/*
  * Returns true if every element in this array satisfies the provided testing
  * function.
  *
@@ -6324,7 +6371,7 @@ Array.prototype.every = Array.prototype.every || function(fn, bind){
     return true;
 };
 
-/**
+/*
  * Creates a new array with the results of calling a provided function on every
  * element in this array.
  *
@@ -6339,7 +6386,7 @@ Array.prototype.map = Array.prototype.map || function(fn, bind){
     return results;
 };
 
-/**
+/*
  * Tests whether some element in the array passes the test implemented by the
  * provided function.
  *
@@ -6357,7 +6404,7 @@ Array.prototype.some = Array.prototype.some || function(fn, bind){
 
 
 
-/**
+/*
  * Transform a number to a string and pad it with a zero digit its length is one.
  *
  * @type {String}
@@ -6375,7 +6422,7 @@ RegExp.prototype.getNativeFlags = function() {
            (this.sticky     ? "y" : "");
 };
 
-/**
+/*
  * Accepts flags; returns a new XRegExp object generated by recompiling
  * the regex with the additional flags (may include non-native flags).
  * the original regex object is not altered.
@@ -6384,7 +6431,7 @@ RegExp.prototype.addFlags = function(flags){
     return new RegExp(this.source, (flags || "") + this.getNativeFlags());
 };
 
-/**
+/*
  * Casts the first character in a string to uppercase.
  *
  * @type {String}
@@ -6393,7 +6440,7 @@ String.prototype.uCaseFirst = function(){
     return this.substr(0, 1).toUpperCase() + this.substr(1)
 };
 
-/**
+/*
  * Removes spaces and other space-like characters from the left and right ends
  * of a string
  *
@@ -6403,7 +6450,7 @@ String.prototype.trim = function(){
     return this.replace(/[\s\n\r]*$/, "").replace(/^[\s\n\r]*/, "");
 };
 
-/**
+/*
  * Concatenate a string with itself n-times.
  *
  * @param {Number} times Number of times to repeat the String concatenation
@@ -6413,7 +6460,7 @@ String.prototype.repeat = function(times){
     return Array(times + 1).join(this);
 };
 
-/**
+/*
  * Count the number of occurences of substring 'str' inside a string
  *
  * @param {String} str
@@ -6423,7 +6470,7 @@ String.prototype.count = function(str){
     return this.split(str).length - 1;
 };
 
-/**
+/*
  * Remove HTML or any XML-like tags from a string
  *
  * @type {String}
@@ -6432,7 +6479,7 @@ String.prototype.stripTags = function() {
     return this.replace(/<\/?[^>]+>/gi, "");
 };
 
-/**
+/*
  * Wrapper for the global 'escape' function for strings
  *
  * @type {String}
@@ -6441,7 +6488,7 @@ String.prototype.escape = function() {
     return escape(this);
 };
 
-/**
+/*
  * Returns an xml document
  * @type {XMLElement}
  */
@@ -6460,9 +6507,9 @@ String.prototype.toXml = function(){
 };
 
 
-if (typeof window != "undefined" && typeof window.document != "undefined" 
+if (typeof window != "undefined" && typeof window.document != "undefined"
   && typeof window.document.createElement == "function") {
-    /**
+    /*
      * Encode HTML entities to its HTML equivalents, like '&amp;' to '&amp;amp;'
      * and '&lt;' to '&amp;lt;'.
      *
@@ -6474,7 +6521,7 @@ if (typeof window != "undefined" && typeof window.document != "undefined"
         return this.escapeHTML.div.innerHTML;
     };
 
-    /**
+    /*
      * Decode HTML equivalent entities to characters, like '&amp;amp;' to '&amp;'
      * and '&amp;lt;' to '&lt;'.
      *
@@ -6519,7 +6566,7 @@ if (!String.prototype.unescapeHTML) {
     };
 }
 
-/**
+/*
  * Trim a string down to a specific number of characters. Optionally, append an
  * ellipsis ('...') as a suffix.
  *
@@ -6533,7 +6580,7 @@ String.prototype.truncate = function(nr, ellipsis){
         : this;
 };
 
-/**
+/*
  * Pad a string at the right or left end with a string 'pad' to a specific
  * number of characters. Highly optimized version for speed, not readability.
  *
@@ -6550,7 +6597,7 @@ String.prototype.pad = function(len, pad, dir) {
 apf.PAD_LEFT  = false;
 apf.PAD_RIGHT = true;
 
-/**
+/*
  * Special String.split; optionally lowercase a string and trim all results from
  * the left and right.
  *
@@ -6565,7 +6612,7 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
         .split(new RegExp("[\\s ]*" + separator + "[\\s ]*", "g"), limit || 999);
 };
 
-/**
+/*
  * Appends a random number with a specified length to this String instance.
  *
  * @see randomGenerator
@@ -6579,7 +6626,7 @@ String.prototype.appendRandomNumber = function(length) {
     return this.toString() + arr.join("");
 };
 
-/**
+/*
  * Prepends a random number with a specified length to this String instance.
  *
  * @see randomGenerator
@@ -6593,7 +6640,7 @@ String.prototype.prependRandomNumber = function(length) {
     return arr.join("") + this.toString();
 };
 
-/**
+/*
  * Returns a string produced according to the formatting string. It replaces
  * all <i>%s</i> occurrences with the arguments provided.
  *
@@ -6613,10 +6660,10 @@ String.prototype.sprintf = function() {
     return str;
 };
 
-/**
- * The now method returns the milliseconds elapsed since 
+/*
+ * The now method returns the milliseconds elapsed since
  * 1 January 1970 00:00:00 UTC up until now as a number.
- * 
+ *
  * @type {Number}
  */
 if (!Date.now) {
@@ -6656,11 +6703,12 @@ if (!Date.now) {
 
 
 /**
- * This method sets a single css rule
- * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
- * @param {String} type         the css property to change.
- * @param {String} value        the css value of the property.
- * @param {String} [stylesheet] the name of the stylesheet to change.
+ * This method sets a single CSS rule.
+ * @param {String} name         The CSS name of the rule (i.e. `.cls` or `#id`).
+ * @param {String} type         The CSS property to change.
+ * @param {String} value        The CSS value of the property.
+ * @param {String} [stylesheet] The name of the stylesheet to change.
+ * @param {Object} [win]        A reference to a window
  */
 apf.setStyleRule = function(name, type, value, stylesheet, win){
     name = name.toLowerCase();
@@ -6701,10 +6749,11 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
 };
 
 /**
- * This method gets a single css rule
- * @param {String} name         the css name of the rule (i.e. '.cls' or '#id').
- * @param {String} type         the css property to change.
- * @param {String} [stylesheet] the name of the stylesheet to change.
+ * This method gets a single CSS rule.
+ * @param {String} name         The CSS name of the rule (i.e. `.cls` or `#id`).
+ * @param {String} type         The CSS property to change.
+ * @param {String} [stylesheet] The name of the stylesheet to change.
+ * @param {Object} [win]        A reference to a window
  */
 apf.getStyleRule = function(name, type, stylesheet, win){
     name = name.toLowerCase();
@@ -6733,14 +6782,14 @@ apf.getStyleRule = function(name, type, stylesheet, win){
     }
     
     return false;
-}
+};
 
 /**
- * This method adds one class name to an HTMLElement and removes none or more.
- * @param {HTMLElement} oHtml        the HTMLElement to apply the css class to.
- * @param {String}      className    the name of the css class to apply.
- * @param {Array}       [exclusion]  a list of strings specifying names of css classes to remove.
- * @returns {HTMLElement}
+ * This method adds one class name to an HTMLElement. It can also remove classes.
+ * @param {HTMLElement} oHtml        The HTMLElement to apply the CSS class to.
+ * @param {String}      className    The name of the CSS class to apply.
+ * @param {Array}       [exclusion]  A list of strings specifying names of CSS classes to remove.
+ * @returns {HTMLElement} The modified `oHtml` element.
  */
 apf.setStyleClass = function(oHtml, className, exclusion, userAction){
     if (!oHtml || userAction && this.disabled)
@@ -6769,10 +6818,10 @@ apf.setStyleClass = function(oHtml, className, exclusion, userAction){
 };
 
 /**
- * This method imports a css stylesheet from a string
- * @param {String} cssString  the css definition
- * @param {Object} [doc]      the reference to the document where the css is applied on
- * @param {String} [media]    the media to which this css applies (i.e. 'print' or 'screen')
+ * This method imports a CSS stylesheet from a string.
+ * @param {String} cssString  The CSS definition
+ * @param {Object} [doc]      The reference to the document where the CSS is applied on
+ * @param {String} [media]    The media to which this CSS applies (_i.e._ `print` or `screen`)
  */
 apf.importCssString = function(cssString, doc, media){
     doc = doc || document;
@@ -6801,11 +6850,11 @@ apf.importCssString = function(cssString, doc, media){
 
 /**
  * This method retrieves the current value of a property on a HTML element
- * recursively. If the style isn't found on the element itself, it's parent is
+ * recursively. If the style isn't found on the element itself, its parent is
  * checked.
- * @param {HTMLElement} el    the element to read the property from
- * @param {String}      prop  the property to read
- * @returns {String}
+ * @param {HTMLElement} el    The element to read the property from
+ * @param {String}      prop  The property to read
+ * @returns {String} The retrieved value
  */
 apf.getStyleRecur = function(el, prop) {
     var value = apf.hasComputedStyle
@@ -6822,9 +6871,9 @@ apf.getStyleRecur = function(el, prop) {
 };
 
 /**
- * This method imports a stylesheet defined in a multidimensional array 
- * @param {Array}    def Required Multidimensional array specifying 
- * @param {Object}    win Optional Reference to a window
+ * This method imports a stylesheet defined by a multidimensional array. 
+ * @param {Array}    def  A multidimensional array specifying stylesheets to import
+ * @param {Object}   [win] A reference to a window
  * @method
  * @deprecated
  */    
@@ -6863,8 +6912,13 @@ apf.importStylesheet = function (def, win, stylesheet) {
             }
         }
     }
-}
+};
 
+/**
+ * This method constructs a stylesheet.
+ * @param {Object}  [win] A reference to a window
+ * @returns {String} The created CSS stylesheet
+ */ 
 apf.createStylesheet = function(win){
     var doc = (win || window).document;
     
@@ -6876,14 +6930,14 @@ apf.createStylesheet = function(win){
         doc.getElementsByTagName("head")[0].appendChild(elem);
         return elem.sheet;
     }
-}
+};
 
 /**
  * This method determines if specified coordinates are within the HTMLElement.
- * @param {HTMLElement} el  the element to check
- * @param {Number}      x   the x coordinate in pixels
- * @param {Number}      y   the y coordinate in pixels
- * @returns {Boolean}
+ * @param {HTMLElement} el  The element to check
+ * @param {Number}      x   The x-coordinate in pixels
+ * @param {Number}      y   The y-coordinate in pixels
+ * @returns {Boolean} `true` if the coordinates are within the element.
  */
 apf.isInRect = function(oHtml, x, y){
     var pos = this.getAbsolutePosition(oHtml);
@@ -6894,11 +6948,11 @@ apf.isInRect = function(oHtml, x, y){
 };
 
 /**
- * Retrieves the parent which provides the rectangle to which the HTMLElement is
- * bound and cannot escape. In css this is accomplished by having the overflow
- * property set to hidden or auto.
- * @param {HTMLElement} o  the element to check
- * @returns {HTMLElement}
+ * Retrieves the parent providing the rectangle to which the HTMLElement is
+ * bound and cannot escape. In CSS, this is accomplished by having the overflow
+ * property set to `"hidden"` or `"auto"`.
+ * @param {HTMLElement} o  The element to check
+ * @returns {HTMLElement} The parent element
  */
 apf.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
@@ -6912,10 +6966,10 @@ apf.getOverflowParent = function(o){
 };
 
 /**
- * Retrieves the first parent element which has a position absolute or
- * relative set.
- * @param {HTMLElement} o  the element to check
- * @returns {HTMLElement}
+ * Retrieves the first parent element which has a position `absolute` or
+ * `relative` set.
+ * @param {HTMLElement} o  The element to check
+ * @returns {HTMLElement} The parent element
  */
 apf.getPositionedParent = function(o){
     o = o.offsetParent;
@@ -6927,12 +6981,12 @@ apf.getPositionedParent = function(o){
 };
 
 /**
- * Retrieves the absolute x and y coordinates, relative to the browsers
- * drawing area or the specified refParent.
- * @param {HTMLElement} o           the element to check
- * @param {HTMLElement} [refParent] the reference parent
- * @param {Boolean}     [inclSelf]  whether to include the position of the element to check in the return value.
- * @returns {Array} the x and y coordinate of oHtml.
+ * Retrieves the absolute x- and y-coordinates, relative to the browser's
+ * drawing area or the specified `refParent`.
+ * @param {HTMLElement} o           The element to check
+ * @param {HTMLElement} [refParent] The reference parent
+ * @param {Boolean}     [inclSelf]  Whether to include the position of the element to check in the return value.
+ * @returns {Array} The x- and y-coordinates of `oHtml`.
  */
 apf.getAbsolutePosition = function(o, refParent, inclSelf){
     if ("getBoundingClientRect" in document.documentElement) { 
@@ -7045,18 +7099,35 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
 };
 
 //@todo its much faster to move these to browser specific files and eliminate apf.getStyle()
+/**
+ * Returns the distance between the border left and border right values of an element.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ * @see apf.getWidthDiff
+ */
 apf.getHorBorders = function(oHtml){
     return Math.max(0,
           (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
+/**
+ * Returns the distance between the border top and border bottom values of an element.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ */
 apf.getVerBorders = function(oHtml){
     return Math.max(0,
           (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
         + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
+/**
+ * Returns the distance between the border left and border right values of an element, taking padding into consideration.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ * @see apf.getHorBorders
+ */
 apf.getWidthDiff = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
@@ -7068,6 +7139,11 @@ apf.getWidthDiff = function(oHtml){
         + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
+/**
+ * Returns the distance between the border top and border bottom values of an element, taking padding into consideration.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation, or 0, if there's no difference
+ */
 apf.getHeightDiff = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
@@ -7079,6 +7155,12 @@ apf.getHeightDiff = function(oHtml){
         + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
+/**
+ * Returns an array with two elements. The first is the distance between the border top and border bottom values of an element, taking padding into consideration; 
+ * the second is the distance between the border top and border bottom values of an element, taking padding into consideration.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {[Number]} An array containing the differences
+ */
 apf.getDiff = function(oHtml){
     if (apf.hasFlexibleBox 
       && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
@@ -7094,6 +7176,12 @@ apf.getDiff = function(oHtml){
         + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))];
 };
 
+/**
+ * Returns an array with two elements. The first is the distance between the margin left and margin right values of an element; 
+ * the second is the distance between the margin top top and margin bottom values of an element.
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {[Number]} An array containing the differences
+ */
 apf.getMargin = function(oHtml) {
     return [(parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
         + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0),
@@ -7101,12 +7189,22 @@ apf.getMargin = function(oHtml) {
         + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)]
 };
 
+/**
+ * Returns the difference between an element's `offsetWidth`, with its border left and border right widths removed. 
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation
+ */
 apf.getHtmlInnerWidth = function(oHtml){
     return (oHtml.offsetWidth
         - (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
         - (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
+/**
+ * Returns the difference between an element's `offsetWidth`, with its border top and border bottom widths removed. 
+ * @param {HTMLElement} oHtml The element to check
+ * @returns {Number} The final calculation
+ */
 apf.getHtmlInnerHeight = function(oHtml){
     return (oHtml.offsetHeight
         - (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
@@ -7114,11 +7212,10 @@ apf.getHtmlInnerHeight = function(oHtml){
 };
 
 /**
- * Returns the viewport of the a window.
+ * Returns the viewport of a window.
  *
  * @param  {WindowImplementation} [win] The window to take the measurements of.
- * @return {Object}                     Viewport object with fields x, y, w and h.
- * @type   {Object}
+ * @returns {Object}                    Viewport object with  x, y, w, and h properties.
  */
 apf.getViewPort = function(win) {
     win = win || window;
@@ -7135,7 +7232,7 @@ apf.getViewPort = function(win) {
         width : win.innerWidth  || doc.clientWidth,
         height: win.innerHeight || doc.clientHeight
     };
-}
+};
 
 
 
@@ -7166,12 +7263,13 @@ apf.getViewPort = function(win) {
 
 /**
  * Manages the z-index of all elements in the UI. It takes care of different
- * regions in the z dimension preserved for certain common UI scenarios.
+ * regions in the z-dimension preserved for certain common UI scenarios.
  *
- * Remarks:
+ * #### Remarks
+ * 
  *  The following regions are defined:
  *  From:         To:           For:
- *            10        10000  Common Elements (each element a unique z index)
+ *           10        10000  Common Elements (each element a unique z index)
  *       100000       110000  Plane (Modal Windows / Maximized Panels) (latest shown highest)
  *       200000       210000  Popup (Menus / Dropdown Containers) (latest shown highest)
  *       300000       310000  Notifiers
@@ -7246,21 +7344,13 @@ apf.zmanager = function(){
 
 
 
-/**
- * @author      Fabian Jakobs
- * @version     %I%, %G%
- * @since       1.0
- *
- * @namespace apf
- *
- */
 
 /**
- * Perform an async function in serial on each of the list items
+ * Performs an async function in serial on each of the list items.
  * 
- * @param {Array} list
- * @param {Function} async async function of the form function(item, callback)
- * @param {Function} callback function of the form function(error), which is
+ * @param {Array} list A list of elements to iterate over asynchronously
+ * @param {Function} async An ssync function of the form `function(item, callback)`
+ * @param {Function} callback A function of the form `function(error)`, which is
  *      called after all items have been processed
  */
 apf.asyncForEach = function(list, async, callback) {
@@ -7282,13 +7372,13 @@ apf.asyncForEach = function(list, async, callback) {
 };
 
 /**
- * Perform an async function in serial while the function 'condition' (first 
+ * Performs an async function in serial, as long as the function 'condition' (first 
  * argument) evaluates to true.
  * 
- * @param {Function} condition function that returns a Boolean, which determines
+ * @param {Function} condition A function that returns a [Boolean], which determines
  *                             if the loop should continue
- * @param {Function} async     async function of the form function(iteration_no, callback)
- * @param {Function} callback  function of the form function(error), which is
+ * @param {Function} async     async A function of the form `function(iteration_no, callback)`
+ * @param {Function} callback  A function of the form `function(error)`, which is
  *                             called after all items have been processed
  */
 apf.asyncWhile = function(condition, async, callback) {
@@ -7306,16 +7396,18 @@ apf.asyncWhile = function(condition, async, callback) {
 };
 
 /**
- * Map each element from the list to the result returned by the async mapper
- * function. The mapper takes an element from the list and a callback as arguments.
- * After completion the mapper has to call the callback with an (optional) error
- * object as first and the result of the map as second argument. After all
- * list elements have been processed the last callback is called with the mapped
+ * Maps each element from the list to the result returned by the async mapper
+ * function. 
+ *
+ * The mapper takes an element from the list and a callback as arguments.
+ * After completion, the mapper has to call the callback with an (optional) error
+ * object as the first argument, and the result of the map as second argument. After all
+ * list elements have been processed, the last callback is called with the mapped
  * array as second argument.
  * 
- * @param {Array} list
- * @param {Function} mapper function of the form function(item, next)
- * @param {Function} callback function of the form function(error, result)
+ * @param {Array} list A list of elements to iterate over asynchronously
+ * @param {Function}  mapper A function of the form `function(item, next)`
+ * @param {Function} callback A function of the form `function(error, result)`
  */
 apf.asyncMap = function(list, mapper, callback) {
     var i = 0;
@@ -7340,12 +7432,14 @@ apf.asyncMap = function(list, mapper, callback) {
 
 
 /**
- * Chains an array of functions. Each of the functions except the last one must
- * have excatly one 'callback' argument, which has to be called after the functions has
- * finished. If the callback fails if has to pass a non null error object as
+ * Chains an array of functions. 
+ *
+ * Each of the functions (except the last one) must
+ * have exactly one `callback` argument, which must be called after the functions has
+ * finished. If the callback fails, it must pass a non-null error object as the
  * first argument to the callback.
  * 
- * @param {Array} funcs
+ * @param {Array} funcs An array of functions to chain together.
  */
 apf.asyncChain = function(funcs) {
     var i = 0;
@@ -7360,7 +7454,7 @@ apf.asyncChain = function(funcs) {
     }
     
     next();
-}
+};
 
 
 
@@ -7503,14 +7597,15 @@ apf.hotkeys = {};
 
     /**
      * Registers a hotkey handler to a key combination.
-     * Example:
-     * <code>
+     * 
+     * #### Example:
+     * ```javascript
      *   apf.registerHotkey('Ctrl-Z', undoHandler);
-     * </code>
-     * @param {String}   hotkey  the key combination to user. This is a
-     * combination of Ctrl, Alt, Shift and a normal key to press. Use + to
+     * ```
+     * @param {String}   hotkey  The key combination to user. This is a
+     * combination of [[keys: Ctrl]], [[keys: Alt]], [[keys: Shift]] and a normal key to press. Use `+` to
      * seperate the keys.
-     * @param {Function} handler the code to be executed when the key
+     * @param {Function} handler The code to be executed when the key
      * combination is pressed.
      */
     apf.registerHotkey = this.register = function(hotkey, handler){
@@ -7545,7 +7640,9 @@ apf.hotkeys = {};
 
     /**
      * Removes a registered hotkey.
-     * @param {String} hotkey the hotkey combination.
+     * @param {String} hotkey The hotkey combination to remove
+     * @param {Function} handler The code to be executed when the key
+     * combination is pressed.
      */
     apf.removeHotkey = this.remove = this.unregister = function(hotkey, handler) {
         var parts = hotkey.split("|"),
@@ -7626,37 +7723,71 @@ apf.hotkeys = {};
 
 
 
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
 /**
- * Implementation of hash change listener. The 'hash' is the part of the
+ * @class apf.history
+ *
+ * Implements a hash change listener. The 'hash' is the part of the
  * location string in your browser that takes care of pointing to a section
  * within the current application.
- * Example:
- * <code>
+ * 
+ * #### Example
+ * ```
  *  www.example.com/index.php#products
- * </code>
- * Remarks:
- * In future browsers (> 2009) the location hash can be set by script and
- * {@link element.history.event.hashchange} is called when it's changed by using the back or forward
+ * ```
+ * 
+ * #### Remarks
+ * 
+ * In modern browsers (after 2009) the location hash can be set by script and
+ * {@link apf.history@hashchange} is called when it's changed by using the back or forward
  * button of the browsers. In most of the current (2009) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.
  *
- * Note on Internet Explorer 8. When switching between the IE7 compatibility mode
- * and IE8 mode the history navigation will break. A browser restart is then 
+ * Note: For Internet Explorer 8, when switching between the IE7 compatibility mode
+ * and IE8 mode the history navigation breaks. A browser restart is then 
  * required to fix it. Individually history navigation works fine in each mode.
  *
+ */
+/**
  * @event hashchange Fires when the hash changes. This can be either by setting
  * a new hash value or when a user uses the back or forward button. Typing a
  * new hash value in the location bar will also trigger this function.
- * Example:
- * <code>
+ *
+ * #### Example
+ *
+ * ```javascript
  *  apf.addEventListener("hashchange", function(e){
  *      var info = e.page.split(":");
  *
  *      switch(info[0]) {
  *          case "product": //hash is for instance 'product:23849'
  *              //Sets the application state to display product info
- *              //For more information see {@link element.state}
+ *              //For more information see apf.state
  *              stProduct.activate(); 
  *              //Loads a product by id
  *              loadProduct(info[1]); 
@@ -7666,7 +7797,7 @@ apf.hotkeys = {};
  *              break;
  *      }
  *  });
- * </code>
+ * ```
  *
  * @default_private
  */
@@ -7773,9 +7904,10 @@ apf.history = {
     /**
      * Sets the hash value of the location bar in the browser. This is used
      * to represent the state of the application for use by the back and forward
-     * buttons as well as for use when bookmarking or sharing url's.
-     * @param {String}  name    the new hash value.
-     * @param {Boolean} timed   whether to add a delay to setting the value.
+     * buttons, as well as for use when bookmarking or sharing URLs.
+     * @param {String}  name    The new hash value
+     * @param {Boolean} timed   Whether to add a delay to setting the value
+     * @param {Boolean} force   Forces the change to overwrite any existing value
      */
     setHash : function(name, timed, force){
         if (this.changing || this.page == name || !force
@@ -8056,7 +8188,7 @@ if (apf.history)
 
 apf.offline = {
     onLine : true
-}
+};
 
 
 
@@ -8369,16 +8501,16 @@ apf.offline = {
 
 
 /**
- * The xml database object provides local storage for xml data. This object
- * routes all changes to the xml data to the data bound objects. It further
- * provides utility functions for xml handling.
+ * The XML database object provides local storage for XML data. This object
+ * routes all changes to the XML data to the data bound objects. It also
+ * provides utility functions for XML handling.
  *
- * @constructor
- * @apfclass
+ * @class apf.xmldb
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ * @additional
  *
  * @default_private
  */
@@ -8423,7 +8555,7 @@ apf.xmldb = new (function(){
           }, 60000)
         : null;
 
-    /**
+    /*
      * @private
      */
     this.getElementById = function(id, doc){
@@ -8436,7 +8568,7 @@ apf.xmldb = new (function(){
             + this.xmlIdTag + "='" + id + "']");
     };
 
-    /**
+    /*
      * @private
      */
     this.getNode = function(htmlNode){
@@ -8447,7 +8579,7 @@ apf.xmldb = new (function(){
             .split("\|", 2).join("|"));
     };
 
-    /**
+    /*
      * @private
      */
     this.getNodeById = function(id, doc){
@@ -8456,14 +8588,14 @@ apf.xmldb = new (function(){
         return this.getElementById(q.join("|"), doc);//id.split("\|", 2).join("|")
     };
 
-    /**
+    /*
      * @private
      */
     this.getDocumentById = function(id){
         return this.$xmlDocLut[id];
     };
 
-    /**
+    /*
      * @private
      */
     this.getDocument = function(node){
@@ -8477,7 +8609,7 @@ apf.xmldb = new (function(){
         return xmlNode.getAttribute(this.xmlIdTag) + "|" + o.$uniqueId;
     };
 
-    /**
+    /*
      * @private
      */
     this.getElement = function(parent, nr){
@@ -8491,9 +8623,9 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Sets the model of an element
+     * Sets the model of an element.
      *
-     * @param {Model} The model to be set
+     * @param {apf.model} The model to be set
      *
      */
     this.setModel = function(model){
@@ -8504,9 +8636,9 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Find the model of an element
+     * Finds the model of an element.
      *
-     * @param {XMLNode} xmlNode the {@link term.datanode data node} to find its model.
+     * @param {XMLNode} xmlNode The {@link term.datanode data node} to find its model.
      *
      */
     this.findModel = function(xmlNode){
@@ -8516,20 +8648,20 @@ apf.xmldb = new (function(){
         
     };
 
-    /**
+    /*
      * @private
      */
     this.getXmlId = function(xmlNode){
         return xmlNode.getAttribute(this.xmlIdTag) ||
           this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
-    }
+    };
 
     /**
-     * Gets the html representation of an xml node for a certain element.
+     * Gets the HTML representation of an XML node for a certain element.
      *
-     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {AMLNode} oComp    the element that has created the representation.
-     * @return {HTMLNode} the html node representing the xml node.
+     * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
+     * @param {apf.AmlNode} oComp    The element that has created the representation.
+     * @return {DOMNode} The HTML node representing the XML node.
      */
     this.getHtmlNode = function(xmlNode, oComp){
         if (xmlNode && xmlNode.nodeType == 1 && xmlNode.getAttribute(this.xmlIdTag)) {
@@ -8537,14 +8669,14 @@ apf.xmldb = new (function(){
                 + "|" + oComp.$uniqueId);
         }
         return null;
-    }
+    };
 
     /**
-     * Finds the html representation of an xml node for a certain element.
+     * Finds the HTML representation of an XML node for a certain element.
      *
-     * @param {XMLNode} xmlNode  the {@link term.datanode data node} which is represented by the hml element.
-     * @param {AMLNode} oComp    the element that has created the representation.
-     * @return {HTMLNode} the html node representing the xml node.
+     * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
+     * @param {apf.AmlNode} oComp    The element that has created the representation.
+     * @return {DOMNode} The HTML node representing the XML node.
      */
     this.findHtmlNode = function(xmlNode, oComp){
         do {
@@ -8563,10 +8695,10 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Finds the {@link term.datanode data node} that is represented by the html node.
+     * Finds the {@link term.datanode data node} that is represented by the HTML node.
      *
-     * @param {HTMLNode} htmlNode  the html node representing the an xml node.
-     * @return {XMLNode} the {@link term.datanode data node} for which the html node is it's representation.
+     * @param {DOMNode} htmlNode  The HTML node representing the an XML node.
+     * @return {XMLNode} The {@link term.datanode data node} for which the HTML node is its representation.
      */
     this.findXmlNode = function(htmlNode){
         if (!htmlNode)
@@ -8593,7 +8725,7 @@ apf.xmldb = new (function(){
 
     this.getXml = apf.getXml;
 
-    /**
+    /*
      * @private
      */
     this.nodeConnect = function(documentId, xmlNode, htmlNode, o){
@@ -8615,13 +8747,15 @@ apf.xmldb = new (function(){
         return htmlId;
     };
 
-    /**
-     * @private
-     * @todo this is cleanup hell! Listeners should be completely rearchitected
-     */
 
-    // make sure that "0" is never a listener index
-    this.$listeners = [null];
+
+    this.$listeners = [null];    
+    // make sure that "0" is never a listener index    
+    // @todo this is cleanup hell! Listeners should be completely rearchitected
+    /*
+     * @private
+     * 
+     */
     this.addNodeListener = function(xmlNode, o, uId){
         
 
@@ -8676,7 +8810,7 @@ apf.xmldb = new (function(){
         return xmlNode;
     };
 
-    /**
+    /*
      * @todo  Use this function when an element really unbinds from a
      *        piece of data and does not uses it for caching
      * @private
@@ -8705,14 +8839,15 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Sets the value of a text node. If the node doesn't exists it is created.
+     * Sets the value of a text node. If the node doesn't exist, it is created.
+     *
      * Changes are propagated to the databound elements listening for changes
      * on the data changed.
      *
-     * @param {XMLElement} pNode     the parent of the text node.
-     * @param {String}     value     the value of the text node.
-     * @param {String}     [xpath]   the xpath statement which selects the text node.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} pNode     The parent of the text node.
+     * @param {String}     value     The value of the text node.
+     * @param {String}     [xpath]   The xpath statement which selects the text node.
+     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.setTextNode =
     apf.setTextNode  = function(pNode, value, xpath, undoObj, range){
@@ -8762,11 +8897,11 @@ apf.xmldb = new (function(){
      * Sets an attribute on a node. Changes are propagated to the databound
      * elements listening for changes on the data changed.
      *
-     * @param {XMLElement} xmlNode   the xml node to set the attribute on.
-     * @param {String}     name      the name of the attribute.
-     * @param {String}     value     the value of the attribute.
-     * @param {String}     [xpath]   the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} xmlNode   The XML node to set the attribute on.
+     * @param {String}     name      The name of the attribute.
+     * @param {String}     value     The value of the attribute.
+     * @param {String}     [xpath]   The xpath statement to select the attribute.
+     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.setAttribute =
     apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
@@ -8790,13 +8925,13 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Removes an attribute of an xml node. Changes are propagated to the
+     * Removes an attribute of an XML node. Changes are propagated to the
      * databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} xmlNode   the xml node to delete the attribute from
-     * @param {String}     name      the name of the attribute.
-     * @param {String}     [xpath]   the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} xmlNode   The XML node to delete the attribute from
+     * @param {String}     name      The name of the attribute.
+     * @param {String}     [xpath]   The xpath statement to select the attribute.
+     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.removeAttribute =
     apf.removeAttribute  = function(xmlNode, name, xpath, undoObj){
@@ -8821,10 +8956,10 @@ apf.xmldb = new (function(){
      * Replace one node with another. Changes are propagated to the
      * databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} oldNode   the xml node to remove.
-     * @param {XMLElement} newNode   the xml node to set.
-     * @param {String}     [xpath]   the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj] the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} oldNode   The XML node to remove.
+     * @param {XMLElement} newNode   The XML node to set.
+     * @param {String}     [xpath]   The xpath statement to select the attribute.
+     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.replaceNode =
     apf.replaceNode  = function(newNode, oldNode, xpath, undoObj){
@@ -8868,15 +9003,15 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Creates a new element under a parent xml node. Changes are propagated
+     * Creates a new element under a parent XML node. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} pNode       the parent xml node to add the new element to.
-     * @param {String}     tagName     the tagName of the {@link term.datanode data node} to add.
+     * @param {XMLElement} pNode       The parent XML node to add the new element to.
+     * @param {String}     tagName     The tagName of the {@link term.datanode data node} to add.
      * @param {Array}      attr        list of the attributes to set. Each item is another array with the name and value.
-     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
-     * @param {String}     [xpath]     the xpath statement to select the attribute.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
+     * @param {String}     [xpath]     The xpath statement to select the attribute.
+     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.addChildNode =
     apf.addChildNode  = function(pNode, tagName, attr, beforeNode, undoObj){
@@ -8904,15 +9039,15 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Appends an xml node to a parent. Changes are propagated
+     * Appends an XML node to a parent. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} pNode       the parent xml node to add the element to.
-     * @param {XMLElement} xmlNode     the xml node to insert.
-     * @param {XMLElement} beforeNode  Node  the xml node which indicates the insertion point.
-     * @param {Boolean}    unique      whether the parent can only contain one element with a certain tagName.
-     * @param {String}     [xpath]     the xpath statement to select the parent node.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} pNode       The parent XML node to add the element to.
+     * @param {XMLElement} xmlNode     The XML node to insert.
+     * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
+     * @param {Boolean}    unique      Specifies whether the parent can only contain one element with a certain tag name.
+     * @param {String}     [xpath]     The xpath statement to select the parent node.
+     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.appendChild =
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
@@ -8967,14 +9102,14 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Moves an xml node to a parent node. Changes are propagated
+     * Moves an XML node to a parent node. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} pNode       the new parent xml node of the node.
-     * @param {XMLElement} xmlNode     the xml node to move.
-     * @param {XMLElement} beforeNode  the xml node which indicates the insertion point.
-     * @param {String}     [xpath]     the xpath statement to select the parent node.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} pNode       The new parent XML node of the node.
+     * @param {XMLElement} xmlNode     The XML node to move.
+     * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
+     * @param {String}     [xpath]     The xpath statement to select the parent node.
+     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.moveNode =
     apf.moveNode  = function(pNode, xmlNode, beforeNode, xpath, undoObj){
@@ -9014,12 +9149,12 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Removes an xml node from it's parent. Changes are propagated
+     * Removes an XML node from its parent. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {XMLElement} xmlNode     the xml node to remove from the dom tree.
-     * @param {String}     [xpath]     the xpath statement to select the parent node.
-     * @param {UndoObj}    [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {XMLElement} xmlNode     The XML node to remove from the dom tree.
+     * @param {String}     [xpath]     The xpath statement to select the parent node.
+     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.removeNode =
     apf.removeNode  = function(xmlNode, xpath, undoObj){
@@ -9051,11 +9186,11 @@ apf.xmldb = new (function(){
     };
 
     /**
-     * Removes a list of xml nodes from their parent. Changes are propagated
+     * Removes a list of XML nodes from their parent. Changes are propagated
      * to the databound elements listening for changes on the data changed.
      *
-     * @param {Array}   xmlNodeList list of xml nodes to remove.
-     * @param {UndoObj} [undoObj]   the undo object that is responsible for archiving the changes.
+     * @param {Array}   xmlNodeList A list of XML nodes to remove.
+     * @param {apf.UndoData} [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.removeNodeList =
     apf.removeNodeList  = function(xmlNodeList, undoObj){
@@ -9087,7 +9222,7 @@ apf.xmldb = new (function(){
         }
     };
 
-    /**
+    /*
      * Looks for this.$listeners and executes their $xmlUpdate methods.
      * @private
      */
@@ -9202,7 +9337,7 @@ apf.xmldb = new (function(){
         }
     };
 
-    /**
+    /*
      *  @todo in actiontracker - add stack auto purging
      *        - when undo item is purged which was a removed, remove cache item
      *  @todo shouldn't the removeNode method remove all this.$listeners?
@@ -9237,7 +9372,7 @@ apf.xmldb = new (function(){
         }
 
 
-    }
+    };
 
     /**
      * @private
@@ -9255,7 +9390,7 @@ apf.xmldb = new (function(){
     };
 
     
-    /**
+    /*
      * Sends Message through transport to tell remote databound this.$listeners
      * that data has been changed
      * @private
@@ -9354,8 +9489,8 @@ apf.xmldb = new (function(){
      * data nodes contain special attributes to track them. These attributes
      * are removed from the copied node when using this method.
      *
-     * @param {XMLElement} xmlNode the {@link term.datanode data node} to copy.
-     * @return {XMLElement} the copy of the {@link term.datanode data node}.
+     * @param {XMLElement} xmlNode The {@link term.datanode data node} to copy.
+     * @return {XMLElement} The copy of the {@link term.datanode data node}.
      */
     this.copy         =
     this.getCleanCopy =
@@ -9400,7 +9535,7 @@ apf.xmldb = new (function(){
             window.clearInterval(this.$gcInterval);
     };
 
-    /**
+    /*
      * @private
      * @todo xml doc leakage
      */
@@ -9563,7 +9698,7 @@ apf.setZeroTimeout = !window.postMessage
 
 
 
-/**
+/*
  *
  */
 apf.queue = {
@@ -9641,11 +9776,15 @@ apf.queue = {
 
 
 /**
+ * 
+ * Controls the skinning modifications for AML.
+ *
  * @private
  */
 apf.skins = {
     skins  : {},
     css    : [],
+    // @TODO Doc these ?
     events : ["onmousemove", "onmousedown", "onmouseup", "onmouseout",
         "onclick", "ondragcopy", "ondragstart", "ondblclick"],
 
@@ -9742,10 +9881,10 @@ apf.skins = {
     },
 
     /**
-     * This method loads a stylesheet from a url
-     * @param {String}    filename Required The url to load the stylesheet from
-     * @param {String}    title Optional Title of the stylesheet to load
-     * @method
+     * Loads a stylesheet from a URL.
+     * @param {String}    filename  The url to load the stylesheet from
+     * @param {String}    [title]  Title of the stylesheet to load
+     * @method loadStylesheet
      */
     loadStylesheet: function(filename, title){
         var o;
@@ -9972,7 +10111,7 @@ apf.skins = {
  *
  */
 
-/**
+/*
  * @version: 1.0 Alpha-1
  * @author: Coolite Inc. http://www.coolite.com/
  * @date: 2008-04-13
@@ -10138,7 +10277,6 @@ apf.skins = {
     /**
      * Resets the time of this Date object to 12:00 AM (00:00), which is the 
      * start of the day.
-     * @param {Boolean}  .clone() this date instance before clearing Time
      * @return {Date}    this
      */
     $P.clearTime = function() {
@@ -10337,14 +10475,9 @@ apf.skins = {
     };
 
     /**
-     * Determines if the current Date instance occurs today.
-     * @return {Boolean} true if this date instance is 'today', otherwise false.
-     */
-    
-    /**
      * Determines if the current Date instance occurs on the same Date as the supplied 'date'. 
      * If no 'date' to compare to is provided, the current Date instance is compared to 'today'. 
-     * @param {date}     Date object to compare. If no date to compare, the current Date ("now") is used.
+     * @param {Date}     Date object to compare. If no date to compare, the current Date ("now") is used.
      * @return {Boolean} true if this Date instance occurs on the same Day as the supplied 'date'.
      */
     $P.isToday = $P.isSameDay = function(date) {
@@ -11093,8 +11226,104 @@ apf.skins = {
 
 
 /**
- * Object dealing with layout updates
+ * @class apf.layout
+ *
+ * Takes care of the spatial order of elements within the display area
+ * of the browser. Layouts can be saved to XML and loaded again. Window
+ * elements are dockable, which means the user can change the layout as s/he
+ * wishes. The state of the layout can be saved as XML at any time.
+ *
+ * #### Example
+ * 
+ * This example shows five windows which have a layout defined in layout.xml.
+ * 
+ * ```xml
+ *  <a:appsettings layout="[mdlLayouts::layout[1]]" />
+ *  <a:model id="mdlLayouts" src="layout.xml" />
+ *  
+ *  <a:window title="Main Window" id="b1" />
+ *  <a:window title="Tree Window" id="b2" />
+ *  <a:window title="Window of Oppertunity" id="b3" />
+ *  <a:window title="Small window" id="b4" />
+ *  <a:window title="Some Window" id="b5" />
+ * ```
+ *
+ * This is the layout file containing two layouts (_layout.xml_):
+ * 
+ * ```xml
+ *  <layouts>
+ *      <layout name="Layout 1" margin="2,2,2,2">
+ *          <vbox edge="splitter">
+ *              <node name="b1" edge="2"/>
+ *              <hbox edge="2">
+ *                  <vbox weight="1">
+ *                      <node name="b2"/>
+ *                      <node name="b3"/>
+ *                  </vbox>
+ *                  <node name="b4" weight="1" />
+ *              </hbox>
+ *              <node name="b5" height="20" />
+ *          </vbox>
+ *      </layout>
+ *
+ *      <layout name="Layout 2">
+ *          <vbox edge="splitter">
+ *              <node name="b1" edge="2" />
+ *              <node name="b2" height="100" />
+ *              <hbox edge="2">
+ *                  <node name="b3" width="20%" />
+ *                  <node name="b4" width="100" />
+ *              </hbox>
+ *              <node name="b5" height="20" />
+ *          </vbox>
+ *      </layout>
+ *  </layouts>
+ * ```
+ *
+ * By binding on the _layout.xml_ you can easily create a layout manager.
+ * 
+ * ```xml
+ *  <a:list id="lstLayouts"
+ *    model          = "mdlLayouts"
+ *    allowdeselect  = "false"
+ *    onafterselect  = "
+ *      if(!this.selected || apf.layout.isLoadedXml(this.selected))
+ *          return;
+ *     
+ *      apf.layout.saveXml();
+ *      apf.layout.loadXml(this.selected);
+ *    "
+ *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
+ *      <a:bindings>
+ *          <a:caption match="[@name]" />
+ *          <a:icon value="layout.png" />
+ *          <a:each match="[layout]" />
+ *      </a:bindings>
+ *      <a:actions>
+ *          <a:rename match="[.]" />
+ *          <a:remove match="[.]" />
+ *      </a:actions>
+ *  </a:list>
+ *  <a:button
+ *    onclick = "
+ *      if (!lstLayouts.selected)
+ *          return;
+ *     
+ *      var newLayout = apf.layout.getXml(document.body);
+ *      newLayout.setAttribute('name', 'New');
+ *      apf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
+ *      lstLayouts.select(newLayout, null, null, null, null, true);
+ *      apf.layout.loadXml(newLayout);
+ *      lstLayouts.startRename();
+ *    ">
+ *    Add Layout
+ *  </a:button>
+ * ```
+ *
+ * @default_private
  */
+ // @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this element.
+
 apf.layout = {
     compile : function(oHtml){
         var l = this.layouts[oHtml.getAttribute("id")];
@@ -11202,11 +11431,11 @@ apf.layout = {
 
     /**
      * Adds layout rules to the resize event of the browser. Use this instead
-     * of onresize events to add rules that specify determine the layout.
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element. Use this to easily update or remove the rules added.
-     * @param {String}      rules       the javascript code that is executed when the html element resizes.
-     * @param {Boolean}     [overwrite] whether the rules are added to the resize function or overwrite the previous set rules with the specified id.
+     * of `"onresize"` events to add rules that specify determine the layout.
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {String}      id          The identifier for the rules within the resize function of this element. Use this to easily update or remove the rules added.
+     * @param {String}      rules       The JavaScript code that is executed when the html element resizes.
+     * @param {Boolean}     [overwrite] Whether the rules are added to the resize function or overwrite the previous set rules with the specified id.
      */
     setRules : function(oHtml, id, rules, overwrite){
         if (!this.getHtmlId(oHtml))
@@ -11223,9 +11452,9 @@ apf.layout = {
     },
 
     /**
-     * Retrieves the rules set for the resize event of an html element specified by an identifier
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element.
+     * Retrieves the rules set for the `"resize"` event of an HTML element specified by an identifier
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {String}      id          The identifier for the rules within the resize function of this element.
      */
     getRules : function(oHtml, id){
         return id
@@ -11234,9 +11463,9 @@ apf.layout = {
     },
 
     /**
-     * Removes the rules set for the resize event of an html element specified by an identifier
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
-     * @param {String}      id          the identifier for the rules within the resize function of this element.
+     * Removes the rules set for the `"resize"` event of an html element specified by an identifier
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {String}      id          The identifier for the rules within the resize function of this element.
      */
     removeRule : function(oHtml, id){
         var htmlId = this.getHtmlId(oHtml);
@@ -11274,8 +11503,9 @@ apf.layout = {
     },
 
     /**
-     * Activates the rules set for an html element
-     * @param {HTMLElement} oHtml       the element that triggers the execution of the rules.
+     * Activates the rules set for an HTML element
+     * @param {HTMLElement} oHtml       The element that triggers the execution of the rules.
+     * @param {Boolean} [no_exec]       
      */
     activateRules : function(oHtml, no_exec){
         if (!oHtml) { //!apf.hasSingleRszEvent &&
@@ -11379,8 +11609,8 @@ apf.layout = {
     },
 
     /**
-     * Forces calling the resize rules for an html element
-     * @param {HTMLElement} oHtml  the element for which the rules are executed.
+     * Forces calling the resize rules for an HTML element
+     * @param {HTMLElement} oHtml  The element for which the rules are executed.
      */
     forceResize : function(oHtml){
         if (apf.hasSingleRszEvent)
@@ -11406,9 +11636,9 @@ apf.layout = {
     paused : {},
 
     /**
-     * Disables the resize rules for the html element temporarily.
-     * @param {HTMLElement} oHtml  the element for which the rules are paused.
-     * @param {Function}    func   the resize code that is used temporarily for resize of the html element.
+     * Temporarily disables the resize rules for the HTML element.
+     * @param {HTMLElement} oHtml  The element for which the rules are paused.
+     * @param {Function}    func   The resize code that is used temporarily for resize of the HTML element.
      */
     pause  : function(oHtml, replaceFunc){
         if (apf.hasSingleRszEvent) {
@@ -11436,8 +11666,8 @@ apf.layout = {
     },
 
     /**
-     * Enables paused resize rules for the html element
-     * @param {HTMLElement} oHtml  the element for which the rules have been paused.
+     * Enables paused resize rules for the HTML element
+     * @param {HTMLElement} oHtml  The element for which the rules were paused.
      */
     play : function(oHtml){
         if (!this.paused[this.getHtmlId(oHtml)])
@@ -11752,7 +11982,7 @@ apf.Sort = function(xmlNode){
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
- * @namespace apf
+ * 
  */
 
 apf.resize = function() {
@@ -11783,7 +12013,7 @@ apf.resize = function() {
         gridH     : 48
     };
 
-    /**
+    /*
      * html representation of resized block element
      */
     this.htmlElement;
@@ -11871,7 +12101,7 @@ apf.resize = function() {
     };
 };
 
-/**
+/*
  * Creates html and object representation for square element. Square is used for
  * resizing block elements.
  * 
@@ -11889,15 +12119,15 @@ apf.resize = function() {
  * @constructor
  */
 apf.resize.square = function(posY, posX, objResize) {
-    /**
+    /*
      * Square visibility
      */
     this.visible  = true;
-    /**
+    /*
      * square vertical align relative to resized block element
      */
     this.posX     = posX;
-    /**
+    /*
      * square vertical align relative to resized block element
      */
     this.posY     = posY;
@@ -11905,13 +12135,13 @@ apf.resize.square = function(posY, posX, objResize) {
     var margin = 0;
     var _self  = this;
 
-    /**
+    /*
      * html represenation of square element
      */
     this.htmlElement = objResize.htmlElement.parentNode.appendChild(document.createElement('div'));
     apf.setStyleClass(this.htmlElement, "square");
 
-    /**
+    /*
      * Repaints square
      */
     this.repaint = function() {
@@ -12107,7 +12337,7 @@ apf.resize.square = function(posY, posX, objResize) {
             }
         };
     };
-}
+};
 
 
 
@@ -12163,7 +12393,10 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 /**
- * The animation library that is used for the animations inside elements
+ * The library that is used for the animations inside elements.
+ *
+ * @class apf.tween
+ *
  * @default_private
  */
 apf.tween = (function(apf) {
@@ -12362,9 +12595,16 @@ var ID        = "id",
         }
     },
 
+     // @TODO Doc
     /**
      * Calculates all the steps of an animation between a
-     * begin and end value based on 3 tween strategies
+     * begin and end value based on three tween strategies
+     *
+     * @method calcSteps
+     * @param func {Function}
+     * @param fromValue {String}
+     * @param fromValue {String}
+     * @param nrOfSteps {Number}
      */
     calcSteps = function(func, fromValue, toValue, nrOfSteps){
         var i     = 0,
@@ -12397,9 +12637,16 @@ var ID        = "id",
         return steps;
     },
 
+     // @TODO Doc
     /**
      * Calculates all the steps of an animation between a
      * begin and end value for colors
+     *  
+     * @method calcColorSteps   
+     * @param animtype {Function}
+     * @param fromValue {String}
+     * @param fromValue {String}
+     * @param nrOfSteps {Number}
      */
     calcColorSteps = function(animtype, fromValue, toValue, nrOfSteps){
         var d2, d1,
@@ -12420,57 +12667,63 @@ var ID        = "id",
         return out;
     },
 
+     // @TODO Doc wtf is stop ?
     /**
-     * Tweens a single property of a single element or html element from a
+     * Tweens a single property of a single element or HTML element from a
      * start to an end value.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```javascript
      *  apf.tween.single(myDiv, {
      *      type : "left",
      *      from : 10,
      *      to   : 100,
      *      anim : apf.tween.EASEIN
      *  });
-     * </code>
-     * Example:
-     * Multiple animations can be run after eachother
+     * ```
+     *
+     * #### Example
+     * 
+     * Multiple animations can be run after each other
      * by calling this function multiple times.
-     * <code>
+     * 
+     * ```javascript
      *  apf.tween.single(myDiv, options).single(myDiv2, options2);
-     * </code>
-     * @param {Element}  oHtml the object to animate.
-     * @param {Object}   info  the animation settings.
-     *   Properties:
-     *   {String}   type        the property to be animated. These are predefined
+     * ```
+     *
+     * @method single
+     * @param {DOMNode}  oHtml The object to animate.
+     * @param {Object}   info  The animation settings. The following properties are available:
+     *   - type ([[String]]): The property to be animated. These are predefined
      *                          property handlers and can be added by adding a
-     *                          method to apf.tween with the name of the property
-     *                          modifier. Default there are several handlers available.
-     *      Possible values:
-     *      left            Sets the left position
-     *      right           Sets the right position
-     *      top             Sets the top position
-     *      bottom          Sets the bottom position
-     *      width           Sets the horizontal size
-     *      height          Sets the vertical size
-     *      scrollTop       Sets the scoll position
-     *      mwidth          Sets the width and the margin-left to width/2
-     *      mheight         Sets the height ant the margin-top to height/2
-     *      scrollwidth     Sets the width an sets the scroll to the maximum size
-     *      scrollheight    Sets the height an sets the scroll to the maximum size
-     *      scrolltop       Sets the height and the top as the negative height value
-     *      fade            Sets the opacity property
-     *      bgcolor         Sets the background color
-     *      textcolor       Sets the text color
-     *   {Number, String} from  the start value of the animation
-     *   {Number, String} to    the end value of the animation
-     *   {Number}   [steps]     the number of steps to divide the tween in
-     *   {Number}   [interval]  the time between each step
-     *   {Number}   [anim]      the distribution of change between the step over the entire animation
-     *   {Boolean}  [color]     whether the specified values are colors
-     *   {Mixed}    [userdata]  any data you would like to have available in your callback methods
-     *   {Function} [onfinish]  a function that is called at the end of the animation
-     *   {Function} [oneach]    a function that is called at each step of the animation
-     *   {Object}   [control]   an object that can stop the animation at any point
+     *                          method to `apf.tween` with the name of the property
+     *                          modifier. There are several handlers available.
+     *      - `"left"`:            Sets the left position
+     *      - `"right"`:           Sets the right position
+     *      - `"top"`:            Sets the top position
+     *      - `"bottom"`:          Sets the bottom position
+     *      - `"width"` :          Sets the horizontal size
+     *      - `"height"`:          Sets the vertical size
+     *      - `"scrollTop"`:       Sets the scoll position
+     *      - `"mwidth"` :         Sets the width and the margin-left to width/2
+     *      - `"mheight"` :        Sets the height ant the margin-top to height/2
+     *      - `"scrollwidth"`:     Sets the width an sets the scroll to the maximum size
+     *      - `"scrollheight"`:    Sets the height an sets the scroll to the maximum size
+     *      - `"scrolltop"` :      Sets the height and the top as the negative height value
+     *      - `"fade"` :           Sets the opacity property
+     *      - `"bgcolor"`:         Sets the background color
+     *      - `"textcolor"`:       Sets the text color
+     *   - from ([[Number]] or [[String]]): The start value of the animation
+     *   - to ([[Number]] or [[String]]): The end value of the animation
+     *   - [steps] ([[Number]]): The number of steps to divide the tween in
+     *   - [interval] ([[Number]]): The time between each step
+     *   - [anim] ([[Number]]): The distribution of change between the step over the entire animation.             
+     *   - [color] ([[Boolean]]): Specifies whether the specified values are colors
+     *   - [userdata] (`Mixed`): Any data you would like to have available in your callback methods
+     *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
+     *   - [oneach] ([[Function]]): A function that is called at each step of the animation
+     *   - [control] ([[Object]]): An object that can stop the animation at any point
      *     Methods:
      *     stop                 set on the object passed .
      */
@@ -12590,12 +12843,16 @@ var ID        = "id",
         return apf.tween;
     },
 
+     // @TODO Doc wtf is stop
     /**
      * Tweens multiple properties of a single element or html element from a
      * start to an end value.
-     * Example:
-     * Animating both the left and width at the same time.
-     * <code>
+     * 
+     * #### Example
+     *
+     * Here we are, animating both the left and width at the same time:
+     *
+     * ```javascript
      *  apf.tween.multi(myDiv, {
      *      anim   : apf.tween.EASEIN
      *      tweens : [{
@@ -12609,32 +12866,35 @@ var ID        = "id",
      *          to   : 400,
      *      }]
      *  });
-     * </code>
-     * Example:
-     * Multiple animations can be run after eachother
+     * ````
+     *
+     * #### Example
+     *
+     * Multiple animations can be run after each other
      * by calling this function multiple times.
-     * <code>
+     *
+     * ```javascript
      *  apf.tween.multi(myDiv, options).multi(myDiv2, options2);
-     * </code>
-     * @param {Element}  oHtml the object to animate.
-     * @param {Object} info the settings of the animation.
-     *   Properties:
-     *   {Number}   [steps]     the number of steps to divide the tween in
-     *   {Number}   [interval]  the time between each step
-     *   {Number}   [anim]      the distribution of change between the step over
+     * ```
+     *
+     * @method multi
+     * @param {DOMNode}  oHtml The object to animate.
+     * @param {Object} info The settings of the animation. It contains the following properties:
+     *   - [steps] ([[Number]]): The number of steps to divide the tween in
+     *   - [interval] ([[Number]]): The time between each step
+     *   - [anim] ([[Number]]): The distribution of change between the step over
      *                          the entire animation
-     *   {Function} [onfinish]  a function that is called at the end of the animation
-     *   {Function} [oneach]    a function that is called at each step of the animation
-     *   {HTMLElement} [oHtml]  another html element to animate.
-     *   {Object}   [control]   an object that can stop the animation at any point
-     *     Properties:
-     *     {Boolean} stop       whether the animation should stop.
-     *   {Array}    [tweens]    a collection of simple objects specifying the single
+     *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
+     *   - [oneach] ([[Function]]): A function that is called at each step of the animation
+     *   - [oHtml] ([[HTMLElement]]): Another HTML element to animate.
+     *   - [control] ([[Object]]): An object that can stop the animation at any point. It contains the following properties:
+     *     - stop ([[Boolean]]): Specifies whether the animation should stop.
+     *   - [tweens] ([[Array]]): A collection of simple objects specifying the single
      *                          value animations that are to be executed simultaneously.
      *                          (for the properties of these single tweens see the
-     *                          single tween method).
+     *                          [[apf.tween.single]] method).
      */
-    multi = function(oHtml, info){
+    multi = function(oHtml, info){ 
         info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
         info.steps    = Math.ceil(info.steps * apf.animSteps);
         info.interval = Math.ceil(info.interval * apf.animInterval);
@@ -12774,26 +13034,30 @@ var ID        = "id",
     },
 
     /**
-     * Tweens an element or html element from it's current state to a css class.
-     * Example:
-     * Multiple animations can be run after eachother by calling this function
+     * Tweens an element or HTML element from its current state to a CSS class.
+     *
+     * #### Example
+     *
+     * Multiple animations can be run after each other by calling this function
      * multiple times.
-     * <code>
+     * 
+     * ```javascript
      *  apf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
-     * </code>
-     * @param {Element}  oHtml the object to animate.
-     * @param {String} className the classname that defines the css properties to be set or removed.
-     * @param {Object} info the settings of the animation.
+     * ```
+     *
+     * @method apf.tween.css
+     * @param {DOMNode}  oHtml The object to animate.
+     * @param {String} className The class name that defines the CSS properties to be set or removed.
+     * @param {Object} info The settings of the animation. The following properties are available:
      *   Properties:
-     *   {Number}   [steps]     the number of steps to divide the tween in
-     *   {Number}   [interval]  the time between each step
-     *   {Number}   [anim]      the distribution of change between the step over the entire animation
-     *   {Function} [onfinish]  a function that is called at the end of the animation
-     *   {Function} [oneach]    a function that is called at each step of the animation
-     *   {Object}   [control]   an object that can stop the animation at any point
-     *     Properties:
-     *     {Boolean} stop       whether the animation should stop.
-     * @param {Boolean} remove whether the class is set or removed from the element or html element
+     *   - [steps] ([[Number]]): The number of steps to divide the tween in
+     *   - [interval] ([[Number]]): The time between each step
+     *   - [anim] ([[Number]]): The distribution of change between the step over the entire animation
+     *   - [onfinish] ([[Function]]): A function that is called at the end of the animation
+     *   - [oneach] ([[Function]]): A function that is called at each step of the animation
+     *   - [control] ([[Object]]): An object that can stop the animation at any point. It contains the following property:
+     *     - stop ([[Boolean]]): Specifies whether the animation should stop.
+     * @param {Boolean} remove Specifies whether the class is set or removed from the element
      */
     css = function(oHtml, className, info, remove){
         (info = info || {}).tweens = [];
@@ -13144,96 +13408,30 @@ return {
 
 
 
-/**
- * @term datainstruction Data instructions offer a single and consistent way for
- * storing and retrieving
- * data from different data sources. For instance from a webserver using REST
- * or RPC, or from local data sources such as gears, air, o3, html5, as well as
- * from in memory sources from javascript or cookies. There is often an xml
- * element which is relevant to storing information. This element can be
- * accessed using xpath statements in the data instruction using curly braces.
- *
- *  - for complex model expr. replace model.
- *  - use property binding for selection, instead of setConnections
- *  <a:bar model="{tree.selected}">
- *      <a:textbox value="[persons/person/text]" />
- *      <a:textbox value="[persons/person/text1]" />
- *      <a:textbox value="[persons/person/text2]" />
- *      <a:textbox value="[persons/person/text3]" />
- *      <a:textbox value="[persons/person/text4]" />
- *  </a:bar>
- *  - create exec function for async objects
- *  - have list of async objects
- *
- * Syntax:
- * Using data instructions to retrieve data
- * <code>
- *  model="name_of_model"
- *  model="[name_of_model::xpath]"
- *  model="{element.selected}"
- *  model="[local(element.selected) {xpath}]"
- *  model="{element.choose}"
- *      model="[local(element.choose) {xpath}]"
- *      model="[local(element.root) {xpath}]"
- *      load="<specialtag>[comm.doCall([@id], test(), 5+10).xml]</specialtag>"
- *      get="example.jsp"
- *      get="http://www.bla.nl?blah=10&foo=[@bar]&example=[10+5]"
- *      get="{comm.submit('abc', [@bar])}"
- *      get="[local(comm.submit('abc', [@bar])) return [xpath]]"
- *      get="[submit('abc', [@bar])]"
- *      get="{xmpp.login(username, password)}"
- *      get="{webdav.getRoot()}"
- *      get="[10+5]"
- * </code>
- *
- * Syntax:
- * Using data instructions to store data
- * <code>
- *  set="http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
- *  set="post http://www.bla.nl?blah=10&foo={/bar}&example=[10+5]"
- * <a:add set="[[@uid] = comm.addPerson('abc', {/bar})]" />
- *  set="[submit('abc', {/bar})]"
- *  set="[example=[@name]]"
- *  set="[apf.setcookie('something', [.])]"
- *  set="[o3.fs.get('/var/test.xml').data = [.]]"
- * </code>
- *
- * [
- *  function test(){
- *      var blah = comm.blah();
- *      return blah;
- *  }
- * ]
- * <a:add set="[test([.])]" />
- *
- * See:
- * <ul>
- *  <li>{@link teleport.cgi the cgi teleport module}</li>
- *  <li>{@link teleport.rpc the rpc teleport module}</li>
- *  <li>{@link teleport.webdav the webdav teleport module}</li>
- *  <li>{@link teleport.xmpp the xmpp teleport module}</li>
- * </ul>
- */
 
 /**
  * Stores data using a {@link term.datainstruction data instruction}.
  *
- * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to store the data.
- * @param {Object}      [options]    the options for this instruction
- *   Properties:
- *   {Boolean} multicall    whether this call should not be executed immediately but saved for later sending using the purge() command.
- *   {mixed}   userdata     any data that is useful to access in the callback function.
- *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
- *   {XMLElement}  [xmlContext] the subject of the xpath queries
- *   {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
+ * 
+ * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to store the data.
+ * @param {Object}      [options]    The options for this instruction. Available properties include:
+ *   - multicall ([[Boolean]]): Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
+ *   - userdata (`Mixed`): Any data that is useful to access in the callback function
+ *   - args ([[Array]]): The arguments of the call, overriding any specified in the data instruction
+ *   - [xmlContext] ([[XMLElement]]): The subject of the xpath queries
+ *   - [callback] ([[Function]]): The code that is executed when the call returns, either successfully or not
+ *   {: #saveDataOptions}
  */
 apf.saveData = 
 
 /**
  * Retrieves data using a {@link term.datainstruction data instruction}.
- * Example:
- * Several uses for a data instruction
- * <code>
+ * 
+ * #### Example
+ * 
+ * Here are several uses for data instructions:
+ * 
+ * ```xml
  *  <!-- loading aml from an xml file -->
  *  <a:bar aml="moreaml.xml" />
  *
@@ -13258,17 +13456,18 @@ apf.saveData =
  *
  *  <!-- loads data into a model and when submitted sends the altered data back -->
  *  <a:model load="load_contact.jsp" submission="save_contact.jsp" />
- * </code>
+ * ```
  *
- * @param {String}      instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data.
- * @param {XMLElement}  [xmlContext] the subject of the xpath queries
- * @param {Object}      [options]    the options for this instruction
- *   Properties:
- *   {Boolean} multicall    whether this call should not be executed immediately but saved for later sending using the purge() command.
- *   {mixed}   userdata     any data that is useful to access in the callback function.
- *   {mixed}   data         data to use in the call
- *   {Array}   args         the arguments of the call, overriding any specified in the data instruction.
- * @param {Function}    [callback]   the code that is executed when the call returns, either successfully or not.
+ * @method getData
+ * @param {String}      instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data.
+ * @param {XMLElement}  [xmlContext] The subject of the xpath queries
+ * @param {Object}      [options]    The options for this instruction. Available properties include:
+ *   - multicall ([[Boolean]]): Whether this call should not be executed immediately, but saved for later sending using the `purge()` command
+ *   - userdata (`Mixed`): Any data that is useful to access in the callback function
+ *   - args ([[Array]]): The arguments of the call, overriding any specified in the data instruction
+ *   - [xmlContext] ([[XMLElement]]): The subject of the xpath queries
+ *   - [callback] ([[Function]]): The code that is executed when the call returns, either successfully or not
+ * @param {Function}    [callback]   The code that is executed when the call returns, either successfully or not
  */
 apf.getData = function(instruction, options){
     if (!instruction) return false;
@@ -13422,8 +13621,8 @@ apf.getData = function(instruction, options){
 /**
  * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
- * @param {String} instruction  the {@link term.datainstruction data instruction} to be used to retrieve the data for the model.
- * @param {AmlNode} amlNode     the element the model is added to.
+ * @param {String} instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data for the model
+ * @param {apf.AmlNode} amlNode     The element the model is added to
  */
 apf.setModel = function(instruction, amlNode){
     if (!instruction) return;
@@ -13895,23 +14094,32 @@ apf.setModel = function(instruction, amlNode){
 
 
 /**
- * This object does what is commonly known as Ajax, it <strong>A</strong>synchronously 
- * communicates using <strong>J</strong>avascript <strong>A</strong>nd in most 
- * cases it sends or receives <strong>X</strong>ml. It allows for easy http 
- * communication from within the browser. This object provides
- * {@link teleport.http.method.savecache caching} on top of
+ * @class apf.http
+ *
+ * This object does what is commonly known as Ajax; it **A**synchronously 
+ * communicates using **J**avaScript, **A**nd in most 
+ * cases it sends or receives **X**ml. It allows for easy HTTP 
+ * communication from within the browser. 
+ *
+ * This object provides caching on top of
  * the browser's cache. This enables you to optimize your application, because
  * this can be set on a per call basis. 
- * Example:
- * Retrieving content over http synchronously:
- * <code>
+ *
+ * #### Example:
+ *
+ * Retrieving content over HTTP synchronously:
+ *
+ * ```javascript
  *  var http = new apf.http();
  *  var data = http.get("http://www.example.com/mydata.jsp", {async: false});
  *  alert(data);
- * </code>
- * Example:
- * Retrieving content over http asynchronously:
- * <code>
+ * ```
+ *
+ * #### Example:
+ *
+ * Retrieving content over HTTP asynchronously:
+ *
+ * ```javascript
  *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
@@ -13921,10 +14129,13 @@ apf.setModel = function(instruction, amlNode){
  *         alert(data);
  *      }
  *  });
- * </code>
- * Example:
- * Async http request with retry.
- * <code>
+ * ```
+ *
+ * #### Example:
+ *
+ * An asynchronous HTTP request, with retry:
+ *
+ * ```javascript
  *  var http = new apf.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
@@ -13941,31 +14152,29 @@ apf.setModel = function(instruction, amlNode){
  *          alert(data);
  *      }
  *  });
- * </code>
- *
+ * ```
+ */
+/**
  * @event error Fires when a communication error occurs.
- *   bubbles: yes
- *   cancelable:  Prevents a communication error to be thrown.
- *   object:
- *     {Error}          error     the error object that is thrown when the event
+ * @bubbles
+ * @cancelable  Prevents a communication error to be thrown.
+ * @param {Object} e An object returned by the callback. It contains the following properties:
+ *     - error ([[Error]]): The error object that is thrown when the event
  *                                callback doesn't return false.
- *     {Number}         state     the state of the call
- *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
- *                                the callback of the http request.
- *     {XMLHttpRequest} http      the object that executed the actual http request.
- *     {String}         url       the url that was requested.
- *     {Http}           tpModule  the teleport module that is making the request.
- *     {Number}         id        the id of the request.
- *     {String}         message   the error message.
+ *     - state ([[Number]]): The state of the call. Possible values include:
+ *       - `apf.SUCCESS`:  The request was successfull
+ *       - `apf.TIMEOUT`:  The request has timed out.
+ *       - `apf.ERROR`:    An error has occurred while making the request.
+ *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *     - userdata (`Mixed`): Data that the caller wanted to be available in
+ *                                the callback of the HTTP request.
+ *     - http ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
+ *     - url ([[String]]): The URL that was requested.
+ *     - tpModule ([[apf.http]]): The teleport module that is making the request.
+ *     - id ([[Number]]): The id of the request.
+ *     - message ([[String]]): The error message.
  *
- * @constructor
  * @define http
- * @addnode teleport
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -13979,23 +14188,33 @@ apf.http = function(){
 
     /**
      * Sets the timeout of http requests in milliseconds. Default is 10000ms (10s).
+     * @type {Number}
      */
     this.timeout   = this.timeout || 10000; //default 10 seconds
     
     /**
      * Sets whether this element routes traffic through a server proxy.
-     * Remarks:
-     * This can also be set on a per call basis. See {@link teleport.http.method.get}.
+     *
+     * #### Remarks
+     *
+     * This can also be set on a per call basis. See {@link apf.http.get}.
+     *
+     * 
+     * @type {Boolean}
      */
     this.autoroute = this.autoroute || false;
     
     /**
-     * String specifying the url to the route script. 
-     * Remarks:
-     * The route script will receive the route information in 3 extra headers:
-     *   X-Route-Request     - Containing the destination url.<br />
-     *   X-Proxy-Request     - Containing the destination url.<br />
-     *   X-Compress-Response - Set to 'gzip'.<br />
+     * String specifying the URL to the route script. 
+     * 
+     * #### Remarks
+     *
+     * The route script will receive the route information in three extra headers:
+     *   - `X-Route-Request`     : Contains the destination URL
+     *   - `X-Proxy-Request`     : Contains the proxy URL
+     *   - `X-Compress-Response` : Set to 'gzip'
+     *
+     * @type {String}
      */
     this["route-server"] = this["route-server"] || null;
 
@@ -14009,19 +14228,18 @@ apf.http = function(){
     
 
     /**
-     * Makes an http request that receives xml
-     * @param {String}   url       the url that is accessed.
-     * @param {Object}   options   the options for the http request
-     *   Properties:
-     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
-     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   {Boolean} nocache        whether browser caching is prevented.
-     *   {String}  data           the data sent in the body of the message.
-     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-     *   {Boolean} caching        whether the request should use internal caching.
-     *   {Boolean} ignoreOffline  whether to ignore offline catching.
-     *   {Function} callback      the handler that gets called whenever the
+     * Makes an HTTP request that receives XML.
+     * @param {String}   url       The url that is accessed.
+     * @param {Object}   options   The options for the HTTP request. It contains the following properties:
+     *   - async ([[Boolean]]): Specifies whether the request is sent asynchronously. Defaults to true.
+     *   - userdata (`Mixed`): custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (`POST`|`GET`|`PUT`|`DELETE`). Defaults to `GET`.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): the data sent in the body of the message.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */
@@ -14040,21 +14258,21 @@ apf.http = function(){
     };
 
     /**
-     * Makes an http request.
-     * @param {String}   url       the url that is accessed.
-     * @param {Object}   options   the options for the http request
-     *   Properties:
-     *   {Boolean} async          whether the request is sent asynchronously. Defaults to true.
-     *   {mixed}   userdata       custom data that is available to the callback function.
-     *   {String}  method         the request method (POST|GET|PUT|DELETE). Defaults to GET.
-     *   {Boolean} nocache        whether browser caching is prevented.
-     *   {String}  data           the data sent in the body of the message.
-     *   {Boolean} useXML         whether the result should be interpreted as xml.
-     *   {Boolean} autoroute      whether the request can fallback to a server proxy.
-     *   {Boolean} caching        whether the request should use internal caching.
-     *   {Boolean} ignoreOffline  whether to ignore offline catching.
-     *   {String}  contentType    the mime type of the message
-     *   {Function} callback      the handler that gets called whenever the
+     * Makes an HTTP request.
+     * @param {String}   url       The URL that is accessed.
+     * @param {Object}   options   The options for the HTTP request. It contains the following properties:
+     *   - async ([[Boolean]]): Specifies whether the request is sent asynchronously. Defaults to true.
+     *   - userdata (`Mixed`): Custom data that is available to the callback function.
+     *   - method ([[String]]): The request method (POST|GET|PUT|DELETE). Defaults to GET.
+     *   - nocache ([[Boolean]]): Specifies whether browser caching is prevented.
+     *   - data ([[String]]): The data sent in the body of the message.
+     *   - useXML ([[Boolean]]): Specifies whether the result should be interpreted as xml.
+     *   - autoroute ([[Boolean]]): Specifies whether the request can fallback to a server proxy.
+     *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
+     *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
+     *   - contentType ([[String]]): The mime type of the message
+     *   - withCredentials ([[Boolean]]): Value of the withCredentials field for CORS requests
+     *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
      */
@@ -14136,10 +14354,32 @@ apf.http = function(){
             
             var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
             if (requestedWithParam) {
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
-                    + requestedWithParam + "=1";
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") +
+                    encodeURIComponent(requestedWithParam) + "=1";
+            }
+            // global support for protection against Cross Site Request Forgery
+            // attacks by supplying a token to the global APF config object. This
+            // token will be appended to the URL and sent for each XHR.
+            // Warning: if you are doing CORS, be sure to use a different method!
+            var CSRFHeader = apf.config ? apf.config["csrf-header"] : null;
+            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
+            if (CSRFHeader) {
+                setRequestHeader("X-CSRF-Token", CSRFHeader);
+            }
+            else if (CSRFToken) {
+                CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
             }
 
+            var withCredentials = false;
+            if ("withCredentials" in options) {
+                withCredentials = options.withCredentials;
+            }
+            else {
+                withCredentials = (apf.config && apf.config["cors-with-credentials"]) || false;
+            }
+
+            http.withCredentials = withCredentials;
             http.open(this.method || options.method || "GET", httpUrl, async);
 
             if (options.username) {
@@ -14308,11 +14548,12 @@ apf.http = function(){
     };
     
     
+    if (!this.exec) {
     /**
-     * Method that all async objects should implement
+             * A method that all async objects should implement.
+             *
      * @private
      */
-    if (!this.exec) {
         this.exec = function(method, args, callback, options){
             if (!options)
                 options = {};
@@ -14335,9 +14576,9 @@ apf.http = function(){
     
     
     /**
-     * Sends the binary blob to server and multipart encodes it if needed this code 
+     * Sends the binary blob to the server, and multipart encodes it if needed. This code 
      * will only be executed on Gecko since it's currently the only browser that 
-     * supports direct file access
+     * supports direct file access.
      * @private
      */
     function getBinaryBlob(data, http, binary) {
@@ -14538,22 +14779,21 @@ apf.http = function(){
     };
 
     /**
-     * Checks if the request has times out. If so it's retried
+     * Checks if the request has timed out. If so, it is retried
      * three times before an exception is thrown. Request retrying is a very
-     * good way to create robust Ajax applications. In many cases, even with
-     * good connections requests time out.
-     * @param {Object}  extra      the information object given as a third
-     *                             argument of the http request callback.
-     * @param {Number}  state      the return code of the http request.
-     *   Possible values:
-     *   apf.SUCCESS  the request was successfull
-     *   apf.TIMEOUT  the request has timed out.
-     *   apf.ERROR    an error has occurred while making the request.
-     *   apf.OFFLINE  the request was made while the application was offline.
-     * @param {AmlNode} [amlNode]    the element receiving the error event.
-     * @param {Error}   [oError]     the error to be thrown when the request is
+     * good way to create a robust Ajax application. In many cases, even with
+     * good connections, requests still time out.
+     * @param {Object}  extra      The information object given as a third
+     *                             argument of the HTTP request callback.
+     * @param {Number}  state      The return code of the HTTP request. It contains the following properties:
+     *   - `apf.SUCCESS`:  the request was successfull
+     *   - `apf.TIMEOUT`:  the request has timed out.
+     *   - `apf.ERROR`:    an error occurred while making the request.
+     *   - `apf.OFFLINE`:  the request was made while the application was offline.
+     * @param {apf.AmlNode} [amlNode]    The element receiving the error event.
+     * @param {Error}   [oError]     The error to be thrown when the request is
      *                               not retried.
-     * @param {Number}  [maxRetries] the number of retries that are done before
+     * @param {Number}  [maxRetries] The number of retries that are done before
      *                               the request times out. Default is 3.
      */
     this.retryTimeout = function(extra, state, amlNode, oError, maxRetries){
@@ -14577,14 +14817,17 @@ apf.http = function(){
 
     /**
      * Removes the item from the queue. This is usually done automatically.
-     * However when the callback returns true the queue isn't cleared, for instance
+     * However, when the callback returns `true` the queue isn't cleared; for instance,
      * when a request is retried. The id of the call
-     * is found on the 'extra' object. The third argument of the callback.
-     * Example:
-     * <code>
+     * is found on the `'extra'` object, the third argument of the callback.
+     * 
+     * #### Example
+     *
+     * ```javascript
      *  http.clearQueueItem(extra.id);
-     * </code>
-     * @param {Number} id the id of the call that should be removed from the queue.
+     * ```
+     *
+     * @param {Number} id The id of the call that should be removed from the queue.
      */
     this.clearQueueItem = function(id){
         if (!this.queue[id])
@@ -14602,18 +14845,21 @@ apf.http = function(){
     };
 
     /**
-     * Retries a call based on it's id. The id of the call is found on the
-     * 'extra' object. The third argument of the callback.
-     * Example:
-     * <code>
+     * Retries a call based on its id. The id of the call is found on the
+     * `'extra'` object, the third argument of the callback.
+     * 
+     * #### Example
+     *
+     * ```javascript
      *  function callback(data, state, extra){
      *      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
      *          return extra.tpModule.retry(extra.id);
      *
      *      //Do stuff here
      *  }
-     * </code>
-     * @param {Number} id the id of the call that should be retried.
+     * ```
+     *
+     * @param {Number} id The id of the call that should be retried.
      */
     this.retry = function(id){
         if (!this.queue[id])
@@ -14633,7 +14879,12 @@ apf.http = function(){
     };
 
     /**
-     * see {@link teleport.http.method.clearqueueitem}
+     * Cancels a call based on its id. The id of the call is found on the
+     * `'extra'` object, the third argument of the callback.
+     *
+     * @see apf.http.clearQueueItem
+     *
+     * @param {Number} id The id of the call that should be canceled.
      */
     this.cancel = function(id){
         if (id === null)
@@ -14799,17 +15050,17 @@ apf.Init.run("http");
  *   <a:include src="bindings.aml" />
  * </code>
  * @attribute {String} src the location of the aml file to include in this application.
- * @addnode global, anyaml
+ *
  */
 apf.DOMParser = function(){};
 
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
-    
+
     this.$waitQueue  = {}
     this.$callCount  = 0;
-    
+
     // privates
     var RE     = [
             /\<\!(DOCTYPE|doctype)[^>]*>/,
@@ -14817,7 +15068,7 @@ apf.DOMParser.prototype = new (function(){
             /<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g
         ],
         XPATH  = "//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]";
-    
+
     this.parseFromString = function(xmlStr, mimeType, options){
         var xmlNode;
         if (this.caseInsensitive) {
@@ -14831,12 +15082,12 @@ apf.DOMParser.prototype = new (function(){
             x.ownerDocument.setProperty("SelectionNamespaces",
                                     "xmlns:a='" + apf.ns.aml + "'");
             */
-        
+
             if (!this.supportNamespaces)
                 str = str.replace(/xmlns\=\"[^"]*\"/g, "");
-        
+
             
-        
+
             var xmlNode = apf.getXmlDom(str);
             if (apf.xmlParseError) apf.xmlParseError(xmlNode);
             xmlNode = xmlNode.documentElement;
@@ -14848,13 +15099,13 @@ apf.DOMParser.prototype = new (function(){
 
         return this.parseFromXml(xmlNode, options);
     };
-    
+
     //@todo prevent leakage by not recording .$aml
     this.parseFromXml = function(xmlNode, options){
         var doc, docFrag, amlNode, beforeNode;
-        if (!options) 
+        if (!options)
             options = {};
-        
+
         if (!options.delayedRender && !options.include) {
             //Create a new document
             if (options.doc) {
@@ -14868,9 +15119,9 @@ apf.DOMParser.prototype = new (function(){
             }
             if (options.host)
                 doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
+
             
-            
-            
+
             //Let's start building our tree
             amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
             (docFrag || doc).appendChild(amlNode);
@@ -14880,7 +15131,7 @@ apf.DOMParser.prototype = new (function(){
         else {
             amlNode    = options.amlNode;
             doc        = options.doc;
-            
+
             if (options.include) {
                 var n = amlNode.childNodes;
                 var p = n.indexOf(options.beforeNode);
@@ -14890,7 +15141,7 @@ apf.DOMParser.prototype = new (function(){
 
         //Set parse context
         this.$parseContext = [amlNode, options];
-        
+
         this.$addParseState(amlNode, options || {});
 
         //First pass - Node creation
@@ -14907,7 +15158,7 @@ apf.DOMParser.prototype = new (function(){
                 if (!newNode) continue; //for preserveWhiteSpace support
 
                 cNodes[cL = cNodes.length] = newNode; //Add to children
-                
+
                 //Set tree refs
                 newNode.parentNode = amlNode;
                 if (cL > 0)
@@ -14916,17 +15167,17 @@ apf.DOMParser.prototype = new (function(){
                 //Create children
                 if (!newNode.render && newNode.canHaveChildren && (nNodes = node.childNodes).length)
                     recur(newNode, nNodes);
-                
+
                 //newNode.$aml = node; //@todo should be deprecated...
-                
+
                 //Store high prio nodes for prio insertion
                 if (newNode.$parsePrio) {
                     if (newNode.$parsePrio == "001") {
                         newNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                         continue;
                     }
-                        
-                    (nodelist[newNode.$parsePrio] || (prios.push(newNode.$parsePrio) 
+
+                    (nodelist[newNode.$parsePrio] || (prios.push(newNode.$parsePrio)
                       && (nodelist[newNode.$parsePrio] = []))).push(newNode); //for second pass
                 }
             }
@@ -14934,7 +15185,7 @@ apf.DOMParser.prototype = new (function(){
             amlNode.firstChild = cNodes[0];
             amlNode.lastChild  = cNodes[cL];
         })(amlNode, xmlNode.childNodes);
-        
+
         if (options.include && rest.length) {
             var index = n.length - 1;
             n.push.apply(n, rest);
@@ -14951,7 +15202,7 @@ apf.DOMParser.prototype = new (function(){
             };
             return (docFrag || doc);
         }
-        
+
         //Second pass - Document Insert signalling
         prios.sort();
         var i, j, l, l2;
@@ -14962,7 +15213,7 @@ apf.DOMParser.prototype = new (function(){
             }
         }
 
-        if (this.$waitQueue[amlNode.$uniqueId] 
+        if (this.$waitQueue[amlNode.$uniqueId]
           && this.$waitQueue[amlNode.$uniqueId].$shouldWait)
             return (docFrag || doc);
 
@@ -14977,26 +15228,26 @@ apf.DOMParser.prototype = new (function(){
 
         return (docFrag || doc);
     };
-    
+
     this.$isPaused = function(amlNode){
-        return this.$waitQueue[amlNode.$uniqueId] && 
+        return this.$waitQueue[amlNode.$uniqueId] &&
           this.$waitQueue[amlNode.$uniqueId].$shouldWait > 0;
     }
-    
+
     this.$addParseState = function(amlNode, options){
-        var waitQueue = this.$waitQueue[amlNode.$uniqueId] 
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId]
             || (this.$waitQueue[amlNode.$uniqueId] = [])
         waitQueue.pushUnique(options);
-        
+
         return waitQueue;
     }
-    
+
     this.$pauseParsing = function(amlNode, options){
         var waitQueue = this.$waitQueue[amlNode.$uniqueId];
         if (!waitQueue.$shouldWait) waitQueue.$shouldWait = 0;
         waitQueue.$shouldWait++;
     }
-    
+
     this.$continueParsing = function(amlNode, options){
         if (!amlNode)
             amlNode = apf.document.documentElement;
@@ -15004,33 +15255,33 @@ apf.DOMParser.prototype = new (function(){
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
-            
+
             if (item.$shouldWait && --item.$shouldWait)
                 return false;
-            
+
             var node = amlNode.parentNode;
             while (node && node.nodeType == 1) {
-                if (this.$waitQueue[node.$uniqueId] 
+                if (this.$waitQueue[node.$uniqueId]
                   && this.$waitQueue[node.$uniqueId].$shouldWait)
                     return false;
                 node = node.parentNode;
             }
-            
+
             var parseAmlNode = apf.all[uId];
-            
             delete this.$waitQueue[uId];
-            for (var i = 0; i < item.length; i++) {
-                this.$parseState(parseAmlNode, item[i]);
+            if (parseAmlNode) {
+                for (var i = 0; i < item.length; i++)
+                    this.$parseState(parseAmlNode, item[i]);
             }
-            
+
             //@todo Check for shouldWait here?
         }
         else
             this.$parseState(amlNode, options || {});
-        
+
         delete this.$parseContext;
     }
-    
+
     this.$parseState = function(amlNode, options) {
         this.$callCount++;
 
@@ -15039,7 +15290,7 @@ apf.DOMParser.prototype = new (function(){
                 nodelist = amlNode.$parseOptions.nodelist,
                 i, j, l, l2, node;
             delete amlNode.$parseOptions;
-            
+
             //Second pass - Document Insert signalling
             prios.sort();
             for (i = 0, l = prios.length; i < l; i++) {
@@ -15063,32 +15314,32 @@ apf.DOMParser.prototype = new (function(){
                 if (!(node = nodes[i]).$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
-                
+
                 //Create children
                 if (!node.render && (nNodes = node.childNodes).length)
                     _recur(nNodes);
             }
         })(amlNode.childNodes);
-        
+
         if (!--this.$callCount && !options.delay)
             apf.queue.empty();
-        
+
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
     };
-    
+
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){
         var o;
-        
+
         switch (nodeType) {
             case 1:
                 var id, prefix;
                 if (xmlNode) {
-                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml) 
+                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml)
                       && !(prefix = doc.$prefixes[namespaceURI])) {
                         doc.$prefixes[prefix = xmlNode.prefix || xmlNode.scopeName || ""] = namespaceURI;
                         doc.$namespaceURIs[namespaceURI] = prefix;
-                        
+
                         if (!doc.namespaceURI && !prefix) {
                             doc.namespaceURI = namespaceURI;
                             doc.prefix       = prefix;
@@ -15101,17 +15352,17 @@ apf.DOMParser.prototype = new (function(){
                 }
 
                 
-                
+
                 var els = apf.namespaces[namespaceURI].elements;
 
                 
-                
+
                 o = new (els[nodeName] || els["@default"])(null, nodeName);
-                
+
                 o.prefix       = prefix || "";
                 o.namespaceURI = namespaceURI;
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
-        
+
                 if (xmlNode) {
                     if ((id = xmlNode.getAttribute("id")) && !self[id])
                         o.$propHandlers["id"].call(o, o.id = id);
@@ -15119,7 +15370,7 @@ apf.DOMParser.prototype = new (function(){
                     //attributes
                     var attr = xmlNode.attributes, n;
                     for (var a, na, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(na = new apf.AmlAttr(o, 
+                        o.attributes.push(na = new apf.AmlAttr(o,
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         
                         if (n == "render")
@@ -15130,7 +15381,7 @@ apf.DOMParser.prototype = new (function(){
                             na.$triggerUpdate();
                     }
                 }
-                
+
                 break;
             case 2:
                 o = new apf.AmlAttr();
@@ -15145,10 +15396,10 @@ apf.DOMParser.prototype = new (function(){
                 else {
                     o.prefix = doc.$prefixes[namespaceURI];
                 }
-                
+
                 break;
             case 3:
-                if (xmlNode) 
+                if (xmlNode)
                     nodeValue = xmlNode && xmlNode.nodeValue;
                 if (!this.preserveWhiteSpace && !(nodeValue || "").trim())
                     return;
@@ -15192,10 +15443,10 @@ apf.DOMParser.prototype = new (function(){
                 o = new apf.AmlDocumentFragment();
                 break;
         }
-        
-        o.ownerDocument = doc;    
+
+        o.ownerDocument = doc;
         o.$aml          = xmlNode;
-        
+
         return o;
     };
 })();
@@ -15215,7 +15466,7 @@ apf.AmlNamespace.prototype = {
     setElement : function(tagName, fConstr){
         return this.elements[tagName] = fConstr;
     },
-    
+
     setProcessingInstruction : function(target, fConstr){
         this.processingInstructions[target] = fConstr;
     }
@@ -15261,7 +15512,7 @@ apf.AmlNamespace.prototype = {
  *   <a:include src="bindings.aml" />
  * </code>
  * @attribute {String} src the location of the aml file to include in this application.
- * @addnode global, anyaml
+ *
  */
 apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
@@ -15296,26 +15547,33 @@ apf.__AMLNODE__ = 1 << 14;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have Document Object Model (DOM) support. The DOM
- * is the primary method for accessing and manipulating an xml document. This
- * includes html documents and aml documents. Every element in the ajax.org
+ * is the primary method for accessing and manipulating an XML document. This
+ * includes HTML documents and AML documents. Every element in the ajax.org
  * markup language can be manipulated using the W3C DOM. This means
- * that every element and attribute you can set in the xml format, can be
- * changed, set, removed reparented, etc runtime. This offers a great deal of
- * flexibility. Well known methods
- * from this specification are .appendChild .removeChild .setAttribute and
- * insertBefore to name a few. Ajax.org Platform aims to implement DOM1
- * completely and parts of DOM2. Which should be extended in the future to fully
- * implement DOM Level 2. For more information see {@link http://www.w3.org/DOM/} 
+ * that every element and attribute you can set in the XML format, can be
+ * changed, set, removed, reparented, _e.t.c._ at runtime. This offers a great deal of
+ * flexibility. 
+ *
+ * Well known methods
+ * from this specification are: `appendChild`, `removeChild`, `setAttribute`, and
+ * `insertBefore`--to name a few. The Ajax.org Platform aims to implement DOM1
+ * completely and parts of DOM2. For more information see {@link http://www.w3.org/DOM/} 
  * or {@link http://www.w3schools.com/dom/default.asp}.
- * Example:
- * Ajax.org Markup Language
- * <code>
+ * 
+ * #### Example:
+ *
+ * Here's a basic window using the Ajax.org Markup Language (AML): 
+ *
+ * ```xml
  *  <a:window id="winExample" title="Example" visible="true">
  *      <a:button id="tstButton" />
  *  </a:window>
- * </code>
- * Document Object Model in javascript
- * <code>
+ * ```
+ *
+ * 
+ * Using the Document Object Model in JavaScript:
+ *
+ * ```javascript
  *  //The following line is only there for completeness sake. In fact apf
  *  //automatically adds a reference in javascript called winExample based
  *  //on the id it has.
@@ -15329,9 +15587,11 @@ apf.__AMLNODE__ = 1 << 14;
  *  lblNew.setAttribute("caption", "Example");
  *
  *  tstButton.setAttribute("caption", "Click me");
- * </code>
- * That would be the same as having the following aml:
- * <code>
+ * ```
+ *
+ * That would be the same as having the following AML:
+ * 
+ * ```xml
  *  <a:window id="winExample"
  *    title   = "Example"
  *    icon    = "icoFolder.gif"
@@ -15340,24 +15600,33 @@ apf.__AMLNODE__ = 1 << 14;
  *      <a:button id="tstButton" caption="Click me"/>
  *      <a:label caption="Example" />
  *  </a:window>
- * </code>
- * Remarks:
+ * ```
+ *
+ * #### Remarks
  * Because the W3C DOM is native to all modern browsers the internet is full
- * of tutorials and documentation for this API. If you need more information
+ * of tutorials and documentation for this API. If you need more information,
  * it's a good idea to search for tutorials online.
  *
- * @event DOMNodeInserted
- * @event DOMNodeInsertedIntoDocument
- * @event DOMNodeRemoved
- * @event DOMNodeRemovedFromDocument
- *
- * @constructor
+ * @class apf.AmlNode
  * @baseclass
- *
+ * @inherits apf.Class
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  */
+/**
+ * @event DOMNodeInserted Fires when a DOM node is inserted.
+ */
+/** 
+ * @event DOMNodeInsertedIntoDocument Fires when a DOM node is inserted into the document.
+ */
+/** 
+ * @event DOMNodeRemoved Fires when a DOM node is removed.
+ */
+/** 
+ * @event DOMNodeRemovedFromDocument Fires when a DOM node is removed from a document.
+ */
+
 apf.AmlNode = function(){
     this.$init(function(){
         /**
@@ -15372,6 +15641,7 @@ apf.AmlNode = function(){
     
     /**
      * Returns a string representation of this object.
+     * @returns A string defining the object.
      */
     this.toString = function(){
         if (this.nodeName)
@@ -15386,66 +15656,67 @@ apf.AmlNode = function(){
     
     /**
      * Number specifying the type of node within the document.
+     * @type {Number}
      */
     this.$regbase = this.$regbase | apf.__AMLNODE__;
     
     /**
-     * Constant for a dom element node.
+     * The constant for a DOM element node.
      * @type {Number}
      */
     this.NODE_ELEMENT                = 1;
     /**
-     * Constant for a dom attribute node.
+     * The constant for a DOM attribute node.
      * @type {Number}
      */
     this.NODE_ATTRIBUTE              = 2;
     /**
-     * Constant for a dom text node.
+     * The constant for a DOM text node.
      * @type {Number}
      */
     this.NODE_TEXT                   = 3;
     /**
-     * Constant for a dom cdata section node.
+     * The constant for a DOM cdata section node.
      * @type {Number}
      */
     this.NODE_CDATA_SECTION          = 4;
     /**
-     * Constant for a dom entity reference node.
+     * The constant for a DOM entity reference node.
      * @type {Number}
      */
     this.NODE_ENTITY_REFERENCE       = 5;
     /**
-     * Constant for a dom entity node.
+     * The constant for a DOM entity node.
      * @type {Number}
      */
     this.NODE_ENTITY                 = 6;
     /**
-     * Constant for a dom processing instruction node.
+     * The constant for a DOM processing instruction node.
      * @type {Number}
      */
     this.NODE_PROCESSING_INSTRUCTION = 7;
     /**
-     * Constant for a dom comment node.
+     * The constant for a DOM comment node.
      * @type {Number}
      */
     this.NODE_COMMENT                = 8;
     /**
-     * Constant for a dom document node.
+     * The constant for a DOM document node.
      * @type {Number}
      */
     this.NODE_DOCUMENT               = 9;
     /**
-     * Constant for a dom document type node.
+     * The constant for a DOM document type node.
      * @type {Number}
      */
     this.NODE_DOCUMENT_TYPE          = 10;
     /**
-     * Constant for a dom document fragment node.
+     * The constant for a DOM document fragment node.
      * @type {Number}
      */
     this.NODE_DOCUMENT_FRAGMENT      = 11;
     /**
-     * Constant for a dom notation node.
+     * The constant for a DOM notation node.
      * @type {Number}
      */
     this.NODE_NOTATION               = 12;
@@ -15454,50 +15725,51 @@ apf.AmlNode = function(){
 
     /**
      * The document node of this application
+     * @type {apf.AmlDocument}
      */
     this.ownerDocument = null;
 
     /**
      * Returns the value of the current node. 
+     * @type {apf.AmlNode}
      */
     this.nodeValue = "";
     
     /**
-     * The namespace URI of the node, or null if it is unspecified (read-only). 
+     * The namespace URI of the node, or `null` if it is unspecified (read-only). 
+     *
      * When the node is a document, it returns the XML namespace for the current 
      * document.
+     * @type {String}
      */
     this.namespaceURI = "";
     
-    /**
+    /*
      * @todo
      */
     //this.baseURI = alsdjlasdj
     
-    /**
+    /*
      * @todo
      */
     //this.prefix = asdkljahqsdkh
         
     /**
-     * Appends an element to the end of the list of children of this element.
-     * If the element was already a child of another element it is removed from
-     * that parent before adding it this element.
-     *
-     * @param  {AmlNode}  amlNode  the element to insert as child of this element.
-     * @return  {AmlNode}  the appended node
-     * @method
+     * 
+     * @inheritdoc apf.AmlNode.insertBefore
+     * 
      */
     this.appendChild =
 
     /**
      * Inserts an element before another element in the list of children of this
-     * element. * If the element was already a child of another element it is
+     * element. If the element was already a child of another element it is
      * removed from that parent before adding it this element.
      *
-     * @param  {AmlNode}  amlNode     the element to insert as child of this element.
-     * @param  {AmlNode}  beforeNode  the element which determines the insertion position of the element.
-     * @return  {AmlNode}  the inserted node
+     * @method insertBefore
+     * @param  {apf.AmlNode}  amlNode     The element to insert as child of this element.
+     * @param  {apf.AmlNode}  beforeNode  The element which determines the insertion position of the element.
+     * @return  {apf.AmlNode}  The inserted node
      */
     this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         
@@ -15717,6 +15989,7 @@ apf.AmlNode = function(){
     /**
      * Removes a child from the node list of this element. Call-chaining is
      * supported.
+     * @param {apf.AmlNode} childNode The child node to remove
      */
     this.removeChild = function(childNode) {
         
@@ -15729,10 +16002,11 @@ apf.AmlNode = function(){
     this.replaceChild = function(){};
 
     /**
-     * Clones this element, creating an exact copy of it but does not insert
+     * Clones this element, creating an exact copy of it--but does not insert
      * it in the document hierarchy.
-     * @param {Boolean} deep whether the element's are cloned recursively.
-     * @return {AmlNode} the cloned element.
+     *
+     * @param {Boolean} deep Specifies whether the elements are cloned recursively.
+     * @return {apf.AmlNode} The cloned element.
      */
     this.cloneNode = function(deep){
         if (deep && this.nodeType == 1) {
@@ -15807,15 +16081,15 @@ apf.AmlNode = function(){
     
     this.normalize = function(){};
     
-    /**** Xpath support ****/
+    // *** Xpath support *** //
 
     /**
-     * Queries the aml dom using the W3C xPath query language and returns a node
-     * list. This is not an official API call but can be useful in certain cases.
-     * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
-     * @param {String}  sExpr          the xpath expression to query the aml DOM tree with.
-     * @param {AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
-     * @returns {NodeList} list of found nodes.
+     * Queries the AML DOM using the W3C xPath query language and returns a node
+     * list. This is not an official API call, but can be useful in certain cases.
+     *
+     * @param {String}  sExpr          The xpath expression to query the AML DOM tree with.
+     * @param {apf.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
+     * @returns {NodeList} List of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
         if (!apf) return;
@@ -15827,12 +16101,12 @@ apf.AmlNode = function(){
     };
 
     /**
-     * Queries the aml dom using the W3C xPath query language and returns a single
-     * node. This is not an official API call but can be useful in certain cases.
-     * see {@link core.documentimplementation.method.evaluate evaluate on the apf.document}
-     * @param {String}  sExpr          the xpath expression to query the aml DOM tree with.
-     * @param {AmlNode} [contextNode]  the element that serves as the starting point of the search. Defaults to this element.
-     * @returns {AmlNode} the first node that matches the query.
+     * Queries the AML dom using the W3C xPath query language and returns a single
+     * node. This is not an official API call, but can be useful in certain cases.
+     * 
+     * @param {String}  sExpr          The xpath expression to query the AML DOM tree with.
+     * @param {apf.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
+     * @returns {apf.AmlNode} The first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
         if (!apf) return;
@@ -15873,6 +16147,14 @@ apf.AmlNode = function(){
  *
  */
 
+/**
+ * Represents a single element within an AML node.
+ *
+ * @class apf.AmlElement
+ * @baseclass
+ * @inherits apf.AmlNode
+ */
+
 
 apf.AmlElement = function(struct, tagName){
     var $init = this.$init;
@@ -15897,30 +16179,34 @@ apf.AmlElement = function(struct, tagName){
         this.$events            = {};
         this.$inheritProperties = {};
         
-        /**
-         * Nodelist containing all attributes. This is implemented according to the
+        /*
+         * A node list containing all the attributes. This is implemented according to the
          * W3C specification.
-         * Example:
-         * <code>
+         * 
+         * For more information, see [[apf.AmlElement.getAttribute]] and [[apf.AmlElement.setAttribute]].
+         *
+         * #### Example
+         * 
+         * ```javascript
          *  for (var i = 0; i < obj.attributes.length; i++) {
          *      alert(obj.attributes.item(i));
          *  }
-         * </code>
-         * @see baseclass.amldom.method.getAttribute
-         * @see baseclass.amldom.method.setAttribute
+         * ```
+         * @type {apf.AmlNamedNodeMap}
          */
         this.attributes = new apf.AmlNamedNodeMap(this); //@todo apf3.0 move to init?
         
         /**
-         * The purpose of this element
-         * Possible values:
-         * apf.NODE_VISIBLE     this element has a gui representation
-         * apf.NODE_HIDDEN      this element does not display a gui
+         * Defines the purpose of this element. Possible values include:
+         * - `apf.NODE_VISIBLE`:  This element has a GUI representation
+         * - `apf.NODE_HIDDEN`:   This element does not display a GUI
+         * @type {Number}
          */
         this.nodeFunc = nodeFunc;
         
         /**
          * The local name of this element
+         * @type {String}
          */
         this.localName = tagName; //@todo
         
@@ -15979,24 +16265,27 @@ apf.AmlElement = function(struct, tagName){
 
 (function(){
     /**
-     * Number specifying the type of node within the document.
+     * A number specifying the type of node within the document.
+     * @type {Number}
      */
     this.nodeType = this.NODE_ELEMENT;
     this.canHaveChildren = true;
     
     this.$propHandlers = {
         /**
-         * @attribute {String} id the identifier of this element. When set this
-         * identifier is the name of the variable in javascript to access this
+         * @attribute {String} id The identifier of this element. When set, this
+         * identifier is the name of the variable in JavaScript to access this
          * element directly. This identifier is also the way to get a reference to
-         * this element using apf.document.getElementById.
-         * Example:
-         * <code>
+         * this element using `apf.document.getElementById()`.
+         * 
+         * #### Example
+         *
+         * ```xml
          *  <a:bar id="barExample" />
          *  <a:script>
          *      alert(barExample);
          *  </a:script>
-         * </code>
+         * ```
          */
         "id": function(value){
             
@@ -16041,12 +16330,13 @@ apf.AmlElement = function(struct, tagName){
     
     /**
      * Returns a list of elements with the given tag name.
+     *
      * The subtree below the specified element is searched, excluding the
      * element itself.
      *
-     * @method
-     * @param  {String}  tagName  the tag name to look for. The special string "*" represents any tag name.
-     * @return  {NodeList}  containing any node matching the search string
+     * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
+     * @param {Boolean} [norecur] If specified, defines whether or not to check recursively
+     * @return  {NodeList}  Contains any nodes matching the search string
      */
     this.getElementsByTagName = function(tagName, norecur){
         tagName = tagName.toLowerCase();
@@ -16066,7 +16356,18 @@ apf.AmlElement = function(struct, tagName){
         
         return result;
     };
-    
+
+    /**
+     * Returns a list of elements with the given tag name and the specified namespace URI.
+     *
+     * The subtree below the specified element is searched, excluding the
+     * element itself.
+     *
+     * @param  {String}  namespaceURI  The namespace URI name to look for.
+     * @param  {String}  localName  The tag name to look for. The special string "*" represents any tag name.
+     * @param {Boolean} [norecur] If specified, defines whether or not to check recursively
+     * @return  {NodeList}  Contains any nodes matching the search string
+     */    
     this.getElementsByTagNameNS = function(namespaceURI, localName, norecur){
         localName = localName.toLowerCase();
         var node, i, l,
@@ -16087,9 +16388,12 @@ apf.AmlElement = function(struct, tagName){
     };
 
     /**
-     * Sets an attribute on this element. Call-chaining is supported.
-     * @param {String} name the name of the attribute to which the value is set
-     * @param {String} value the new value of the attribute.
+     * Sets an attribute on this element.
+     * @chainable
+     * @param {String} name The name of the attribute to which the value is set
+     * @param {String} value The new value of the attribute.
+     * @param {Boolean} [noTrigger] If specified, does not emit events 
+     * [[apf.AmlNode@DOMNodeInsertedIntoDocument]] and [[apf.AmlNode@DOMNodeInserted]].
      */
     this.setAttribute = function(name, value, noTrigger) {
         name = name.toLowerCase();
@@ -16149,11 +16453,12 @@ apf.AmlElement = function(struct, tagName){
     };
     
     /**
-     * Removes an attribute from this element. Call-chaining is supported.
-     * @param {String} name the name of the attribute to remove.
+     * Removes an attribute from this element. 
+     * @chainable
+     * @param {String} name The name of the attribute to remove.
+     * @returns {apf.AmlElement} The modified element.
      */
-    //@todo apf3.0 domattr
-    this.removeAttribute = function(name){
+    this.removeAttribute = function(name){ //@todo apf3.0 domattr
         this.attributes.removeNamedItem(name);
         return this;
     };
@@ -16169,11 +16474,11 @@ apf.AmlElement = function(struct, tagName){
     };
 
     /**
-     * Retrieves the value of an attribute of this element
-     * @param  {String}  name       the name of the attribute for which to return the value.
-     * @param  {Boolean} [inherited]
-     * @return {String} the value of the attribute or null if none was found with the name specified.
-     * @method
+     * Retrieves the value of an attribute of this element.
+     *
+     * @param  {String}  name       The name of the attribute for which to return the value.
+     * @param  {Boolean} [inherited] if specified, takes into consideration that the attribute is inherited
+     * @return {String} The value of the attribute, or `null` if none was found with the name specified.
      */
     this.getAttribute = function(name, inherited){
         var item = this.attributes.getNamedItem(name);
@@ -16184,8 +16489,9 @@ apf.AmlElement = function(struct, tagName){
     
     /**
      * Retrieves the attribute node for a given name
-     * @param {String} name the name of the attribute to find.
-     * @return {AmlNode} the attribute node or null if none was found with the name specified.
+     *
+     * @param {String} name The name of the attribute to find.
+     * @return {apf.AmlNode} The attribute node, or `null` if none was found with the name specified.
      */
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
@@ -16211,9 +16517,9 @@ apf.AmlElement = function(struct, tagName){
     };
     
     /**
-     * Replaces the child aml elements with new aml.
-     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {HTMLElement} oInt        the html parent of the created aml elements.
+     * Replaces the child AML elements with new AML.
+     * @param {Mixed}       amlDefNode  The AML to be loaded. This can be a string or a parsed piece of XML.
+     * @param {HTMLElement} oInt        The HTML parent of the created AML elements.
      */
     this.replaceMarkup = function(amlDefNode, options) {
         
@@ -16255,12 +16561,11 @@ apf.AmlElement = function(struct, tagName){
     };
 
     /**
-     * Inserts new aml into this element.
-     * @param {mixed}       amlDefNode  the aml to be loaded. This can be a string or a parsed piece of xml.
-     * @param {Object}      options     
-     *    Properties:
-     *    callback
-     *    clear
+     * Inserts new AML into this element.
+     * @param {Mixed}       amlDefNode  The AML to be loaded. This can be a string or a parsed piece of XML.
+     * @param {Object}      options     Additional options to pass. It can include the following properties:
+     *                                  - callback ([[Function]]): A function to call once the insertion completes.
+     *                                  - clear ([[Boolean]]): If set, the AML has the attribute "clear" attached to it
      */
     this.insertMarkup = function(amlDefNode, options){
         
@@ -16638,12 +16943,12 @@ apf.AmlProcessingInstruction = function(isPrototype){
 (function(){
     this.nodeType = this.NODE_PROCESSING_INSTRUCTION;
     
-    /**
+    /*
      * @todo docs
      */
     this.data   = null;
     
-    /**
+    /*
      * @todo docs
      */
     this.target = null;
@@ -16767,14 +17072,14 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 /**
- * The aml document, this is the root of the DOM Tree and has a nodeType with 
- * value 9 (apf.NODE_DOCUMENT). 
+ * The AML document. This is the root of the DOM tree and has a nodeType with 
+ * value 9 (`apf.NODE_DOCUMENT`). 
  *
- * @constructor
+ * @class apf.AmlDocument
  * @inherits apf.AmlNode
  * @inherits apf.Class
  * @default_private 
- * @see baseclass.amldom
+ * @see apf.AmlDom
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -16793,7 +17098,7 @@ apf.AmlDocument = function(){
 (function() {
     /**
      * The type of node within the document.
-     *   Possible values:
+     * @type {Number}
      */
     this.nodeType   = this.NODE_DOCUMENT;
     this.nodeFunc   = apf.NODE_HIDDEN;
@@ -16808,20 +17113,30 @@ apf.AmlDocument = function(){
     this.characterSet    = apf.characterSet;
     
     /**
-     * The root element node of the aml application. This is an element with
-     * the tagName 'application'. This is similar to the 'html' element
+     * The root element node of the AML application. This is an element with
+     * the tagName `'application'`. This is similar to the `'html'` element for regular HTML.
+     * @type {apf.AmlNode}
      */
     this.documentElement = null;
     
     /**
-     * Gets a aml element based on it's id.
-     * @param {String} id the id of the aml element to return.
-     * @return {AMLElement} the aml element with the id specified.
+     * Gets a AML element based on its id.
+     * @param {String} id The id of the AML element to return.
+     * @return {apf.AmlElement} The AML element with the id specified.
      */
     this.getElementById = function(id){
         return self[id];
     };
-    
+
+    /**
+     * Returns a list of elements with the given tag name.
+     *
+     * The subtree below the [[apf.AmlDocument.documentElement]] is searched, excluding the
+     * element itself.
+     *
+     * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
+     * @return  {NodeList}  Contains any nodes matching the search string
+     */ 
     this.getElementsByTagName = function(tagName){
         var docEl, res = (docEl = this.documentElement)
             .getElementsByTagName(tagName);
@@ -16830,7 +17145,17 @@ apf.AmlDocument = function(){
             res.unshift(docEl);
         return res;
     };
-    
+
+    /**
+     * Returns a list of elements with the given tag name and the specified namespace URI.
+     *
+     * The subtree below the [[apf.AmlDocument.documentElement]] is searched, excluding the
+     * element itself.
+     *
+     * @param  {String}  namespaceURI  The namespace URI name to look for.
+     * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
+     * @return  {NodeList}  Contains any nodes matching the search string
+     */ 
     this.getElementsByTagNameNS = function(nameSpaceURI, tagName){
         var docEl,
             res = (docEl = this.documentElement)
@@ -16842,24 +17167,41 @@ apf.AmlDocument = function(){
     };
 
     /**
-     * Creates a new aml element.
-     * @param {mixed} tagName information about the new node to create.
-     *   Possible values:
-     *   {String}     the tagName of the new element to create
-     *   {String}     the aml definition for a single or multiple elements.
-     *   {XMLElement} the aml definition for a single or multiple elements.
-     * @return {AMLElement} the created aml element.
+     * Creates a new AML element.
+     *
+     * @param {Mixed} qualifiedName Information about the new node to create. Possible values include:
+     *                              - [[String]]:     The tag name of the new element to create
+     *                              - [[String]]:    The AML definition for a single or multiple elemnts
+     *                              - [[XMLElement]]: The AML definition for a single or multiple elements
+     * @return {apf.AmlElement} The created AML element
      */
     this.createElement = function(qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
             this.namespaceURI, qualifiedName);
     };
-        
+
+    /**
+     * Creates a new AML element within the given namespace.
+     *
+     * @param  {String}  namespaceURI  The namespace URI name to use
+     * @param {Mixed} qualifiedName Information about the new node to create. Possible values include:
+     *                              - [[String]]:     The tag name of the new element to create
+     *                              - [[String]]:     The AML definition for a single or multiple elemnts
+     *                              - [[XMLElement]]: The AML definition for a single or multiple elements
+     * @return {apf.AmlElement} The created AML element
+     */        
     this.createElementNS = function(namespaceURI, qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
             namespaceURI, qualifiedName);
     };
-    
+
+    /**
+     * Creates a copy of a node from an external document that can be inserted into the current document.
+     *
+     * @param  {apf.AmlNode}  node  The node to import and copy
+     * @param {Boolean} [deep]      Indicates whether the descendants of the imported node should also be imported
+     * @return {apf.AmlNode} The imported node
+     */     
     this.importNode = function(node, deep){
         if (deep && node.nodeType == 1) {
             return this.$domParser.parseFromXml(node, {
@@ -16872,52 +17214,93 @@ apf.AmlDocument = function(){
         }
     };
     
-    //@todo
+    /**
+     * Creates and returns a new attribute node.
+     *
+     * @param  {String}  nodeName  The name of the attribute
+     * @return {apf.AmlNode} The attribute node
+     */ 
     this.createAttribute = function(nodeName){
         return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
             this.nameSpaceURI, nodeName);
     };
     
-    //@todo
+    /**
+     * Creates and returns a new attribute node, within a specified URI.
+     *
+     * @param  {String} nameSpaceURI  The name of the URI
+     * @param  {String}  nodeName  The name of the attribute
+     * @return {apf.AmlNode} The attribute node
+     */ 
     this.createAttributeNS = function(nameSpaceURI, nodeName){
         return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
             nameSpaceURI, nodeName);
     };
-    
+    /**
+     * Creates and returns a new [[apf.AmlEvent]] .
+     */     
     this.createEvent = function(){
         return new apf.AmlEvent();
     };
-    
+
+    /**
+     * Creates and returns a new comment node.
+     * @param {String} nodeValue The data to be added to the comment
+     * @return {apf.AmlNode} The comment node
+     */    
     this.createComment = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_COMMENT, null, null,
             null, nodeValue);
     };
-    
+
+    /**
+     * Creates and returns a new processing instruction node.
+     * @param {String} target The target part of the processing instruction node, like `<?_target_ ...?>`
+     * @param {String} data The data to be added to the PI
+     * @return {apf.AmlNode} The processing instruction node
+     */     
     this.createProcessingInstruction = function(target, data){
         return this.$domParser.$createNode(this, this.NODE_PROCESSING_INSTRUCTION,
             null, null, target, data);
     };
-    
+ 
+    /**
+     * Creates and returns a new CDATA section node.
+     * @param {String} nodeValue The data to be added to the CDATA node
+     * @return {apf.AmlNode} The CDATA section node
+     */     
     this.createCDATASection = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_CDATA_SECTION, null,
             null, null, nodeValue);
     };
-    
+  
+    /**
+     * Creates and returns a new Text node.
+     * @param {String} nodeValue The data to be added to the text node
+     * @return {apf.AmlNode} The Text node
+     */      
     this.createTextNode = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_TEXT, null, null,
             null, nodeValue);
     };
-    
+
+    /**
+     * Creates and returns a new document fragment.
+     */ 
+
     this.createDocumentFragment = function(){
         return this.$domParser.$createNode(this, this.NODE_DOCUMENT_FRAGMENT);
     };
 
+    // @todo
     this.querySelector = function(){};
-    
+ 
+     // @todo   
     this.querySelectorAll = function(){};
 
     
 
+    // @todo
     this.hasFocus = function(){
         
     }
@@ -17341,10 +17724,10 @@ apf.AmlAttr = function(ownerElement, name, value){
 
 
 /**
- * Implementation of W3C event object. An instance of this class is passed as
- * the first argument of any event handler. Per event it will contain different
+ * Implementation of the W3C event object. An instance of this class is passed as
+ * the first argument of any event handler. As per event, it contains different
  * properties giving context based information about the event.
- * @constructor
+ * @class apf.AmlEvent
  * @default_private
  */
 apf.AmlEvent = function(name, data){
@@ -17362,7 +17745,7 @@ apf.AmlEvent.prototype = {
     
 
     /**
-     * Cancels the event if it is cancelable, without stopping further 
+     * Cancels the event (if it is cancelable), without stopping further 
      * propagation of the event. 
      */
     preventDefault : function(){
@@ -17490,8 +17873,8 @@ apf.AmlTextRectangle.prototype = new apf.Class();
 
 
 
-/**
- * Object creating the XHTML namespace for the aml parser.
+/*
+ * An object creating the XHTML namespace for the aml parser.
  *
  * @constructor
  * @parser
@@ -19542,14 +19925,18 @@ apf.__ANCHORING__ = 1 << 13;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have anchoring features. Each side of the
- * element can be attached at a certain distance to it's parent's rectangle.
- * When the parent is resized the anchored side of the element stays
- * at the specified distance at all times. If both sides are anchored the
+ * element can be attached at a certain distance to its parent's rectangle.
+ *
+ * When the parent is resized, the anchored side of the element stays
+ * at the specified distance at all times. If both sides are anchored, the
  * element size is changed to make sure the specified distance is maintained.
- * Example:
- * This example shows a bar that has 10% as a margin around it and contains a
+ *
+ * #### Example
+ *
+ * This example shows a bar that has a 10% margin around it, and contains a
  * frame that is displayed using different calculations and settings.
- * <code>
+ *
+ * ```xml
  *  <a:bar width="80%" height="80%" top="10%" left="10%">
  *      <a:frame 
  *        caption = "Example" 
@@ -19558,17 +19945,17 @@ apf.__ANCHORING__ = 1 << 13;
  *        right   = "10%"
  *        bottom  = "Math.round(0.232*100)" />
  *  </a:bar>
- * </code>
- * Remarks:
- * This is one of three positioning methods.
- * See {@link baseclass.alignment}
- * See {@link element.grid}
+ * ```
  *
- * @constructor
- * @baseclass
+ * ### Remarks
+ *
+ * This is one of three positioning methods. The other two are Alignment and Grid.
+ *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.3
+ * @baseclass
+ * @layout
  */
 apf.Anchoring = function(){
     this.$regbase = this.$regbase | apf.__ANCHORING__;
@@ -19674,37 +20061,77 @@ apf.Anchoring = function(){
         this.$anchoringEnabled = false; //isn't this redundant?
     };
 
+
     /**
-     * Enables anchoring based on attributes set in the AML of this element
+     * @attribute {Number | String} [left]   Sets or gets a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar left="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /**
+     * @attribute {Number | String} [right]  Sets or gets a way to determine the amount of pixels from the right border of this element to the right edge of its parent's border.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar right="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [width]  Sets or gets a way to determine the amount of pixels from the left border to the right border of this element.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar width="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [top]    Sets or gets a way to determine the amount of pixels from the top border of this element to the top edge of its parent's border.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar top="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [bottom] Sets or gets a way to determine the amount of pixels from the bottom border of this element to the bottom edge of its parent's border.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar bottom="(20% + 10) * SOME_JS_VAR" />
+     * ```
+     */
+    /** 
+     * @attribute {Number | String} [height] Sets or gets a way to determine the amount of pixels from the top border to the bottom border of this element.
+     *                                      This attribute can also contain percentages, arithmetic and even full expressions.
+     * 
+     * #### Example
+     *
+     * ```xml
+     * <a:bar height="(20% + 10) * SOME_JS_VAR" />
+     * ```
      */
     /*
-     * @attribute {Number, String} [left]   a way to determine the amount of pixels from the left border of this element to the left edge of it's parent's border. This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar left="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [right]  a way to determine the amount of pixels from the right border of this element to the right edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar right="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [width]  a way to determine the amount of pixels from the left border to the right border of this element.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar width="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [top]    a way to determine the amount of pixels from the top border of this element to the top edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar top="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [bottom] a way to determine the amount of pixels from the bottom border of this element to the bottom edge of it's parent's border.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar bottom="(20% + 10) * SOME_JS_VAR" />
-     * @attribute {Number, String} [height] a way to determine the amount of pixels from the top border to the bottom border of this element.This attribute can also contain percentages, arithmetic and even full expressions.
-     * Example:
-     * <a:bar height="(20% + 10) * SOME_JS_VAR" />
+     * Enables anchoring based on attributes set in the AML of this element
      */
     this.$enableAnchoring = function(){
         if (this.$inited) //@todo add code to reenable anchoring rules (when showing)
             return;
 
-        /**** Properties and Attributes ****/
+        // *** Properties and Attributes *** //
         apf.extend(this.$propHandlers, propHandlers);
 
-        /**** Event handlers ****/
+        // *** Event handlers *** //
         this.addEventListener("DOMNodeRemoved", remove); 
         this.addEventListener("DOMNodeInserted", reparent); 
         this.addEventListener("prop.visible", visibleHandler);
@@ -19801,7 +20228,10 @@ apf.Anchoring = function(){
     }
 
     /**
-     * @macro
+     * Sets the anchoring percentage.
+     * @param {String} expr An expression that's converted to a string
+     * @param {Number} An integer value that's used to convert to a percentage; for example, 50 becomes .5
+     * @returns {String} The anchor percentage
      */
     function setPercentage(expr, value){
         return String(expr).replace(apf.percentageMatch, "((" + value + " * $1)/100)");
@@ -19906,6 +20336,7 @@ apf.Anchoring = function(){
             }
             else if (hasWidth && typeof this.maxwidth == "number" && typeof this.minwidth == "number") {
                 if (parseInt(width) != width) {
+                    this.width = width = (this.width || "").replace(/--(\d+)/, "-(-$1)");
                     width = setPercentage(width, "pWidth");
                     rules.push("oHtml.style.width = Math.max(" 
                         + (this.minwidth - this.$hordiff)
@@ -20066,77 +20497,109 @@ apf.__VALIDATION__ = 1 << 6;
 
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} are a aml component.
+ * All elements inheriting from this {@link term.baseclass baseclass} are an AML component.
  *
- * @constructor
- * @baseclass
+ * @class apf.GuiElement
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
+ * @baseclass
+ * @inherits apf.AmlElement
  * @inherits apf.Anchoring
  * @inherits apf.DelayedRender
  * @inherits apf.DragDrop
  * @inherits apf.Focussable
  * @inherits apf.Interactive
- * @inherits apf.Transaction
  * @inherits apf.Validation
  *
- * @attribute {String} span     the number of columns this element spans. Only used inside a table element.
- * @attribute {String} margin   
- * @todo attribute align
+ */
+/**
+ * @attribute {String} span     Sets or gets the number of columns that this element spans. Only used inside a table element.
+ */
+/**
+ * @attribute {String | Number} margin  Sets or gets margin values. 
  *
- * @attribute {mixed} left the left position of this element. Depending
+ * Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off margins.
+ */
+/**
+ * @attribute {String} align Sets or gets the edge of the parent to which this
+ *                                  element aligns. 
+ *
+ * The possible values are a combination of "left", "middle", "right", "top", "bottom" and "slider" ,and optionally a size. 
+ * Combinations are combined with the pipe (`"|"`) character.
+ * 
+ */
+/**
+ * @attribute {Mixed} left Sets or gets the left position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} top the top position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} top Sets or gets the top position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} right the right position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} right Sets or gets the right position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} bottom the bottom position of this element. Depending
+ */
+/**
+ * @attribute {Mixed} bottom Sets or gets the bottom position of this element. Depending
  * on the choosen layout method the unit can be pixels, a percentage or an
  * expression.
- *
- * @attribute {mixed} width the different between the left edge and the
+ */
+/**
+ * @attribute {Mixed} width Sets or gets the different between the left edge and the
  * right edge of this element. Depending on the choosen layout method the
  * unit can be pixels, a percentage or an expression.
- * Remarks:
+ * 
+ * #### Remarks
+ *
  * When used as a child of a grid element the width can also be set as '*'. 
  * This will fill the rest space.
- *
- * @attribute {mixed} height the different between the top edge and the
+ */
+/**
+ * @attribute {Mixed} height Sets or gets the different between the top edge and the
  * bottom edge of this element. Depending on the choosen layout method the
  * unit can be pixels, a percentage or an expression.
- * Remarks:
+ * 
+ * #### Remarks
+ *
  * When used as a child of a grid element the height can also be set as '*'. 
  * This will fill the rest space.
- *
+ */
+/**
  * @event resize Fires when the element changes width or height. 
- * 
- * @event contextmenu Fires when the user requests a context menu. Either
+ */
+/** 
+ * @event contextmenu Fires when the user requests a context menu, either
  * using the keyboard or mouse.
- *   bubbles: yes
- *   cancelable:  Prevents the default contextmenu from appearing.
- *   object:
- *   {Number} x         the x coordinate where the contextmenu is requested on.
- *   {Number} y         the y coordinate where the contextmenu is requested on.
- *   {Event}  htmlEvent the html event object that triggered this event from being called.
+ * @bubbles
+ * @cancelable Prevents the default context menu from appearing.
+ * @param {Object} e The standard event object. Contains the following properties:
+ *                   - x ([[Number]]): The x coordinate where the contextmenu is requested on
+ *                   - y ([[Number]]): The y coordinate where the contextmenu is requested on
+ *                   - htmlEvent ([[Event]]): The HTML event object that triggered this event from being called
+ */
+/**  
  * @event focus       Fires when this element receives focus.
+ */
+/** 
  * @event blur        Fires when this element loses focus.
+ */
+/**  
  * @event keydown     Fires when this element has focus and the user presses a key on the keyboard.
- *   cancelable: Prevents the default key action.
- *   bubbles:
- *   object:
- *   {Boolean} ctrlKey   whether the ctrl key was pressed.
- *   {Boolean} shiftKey  whether the shift key was pressed.
- *   {Boolean} altKey    whether the alt key was pressed.
- *   {Number}  keyCode   which key was pressed. This is an ascii number.
- *   {Event}   htmlEvent the html event object that triggered this event from being called.
+ * @bubbles
+ * @cancelable Prevents the default key action.
+ * @param {Object} e The standard event object. Contains the following properties:
+ *                   - ctrlKey ([[Boolean]]): Specifies whether the [[keys: Ctrl]] key was pressed
+ *                   - shiftKey ([[Boolean]]): Specifies whether the [[keys: Shift]] key was pressed
+ *                   - altKey ([[Boolean]]): Specifies whether the [[keys: Alt ]] key was pressed
+ *                   - keyCode ([[Number]]): Indicates which key was pressed. This is an ascii number
+ *                   - htmlEvent ([[Event]]): the HTML event object that triggered this event from being called
+ * 
  */
 apf.GuiElement = function(){
     this.$init(true);
@@ -20161,6 +20624,13 @@ apf.GuiElement = function(){
     
     this.$booleanProperties["visible"]          = true;
     
+    /**
+     * @attribute {Boolean} draggable If true, the element can be dragged around the screen.
+     */    
+    /**
+     * @attribute {Boolean} resizable If true, the element can by resized by the user.
+     * 
+     */
     
     this.$supportedProperties.push("draggable", "resizable");
     
@@ -20223,18 +20693,21 @@ apf.GuiElement = function(){
         
     );
     
-    /**** Convenience functions for gui nodes ****/
+    // **** Convenience functions for gui nodes **** //
 
     
 
-    /**** Geometry ****/
+    // *** Geometry *** //
 
     /**
-     * Sets the different between the left edge and the right edge of this
-     * element. Depending on the choosen layout method the unit can be
-     * pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new width of this element.
+     * Sets the difference between the left edge and the right edge of this
+     * element. 
+     *
+     * Depending on the choosen layout method, the unit can be
+     * pixels, a percentage, or an expression. 
+     *
+     * @chainable
+     * @param {Number | String} value The new width of this element.
      */
     this.setWidth = function(value){
         this.setProperty("width", value, false, true);
@@ -20243,10 +20716,13 @@ apf.GuiElement = function(){
 
     /**
      * Sets the different between the top edge and the bottom edge of this
-     * element. Depending on the choosen layout method the unit can be
+     * element. 
+     *
+     * Depending on the choosen layout method the unit can be
      * pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new height of this element.
+     *
+     * @chainable
+     * @param {Number | String} value the new height of this element.
      */
     this.setHeight = function(value){
         this.setProperty("height", value, false, true);
@@ -20254,10 +20730,13 @@ apf.GuiElement = function(){
     };
 
     /**
-     * Sets the left position of this element. Depending on the choosen
-     * layout method the unit can be pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new left position of this element.
+     * Sets the left position of this element. 
+     *
+     * Depending on the choosen layout method the unit can be pixels, 
+     * a percentage or an expression.
+     *
+     * @chainable
+     * @param {Number | String} value The new left position of this element.
      */
     this.setLeft   = function(value){
         this.setProperty("left", value, false, true);
@@ -20265,10 +20744,13 @@ apf.GuiElement = function(){
     };
 
     /**
-     * Sets the top position of this element. Depending on the choosen
-     * layout method the unit can be pixels, a percentage or an expression.
-     * Call-chaining is supported.
-     * @param {Number} value the new top position of this element.
+     * Sets the top position of this element. 
+     *
+     * Depending on the choosen layout method the unit can be pixels, 
+     * a percentage or an expression.
+     *
+     * @chainable
+     * @param {Number | String} value The new top position of this element.
      */
     this.setTop    = function(value){
         this.setProperty("top", value, false, true);
@@ -20277,7 +20759,8 @@ apf.GuiElement = function(){
 
     if (!this.show) {
         /**
-         * Makes the elements visible. Call-chaining is supported.
+         * Makes the elements visible. 
+         * @chainable
          */
         this.show = function(){
             this.setProperty("visible", true, false, true);
@@ -20287,7 +20770,8 @@ apf.GuiElement = function(){
 
     if (!this.hide) {
         /**
-         * Makes the elements invisible. Call-chaining is supported.
+         * Makes the elements invisible. 
+         * @chainable
          */
         this.hide = function(){
             this.setProperty("visible", false, false, true);
@@ -20296,21 +20780,21 @@ apf.GuiElement = function(){
     }
 
     /**
-     * Retrieves the calculated width in pixels for this element
+     * Retrieves the calculated width in pixels for this element.
      */
     this.getWidth  = function(){
         return (this.$ext || {}).offsetWidth;
     };
 
     /**
-     * Retrieves the calculated height in pixels for this element
+     * Retrieves the calculated height in pixels for this element.
      */
     this.getHeight = function(){
         return (this.$ext || {}).offsetHeight;
     };
 
     /**
-     * Retrieves the calculated left position in pixels for this element
+     * Retrieves the calculated left position in pixels for this element,
      * relative to the offsetParent.
      */
     this.getLeft   = function(){
@@ -20318,17 +20802,18 @@ apf.GuiElement = function(){
     };
 
     /**
-     * Retrieves the calculated top position in pixels for this element
+     * Retrieves the calculated top position in pixels for this element,
      * relative to the offsetParent.
      */
     this.getTop    = function(){
         return (this.$ext || {}).offsetTop;
     };
 
-    /**** Disabling ****/
+    // *** Disabling *** //
 
     /**
-     * Activates the functions of this element. Call-chaining is supported.
+     * Activates the functions of this element. 
+     * @chainable
      */
     this.enable  = function(){
         this.setProperty("disabled", false, false, true);
@@ -20337,18 +20822,18 @@ apf.GuiElement = function(){
 
     /**
      * Deactivates the functions of this element.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.disable = function(){
         this.setProperty("disabled", true, false, true);
         return this;
     };
 
-    /**** z-Index ****/
+    // *** z-Index *** //
 
     /**
      * Moves this element to the lowest z ordered level.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.sendToBack = function(){
         this.setProperty("zindex", 0, false, true);
@@ -20357,7 +20842,7 @@ apf.GuiElement = function(){
 
     /**
      * Moves this element to the highest z ordered level.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.bringToFront  = function(){
         this.setProperty("zindex", apf.all.length + 1, false, true);
@@ -20366,7 +20851,7 @@ apf.GuiElement = function(){
 
     /**
      * Moves this element one z order level deeper.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.sendBackwards = function(){
         this.setProperty("zindex", this.zindex - 1, false, true);
@@ -20375,7 +20860,7 @@ apf.GuiElement = function(){
 
     /**
      * Moves this element one z order level higher.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.bringForward  = function(){
         this.setProperty("zindex", this.zindex + 1, false, true);
@@ -20563,11 +21048,23 @@ apf.GuiElement = function(){
     
 }).call(apf.GuiElement.prototype = new apf.AmlElement());
 
-/**
+/*
  * @for apf.amlNode
  * @private
  */
 apf.GuiElement.propHandlers = {
+    /**
+     * @attribute {Number} minwidth Sets or gets the minimum width for this element.
+     */
+    /**
+     * @attribute {Number} maxwidth Sets or gets the maximum width for this element.
+     */
+    /**
+     * @attribute {Number} minheight Sets or gets the minimum height for this element.
+     */
+    /**
+     * @attribute {Number} maxheight Sets or gets the maximum height for this element.
+     */
     "minwidth": function(value){ this.$ext.style.minWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
     "minheight": function(value){ this.$ext.style.minHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
     "maxwidth": function(value){ this.$ext.style.maxWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
@@ -20575,8 +21072,8 @@ apf.GuiElement.propHandlers = {
     
     
     /**
-     * @attribute {Boolean} focussable whether this element can receive the focus.
-     * The focussed element receives keyboard event.s
+     * @attribute {Boolean} focussable Sets or gets whether this element can receive the focus.
+     * The focused element receives keyboard event.
      */
     "focussable": function(value){
         this.focussable = typeof value == "undefined" || value;
@@ -20601,7 +21098,10 @@ apf.GuiElement.propHandlers = {
             apf.window.$removeFocus(this);
         }
     },
-    
+
+    /**
+     * @attribute {Number} tabindex Sets or gets the tab index for this element.
+     */    
     "tabindex": function(value){
         if (!this.hasFeature(apf.__FOCUSSABLE__)) 
             return;
@@ -20611,7 +21111,7 @@ apf.GuiElement.propHandlers = {
     
 
     /**
-     * @attribute {Number} zindex the z ordered layer in which this element is
+     * @attribute {Number} zindex Sets or gets the z ordered layer in which this element is
      * drawn.
      */
     "zindex": function(value){
@@ -20619,7 +21119,7 @@ apf.GuiElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} visible whether this element is shown.
+     * @attribute {Boolean} visible Sets or gets whether this element is shown.
      */
     "visible": function(value){
         if (apf.isFalse(value) || typeof value == "undefined") {
@@ -20653,9 +21153,9 @@ apf.GuiElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} disabled whether this element's functions are active.
-     * For elements that can contain other apf.NODE_VISIBLE elements this
-     * attribute applies to all it's children.
+     * @attribute {Boolean} disabled Sets or gets whether this element's functions are active.
+     * For elements that can contain other `apf.NODE_VISIBLE` elements, this
+     * attribute applies to all its children.
      */
     "disabled": function(value){
         if (!this.$drawn) {
@@ -20745,16 +21245,16 @@ apf.GuiElement.propHandlers = {
     },
 
     /**
-     * @attribute {Boolean} enables whether this element's functions are active.
-     * For elements that can contain other apf.NODE_VISIBLE elements this
-     * attribute applies to all it's children.
+     * @attribute {Boolean} enables Sets or gets whether this element's functions are active.
+     * For elements that can contain other `apf.NODE_VISIBLE` elements, this
+     * attribute applies to all its children.
      */
     "enabled" : function(value){
        this.setProperty("disabled", !value);
     },
 
     /**
-     * @attribute {Boolean} disable-keyboard whether this element receives
+     * @attribute {Boolean} disable-keyboard Sets or gets whether this element receives
      * keyboard input. This allows you to disable keyboard independently from
      * focus handling.
      */
@@ -20763,7 +21263,7 @@ apf.GuiElement.propHandlers = {
     },
     
     /**
-     * @attribute {String}  tooltip  the text displayed when a user hovers with 
+     * @attribute {String}  tooltip  Sets or gets the text displayed when a user hovers with 
      * the mouse over the element.
      */
     "tooltip" : function(value){
@@ -20773,11 +21273,13 @@ apf.GuiElement.propHandlers = {
     
     
     /**
-     * @attribute {String} contextmenu the name of the menu element that will
+     * @attribute {String} contextmenu Sets or gets the name of the menu element that will
      * be shown when the user right clicks or uses the context menu keyboard
      * shortcut.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     * 
+     * ```xml
      *  <a:menu id="mnuExample">
      *      <a:item>test</a:item>
      *      <a:item>test2</a:item>
@@ -20791,7 +21293,7 @@ apf.GuiElement.propHandlers = {
      *    contextmenu = "mnuExample" 
      *    width       = "200" 
      *    height      = "150" />
-     * </code>
+     * ```
      */
     "contextmenu": function(value){
         this.contextmenus = [value];
@@ -20800,21 +21302,24 @@ apf.GuiElement.propHandlers = {
 
     
     /**
-     * @attribute {String} actiontracker the name of the actiontracker that
-     * is used for this element and it's children. If the actiontracker doesn't
-     * exist yet it is created.
-     * Example:
-     * In this example the list uses a different actiontracker than the two
+     * @attribute {String} actiontracker Sets or gets the name of the [[apf.actiontracker action tracker]] that
+     * is used for this element and its children. If the actiontracker doesn't
+     * exist yet, it is created.
+     *
+     * #### Example
+     *
+     * In this example, the list uses a different action tracker than the two
      * textboxes which determine their actiontracker based on the one that
      * is defined on the bar.
-     * <code>
+     * 
+     * ```xml
      *  <a:list actiontracker="newAT" />
      *
      *  <a:bar actiontracker="someAT">
      *      <a:textbox />
      *      <a:textbox />
      *  </a:bar>
-     * </code>
+     * ```
      */
     "actiontracker": function(value){
         if (!value) {
@@ -20840,17 +21345,18 @@ apf.GuiElement.propHandlers = {
     
     //Load subAML
     /**
-     * @attribute {String} aml the {@link term.datainstruction data instruction} 
-     * that loads new aml as children of this element.
+     * @attribute {String} aml Sets or gets  the {@link term.datainstruction data instruction} 
+     * that loads new AML as children of this element.
      */
     "aml": function(value){
         this.replaceMarkup(value);
     }
 
-    /**
+    /*
      * @attribute {String} sets this aml element to be editable
      * that loads new aml as children of this element.
      */
+    // @todo Doc WTF?
     
    
     
@@ -20886,17 +21392,22 @@ apf.__PRESENTATION__ = 1 << 9;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have skinning features. A skin is a description
- * of how the element is rendered. In the web browser this is done using html
- * elements and css.
- * Remarks:
- * The skin is set using the skin attribute. The skin of each element can be
+ * of how the element is rendered. In the web browser, this is done using HTML
+ * elements and CSS.
+ *
+ * #### Remarks
+ *
+ * The skin is set using the `skin` attribute. The skin of each element can be
  * changed at run time. Other than just changing the look of an element, a skin
  * change can help the user to perceive information in a different way. For 
- * example a list element has a default skin, but can also use the thumbnail 
+ * example, a list element has a default skin, but can also use the thumbnail 
  * skin to display thumbnails of the {@link term.datanode data nodes}.
  *
- * A skin for an element is always build up out of a standard set of parts.
- * <code>
+ * #### Example
+ *
+ * A skin for an element is always built up out of a standard set of parts:
+ *
+ * ```xml
  *   <a:textbox name="textbox">
  *      <a:alias>
  *          ...
@@ -20912,14 +21423,17 @@ apf.__PRESENTATION__ = 1 << 9;
  *          ...
  *      </a:presentation>
  *   </a:textbox>
- * </code>
+ * ```
+ *
  * The alias contains a name that contains alternative names for the skin. The
- * style tags contain the css. The main tag contains the html elements that are
+ * style tags contain the CSS. The main tag contains the HTML elements that are
  * created when the component is created. Any other skin items are used to render
  * other elements of the widget. In this reference guide you will find these
  * skin items described on the pages of each widget.
  *
- * @constructor
+ * @class apf.Presentation
+ * @define presentation
+ * @inherits apf.GuiElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -20932,37 +21446,45 @@ apf.Presentation = function(){
 (function(){
     this.$regbase = this.$regbase | apf.__PRESENTATION__;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("skin");
     
     /**
-     * @attribute {string} skinset the skinset for
-     * this element. If none is specified the skinset attribute
-     * of the appsettings is used. When not defined the default skinset
+     * @attribute {String} skinset Sets or gets the skinset for
+     * this element. If none are specified ,the `skinset` attribute
+     * of the app settings is used. When that's not defined, the default skinset
      * is used.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     *
+     * ```xml
      *  <a:list skinset="perspex" />
-     * </code>
+     * ```
      */
     this.$propHandlers["skinset"] =
 
-    /**
-     * @attribute {string} skin the name of the skin in the skinset that defines 
-     * how this element is rendered. When a skin is changed the full state of the
-     * element is kept including it's selection, all the
-     * aml attributes, loaded data, focus and disabled state.
-     * Example:
-     * <code>
-     *  <a:list id="lstExample" skin="thumbnails" />
-     * </code>
-     * Example:
-     * <code>
-     *  lstExample.setAttribute("skin", "list");
-     * </code>
-     */
     
+    /**
+     * @attribute {String} skin Sets or gets the name of the skin in the skinset that defines 
+     * how this element is rendered. When a skin is changed, the full state of the
+     * element is kept, including its selection, all the
+     * AML attributes, loaded data, and focus and disabled states.
+     *
+     * #### Example
+     *
+     * In XML:
+     *
+     * ```xml
+     *  <a:list id="lstExample" skin="thumbnails" />
+     * ```
+     * 
+     * Or, in JavaScript:
+     *
+     * ```javascript
+     *  lstExample.setAttribute("skin", "list");
+     * ```
+     */
     this.$propHandlers["skin"] = function(value){
         if (!this.$amlLoaded) //If we didn't load a skin yet, this will be done when we attach to a parent
             return;
@@ -20979,7 +21501,7 @@ apf.Presentation = function(){
     
 
     /**
-     * @attribute {String} style the css style applied to the this element. This can be a string containing one or more css rules.
+     * @attribute {String} style Sets or gets the CSS style applied to the this element. This can be a string containing one or more CSS rules.
      */
     this.$propHandlers["style"] = function(value){
         if (!this.styleAttrIsObj && this.$amlLoaded)
@@ -20987,7 +21509,7 @@ apf.Presentation = function(){
     }
     
     /**
-     * @attribute {String} border turns borders on and off. Set sizes in the seq top, right, bottom, left.
+     * @attribute {String} border Sets or gets border values. Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off borders.
      */
     this.$propHandlers["border"] = function(value){
         if (!value)
@@ -20997,7 +21519,7 @@ apf.Presentation = function(){
     }
     
     /**
-     * @attribute {String} margin turns margins on and off. Set sizes in the seq top, right, bottom, left.
+     * @attribute {String | Number} margin Sets or gets margin values. Set these sizes as a quarter of strings, in the usual top, right, bottom, left sequence, or pass an empty string to turn off margins.
      */
     this.$propHandlers["margin"] = function(value){
         if (!value)
@@ -21007,7 +21529,7 @@ apf.Presentation = function(){
     }
 
     /**
-     * @attribute {String} class the name of the css style class applied to the this element.
+     * @attribute {String} class Sets or gets the name of the CSS style class applied to this element.
      */
     this.$propHandlers["class"] = function(value){
         this.$setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
@@ -21198,7 +21720,7 @@ apf.Presentation = function(){
     };
     
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$setStyleClass = apf.setStyleClass;
 
@@ -21272,10 +21794,10 @@ apf.Presentation = function(){
         }
     }
 
-    /**
+    /*
      * Initializes the skin for this element when none has been set up.
      *
-     * @param  {String}  skinName  required  Identifier for the new skin (for example: 'default:List' or 'win').
+     * @param  {String}  skinName   Identifier for the new skin (for example: 'default:List' or 'win').
      * @param  {Boolean} [noError]
      */
     this.$loadSkin = function(skinName, noError){
@@ -21413,7 +21935,7 @@ apf.Presentation = function(){
         return oExt;
     };
 
-    /**** Focus ****/
+    // *** Focus *** //
     this.$focus = function(){
         if (!this.$ext)
             return;
@@ -21446,7 +21968,7 @@ apf.Presentation = function(){
         }
     };
 
-    /**** Caching ****/
+    // *** Caching *** //
     /*
     this.$setClearMessage    = function(msg){};
     this.$updateClearMessage = function(){}
@@ -21531,7 +22053,7 @@ apf.validator = {
         s.push("};validityState.valid = valid; return validityState;");
         return new Function('value', 'checkRequired', 'validityState', s.join(""));
     }
-}
+};
 
 /**
  * Object containing information about the validation state. It contains
@@ -21575,42 +22097,51 @@ apf.validator.validityState = function(){
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have validation support.
- * Example:
- * <code>
- *  <a:bar validgroup="vgExample">
- *      <a:label>Number</a:label>
- *      <a:textbox required="true" min="3" max="10" 
- *        invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
- *      <a:label>Name</a:label>
- *      <a:textbox required="true" minlength="3" 
- *        invalidmsg="Invalid Entry;Please enter your name" />
- *      <a:label>Message</a:label>
- *      <a:textarea required="true" 
- *        invalidmsg="Invalid Message;Please enter a message!" />
  *
- *      <a:button onclick="if(vgExample.isValid()) alert('valid!')">
- *          Validate
- *      </a:button>
- *  </a:bar>
- * </code>
- *
- * @event invalid    Fires when this component goes into an invalid state.
- *
- * @constructor
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:bar validgroup="vgExample">
+ *        <a:label>Number</a:label>
+ *        <a:textbox required="true" min="3" max="10" 
+ *          invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox required="true" minlength="3" 
+ *          invalidmsg="Invalid Entry;Please enter your name" />
+ *        <a:label>Message</a:label>
+ *        <a:textarea required="true" 
+ *          invalidmsg="Invalid Message;Please enter a message!" />
+ *   
+ *        <a:button onclick="if(vgExample.isValid()) alert('valid!')">
+ *            Validate
+ *        </a:button>
+ *    </a:bar>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.Validation
+ * @inherits apf.AmlElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  */
+ /**
+  * @event invalid    Fires when this component goes into an invalid state.
+  *
+  */
 apf.Validation = function(){
     this.$regbase = this.$regbase | apf.__VALIDATION__;
 
     /**
      * Checks if this element's value is valid.
      *
-     * @param  {Boolean} [checkRequired] whether this check also adheres to the 'required' ruled.
-     * @return  {Boolean} specifying whether the value is valid
-     * @see  baseclass.validationgroup
+     * @param  {Boolean} [checkRequired] Specifies whether this check also adheres to the `'required'` rule.
+     * @returns  {Boolean} Specifies whether the value is valid
+     * @see  apf.ValidationGroup
      * @see  element.submitform
      */
     this.isValid = function(checkRequired){
@@ -21632,14 +22163,14 @@ apf.Validation = function(){
         return valid;
     };
 
-    /**
+    /*
      * @private
      */
     this.setCustomValidity = function(message){
         //do stuff
     }
 
-    /**
+    /*
      * @private
      * @todo This method should also scroll the element into view
      */
@@ -21652,31 +22183,18 @@ apf.Validation = function(){
         }
     };
 
-    /**
-     * Puts this element in the error state, optionally showing the
-     * error box if this element's is invalid.
-     *
-     * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
-     * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
-     * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
-     * @return  {Boolean}  boolean specifying whether the value is valid
-     * @see  object.validationgroup
-     * @see  element.submitform
-     * @method
-     */
     
     
     /**
      * Puts this element in the error state, optionally showing the
      * error box if this element is invalid.
      *
-     * @param  {Boolean} [ignoreReq]  whether this element required check is turned on.
-     * @param  {Boolean} [nosetError] whether the error box is displayed if this component does not validate.
-     * @param  {Boolean} [force]      whether this element in the error state and don't check if the element's value is invalid.
-     * @return  {Boolean}  boolean specifying whether the value is valid
-     * @see  object.validationgroup
-     * @see  element.submitform
-     * @method
+     * @method validate
+     * @param  {Boolean} [ignoreReq]  Specifies whether this element required check is turned on.
+     * @param  {Boolean} [nosetError] Specifies whether the error box is displayed if this component does not validate.
+     * @param  {Boolean} [force]      Specifies whether this element is in the error state, and doesn't check if the element's value is invalid.
+     * @return  {Boolean}  Indicates whether the value is valid
+     * @see  apf.ValidationGroup
      */
     this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
@@ -21691,7 +22209,7 @@ apf.Validation = function(){
         }
     };
 
-    /**
+    /*
      *    @private
      */
     this.setError = function(value){
@@ -21717,7 +22235,7 @@ apf.Validation = function(){
             this.focus(null, {mouse:true}); //arguable...
     };
 
-    /**
+    /*
      *    @private
      */
     this.clearError = function(value){
@@ -21740,71 +22258,97 @@ apf.Validation = function(){
 
     /**
      *
-     * @attribute  {Boolean}  required     whether a valid value for this element is required.
-     * @attribute  {RegExp}   pattern      the pattern tested against the value of this element to determine it's validity.
-     * @attribute  {String}   datatype     the datatype that the value of this element should adhere to. This can be any 
-     * of a set of predefined types, or a simple type created by an XML Schema definition.
-     *   Possible values:
-     *   {String} xsd:dateTime
-     *   {String} xsd:time
-     *   {String} xsd:date
-     *   {String} xsd:gYearMonth
-     *   {String} xsd:gYear
-     *   {String} xsd:gMonthDay
-     *   {String} xsd:gDay
-     *   {String} xsd:gMonth
-     *   {String} xsd:string
-     *   {String} xsd:boolean
-     *   {String} xsd:base64Binary
-     *   {String} xsd:hexBinary
-     *   {String} xsd:float
-     *   {String} xsd:decimal
-     *   {String} xsd:double
-     *   {String} xsd:anyURI
-     *   {String} xsd:integer
-     *   {String} xsd:nonPositiveInteger
-     *   {String} xsd:negativeInteger
-     *   {String} xsd:long
-     *   {String} xsd:int
-     *   {String} xsd:short
-     *   {String} xsd:byte
-     *   {String} xsd:nonNegativeInteger
-     *   {String} xsd:unsignedLong
-     *   {String} xsd:unsignedInt
-     *   {String} xsd:unsignedShort
-     *   {String} xsd:unsignedByte
-     *   {String} xsd:positiveInteger
-     *   {String} apf:url
-     *   {String} apf:website
-     *   {String} apf:email
-     *   {String} apf:creditcard
-     *   {String} apf:expdate
-     *   {String} apf:wechars
-     *   {String} apf:phonenumber
-     *   {String} apf:faxnumber
-     *   {String} apf:mobile
-     * @attribute  {Integer}  min          the minimal value for which the value of this element is valid.
-     * @attribute  {Integer}  max          the maximum value for which the value of this element is valid.
-     * @attribute  {Integer}  minlength    the minimal length allowed for the value of this element.
-     * @attribute  {Integer}  maxlength    the maximum length allowed for the value of this element.
-     * @attribute  {Boolean}  notnull      whether the value is filled. Same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page).
-     * @attribute  {String}   checkequal   the id of the element to check if it has the same value as this element.
-     * @attribute  {String}   invalidmsg   the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message.
-     * @attribute  {String}   validgroup   the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
-     * @attribute  {String}   validtest    the instruction on how to test for success. This attribute is generally used to check the value on the server.
-     * Example:
-     * This example shows how to check the username on the server. In this case
-     * comm.loginCheck is an async rpc function that checks the availability of the
-     * username. If it exists it will return 0, otherwise 1. The value variable
+     * @attribute  {Boolean}  required     Sets or gets whether a valid value for this element is required.
+     */
+    /** 
+     * @attribute  {RegExp}   pattern      Sets or gets the pattern tested against the value of this element to determine it's validity.
+     */
+    /**
+     * @attribute  {String}   datatype     Sets or gets the datatype that the value of this element should adhere to. This can be any 
+     * of a set of predefined types, or a simple type created by an XML Schema definition. 
+     * 
+     * Some possible values (all of which are [[String]]s) include:
+     *   - `xsd:dateTime`
+     *   - `xsd:time`
+     *   - `xsd:date`
+     *   - `xsd:gYearMonth`
+     *   - `xsd:gYear`
+     *   - `xsd:gMonthDay`
+     *   - `xsd:gDay`
+     *   - `xsd:gMonth`
+     *   - `xsd:string`
+     *   - `xsd:boolean`
+     *   - `xsd:base64Binary`
+     *   - `xsd:hexBinary`
+     *   - `xsd:float`
+     *   - `xsd:decimal`
+     *   - `xsd:double`
+     *   - `xsd:anyURI`
+     *   - `xsd:integer`
+     *   - `xsd:nonPositiveInteger`
+     *   - `xsd:negativeInteger`
+     *   - `xsd:long`
+     *   - `xsd:int`
+     *   - `xsd:short`
+     *   - `xsd:byte`
+     *   - `xsd:nonNegativeInteger`
+     *   - `xsd:unsignedLong`
+     *   - `xsd:unsignedInt`
+     *   - `xsd:unsignedShort`
+     *   - `xsd:unsignedByte`
+     *   - `xsd:positiveInteger`
+     *   - `apf:url`
+     *   - `apf:website`
+     *   - `apf:email`
+     *   - `apf:creditcard`
+     *   - `apf:expdate`
+     *   - `apf:wechars`
+     *   - `apf:phonenumber`
+     *   - `apf:faxnumber`
+     *   - `apf:mobile`
+     */
+    /**
+     * @attribute  {Number}  min          Sets or gets the minimal value for which the value of this element is valid.
+     */
+    /**
+     * @attribute  {Number}  max          Sets or gets the maximum value for which the value of this element is valid.
+     */
+    /**
+     * @attribute  {Number}  minlength    Sets or gets the minimal length allowed for the value of this element.
+     */
+    /**
+     * @attribute  {Number}  maxlength    Sets or gets the maximum length allowed for the value of this element.
+     */
+    /**
+     * @attribute  {Boolean}  notnull      Sets or gets whether the value is filled. This rule is checked realtime when the element loses the focus.
+     */
+    /**
+     * @attribute  {String}   checkequal   Sets or gets the id of the element to check if it has the same value as this element.
+     */
+    /**
+     * @attribute  {String}   invalidmsg   Sets or gets the message displayed when this element has an invalid value. Use a `;` character to seperate the title from the message.
+     */
+    /**
+     * @attribute  {String}   validgroup   Sets or gets the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards.
+     */
+    /**
+     * @attribute  {String}   validtest    Sets or gets the instruction on how to test for success. This attribute is generally used to check the value on the server.
+     * 
+     * #### Example
+     *
+     * This example shows how to check the username on the server. In this case,
+     * `comm.loginCheck` is an async RPC function that checks the availability of the
+     * username. If it exists, it will return `0`--otherwise, it's `1`. The value variable
      * contains the current value of the element (in this case the textbox). It
      * can be used as a convenience variable.
-     * <pre class="code">
+     *
+     * ```xml
      *  <a:label>Username</a:label>
      *  <a:textbox
      *    validtest  = "{comm.loginCheck(value) == 1}"
      *    pattern    = "/^[a-zA-Z0-9_\-. ]{3,20}$/"
      *    invalidmsg = "Invalid username;Please enter a valid username." />
-     * </pre>
+     * ```
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //this.addEventListener(this.hasFeature(apf.__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
@@ -21961,10 +22505,12 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
 }
 
 /**
- * Object allowing for a set of AML elements to be validated, an element that 
- * is not valid shows the errorbox.
- * Example:
- * <code>
+ * This object allows for a set of AML elements to be validated. An element that 
+ * is not valid shows an errorbox.
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:bar validgroup="vgForm">
  *      <a:label>Phone number</a:label>
  *      <a:textbox id="txtPhone"
@@ -21979,34 +22525,38 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
  *        minlength  = "4"
  *        invalidmsg = "Please enter a password of at least four characters" />
  *  </a:bar>
- * </code>
+ * ```
  *
  * To check if the element has valid information entered, leaving the textbox
- * (focussing another element) will trigger a check. Programmatically a check
+ * (focussing another element) will trigger a check. Programmatically, a check
  * can be done using the following code:
- * <code>
+ *
+ * 
+ * ```javascript
  *  txtPhone.validate();
  *
- *  //Or use the html5 syntax
+ *  // Or, use the html5 syntax
  *  txtPhone.checkValidity();
- * </code>
+ * ```
  *
- * To check for the entire group of elements use the validation group. For only
+ * To check for the entire group of elements, use the validation group. For only
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <code>
+ * 
+ * ```javascript
  *  vgForm.validate();
- * </code>
+ * ```
  *
- * @event validation Fires when the validation group isn't validated.
- *
+ * @class apf.ValidationGroup
  * @inherits apf.Class
- * @constructor
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
+ */
+/**
+ * @event validation Fires when the validation group isn't validated.
  */
 apf.ValidationGroup = function(name){
     this.$init();
@@ -22024,19 +22574,20 @@ apf.ValidationGroup = function(name){
 
 (function(){
     /**
-     * When set to true, only visible elements are validated. Default is false.
+     * When set to true, only visible elements are validated.
      * @type Boolean
      */
     this.validateVisibleOnly = false;
     
     /**
-     * When set to true, validation doesn't stop at the first invalid element. Default is false.
+     * When set to true, validation doesn't stop at the first invalid element.
      * @type Boolean
      */
     this.allowMultipleErrors = false;
 
     /**
-     * Adds a aml element to this validation group.
+     * Adds an AML element to this validation group.
+     * @param o {apf.AmlElement} The AML element to add
      */
     this.register   = function(o){ 
         if (o.hasFeature(apf.__VALIDATION__)) 
@@ -22044,7 +22595,8 @@ apf.ValidationGroup = function(name){
     };
     
     /**
-     * Removes a aml element from this validation group.
+     * Removes a AML element from this validation group.
+     * @param o {apf.AmlElement} The AML element to remove
      */
     this.unregister = function(o){
         this.childNodes.remove(o); 
@@ -22060,11 +22612,11 @@ apf.ValidationGroup = function(name){
     //Shared among all validationgroups
     var errbox;
     /**
-     * Retrieves {@link element.errorbox} used for a specified element.
+     * Retrieves the {@link apf.errorbox} used for a specified element.
      *
-     * @param  {AmlNode}  o  required  AmlNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link object.validationgroup.property.allowMultipleErrors} to influence when Errorboxes are created.
+     * @param  {apf.AmlNode}  o An AMLNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link apf.ValidationGroup.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
-     * @return  {Errorbox}  the found or created Errorbox;
+     * @return  {apf.errorbox}  The found (or created) Errorbox
      */
     this.getErrorBox = function(o, no_create){
         if (this.allowMultipleErrors || !errbox && !no_create) {
@@ -22120,42 +22672,25 @@ apf.ValidationGroup = function(name){
         return found;
     }
 
-    /**
-     * Checks if (part of) the set of element's registered to this element are
-     * valid. When an element is found with an invalid value the error state can
-     * be set for that element.
-     *
-     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying whether the checked elements are valid.
-     * @method isValid, validate, checkValidity
-     */
     
     
     /**
-     * Checks if (part of) the set of element's registered to this element are
-     * valid. When an element is found with an invalid value the error state can
-     * be set for that element.
-     *
-     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying whether the checked elements are valid.
-     * @method isValid, validate, checkValidity
+     * 
+     * @inheritDoc apf.ValidationGroup.isValid
+     * @method
      */
     this.validate =
     
     /**
      * Checks if (part of) the set of element's registered to this element are
-     * valid. When an element is found with an invalid value the error state can
+     * valid. When an element is found with an invalid value, the error state can
      * be set for that element.
      *
-     * @param  {Boolean}    [ignoreReq]  whether to adhere to the 'required' check.
-     * @param  {Boolean}    [nosetError  whether to not set the error state of the element with an invalid value
-     * @param  {AMLElement} [page]           the page for which the children will be checked. When not specified all elements of this validation group will be checked.
-     * @return  {Boolean}  specifying whether the checked elements are valid.
-     * @method isValid, validate, checkValidity
+     * @method isValid
+     * @param  {Boolean}    [ignoreReq]  Specifies whether to adhere to the 'required' check.
+     * @param  {Boolean}    [nosetError  Specifies whether to not set the error state of the element with an invalid value
+     * @param  {apf.AmlElement} [page]   The page for which the children will be checked. When not specified all elements of this validation group are checked.
+     * @return  {Boolean}  Specifies whether the checked elements are valid.
      */
     this.isValid = function(ignoreReq, nosetError, page){
         var found = checkValidChildren.call(this, page || this, ignoreReq,
@@ -22212,13 +22747,15 @@ apf.__DATABINDING__ = 1 << 1;
 
 
 /**
- * Baseclass adding data binding features to this element. Databinding takes
- * care of automatically going from data to representation and establishing a
+ * This is a baseclass that adds data binding features to this element. 
+ * Databinding takes care of automatically going from data to representation and establishing a
  * permanent link between the two. In this way data that is changed will
  * change the representation as well. Furthermore, actions that are executed on
  * the representation will change the underlying data.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:list>
  *      <a:model>
  *          <data>
@@ -22232,43 +22769,48 @@ apf.__DATABINDING__ = 1 << 1;
  *          <a:each match="[item]" />
  *      </a:bindings>
  *  </a:list>
- * </code>
+ * ```
  *
- * @event error             Fires when a communication error has occured while
- *                          making a request for this element.
- *   cancelable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event
- *                              callback doesn't return false.
- *   {Number}         state     the state of the call
- *     cancellable: Prevents the error from being thrown.
- *     Possible values:
- *     apf.SUCCESS  the request was successfull
- *     apf.TIMEOUT  the request has timed out.
- *     apf.ERROR    an error has occurred while making the request.
- *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in
- *                              the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
- * @event beforeretrieve    Fires before a request is made to retrieve data.
- *   cancelable: Prevents the data from being retrieved.
- * @event afterretrieve     Fires when the request to retrieve data returns both
- *                          on success and failure.
- * @event receive           Fires when data is successfully retrieved
- *   object:
- *   {String} data  the retrieved data
- *
- * @constructor
+ * @class apf.DataBinding
+ * @inherits apf.Presentation
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  * @default_private
+ */
+/**
+ * @event error             Fires when a communication error has occured while
+ *                          making a request for this element.
+ * @cancelable Prevents the error from being thrown.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following properties:
+ *                   - error ([[Error]]): the error object that is thrown when the event callback doesn't return false.
+ *                   - state ([[Number]]): the state of the call
+ *                                                - `apf.SUCCESS`:  The request was successfull
+ *                                                - `apf.TIMEOUT`:  The request has timed out.
+ *                                                - `apf.ERROR  `:  An error has occurred while making the request.
+ *                                                - `apf.OFFLINE`:  The request was made while the application was offline.
+ *                   - userdata (`Mixed`): Data that the caller wanted to be available in the callback of the http request.
+ *                   - http ([[XMLHttpRequest]]): The object that executed the actual http request.
+ *                   - url ([[String]]): The url that was requested.
+ *                   - tpModule ([[apf.http]]): The teleport module that is making the request.
+ *                   - id ([[Number]]): The ID of the request.
+ *                   - message ([[String]]): The error message.
+ */
+/** 
+ * @event beforeretrieve    Fires before a request is made to retrieve data.
+ * @cancelable Prevents the data from being retrieved.
+ */
+/**
+ * @event afterretrieve     Fires when the request to retrieve data returns both
+ *                          on success and failure.
+ */
+/**
+ * @event receive           Fires when data is successfully retrieved
+ * @param {Object} e The standard event object. It contains the following properties:
+ *                   - data ([[String]]): the retrieved data
+ *
  */
 apf.DataBinding = function(){
     this.$init(true);
@@ -22289,14 +22831,14 @@ apf.DataBinding = function(){
         //eachvalue : 1 //disabled because of line 1743 valueRule = in multiselect.js
     }, this.$attrExcludePropBind);
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @param  {String}  value  the value to set.
-     * @return  {XMLNode}  the changed XMLNode
+     * @param  {String}  xpath  The xpath used to select a XMLNode
+     * @param  {String}  value  The value to set
+     * @return  {XMLNode}  The changed XMLNode
      */
     this.setQueryValue = function(xpath, value, type){
         var node = apf.createNodeFromXpath(this[type || 'xmlRoot'], xpath);
@@ -22311,46 +22853,45 @@ apf.DataBinding = function(){
     /**
      * Queries the bound data for a string value
      *
-     * @param {String} xpath  the xpath statement which queries on the data this element is bound on.
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return {String} value of the selected XML Node
-     * @todo
+     * @param {String} xpath  The XPath statement which queries on the data this element is bound on.
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return {String}       The value of the selected XML Node
+     * 
+     */
+    this.queryValue = function(xpath, type){
+     /*   @todo
      *  lstRev.query('revision/text()', 'selected');
      *  lstRev.query('revision/text()', 'xmlRoot');
      *  lstRev.query('revision/text()', 'indicator');
      */
-    this.queryValue = function(xpath, type){
         return apf.queryValue(this[type || 'xmlRoot'], xpath );
     };
 	/**
      * Queries the bound data for an array of string values
      *
-     * @param {String} xpath the xpath statement which queries on the data this element is bound on.
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return {String} value of the selected XML Node
+     * @param {String} xpath The XPath statement which queries on the data this element is bound on.
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return {String}       The value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
         return apf.queryValues(this[type || 'xmlRoot'], xpath );
     };
 	
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes an XPath statement on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param {String} xpath The XPath statement which queries on the data this element is bound on.
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return  {Mixed}  An [[XMLNode]] or [[NodeList]] with the result of the selection
      */
     this.queryNode = function(xpath, type){
         var n = this[type||'xmlRoot'];
@@ -22358,15 +22899,14 @@ apf.DataBinding = function(){
     };
 
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes an XPath statement on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @param {String} type   the node that is used as the context node for the query.
-     * Possible values:
-     * selected     the selected data anode of this element.
-     * xmlRoot      the root data node that this element is bound on.
-     * indicator    the data node that is highlighted for keyboard navigation.
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param  {String}   xpath    The XPath used to select the XMLNode(s)
+     * @param {String} type   The node that is used as the context node for the query. It can be one of the following possible values:
+     *                         - `"selected"`:    The selected data anode of this element.
+     *                         - `"xmlRoot"`:   The root data node that this element is bound on.
+     *                         - `"indicator"`:   The data node that is highlighted for keyboard navigation.
+     * @return  {Mixed}  An [[XMLNode]] or [[NodeList]] with the result of the selection
      */
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
@@ -22474,25 +23014,26 @@ apf.DataBinding = function(){
            && this.$bindings.getDataNode(name, xmlNode, createNode, ruleList, multiple);
     };
     
+    
     /**
-     * Sets the model of the specified element
+     * Sets the model of the specified element. 
+     * The model acts as a datasource for this element.
      *
-     * @param  {Model}  The model this element is going to connect to.
+     * @param  {apf.model}  The model this element is going to connect to.
      * 
      */
-    
     this.setModel = function(model){
         this.setAttribute("model", model, false, true);
     };
     
     
     /**
-     * Gets the model to which this element is connected.
-     * This is the model which acts as a datasource for this element.
+     * Gets the model which this element is connected to.
+     * The model acts as a datasource for this element.
      *
-     * @param {Boolean} doRecur whether the model should be searched recursively up the data tree.
-     * @returns  {Model}  The model this element is connected to.
-     * @see  element.smartbinding
+     * @param {Boolean} doRecur Specifies whether the model should be searched recursively up the data tree.
+     * @returns  {apf.model}  The model this element is connected to.
+     * @see apf.smartbinding
      */
     this.getModel = function(doRecur){
         if (doRecur && !this.$model)
@@ -22503,17 +23044,29 @@ apf.DataBinding = function(){
     
     /**
      * Reloads the data in this element.
-     *
+     * @method 
      */
     this.reload = this.reload || function(){
         this.load(this.xmlRoot, {cacheId: this.cacheId, force: true});
     };
-    
+
     /**
-     * Loads data in to this element using binding rules to transform the
-     * data in to a presentation.
-     * Example:
-     * <code>
+     * @event beforeload  Fires before loading data in this element.
+     * @cancelable Prevents the data from being loaded.
+     * @param {XMLElement} xmlNode The node that is loaded as the root {@link term.datanode data node}.
+     *   
+     */
+    /** 
+     * @event afterload   Fires after loading data in this element.
+     * @param {XMLElement} xmlNode The node that is loaded as the root {@link term.datanode data node}.
+     */
+    /**
+     * Loads data into this element using binding rules to transform the
+     * data into a presentation.
+     * 
+     * #### Example
+     * 
+     * ```xml 
      *  <a:list id="lstExample">
      *      <a:bindings>
      *          <a:caption match="[text()]" />
@@ -22531,33 +23084,20 @@ apf.DataBinding = function(){
      *          </images>');
      *      }
      *  --></a:script>
-     * </code>
+     * ```
      *
-     * @param {mixed}  [xmlNode]
-     *   Possible Values:
-     *   {XMLElement}  an xml element loaded in to this element.
-     *   {String}      an xml string which is loaded in this element.
-     *   {String}      an instruction to load data from a remote source.
-     *   {Null}        null clears this element from it's data {@link baseclass.cache.method.clear}.
-     * @param {Object} [options]
-     *   Properties:
-     *   {XMLElement} [xmlNode]    the {@link term.datanode data node} that provides
-     *                             context to the data instruction.
-     *   {Function}   [callback]   the code executed when the data request returns.
-     *   {mixed}      []           Custom properties available in the data instruction.
-     *   {String}     [cacheId]    the xml element to which the binding rules are applied.
-     *   {Boolean}    [force]      whether cache is checked before loading the data.
-     *   {Boolean}    [noClearMsg] wether a message is set when clear is called.
-     *
-     * @event beforeload  Fires before loading data in this element.
-     *   cancelable: Prevents the data from being loaded.
-     *   object:
-     *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
-     * @event afterload   Fires after loading data in this element.
-     *   object:
-     *   {XMLElement} xmlNode the node that is loaded as the root {@link term.datanode data node}.
-     * @see  element.smartbinding
-     * @see  baseclass.cache.method.clear
+     * @param {XMLElement | String}  [xmlNode] The content to load into this element. It can be one of the following values:
+     *                                                - {XMLElement}: An XML element that's loaded into this element
+     *                                                - {String}: Either an XML string, or, an instruction to load the data from a remote source
+     *                                                - `null`: Clears this element from its data
+     * @param {Object} [options] Set of additional options to pass. Properties include:
+     *                           - [xmlNode] ([[XMLElement]]):   The {@link term.datanode data node} that provides
+     *                                                       context to the data instruction.
+     *                           - [callback] ([[Function]]): The code executed when the data request returns
+     *                           - [properties] (`Mixed`): Custom properties available in the data instruction
+     *                           - [cacheId] ([[String]]): The xml element to which the binding rules are applied
+     *                           - [force] ([[Boolean]]): Specifies whether cache is checked before loading the data
+     *                           - [noClearMsg] ([[Boolean]]): Specifies whether a message is set when clear is called
      */
     this.load = function(xmlNode, options){
         if (options) {
@@ -22692,14 +23232,18 @@ apf.DataBinding = function(){
         this.dispatchEvent('afterload', {xmlNode : xmlNode});
     };
     
-    /**
+    // @todo Doc
+    /*
      * @binding load Determines how new data is loaded data is loaded into this
      * element. Usually this is only the root node containing no children.
-     * Example:
+     * 
+     * #### Example
+     * 
      * This example shows a load rule in a text element. It gets its data from
      * a list. When a selection is made on the list the data is loaded into the
      * text element.
-     * <code>
+     * 
+     * ```xml
      *  <a:list id="lstExample" width="200" height="200">
      *      <a:bindings>
      *          <a:caption match="[text()]" />
@@ -22720,10 +23264,13 @@ apf.DataBinding = function(){
      *          <a:contents match="[message/text()]" />
      *      </a:bindings>
      *  </a:text>
-     * </code>
-     * @attribute {string} get the {@link term.datainstruction data instruction}
-     *                     that is used to load data into the xmlRoot of this component.
+     * ```
+     *
      */
+     /**
+      * @attribute {String} get Sets or gets the {@link term.datainstruction data instruction}
+      *                     that is used to load data into the XML root of this component.
+      */
     this.$loadSubData = function(xmlRootNode){
         if (this.$hasLoadStatus(xmlRootNode) && !this.$hasLoadStatus(xmlRootNode, "potential")) 
             return;
@@ -22767,17 +23314,17 @@ apf.DataBinding = function(){
         }
     };
     
-    /**
+    //@todo this function is called way too much for a single load of a tree
+    //@todo should clear listener
+    /*
      * Unloads data from this element and resets state displaying an empty message.
-     * Empty message is set on the {@link baseclass.guielement.property.msg}.
+     * The empty message is set on the {@link apf.GuiElement.msg}.
      *
-     * @param {Boolean} [nomsg]   whether to display the empty message.
-     * @param {Boolean} [doEvent] whether to sent select events.
+     * @param {Boolean} [nomsg]   Specifies whether to display the empty message.
+     * @param {Boolean} [doEvent] Specifies whether to send select events.
      * @see baseclass.databinding.method.load
      * @private
      */
-    //@todo this function is called way too much for a single load of a tree
-    //@todo should clear listener
     this.clear = function(nomsg, doEvent, fakeClear){
         if (!this.$container)
             return;//@todo apf3.0
@@ -22830,10 +23377,10 @@ apf.DataBinding = function(){
         this.clear("custom");
     };
 
+    //@todo optimize this
     /**
      * @private
      */
-    //@todo optimize this
     this.$setLoadStatus = function(xmlNode, state, remove){
         var group  = this.loadgroup || "default";
         var re     = new RegExp("\\|(\\w+)\\:" + group + ":(\\d+)\\|");
@@ -22873,12 +23420,13 @@ apf.DataBinding = function(){
         return ostatus.match(re) ? true : false;
     };
 
-    /**
+    /*
      * @event beforeinsert Fires before data is inserted.
-     *   cancelable: Prevents the data from being inserted.
-     *   object:
-     *   {XMLElement} xmlParentNode the parent in which the new data is inserted
-     * @event afterinsert Fires after data is inserted.
+     * @cancelable Prevents the data from being inserted.
+     * @param {XMLElement} xmlParentNode The parent in which the new data is inserted
+     */
+     /**
+      * @event afterinsert Fires after data is inserted.
      */
 
     /**
@@ -22945,11 +23493,14 @@ apf.DataBinding = function(){
     };
     
     /**
-     * @attribute {Boolean} render-root whether the xml element loaded into this
-     * element is rendered as well. Default is false.
-     * Example:
+     * @attribute {Boolean} render-root Sets or gets whether the XML element loaded into this
+     * element is rendered as well. The default is false.
+     *
+     * #### Example
+     *
      * This example shows a tree which also renders the root element.
-     * <code>
+     * 
+     * ```xml
      *  <a:tree render-root="true">
      *      <a:model>
      *          <root name="My Computer">
@@ -22964,7 +23515,7 @@ apf.DataBinding = function(){
      *          <a:each match="[root|drive|folder]"></a:each>
      *      </a:bindings>
      *  </a:tree>
-     * </code>
+     * ```
      */
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("empty-message", "loading-message",
@@ -22972,18 +23523,18 @@ apf.DataBinding = function(){
         "bindings", "actions");
 
     /**
-     * @attribute {Boolean} render-root wether the root node of the data loaded
+     * @attribute {Boolean} render-root Sets or gets whether the root node of the data loaded
      * into this element is rendered as well. 
-     * @see element.tree
+     * @see apf.tree
      */
     this.$propHandlers["render-root"] = function(value){
         this.renderRoot = value;
     };
     
     /**
-     * @attribute {String} empty-message the message displayed by this element
+     * @attribute {String} empty-message Sets or gets the message displayed by this element
      * when it contains no data. This property is inherited from parent nodes.
-     * When none is found it is looked for on the appsettings element. Otherwise
+     * When none is found, it is looked for on the appsettings element. Otherwise
      * it defaults to the string "No items".
      */
     this.$propHandlers["empty-message"] = function(value){
@@ -22994,33 +23545,39 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} loading-message  the message displayed by this
+     * @attribute {String} loading-message Sets or gets the message displayed by this
      * element when it's loading. This property is inherited from parent nodes.
-     * When none is found it is looked for on the appsettings element. Otherwise
+     * When none is found, it is looked for on the appsettings element. Otherwise
      * it defaults to the string "Loading...".
-     * Example:
-     * This example uses property binding to update the loading message. The
+     *
+     * #### Example
+     *
+     * This example uses property bindings to update the loading message. The
      * position of the progressbar should be updated by the script taking care
      * of loading the data.
-     * <code>
+     *
+     * ```xml
      *  <a:list loading-message="{'Loading ' + Math.round(progress1.value*100) + '%'}" />
      *  <a:progressbar id="progress1" />
-     * </code>
-     * Remarks:
-     * Usually a static loading message is displayed for only 100 milliseconds
-     * or so, whilst loading the data from the server. This is done for instance
-     * when the load binding rule is used. In the code example below a list
+     * ```
+     *
+     * #### Remarks
+     *
+     * Usually, a static loading message is displayed for only 100 milliseconds
+     * or so, whilst loading the data from the server. For instance, this is done
+     * when the load binding rule is used. In the code example below, a list
      * binds on the selection of a tree displaying folders. When the selection
      * changes, the list loads new data by extending the model. During the load
-     * of this new data the loading message is displayed.
-     * <code>
+     * of this new data, the loading message is displayed.
+     * 
+     * ```xml
      *  <a:list model="[trFolders::element]">
      *      <a:bindings>
      *          ...
      *          <a:load get="{comm.getFiles([@path])}" />
      *      </bindings>
      *  </a:list>
-     * </code>
+     * ```
      */
     this.$propHandlers["loading-message"] = function(value){
         this["loading-message"] = value;
@@ -23030,7 +23587,7 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} offline-message  the message displayed by this
+     * @attribute {String} offline-message Sets or gets the message displayed by this
      * element when it can't load data because the application is offline.
      * This property is inherited from parent nodes. When none is found it is
      * looked for on the appsettings element. Otherwise it defaults to the
@@ -23044,17 +23601,22 @@ apf.DataBinding = function(){
     };
 
     /**
-     * @attribute {String} smartbinding  the name of the SmartBinding for this
-     * element. A smartbinding is a collection of rules which define how data
+     * @attribute {String} smartbinding Sets or gets the name of the SmartBinding for this
+     * element. 
+     * 
+     * A smartbinding is a collection of rules which define how data
      * is transformed into representation, how actions on the representation are
      * propagated to the data and it's original source, how drag&drop actions
      * change the data and where the data is loaded from. Each of these are
      * optionally defined in the smartbinding set and can exist independently
      * of the smartbinding object.
-     * Example:
-     * This example shows a fully specified smartbinding. Usually only parts
+     * 
+     * #### Example
+     *
+     * This example shows a fully specified smartbinding. Usually, only parts
      * are used. This example shows a tree with files and folders.
-     * <code>
+     * 
+     * ```xml
      *  <a:tree smartbinding="sbExample" />
      * 
      *  <a:smartbinding id="sbExample">
@@ -23084,11 +23646,14 @@ apf.DataBinding = function(){
      *      </a:actions>
      *      <a:model src="xml/filesystem.xml" />
      *  </a:smartbinding>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
+     *
      * The smartbinding parts can also be assigned to an element by adding them
      * directly as a child in aml.
-     * <code>
+     * 
+     * ```xml
      *  <a:tree>
      *      <a:bindings>
      *          ...
@@ -23097,24 +23662,25 @@ apf.DataBinding = function(){
      *  </a:tree>
      * </code>
      *
-     * See:
-     * There are several ways to be less verbose in assigning certain rules.
-     * <ul>
-     *  <li>{@link baseclass.multiselectbinding.binding.each}</li>
-     *  <li>{@link baseclass.dragdrop.attribute.drag}</li>
-     *  <li>{@link element.bindings}</li>
-     *  <li>{@link element.actions}</li>
-     *  <li>{@link element.dragdrop}</li>
-     * </ul>
+     * ### See Also
+     *
+     * There are several ways to be less verbose in assigning certain rules. For more information, see:
+     *
+     * * [[apf.bindings]]
+     * * [[apf.actions]]
+     * * [[apf.DragDrop]]
+     * 
      */
     this.$propHandlers["smartbinding"] = 
     
     /**
-     * @attribute {String} actions the id of the actions element which
+     * @attribute {String} actions Sets or gets the id of the actions element which
      * provides the action rules for this element. Action rules are used to
      * send changes on the bound data to a server.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:tree 
      *    id             = "tree" 
      *    height         = "200" 
@@ -23143,19 +23709,22 @@ apf.DataBinding = function(){
      *    top     = "10"
      *    onclick = "tree.startRename()" />
      *  <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
-     * </code>
+     * ```
      */
     this.$propHandlers["actions"] = 
 
     /**
-     * @attribute {String} bindings the id of the bindings element which
+     * @attribute {String} bindings Sets or gets the id of the bindings element which
      * provides the binding rules for this element.
-     * Example:
+     * 
+     * #### Example
+     *
      * This example shows a set of binding rules that transform data into the
      * representation of a list. In this case it displays the names of
      * several email accounts, with after each account name the number of unread
      * mails in that account. It uses JSLT to transform the caption.
-     * <code>
+     * 
+     * ```xml
      *  <a:model id="mdlExample">
      *      <data>
      *          <account icon="application.png">Account 1
@@ -23173,21 +23742,24 @@ apf.DataBinding = function(){
      *      <a:icon match="[@icon]" />
      *      <a:each match="[account]" sort="[text()]" />
      *  </a:bindings>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
+     *
      * Bindings can also be assigned directly by putting the bindings tag as a
      * child of this element.
      *
      * If the rule only contains a select attribute, it can be written in a
      * short way by adding an attribute with the name of the rule to the
      * element itself:
-     * <code>
+     * 
+     * ```xml
      *  <a:list 
      *    caption = "[text()] (#[mail[@read != 'true']])"
      *    icon    = "[@icon]"
      *    each    = "[account]"
      *    sort    = "[text()]" />
-     * </code>
+     * ```
      */
     this.$propHandlers["bindings"] = function(value, prop){
         var local = "$" + prop + "Element";
@@ -23367,10 +23939,12 @@ apf.DataBinding = function(){
     
 
     /**
-     * @attribute {String} model the name of the model to load data from or a
+     * @attribute {String} model Sets or gets the name of the model to load data from, or a
      * datainstruction to load data.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:model id="mdlExample" src="filesystem.xml" />
      *   <a:tree 
      *     height         = "200" 
@@ -23381,9 +23955,13 @@ apf.DataBinding = function(){
      *           <a:icon value="Famfolder.gif" />
      *       </a:each>
      *   </a:tree>
-     * </code>
-     * Example:
-     * <code>
+     * ```
+     * 
+     * #### Example
+     *
+     * Here's an example loading from an XML source:
+     *
+     * ```xml
      *  <a:tree 
      *    height         = "200" 
      *    width          = "250" 
@@ -23393,9 +23971,11 @@ apf.DataBinding = function(){
      *          <a:icon value="Famfolder.gif" />
      *      </a:each>
      *  </a:tree>
-     * </code>
-     * Example:
-     * <code>
+     * ```
+     * 
+     * #### Example
+     *
+     * ```xml
      *  <a:tree 
      *     id             = "tree"
      *     height         = "200" 
@@ -23411,34 +23991,18 @@ apf.DataBinding = function(){
      *     value  = "[@caption]" 
      *     width  = "250" 
      *     height = "100" />
-     * </code>
-     * Remarks:
-     * This attribute is inherited from a parent when not set. You can use this
-     * to tell sets of elements to use the same model.
-     * <code>
-     *  <a:bar model="mdlForm">
-     *      <a:label>Name</a:label>
-     *      <a:textbox value="[name]" />
+     * ```
      * 
-     *      <a:label>Happiness</a:label>
-     *      <a:slider value="[happiness]" min="0" max="10" />
-     *  </a:bar>
-     * 
-     *  <a:model id="mdlForm">
-     *      <data />
-     *  </a:model>
-     * </code>
-     * When no model is specified the default model is chosen. The default
-     * model is the first model that is found without a name, or if all models
-     * have a name, the first model found.
-     * Example:
+     * #### Example
+     *
      * This example shows a dropdown from which the user can select a country.
      * The list of countries is loaded from a model. Usually this would be loaded
      * from a separate url, but for clarity it's inlined. When the user selects
      * a country in the dropdown the value of the item is stored in the second
      * model (mdlForm) at the position specified by the ref attribute. In this
      * case this is the country element.
-     * <code>
+     * 
+     * ```xml
      *  <a:label>Name</a:label>
      *  <a:textbox value="[name]" model="mdlForm" />
      * 
@@ -23463,8 +24027,32 @@ apf.DataBinding = function(){
      *          <country />
      *      </data>
      *  </a:model>
-     * </code>
-     * @see baseclass.databinding.attribute.model
+     * ```
+     *
+     * #### Remarks
+     *
+     * This attribute is inherited from a parent when not set. You can use this
+     * to tell sets of elements to use the same model.
+     * 
+     * ```xml
+     *  <a:bar model="mdlForm">
+     *      <a:label>Name</a:label>
+     *      <a:textbox value="[name]" />
+     * 
+     *      <a:label>Happiness</a:label>
+     *      <a:slider value="[happiness]" min="0" max="10" />
+     *  </a:bar>
+     * 
+     *  <a:model id="mdlForm">
+     *      <data />
+     *  </a:model>
+     * ```
+     *
+     * When no model is specified the default model is chosen. The default
+     * model is the first model that is found without a name, or if all models
+     * have a name, the first model found.
+     * 
+     * @see apf.DataBinding.model
      */
     this.$propHandlers["model"] = function(value){
         //Unset model
@@ -23596,10 +24184,11 @@ apf.DataBinding = function(){
 
     
     /**
-     * @attribute {String} viewport the way this element renders its data.
-     * Possible values:
-     * virtual  this element only renders data that it needs to display.
-     * normal   this element renders all data at startup.
+     * @attribute {String} viewport Sets or gets the way this element renders its data.
+     * 
+     * The possible values include:
+     *   - `"virtual"`:  this element only renders data that it needs to display.
+     *   - `"normal`"`:  this element renders all data at startup.
      * @experimental
      */
     this.$propHandlers["viewport"] = function(value){
@@ -23651,9 +24240,12 @@ apf.Init.run("databinding");
 
 
 /**
- * @constructor
+ * The baseclass for all standard data binding rules.
+ *
+ * @class apf.StandardBinding
  * @private
  * @baseclass
+ * @inherits apf.DataBinding
  */
 apf.StandardBinding = function(){
     this.$init(true);
@@ -23779,10 +24371,10 @@ apf.StandardBinding = function(){
         });
     };
 
-    /**
-     * Clears the data loaded into this element resetting it's value.
-     */
     //@todo apf3.0 this is wrong
+    /**
+     * @event $clear Clears the data loaded into this element resetting it's value.
+     */
     this.addEventListener("$clear", function(nomsg, do_event){
         if (this.$propHandlers && this.$propHandlers["value"]) {
             this.value = -99999; //force resetting
@@ -23823,12 +24415,23 @@ apf.Init.run("standardbinding");
  * All elements inheriting from this {@link term.baseclass baseclass} can bind to data
  * which contains multiple nodes.
  *
+ *
+ *
+ * @class apf.MultiselectBinding
+ * @inherits apf.DataBinding
+ * @baseclass
+ * @default_private
  * @allowchild  item, choices
+ */
+
+/*
  * @define  choices     Container for item nodes which receive presentation.
  * This element is part of the XForms specification. It is not necesary for
  * the Ajax.org Markup Language.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:list>
  *      <a:choices>
  *          <a:item>red</a:item>
@@ -23836,12 +24439,8 @@ apf.Init.run("standardbinding");
  *          <a:item>green</a:item>
  *      </a:choices>
  *  </a:list>
- * </code>
+ * ```
  * @allowchild  item
- *
- * @constructor
- * @baseclass
- * @default_private
  */
 apf.MultiselectBinding = function(){
     if (!this.setQueryValue)
@@ -23878,23 +24477,21 @@ apf.MultiselectBinding = function(){
 
      
     /**
-     * Change the sorting order of this element
+     * Change the sorting order of this element.
      *
-     * @param {Object}  options  the new sort options. These are applied incrementally.
-     *                           Any property not set is maintained unless the clear
-     *                           parameter is set to true.
-     *   Properties:
-     *   {String}   order        see {@link baseclass.multiselectbinding.binding.each.attribute.order}
-     *   {String}   [xpath]      see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
-     *   {String}   [type]       see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
-     *   {String}   [method]     see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
-     *   {Function} [getNodes]   Function that retrieves a list of nodes.
-     *   {String}   [dateFormat] see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
-     *   {Function} [getValue]   Function that determines the string content based
-     *                           on an xml node as it's first argument.
-     * @param {Boolean} clear    removes the current sort options.
-     * @param {Boolean} noReload whether to reload the data of this component.
-     * @see   baseclass.multiselectbinding.binding.each
+     * @param {Object}  options  The new sort options. These are applied incrementally.
+     *                           Any property that is not set is maintained unless the clear
+     *                           parameter is set to `true`. The following properties are available:
+     *                  - order ([[String]])
+     *                  - [xpath] ([[String]])
+     *                  - [type] ([[String]])
+     *                  - [method] ([[String]])
+     *                  - [getNodes] ([[Function]]): A function that retrieves a list of nodes.
+     *                  - [dateFormat] ([[String]])
+     *                  - [getValue] ([[Function]]): A function that determines the string content based
+     *                                            on an XML node as it's first argument.
+     * @param {Boolean} clear    Removes the current sort options.
+     * @param {Boolean} noReload Specifies whether to reload the data of this component.
      */
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
@@ -23947,35 +24544,35 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Change sorting from ascending to descending and vice versa.
+     * Change sorting from ascending to descending, and vice versa!
      */
     this.toggleSortOrder = function(){
         return this.resort({"ascending" : !this.$sort.get().ascending}).ascending;
     };
 
     /**
-     * Retrieves the current sort options
+     * Retrieves the current sort options.
      *
-     * @returns {Object}  the current sort options.
-     *   Properties:
-     *   {String}   order      see {@link baseclass.multiselectbinding.binding.each.attribute.order}
-     *   {String}   xpath      see {@link baseclass.multiselectbinding.binding.each.attribute.sort}
-     *   {String}   type       see {@link baseclass.multiselectbinding.binding.each.attribute.data-type}
-     *   {String}   method     see {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
-     *   {Function} getNodes   Function that retrieves a list of nodes.
-     *   {String}   dateFormat see {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
-     *   {Function} getValue   Function that determines the string content based on
-     *                         an xml node as it's first argument.
-     * @see    baseclass.multiselectbinding.binding.each
+     * @returns {Object}  The current sort options. The following properties are available:
+     *                     - order ([[String]])
+     *                     - xpath ([[String]])
+     *                     - type ([[String]])
+     *                     - method ([[String]])
+     *                     - getNodes ([[Function]]): A function that retrieves a list of nodes.
+     *                     - dateFormat ([[String]])
+     *                     - getValue ([[Function]]): A function that determines the string content based on
+     *                                               an XML node as it's first argument.
+     * 
      */
     this.getSortSettings = function(){
         return this.$sort.get();
     };
     
 
-    /**
+    /*
      * Optimizes load time when the xml format is very simple.
      */
+    // @todo Doc
     this.$propHandlers["simpledata"] = function(value){
         if (value) {
             this.getTraverseNodes = function(xmlNode){
@@ -24011,14 +24608,14 @@ apf.MultiselectBinding = function(){
             delete this.getLastTraverseNode;
             delete this.getTraverseParent;
         }
-    }
+    };
 
     /**
-     * Retrieves a nodelist containing the {@link term.datanode data nodes} which
-     * are rendered by this element (see each nodes, see
-     * {@link baseclass.multiselectbinding.binding.each}).
+     * Retrieves a node list containing the {@link term.datanode data nodes} which
+     * are rendered by this element.
      *
-     * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
+     * @param {XMLElement} [xmlNode] The parent element on which each query is applied.
+     * @return {NodeList} The node list containing the data nodes
      */
     this.getTraverseNodes = function(xmlNode){
         
@@ -24035,11 +24632,10 @@ apf.MultiselectBinding = function(){
 
     /**
      * Retrieves the first {@link term.datanode data node} which gets representation
-     * in this element
-     * (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
+     * in this element. 
      *
-     * @param {XMLElement} [xmlNode] the parent element on which the each query is executed.
-     * @return {XMLElement}
+     * @param {XMLElement} [xmlNode] The parent element on which the each query is executed.
+     * @return {apf.AmlNode} The first represented {@link term.datanode data node}
      */
     this.getFirstTraverseNode = function(xmlNode){
         
@@ -24054,12 +24650,11 @@ apf.MultiselectBinding = function(){
 
     /**
      * Retrieves the last {@link term.datanode data node} which gets representation
-     * in this element
-     * (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
+     * in this element. 
      *
      * @param {XMLElement} [xmlNode] the parent element on which the each query is executed.
-     * @return {XMLElement} the last {@link term.datanode data node}
-     * @see    baseclass.multiselectbinding.binding.each
+     * @return {XMLElement} The last represented {@link term.datanode data node}
+     * 
      */
     this.getLastTraverseNode = function(xmlNode){
         var nodes = this.getTraverseNodes(xmlNode || this.xmlRoot);
@@ -24067,12 +24662,11 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Determines whether an {@link term.datanode data node} is a each node (see
-     * {@link baseclass.multiselectbinding.binding.each})
+     * Determines whether a {@link term.datanode data node} is an each node. 
      *
-     * @param {XMLElement} [xmlNode] the parent element on which the each query is executed.
-     * @return  {Boolean}  whether the xml element is a each node.
-     * @see  baseclass.multiselectbinding.binding.each
+     * @param {XMLElement} [xmlNode] The parent element on which the each query is executed.
+     * @return  {Boolean}  Identifies whether the XML element is a each node.
+     * 
      */
     this.isTraverseNode = function(xmlNode){
         /*
@@ -24090,16 +24684,14 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the next each node (see {@link baseclass.multiselectbinding.binding.each})
-     * to be selected
-     * from a given each node. The method can do this in either direction and
-     * also return the Nth node for this algorithm.
+     * Retrieves the next `each` node to be selected from a given `each` node. 
      *
-     * @param {XMLElement}  xmlNode  the starting point for determining the next selection.
-     * @param {Boolean}     [up]     the direction of the selection. Default is false.
-     * @param {Integer}     [count]  the distance in number of nodes. Default is 1.
-     * @return  {XMLElement} the {@link term.datanode data node} to be selected next.
-     * @see  baseclass.multiselectbinding.binding.each
+     * The method can do this in either direction and also return the Nth node for this algorithm.
+     *
+     * @param {XMLElement}  xmlNode  The starting point for determining the next selection.
+     * @param {Boolean}     [up=false]     The direction of the selection.
+     * @param {Number}     [count=1]  The distance in number of nodes.
+     * @return  {XMLElement} The {@link term.datanode data node} to be selected next.
      */
     this.getNextTraverseSelected = function(xmlNode, up, count){
         if (!xmlNode)
@@ -24123,14 +24715,14 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the next each node (see {@link baseclass.multiselectbinding.binding.each}).
+     * Retrieves the next `each` node. 
+     * 
      * The method can do this in either direction and also return the Nth next node.
      *
-     * @param {XMLElement}  xmlNode     the starting point for determining the next node.
-     * @param {Boolean}     [up]        the direction. Default is false.
-     * @param {Integer}     [count]     the distance in number of nodes. Default is 1.
-     * @return  {XMLElement} the next each node
-     * @see  baseclass.multiselectbinding.binding.each
+     * @param {XMLElement}  xmlNode  The starting point for determining the next selection.
+     * @param {Boolean}     [up=false]     The direction of the selection.
+     * @param {Number}     [count=1]  The distance in number of nodes.
+     * @return  {XMLElement} The {@link term.datanode data node} to be selected next.
      */
     this.getNextTraverse = function(xmlNode, up, count){
         if (!count)
@@ -24148,15 +24740,15 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Retrieves the parent each node (see {@link baseclass.multiselectbinding.binding.each}).
-     * In some cases the each rules has a complex form like 'children/item'. In
-     * those cases the generated tree has a different structure from that of the xml
-     * data. For these situations the xmlNode.parentNode property won't return
-     * the each parent, this method will give you the right parent.
+     * Retrieves the parent each node. 
      *
-     * @param {XMLElement} xmlNode the node for which the parent element will be determined.
-     * @return  {XMLElement} the parent node or null if none was found.
-     * @see  baseclass.multiselectbinding.binding.each
+     * In some cases the each rules has a complex form like 'children/item'. In
+     * those cases, the generated tree has a different structure from that of the XML
+     * data. For these situations, the `xmlNode.parentNode` property won't return
+     * the each parent; instead, this method will give you the right parent.
+     *
+     * @param {XMLElement} xmlNode The node for which the parent element will be determined.
+     * @return  {XMLElement} The parent node or `null` if none was found.
      */
     this.getTraverseParent = function(xmlNode){
         if (!xmlNode.parentNode || xmlNode == this.xmlRoot)
@@ -24194,13 +24786,14 @@ apf.MultiselectBinding = function(){
         return x;
     };
 
-    /**
-     * Finds HTML presentation node in cache by ID
-     *
-     * @param  {String} id  the id of the HTMLElement which is looked up.
-     * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
-     */
     if (!this.$findHtmlNode) { //overwritten by apf.Cache
+        /**
+         * Finds HTML presentation node in cache by ID.
+         *
+         * @param  {String} id  The id of the HTMLElement which is looked up.
+         * @return {HTMLElement} The HTMLElement found. When no element is found, `null` is returned.
+         * @private
+         */
         this.$findHtmlNode = function(id){
             return this.$pHtmlDoc.getElementById(id);
         };
@@ -24257,7 +24850,7 @@ apf.MultiselectBinding = function(){
             this.$empty.parentNode.removeChild(this.$empty);
     };
 
-    /**
+    /*
      * Set listeners, calls HTML creation methods and
      * initializes select and focus states of object.
      */
@@ -24334,27 +24927,27 @@ apf.MultiselectBinding = function(){
     };
 
     /**
-     * Loops through parents of changed node to find the first
-     * connected node. Based on the action it will change, remove
+     * @event xmlupdate Fires when XML of this element is updated.
+     * @param {Object} e The standard event object. The following properties are available:
+     *                      - action ([[String]]): The action that was executed on the XML. The following values are possible:
+     *                            - `text`   :     A text node is set
+     *                            - `attribute` :  An attribute is set
+     *                            - `update`:      An XML node is updated
+     *                            - `insert`  :    xml nodes are inserted
+     *                            - `add`   :      An XML node is added
+     *                            - `remove` :     An XML node is removed (parent still set)
+     *                            - `redo`-remove`: An XML node is removed (parent not set)
+     *                            - `synchronize`:  An unknown update
+     *                            - `move-away` :  An XML node is moved (parent not set)
+     *                            - `move`        An XML node is moved (parent still set)
+     *                      - xmlNode ([[XMLElement]]): The node that is subject to the update
+     *                      - result (`Mixed`): The result
+     *                      - UndoObj ([[apf.UndoData]]): The undo information
+     */
+    /*
+     * Loops through parents of a changed node to find the first
+     * connected node. Based on the action, it will change, remove,
      * or update the representation of the data.
-     *
-     * @event xmlupdate Fires when xml of this element is updated.
-     *   object:
-     *   {String}     action   the action that was executed on the xml.
-     *      Possible values:
-     *      text        a text node is set.
-     *      attribute   an attribute is set.
-     *      update      an xml node is updated.
-     *      insert      xml nodes are inserted.
-     *      add         an xml node is added.
-     *      remove      an xml node is removed (parent still set).
-     *      redo-remove an xml node is removed (parent not set).
-     *      synchronize unknown update.
-     *      move-away   an xml node is moved (parent not set).
-     *      move        an xml node is moved (parent still set).
-     *   {XMLElement} xmlNode  the node that is subject to the update.
-     *   {Mixed}      result   the result.
-     *   {UndoObj}    UndoObj  the undo information.
      */
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj, lastParent){
         if (!this.xmlRoot)
@@ -24441,9 +25034,8 @@ apf.MultiselectBinding = function(){
         
 
         
-        /**
-         * @todo Think about not having this code here
-         */
+        
+        // @todo Think about not having this code here
         if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) {
             if(!this.$isInViewport(xmlNode)) //xmlNode is a eachd node
                 return;
@@ -24674,7 +25266,7 @@ apf.MultiselectBinding = function(){
         if (this.signalXmlUpdate && actionFeature[action] & 16) {
             var uniqueId;
             for (uniqueId in this.signalXmlUpdate) {
-                if (parseInt(uniqueId) != uniqueId) continue; //safari_old stuff
+                if (parseInt(uniqueId, 10) != uniqueId) continue; //safari_old stuff
 
                 var o = apf.lookup(uniqueId);
                 if (!this.selected) continue;
@@ -24695,7 +25287,7 @@ apf.MultiselectBinding = function(){
         });
     };
 
-    /**
+    /*
      * Loop through NodeList of selected Traverse Nodes
      * and check if it has representation. If it doesn't
      * representation is created via $add().
@@ -24703,7 +25295,7 @@ apf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
         
 
-        var htmlNode, lastNode;
+        var htmlNode, lastNode, loopNode;
         isChild          = (isChild && (this.renderRoot && xmlNode == this.xmlRoot
             || this.isTraverseNode(xmlNode)));
         var nodes        = isChild ? [xmlNode] : this.getTraverseNodes(xmlNode);
@@ -24890,12 +25482,14 @@ apf.MultiselectBinding = function(){
 
     
     /**
-     * @attribute {String} each the xpath statement that determines which
+     * @attribute {String} each Sets or gets the XPath statement that determines which
      * {@link term.datanode data nodes} are rendered by this element (also known
-     * as {@link term.eachnode each nodes}. See
-     * {@link baseclass.multiselectbinding.binding.each} for more information.
-     * Example:
-     * <code>
+     * as {@link term.eachnode each nodes}. 
+     * 
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:label>Country</a:label>
      *  <a:dropdown
      *      model     = "mdlCountries"
@@ -24912,60 +25506,70 @@ apf.MultiselectBinding = function(){
      *          ...
      *      </countries>
      *  </a:model>
-     * </code>
-     * @see  baseclass.multiselectbinding.binding.each
+     * ```
+     *
+     * 
      */
     this.$propHandlers["each"] =
 
     /**
-     * @attribute {String} caption the xpath statement that determines from
-     * which xml node the caption is retrieved.
-     * Example:
-     * <code>
+     * @attribute {String} caption Sets or gets the text displayed on the item.
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list caption="[text()]" each="[item]" />
-     * </code>
+     * ```
      */
     this.$propHandlers["caption"]  =
 
     /**
-     * @attribute {String} valuerule the xpath statement that determines from
-     * which xml node the value is retrieved.
-     * Example:
-     * <code>
+     * @attribute {String} eachvalue Sets or gets the {@link term.expression}
+     * that determines the value for each data nodes in the dataset of the element.
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list value="[@value]" each="[item]" />
-     * </code>
-     * @see  baseclass.multiselect.binding.value
+     * ```
+     * 
      */
     this.$propHandlers["eachvalue"]  =
 
     /**
-     * @attribute {String} icon the xpath statement that determines from
-     * which xml node the icon url is retrieved.
-     * Example:
-     * <code>
+     * @attribute {String} icon Sets or gets the XPath statement that determines from
+     * which XML node the icon URL is retrieved.
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list icon="[@icon]" each="[item]" />
-     * </code>
+     * ```
      */
     this.$propHandlers["icon"]     =
 
     /**
-     * @attribute {String} tooltip the xpath statement that determines from
-     * which xml node the tooltip text is retrieved.
-     * Example:
-     * <code>
+     * @attribute {String} tooltip Sets or gets the XPath statement that determines from
+     * which XML node the tooltip text is retrieved.
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list tooltip="[text()]" each="[item]" />
-     * </code>
+     * ```
      */
     this.$propHandlers["tooltip"]  = this.$handleBindingRule;
 
     
     /**
-     * @attribute {String} sort the xpath statement that selects the sortable value.
-     * Example:
-     * <code>
+     * @attribute {String} sort Sets or gets the XPath statement that selects the sortable value.
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list sort="[@name]" each="[person]" />
-     * </code>
-     * @see  element.each.attribute.sort
+     * ```
+     * 
      */
     this.$propHandlers["sort"] = function(value){
         if (value) {
@@ -24981,13 +25585,15 @@ apf.MultiselectBinding = function(){
     
 
     /**
-     * @attribute {String} select the xpath statement that determines whether
+     * @attribute {String} match Sets or gets the XPath statement that determines whether
      * this node is selectable.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list match="{[@disabled] != 1}" each="[item]" />
-     * </code>
-     * @see  baseclass.multiselect.binding.select
+     * ```
+     * 
      */
     //this.$propHandlers["select"]   =
     
@@ -25022,64 +25628,17 @@ apf.__MULTISELECT__ = 1 << 8;
 
 
 /**
- * @term eachnode A each node is a {@link term.datanode data node} that is in the set selected by the 
- * {@link baseclass.multiselectbinding.binding.each each binding rule}.
- * These {@link term.datanode data nodes} get representation within the visual element. For instance
- * each item in a list is connected to such a each node. A each node
- * can be selected, removed, added, dragged, dropped and so on. 
- * Example:
- * In this example the person nodes that have the show attribute set to 1 are the 
- * each nodes of the list. This list will display three items.
- * <code>
- *  <a:list>
- *      <a:bindings>
- *          <a:caption match="[@name]" />
- *          <a:each match="[person[@show='1']]" />
- *      </a:bindings>
- *      <a:model>
- *          <data>
- *              <person name="test 5"/>
- *              <person show="1" name="test 3"/>
- *              <person name="test 4"/>
- *              <person show="1" name="test 2"/>
- *              <person show="1" name="test 1"/>
- *          </data>
- *      </a:model>
- *  </a:list>
- * </code>
- * Remarks:
- * A somewhat advanced topic is understanding how an element can use the 
- * each {@link term.binding binding rule}. For the tree this binding rules
- * can be used to create a virtual tree mapping of the xml.
- */
-
-/**
- * @term caret When selecting nodes in a list using the keyboard, the caret is 
- * the indication of the position within that list. The item that the caret is
- * on might or might not be selected. This feature is especially useful when 
- * holding the control key or using the shift key to multi select items.
- */
-
-/**
  * All elements inheriting from this {@link term.baseclass baseclass} have selection features. This includes handling
  * for multiselect and several keyboard based selection interaction. It also
  * takes care of {@link term.caret caret} handling when multiselect is enabled. Furthermore features 
  * for dealing with multinode component are included like adding and removing 
  * {@link term.datanode data nodes}.
  *
- * @constructor
- * @baseclass
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.5
+ * #### Example
  *
- * @inherits apf.MultiselectBinding
+ * In this example the tree contains nodes that have a disabled flag set. These nodes cannot be selected.
  *
- * @binding select Determines whether the {@link term.eachnode each node} can be selected.
- * Example:
- * In this example the tree contains nodes that have a disabled flag set. 
- * These nodes cannot be selected
- * <code>
+ * ```xml
  *  <a:list width="200">
  *      <a:bindings>
  *          <a:selectable match="[self::node()[not(@disabled) or @disabled != 'true']]" />
@@ -25096,11 +25655,11 @@ apf.__MULTISELECT__ = 1 << 8;
  *          </data>
  *      </a:model>
  *  </a:list>
- * </code>
- * @binding value  Determines the way the value for the element is retrieved
- * from the selected node. The value property contains this value.
- * Example:
- * <code>
+ * ```
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:dropdown onafterchange="alert(this.value)">
  *      <a:bindings>
  *          <a:caption match="[text()]" />
@@ -25115,7 +25674,27 @@ apf.__MULTISELECT__ = 1 << 8;
  *          </items>
  *      </a:model>
  *  </a:dropdown>
- * </code>
+ * ```
+ *
+ * @class apf.MultiSelect
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.5
+ *
+ * @inherits apf.MultiselectBinding
+ *
+ */
+/**
+ *
+ * @binding select Determines whether the {@link term.eachnode each node} can be selected.
+ *
+ */
+ /**
+ *
+ * * @binding value  Determines the way the value for the element is retrieved
+ * from the selected node. The `apf.MultiSelect.value` property contains this value.
+ *
  */
 apf.MultiSelect = function(){
     this.$init(function(){
@@ -25128,10 +25707,11 @@ apf.MultiSelect = function(){
 (function() {
     this.$regbase    = this.$regbase|apf.__MULTISELECT__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
+    // @todo Doc is that right? 
     /**
-     * the last selected item of this element.
+     * The last selected item of this element.
      * @type {XMLElement} 
      */
     this.sellength    = 0;
@@ -25139,14 +25719,14 @@ apf.MultiSelect = function(){
     this.$selected    = null;
     
     /**
-     * the xml element that has the {@link term.caret caret}.
+     * The XML element that has the {@link term.caret caret}.
      * @type {XMLElement} 
      */
     this.caret    = null;
     this.$caret   = null;
     
     /**
-     * whether to use a {@link term.caret caret} in the interaction of this element.
+     * Specifies whether to use a {@link term.caret caret} in the interaction of this element.
      * @type {Boolean} 
      */
     this.useindicator = true;
@@ -25154,10 +25734,13 @@ apf.MultiSelect = function(){
     
 
     /**
-     * Removes an {@link term.datanode data node} from the data of this element.
-     * Example:
-     * A simple list showing products. This list is used in all following examples.
-     * <code>
+     * Removes a {@link term.datanode data node} from the data of this element.
+     *
+     * #### Example
+     *
+     * A simple list showing products. This list is used in all the following examples.
+     * 
+     * ```xml
      *  <a:list id="myList">
      *      <a:bindings>
      *          <a:caption match="[@name]" />
@@ -25175,30 +25758,38 @@ apf.MultiSelect = function(){
      *          </products>
      *      </a:model>
      *  </a:list>
-     * </code>
-     * Example:
-     * This example selects a product by it's value and then removes the
-     * selection.
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * This example selects a product by its value and then removes the selection.
+     * 
+     * ```xml
      *  <a:script><!--
      *      apf.onload = function() {
      *          myList.setValue("product20");
      *          myList.remove();
      *      }
      *  --></a:script>
-     * </code>
-     * Example:
-     * This example gets a product by it's value and then removes it.
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * This example gets a product by its value and then removes it.
+     * 
+     * ```xml
      *  <a:script>
      *      var xmlNode = myList.findXmlNodeByValue("product20");
      *      myList.remove(xmlNode);
      *  </a:script>
-     * </code>
-     * Example:
-     * This example retrieves all nodes from a list. All items with a length
+     * ```
+     *
+     * #### Example
+     *
+     * This example retrieves all nodes from the list. All items with a length
      * greater than 10 are singled out and removed.
-     * <code>
+     * 
+     * ```xml
      *  <a:script><![CDATA[
      *      apf.onload = function() {
      *          var list = myList.getTraverseNodes();
@@ -25211,24 +25802,31 @@ apf.MultiSelect = function(){
      *          myList.remove(removeList);
      *      }
      *   ]]></a:script>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
+     *
      * Another way to trigger this method is by using the action attribute on a
      * button.
-     * <code>
+     *
+     * ```xml
      *  <a:button action="remove" target="myList">Remove item</a:button>
-     * </code>
-     * Using the action methodology you can let the original data source
-     * (usually the server) know that the user removed an item.
-     * <code>
+     * ```
+     *
+     * Using the action methodology, you can let the original data source
+     * (usually the server) know that the user removed an item:
+     * 
+     * ```xml
      *     <a:list>
      *         <a:bindings />
      *         <a:remove set="remove_product.php?id=[@id]" />
      *     </a:list>
-     * </code>
-     * For undo this action should be extended and the server should maintain a
+     * ```
+     *
+     * For undo, this action should be extended and the server should maintain a
      * copy of the deleted item.
-     * <code>
+     * 
+     * ```xml
      *  <a:list actiontracker="atList">
      *      <a:bindings />
      *      <a:remove set  = "remove_product.php?id=[@id]"
@@ -25241,13 +25839,12 @@ apf.MultiSelect = function(){
      *     caption  = "Undo"
      *     disabled = "{!atList.undolength}" 
      *     onclick  = "atList.undo()" />
-     * </code>
+     * ```
+     *
      * @action
-     * @param  {mixed} [nodeList]  the {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
-     *   Possible values:
-     *   {NodeList}   the {@link term.datanode data nodes} to be removed.
-     *   {XMLElement} the {@link term.datanode data node} to be removed.
-     * @return  {Boolean}  specifies if the removal succeeded
+     * @param  {NodeList | XMLElement} [nodeList]  The {@link term.datanode data node}(s) to be removed. If none are specified, the current selection is removed.
+     *
+     * @return  {Boolean}  Indicates if the removal succeeded
      */
     this.remove = function(nodeList){
         //Use the current selection if no xmlNode is defined
@@ -25281,10 +25878,13 @@ apf.MultiSelect = function(){
     };
     
     /**
-     * Adds an {@link term.datanode data node} to the data of this element.
-     * Example:
+     * Adds a {@link term.datanode data node} to the data of this element.
+     *
+     * #### Example
+     *
      * A simple list showing products. This list is used in all following examples.
-     * <code>
+     * 
+     * ```xml
      *  <a:list id="myList">
      *      <a:bindings>
      *          <a:caption match="[@name]" />
@@ -25302,22 +25902,27 @@ apf.MultiSelect = function(){
      *          </products>
      *      </a:model>
      *  </a:list>
-     * </code>
-     * Example:
-     * This example adds a product to this element.
-     * selection.
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * This example adds a product to this element selection.
+     *
+     * ```xml
      *  <a:script><![CDATA[
      *      apf.onload = function() {
      *          myList.add('<product name="USB drive" type="storage" />');
      *      }
      *  ]]></a:script>
-     * </code>
-     * Example:
-     * This example copy's the selected product, changes it's name and then
-     * adds it. After selecting the new node the user is offered a rename input
+     * ```
+     *
+     * #### Example
+     *
+     * This example copys the selected product, changes its name, and then
+     * adds it. After selecting the new node, the user is offered a rename input
      * box.
-     * <code>
+     * 
+     * ```xml
      *  <a:script><![CDATA[
      *      apf.onload = function() {
      *          var xmlNode = apf.xmldb.copy(myList.selected);
@@ -25327,11 +25932,13 @@ apf.MultiSelect = function(){
      *          myList.startRename();
      *      }
      *  ]]></a:script>
-     * </code>
-     * Remarks:
+     * ```
+     * 
+     * #### Remarks
      * Another way to trigger this method is by using the action attribute on a
      * button.
-     * <code>
+     *
+     * ```xml
      *  <a:list>
      *      <a:bindings />
      *      <a:model />
@@ -25342,14 +25949,17 @@ apf.MultiSelect = function(){
      *      </a:actions>
      *  </a:list>
      *  <a:button action="add" target="myList">Add new product</a:button>
-     * </code>
-     * Using the action methodology you can let the original data source
-     * (usually the server) know that the user added an item.
-     * <code>
+     * ```
+     *
+     * Using the action methodology you can let the original data source (usually the server) know that the user added an item.
+     * 
+     * ```xml
      *  <a:add get="{comm.addProduct()}" />
-     * </code>
-     * For undo this action should be extended as follows.
-     * <code>
+     * ```
+     *
+     * For undo, this action should be extended as follows.
+     * 
+     * ```xml
      *  <a:list id="myList" actiontracker="atList">
      *      <a:bindings />
      *      <a:model />
@@ -25367,24 +25977,27 @@ apf.MultiSelect = function(){
      *     caption  = "Undo"
      *     disabled = "{!atList.undolength}" 
      *     onclick  = "atList.undo()" />
-     * </code>
-     * In some cases the server needs to create the new product before it's
+     * ```
+     *
+     * In some cases the server needs to create the new product before its
      * added. This is done as follows.
-     * <code>
+     * 
+     * ```xml
      *  <a:add get="{comm.createNewProduct()}" />
-     * </code>
+     * ```
      * Alternatively the template for the addition can be provided as a child of
      * the action rule.
-     * <code>
+     * ```
      *  <a:add set="add_product.php?xml=%[.]">
      *      <product name="USB drive" type="storage" />
      *  </a:add>
-     * </code>
+     * ```
+     *
      * @action
-     * @param  {XMLElement} [xmlNode]    the {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add.
-     * @param  {XMLElement} [pNode]      the parent node of the added {@link term.datanode data node}.
-     * @param  {XMLElement} [beforeNode] the position where the xml element should be inserted.
-     * @return  {XMLElement} the added {@link term.datanode data node} or false on failure.
+     * @param  {XMLElement} [xmlNode]    The {@link term.datanode data node} which is added. If none is specified the action will use the action rule to try to retrieve a new node to add
+     * @param  {XMLElement} [pNode]      The parent node of the added {@link term.datanode data node}
+     * @param  {XMLElement} [beforeNode] The position where the XML element should be inserted
+     * @return  {XMLElement} The added {@link term.datanode data node} or false on failure
      */
     this.add = function(xmlNode, pNode, beforeNode, userCallback){
         var rule;
@@ -25501,14 +26114,13 @@ apf.MultiSelect = function(){
 
     if (!this.setValue) {
         /**
-         * Sets the value of this element.The value
+         * Sets the value of this element. The value
          * corresponds to an item in the list of loaded {@link term.datanode data nodes}. This
          * element will receive the selection. If no {@link term.datanode data node} is found, the
          * selection is cleared.
          *
-         * @param  {String}  value  the new value for this element.
-         * @param  {Boolean} disable_event
-         * @see baseclass.multiselect.method.getValue
+         * @param  {String}  value  The new value for this element.
+         * @see apf.MultiSelect.getValue
          */
         this.setValue = function(value, disable_event){
             // @todo apf3.0 what does noEvent do? in this scope it's useless and
@@ -25522,7 +26134,8 @@ apf.MultiSelect = function(){
     /**
      * Retrieves an {@link term.datanode data node} that has a value that corresponds to the
      * string that is searched on.
-     * @param {String} value the value to match.
+     * @param {String} value The value to match.
+     * @returns {XMLNode} The found node, or `false`
      */
     this.findXmlNodeByValue = function(value){
         var nodes   = this.getTraverseNodes(),
@@ -25543,7 +26156,7 @@ apf.MultiSelect = function(){
         /**
          * Retrieves the value of this element. This is the value of the
          * first selected {@link term.datanode data node}.
-         * @see #setValue
+         * 
          */
         this.getValue = function(xmlNode, noError){
             return this.value;
@@ -25560,41 +26173,44 @@ apf.MultiSelect = function(){
     }
 
     /**
-     * Select the current selection again.
+     * Select the current selection...again.
      *
-     * @todo Add support for multiselect
      */
-    this.reselect = function(){
+    this.reselect = function(){ // @todo Add support for multiselect
         if (this.selected) this.select(this.selected, null, this.ctrlselect,
             null, true);//no support for multiselect currently.
     };
 
     /**
-     * Selects a single, or set of {@link term.eachnode each nodes}.
+     * @event  beforeselect  Fires before a {@link apf.MultiSelect.select selection} is made
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                     - `selected` ([[XMLElement]]): The {@link term.datanode data node} that will be selected
+     *                     - `selection` ([[Array]]): An array of {@link term.datanode data nodes} that will be selected
+     *                     - `htmlNode` ([[HTMLElement]]): The HTML element that visually represents the {@link term.datanode data node} 
+     */
+    /**
+     * @event  afterselect  Fires after a {@link apf.MultiSelect.select selection} is made
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                     - `selected` ([[XMLElement]]):    the {@link term.datanode data node} that was selected
+     *                     - `selection` ([[Array]]():       an array of {@link term.datanode data node} that are selected
+     *                     - `htmlNode` ([[HTMLElement]](): the HTML element that visually represents the {@link term.datanode data node}
+     */
+    /**
+     * Selects a single, or set, of {@link term.eachnode each nodes}.
      * The selection can be visually represented in this element.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     *   Possible values:
-     *   {XMLElement}  the {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
-     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node} for selection.
-     *   {String}      the value of the {@link term.datanode data node} to be select.
-     * @param {Boolean} [ctrlKey]    whether the Ctrl key was pressed
-     * @param {Boolean} [shiftKey]   whether the Shift key was pressed
-     * @param {Boolean} [fakeselect] whether only visually a selection is made
-     * @param {Boolean} [force]      whether reselect is forced.
-     * @param {Boolean} [noEvent]    whether to not call any events
-     * @return  {Boolean}  whether the selection could be made
+     * @param {Mixed}   xmlNode      The identifier to determine the selection. It can be one of the following values:
+     *                                 - ([[XMLElement]]):  The {@link term.datanode data node} to be used in the selection as a start/end point or to toggle the selection on the node.
+     *                                 - ([[HTMLElement]]): The HTML element node used as visual representation of {@link term.datanode data node}. 
+     *                                                 Used to determine the {@link term.datanode data node} for selection.
+     *                                 - ([[String]]):      The value of the {@link term.datanode data node} to be selected.
+     * @param {Boolean} [ctrlKey]    Indicates whether the [[keys: Ctrl]] key was pressed
+     * @param {Boolean} [shiftKey]   Indicates whether the [[keys: Shift]]  key was pressed
+     * @param {Boolean} [fakeselect] Indicates whether only visually a selection is made
+     * @param {Boolean} [force]      Indicates whether reselect is forced
+     * @param {Boolean} [noEvent]    Indicates whether to not call any event
+     * @return  {Boolean}  Indicates whether the selection could be made
      *
-     * @event  beforeselect  Fires before a {@link baseclass.multiselect.method.select selection} is made
-     *   object:
-     *   {XMLElement}  selected the {@link term.datanode data node} that will be selected.
-     *   {Array}       selection an array of {@link term.datanode data node} that will be selected.
-     *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
-     * @event  afterselect  Fires after a {@link baseclass.multiselect.method.select selection} is made
-     *   object:
-     *   {XMLElement}  selected  the {@link term.datanode data node} that was selected.
-     *   {Array}       selection an array of {@link term.datanode data node} that are selected.
-     *   {HTMLElement} htmlNode the html element that visually represents the {@link term.datanode data node}.
      */
     this.select  = function(xmlNode, ctrlKey, shiftKey, fakeselect, force, noEvent, userAction){
         if (!this.selectable || userAction && this.disabled) 
@@ -25640,7 +26256,7 @@ apf.MultiSelect = function(){
 
         var htmlNode;
 
-        /**** Type Detection ****/
+        // *** Type Detection *** //
         if (!xmlNode) {
             
 
@@ -25689,7 +26305,7 @@ apf.MultiSelect = function(){
         }) === false)
               return false;
 
-        /**** Selection ****/
+        // *** Selection *** //
 
         var lastIndicator = this.caret;
         this.caret        = xmlNode;
@@ -25795,20 +26411,26 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * Choose a selected item. This is done by double clicking on the item or
+     * @event  beforechoose  Fires before a choice is made.
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                   - `xmlNode` ([[XMLElement]]):   The {@link term.datanode data node} that was choosen
+     *
+     */
+    /**
+     * @event  afterchoose   Fires after a choice is made.
+     * @param {Object} e The standard event object. It contains the following properties:
+     *                   - `xmlNode` ([[XMLElement]]):   The {@link term.datanode data node} that was choosen
+     */
+    /**
+     * Chooses a selected item. This is done by double clicking on the item or
      * pressing the Enter key.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     *   Possible values:
-     *   {XMLElement}  the {@link term.datanode data node} to be choosen.
-     *   {HTMLElement} the html element node used as visual representation of {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
-     *   {String}      the value of the {@link term.datanode data node} to be choosen.
-     * @event  beforechoose  Fires before a choice is made.
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
-     * @event  afterchoose   Fires after a choice is made.
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that was choosen.
+     * @param {Mixed}   xmlNode      The identifier to determine the selection. It can be one of the following values: 
+     *                                - [[XMLElement]]:  The {@link term.datanode data node} to be choosen
+     *                                - [[HTMLElement]]: The HTML element node used as visual representation of {@link term.datanode data node}
+     *                                                 Used to determine the {@link term.datanode data node}
+     *                                - [[String]] :     The value of the {@link term.datanode data node} to be choosen
+     *
      */
     this.choose = function(xmlNode, userAction){
         if (!this.selectable || userAction && this.disabled) return;
@@ -25826,12 +26448,12 @@ apf.MultiSelect = function(){
         
     };
 
-    /**
+    /*
      * Removes the selection of one or more selected nodes.
      *
-     * @param {Boolean} [singleNode] whether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    whether to not call any events
+     * @param {Boolean} [noEvent]    Indicates whether or not to call any events
      */
+    // @todo Doc
     this.clearSelection = function(noEvent, userAction){
         if (!this.selectable || userAction && this.disabled || !this.$valueList.length)
             return;
@@ -25876,12 +26498,12 @@ apf.MultiSelect = function(){
         }
     };
 
-    /**
+    /*
      * Selects a set of items
      *
      * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
      */
-    //@todo I think there are missing events here?
+    //@todo Doc I think there are missing events here?
     this.selectList = function(xmlNodeList, noEvent, selected, userAction){
         if (!this.selectable || userAction && this.disabled) return;
 
@@ -25941,20 +26563,22 @@ apf.MultiSelect = function(){
     };
 
     /**
+     * @event indicate Fires when an item becomes the indicator.
+     */
+
+    /**
      * Sets the {@link term.caret caret} on an item to indicate to the user that the keyboard
-     * actions are done relevant to that item. Using the keyboard
-     * a user can change the position of the indicator using the Ctrl and arrow
+     * actions are done relevant to that item. Using the keyboard,
+     * a user can change the position of the indicator using the [[keys: Ctrl]] and arrow
      * keys while not making a selection. When making a selection with the mouse
-     * or keyboard the indicator is always set to the selected node. Unlike a
+     * or keyboard, the indicator is always set to the selected node. Unlike a
      * selection there can be only one indicator item.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the indicator.
-     *   Possible values:
-     *   {XMLElement}  the {@link term.datanode data node} to be set as indicator.
-     *   {HTMLElement} the html element node used as visual representation of
-     *                 {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
-     *   {String}      the value of the {@link term.datanode data node} to be set as indicator.
-     * @event indicate Fires when an item becomes the indicator.
+     * @param {Mixed}   xmlNode      The identifier to determine the indicator. Its possible values include:
+     *                                - {XMLElement}  The {@link term.datanode data node} to be set as indicator.
+     *                                - {HTMLElement} The HTML element node used as visual representation of
+     *                                                   {@link term.datanode data node}. Used to determine the {@link term.datanode data node}.
+     *                                - {String}      The value of the {@link term.datanode data node} to be set as an indicator.
      */
     this.setCaret = function(xmlNode){
         if (!xmlNode) {
@@ -25965,7 +26589,7 @@ apf.MultiSelect = function(){
             return;
         }
 
-        /**** Type Detection ****/
+        // *** Type Detection *** //
         var htmlNode;
         if (typeof xmlNode != "object")
             xmlNode = apf.xmldb.getNodeById(xmlNode);
@@ -25993,7 +26617,7 @@ apf.MultiSelect = function(){
         this.setProperty("caret", this.caret = xmlNode);
     };
 
-    /**
+    /*
      * @private
      */
     this.$setTempSelected = function(xmlNode, ctrlKey, shiftKey, down){
@@ -26044,7 +26668,7 @@ apf.MultiSelect = function(){
         }
     };
 
-    /**
+    /*
      * @private
      */
     this.$selectTemp = function(){
@@ -26060,7 +26684,7 @@ apf.MultiSelect = function(){
 
     /**
      * Selects all the {@link term.eachnode each nodes} of this element
-     *
+     * 
      */
     this.selectAll = function(userAction){
         if (!this.multiselect || !this.selectable
@@ -26076,11 +26700,11 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * Retrieves an array or a document fragment containing all the selected
+     * Retrieves an Array or a document fragment containing all the selected
      * {@link term.datanode data nodes} from this element.
      *
-     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @param {Boolean} [xmldoc] Specifies whether the method should return a document fragment.
+     * @return {Mixed} The selection of this element.
      */
     this.getSelection = function(xmldoc){
         var i, r;
@@ -26107,14 +26731,14 @@ apf.MultiSelect = function(){
     /**
      * Selects the next {@link term.datanode data node} to be selected.
      *
-     * @param  {XMLElement}  xmlNode  the context {@link term.datanode data node}.
-     * @param  {Boolean}     isTree
+     * @param  {XMLElement}  xmlNode  The context {@link term.datanode data node}.
+     * @param  {Boolean}     [isTree] If `true`, indicates that this node is a tree, and should select children
      */
     this.defaultSelectNext = function(xmlNode, isTree){
         var next = this.getNextTraverseSelected(xmlNode);
         //if(!next && xmlNode == this.xmlRoot) return;
 
-        //Why not use this.$isTreeArch ??
+        //@todo Why not use this.$isTreeArch ??
         if (next || !isTree)
             this.select(next ? next : this.getTraverseParent(xmlNode));
         else
@@ -26139,7 +26763,7 @@ apf.MultiSelect = function(){
             this.select(xmlNode);
     };
 
-    /**
+    /*
      * @private
      */
     this.getDefaultNext = function(xmlNode, isTree){  //@todo why is isTree an argument
@@ -26156,8 +26780,8 @@ apf.MultiSelect = function(){
     /**
      * Determines whether a node is selected.
      *
-     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
-     * @return  {Boolean} whether the element is selected.
+     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked
+     * @return  {Boolean} Identifies if the element is selected
      */
     this.isSelected = function(xmlNode){
         if (!xmlNode) return false;
@@ -26170,7 +26794,7 @@ apf.MultiSelect = function(){
         return false;
     };
 
-    /**
+    /*
      * This function checks whether the current selection is still correct.
      * Selection can become invalid when updates to the underlying data
      * happen. For instance when a selected node is removed.
@@ -26232,19 +26856,29 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * @attribute {Boolean} [multiselect]   whether the user may select multiple items. Default is true, false for dropdown. 
-     * @attribute {Boolean} [autoselect]    whether a selection is made after data is loaded. Default is true, false for dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
-     * @attribute {Boolean} [selectable]    whether the {@link term.datanode data nodes} of this element can be selected. Default is true.
-     * @attribute {Boolean} [ctrlselect]    whether when a selection is made as if the user is holding the Ctrl key. When set to true each mouse selection will add to the current selection. selecting an already selected element will deselect it.
-     * @attribute {Boolean} [allowdeselect] whether the user can remove the selection of this element. When set to true it is possible for this element to have no selected {@link term.datanode data node}.
-     * @attribute {Boolean} [reselectable]  whether selected nodes can be selected again and the selection events are called again. Default is false. When set to false a selected {@link term.datanode data node} cannot be selected again.
-     * @attribute {String}  [default]       the value that this component has when no selection is made.
-     * @attribute {String}  [eachvalue]     the {@link term.expression expression} that determines the value for each {@link term.datanode data nodes} in the dataset of the element.
-     * Remarks:
+     * @attribute {Boolean} [multiselect]   Sets or gets whether the user may select multiple items. Default is `true, but `false` for dropdown. 
+     */
+    /**
+     * @attribute {Boolean} [autoselect]    Sets or gets whether a selection is made after data is loaded. Default is `true`, but `false` for dropdown. When the string 'all' is set, all {@link term.datanode data nodes} are selected.
+     */
+    /**
+     *  @attribute {Boolean} [selectable]    Sets or gets whether the {@link term.datanode data nodes} of this element can be selected. Default is `true`.
+     */
+    /**
+     *  @attribute {Boolean} [ctrlselect]    Sets or gets whether a selection is made as if the user is holding the [[keys: Ctrl]] key. When set to `true` each mouse selection will add to the current selection. Selecting an already selected element will deselect it.
+     */
+    /**
+     *  @attribute {Boolean} [allowdeselect] Sets or gets whether the user can remove the selection of this element. When set to `true` it is possible for this element to have no selected {@link term.datanode data node}.
+     */
+    /**
+     *  @attribute {Boolean} [reselectable]  Sets or gets whether selected nodes can be selected again, and the selection events are called again. Default is `false`. When set to `false` a selected {@link term.datanode data node} cannot be selected again.
+     */
+    /**
+     *  @attribute {String}  [default]      Sets or gets the value that this component has when no selection is made.
+     */
+    /**
+     *  @attribute {String}  [eachvalue]     Sets or gets the {@link term.expression expression} that determines the value for each {@link term.datanode data nodes} in the dataset of the element.
      * 
-     * Example:
-     *
-     * @see baseclass.multiselect.attribute.eachvalue
      */
     this.selectable = true;
     if (typeof this.ctrlselect == "undefined")
@@ -26272,12 +26906,8 @@ apf.MultiSelect = function(){
         "selection", "selected", "default", "value", "caret");
 
     /**
-     * @attribute {String} [value]   the value of the element that is selected.
-     * Remarks:
-     * 
-     * Example:
+     * @attribute {String} [value]  Sets or gets the value of the element that is selected.
      *
-     * @see baseclass.multiselect.attribute.eachvalue
      */
     //@todo add check here
     this.$propHandlers["value"] = function(value){
@@ -26310,12 +26940,7 @@ apf.MultiSelect = function(){
     }
     
     /**
-     * @attribute {String} [value]   the value of the element that is selected.
-     * Remarks:
-     * 
-     * Example:
-     *
-     * @see baseclass.multiselect.attribute.selected, baseclass.multiselect.attribute.selection
+     * @attribute {String} [value]   Sets or gets the caret value of the element.
      */
     //@todo fill this in
     this.$propHandlers["caret"] = function(value, prop){
@@ -26327,22 +26952,14 @@ apf.MultiSelect = function(){
     
     //@todo optimize this thing. Also implement virtual dataset support.
     /**
-     * @attribute {String} [selection]   the {@link term.expression expression} that determines the selection for this element. A reference to an xml nodelist can be passed as well.
-     * Remarks:
-     * 
-     * Example:
+     * @attribute {String} [selection]  Sets or gets the {@link term.expression expression} that determines the selection for this element. A reference to an XML nodelist can be passed as well.
      *
-     * @see baseclass.multiselect.attribute.selected, baseclass.multiselect.attribute.selection
      */
     this.$propHandlers["selection"] = 
     
     /**
-     * @attribute {String} [selected]   the {@link term.expression expression} that determines the selected node for this element. A reference to an xml element can be passed as well.
-     * Remarks:
+     * @attribute {String} [selected]   Sets or gets the {@link term.expression expression} that determines the selected node for this element. A reference to an XML element can be passed as well.
      * 
-     * Example:
-     *
-     * @see baseclass.multiselect.attribute.selected, baseclass.multiselect.attribute.selection
      */
     this.$propHandlers["selected"] = function(value, prop) {
         if (!value) value = this[prop] = null;
@@ -26766,7 +27383,7 @@ apf.MultiSelect = function(){
 
 
 //@todo refactor below
-/**
+/*
  * @private
  */
 /*
@@ -26939,18 +27556,19 @@ apf.__DATAACTION__ = 1 << 25;
 
 
 /**
- * Baseclass adding data action features to this element.
+ * A [[term.baseclass baseclass]] that adds data action features to this element.
+ * @class apf.DataAction
  */
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
      * Gets the ActionTracker this element communicates with.
      *
-     * @return {ActionTracker}
-     * @see  element.smartbinding
+     * @return {apf.actiontracker}
+     * @see apf.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
         if (!apf.AmlNode)
@@ -26977,93 +27595,41 @@ apf.DataAction = function(){
     this.$actions    = false;
 
     /**
-     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock}
-     * is a mechanism for enforcing limits on access to a resource in a
-     * multi-user environment. Locks are one way of enforcing concurrency
-     * control policies. Ajax.org Platform (apf) has support for locking in
-     * combination with {@link term.action action rules}. There are two
-     * types of locks; pessimistic and optimistic locks. Descriptions below are
-     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}.
+     * @event locksuccess   Fires when a lock request succeeds
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the lock request
      *
-     * Optimistic:
-     * This allows multiple concurrent users access to the database whilst the
-     * system keeps a copy of the initial-read made by each user. When a user
-     * wants to update a record, the application determines whether another user
-     * has changed the record since it was last read. The application does this
-     * by comparing the initial-read held in memory to the database record to
-     * verify any changes made to the record. Any discrepancies between the
-     * initial-read and the database record violates concurrency rules and hence
-     * causes the system to disregard any update request. An error message is
-     * generated and the user is asked to start the update process again.
-     * It improves database performance by reducing the amount of locking
-     * required, thereby reducing the load on the database server. It works
-     * efficiently with tables that require limited updates since no users are
-     * locked out. However, some updates may fail. The downside is constant
-     * update failures due to high volumes of update requests from multiple
-     * concurrent users - it can be frustrating for users.
-     *
-     * For optimistic locking apf can run as if there would be no locking.
-     * Changed data is sent to the server and is either successfully saved or
-     * not. When the action isn't changed and the server returns an error code
-     * the {@link element.actiontracker actiontracker} <strong>automatically
-     * reverts the change</strong>.
-     *
-     * Pessimistic:
-     * This is whereby a user who reads a record with the intention of updating
-     * it, places an exclusive lock on the record to prevent other users from
-     * manipulating it. This means no one else can manipulate that record until
-     * the user releases the lock. The downside is that users can be locked out
-     * for a long time thereby causing frustration.
-     *
-     * For pessimistic locking add the locking attribute to the {@link term.action action rules}
-     * that need it. The following example shows a lock request for a rename
-     * action on a file browser tree.
-     * <code>
-     *  <a:rename set="..." lock="{comm.lockFile([@path], unlock)}" />
-     * </code>
-     * The unlock variable is true when the lock needs to be released. This is
-     * done when the action was cancelled after getting a lock. For instance
-     * when the user presses escape while renaming.
-     *
-     * MultiUser:
-     * In multi user environments it can be handy
-     * to be signalled of changes by others within the application. For more
-     * information on this please look at {@link element.remote}.
-     *
-     * Remarks:
-     * During offline works pessimistic locks will always fail. If the application
-     * does not use {@link element.remote remote smart bindings} the developer
-     * should reload the part of the content for which the lock failed. See
-     * {@link baseclass.databinding.event.lockfailed}.
-     *
-     * Note: APF understands the status codes specified in RFC4918 for the locking implementation
-     *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
-
     /**
-     *  Start the specified action, does optional locking and can be offline aware
+     * @event lockfailed    Fires when a lock request failes
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the lock request
+     *
+     */
+    /**
+     * @event unlocksuccess Fires when an unlock request succeeds
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the unlock request
+     *
+     */
+    /**
+     * @event unlockfailed  Fires when an unlock request fails
+     * @bubbles 
+     * @param {Object} e The standard event object, with the following properties:
+     *                   - state ([[Number]]): The return code of the unlock request
+     *
+     */
+    /*
+     *  Starts the specified action, does optional locking and can be offline aware
      *  - or for optimistic locking it will record the timestamp (a setting
      *    <a:appsettings locking="optimistic"/>)
      *  - During offline work, optimistic locks will be handled by taking the
      *    timestamp of going offline
      *  - This method is always optional! The server should not expect locking to exist.
      *
-     * @event locksuccess   Fires when a lock request succeeds
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the lock request
-     * @event lockfailed    Fires when a lock request failes
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the lock request
-     * @event unlocksuccess Fires when an unlock request succeeds
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the unlock request
-     * @event unlockfailed  Fires when an unlock request fails
-     *   bubbles: yes
-     *   object:
-     *     {Number} state    the return code of the unlock request
      */
     this.$startAction = function(name, xmlContext, fRollback){
         if (this.disabled || this.liveedit && name != "edit")
@@ -27112,26 +27678,25 @@ apf.DataAction = function(){
         
     };
 
-    /**
-     * Executes an action using action rules set in the {@link element.actions actions element}.
+    /*
+     * Executes an action using action rules set in the {@link apf.actions actions element}.
      *
-     * @param {String}      atAction      the name of the action to be performed by the ActionTracker.
-     *   Possible values:
-     *   setTextNode        sets the first text node of an xml element. {@link core.xmldb.method.setTextNode}
-     *   setAttribute       sets the attribute of an xml element. {@link core.xmldb.method.setAttribute}
-     *   removeAttribute    removes an attribute from an xml element. {@link core.xmldb.method.removeAttribute}
-     *   setAttributes      sets multiple attribute on an xml element. Arguments are [xmlNode, Array]
-     *   replaceNode        replaces an xml child with another one. {@link core.xmldb.method.replaceNode}
-     *   addChildNode       adds a new xml node to a parent node. {@link core.xmldb.method.addChildNode}
-     *   appendChild        appends an xml node to a parent node. {@link core.xmldb.method.appendChild}
-     *   moveNode           moves an xml node from one parent to another. {@link core.xmldb.method.moveNode}
-     *   removeNode         removes a node from it's parent. {@link core.xmldb.method.removeNode}
-     *   removeNodeList     removes multiple nodes from their parent. {@link core.xmldb.method.removeNodeList}
-     *   setValueByXpath    sets the nodeValue of an xml node whiche is selected
-     *                      by an xpath statement. Arguments are [xmlNode, xpath, value]
-     *   multicall          calls multiple of these actions. Arguments is an array
-     *                      of argument arrays for these actions each with a func
-     *                      property which is the name of the action.
+     * @param {String}      atAction      The name of the action to be performed by the [[ActionTracker]]. Possible values include:
+     *                                 - `"setTextNode"`:   Sets the first text node of an XML element. For more information, see {@link core.xmldb.method.setTextNode}
+     *                                 - `"setAttribute"`:  Sets the attribute of an XML element. For more information, see {@link core.xmldb.method.setAttribute}
+     *                                 - `"removeAttribute"`:   Removes an attribute from an XML element. For more information, see {@link core.xmldb.method.removeAttribute}
+     *                                 - `"setAttributes"`:   Sets multiple attribute on an XML element. The arguments are in the form of `xmlNode, Array`
+     *                                 - `"replaceNode"`:   Replaces an XML child with another one. For more information, see {@link core.xmldb.method.replaceNode}
+     *                                 - `"addChildNode"`:   Adds a new XML node to a parent node. For more information, see {@link core.xmldb.method.addChildNode}
+     *                                 - `"appendChild"`:   Appends an XML node to a parent node. For more information, see {@link core.xmldb.method.appendChild}
+     *                                 - `"moveNode"` :  Moves an XML node from one parent to another. For more information, see {@link core.xmldb.method.moveNode}
+     *                                 - `"removeNode"`:   Removes a node from it's parent. For more information, see {@link core.xmldb.method.removeNode}
+     *                                 - `" removeNodeList"`:    Removes multiple nodes from their parent. For more information, see {@link core.xmldb.method.removeNodeList}
+     *                                 - `"setValueByXpath"`:   Sets the nodeValue of an XML node which is selected
+     *                                                           by an xpath statement. The arguments are in the form of `xmlNode, xpath, value`
+     *                                 - `"multicall"`:          Calls multiple of the above actions. The argument`s are an array
+     *                                                           of argument arrays for these actions each with a func`
+     *                                                           property, which is the name of the action.
      * @param {Array}       args          the arguments to the function specified
      *                                    in <code>atAction</code>.
      * @param {String}      action        the name of the action rule defined in
@@ -27142,7 +27707,7 @@ apf.DataAction = function(){
      *                                    (such as RPC calls). Usually the same
      *                                    as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
-     * @see  element.smartbinding
+     * @see apf.smartbinding
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         
@@ -27215,7 +27780,7 @@ apf.DataAction = function(){
         return UndoObj;
     };
 
-    /**
+    /*
      * Executes an action based on the set name and the new value
      * @param {String}      atName   the name of the action rule defined in actions for this element.
      * @param {String}      setName  the name of the binding rule defined in bindings for this element.
@@ -27351,11 +27916,10 @@ apf.DataAction = function(){
     /**
      * Changes the value of this element.
      * @action
-     * @param  {String} [string] the new value of this element.
-     * @todo apf3.0 maybe not for multiselect?? - why is clearError handling not
-     *       in setProperty for value
+     * @param  {String} [string] The new value of this element.
+     * 
      */
-    this.change = function(value, force){
+    this.change = function(value, force){ // @todo apf3.0 maybe not for multiselect?? - why is clearError handling not in setProperty for value
         
         if (this.errBox && this.errBox.visible && this.isValid && this.isValid())
             this.clearError();
@@ -27403,16 +27967,19 @@ apf.DataAction = function(){
     this.$supportedProperties.push("create-model", "actions");
 
     /**
-     * @attribute {Boolean} create-model whether the model this element connects
+     * @attribute {Boolean} create-model Sets or gets whether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
-     * Example:
-     * In this example a model is extended when the user enters information in
-     * the form elements. Because no model is specified for the form elements
-     * the first available model is chosen. At the start it doesn't have any
-     * data, this changes when for instance the name is filled in. A root node
-     * is created and under that a 'name' element with a textnode containing
+     * 
+     * #### Example
+     *
+     * In this example, a model is extended when the user enters information in
+     * the form elements. Because no model is specified for the form elements,
+     * the first available model is chosen. At the start, it doesn't have any
+     * data; this changes when (for instance) the name is filled in. A root node
+     * is created, and under that a 'name' element with a textnode containing
      * the entered text.
-     * <code>
+     * 
+     * ```xml
      *  <a:bar>
      *      <a:label>Name</a:label>
      *      <a:textbox value="[name]" required="true" />
@@ -27428,7 +27995,7 @@ apf.DataAction = function(){
      *        caption = "[@name]" />
      *      <a:button action="submit">Submit</a:button>
      *  </a:bar>
-     * </code>
+     * ```
      */
     this.$propHandlers["create-model"] = function(value){
         this.$createModel = value;
@@ -27475,11 +28042,11 @@ apf.__CACHE__ = 1 << 2;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have caching features. It takes care of
- * storing, retrieving and updating rendered data (in html form)
+ * storing, retrieving, and updating rendered data (in HTML form)
  * to overcome the waiting time while rendering the contents every time the
  * data is loaded.
  *
- * @constructor
+ * @class apf.Cache
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -27594,16 +28161,13 @@ apf.Cache = function(){
         }
     });
 
-    /**
-     * Checks the cache for a cached item by ID. If the ID is found the
+    /*
+     * Checks the cache for a cached item by ID. If the ID is found, the
      * representation is loaded from cache and set active.
      *
-     * @param  {String} id  the id of the cache element which is looked up.
+     * @param  {String} id  The id of the cache element which is looked up.
      * @param  {Object} xmlNode
-     * @return {Boolean}
-     *   Possible values:
-     *   true   the cache element is found and set active
-     *   false  otherwise
+     * @return {Boolean} If `true`, the cache element was found and set active
      * @see    baseclass.databinding.method.load
      * @private
      */
@@ -27682,26 +28246,26 @@ apf.Cache = function(){
         this.$setCurrentFragment(fragment);
 
         return true;
-    }
+    };
 
-    /**
-     * Sets cache element and it's ID
+    /*
+     * Sets cache element and its ID.
      *
-     * @param {String}           id        the id of the cache element to be stored.
-     * @param {DocumentFragment} fragment  the data to be stored.
+     * @param {String}           id        The id of the cache element to be stored.
+     * @param {DocumentFragment} fragment  The data to be stored.
      * @private
      */
     function setCache(id, fragment){
         if (!this.caching) return;
 
         this.cache[id] = fragment;
-    }
+    };
 
-    /**
-     * Finds HTML presentation node in cache by ID
+    /*
+     * Finds HTML presentation node in cache by ID.
      *
-     * @param  {String} id  the id of the HTMLElement which is looked up.
-     * @return {HTMLElement} the HTMLElement found. When no element is found, null is returned.
+     * @param  {String} id  The id of the HTMLElement which is looked up.
+     * @return {HTMLElement} The HTMLElement found. When no element is found, `null` is returned.
      */
     this.$findHtmlNode = function(id){
         var node = this.$pHtmlDoc.getElementById(id);
@@ -27720,8 +28284,8 @@ apf.Cache = function(){
     /**
      * Removes an item from the cache.
      *
-     * @param {String}  id       the id of the HTMLElement which is looked up.
-     * @param {Boolean} [remove] whether to destroy the Fragment.
+     * @param {String}  id       The id of the HTMLElement which is looked up.
+     * @param {Boolean} [remove] Specifies whether to destroy the Fragment.
      * @see baseclass.databinding.method.clear
      * @private
      */
@@ -27736,7 +28300,7 @@ apf.Cache = function(){
         this.cache[id] = null;
     };
 
-    /**
+    /*
      * Removes all items from the cache
      *
      * @see baseclass.databinding.method.clearCacheItem
@@ -27750,9 +28314,9 @@ apf.Cache = function(){
     };
 
     /**
-     * Gets the cache item by it's id
+     * Gets the cache item by its id
      *
-     * @param {String} id  the id of the HTMLElement which is looked up.
+     * @param {String} id  The id of the HTMLElement which is looked up.
      * @see baseclass.databinding.method.clearCacheItem
      * @private
      */
@@ -27760,7 +28324,7 @@ apf.Cache = function(){
         return this.cache[id];
     };
 
-    /**
+    /*
      * Checks whether a cache item exists by the specified id
      *
      * @param {String} id  the id of the cache item to check.
@@ -27791,7 +28355,7 @@ apf.Cache = function(){
     }
     
     /**
-     * @attribute {Boolean} caching whether caching is enabled for this element.
+     * @attribute {Boolean} caching Sets or gets whether caching is enabled for this element.
      */
     this.$booleanProperties["caching"] = true;
     this.$supportedProperties.push("caching");
@@ -27845,10 +28409,13 @@ apf.__RENAME__ = 1 << 10;
  * will show an input element in place where the user can change the name of the
  * item to a new one. When the caption is changed the {@link term.datanode data node} is
  * changed accordingly.
- * Example:
+ * 
+ * #### Example
+ *
  * This example shows a list containing products. Only products that have the
  * editable attribute set to 1 can be renamed by the user.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlTest">
  *      <data>
  *          <product name="TV" />
@@ -27869,15 +28436,17 @@ apf.__RENAME__ = 1 << 10;
  *  <a:button
  *    caption = "Rename"
  *    onclick = "list.startRename()" />
- * </code>
+ * ```
  *
- * @event stoprename Fires when a rename action is cancelled.
- *
- * @constructor
+ * @class apf.Rename
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
+ */
+/**
+ * @event stoprename Fires when a rename action is cancelled.
+ *
  */
 apf.Rename = function(){
     this.$regbase       = this.$regbase|apf.__RENAME__;
@@ -27888,7 +28457,7 @@ apf.Rename = function(){
     this.lastCursor     = null;
     
     /**
-     * @attribute  {Boolean}  rename  whether the user can start renaming rendered nodes in this element.
+     * @attribute  {Boolean}  rename  Sets or gets whether the user can start renaming rendered nodes in this element.
      */
     this.$booleanProperties["canrename"]  = true;
     this.$booleanProperties["autorename"] = true;
@@ -27898,11 +28467,12 @@ apf.Rename = function(){
 
     /**
      * Changes the data presented as the caption of a specified {@link term.datanode data node}.
-     * If none is specified the indicated node is used.
+     * 
+     * If none are specified, the indicated node is used.
      *
      * @action
-     * @param  {XMLElement} xmlNode the element to change the caption of.
-     * @param  {String}     value   the value to set as the caption of the {@link term.datanode data node}.
+     * @param  {XMLElement} xmlNode The element to change the caption of.
+     * @param  {String}     value   The value to set as the caption of the {@link term.datanode data node}.
      */
     this.rename = function(xmlNode, value){
         if (!xmlNode)
@@ -27913,6 +28483,7 @@ apf.Rename = function(){
         return this.$executeSingleValue("rename", "caption", xmlNode, value);
     };
 
+    // @todo Doc params
     /**
      * Starts the rename process with a delay, allowing for cancellation when
      * necesary. Cancellation is necesary for instance, when double click was
@@ -27930,6 +28501,7 @@ apf.Rename = function(){
             + this.$uniqueId + ').startRename()', time || 400);
     };
     
+    // @todo Doc params
     /**
      * Starts the rename process by displaying an input box at the position
      * of the item that can be renamed by the user.
@@ -28011,8 +28583,9 @@ apf.Rename = function(){
         else $setTimeout(f);
     };
 
+    // @todo Doc params
     /**
-     * Stop renaming process and change the data according to the set value.
+     * Stops the renaming process and changes the data according to the set value.
      * Cancel the renaming process without changing data.
      *
      */
@@ -28251,7 +28824,9 @@ apf.Rename.initEditableArea = function(){
 
 
 /**
- * @constructor
+ * The base class for state buttons.
+ *
+ * @class apf.BaseStateButtons
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -28276,11 +28851,10 @@ apf.BaseStateButtons = function(){
     this.$supportedProperties.push("buttons", "animate", "state");
     
     /**
-     * Close the window. It can be reopened by using {@link baseclass.guielement.method.show}
-     * Call-chaining is supported.
-     * @todo show should unset closed
+     * Close the window. It can be reopened by using {@link apf.GuiElement.show}
+     * @chainable
      */
-    this.close = function(){
+    this.close = function(){ // @todo show should unset closed
         this.setProperty("state", this.state.split("|")
             .pushUnique("closed").join("|"), false, true);
         return this;
@@ -28288,8 +28862,8 @@ apf.BaseStateButtons = function(){
 
     /**
      * Minimize the window. The window will become the height of the title of
-     * the window.
-     * Call-chaining is supported.
+     * the parent window.
+     * @chainable
      */
     this.minimize = function(){
         this.setProperty("state", this.state.split("|")
@@ -28302,7 +28876,7 @@ apf.BaseStateButtons = function(){
     /**
      * Maximize the window. The window will become the width and height of the
      * browser window.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.maximize = function(){
         this.setProperty("state", this.state.split("|")
@@ -28315,7 +28889,7 @@ apf.BaseStateButtons = function(){
     /**
      * Restore the size of the window. The window will become the width and
      * height it had before it was minimized or maximized.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.restore = function(){
         this.setProperty("state", this.state.split("|")
@@ -28327,7 +28901,7 @@ apf.BaseStateButtons = function(){
     
      /**
      * Set the window into edit state. The configuration panel is shown.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.edit = function(value){
         this.setProperty("state", this.state.split("|")
@@ -28337,7 +28911,7 @@ apf.BaseStateButtons = function(){
 
     /**
      * Removes the edit state of this window. The configuration panel is hidden.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.closeedit = function(value){
         this.setProperty("state", this.state.split("|")
@@ -28361,14 +28935,16 @@ apf.BaseStateButtons = function(){
     }
     
     /**
-     * @attribute {String} state the state of the window. The state can be a
-     * combination of multiple states seperated by a pipe '|' character.
-     *   Possible values:
-     *   normal     The window has it's normal size and position. Default value.
-     *   minimized  The window is minimized.
-     *   maximized  The window is maximized.
-     *   edit       The window is in the edit state.
-     *   closed     The window is closed.
+     * @attribute {String} state Sets or gets the state of the window. The state can be a
+     * combination of multiple states, seperated by a pipe (`'|'`) character.
+     *   
+     * The possible values include:
+     *
+     *   `"normal"`:     The window has its normal size and position. This is the default value.
+     *   `"minimized"`:  The window is minimized.
+     *   `"maximized"`:  The window is maximized.
+     *   `"edit"`:       The window is in the edit state.
+     *   `"closed"`:     The window is closed.
      */
     this.$propHandlers["state"] = function(value, prop, force, reenter, noanim){
         var _self = this;
@@ -28775,13 +29351,15 @@ apf.BaseStateButtons = function(){
 
     var marginBox, hordiff, verdiff, oButtons = {}
     /**
-     * @attribute {String} buttons the buttons that the window displays. This
-     * can be multiple values seperated by a pipe '|' character.
-     *   Possible values:
-     *   min    The button that minimizes the window.
-     *   max    The button that maximizes the window.
-     *   close  The button that closes the window.
-     *   edit   The button that puts the window into the edit state.
+     * @attribute {String} buttons Sets or gets the buttons that the window displays. This
+     * can be multiple values seperated by a pipe (`'|'`) character.
+     *   
+     * The possible values include:
+     *
+     *   `"min"`:    The button that minimizes the window.
+     *   `"max"`:    The button that maximizes the window.
+     *   `"close"`:  The button that closes the window.
+     *   `"edit"`:   The button that puts the window into the edit state.
      */
     this.$propHandlers["buttons"] = function(value){
         
@@ -28946,15 +29524,17 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 /**
  * Baseclass of an element that has one or two states and can be clicked on to
- * trigger an action. (i.e. {@link element.button} or {@link element.checkbox}).
+ * trigger an action (_i.e._ {@link apf.button} or {@link apf.checkbox}).
  *
- * @constructor
+ * @class apf.BaseButton
  * @baseclass
  * @author      Abe Ginner
  * @version     %I%, %G%
  * @since       0.8
- *
- * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ * @inherits apf.StandardBinding
+ */
+/**
+ * @event click Fires when the user presses a mouse button while over this element...and then lets the mousebutton go. 
  */
 apf.BaseButton = function(){
     this.$init(true);
@@ -28970,26 +29550,29 @@ apf.BaseButton = function(){
     this.$mouseOver    =        // Mouse hovering over the button?
     this.$mouseLeft    = false; // Has the mouse left the control since pressing the button.
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
-     * @attribute {string} background sets a multistate background. The arguments
-     * are seperated by pipes '|' and are in the order of:
-     * 'imagefilename|mapdirection|nrofstates|imagesize'
-     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
-     * The nrofstates argument specifies the number of states the iconfile contains:
-     * 1 - normal
-     * 2 - normal, hover
-     * 3 - normal, hover, down
-     * 4 - normal, hover, down, disabled
-     * The imagesize argument specifies how high or wide each icon is inside the
-     * map, depending of the mapdirection argument.
+     * @attribute {String} background Sets or gets a multistate background. The arguments
+     * are seperated by pipes (`'|'`) and are in the order of:'imagefilename|mapdirection|nrofstates|imagesize'
      *
-     * Example:
-     * A 3 state picture where each state is 16px high, vertically spaced
-     * <code>
+     * - The `mapdirection` argument may have the value of `'vertical'` or `'horizontal'`.
+     * - The `nrofstates` argument specifies the number of states the iconfile contains:
+     *     - 1: normal
+     *     - 2: normal, hover
+     *     - 3: normal, hover, down
+     *     - 4: normal, hover, down, disabled
+     * - The `imagesize` argument specifies how high or wide each icon is inside the
+     * map, depending on the `mapdirection` argument.
+     * {: #multiStateDoc}
+     * 
+     * #### Example
+     * 
+     * Here's a three state picture where each state is 16px high, vertically spaced:
+     * 
+     * ```xml
      * background="threestates.gif|vertical|3|16"
-     * </code>
+     * ```
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
@@ -29011,7 +29594,7 @@ apf.BaseButton = function(){
         }
     };
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -29054,7 +29637,7 @@ apf.BaseButton = function(){
     }, true);
     
 
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
 
     this.states = {
         "Out"   : 1,
@@ -29185,7 +29768,7 @@ apf.BaseButton = function(){
         }
     };
 
-    /**** Focus Handling ****/
+    // *** Focus Handling *** //
 
     this.$focus = function(){
         if (!this.$ext)
@@ -29262,6 +29845,14 @@ apf.BaseButton = function(){
 
 apf.__FOCUSSABLE__ = 1 << 26;
 
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have focussable
+ * features
+ * 
+ * @class apf.Focussable
+ * @baseclass
+ * 
+ */
 
 apf.Focussable = function(){
     this.$regbase = this.$regbase | apf.__FOCUSSABLE__;
@@ -29271,8 +29862,8 @@ apf.Focussable = function(){
     /**
      * Sets the position in the list that determines the sequence
      * of elements when using the tab key to move between them.
-     * Call-chaining is supported.
-     * @param {Number} tabindex the position in the list
+     * @chainable
+     * @param {Number} tabindex The position in the list
      */
     this.setTabIndex = function(tabindex){
         apf.window.$removeFocus(this);
@@ -29282,7 +29873,8 @@ apf.Focussable = function(){
 
     /**
      * Gives this element the focus. This means that keyboard events
-     * are send to this element.
+     * are sent to this element.
+     * @chainable
      */
     this.focus = function(noset, e, nofix){
         if (!noset) {
@@ -29309,7 +29901,7 @@ apf.Focussable = function(){
 
     /**
      * Removes the focus from this element.
-     * Call-chaining is supported.
+     * @chainable
      */
     this.blur = function(noset, e){
         
@@ -29331,7 +29923,7 @@ apf.Focussable = function(){
 
     /**
      * Determines whether this element has the focus
-     * @returns {Boolean} indicating whether this element has the focus
+     * @returns {Boolean} Indicates whether this element has the focus
      */
     this.hasFocus = function(){
         return apf.document.activeElement == this || this.$isWindowContainer
@@ -29370,9 +29962,13 @@ apf.Focussable = function(){
 /**
  * Element which specifies the ways the application can communicate to remote
  * data sources.
- * Example:
- * Example of the {@link teleport.cgi rpc module with the cgi protocol}.
- * <code>
+ * 
+ *
+ * #### Example
+ *
+ * Here's an example of the RPC module with the CGI protocol.
+ * 
+ * ```xml
  *  <a:rpc id="comm" protocol="cgi">
  *      <a:method
  *        name    = "searchProduct"
@@ -29399,10 +29995,13 @@ apf.Focussable = function(){
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </a:script>
- * </code>
- * Example:
- * Example of the {@link teleport.soap rpc module with the soap protocol}.
- * <code>
+ * ```
+ * 
+ * #### Example
+ *
+ * Example of the RPC module with the SOAP protocol.
+ * 
+ * ```xml
  *  <a:rpc id="comm" 
  *    protocol    = "soap" 
  *    url         = "http://example.com/show-product.php" 
@@ -29431,10 +30030,13 @@ apf.Focussable = function(){
  *      //Execute a search for the product car
  *      comm.searchProduct('car', 10);
  *  </a:script>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * Writing to a file with a WebDAV connector
- * <code>
+ * 
+ * ```xml
  *   <a:webdav id="myWebDAV"
  *    url   = "http://my-webdav-server.com/dav_files/" />
  *     
@@ -29442,10 +30044,13 @@ apf.Focussable = function(){
  *      // write the text 'bar' to a file on the server called 'foo.txt'
  *      myWebDAV.write('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
  *  </a:script>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * XMPP connector with new message notification
- * <code>
+ * 
+ * ```xml
  *  <a:xmpp id="myXMPP"
  *    url           = "http://my-jabber-server.com:5280/http-bind"
  *    model         = "mdlRoster"
@@ -29462,28 +30067,35 @@ apf.Focussable = function(){
  *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
  *          apf.xmpp.MSG_CHAT);
  *  </a:script>
- * </code>
+ * ```
  *
- * @attribute {String}  url              the location of the server that is
- *                                       recipient of the rpc messages.
- * @attribute {String}  [route-server]   String specifying the url to the route script.
- *                                       Remarks:
- *                                       The route script will receive the route information in 3 extra headers:
- *                                           X-Route-Request     - Containing the destination url.<br />
- *                                           X-Proxy-Request     - Containing the destination url.<br />
- *                                           X-Compress-Response - Set to 'gzip'.<br />
- * @attribute {Boolean} [autoroute]      whether the call should be routed
- *                                       through a proxy when a permission
- *                                       error occurs due to the same domein policy.
- * @attribute {Number}  [timeout]        the number of milliseconds after
- *                                       which the call is considered timed out.
- *
- * 
+ * @class apf.Teleport
  * @define teleport
- * @addnode global
+ * @inherits apf.AmlElement
  * @allowchild {teleport}
  *
  * @default_private
+ */
+/**
+ * @attribute {String}  url              The location of the server that is
+ *                                       recipient of the RPC messages.
+ */
+/**
+ *  @attribute {String}  [route-server]   String specifying the URL to the route script.
+ *                                       The route script will receive the route information in three extra headers:
+ *                                           - `X-Route-Request`: Containing the destination URL
+ *                                           - `X-Proxy-Request`: Containing the destination URL
+ *                                           - `X-Compress-Response`: Set to `'gzip'`
+ */
+/**
+ *  @attribute {Boolean} [autoroute]     Indicates whether the call should be routed
+ *                                       through a proxy when a permission
+ *                                       error occurs due to the same domain policy.
+ */
+/**
+ *  @attribute {Number}  [timeout]       The number of milliseconds after
+ *                                       which the call is considered timed out.
+ *
  */
 apf.Teleport = function(){
     this.$init(true);
@@ -29599,16 +30211,21 @@ apf.__DELAYEDRENDER__ = 1 << 11
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have delayed
- * rendering features. Any element that is (partially) hidden at startup has the
- * possibility to delay rendering it's childNodes by setting render="runtime" on
- * the element. These elements include window, tab, pages, form and container.
- * For instance a Tab page in a container is initally hidden and does not
- * need to be rendered. When the tab button is pressed to activate the page
+ * rendering features. 
+ *
+ * Any element that is (partially) hidden at startup has the
+ * possibility to delay rendering its childNodes by setting `render="runtime"` on
+ * the element. These elements include `window`, `tab`, `pages`, `form` and c`ontainer`.
+ * For instance, a tab page in a container is initally hidden and does not
+ * need to be rendered. When the tab button is pressed to activate the page,
  * the page is rendered and then displayed. This can dramatically decrease
  * the startup time of the application.
- * Example:
+ * 
+ * #### Example
+ *
  * In this example the button isn't rendered until the advanced tab becomes active.
- * <code>
+ * 
+ * ```xml
  *  <a:tab width="200" height="150">
  *      <a:page caption="General">
  *      ...
@@ -29617,36 +30234,44 @@ apf.__DELAYEDRENDER__ = 1 << 11
  *         <a:button>OK</a:button>
  *      </a:page>
  *  </a:tab>
- * </code>
- *
- * @event beforerender  Fires before elements are rendered. Use this event to display a loader.
- *   cancelable: Prevents rendering of the childNodes
- * @event afterrender   Fires after elements are rendered. User this event to hide a loader.
- *
- * @attribute {String}  render           when the contents of this element is rendered.
- *   Possible values:
- *   init     elements are rendered during init of the application.
- *   runtime  elements are rendered when the user requests them.
- * @attribute {Boolean} use-render-delay whether there's a short delay between showing this element and rendering it's contents.
- *   Possible values:
- *   true   The elements are rendered immediately
- *   false  There is a delay between showing this element and the actual rendering,
- *          allowing the browsers' render engine to draw (for instance a loader).
- *
- * @constructor
+ * ```
+ * @class apf.DelayedRender
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8.9
  */
+/**
+ * @event beforerender  Fires before elements are rendered. Use this event to display a loader.
+ * @cancelable Prevents rendering of the childNodes
+ */
+/**
+ *  @event afterrender   Fires after elements are rendered. Use this event to hide a loader.
+ *
+ */
+/**
+ *  @attribute {String}  render   Sets or gets when the contents of this element is rendered.
+ *   
+ * Possible values include:
+ *   
+ *   - init:     elements are rendered during the initialization of the application.
+ *   - runtime:  elements are rendered when the user requests them.
+ */
+/**
+ *  @attribute {Boolean} use-render-delay Sets or gets whether there's a short delay between showing this element and rendering its contents.
+ *  
+ * If `true`, the elements are rendered immediately. Otherwise, there is a delay between showing this element and the actual rendering,
+ * allowing the browsers' render engine to draw (for instance, a loader).
+ *
+ */
 apf.DelayedRender = function(){
     this.$regbase   = this.$regbase | apf.__DELAYEDRENDER__;
     this.$rendered  = false;
     
-    /**
+    /*
      * Renders the children of this element.
      *
-     * @param {Boolean} [usedelay] whether a delay is added between calling 
+     * @param {Boolean} [usedelay] Specifies whether a delay is added between calling 
      * this function and the actual rendering. This allows the browsers' 
      * render engine to draw (for instance a loader).
      */
@@ -29754,10 +30379,11 @@ apf.config.$inheritProperties["render-delay"] = 1;
  * Baseclass of elements that allows the user to select one or more items
  * from a tree based element.
  *
- * @constructor
+ * @class apf.BaseTree
  * @baseclass
  *
- * @inherits apf.XForms
+ * @inherits apf.MultiSelect
+ * @inheritsElsewhere apf.XForms
  * @inherits apf.Cache
  * @inherits apf.DataAction
  * @inherits apf.Rename
@@ -29795,7 +30421,7 @@ apf.BaseTree = function(){
     );
     
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     //Options
     this.$isTreeArch   = true; // This element has a tree architecture.
@@ -29823,15 +30449,25 @@ apf.BaseTree = function(){
     this.$treeState[IS_LAST | HAS_CHILD | IS_CLOSED] = "pluslast";
     this.$treeState[IS_ROOT]                         = "root";
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
-     * @attribute {Boolean} openadd         whether the tree expands the parent to which a node is added. Defaults to true.
-     * @attribute {Boolean} startcollapsed  whether the tree collapses all nodes that contain children on load. Defaults to true.
-     * @attribute {Boolean} nocollapse      whether the user cannot collapse a node. Defaults to false.
-     * @attribute {Boolean} singleopen      whether the tree will expand a node by a single click. Defaults to false.
-     * @attribute {Boolean} prerender       whether the tree will render all the nodes at load. Defaults to true.
-     * @attribute {Boolean} disableremove   whether the tree disallows removing nodes with the keyboard, by pressing DEL. Defaults to false.
+     * @attribute {Boolean} openadd         Sets or gets whether the tree expands the parent to which a node is added. Defaults to `true`.
+     */
+    /**
+     * @attribute {Boolean} startcollapsed  Sets or gets whether the tree collapses all nodes that contain children on load. Defaults to `true`.
+    */
+    /**
+     *  @attribute {Boolean} nocollapse      Sets or gets whether the user cannot collapse a node. Defaults to `false`.
+     */
+    /**
+     *  @attribute {Boolean} singleopen      Sets or gets whether the tree will expand a node by a single click. Defaults to `false`.
+     */
+    /**
+     *  @attribute {Boolean} prerender       Sets or gets whether the tree will render all the nodes at load. Defaults to `true`.
+     */
+    /**
+     *  @attribute {Boolean} disableremove   Sets or gets whether the tree disallows removing nodes with the keyboard, by pressing [[keys: Del]]. Defaults to `false`.
      */
     this.$booleanProperties["openadd"]         = true;
     this.$booleanProperties["startcollapsed"]  = true;
@@ -29852,10 +30488,10 @@ apf.BaseTree = function(){
     this.prerender      = true;
     this.disableremove  = false;
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     /**
-     * Expands all items in the tree
+     * Expands all items in the tree.
      */
     this.expandAll    = function(){
         if (!this.xmlRoot)
@@ -29876,7 +30512,7 @@ apf.BaseTree = function(){
     };
 
     /**
-     * Collapses all items in the tree
+     * Collapses all items in the tree.
      */
     this.collapseAll   = function(){
         if (!this.xmlRoot)
@@ -29892,7 +30528,8 @@ apf.BaseTree = function(){
     };
 
     /**
-     * Collapse a single node in the tree
+     * Collapse a single node in the tree.
+     * - xmlNode ([[XMLNode]]): The node to collapse
      */
     this.collapse = function(xmlNode) {
         if (!this.xmlRoot)
@@ -29908,6 +30545,7 @@ apf.BaseTree = function(){
 
     /**
      * Selects a node and expands each parent of it.
+     * - xmlNode ([[XMLNode]]): The node to expand
      */
     this.expandAndSelect = function(xmlNode) {
         if (!this.xmlRoot)
@@ -29928,9 +30566,9 @@ apf.BaseTree = function(){
     };
 
     /**
-     * Loads a list of folders
-     * paths {Array} Array of strings in the form of 'folder[1]/folder[2]'
-     * onFinished {function} Callback to be called when finished
+     * Loads a list of folders.
+     * paths {[String]} Array of strings in the form of `'folder[1]/folder[2]'` representing a list of folders
+     * onFinished {Function} A callback to be called when finished
      */
     this.expandList = function (paths, onFinished) {
         var _self = this;
@@ -30016,16 +30654,16 @@ apf.BaseTree = function(){
         });
     };
 
-    /**
+    /*
      * @notimplemented
      * @todo who's volunteering?
      * @private
      */
     this.selectPath = function(path){};
 
-    /**** Sliding functions ****/
+    // *** Sliding functions *** //
 
-    /**
+    /*
      * @private
      */
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
@@ -30072,7 +30710,7 @@ apf.BaseTree = function(){
     }
 
     var lastOpened = {};
-    /**
+    /*
      * @event expand Fires when a tree leaf is expanded from collapsed view to
      *               reveal its children leaves.
      * @private
@@ -30190,7 +30828,7 @@ apf.BaseTree = function(){
         }
     };
 
-    /**
+    /*
      * @event collapse Fires when a tree leaf is collapsed from expanded view to
      *                 conceal its children leaves.
      * @private
@@ -30241,7 +30879,7 @@ apf.BaseTree = function(){
         });
     };
 
-    /**** Databinding Support ****/
+    // *** Databinding Support *** //
 
     this.$isStartCollapsed = function(xmlNode){
         return this.$hasBindRule("collapsed")
@@ -30666,7 +31304,7 @@ apf.BaseTree = function(){
 
     this.addEventListener("xmlupdate", xmlUpdateHandler);
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     
     this.addEventListener("beforerename", function(){
@@ -30963,7 +31601,7 @@ apf.BaseTree = function(){
     }, true);
     
 
-    /**** Rename Support ****/
+    // *** Rename Support *** //
 
     
     this.$getCaptionElement = function(){
@@ -30973,7 +31611,7 @@ apf.BaseTree = function(){
     };
     
 
-    /**** Selection Support ****/
+    // *** Selection Support *** //
     /*
         nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
                 ? this.xmlRoot.selectNodes(this.$isTreeArch
@@ -31070,15 +31708,12 @@ apf.BaseTree = function(){
         while(cNode);
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     /**
      * @event click Fires when the user presses a mousebutton while over this
-     *              element and then let's the mousebutton go.
-     * @see baseclass.multiselect.event.beforeselect
-     * @see baseclass.multiselect.event.afterselect
-     * @see baseclass.multiselect.event.beforechoose
-     * @see baseclass.multiselect.event.afterchoose
+     *              element, and then lets the mousebutton go
+     *
      */
     this.$drawBase = function(){
         //@todo apf3.0 checkmode, radiomode
@@ -31164,32 +31799,45 @@ apf.BaseTree = function(){
 
 
 /**
- * Baseclass of elements that allows the user to select one or more items
+ * The baseclass of elements that allows the user to select one or more items
  * out of a list.
  *
- * @constructor
+ * @class apf.BaseList
  * @baseclass
  *
  * @inherits apf.MultiSelect
  * @inherits apf.Cache
  * @inherits apf.DataAction
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  * @default_private
  *
+ */
+/**
  * @binding caption  Determines the caption of a node.
- * @binding icon     Determines the icon of a node. This binding rule is used
+ */
+/**
+ * @binding icon     Determines the icon of a node. 
+*
+ * This binding rule is used
  * to determine the icon displayed when using a list skin. The {@link baseclass.baselist.binding.image image binding}
  * is used to determine the image in the thumbnail skin.
- * @binding image    Determines the image of a node. This binding rule is used
+ */
+/**
+ * @binding image    Determines the image of a node. 
+ * 
+ * This binding rule is used
  * to determine the image displayed when using a thumbnail skin. The {@link baseclass.baselist.binding.icon icon binding}
  * is used to determine the icon in the list skin.
- * Example:
- * In this example the image url is read from the thumbnail attribute of the data node.
- * <code>
+ *
+ * #### Example
+ *
+ * In this example, the image URL is read from the thumbnail attribute of the data node.
+ *
+ * ```xml
  *  <a:thumbnail>
  *      <a:model>
  *          <data>
@@ -31205,11 +31853,17 @@ apf.BaseTree = function(){
  *          <a:each match="[image]" />
  *      </a:bindings>
  *  </a:thumbnail>
- * </code>
- * @binding css      Determines a css class for a node.
- * Example:
+ * ```
+ *
+ */
+/**
+ * @binding css      Determines a CSS class for a node.
+ *
+ * #### Example
+ *
  * In this example a node is bold when the folder contains unread messages:
- * <code>
+ *
+ * ```xml
  *  <a:tree>
  *      <a:model>
  *          <data>
@@ -31233,11 +31887,16 @@ apf.BaseTree = function(){
  *          <a:each match="[folder|message]" />
  *      </a:bindings>
  *  </a:tree>
- * </code>
- * @binding tooltip  Determines the tooltip of a node.
- * @event notunique Fires when the more attribute is set and an item is added that has a caption that already exists in the list.
- *   object:
- *   {String} value the value that was entered.
+ * ```
+ *
+ */
+/**
+ * @binding tooltip  Determines the tooltip of a node. 
+ */
+/**
+ * @event notunique Fires when the `more` attribute is set and an item is added that has a caption that already exists in the list.
+ * @param {Object} e The standard event object, with the following properties:
+ *                    - value ([[String]]): The value that was entered
  */
 apf.BaseList = function(){
     this.$init(true);
@@ -31263,7 +31922,7 @@ apf.BaseList = function(){
     );
     
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = true; // This object can get the focus
     this.$isWindowContainer = -1;
@@ -31271,17 +31930,21 @@ apf.BaseList = function(){
     this.multiselect = true; // Initially Disable MultiSelect
 
     /**
-     * @attribute {String} fill the set of items that should be loaded into this
-     * element. A start and an end seperated by a -.
-     * Example:
-     * This example loads a list with items starting at 1980 and ending at 2050.
-     * <code>
+     * @attribute {String} fill Sets or gets the set of items that should be loaded into this
+     * element. Items are seperated by a comma (`,`). Ranges are specified by a start and end value seperated by a dash (`-`).
+     *
+     * #### Example
+     *
+     * This example loads a list with items starting at 1980 and ending at 2050. It also loads several other items and ranges.
+     *
+     * ```xml
      *  <a:dropdown fill="1980-2050" />
      *  <a:dropdown fill="red,green,blue,white" />
-     *  <a:dropdown fill="None,100-110,1000-1100" />
-     *  <a:dropdown fill="01-10" />
-     *  <a:dropdown fill="1-10" />
-     * </code>
+     *  <a:dropdown fill="None,100-110,1000-1100" /> <!-- 101, 102...110, 1000,1001, e.t.c. -->
+     *  <a:dropdown fill="01-10" /> <!-- 01, 02, 03, 04, e.t.c. -->
+     *  <a:dropdown fill="1-10" /> <!-- // 1 2 3 4 e.t.c. -->
+
+     * ```
      */
     this.$propHandlers["fill"] = function(value){
         if (value)
@@ -31293,10 +31956,12 @@ apf.BaseList = function(){
     
     
     /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     * @attribute {String} mode Sets or gets the way this element interacts with the user.
+     *  
+     * The following values are possible:
+     *
+     *   - `check`: the user can select a single item from this element. The selected item is indicated.
+     *   - `radio`: the user can select multiple items from this element. Each selected item is indicated.
      */
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
@@ -31323,7 +31988,7 @@ apf.BaseList = function(){
     
     
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     
 
@@ -31645,7 +32310,7 @@ apf.BaseList = function(){
 
     
 
-    /**** Private databinding functions ****/
+    // *** Private databinding functions *** //
 
     this.$deInitNode   = function(xmlNode, htmlNode){
         if (!htmlNode) return;
@@ -31765,6 +32430,8 @@ apf.BaseList = function(){
                     o.stopRename();\
                  else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
+                 if (event.button == 2 && isSelected)\
+                    return;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -31913,10 +32580,10 @@ apf.BaseList = function(){
     };
 
     /**
-     * Adds a new item to the list and lets the users type in the new name.
+     * Adds a new item to the list, and lets the users type in the new name.
+     *
      * This functionality is especially useful in the interface when
-     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
-     * @see element.list.attribute.more
+     * the list mode is set to `check` or `radio`--for instance in a form.
      */
     this.startMore = function(o, userAction){
         if (userAction && this.disabled)
@@ -31993,7 +32660,7 @@ apf.BaseList = function(){
         });
     };
 
-    /**** Selection ****/
+    // *** Selection *** //
 
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [],
@@ -32031,16 +32698,19 @@ apf.BaseList = function(){
 
     /**
      * Generates a list of items based on a string.
-     * @param {String} str the description of the items. Items are seperated by a comma (,). Ranges are specified by a start and end value seperated by a dash (-).
-     * Example:
+     * @param {String} str The description of the items. Items are seperated by a comma (`,`). Ranges are specified by a start and end value seperated by a dash (`-`).
+     *
+     * #### Example
+     *
      * This example loads a list with items starting at 1980 and ending at 2050.
-     * <code>
+     *
+     * #### ```xml
      *  lst.loadFillData("1980-2050");
      *  lst.loadFillData("red,green,blue,white");
-     *  lst.loadFillData("None,100-110,1000-1100");
-     *  lst.loadFillData("1-10"); // 1 2 3 4 etc
-     *  lst.loadFillData("01-10"); //01, 02, 03, 04, etc
-     * </code>
+     *  lst.loadFillData("None,100-110,1000-1100"); // 101, 102...110, 1000,1001, e.t.c.
+     *  lst.loadFillData("1-10"); // 1 2 3 4 e.t.c.
+     *  lst.loadFillData("01-10"); //01, 02, 03, 04, e.t.c.
+     * ```
      */
     this.loadFillData = function(str){
         var len, start, end, parts = str.splitSafe(","), data = [];
@@ -32145,37 +32815,45 @@ apf.__MULTICHECK__ = 1 << 22;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
  *
- * @constructor
+ * @class apf.MultiCheck
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       3.0
  *
- * @todo type detection, errors (see functions in multiselect)
+ *
  */
+// @todo type detection, errors (see functions in multiselect)
 apf.MultiCheck = function(){
     this.$regbase    = this.$regbase | apf.__MULTICHECK__;
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.multicheck  = true;
     this.checklength = 0;
     this.$checkedList = [];
 
-    /**** Public Methods ****/
-    
+    // *** Public Methods *** //
+
     /**
-     * Checks a single, or set of.
-     * The checking can be visually represented in this element.
-     * The element can be checked, partialy checked or unchecked
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could not be made
-     *
      * @event  beforecheck  Fires before a check is made
-     *
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that will be checked.
+     */
+    /**
      * @event  aftercheck  Fires after a check is made
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that was checked.
      *
+     */    
+    /**
+     * Checks a single, or a set of, elements.
+     *
+     * The checking can be visually represented in this element.
+     * The element can be checked, partialy checked, or unchecked
+     *
+     * @param {Mixed}   xmlNode      The identifier to determine the selection.
+     * @return  {Boolean}  Indicates whether the selection could not be made (`false`)
      */
     this.check = function(xmlNode, userAction){
         if (userAction && this.disabled 
@@ -32204,17 +32882,24 @@ apf.MultiCheck = function(){
             xmlNode     : xmlNode
         });
     };
-    
+
     /**
-     * Unchecks a single, or set of.
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could be made
-     *
      * @event  beforeuncheck  Fires before a uncheck is made
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that will be unchecked.
      *
+     */
+    /**
      * @event  afteruncheck  Fires after a uncheck is made
+     * @param {Object} e The standard event object, with the following properties:
+     *   - `xmlNode` ([[XMLElement]]): the {@link term.datanode data node} that was unchecked.
      *
+     */     
+    /**
+     * Unchecks a single, or set of, elements.
+     *
+     * @param {Mixed}   xmlNode      The identifier to determine the selection.
+     * @return  {Boolean}  Indicates if the selection could be made (`false`)
      */
     this.uncheck = function(xmlNode, userAction){
         if (userAction && this.disabled 
@@ -32243,9 +32928,9 @@ apf.MultiCheck = function(){
     };
 
     /**
-     * Toggles between check and uncheck a single, or set of.
+     * Toggles between a check and uncheck of a single, or set of, elements.
      *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @param {Mixed}   xmlNode    The identifier to determine the selection.
      *
      */
     this.checkToggle = function(xmlNode, userAction){
@@ -32268,15 +32953,15 @@ apf.MultiCheck = function(){
     };
     
     /**
-     * Checks a set of items
+     * Checks a set of items.
      *
-     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
-     * @param {boolean} uncheck
-     * @param {boolean} noClear
-     * @param {boolean} noEvent whether to not call any events
+     * @param {Array} xmlNodeList The {@link term.datanode data nodes} that will be selected.
+     * @param {Boolean} uncheck If `true`, checks the items
+     * @param {Boolean} noClear If `true`, does not also clears the selection
+     * @param {Boolean} noEvent Indicates whether to call any events
      * @event  beforecheck  Fires before a check is made
      *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
+     *   
      * @event  aftercheck   Fires after a check is made
      *   object:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
@@ -32345,14 +33030,7 @@ apf.MultiCheck = function(){
     /**
      * Removes the selection of one or more checked nodes.
      *
-     * @param {Boolean} [singleNode] whether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    whether to not call any events
-     * @event  beforeuncheck  Fires before a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
-     * @event  afteruncheck   Fires after a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
+     * @param {Boolean} [noEvent]    Indicates whether to call any events
      */
     this.clearChecked = function(noEvent){
         if (!noEvent && this.dispatchEvent("beforeuncheck", {
@@ -32378,7 +33056,7 @@ apf.MultiCheck = function(){
      * Determines whether a node is checked.
      *
      * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
-     * @return  {Boolean} whether the element is selected.
+     * @return  {Boolean} Whether the element is selected.
      */
     this.isChecked = function(xmlNode){
         return this.$checkedList.indexOf(xmlNode) > -1;
@@ -32388,8 +33066,8 @@ apf.MultiCheck = function(){
      * Retrieves an array or a document fragment containing all the checked
      * {@link term.datanode data nodes} from this element.
      *
-     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
+     * @param {Boolean} [xmldoc] Specifies whether the method should return a document fragment.
+     * @return {Mixed} The selection of this element.
      */
     this.getChecked = function(xmldoc){
         var i, r;
@@ -32717,11 +33395,11 @@ apf.VirtualViewport = function(){
             this.$cachedTraverseList = (xmlNode || this.xmlRoot).selectNodes(this.each);
             this.$cachedTraverseList.name = this.each;
         }
-    }
+    };
     
     /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
-     * this element (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
+     * this element.
      *
      * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
      */
@@ -32972,7 +33650,7 @@ apf.$viewportVirtual = function(amlNode){
         this.setScrollTop(nr * itemHeight + (toBottom ? itemHeight - this.getHeight() : 0));
     }
     
-    /**** Private ****/
+    // *** Private *** //
     
     //Assume all items have the same height;
     //@todo this can be optimized by caching
@@ -32996,7 +33674,7 @@ apf.$viewportVirtual = function(amlNode){
             : htmlNode);
     }
 
-    /**** Implementation ****/
+    // *** Implementation *** //
 
     this.draw = function(){
         this.inited = true;
@@ -33035,10 +33713,10 @@ apf.$viewportVirtual = function(amlNode){
             
             j++;
         }
-    }
+    };
     
     /**
-     * @note This function only supports single dimension items (also no grid, like thumbnails)
+     * Note: this function only supports single dimension items (also no grid, like thumbnails)
      */
     this.resize = function(limit, updateScrollbar){
         this.cache = null;
@@ -33067,7 +33745,7 @@ apf.$viewportVirtual = function(amlNode){
         
         if (updateScrollbar && this.sb)
             this.sb.$update(this.$container);
-    }
+    };
     
     this.$findNewLimit = function(){
         if (!this.amlNode.xmlRoot || !this.amlNode.$ext.offsetHeight)
@@ -33082,7 +33760,7 @@ apf.$viewportVirtual = function(amlNode){
             this.resize(limit);
             this.redraw();
         }
-    }
+    };
     
     /**
      *  @todo   This method should be optimized by checking if there is
@@ -33211,7 +33889,7 @@ apf.$viewportVirtual = function(amlNode){
         var htmlNode = this.$getHtmlHost();
         var itemHeight = this.$getItemHeight();
         htmlNode.scrollTop = scrollTop - (this.offset * itemHeight);
-    }
+    };
 }).call(apf.$viewportVirtual.prototype);
 
 
@@ -33270,10 +33948,10 @@ apf.__XFORMS__ = 1 << 17;
 
 
 /**
- * Baseclass of a simple element. This are usually displaying elements 
- * (i.e. {@link element.label}, {@link element.picture})
+ * Baseclass of a simple element. These are usually displaying elements 
+ * (_i.e._ {@link apf.label}, {@link apf.img})
  *
- * @constructor
+ * @class apf.BaseSimple
  * @baseclass
  *
  * @inherits apf.StandardBinding
@@ -33330,29 +34008,37 @@ apf.__DRAGDROP__ = 1 << 5;
 
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} have drag&drop 
- * features. This baseclass operates on the bound data of this element. 
- * When a rendered item is dragged and dropped the bound data is moved or 
+ * All elements inheriting from this {@link term.baseclass baseclass} have drag & drop 
+ * features. 
+ *
+ * This baseclass operates on the bound data of this element. 
+ * When a rendered item is dragged and dropped, the bound data is moved or 
  * copied from one element to another, or to the same element but at a different 
  * position. This is possible because the rendered item has a 
- * {@link term.smartbinding bidirectional connection} to the data. Drag&drop can 
+ * {@link term.smartbinding bidirectional connection} to the data. Drag & drop can 
  * be turned on with a simple boolean, or by specifying detailed rules to set 
  * which data can be dragged and dropped and where.
  *
- * Example:
- * This is a simple example, enabling drag&drop for a list.
- * <code>
+ *
+ * #### Example
+ *
+ * This is a simple example, enabling drag & drop for a list:
+ *
+ * ```xml
  *  <a:list
  *    drag     = "true"
  *    drop     = "true"
  *    dragcopy = "true" />
- * </code>
+ * ```
  *
- * Example:
- * This example shows a smartbinding that represents files and folders. It uses 
- * {@link term.datainstruction data instruction} to tell communicat to the webdav
+ *
+ * #### Example
+ *
+ * This example shows a smartbinding that represents files and folders. It uses a
+ * {@link term.datainstruction data instruction} to communicate to the webdav
  * server when an item is copied or moved.
- * <code>
+ *
+ * ```xml
  *  <a:smartbinding>
  *      <a:bindings>
  *          <a:caption match="[@filename]" />
@@ -33381,54 +34067,17 @@ apf.__DRAGDROP__ = 1 << 5;
  *              set   = "{myWebdav.copy([@path], [../@path])}" />
  *      </a:actions>
  *  </a:smartbinding>
- * </code>
+ * ```
  *
- * @event  dragdata  Fires before a drag&drop operation is started to determine the data that is dragged.
- *   object:
- *   {XMLElement} data the default data for the drag&drop operation
- * @event  dragstart Fires before a drag operation is started.
- *   cancelable: Prevents the drag operation to start.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
- * @event  dragover Fires when the users drags over this aml element.
- *   cancelable: Prevents the possibility to drop.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
- * @event  dragout  Fires when the user moves away from this aml element.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
- * @event  dragdrop  Fires when the user drops an item on this aml element.
- *   cancelable: Prevents the possibility to drop.
- *   object:
- *   {XMLElement}  data      the data for the drag&drop operation
- *   {XMLElement}  selection the selection at the start of the drag operation
- *   {HTMLElement} indicator the html element that is shown while dragging the data
- *   {AMLElement}  host      the aml source element.
- *   {Boolean}     candrop   whether the data can be inserted at the point hovered over by the user
+ * #### Example 
  *
- * @see element.drag
- * @see element.drop
- * @see element.dragdrop
- *
- * @define dragdrop
- * @allowchild drop, drag
- * @define drag   Determines whether a {@link term.datanode data node} can 
- * be dragged from this element. 
- * Example:
  * This example shows a small mail application. The tree element displays a root
  * node, accounts and folders in a tree. The datagrid contains the mails. This
  * rule specifies which data nodes can be dropped where. Folders can be dropped 
  * in folders and accounts. Mails can be dropped in folders.
- * <code>
+ *
+ * ```xml
+ *
  *  <a:tree align="left" width="200">
  *      <a:each match="[root|account|folder|mail]">
  *          <a:caption match="[@name]" />
@@ -33464,46 +34113,100 @@ apf.__DRAGDROP__ = 1 << 5;
  *          </data>
  *      </a:model>
  *  </a:datagrid>
- * </code>
- *
- * @attribute {String} match           an xpath statement querying the
- *                                     {@link term.datanode data node} that is
- *                                     dragged. If the query matches a node it
- *                                     is allowed to be dropped. The xpath is
- *                                     automatically prefixed by 'self::'.
- * @attribute {String} copy            a javascript expression that determines
- *                                     whether the dragged element is a copy or
- *                                     a move. Use event.ctrlKey to use the Ctrl
- *                                     key to determine whether the element is copied.
- *
- * @define drop   Determines whether a {@link term.datanode data node} can 
- * be dropped on a data node bound to this element. 
+ *```
  * 
- * @attribute {String} match           an xpath statement querying the
- *                                     {@link term.datanode data node} that is
- *                                     dragged. If the query matches a node it
- *                                     is allowed to be dropped. The xpath is
- *                                     automatically prefixed by 'self::'.
- * @attribute {String} target          an xpath statement determining the new
- *                                     parent of the dropped {@link term.datanode data node}.
- *                                     The xpath is automatically prefixed by 'self::'.
- * @attribute {String} action          the action to perform when the
- *                                     {@link term.datanode data node} is inserted.
- *   Possible values:
- *   tree-append    Appends the {@link term.datanode data node} to the element it's dropped on.
- *   list-append    Appends the {@link term.datanode data node} to the root element of this element.
- *   insert-before  Inserts the {@link term.datanode data node} before the elements it's dropped on.
- * @attribute {String} copy            a javascript expression that determines
- *                                     whether the drop is a copy or a move.
- *                                     Use event.ctrlKey to use the Ctrl key to
- *                                     determine whether the element is copied.
- */
-/**
- * @constructor
+ * @class apf.DragDrop
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
+ * @define dragdrop
+ * @allowchild drop, drag
+ * @define drag 
+ */
+/**
+ * @event  dragdata  Fires before a drag & drop operation is started to determine the data that is dragged.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - `data` ([[XMLElement]]): The default data for the drag & drop operation
+ */
+/**
+ * @event  dragstart Fires before a drag operation is started.
+ * @cancelable Prevents the drag operation to start.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - `data` ([[XMLElement]]): The data for the drag & drop operation
+ *   - `selection` ([[XMLElement]]): The selection at the start of the drag operation
+ *   - `indicator` ([[HTMLElement]]): The HTML element that is shown while dragging the data
+ *   - `host` ([[apf.AmlElement]]): The AML source element.
+ */
+/**
+ * @event  dragover Fires when the users drags over this AML element.
+ * @cancelable Prevents the possibility to drop.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   {XMLElement}  data      The data for the drag & drop operation
+ *   {XMLElement}  selection The selection at the start of the drag operation
+ *   {HTMLElement} indicator The HTML element that is shown while dragging the data
+ *   {apf.AmlElement}  host      the AML source element.
+ */
+/**
+ * @event  dragout  Fires when the user moves away from this AML element.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   {XMLElement}  data      the data for the drag & drop operation
+ *   {XMLElement}  selection the selection at the start of the drag operation
+ *   {HTMLElement} indicator the HTML element that is shown while dragging the data
+ *   {apf.AmlElement}  host      the aml source element.
+ */
+/**
+ * @event  dragdrop  Fires when the user drops an item on this aml element.
+ * @cancelable Prevents the possibility to drop.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   {XMLElement}  data      The data for the drag & drop operation
+ *   {XMLElement}  selection The selection at the start of the drag operation
+ *   {HTMLElement} indicator The html element that is shown while dragging the data
+ *   {apf.AmlElement}  host      The AML source element.
+ *   {Boolean}     candrop   Specifies whether the data can be inserted at the point hovered over by the user
+ *
+ *
+ */
+/**
+ * @attribute {String} match           An XPath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The XPath is
+ *                                     automatically prefixed by `'self::'`.
+ */
+/**
+ * @attribute {String} copy            A JavaScript expression that determines
+ *                                     whether the dragged element is a copy or
+ *                                     a move. Use event.ctrlKey to use the Ctrl
+ *                                     key to determine whether the element is copied.
+ *
+ */
+/**
+ * @attribute {String} match           An XPath statement querying the
+ *                                     {@link term.datanode data node} that is
+ *                                     dragged. If the query matches a node it
+ *                                     is allowed to be dropped. The XPath is
+ *                                     automatically prefixed by `'self::'`.
+ */
+/**
+ * @attribute {String} target          An XPath statement determining the new
+ *                                     parent of the dropped {@link term.datanode data node}.
+ *                                     The XPath is automatically prefixed by `'self::'`.
+ */
+/**
+ * @attribute {String} action          The action to perform when the
+ *                                     {@link term.datanode data node} is inserted.
+ *   The possible values include:
+ *
+ *   - `tree-append`:    Appends the {@link term.datanode data node} to the element its dropped on.
+ *   - `list-append`:    Appends the {@link term.datanode data node} to the root element of this element.
+ *   - `insert-before`:  Inserts the {@link term.datanode data node} before the elements its dropped on.
+ */
+/**
+ * @attribute {String} copy            A JavaScript expression that determines
+ *                                     whether the drop is a copy or a move.
+ *                                     Use event.ctrlKey to use the [[keys: Ctrl]] key to
+ *                                     determine whether the element is copied.
  */
 apf.DragDrop = function(){
     this.$regbase = this.$regbase | apf.__DRAGDROP__;
@@ -33518,12 +34221,12 @@ apf.DragDrop = function(){
      * Copies a {@link term.datanode data node} to the bound data of this element.
      *
      * @action
-     * @param  {XMLElement} xmlNode      the {@link term.datanode data node} which is copied.
-     * @param  {XMLElement} pNode        the new parent element of the copied
-     *                                   {@link term.datanode data node}. If none
+     * @param  {XMLElement} xmlNode      The {@link term.datanode data node} which is copied.
+     * @param  {XMLElement} [pNode]        The new parent element of the copied
+     *                                   {@link term.datanode data node}. If none is
      *                                   specified the root element of the data
      *                                   loaded in this element is used.
-     * @param  {XMLElement} [beforeNode] the position where the {@link term.datanode data node}
+     * @param  {XMLElement} [beforeNode] The position where the {@link term.datanode data node}
      *                                   is inserted.
      */
     this.copy = function(nodeList, pNode, beforeNode, isMove){
@@ -33563,12 +34266,12 @@ apf.DragDrop = function(){
      * Moves a {@link term.datanode data node} to the bound data of this element.
      *
      * @action
-     * @param  {XMLElement}  xmlNode      the {@link term.datanode data node} which is copied.
-     * @param  {XMLElement}  pNode        the new parent element of the moved
+     * @param  {XMLElement}  xmlNode      The {@link term.datanode data node} which is copied.
+     * @param  {XMLElement}  [pNode]      The new parent element of the moved
      *                                    {@link term.datanode data node}. If none
      *                                    specified the root element of the data
      *                                    loaded in this element is used.
-     * @param  {XMLElement}  [beforeNode] the position where the
+     * @param  {XMLElement}  [beforeNode] The position where the
      *                                    {@link term.datanode data node} is inserted.
      */
     this.move = function(nodeList, pNode, beforeNode){
@@ -33577,17 +34280,16 @@ apf.DragDrop = function(){
     
     /**
      * Determines whether the user is allowed to drag the passed 
-     * {@link term.datanode data node}. The decision is made based on the 
-     * {@link element.drag drag} and {@link element.drag drag} 
-     * rules. These elements determine when a data node can be dropped on 
-     * another data node. For instance, imagine a mail application with a root
+     * {@link term.datanode data node}. 
+     *
+     * For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
-     * would specify you can drag&drop folders within an account, and emails between
+     * would specify you can drag & drop folders within an account, and emails between
      * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject to the test.
-     * @return {Boolean} result of the test
-     * @see baseclass.dragdrop.method.isDragAllowed
+     * @param  {XMLElement} dataNode The {@link term.datanode data node} subject to the test.
+     * @return {Boolean} The result of the test
+     * @see apf.DragDrop.isDragAllowed
      */
     this.isDragAllowed = function(x, data){
         
@@ -33624,21 +34326,20 @@ apf.DragDrop = function(){
     };
 
     /**
-     * Determines whether the user is allowed to dropped the passed 
-     * {@link term.datanode data node}. The decision is made based on the 
-     * {@link element.drag drag} and {@link element.drag drag} 
-     * rules. These elements determine when a data node can be dropped on 
-     * another data node. For instance, imagine a mail application with a root
+     * Determines whether the user is allowed to drop the passed 
+     * {@link term.datanode data node}. 
+     * 
+     * For instance, imagine a mail application with a root
      * node, accounts and folders in a tree, and mails in a datagrid. The rules
-     * would specify you can drag&drop folders within an account, and emails between
+     * would specify you can drag & drop folders within an account, and emails between
      * folders, but not on accounts or the root.
      *
-     * @param  {XMLElement} dataNode the {@link term.datanode data node} subject
+     * @param  {XMLElement} dataNode The {@link term.datanode data node} subject
      *                               to the test.
-     * @param  {XMLElement} target   the {@link term.datanode data node} on which
+     * @param  {XMLElement} target   The {@link term.datanode data node} on which
      *                               the dragged data node is dropped.
-     * @return {Boolean} result of the test
-     * @see baseclass.dragdrop.method.isDragAllowed
+     * @return {Boolean} The result of the test
+     * @see apf.DragDrop.isDragAllowed
      */
     this.isDropAllowed = function(x, target){
         
@@ -33823,11 +34524,11 @@ apf.DragDrop = function(){
             Init
     ***********************/
 
-    /**
+    /*
      * Loads the dragdrop rules from the dragdrop element
      *
-     * @param  {Array}      rules     the rules array created using {@link core.apf.method.getrules}
-     * @param  {XMLElement} [node] the reference to the dragdrop element
+     * @param  {Array}      rules     The rules array created using {@link core.apf.method.getrules}
+     * @param  {XMLElement} [node] The reference to the drag & drop element
      * @see  SmartBinding
      * @private
      */
@@ -33937,18 +34638,26 @@ apf.DragDrop = function(){
     this.$supportedProperties.push("drop", "drag", "dragcopy");
 
     /**
-     * @attribute  {Boolean}  drag       whether the element allows dragging of it's items.
-     * Example:
-     * <code>
+     * @attribute  {Boolean}  drag   Sets or gets whether the element allows dragging of its items.
+     *
+     * #### Example
+     *
+     * ```xml
+     *
      *  <a:list drag="true">
      *      <a:item>item 1</a:item>
      *      <a:item>item 2</a:item>
      *      <a:item>item 3</a:item>
      *  </a:list>
-     * </code>
+     *```
+     *
+     */
+    /**
      * @attribute  {Boolean}  dragcopy   whether dragged items are copied.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:list 
      *    drag    = "true" 
      *    align   = "right" 
@@ -33963,27 +34672,36 @@ apf.DragDrop = function(){
      *          </data>
      *      </a:model>
      *  </a:list>
-     * </code>
-     * Example:
-     * Items are only copied when the user holds the Ctrl key
-     * <code>
+     * ```
+     *
+     * #### Example
+     *
+     * Items are only copied when the user holds the [[keys: Ctrl]] key
+     *
+     * ```xml
      *  <a:list dragcopy="[ctrlKey]">
      *      <a:item>item 1</a:item>
      *      <a:item>item 2</a:item>
      *      <a:item>item 3</a:item>
      *  </a:list>
-     * </code>
-     * @attribute  {Boolean}  drop       whether the element allows items to be dropped.
-     * Example:
-     * <code>
+     * ```
+     */
+    /**
+     * @attribute  {Boolean}  drop       Sets or gets whether the element allows items to be dropped.
+     *
+     * #### Example
+     *
+     *
+     * ```xml
      *  <a:list drop="true">
      *      <a:item>item 1</a:item>
      *      <a:item>item 2</a:item>
      *      <a:item>item 3</a:item>
      *  </a:list>
-     * </code>
-     * @attribute  {String}   dragdrop          the name of the dragdrop element for this element.
-     * <code>
+     * ```
+     * @attribute  {String}   dragdrop    Sets or gets the name of the dragdrop element for this element.
+     *
+     * ```xml
      *  <a:tree align="left" width="200" height="300">
      *      <a:each match="[root|account|folder|mail]">
      *          <a:caption match  = "[@name]" />
@@ -34026,7 +34744,7 @@ apf.DragDrop = function(){
      *        match = "[mail]"
      *        action = "list-append" />
      *   </a:bindings>
-     * </code>
+     * ```
      */
     this.$propHandlers["dragcopy"] =
     this.$propHandlers["dropcopy"] =
@@ -34074,7 +34792,7 @@ apf.GuiElement.propHandlers["drag"]     = function(value, prop) {
     }
 };
 
-/**
+/*
  * Central object for dragdrop handling.
  * @private
  */
@@ -34521,11 +35239,11 @@ apf.DragServer = {
     }
 };
 
-/**
+/*
  * @private
  */
 apf.MultiselectDragDrop = function() {
-    /**** Drag & Drop ****/
+    // *** Drag & Drop *** //
     
     this.diffX        =
     this.diffY        = 0;
@@ -34730,7 +35448,7 @@ apf.MultiselectDragDrop = function() {
     
 };
 
-/**
+/*
  * @private
  */
 apf.StandardDragDrop = function() {
@@ -34818,58 +35536,85 @@ apf.__INTERACTIVE__ = 1 << 21;
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have interactive features, making an
  * element draggable and resizable.
- * Example:
- * <code>
- *  <a:textarea draggable="true" resizable="true" />
- * </code>
  * 
- * @attribute {Boolean} draggable whether an element is draggable. The user will
+ * #### Example
+ *
+ * ```xml
+ *  <a:textarea draggable="true" resizable="true" />
+ * ```
+ * 
+ * @class apf.Interactive
+ * @baseclass
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       1.0
+ *
+ * @see apf.appsettings.outline
+ * @see apf.appsettings.resize-outline
+ * @see apf.appsettings.drag-outline
+ */
+/**
+ * @attribute {Boolean} draggable Sets or gets whether an element is draggable. The user will
  * able to move the element around while holding the mouse button down on the 
  * element.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:bar 
  *    draggable = "true" 
  *    width     = "200" 
  *    height    = "200" 
  *    left      = "10" 
  *    top       = "10" />
- * </code>
- * @attribute {Boolean} resizable whether an element is resizable. The user will able
+ * ```
+ */
+/**
+ * @attribute {Boolean} resizable Sets or gets whether an element is resizable. 
+ * 
+ * The user will able
  * to resize the element by grabbing one of the four edges of the element and 
  * pulling it in either direction. Grabbing the corners allows users to 
  * resize horizontally and vertically at the same time. The right bottom corner 
  * is special, because it offers an especially big grab area. The size of this
  * area can be configured in the skin of the element.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:window 
  *    resizable = "true"
  *    visible   = "true" 
  *    width     = "400" 
  *    height    = "200" />
- * </code>
- * @attribute {Number} minwidth  the minimum horizontal size the element can get when resizing.
- * @attribute {Number} minheight the minimum vertical size the element can get when resizing.
- * @attribute {Number} maxwidth  the maximum horizontal size the element can get when resizing.
- * @attribute {Number} maxheight the maximum vertical size the element can get when resizing.
+ * ```
+ */
+/**
+ * @attribute {Number} minwidth  Sets or gets the minimum horizontal size the element can get when resizing.
+ */
+/**
+ * @attribute {Number} minheight Sets or gets the minimum vertical size the element can get when resizing.
+ */
+/**
+ * @attribute {Number} maxwidth  Sets or gets the maximum horizontal size the element can get when resizing.
+ */
+/**
+ * @attribute {Number} maxheight Sets or gets the maximum vertical size the element can get when resizing.
  *
+ */
+/**
  * @event drag          Fires when the widget has been dragged.
+ */
+/**
  * @event resizestart   Fires before the widget is resized.
- *   cancelable: Prevents this resize action to start.
- *   object:
- *   {String} type the type of resize. This is a combination of the four directions, n, s, e, w.
+ * @cancelable Prevents this resize action to start.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - type ([[String]]): the type of resize. This is a combination of the four directions--`"n"`, `"s"`, `"e"`, `"w"`.
+ */
+/**
  * @event resize        Fires when the widget has been resized.
  *
- * @constructor
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       1.0
- *
- * @see element.appsettings.attribute.outline
- * @see element.appsettings.attribute.resize-outline
- * @see element.appsettings.attribute.drag-outline
  */
 apf.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, r, b, lMax, tMax, lMin,
@@ -35607,30 +36352,35 @@ apf.Init.run("interactive");
 /**
  * Baseclass of a paged element. 
  *
- * @constructor
+ * @class apf.BaseTab
  * @baseclass
  * @allowchild page
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
- * 
+ * @inherits apf.Presentation
+ *
+ */
+/**
  * @event beforeswitch  Fires before this element switches to another page.
- *   cancelable: Prevents the page to become active.
- *   object:
- *   {Mixed}    previous     the name or number of the current page.
- *   {Number}   previousId   the number of the current page.
- *   {apf.page} previousPage the current page.
- *   {Mixed}    next         the name or number of the page the will become active.
- *   {Number}   nextId       the number of the page the will become active.
- *   {apf.page} nextPage     the page the will become active.
- * @event afterswitch   Fires after this element has switched to another page.
- *   object:
- *   {Mixed}    previous     the name or number of the previous page.
- *   {Number}   previousId   the number of the previous page.
- *   {apf.page} previousPage the previous page.
- *   {Mixed}    next         the name or number of the current page.
- *   {Number}   nextId       the number of the the current page.
- *   {apf.page} nextPage     the the current page.   
+ * @cancelable Prevents the page to become active.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - previous ([[String]] or [[Number]]): The name or number of the current page.
+ *   - previousId ([[Number]]): The number of the current page.
+ *   - previousPage ([[apf.page]]): The current page.
+ *   - next ([[String]] or [[Number]]): The name or number of the page the will become active.
+ *   - nextId ([[Number]]): The number of the page the will become active.
+ *   - nextPage ([[apf.page]]): The page the will become active.
+ */
+/**
+ *  @event afterswitch   Fires after this element has switched to another page.
+ *  @param {Object} e The standard event object. It contains the following properties:
+ *   - previous ([[String]] or [[Number]]): The name or number of the previous page.
+ *   - previousId ([[Number]]): The number of the previous page.
+ *   - previousPage ([[apf.page]]): The previous page.
+ *   - next ([[String]] or [[Number]]): The name or number of the current page.
+ *   - nextId ([[Number]]): The number of the the current page.
+ *   - nextPage ([[apf.page]]): The the current page.   
  */
 apf.BaseTab = function(){
     this.$init(true);
@@ -35647,8 +36397,8 @@ apf.BaseTab = function(){
 
     /**
      * Sets the current page of this element.
-     * @param {mixed}    page     the name of numer of the page which is made active.
-     * @param {Function} callback the function called after setting the page. Especially handy when using the src attribute.
+     * @param {String | Number}    page     The name or number of the page which is made active.
+     * @param {Function} callback The function called after setting the page. Especially handy when using the `src` attribute.
      */
     this.set = function(page, callback, noEvent){
         if (noEvent || this.src && !this.$findPage(page, {})) {
@@ -35663,17 +36413,32 @@ apf.BaseTab = function(){
         this.setProperty("activepage", page);
     };
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("activepage", "activepagenr", "length",
         "src", "loading", "trans-in", "trans-out");
 
     /**
-     * @attribute {Number} activepagenr the child number of the active page.
-     * Example:
+     * @property {Number} [SCROLL_LEFT=1] The constant representing the "scroll left" button
+     * @readonly
+     */
+    /**
+     * @property {Number} [SCROLL_RIGHT=2] The constant representing the "scroll right" button
+     * @readonly
+     */
+    /**
+     * @property {Number} [SCROLL_BOTH=4] The constant representing the "scroll left" and "scroll right" buttons
+     * @readonly
+     */
+    /**
+     * @attribute {Number} activepagenr Sets or gets the child number of the active page.
+     * 
+     * #### Example
+     *
      * This example uses property binding to maintain consistency between a
      * dropdown which is used as a menu, and a pages element
-     * <code>
+     * 
+     * ```xml
      *  <a:dropdown id="ddMenu" value="0">
      *      <a:item value="0">Home</a:item>
      *      <a:item value="1">General</a:item>
@@ -35691,14 +36456,16 @@ apf.BaseTab = function(){
      *          <h1>Advanced Page</h1>
      *      </a:page>
      *  </a:pages>
-     * </code>
+     * ```
      */
     this.$propHandlers["activepagenr"] =
 
     /**
-     * @attribute {String} activepage the name of the active page.
-     * Example:
-     * <code>
+     * @attribute {String} activepage Sets or gets the name of the active page.
+     *  
+     * #### Example
+     *
+     * ```xml
      *  <a:tab activepage="general" width="250" height="100">
      *      <a:page id="home" caption="Home">
      *      ...
@@ -35710,7 +36477,7 @@ apf.BaseTab = function(){
      *          ...
      *      </a:page>
      *   </a:tab>
-     * </code>
+     * ```
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
         if (!this.inited || apf.isNot(next) || next == -1) return;
@@ -35866,11 +36633,12 @@ apf.BaseTab = function(){
     };
     
     /**
-     * @attribute {String} buttons the modifier for tab page buttons, seperated by a | character
-     *   Possible values:
-     *   close   the button has a close button inside it.
-     *   scale   the buttons are scaled to make room for more buttons.
-     *   scroll  when the buttons take too much space scroll buttons are displayed.
+     * @attribute {String} buttons Sets or gets the modifier for tab page buttons, seperated by a `|` character
+     *   
+     * Possible values include:
+     *   - `close`:   The button has a close button inside it
+     *   - `scale`:  The buttons are scaled to make room for more buttons
+     *   - `scroll`:  When the buttons take too much space, scroll buttons are displayed
      */
     this.$propHandlers["buttons"] = function(value){
         //this.buttons = value;
@@ -36144,7 +36912,7 @@ apf.BaseTab = function(){
         }
     }
     
-    /**
+    /*
      * Update the size of the tab container
      */
     function scalersz(e, excl){
@@ -36172,12 +36940,13 @@ apf.BaseTab = function(){
     }
     
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
     /**
      * Retrieves an array of all the page elements of this element.
+     * @returns {Array} An array of all the {apf.page} elements
      */
     this.getPages = function(){
         var r = [], nodes = this.childNodes;
@@ -36189,9 +36958,9 @@ apf.BaseTab = function(){
     };
 
     /**
-     * Retrieves a page element by it's name or child number
-     * @param {mixed} nameOrId the name or child number of the page element to retrieve.
-     * @return {Page} the found page element.
+     * Retrieves a page element by its name or child number.
+     * @param {String | Number} nameOrId The name or child number of the page element to retrieve.
+     * @return {apf.page} The found page element.
      */
     this.getPage = function(nameOrId){
         if (apf.isNot(nameOrId))
@@ -36201,10 +36970,13 @@ apf.BaseTab = function(){
     };
 
     /**
-     * Add a new page element
-     * @param {String} [caption] the text displayed on the button of the page.
-     * @param {String} [name]    the name of the page which is can be referenced by.
-     * @return {page} the created page element.
+     * Adds a new page element
+     * @param {String} [caption] The text displayed on the button of the page
+     * @param {String} [name]    The name of the page which is can be referenced by
+     * @param {String} [type]    The type of the page
+     * @param {apf.page} [insertBefore]   The page to insert ahead of; `null` means to put it at the end
+     * @param {Function} [callback]   A callback to call and pass the new page to
+     * @return {apf.page} The created page element.
      */
     this.add = function(caption, name, type, before, callback){
         var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
@@ -36228,11 +37000,11 @@ apf.BaseTab = function(){
 
     /**
      * Removes a page element from this element. This function destroys ALL children
-     * of this page. To simple remove the page from the DOM tree use the
-     * removeNode() method.
+     * of this page. To simple remove the page from the DOM tree, use the
+     * [[apf.AmlNode.removeNode]] method.
      *
-     * @param {mixed} nameOrId the name or child number of the page element to remove.
-     * @return {Page} the removed page element.
+     * @param {Mixed} nameOrId The name or child number of the page element to remove
+     * @return {apf.page} The removed page element
      */
     this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
@@ -36342,12 +37114,12 @@ apf.BaseTab = function(){
     }
 
     /**
-     * Set the state scroller buttons: enabled, disabled or completely hidden,
+     * Sets the state scroller buttons: `enabled`, `disabled` or completely `hidden`,
      * depending on the state of the tab buttons
      *
      * @param {Boolean} [bOn]   Indicates whether to turn the scroll buttons on or off
-     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be SCROLL_LEFT, SCROLL_RIGHT or SCROLL_BOTH
-     * @type  {void}
+     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be [[apf.BaseTab.SCROLL_LEFT]], [[apf.BaseTab.SCROLL_RIGHT]] or [[apf.BaseTab.SCROLL_BOTH]]
+     * 
      */
     this.setScrollerState = function(bOn, iBtns) {
         if (!this.ready || !this.$hasButtons || !this.oScroller) return;
@@ -36390,7 +37162,6 @@ apf.BaseTab = function(){
      * Corrects the state of the scroller buttons when the state of external
      * components change, like on a resize event of a window.
      *
-     * @type {void}
      */
     this.correctScrollState = function() {
         if (!this.ready || !this.$hasButtons || !this.oScroller) return;
@@ -36401,9 +37172,9 @@ apf.BaseTab = function(){
      * Retrieves the utmost left or right boundaries of the tab buttons strip that
      * can be scrolled to. The tabs cannot scroll any further than these boundaries
      *
-     * @param {Number} dir        Determines which boundary side to look at; SCROLL_LEFT or SCROLL_RIGHT
-     * @param {Boolan} [useCache] Used only when tabs are draggable. Not implemented.
-     * @type  {Number}
+     * @param {Number} dir        Determines which boundary side to look at, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     * @param {Boolean} [useCache] Used only when tabs are draggable. Not implemented.
+     * @returns  {Number}
      */
     function getAnimationBoundary(dir, useCache) {
         if (SCROLLANIM.size <= 0) {
@@ -36427,13 +37198,15 @@ apf.BaseTab = function(){
     }
 
     /**
-     * Event handler; executed when the user pressed one of the two scroll buttons
-     * (left or right one). If the tab-buttons strip may/ can be scrolled, the
+     * @event scroll Executed when the user presses one of the two scroll buttons
+     * (left or right). 
+     * 
+     * If the tab-buttons strip can be scrolled, the
      * respective behavior is called.
      *
-     * @param {Event}  e   Event object, usually a mousedown event from a scroller-button
-     * @param {Number} dir Direction to scroll; SCROLL_LEFT or SCROLL_RIGHT
-     * @type  {void}
+     * @param {Event}  e   An event object, usually a mousedown event from a scroller-button
+     * @param {Number} dir The direction of the scroll, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     *
      */
     this.scroll = function(e, dir) {
         if (!this.ready || !this.$hasButtons || !this.oScroller) return;
@@ -36572,11 +37345,11 @@ apf.BaseTab = function(){
     };
 
     /**
-     * If a tabpage is outside of the users' view, this function scrolls that
+     * If a tab page is outside of the user's view, this function scrolls that
      * tabpage into view smoothly.
      *
-     * @param {page} oPage The page to scroll into view
-     * @type  {void}
+     * @param {apf.page} oPage The page to scroll into view
+     * 
      */
     this.scrollIntoView = function(oPage) {
         bAnimating = false;
@@ -36641,7 +37414,7 @@ apf.BaseTab = function(){
 
     
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         var amlNode = e.currentTarget;
@@ -36756,7 +37529,7 @@ apf.BaseTab = function(){
         
     });
 
-    /**** Private state handling functions ****/
+    // *** Private state handling functions *** //
 
     this.$findPage = function(nameOrId, info){
         var node, nodes = this.childNodes;
@@ -36802,7 +37575,7 @@ apf.BaseTab = function(){
         }
     };
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     
 
@@ -36848,7 +37621,7 @@ apf.BaseTab = function(){
 
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$loadChildren = function(callback){
         var page  = false,
@@ -37334,21 +38107,26 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 /**
- * Object representing the window of the aml application. The semantic is
+ * Object representing the window of the AML application. The semantic is
  * similar to that of a window in the browser, except that this window is not
- * the same as the javascript global object. It handles the focussing within
+ * the same as the JavaScript global object. It handles the focussing within
  * the document and several other events such as exit and the keyboard events.
  *
- * @event blur              Fires when the browser window looses focus.
- * @event focus             Fires when the browser window receives focus.
- *
- * @constructor
+ * @class apf.window
  * @inherits apf.Class
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ */
+/**
+ * @event blur              Fires when the browser window loses focus.
+ */
+/**
+ * @event focus             Fires when the browser window receives focus.
+ *
+ *
  */
 apf.window = function(){
     this.$uniqueId = apf.all.push(this);
@@ -37362,13 +38140,13 @@ apf.window = function(){
     };
     
     /**
-     * Retrieves the primary {@link element.actiontracker action tracker} of the application.
+     * Retrieves the primary {@link apf.actiontracker action tracker} of the application.
      */
     this.getActionTracker = function(){
         return this.$at
     };
 
-    /**
+    /*
      * @private
      */
     this.loadCodeFile = function(url){
@@ -37415,7 +38193,7 @@ apf.window = function(){
 
     /**
      * Set the icon of the browser window.
-     * @param {String} url the location of the .ico file.
+     * @param {String} url The location of the _.ico_ file.
      */
     this.setIcon = function(url){
         if (apf.isDeskrun)
@@ -37424,7 +38202,7 @@ apf.window = function(){
 
     /**
      * Set the title of the browser window.
-     * @param {String} value the new title of the window.
+     * @param {String} value The new title of the window.
      */
     this.setTitle = function(value){
         this.title = value || "";
@@ -37435,7 +38213,7 @@ apf.window = function(){
             document.title = (value || "");
     };
 
-    /**
+    /*
      * @private
      */
     this.loadAml = function(x){
@@ -37448,7 +38226,7 @@ apf.window = function(){
 
     
 
-    /**** Focus Internals ****/
+    // *** Focus Internals *** //
 
     
     this.vManager = new apf.visibilitymanager();
@@ -37745,18 +38523,18 @@ apf.window = function(){
         //this.$focusParent = null; //@experimental to not execute this
     }
 
-    /**** Focus API ****/
+    // *** Focus API *** //
 
     /**
-     * Determines whether a given aml element has the focus.
-     * @param {AMLElement} the element to check
-     * @returns {Boolean} whether the element has focus.
+     * Determines whether a given AML element has the focus.
+     * @param {apf.AmlElement} The element to check
+     * @returns {Boolean} Indicates whether the element has focus.
      */
     this.hasFocus = function(amlNode){
         return this.activeElement == amlNode;
     };
 
-    /**
+    /*
      * @private
      */
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
@@ -37835,7 +38613,7 @@ apf.window = function(){
         
     };
 
-    /**
+    /*
      * @private
      */
     this.focusDefault = function(){
@@ -37847,7 +38625,7 @@ apf.window = function(){
 
     
 
-    /**** Set Window Events ****/
+    // *** Set Window Events *** //
 
     apf.addListener(window, "beforeunload", function(){
         return apf.dispatchEvent("exit");
@@ -37864,7 +38642,7 @@ apf.window = function(){
 
     
 
-    /**** Keyboard and Focus Handling ****/
+    // *** Keyboard and Focus Handling *** //
 
     apf.addListener(document, "contextmenu", function(e){
         if (!e)
@@ -38404,7 +39182,7 @@ apf.window = function(){
     
     
 
-    /**
+    /*
      * @private
      */
     this.destroy = function(){
@@ -38569,11 +39347,12 @@ apf.runWebkit = function(){
     
     
     if (XMLHttpRequest.prototype.sendAsBinary === undefined) {
-        /**
-         * Binary support for Chrome 7+ which implements [ECMA-262] typed arrays
-         * @see http://www.khronos.org/registry/typedarray/specs/latest/
-         */
         if (window.ArrayBuffer) {
+            /**
+             * Binary support for Chrome 7+ which implements [ECMA-262] typed arrays
+             * 
+             * For more information, see <http://www.khronos.org/registry/typedarray/specs/latest/>.
+             */
             XMLHttpRequest.prototype.sendAsBinary = function(string) {
                 var bytes = Array.prototype.map.call(string, function(c) {
                     return c.charCodeAt(0) & 0xff;
@@ -38990,7 +39769,7 @@ apf.runIE = function(){
     
     apf.importClass(apf.runXpath, true, self);
     
-}
+};
 
 
 
@@ -39061,7 +39840,7 @@ apf.runNonIe = function (){
 
     
     
-    /**** XML Serialization ****/
+    // *** XML Serialization *** //
     if (XMLDocument.prototype.__defineGetter__) {
         //XMLDocument.xml
         XMLDocument.prototype.__defineGetter__("xml", function(){
@@ -39378,7 +40157,7 @@ apf.runNonIe = function (){
     apf.setOpacity = function(oHtml, value){
         oHtml.style.opacity = value;
     };
-}
+};
 
 
 
@@ -39566,7 +40345,7 @@ apf.runGecko = function(){
         return [-1 * (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0),
             -1 * (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)];
     };
-}
+};
 
 
 
@@ -40197,7 +40976,7 @@ apf.CodeCompilation = function(code){
     };
 };
 
-}
+};
 
 
 
@@ -40253,19 +41032,20 @@ apf.CodeCompilation = function(code){
 
 
 /**
- * Object that represents a URI, broken down to its parts, according to RFC3986.
- * All parts are publicly accessible after parsing like 'url.port' or 'url.host'.
- * Example:
- * <code>
+ * An object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
+ *
+ * All parts are publicly accessible after parsing, like 'url.port' or 'url.host'.
+ * 
+ * #### Example
+ *
+ * ```javascript
  *   var url = new apf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
  *   alert(url.port); //will show '81'
  *   alert(url.host); //will show 'www.test.com'
  *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
+ * ```
  *
- * </code>
- *
- * @see http://tools.ietf.org/html/rfc3986
- * @constructor
+ * @class apf.url
  * @parser
  * @default_private
  *
@@ -40300,10 +41080,9 @@ apf.url = function(str) {
     });
 
     /**
-     * Checks if the same origin policy is in effect for this URI.
-     * @see http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript
+     * Checks if the [same origin policy](http://developer.mozilla.org/index.php?title=En/Same_origin_policy_for_JavaScript) is in effect for this URI.
      *
-     * @returns {Boolean}
+     * @returns {Boolean} `true` if it's the same.
      */
     this.isSameLocation = function(){
         // filter out anchors
@@ -40374,92 +41153,7 @@ apf.url.options = {
 
 
 
-/**
- * @term livemarkup
- * Live Markup is an extension to Javascript, and it allows APF to have
- * a simple consistent syntax for all attribute values and templates.
- * Live markup is used for templating, rpc, data binding,
- * property binding, formatting and even events.
- * Live Markup generates text-output via the default-output of statements,
- * and APF maintains knowledge of all properties and data used to create
- * this output allowing for a Live update when any of this information changes.
- * Nearly all attributes in APF are processed as a live markup " " string
- * Some attributes (like events) and <?lm ?> blocks are processed as code.
- * LiveMarkup features:
- * <ol>
- *  <li>inline xpaths</li>
- *  <li>E4X-like xml literals</li>
- *  <li>automatic statement/expression output and concat</li>
- *  <li>code and xpath expansion in-strings</li>
- *  <li>virtual-sync of async calls</li>
- * </ol>
- * Examples:
- * <code>
- *    var x = [folder/@name]; // value of xpath
- *    [folder/@name] = 'hello'; // set an attribute
- *    [folder/file] += <file/>; // add a new file node to folder/file list
- *    var y = <folder><file name={x}/></folder> // e4x-style xml
- *    x; //automatic output
- *    <xml/>; // automatic output
- *    if(a)func(); // automatic output of function returnvalue
- *    x = 15; // not outputted, assignments are never output.
- *    var z = "string with jsvars: {x} and xpath: [folder/@name]";
- *    alert(comm.someRpcCall(x)); // async call returns sync value
- * </code>
- * LiveMarkup syntax has one conflict with normal JS syntax; an array of 1 item vs xpath.
- * Arrays are recognised if there is atleast one , present: [1,2] and 1 item: [,1]
- *
- * Another important feature of LiveMarkup is that its infinitely nestable:
- * Outer construct: inner constructs
- * <ol>
- *  <li>string: xpath, code</li>
- *  <li>xpath: code, xpath(its a sub-xpath when NOT after [)\w] or IS inside "str" or 'str' )</li>
- *  <li>code: xpath, code, string, xml</li>
- *  <li>xml: xpath, code</li>
- * </ol>
- * Example of code in xpath in xml in code in string, for the sake of argument:
- * <code>
- * var x = "str{<xml id=[xp{y}]/>}"
- * </code>
- * since code has an auto-output, it is also possible to use scope { } delimiters holding a value
- * and used as an expression.
- * var x = {..code with auto output..}
- * The ^ character at the beginning of a statement can force 'no output' but is very rarely needed.
- *
- * It is important to realise that Live Markup is converted to normal Javascript
- * in a single compile pass, and does not constitute black-magic.
- * As rarely debugging might force you to look at generated code, its useful to know it exists.
- * For instance:
- * XML literals are turned into normal JS strings: <xml/> becomes "<xml/>"
- * in generated code. This is different from E4X where they are special type of object.
- * xpaths and operators are turned into functioncalls: [xpath] becomes _val(_n,"xpath")
- * and nesting becomes concatenation: "a{x}b" becomes ("str"+(x)+"str")
- *
- * Live markup xpath reference
- * Different xpath types:
- * [xpath] - value xpath (string)
- * %[xpath] - single node
- * *[xpath] - node set
- * #[xpath] - number of nodes selected by xpath
- * $[symbol] - language 'xpath', fetches value from language symbol library
- * [model::xpath] - xpath value on model with name 'model'
- * [{x}::xpath] - xpath value on xml node or model with js variable x
- * [{rpc.thing()}::xpath] - xpath value on an rpc call
- * [xpath] = 'value' - assign text-value to xpath (nodeValue = ..)
- * [xpath] = <xml/> - replace node with right hand xml
- * [xpath] = xmlNode - replace node with right hand node, removing xmlNode from its old position
- * [xpath] += 'value' - appends text-value to nodeValue
- * [xpath] += <xml/> - appends the <xml/> after the selected node
- * [xpath] += xmlNode - appends the node and removes from its old position
- *
- * Macro reference
- * localName(n) - returns the localName of the context node or supplied argument
- * tagName(n) - tagName of context node or supplied argument
- * nodeValue(n) - value of context nore or supplied argment similar to [.]
- * local(n){..code..} - a codeblock with a new context node n, n can be xml-string too
- * each(set){..code..) iterates over the set. usually used as: each(*[xpath]){}
- *
- */
+
 
 /**
  * @constructor
@@ -40589,7 +41283,7 @@ apf.lm = new (function(){
             "foreachrev": "_nods(_n,",
             "eachrev"   : "_nods(_n,",
             "xabs"      : "_valst(_n,",
-           // "edit"      : "_argwrap(_n,", 
+           // "edit"      : "_argwrap(_n,",
            // "edit"      : "_val(_n,", // toggled by liveedit
             "local"     : "_nod(_n,",
             "tagName"   : "_nod(_n,",
@@ -40692,7 +41386,7 @@ apf.lm = new (function(){
     macro_c.edit        = ")",
     macro_o.xabs        = "  (  ",
     macro_c.xabs        = "  )  ",
-    
+
     macro_o.localName   = "_localName(_n",
     macro_c.localName   = ")",
     macro_o.output      = "_o.join(''",
@@ -40803,7 +41497,7 @@ apf.lm = new (function(){
             u = scope-1; // scan for our root expression block to switch to block
         else
             for (v = sl - 2, u = 0; v >= 0 && o[u=(s[v] & 0xfffffff) - 1] != "{{"; v -=2 ){};
-        
+
         if (!no_output && ol > u + 1)  // inject auto output unless no output or nothing to output in buffer
             o[u] = cf_block_o + cf_str_output
         else
@@ -40873,7 +41567,7 @@ apf.lm = new (function(){
                                         o[ol++] = tok;
                                         // lets scan in reverse to see if we have an output or a non-output
 
-                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  " 
+                                        for (v = ol; v >= scope && !statement_lut[o[v]] && !((o[v] == "  "
                                             || o[v] == (nesting ? cf_str_output : cf_mode_output)) && (o[v]="",1)); v--){};
 
                                         if (last_type == 3 && last_dot>0 && last_tok.charAt(0)!="."){ // prop = macro
@@ -40882,7 +41576,7 @@ apf.lm = new (function(){
                                                 while (is_out_space[o[ol]])
                                                     ol--;
                                                 w = last_tok;
-                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot), 
+                                                o[ol++] = op_lut[tok], o[ol++] = w.slice(0,last_dot),
                                                 o[ol++] = ",'", o[ol++] = w.slice(last_dot+1),
                                                 o[ol++] = "',", s[sl++] = scope | (parse_mode << 28),
                                                 s[sl++] = ""; // notabene, this stored item is checked everywhere
@@ -41123,7 +41817,7 @@ apf.lm = new (function(){
 
                         if (u && !s[sl-1]) // close = macro
                             o[ol-1]=="\n"&&(o[ol-1]=""),o[ol++]=")", o[ol++]="\n",v = 1,sl -=2;
-                        
+
                         if (v && parse_mode) // inject output
                             o[ol++] = (nesting?cf_str_output:cf_mode_output), last_type = 0;
 
@@ -41168,7 +41862,7 @@ apf.lm = new (function(){
                                     else { // its a obj.prop() type call
                                         if(last_tok.indexOf('.')!=last_dot) // obj.prop.call();
                                             o_props[last_tok.slice(0,last_dot)] = 1;
-                                            
+
                                         s[sl++] = scope, s[sl++] = o[ol++] = tok,
                                         scope = segment = ol;
                                     }
@@ -41261,7 +41955,7 @@ apf.lm = new (function(){
                             o[ol] = (ol++ == scope) ? "\"" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
                         break;
                     case 5: // -------- stringquotes --------
@@ -41327,7 +42021,7 @@ apf.lm = new (function(){
                         line_no++, last_line = pos;
                         break;
                     case 2: // -------- misc --------
-                        if (tok == ":" && last_tok == ":" && !xpath_axes[w = o[ol - 2]] 
+                        if (tok == ":" && last_tok == ":" && !xpath_axes[w = o[ol - 2]]
                           && ((v = s[sl - 2]) >> 28) != 6) { // found model::xpath split
                             if (o[ol - 2] == '+"') // model is calculated
                                 o[ol - 2] = o[ol - 1] = "", last_model = "#";
@@ -41371,10 +42065,10 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "\"" : "+\"";                 
+                            o[ol] = (ol++ == scope) ? "\"" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
                         break
                     case 5: // -------- stringquotes --------
@@ -41407,7 +42101,7 @@ apf.lm = new (function(){
                         break;
                     case 9: // -------- [ --------
                         // lets see if we are an xpath
-                        if (s[sl - 1] == "'" || s[sl - 1] == '"' || 
+                        if (s[sl - 1] == "'" || s[sl - 1] == '"' ||
                             ((last_type != 3 || last_tok=='$') && last_tok != ")" && last_tok != "]") ) {
                             if (last_model)
                                 o_xpathpairs.push(last_model, "#"), o_models++;
@@ -41477,7 +42171,7 @@ apf.lm = new (function(){
                                         v = "#";
                                         if (c_injectself)// inject dyn self if dyn xpath
                                             o[scope - 1] = u + "_injself(", o[ol++] = ")";
-                                    } 
+                                    }
                                     else
                                         v = "";
                                 }
@@ -41560,12 +42254,12 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol++] = "+\"";        
+                            o[ol++] = "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
-                        break                       
+                        break
                     case 5: // -------- stringquotes --------
                         if (ol == segment)
                             o[ol++] = "+\"";
@@ -41638,7 +42332,7 @@ apf.lm = new (function(){
                                     ol --;
                                 else
                                     v = xpath_macro[c_elemxpath];
-                                    
+
                                 s[sl++] = scope | 0x40000000
                             }
                             else {
@@ -41650,7 +42344,7 @@ apf.lm = new (function(){
                                 }
                                 else
                                     v = xpath_macro[last_ns ? c_statexpath : 8];
-                                
+
                                 if (last_tok == "=")//0x7 flags xpath-in-missing-quotes <a i=[xp]/>
                                     o[ol++] = "\\\"", s[sl - 1] = scope | 0x70000000;
                             }
@@ -41703,12 +42397,12 @@ apf.lm = new (function(){
                         break;
                     case 3: // word
                         if (ol == segment)
-                            o[ol] = (ol++ == scope) ? "" : "+\"";       
+                            o[ol] = (ol++ == scope) ? "" : "+\"";
                         if(tok.charAt(tok.length-1)=='$'){
                             o[ol++] = tok.slice(0,-1);
-                            o[ol++] = tok = '$';// fix word$[xpath] 
+                            o[ol++] = tok = '$';// fix word$[xpath]
                         }else o[ol++] = tok;
-                        break                           
+                        break
                     case 5: // -------- stringquotes --------
                         if (s[sl - 1] == tok) { // closed by matching quote
                             if (scope != segment) // string is segmented, output )
@@ -41809,7 +42503,7 @@ apf.lm = new (function(){
                             type = last_type = last_cmt_type;
                         break;
                     case 6: // -------- comment --------
-                        if ((start_tok == "/*" && tok == "*/") 
+                        if ((start_tok == "/*" && tok == "*/")
                           || (start_tok == "<!--" && tok == "-->")) {
                             parse_mode = last_cmt_mode,
                             tok = last_tok = last_cmt_tok,
@@ -41825,11 +42519,11 @@ apf.lm = new (function(){
                         } else {
                             parse_mode = last_cmt_mode,
                             tok = last_tok = last_cmt_tok,
-                            type = last_type = last_cmt_type;                        
+                            type = last_type = last_cmt_type;
                             if (sl && !s[sl - 1]) { // close = macro
                                 o[ol - 1] == "\n" && (o[ol - 1] = ""), o[ol++] = ")",
                                 o[ol++] = "\n", v = 1, sl -= 2;
-                            }  
+                            }
                         };
                         break;
                 }
@@ -41857,7 +42551,7 @@ apf.lm = new (function(){
         else {
             throw new Error(apf.formatErrorString(0, null,
                 "Compiling live markup function on line " + linenr,
-                "Error whilst compiling: " + e.message 
+                "Error whilst compiling: " + e.message
                 //+ "\nStack Trace:\n" + e.stack
                 + "\nInput:\n" + str
                 + "\nGenerated:\n" + apf.lm.lastCode()));
@@ -41935,16 +42629,16 @@ apf.lm = new (function(){
             alert("ERROR, undefined live markup cache marker found:"+istr);
             return {type:2,str:istr};
         }
-            
+
         var key = (cfg.xpathmode | (cfg.withopt && 0x10) | (cfg.precall && 0x20)
                 | (cfg.alwayscb && 0x40) | (cfg.nostring && 0x80)  | (cfg.parsecode && 0x100)
                 | (cfg.nostate && 0x200) | (cfg.liveedit && 0x400)| (cfg.langedit && 0x800)
                 | (cfg.injectself && 0x1000) | (cfg.event && 0x2000) | (cfg.funcglobal && 0x4000)) + istr;
-                
+
         if (c = cache[key])
             return c;
 
-            
+
         c_injectself = cfg.injectself,  c_xpathmode = cfg.xpathmode||0,
         c_statexpath = cfg.nostate ? 0 : 6, c_elemxpath = 0;
         c_export = cfg.funcglobal?"self":(cfg.withopt?"_w":null);
@@ -41952,7 +42646,7 @@ apf.lm = new (function(){
 
         xpath_macro.edit = cfg.liveedit ? "_argwrap(_n," : "_argwrap(_n,";//"_val(_n,";
         macro_o.edit     = cfg.liveedit ? macro_o._editlm : macro_o._editnormal;
-        
+
         xpath_lut_node = cfg.langedit ? xpath_lut_node_langedit : xpath_lut_node_normal;
 
         o_props = {}, o_xpathpairs = [], s = [], o = ["","","",""], str = istr,
@@ -41979,7 +42673,7 @@ apf.lm = new (function(){
                 return null;
             }
         }
-        
+
         if (cfg.parsecode) {
             if (nesting || s[sl - 1].length == 1)
                 handleError({
@@ -41991,7 +42685,7 @@ apf.lm = new (function(){
         }else if( (ol==7 || ol==8) && o_segs == 1){
             is_single_prop = 0;
             for(c in o_props)is_single_prop++;
-            if(is_single_prop!=1)is_single_prop = 0;  
+            if(is_single_prop!=1)is_single_prop = 0;
         }
         if ((!cfg.nostring && !cfg.event)&& (parse_mode == 2 && segment == 4 || ol == 4)) {
             return {
@@ -42009,7 +42703,7 @@ apf.lm = new (function(){
             else if (c_xpathmode) { // object return
                 if (parse_mode == 1) {
                     o[3]    = (o[3] != cf_block_o) ? cc_o_blk_o : cc_o_blk_ob,
-                    o[ol++] = cc_o_blk_cb; 
+                    o[ol++] = cc_o_blk_cb;
                 }
                 else
                     o[3] = cc_o_cb_o, o[ol++] = cc_o_cb_c;
@@ -42021,8 +42715,8 @@ apf.lm = new (function(){
                 else
                     o[3] = cc_v_cb_o, o[ol++] = cc_v_cb_c;
             }
-            
-            if (o_asyncs) { 
+
+            if (o_asyncs) {
                 // for parse_mode == 1 we can squeeze in before [3] and cb close
                 // else we put var _r= in 3 and put our ending last and put
                 // the cb at the end
@@ -42042,8 +42736,8 @@ apf.lm = new (function(){
 
             if (cfg.withopt)
                 o[1] = cc_opt_o, o[ol++] = cc_opt_c;
-                
-            o[0] = cfg.event 
+
+            o[0] = cfg.event
                 ? cc_fe_async_o
                 : ((c_xpathmode == 1 || c_xpathmode == 3) ? cc_fc_async_o : cc_f_async_o);
             o[ol++] = cc_f_c;
@@ -42134,7 +42828,7 @@ apf.lm = new (function(){
      *   {Number}  asyncs       description
      *   {String]  str          optional, returned with type 2
      */
-    
+
     this.compileMatch = function(strarray, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -42193,7 +42887,7 @@ apf.lm = new (function(){
                 if(cfg.node)
                     c_xpathmode = 2;
                 parse_mode = 2, c_injectself = 0;
-                
+
                 if (cfg.nothrow) {
                     str.replace(parserx, parser);
                 }
@@ -42209,7 +42903,7 @@ apf.lm = new (function(){
 
                 if (o_asyncs)
                     handleError({t:"Asynchronous calls not supported in match/value"});
-                
+
                 if(cfg.node){
                     if (parse_mode == 2 && segment == ob || ol == ob)
                         o[ob-1] = cc_m_n_string;
@@ -42232,12 +42926,12 @@ apf.lm = new (function(){
                     handleError({t:"Both match and value are empty"});
 
                 if(cfg.node)
-                    o[ol++] = cc_m_n_ret;               
+                    o[ol++] = cc_m_n_ret;
                 else
-                    o[ol++] = cc_m_v_ret;               
-                
+                    o[ol++] = cc_m_v_ret;
+
                 c_xpathmode = 2;
-                    
+
                 o[ol++] = cc_m_c;
             }
         }
@@ -42265,7 +42959,7 @@ apf.lm = new (function(){
     this.setWarnLevel = function(lvl){
         apf.lm_exec.setWarnLevel(lvl);
     };
-    
+
     this.parseExpression = function(istr, cfg){
         if (!cfg)
             cfg = emptyCfg;
@@ -42277,7 +42971,7 @@ apf.lm = new (function(){
         c_xpathmode = c_injectself = last_tok = sl = line_no = o_segs = o_xpaths =
         last_type = o_asyncs = last_line = 0;
         parse_mode = 2;
-        
+
         if (cfg.nothrow) {
             str.replace(parserx, parser);
         }
@@ -42293,7 +42987,7 @@ apf.lm = new (function(){
         return o.join('');
     }
 
-    
+
 })();
 
 // apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
@@ -42334,9 +43028,9 @@ apf.lm_exec = new (function(){
     function __val(n, x){
         if (!n)
             return ("")
-        return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
+        return apf.escapeXML((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || ("");
+          && n.nodeValue || (""));
     }
 
     var __valattrrx = /(["'])/g;
@@ -42346,12 +43040,12 @@ apf.lm_exec = new (function(){
     function __valattr(n, x){
         if (!n)
             return ("")
-        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+        return apf.escapeXML((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || ("");
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (""));
     }
 
-    
+
     // value of model node by xpath
     function __valm(m, x){
         var n;
@@ -42359,7 +43053,7 @@ apf.lm_exec = new (function(){
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return ("");
-        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
+        return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           && n.nodeValue || ("");
     }
@@ -42421,7 +43115,7 @@ apf.lm_exec = new (function(){
             m = apf.xmldb.findModel(m);
             x = apf.xmlToXpath(node, m.data) + "/" + x;
         }
-        
+
         return {
             model:    m,
             xpath:    x,
@@ -42549,80 +43243,80 @@ apf.lm_exec = new (function(){
 
     function __lng(x,x2){           // the language macro
 
-        return "$["+x+"]"; 
+        return "$["+x+"]";
 
     }
 
     function _lnged(x,x2){          // editable language macro
 
-        return "$["+x+"]"; 
+        return "$["+x+"]";
 
     }
-    
+
     function _(n, m, x){   // wrap a value with editable div
-        return '<span class="liveEdit" xpath="' + (n 
-            ? (m.substr(0,1) != "/" 
-                ? apf.xmlToXpath(n, null, false) 
-                : "") + "/" + m 
+        return '<span class="liveEdit" xpath="' + (n
+            ? (m.substr(0,1) != "/"
+                ? apf.xmlToXpath(n, null, false)
+                : "") + "/" + m
             : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&#32;") + '</span>';
     }
 
 //    function _edit(n, opts){
-//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';        
+//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
 //    }
-    
+
     function _argwrap(n,x){
         return [n,x];
     }
-    
+
     function _argwrapm(m,x){
         return [0,m,x];
     }
-    
+
     function _valedx(editMode, args, opt){   // wrap a value with editable div
         args[3] = opt;
         args[4] = editMode;
         return _valed.apply(this, args);
     }
-    
+
     function _valed(n, m, x, options, editMode){   // wrap a value with editable div
         var res = (n?__val(n,m):__valm(m,x));
 
         if (options && options.multiline && options.editor != "richtext")
             res = res.replace(/\n/g, "<br />");
-        
+
         if (editMode !== false) {
             var value = res || options && options.initial || "&#32;";
-            if (!options || !options.richtext) 
+            if (!options || !options.richtext)
                 value = apf.htmlentities(value);
             if (options && options.multiline)
                 value = value
                     .replace(/&lt;br ?\/?&gt;/g, "<br />")
                     .replace(/&lt;(\/?div)&gt;/g, "<$1>");
 
-            return '<div' 
-              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n 
-                ? ((m.substr(0,1) != "/" 
-                    ? apf.xmlToXpath(n, null, false) 
+            return '<div'
+              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n
+                ? ((m.substr(0,1) != "/"
+                    ? apf.xmlToXpath(n, null, false)
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
-                : (self[m] 
+                : (self[m]
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
-                    : "")) + '"' 
+                    : "")) + '"'
               + (options
                 ? ' options="' + JSON.stringify(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
-                : "") + '>' + value 
+                : "") + '>' + value
               + '</div>';
         }
         else {
             return res;
         }
     }
-    
+
     var selfrx = /(^|\|)(?!\@|text\(\)|\.\.|[\w\-\:]+?\:\:)/g; // inject self regexp
-    
+
     function _injself(s){           // self inject helper func
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
@@ -42645,7 +43339,7 @@ apf.lm_exec = new (function(){
         var cb = function(data, state, extra){
             if (_w)
                 delete _w._pc;
-            
+
             if (state != apf.SUCCESS){
                 _c(null, state, extra);
             }
@@ -42706,7 +43400,7 @@ apf.lm_exec = new (function(){
         s.set(options);
         return s.apply(apf.getArrayFromNodelist(set));
     }
-    
+
     function _cthex(c){
         var t;
         if((t=typeof(c))=='string'){
@@ -42722,14 +43416,14 @@ apf.lm_exec = new (function(){
                             (((t=c[4])<0?0:(t>255?255:parseInt(t))));
                 } else { // hsv
                     var h=parseFloat(c[2]),s=parseFloat(c[3]),v=parseFloat(c[4]),
-                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i))); 
+                        i,m=v*(1-s),n=v*(1-s*((i=floor(((h<0?-h:h)%1)*6))?h-i:1-(h-i)));
                     switch(i){
-                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);  
-                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff); 
-                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff); 
-                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff); 
-                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff); 
-                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff); 
+                      case 6:case 0: return ((v&0xff)<<16)+((n&0xff)<<8)+(m&0xff);
+                      case 1: return ((n&0xff)<<16)+((v&0xff)<<8)+(m&0xff);
+                      case 2: return ((m&0xff)<<16)+((v&0xff)<<8)+(n&0xff);
+                      case 3: return ((m&0xff)<<16)+((n&0xff)<<8)+(v&0xff);
+                      case 4: return ((n&0xff)<<16)+((m&0xff)<<8)+(v&0xff);
+                      default:case 5: return ((v&0xff)<<16)+((m&0xff)<<8)+(n&0xff);
                     }
                 }
             }
@@ -42745,12 +43439,12 @@ apf.lm_exec = new (function(){
                    ((fa&0xff)*f+(fb&0xff)*fm)&0xff;
         return f*fa+fm*fb;
     }
-    
+
     var abs = Math.abs, acos = Math.acos, asin = Math.asin,
        atan = Math.atan, atan2 = Math.atan2, ceil = Math.ceil,
        cos = Math.cos, exp = Math.exp, floor = Math.floor,
        log = Math.log, max = Math.max, min = Math.min,
-       pow = Math.pow, random = Math.random, round = Math.round, 
+       pow = Math.pow, random = Math.random, round = Math.round,
        sin = Math.sin, sqrt = Math.sqrt, tan = Math.tan, linear = lin;
 
     function tsin(x){ return 0.5*sin(x)+0.5;}
@@ -42759,24 +43453,24 @@ apf.lm_exec = new (function(){
     function ucos(x){ return 0.5-0.5*cos(x);}
     function snap(a,b){ return round(a/b)*b; }
     function clamp(a,b,c){ return a<b?b:(a>c?c:a); }
-    
+
     this.compile = function(code){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
 
         eval(code);
-        
+
         return _f;
     }
-    
+
     this.compileWith = function(code, withs){
         // up-scope much used functions
         var _ret = __ret, _val = __val,_valm = __valm, _nod = __nod,
         _nodm = __nodm, _cnt = __cnt, _cntm = __cntm, _lng = __lng, _valattr = __valattr;
 
         eval(code);
-        
+
         return _f;
     }
 
@@ -42787,11 +43481,11 @@ apf.lm_exec = new (function(){
     this.c342 = function(_n,_a,_w){
         ..cached LM function..
     }
-    this.c342.type = 2; 
-    this.c342.xpaths = {...}; 
+    this.c342.type = 2;
+    this.c342.xpaths = {...};
     this.c342.props = {...};
     this.c723 = function(....){
-    
+
     }
     // replace
     d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");
@@ -43064,7 +43758,7 @@ apf.crypto.MD5 = {
 
 
 
-/**
+/*
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
  * JavaScript.
  *
@@ -43507,7 +44201,7 @@ apf.crypto.UTF8 = {
 
 
 
-/**
+/*
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
  * JavaScript.
  *
@@ -43561,7 +44255,7 @@ apf.crypto.UTF8 = {
 
 
 
-/**
+/*
  * RSA, a suite of routines for performing RSA public-key computations in
  * JavaScript.
  *
@@ -43633,10 +44327,12 @@ apf.crypto.UTF8 = {
 
 
 /**
- * @define bindings element containing all the binding rules for the data 
+ * An element containing all the binding rules for the data 
  * bound elements referencing this element.
- * Example:
- * <code>
+ * 
+ * #### Example
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -43654,9 +44350,9 @@ apf.crypto.UTF8 = {
  *    height   = "200" 
  *    model    = "mdlList" 
  *    bindings = "bndFolders" />
- * </code>
- * @see element.smartbinding
- *
+ * ```
+ * 
+ * @see apf.smartbinding
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -43715,7 +44411,7 @@ apf.BindingRule = function(struct, tagName){
         }
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     /*this.addEventListener("DOMAttrModified", function(e){
         
@@ -43883,7 +44579,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/**
+/*
  * @private
  */
 apf.WinServer = {
@@ -43955,51 +44651,78 @@ apf.WinServer = {
 }
 
 /**
- * Element displaying a skinnable, draggable window with optionally
- * a min, max, edit and close button. This element is also used
- * as a portal widget container. Furthermore this element supports
- * docking in an alignment layout.
- * Example:
- * <code>
- *  <a:window 
- *    id        = "winMail"
- *    modal     = "false"
- *    buttons   = "min|max|close"
- *    title     = "Mail message"
- *    icon      = "icoMail.gif"
- *    visible   = "true"
- *    resizable = "true"
- *    minwidth  = "300"
- *    minheight = "290"
- *    width     = "500"
- *    height    = "400">
- *  </a:window>
- * </code>
+ * This element displays a skinnable, draggable window. It can be given
+ * a minimum and miximum width and height, as well as keybindings and various buttons. 
+ * 
+ * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *     <a:window 
+ *       id        = "winMail"
+ *       buttons   = "min|max|close"
+ *       title     = "Mail Message"
+ *       visible   = "true"
+ *       resizable = "true"
+ *       width     = "500"
+ *       modal     = "true"
+ *       height    = "400"
+ *       skin      = "bk-window2">
+ *       <a:vbox>
+ *           <a:hbox margin="5px">
+ *               <a:label for="to" caption="To:"/>
+ *               <a:textbox id="to" margin="0 0 0 5" width="140" />
+ *           </a:hbox>
+ *           <a:hbox margin="5">
+ *               <a:label for="subject" caption="Subject:" />
+ *               <a:textbox id="subject" width="140" />
+ *           </a:hbox>
+ *           <a:textarea height="200" width="400"/>
+ *       </a:vbox>
+ *     </a:window>
+ *   <!-- endcontent -->
+ * </a:application> 
+ * ```
  *
- * @constructor
- * @define modalwindow
+ * @class apf.window 
+ * @define window
+ * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @inherits apf.Presentation
- * @inherits apf.Transaction
+ * @inheritsElsewhere apf.Transaction
  *
+ */
+ /**
  * @event show          Fires when the window is opened.
+ */
+ /**
  * @event close         Fires when the window is closed.
- * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
- * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the {@link element.portal}.
- *   cancelable:   Prevents the edit panel from being closed.
+ */
+ /**
+ * 
+ * @event editstart     Fires before the user edits the properties of this window. Used mostly for when this window is part of the portal.
+ */
+ /** 
+  * @event editstop      Fires after the user edited the properties of this window. Used mostly for when this window is part of the portal.
+ *  @cancelable   Prevents the edit panel from being closed.
+ */
+/**
  * @event statechange   Fires after the state of this window changed.
- *   object:
- *   {Boolean} minimized  whether the window is minimized.
- *   {Boolean} maximized  whether the window is maximized.
- *   {Boolean} normal     whether the window has it's normal size and position.
- *   {Boolean} edit       whether the window is in the edit state.
- *   {Boolean} closed     whether the window is closed.
+ * @param e {Object} The standard event object. The following properties are available:
+ * 
+ *   - `minimized` ([[Boolean]]):   Specifies whether the window is minimized.
+ *   - `maximized` ([[Boolean]]):   Specifies whether the window is maximized.
+ *   - `normal` ([[Boolean]]):      Specifies whether the window has it's normal size and position.
+ *   - `edit` ([[Boolean]]):        Specifies whether the window is in the edit state.
+ *   - `closed` ([[Boolean]]):      Specifies whether the window is closed.
  */
 apf.toolwindow  = function(struct, tagName){
     this.$init(tagName || "toolwindow", apf.NODE_VISIBLE, struct);
@@ -44027,13 +44750,14 @@ apf.AmlWindow = function(struct, tagName){
     this.$focussable       = apf.KEYBOARD;
     this.$editableCaption  = ["title"];
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
     /**
-     * Sets the title of the window. Call-chaining is supported.
-     * @param {String} caption the text of the title.
+     * Sets the title of the window.
+     * @chainable
+     * @param {String} caption The text of the title.
      */
     this.setTitle = function(caption){
         this.setProperty("title", caption, false, true);
@@ -44041,8 +44765,9 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * Sets the icon of the window. Call-chaining is supported.
-     * @param {String} icon the location of the image.
+     * Sets the icon of the window.
+     * @chainable
+     * @param {String} icon The location of the image.
      */
     this.setIcon = function(icon){
         this.setProperty("icon", icon, false, true);
@@ -44064,7 +44789,7 @@ apf.AmlWindow = function(struct, tagName){
         return this;
     };
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["modal"]        = true;
     this.$booleanProperties["center"]       = true;
@@ -44077,7 +44802,7 @@ apf.AmlWindow = function(struct, tagName){
         "maxwidth", "maxheight", "showdragging", "transaction");
 
     /**
-     * @attribute {Boolean} modal whether the window prevents access to the
+     * @attribute {Boolean} modal Specifies whether the window prevents access to the
      * layout below it.
      */
     this.$propHandlers["modal"] = function(value){
@@ -44096,7 +44821,7 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * @attribute {Boolean} center centers the window relative to it's parent's
+     * @attribute {Boolean} center Centers the window relative to its parent's
      * containing rect when shown.
      */
     this.$propHandlers["center"] = function(value){
@@ -44104,7 +44829,7 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} title the text of the title.
+     * @attribute {String} title Specifies the text of the title.
      */
     this.$propHandlers["title"] = function(value){
         if (this.oTitle)
@@ -44112,7 +44837,7 @@ apf.AmlWindow = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} icon the location of the image.
+     * @attribute {String} icon Specifies the location of the image.
      */
     this.$propHandlers["icon"] = function(value){
         if (!this.oIcon) return;
@@ -44232,7 +44957,7 @@ apf.AmlWindow = function(struct, tagName){
         this.$ext.style.zIndex = value + 1;
     };
 
-    /**** Keyboard ****/
+    // *** Keyboard *** //
 
     
     
@@ -44310,7 +45035,7 @@ apf.AmlWindow = function(struct, tagName){
 
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.popout = apf.isTrue(this.getAttribute("popout"));
@@ -44515,9 +45240,10 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 /**
- * Element displaying a divider. For use in toolbars, menu's and such.
+ * Element displaying a divider. For use in toolbars, menus, and such.
+ * @class apf.divider
  * @define divider
- * @constructor
+ * @inherits apf.Presentation
  */
 apf.divider = function(struct, tagName){
     this.$init(tagName || "divider", apf.NODE_VISIBLE, struct);
@@ -44872,17 +45598,17 @@ apf.BindingColumnRule = function(struct, tagName){
 
             this.setProperty("width", newsize, false, true);
         }
-    }
+    };
     
     this.hide = function(){
         this.setProperty("visible", false, false, true);
         return this;
-    }
+    };
     
     this.show = function(){
         this.setProperty("visible", true, false, true);
         return this;
-    }
+    };
     
     /**
      * Sorts a column.
@@ -45409,7 +46135,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
  * @attribute {String} name     the unique identifier of the service
  * @attribute {String} login    the {@link term.datainstruction data instruction} on how to log in to a service
  * @attribute {String} logout   the {@link term.datainstruction data instruction} on how to log out of a service
- * @see element.appsettings
+ * @see apf.appsettings
  *
  * @default_private
  */
@@ -45818,7 +46544,7 @@ apf.aml.setElement("auth", apf.auth);
     this.getCredentials = function(service){
         var cache = this.$cache[service || "default"];
         return !cache ? ["", ""] : [cache.username, cache.password];
-    }
+    };
 
     /**
      * Signals services that a log in is required and fires authrequired event
@@ -45890,45 +46616,75 @@ apf.aml.setElement("auth", apf.auth);
 
 
 /**
- * Element displaying a clickable rectangle having two states which
+ * This element displays a clickable rectangle with two states that
  * can be toggled by user interaction.
- * Example:
- * <code>
- *  <a:checkbox values="full|empty">the glass is full</a:checkbox>
- * </code>
+ * 
+ * #### Example: Setting and Retrieving Values
  *
- * @constructor
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox 
+ *   id      = "ch1" 
+ *   values  = "full|empty" 
+ *   checked = "true">Full</a:checkbox>
+ *   <a:textbox value="the glass is {ch1.value}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example: Disabled Values
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox checked="true">Option 1</a:checkbox>
+ *   <a:checkbox>Option 2</a:checkbox>
+ *   <a:checkbox checked="true" disabled="true">Option 3</a:checkbox>
+ *   <a:checkbox disabled="true">Option 4</a:checkbox>
+ *   <a:checkbox label="Option 5" />
+ *   <a:checkbox label="Option 6" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.checkbox
  *
  * @define checkbox
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
- *
+ * @form
  * @inherits apf.BaseButton
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ *
  * Sets the value of the checkbox based on data loaded into this component.
- * <code>
+ * ```xml
  *  <a:model id="mdlCheckbox">
  *      <data answer="Something"></data>
  *  </a:model>
  *  <a:checkbox 
  *    model = "mdlCheckbox" 
  *    value = "[@answer]">Caption</a:checkbox>
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlCheckbox">
  *      <data answer="Something"></data>
  *  </a:model>
  *  <a:checkbox value="[mdlCheckbox::@answer]">Caption</a:checkbox>
- * </code>
+ * ```
  */
 apf.checkbox = function(struct, tagName){
     this.$init(tagName || "checkbox", apf.NODE_VISIBLE, struct);
@@ -45946,13 +46702,13 @@ apf.checkbox = function(struct, tagName){
     this.$focussable = apf.KEYBOARD; // This object can get the focus
     this.checked     = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["checked"] = true;
     this.$supportedProperties.push("value", "checked", "label", "values");
 
     /**
-     * @attribute {String}  value    the value of this element.
+     * @attribute {String}  value   Sets or gets the value of this element.
      */
     this.$propHandlers["value"] = function(value){
         value = (typeof value == "string" ? value.trim() : value);
@@ -45975,7 +46731,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {Boolean} checked  whether the element is in the checked state.
+     * @attribute {Boolean} checked  Sets or gets whether the element is in the checked state.
      */
     this.$propHandlers["checked"] = function(value) {
         if (!this.$values) {
@@ -45988,7 +46744,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {String}  label    the caption of the label explaining what
+     * @attribute {String}  label Sets or gets the caption of the label explaining what
      * the meaning of the checked state of this element is.
      */
     this.$propHandlers["label"] = function(value){
@@ -46006,9 +46762,9 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * @attribute {String}  values   a pipe seperated list of two values which
+     * @attribute {String}  values Sets or gets a pipe seperated list of two values which
      * correspond to the two states of the checkbox. The first for the checked
-     * state, the second for the unchecked state. Defaults to "true|false".
+     * state, the second for the unchecked state.
      */
     this.$propHandlers["values"] = function(value){
         this.$values = typeof value == "string"
@@ -46018,14 +46774,14 @@ apf.checkbox = function(struct, tagName){
         this.$propHandlers["value"].call(this, this.value);
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the [[apf.checkbox.values]] attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         if (!this.$values) return;
@@ -46033,7 +46789,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * Returns the current value
+     * Returns the current value.
      */
     this.getValue = function(){
         return this.xmlRoot ? (this.$values 
@@ -46042,7 +46798,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * Sets the checked state and related value
+     * Sets the checked state (and related value).
      */
     this.check = function(){
         this.setProperty("value", this.$values
@@ -46051,7 +46807,7 @@ apf.checkbox = function(struct, tagName){
     };
 
     /**
-     * Sets the unchecked state and related value
+     * Sets the unchecked state (and related value).
      */
     this.uncheck = function(){
         this.setProperty("value", this.$values
@@ -46061,7 +46817,7 @@ apf.checkbox = function(struct, tagName){
     
     
 
-    /**** Private state handling methods ****/
+    // *** Private state handling methods *** //
 
     this.addEventListener("$clear", function(){
         this.setProperty("value", this.$values ? this.$values[1] : false);
@@ -46108,7 +46864,7 @@ apf.checkbox = function(struct, tagName){
         return true;
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin
@@ -46185,43 +46941,51 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 /**
- * Element displaying a bar containing buttons and other aml elements.
+ * This element displays a bar containing buttons and other AML elements.
+ * 
  * This element is usually positioned in the top of an application allowing
  * the user to choose from grouped buttons.
- * Example:
- * <code>
- *  <a:menu id="menu5">
- *      <a:item>About us</a:item>
- *      <a:item>Help</a:item>
- *  </a:menu>
- *  <a:menu id="menu6">
- *      <a:item icon="email.png">Tutorials</a:item>
- *      <a:item>Live Helps</a:item>
- *      <a:divider></a:divider>
- *      <a:item>Visit Ajax.org</a:item>
- *      <a:item>Exit</a:item>
- *  </a:menu>
+ *
+ * #### Example
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
  *  <a:window 
  *    id          = "winMail"
- *    contextmenu = "menu6"
+ *    contextmenu = "fileMenu"
  *    width       = "300"
  *    height      = "200" 
  *    visible     = "true"
  *    resizable   = "true" 
- *    title       = "Mail message"
- *    icon        = "email.png">
+ *    title       = "An App">
+ *  <!-- startcontent -->
  *      <a:toolbar>
  *          <a:menubar>
- *              <a:button submenu="menu6">File</a:button>
- *              <a:button submenu="menu5">Edit</a:button>
+ *              <a:button submenu="fileMenu">File</a:button>
+ *              <a:button submenu="editMenu">Edit</a:button>
  *          </a:menubar>
  *      </a:toolbar>
+ * 
+ *     <a:menu id="editMenu">
+ *          <a:item>About us</a:item>
+ *          <a:item>Help</a:item>
+ *      </a:menu>
+ *      <a:menu id="fileMenu">
+ *          <a:item icon="email.png">Tutorials</a:item>
+ *          <a:item>Live Helps</a:item>
+ *          <a:divider></a:divider>
+ *          <a:item>Visit Ajax.org</a:item>
+ *          <a:item>Exit</a:item>
+ *      </a:menu>
+ *  <!-- endcontent -->
  *  </a:window>
- * </code>
+ * </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.toolbar
  * @define toolbar
- * @addnode elements
+ * @container
+ *
  * @allowchild bar, menubar
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -46238,10 +47002,10 @@ apf.toolbar = function(struct, tagName){
 (function(){
     this.$focussable     = false;
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin
@@ -46370,10 +47134,10 @@ apf.aml.setElement("junction", apf.junction);
  * Element displaying the rendered contents of an URL.
  *
  * @constructor
- * @addnode elements:browser
+ *
  * @define browser
  *
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
  * 
@@ -46585,7 +47349,7 @@ apf.aml.setElement("browser", apf.browser);
  * @constructor
  *
  * @define source
- * @addnode audio, video
+ *
  *
  * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
@@ -46635,79 +47399,88 @@ apf.aml.setElement("source", apf.source);
 
 
 /**
- * Element keeping track of all user actions that are triggered in GUI
- * elements. This element maintains a stack of actions and knows how to
- * undo & redo them. It is aware of how to synchronize the changes to the
+ * This element the keeps track of all user actions that are triggered in GUI
+ * elements. 
+ * 
+ * This element maintains a stack of actions, and knows how to
+ * undo and redo them. It is also aware of how to synchronize the changes to the
  * backend data store.
- * Example:
- * <code>
- *   datagrid.getActionTracker().undo();
- * </code>
- * Remarks:
- * With offline support enabled the actiontracker can
+ * 
+ * 
+ * #### Remarks
+ *
+ * With offline support enabled, the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
- * be kept in between application sessions. This means that a user will be able
+ * be kept in-between application sessions. This means that a user will be able
  * to close the application and start it at a later date whilst keeping his or
- * her entire undo/redo stack. Furthermore all changes done whilst being offline
+ * her entire undo/redo stack. Furthermore, all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
- * @constructor
- * @inherits apf.Class
- *
+ * @class apf.actiontracker
  * @define actiontracker
- * @addnode smartbinding, global
- * @event afterchange   Fires after a change to the action stack occurs
- *    object:
- *    {String} action the name of the action that was execution
- * @event beforechange  Fires before a change to the action stack will occur
- *   cancelable:    Prevents the execution of the action.
- *   object:
- *   {String}  action           the action to be executed
- *   {Array}   args             the arguments for the action
- *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the server
- *                              for both execution and undo. (See action rules)
- *   {AmlNode} [amlNode]        the GUI element that triggered the action
- *   {XmlNode} [selNode]        the relevant {@link term.datanode data node} to
- *                              which the action node works on
- *   {Number}  [timestamp]      the start of the action that is now executed.
- * @event actionfail Fires when an action fails to be sent to the server.
- *   bubbles: true
- *   object:
- *     {Error}          error     the error object that is thrown when the event
- *                                callback doesn't return false.
- *     {Number}         state     the state of the call
- *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
- *                                the callback of the http request.
- *     {XMLHttpRequest} http      the object that executed the actual http request.
- *     {String}         url       the url that was requested.
- *     {Http}           tpModule  the teleport module that is making the request.
- *     {Number}         id        the id of the request.
- *     {String}         message   the error message.
- * @see term.locking
- * @event actionsuccess Fires when an action is successfully sent to the server.
- *   bubbles: true
- *   object:
- *     {Number}         state     the state of the call
- *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
- *     {mixed}          userdata  data that the caller wanted to be available in
- *                                the callback of the http request.
- *     {XMLHttpRequest} http      the object that executed the actual http request.
- *     {String}         url       the url that was requested.
- *     {Http}           tpModule  the teleport module that is making the request.
- *     {Number}         id        the id of the request.
+ * @logic
  *
+ * @inherits apf.Class
+ * @inherits apf.AmlElement
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ *
+ */
+/**
+ * @event afterchange   Fires after a change to the action stack occurs
+ * @param {Object} e The standard event object. It contains the following property:
+ *    - action ([[String]]): the name of the action that was executed
+ */
+/**
+ * @event beforechange  Fires before a change to the action stack will occur
+ * @cancelable    Prevents the execution of the action.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - `action` ([[String]]): The action to be executed
+ *   - `args` ([[Array]]): The arguments for the action
+ *   - `[xmlActionNode]` ([[XMLNode]]): The rules to synchronize the changes to the server
+ *                              for both execution and undo.
+ *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
+ *   - `[selNode]` ([[XMLNode]]):        The relevant {@link term.datanode data node} to
+ *                              which the action node works on
+ *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
+ */
+/**
+ * @event actionfail Fires when an action fails to be sent to the server.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following property:
+ *     - `error` ([[Error]]): The error object that is thrown when the event
+ *                                callback doesn't return false.
+ *     - `state` ([[Number]]): The state of the call. It can be one of the following values:
+ *       - `apf.SUCCESS`:  The request was successfull
+ *       - `apf.TIMEOUT`:  The request has timed out.
+ *       - `apf.ERROR`:    An error has occurred while making the request.
+ *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *     - `userdata` (`Mixed`): Data that the caller wanted to be available in
+ *                                the callback of the HTTP request.
+ *     - `http` ([[XMLHttpRequest]]): the object that executed the actual HTTP request.
+ *     - `url` ([[String]]): The URL that was requested.
+ *     - `tpModule` ([[apf.http]]): The teleport module that is making the request.
+ *     - `id` ([[Number]]): The id of the request.
+ *     - `message` ([[String]]): The error message.
+ * @see term.locking
+ */
+/**
+ * @event actionsuccess Fires when an action is successfully sent to the server.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following property:
+ *     - `state` ([[Number]]): The state of the call. It can be one of the following values:
+ *       - `apf.SUCCESS`:  The request was successfull
+ *       - `apf.TIMEOUT`:  The request has timed out.
+ *       - `apf.ERROR`:    An error has occurred while making the request.
+ *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *     - `userdata` (`Mixed`): Data that the caller wanted to be available in
+ *                                the callback of the HTTP request.
+ *     - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
+ *     - `url` ([[String]]): The URL that was requested.
+ *     - `tpModule` ([[apf.http]]): The teleport module that is making the request.
+ *     - `id` ([[Number]]): The id of the request.
+ *
  */
 apf.actiontracker = function(struct, tagName){
     this.$init(tagName || "actiontracker", apf.NODE_HIDDEN, struct);
@@ -46728,16 +47501,25 @@ apf.actiontracker = function(struct, tagName){
     
 
     /**
-     * @attribute {Number}  !undolength the length of the undo stack.
-     * @attribute {Number}  !redolength the length of the redo stack.
-     * @attribute {Number}  !length     the length of the undo/redo stack combined.
+     * @attribute {Number}  undolength Sets or gets the length of the undo stack.
+     *
+     */
+    /** 
+     * @attribute {Number}  redolength Sets or gets the length of the redo stack.
+     */
+    /** 
+     *  @attribute {Number}  length     Sets or gets the length of the undo/redo stack combined.
      *                                  Use this attribute to bind a slider's max
      *                                  attribute to.
-     * @attribute {Number}  position    the position within the total length (same
-     *                                  value as undolength). Use this attribute
+     */
+    /** 
+     *  @attribute {Number}  position   Sets or gets the position within the total length (the same
+     *                                  value as [[apf.actiontracker.undolength]]). Use this attribute
      *                                  to bind a slider's value attribute to.
-     * @attribute {Boolean} realtime    whether changes are immediately send to
-     * the datastore, or held back until purge() is called.
+     */
+    /** 
+     *  @attribute {Boolean} realtime   Sets or gets whether changes are immediately sent to
+     * the datastore, or held back until [[apf.actiontracker.purge]] is called.
      */
     this.$booleanProperties = {};
     this.$booleanProperties["realtime"] = true;
@@ -46773,15 +47555,15 @@ apf.actiontracker = function(struct, tagName){
      * Adds a new action handler which can be used by any actiontracker.
      * @param {String} action Specifies the name of the action
      * @param {Function} func Specifies the function that is executed when
-     *                        Executing or undoing the action.
+     *                        executing or undoing the action.
      */
     this.define = function(action, func){
         apf.actiontracker.actions[action] = func;
     };
 
     /**
-     * Searches for the actiontracker that functions as a parent for this one.
-     * @return {ActionTracker} Returns the parent actiontracker
+     * Searches for the action tracker that functions as a parent for this one.
+     * @return {apf.actiontracker} Returns the parent action tracker
      */
     this.getParent = function(){
         return this.parentNode && this.parentNode.getActionTracker
@@ -46812,19 +47594,19 @@ apf.actiontracker = function(struct, tagName){
     };
 
     /**
-     * Executes an action, which later can be undone and of which the execution
+     * Executes an action, which later can be undone and which the execution
      * can be synchronized to the data store.
-     * @param {Object} options the details of the execution.
+     * @param {Object} options The details of the execution. It contains the following properties:
      *   Properties:
-     *   {String}  action           the action to be executed
-     *   {Array}   args             the arguments for the action
-     *   {XmlNode} [xmlActionNode]  the rules to synchronize the changes to the
-     *                              server for both execution and undo. (See action rules)
-     *   {AmlNode} [amlNode]        the GUI element that triggered the action
-     *   {XmlNode} [selNode]        the relevant {@link term.datanode data node}
+     *   - `action` ([[String]]): The action to be executed
+     *   - `args` ([[Array]]): The arguments for the action
+     *   - `[xmlActionNode]` ([[XMLNode]]): The rules to synchronize the changes to the
+     *                              server for both execution and undo.
+     *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
+     *   - `[selNode]` ([[XMLNode]]):      The relevant {@link term.datanode data node}
      *                              to which the action node works on
-     *   {Number}  [timestamp]      the start of the action that is now executed.
-     *   {String}  [annotator]      the name or identifier of the entity that is
+     *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
+     *   - `[annotator]` ([[String]]): The name or identifier of the entity that is
      *                              responsible for the action
      */
     this.execute = function(options){
@@ -46896,11 +47678,10 @@ apf.actiontracker = function(struct, tagName){
         this.dispatchEvent("afterchange", {action: "group", done: done});
     };*/
 
+    // @todo I don't really know if this stacking into the parent is still used, for instance for apf.Transaction. please think about it.
     /**
      * Synchronizes all held back changes to the data store.
-     * @todo I don't really know if this stacking into the parent is
-     * still used, for instance for apf.Transaction. please think
-     * about it.
+     * 
      */
     this.purge = function(nogrouping, forcegrouping){//@todo, maybe add noReset argument
         //var parent = this.getParent();
@@ -46927,7 +47708,7 @@ apf.actiontracker = function(struct, tagName){
     
 
     /**
-     * Empties the action stack. After this method is run running undo
+     * Empties the action stack. After this method is run, running undo
      * or redo will not do anything.
      */
     this.reset = function(){
@@ -46942,14 +47723,14 @@ apf.actiontracker = function(struct, tagName){
     };
 
     /**
-     * Revert the most recent action on the action stack
+     * Revert the most recent action on the action stack.
      */
     this.undo = function(id, single, rollback){
         change.call(this, id, single, true, rollback);
     };
 
     /**
-     * Re-executes the last undone action
+     * Re-executes the last undone action.
      */
     this.redo = function(id, single, rollback){
         change.call(this, id, single, false, rollback);
@@ -47303,11 +48084,11 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
  * @attribute {String} transport the name of the teleport element that provides a
  * bidirectional connection to (a pool of) other clients.
  *
- * @see element.auth
+ * 
  *
  * @define remote
  * @allowchild unique, {any}
- * @addnode elements
+ *
  *
  * @define unique Element defining what is unique about a set of data elements.
  * This enables remote databindings to point to xml data in  the same way on all
@@ -47336,7 +48117,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
  *  <a:remote transport="myXMPP" id="rmtPersons" />
  * </code>
  * @attribute {String} transport   ID of a Teleport element that is able to serve
- *                                 as a transport for RDB message like {@link element.xmpp xmpp}
+ *                                 as a transport for RDB message like xmpp
  */
 /**
  * @author      Mike de Boer (mike AT ajax DOT org)
@@ -47763,30 +48544,68 @@ apf.aml.setElement("remote", apf.remote);
 
 
 /**
- * @define vbox Container that stacks it's children vertically.
+ * A container that stacks its children vertically.
+ * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:vbox width="100">
+ *       <a:button height="28" edge="5">Button 1</a:button>
+ *       <a:button height="28" edge="5">Button 2</a:button>
+ *       <a:button height="28" edge="5">Button 3</a:button>
+ *   </a:vbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.vbox
+ * @layout
+ * @define vbox 
+ * 
+ * 
  * @see element.hbox
- * @define hbox Container that stacks it's children horizontally.
- * Example:
- * <code>
- *  <a:hbox height="500" width="600">
- *      <a:vbox height="500" width="500">
- *          <a:bar height="250" caption="Top bar" />
- *          <a:hbox width="500" height="250">
- *              <a:bar width="150" caption="Bottom left bar"/>
- *              <a:bar width="350" caption="Bottom Right bar"/>
- *          </a:hbox>
- *      </a:vbox>
- *      <a:bar width="100" caption="Right bar"/>
- *  </a:hbox>
- * </code>
- * Remarks:
- * Firefox has some issues. 
+ * 
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.9
+ * @layout
+ */
+/**
+ * A container that stacks its children horizontally.
+ * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:hbox height="29" width="300" lean="right" margin="5 0 0 0">
+ *       <a:button width="100" edge="5">Button 1</a:button>
+ *       <a:button width="100">Button 2</a:button>
+ *       <a:button width="100">Button 3</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * 
+ * #### Remarks
+ * 
+ * Firefox has some issues:
+ * 
  * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
  * height value.
  * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
- * @addnode elements
- * @constructor
+ * 
  *
+ *
+ * @class apf.hbox
+ * @inherits apf.GuiElement
+ * @define hbox
+ * @layout
+ * 
+ * @see element.vbox
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
@@ -47802,7 +48621,7 @@ apf.vbox = function(struct, tagName){
     this.minwidth    = 0;
     this.minheight   = 0;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -47813,24 +48632,39 @@ apf.vbox = function(struct, tagName){
     var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
-     * @attribute {String}  padding      the space between each element. Defaults to 2.
-     * @attribute {Boolean} reverse      whether the sequence of the elements is in reverse order.
-     * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
-     * Example:
-     * <code>
+     * @attribute {String}  [padding=2]      Sets or gets the space between each element.
+     */
+    /**
+     * @attribute {Boolean} reverse      Sets or gets whether the sequence of the elements is in reverse order.
+     */
+    /**
+     * @attribute {String}  [edge="5,5,5,5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:vbox edge="10 10 40 10" />
-     * </code>
+     * ```
+     */
+    // @todo Doc
+    /**
      * @attribute {String} pack     
-     *   Possible values:
-     *   start
-     *   center
-     *   end
+     *   
+     *  Possible values include:
+     * 
+     *   - `"start"`:
+     *   - `"center"`:
+     *   - `"end"`:
+     */
+    /**
      * @attribute {Boolean} align
-     *   Possible values:
-     *   start
-     *   center
-     *   end
-     *   stretch
+     *   
+     *  Possible values include:
+     * 
+     *   - `"start"`:
+     *   - `"center"`:
+     *   - `"end"`:
+     *   - `"stretch"`:
      */
     this.$booleanProperties["splitters"] = true;
     this.$supportedProperties.push("padding", "reverse", "edge", "pack", "align", "splitters");
@@ -48436,7 +49270,7 @@ apf.vbox = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)
@@ -48788,63 +49622,116 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 /**
- * Element displaying data in a list where each item in the list can contain
- * such a list. This element gives the user the ability to walk through this
+ * An element displaying data in a list, where each item in the list can contain
+ * such a list. 
+ *
+ * This element gives the user the ability to walk through this
  * tree of data by clicking open elements to show more elements. The tree
  * can grow by fetching more data when the user requests it.
- * Example:
- * A tree with inline items.
- * <code>
- *  <a:tree id="tree" align="right">
- *      <a:item caption="root" icon="icoUsers.gif">
- *          <a:item icon="icoUsers.gif" caption="test">
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *          </a:item>
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *      </a:item>
- *  </a:tree>
- * </code>
- * Example:
- * <code>
- *  <a:tree model="filesystem.xml">
- *      <a:caption match="[@caption]" />
- *      <a:caption match="[@filename]" />
- *      <a:icon match="[@icon]" />
- *      <a:each match="[drive|file|folder]" />
- *  </a:tree>
- * </code>
- * Example:
- * Inline tree description that draws the same as the above example:
- * <code>
- *  <a:tree 
- *    model   = "filesystem.xml"
- *    caption = "[@caption|@filename]"
- *    icon    = "[@icon]"
- *    each    = "[drive|file|folder]" />
- * </code>
  *
- * @constructor
+ *
+ * #### Example: A Simple Tree
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:tree id="tree" align="right">
+ *       <a:item caption="root" icon="/api/apf/resources/icons/icoUsers.gif">
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test">
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           </a:item>
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *       </a:item>
+ *   </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example: Using a Model
+ *
+ * A tree using a model:
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
+ *   <a:tree model="filesystem">
+ *        <a:caption match="[@caption]" />
+ *        <a:caption match="[@filename]" />
+ *        <a:each match="[drive|file|folder]" />
+ *    </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example: An Inline Tree
+ * 
+ * An inline tree that draws the same as the above example:
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
+ *  <a:tree 
+ *    model   = "filesystem"
+ *    caption = "[@caption|@filename]"
+ *    each    = "[drive|file|folder]" />
+ *  <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * @class apf.tree
  * @define tree
+ * @selection
  * @allowchild {smartbinding}
- * @addnode elements
+ *
+ * @inherits apf.BaseTree
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
+ *
+ */
+/**
  * @binding insert Determines how new data is loaded when the user expands 
  * an item. For instance by clicking on the + button. This way only the root nodes
  * need to be loaded at the start of the application. All other children are
  * received on demand when the user requests it by navigating throught the tree.
- * Example:
+ *
+ * #### Example
+ *
  * This example shows an insert rule that only works on folder elements. It will
  * read the directory contents using webdav and insert it under the selected 
  * tree node.
- * <code>
+ *
+ * ```xml
  *  <a:tree model="filesystem.xml">
  *      <a:bindings>
  *          <a:caption match="[@caption|@filename]" />
@@ -48852,14 +49739,28 @@ apf.aml.setElement("vbox", apf.vbox);
  *          <a:each match="[drive|file|folder]" />
  *      </a:bindings>
  *  </a:tree>
- * </code>
- * @attribute {String} get the {@link term.datainstruction data instruction} that is used to load the new data.
+ * ```
+ *
+ */
+/**
+ * @attribute {String} get Sets or gets the {@link term.datainstruction data instruction} that is used to load the new data.
+ *
+ */
+/**
  * @binding caption  Determines the caption of a tree node.
+ */
+/**
  * @binding icon     Determines the icon of a tree node.
+ */
+/**
  * @binding css      Determines a css class for a tree node.
- * Example:
+ *
+ * #### Example
+ *
  * In this example a node is bold when the folder contains unread messages:
- * <code>
+ *
+ * ```xml
+ *
  *  <a:tree model="messages.xml">
  *      <a:caption match="[@caption]" />
  *      <a:css match="[folder/message[@unread]]" value="highlighUnread" />
@@ -48867,13 +49768,20 @@ apf.aml.setElement("vbox", apf.vbox);
  *      <a:icon match="[folder]" value="icoDir.png" />
  *      <a:each match="[folder|message]" />
  *  </a:tree>
- * </code>
+ * ```
+ */
+/**
  * @binding tooltip  Determines the tooltip of a tree node.
+ */
+/**
  * @binding empty    Determines the empty message of a node.
- * Example:
- * This example shows a gouped contact list, that displays a message under 
+ *
+ * #### Example
+ *
+ * This example shows a grouped contact list that displays a message under 
  * empty groups.
- * <code>
+ *
+ * ```xml
  *  <a:tree model="xml/contacts.xml">
  *      <a:caption match="[@caption]" />
  *      <a:icon match="[contact]" value="icoContact.png" />
@@ -48881,7 +49789,7 @@ apf.aml.setElement("vbox", apf.vbox);
  *      <a:empty match="[group]" value="Drag a contact to this group." />
  *      <a:each match="[group|contact]" />
  *  </a:tree>
- * </code>
+ * ```
  */
 apf.tree = function(struct, tagName){
     this.$init(tagName || "tree", apf.NODE_VISIBLE, struct);
@@ -48894,15 +49802,16 @@ apf.tree = function(struct, tagName){
         IS_ROOT   = 1 << 4,
         treeState = this.$treeState;
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     
     
     /**
      * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     *   
+     * The possible values are:
+     *   - `"check"`:  the user can select a single item from this element. The selected item is indicated.
+     *   - `"radio"`:  the user can select multiple items from this element. Each selected item is indicated.
      */
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
@@ -49150,7 +50059,7 @@ apf.tree = function(struct, tagName){
         
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$drawBase();
@@ -49188,24 +50097,42 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 /**
- * element specifying the skin of an application.
- * Example:
- * <code>
- *  <a:skin src="perspex.xml"
- *    name       = "perspex"
- *    media-path = "http://example.com/images"
- *    icon-path  = "http://icons.example.com" />
- * </code>
- * @attribute {String} name       the name of the skinset.
- * @attribute {String} src        the location of the skin definition.
- * @attribute {String} media-path the basepath for the images of the skin.
- * @attribute {String} icon-path  the basepath for the icons used in the elements using this skinset.
+ * This element specifies the skin of an application.
+ *
+ * For Cloud9, the skin is provided for you, and thus, you generally won't need
+ * to provide a new skin for a piece of AML.
+ * 
+ * #### Example
+ * 
+ * ```xml
+ * <a:skin src="perspex.xml"
+ *  name       = "perspex"
+ *  media-path = "http://example.com/images"
+ *  icon-path  = "http://icons.example.com" />
+ * ```
+ *  
+ * @class apf.skin
+ * @inherits apf.AmlElement
+ * @define skin
+ * @layout
  * @allowchild  style, presentation
- * @addnode global, anyaml
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
- * @since       0.4
+ * @since  0.4
+ */
+/**
+ * @attribute {String} name       Sets or gets the name of the skinset.
+ */
+/**
+ * @attribute {String} src        Sets or gets the location of the skin definition.
+ */
+/**
+ * @attribute {String} media-path Sets or gets the basepath for the images of the skin.
+ */
+/**
+ * @attribute {String} icon-path  Sets or gets the basepath for the icons used in the elements using this skinset.
  */
 apf.skin = function(struct, tagName){
     this.$init(tagName || "skin", apf.NODE_HIDDEN, struct);
@@ -49231,7 +50158,7 @@ apf.aml.setElement("skin", apf.skin);
             this.$path = apf.getAbsolutePath(apf.hostPath, value) + "/index.xml";
             getSkin.call(this, this.$path);
         }
-    }
+    };
     
     /**
      * @private
@@ -49385,506 +50312,41 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/**
- * @term smartbinding Smartbinding is a type of bidirectional databinding where 
- * rules specify how data is rendered in a component <i>and</i> how changes to
- * the bound data are sent back to the server (or other data source). 
- * Smartbindings are specifically designed to solve the problem of databinding
- * for Ajax applications that connect to remote (non-local) datasources.
- * A smartbinding element can contain three elements; {@link element.bindings bindings}, 
- * {@link element.actions actions} and {@link element.model model}.
- *
- * See also more information about {@link term.binding binding rules} and
- * {@link term.action action rules}.
- *
- * Model:
- * The model is the place where your xml data resides. Data is loaded into the
- * model using a {@link term.datainstruction data instruction} as the following
- * example shows:
- * <code>
- *  <a:model src="get_person.php?id=10" />
- * </code>
- * An element can connect directly to a model in order to bind to data.
- * <code>
- *  <a:model id="mdlExample" />
- *  <a:tree model="mdlExample" />
- * </code>
- *
- * The model can also be part of a smartbinding that is used by the element. 
- * A smartbinding can be used by multiple elements referenced by id:
- * <code>
- *  <a:smartbinding id="sbExample">
- *      <a:model id="mdlList" src="http://localhost/get_person.php?id=10" />
- *      <a:bindings>
- *          <a:caption match="[@name]" />
- *          <a:each match="[user]"/>
- *      </a:bindings>
- *  </a:smartbinding>
- *
- *  <a:list width="300" smartbinding="sbExample" />
- * </code>
- *
- * Bindings:
- * The bindings element is a container for binding rules. Binding rules determine
- * how an element renders the data that it's bound to. Some binding rules specify
- * how data can be interacted with (i.e. {@link baseclass.multiselect.binding.select the select rule}).
- * Check the {@link term.binding term binding rules} for more information.
- *
- * Actions:
- * The actions element is a container for action rules. Action rules influence 
- * and trigger several parts of the user interaction. 
- * <ol>
- *  <li>It determines whether a user action can be executed on the bound and/or 
- *      selected {@link term.datanode data node}.</li>
- *  <li>It dispatches events, before and after the data is changed.</li>
- *  <li>It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} 
- *      that is pushed on the undo stack of the {@link element.actiontracker actiontracker} 
- *      connected to the element that triggered the action.</li>
- *  <li>The command object contains all the information to send the change back 
- *      to the server</li>
- * </ol>
- * So in short, an action rule is always triggered by the user, creates an 
- * undo item and sends the change back to the server.
- * Check the {@link term.action term action rules} for more information.
- *
- * See:
- * {@link baseclass.databinding.attribute.smartbinding}
- */
 
-/**
- * @term binding Binding rules determine how an element displays the data that 
- * its bound to (ex.: {@link element.tree.binding.caption the caption rule}), 
- * and determines how it can be interacted with 
- * (ex.: {@link baseclass.multiselect.binding.select the select rule}).
- * Binding rules are part of the {@link term.smartbinding smartbinding concept}.
- * 
- * Basic:
- * Let's take a simple example, that of a {@link element.textbox textbox}. A 
- * textbox has a {@link element.textbox.attribute.value value attribute}. This
- * attribute can be set like this:
- * <code>
- *  <a:textbox value="The text" />
- * </code>
- * In many cases it's handy to bind the value of the textbox to data. Imagine
- * you are editing a contact's name in a textbox. In this case you would want to 
- * bind the value of the textbox to the xml data. The binding rule is configured
- * to determine this value based on the bound xml. Let's look at an example:
- * <code>
- *  <a:model id="mdlExample">
- *      <contact>
- *          <name>Test</name>
- *      </contact>
- *  </a:model>
- *  
- *  <a:textbox value="[mdlExample::name]" />
- * </code>
- * The textbox binds to the data of the model. The bind rule sets how the value
- * is retrieved from the bound data. In this case the value of the name node is
- * retrieved. <strong>When the user changes the value of the textbox, the name
- * node is updated with that value.</strong> Subsequently <strong>when the xml
- * changes the value of the textbox is updated</strong>.
- *
- * Each attribute on an element can be bound to data by using the attribute
- * name as the name of the binding rule. In the next example, the visible
- * attribute of a textbox is based on the availability of a {@link term.datanode data node}:
- * <code>
- *  <a:model>
- *      <data name="false" />
- *  </a:model>
- *  
- *  <a:textbox visible="[@name]" value="Text" />
- * </code>
- * Each element has a primary bind rule that can be accessed in a short format.
- * This is usually the value bind rule. The short format works as follows:
- * <code>
- *  <a:model id="mdlExample">
- *      <contact>
- *          <name>Test</name>
- *      </contact>
- *  </a:model>
- *  <a:textbox value="[name]" model="mdlExample" />
- * </code>
- *
- * Advanced:
- * For multi node components databinding adds another conceptual step. The basics
- * stay the same, though a way is introduced to do 'foreach' on the data to 
- * determine which nodes are rendered. This is done using the 
- * {@link element.multiselectbinding.binding.each each binding rule} and
- * the selected nodes are called {@link term.eachnode each nodes}.
- *
- * When the set of each nodes is determined, each is rendered based on other
- * binding rules that determine whatever is deemed necesary by the component. 
- * This can be the caption, icon, tooltip, whether an item is seletable and so on.
- * In the next example a list is bound to some data representing a contact list.
- * Each contact's name is displayed as the caption of the item.
- * <code>
- *  <a:model id="mdlSmart1">
- *      <data>
- *          <contact>
- *              <name>Ruben</name>
- *              <company>Javeline</company>
- *          </contact>
- *          <contact>
- *              <name>Łukasz</name>
- *              <company>Javeline</company>
- *          </contact>
- *      </data>
- *  </a:model>
- *  <a:list model="mdlSmart1">
- *      <a:bindings>
- *          <a:caption value="[name]" />
- *          <a:icon value="contact.png" />
- *          <a:each match="[contact]" />
- *      </a:bindings>
- *  </a:list>
- * </code>
- * 
- * Fallbacks:
- * By stacking multiple binding rules it's possible to define different ways to
- * determine the value for an attribute. Let's say we have a tree that displays
- * files and folders. A file and a folder can have custom icons. If these are 
- * not specified, they each default to an icon representing their type. This would
- * be encoded like this:
- * <code>
- *  <a:model id="mdlSmart1">
- *      <data>
- *          <folder caption="folder 1">
- *              <file caption="file 1" />
- *              <file caption="file 2" />
- *              <file caption="unknown" icon="icoAnything.gif" />
- *          </folder>
- *      </data>
- *  </a:model>
- *  <a:tree model="mdlSmart1">
- *      <a:bindings>
- *          <a:caption value="[@caption]" />
- *          <a:icon match="[@icon]" />
- *          <a:icon match="[folder]" value="Famfolder.gif" />
- *          <a:icon match="[file]" value="icoEmpty.png" />
- *          <a:each match="[folder|file]" />
- *      </a:bindings>
- *  </a:tree>
- * </code>
- *
- * Processors:
- * There are several ways to convert the data retrieved from the xml data into
- * the needed string or boolean. The following example uses {@link term.livemarkup live markup}
- * to determine the icon by the extension of the filename:
- * <code>
- *  <a:model id="mdlSmart1">
- *      <data>
- *          <contact>
- *              <name>Ruben</name>
- *              <filename>Baseclasses</filename>
- *          </contact>
- *          <contact>
- *              <name>Łukasz</name>
- *              <filename>application.png</filename>
- *          </contact>
- *      </data>
- *  </a:model>
- *  <a:list model="mdlSmart1">
- *      <a:bindings>
- *          <a:caption value="[name]" />
- *          <a:icon><?lm
- *              var ext = {[filename].split(".").shift()};
- *              ext == [filename] ? "unknown.png" : ext + ".png";
- *          ?></a:icon>
- *          <a:each match="[contact]" />
- *      </a:bindings>
- *  </a:list>
- * </code>
- * Instead of live markup you can use xslt as well. Furthermore you can apply some
- * javascript to the result by calling a method. The following examples shows
- * a caption where a javascript method inserts smileys.
- * <code>
- *  <a:model id="mdlSmart1">
- *      <data>
- *          <file caption="file 1" />
- *          <file caption="file 2" />
- *      </data>
- *  </a:model>
- *  <a:tree model="mdlSmart1" height="100">
- *      <a:script>
- *          function insertSmileys(value) {
- *              //do something with value
- *              return value;
- *          }
- *      </a:script>
- *      <a:bindings>
- *          <a:caption value="{insertSmileys([@caption])}" />
- *          <a:each match="[file]" />
- *      </a:bindings>
- *  </a:tree>
- * </code>
- *
- * Extending:
- * Two special binding rules are the {@link baseclass.databinding.binding.load load}
- * and the {@link element.tree.binding.insert insert} bindings. These bindings
- * are used to load and insert new data into the data bound to the element that
- * uses them. With these rules an application can start out with only a bit of
- * data and when the user needs it extends the data. A simple example is that of
- * a tree element that loads subnodes whenever a user expands a node. This can
- * be achieved in the following way:
- * <code>
- *  <a:model id="mdlSmart2">
- *      <data>
- *          <group name="Group 1">
- *              <user name="User 1" id="1" leaf="long"></user>
- *              <user name="User 2" id="2"></user>
- *          </group>
- *          <group name="Group 2">
- *              <user name="User 3" id="3" leaf="long"></user>
- *              <user name="User 4" id="4"></user>
- *          </group>
- *      </data>
- *  </a:model>
- *  
- *  <a:tree model="mdlSmart2">
- *      <a:bindings>
- *          <a:caption match="[@name]" />
- *          <a:insert  
- *            match = "[user[not(@leaf)]]" 
- *            get   = "http://localhost/get_person.php?id=[@id]" />
- *          <a:each match="[user|group]" />
- *      </a:bindings>
- *  </a:tree>
- * </code>
- * For more information about how data can be loaded into aml elements please
- * check {@link term.datainstruction data instructions}.
- */
-
-/**
- * @term action Action rules determine whether a user can execute an action and
- * takes care of executing the change both locally and on a remote server. Each
- * triggered action creates an item on the undo stack.
- * Action rules are part of the {@link term.smartbinding smartbinding concept}.
- *
- * Syntax:
- * Actions are added to {@link element.actions}. The <i>select</i> attribute specifies
- * whether an action can be executed. The <i>set</i> attribute specifies how the change
- * to the data is send to the server. The following example shows a remove 
- * action on a datagrid. A jsp script is called to process the change. This is
- * specified using a {@link term.datainstruction data instruction}.
- * <code>
- *  <a:datagrid>
- *      <a:actions>
- *          <a:remove 
- *            match = "[contact[not(@readonly)]]" 
- *            set   = "php/remove_contact.php?id=[@id]" />
- *      </a:actions>
- *  </a:datagrid>
- * </code>
- *
- * Defaults:
- * The default behaviour for all components is to enable all actions when no
- * actions element has been assigned. This can be change by setting 
- * {@link element.appsettings.attribute.auto-disable-actions}. When a actions
- * element <i>is</i> assigned, all actions are disabled unless they are specified.
- * When the select attribute on an action is not set the action will always be
- * allowed. 
- * 
- * Flow:
- * Action rules influence and trigger several parts of the user interaction. 
- * <ol>
- *  <li>It determines whether a user action can be executed on the bound and/or 
- *      selected {@link term.datanode data node}.</li>
- *  <li>It dispatches events, before and after the data is changed.</li>
- *  <li>It creates a {@link http://en.wikipedia.org/wiki/Command_pattern command object} 
- *      that is pushed on the undo stack of the {@link element.actiontracker actiontracker} 
- *      connected to the element that triggered the action.</li>
- *  <li>The command object ({@link core.undodata UndoData}) contains all the 
- *      information to send the change back to the server.</li>
- * </ol>
- *
- * Fallbacks:
- * By stacking multiple action rules it's possible to define different ways to
- * deal with user actions. Let's say we have a tree that displays
- * files and folders. Renaming a file and a folder might have different handlers. 
- * This would be encoded like this:
- * <code>
- *  <a:tree 
- *    id             = "tree" 
- *    height         = "200" 
- *    width          = "250"
- *    model          = "filesystem.xml"
- *    actiontracker  = "atExample"
- *    startcollapsed = "false" 
- *    onerror        = "alert('Sorry this action is not permitted');return false">
- *      <a:each match="[folder|drive]">
- *          <a:caption match="[@caption]" />
- *          <a:icon value="Famfolder.gif" />
- *      </a:each>
- *      <a:rename match = "[file]"   
- *                set    = "rename_folder.php?id=[@fid]" />
- *      <a:rename match = "[folder]" 
- *                set    = "rename_file.php?id=[@fid]" />
- * </a:tree>
- *       
- * <a:button 
- *   caption = "Rename"
- *   right   = "10" 
- *   top     = "10"
- *   onclick = "tree.startRename()" />
- * <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
- * </code>
- *
- * Undo:
- * When an action is execute it creates an entry on the undostack of an 
- * actiontracker. Undo can be triggered by calling the undo method.
- * <code>
- *  myTree.getActionTracker().undo();
- *  //or
- *  ActionTracker.undo();
- * </code>
- * Executing will revert the change to the data. This will also be communicated
- * to the server. In some cases the call to the server is not symmetric; the set
- * call cannot be used to revert. For these situations set the undo attribute.
- * <code>
- *  <a:tree id="tree" height="200" width="250"
- *    model          = "filesystem.xml"
- *    actiontracker  = "atExample"
- *    startcollapsed = "false" 
- *    onerror        = "alert('Sorry this action is not permitted');return false">
- *      <a:each match="[folder|drive]">
- *          <a:caption match="[@caption]" />
- *          <a:icon value="Famfolder.gif" />
- *      </a:each>
- *      <a:remove set  = "remove.php?id=[@fid]"
- *                undo = "undo_remove.php?id=[@fid]">
- *      </a:remove>
- *  </a:tree>
- *  <a:button onclick="tree.getActionTracker().undo();">Undo</a:button>
- *  <a:button onclick="tree.remove();">Remove</a:button>
- * </code>
- * In the example above the server is required to support reverting remove. 
- * Another possibility is to add the item again as shown in this example:
- * <code>
- *  <a:remove set  = "remove.php?id=[@id]"
- *            undo = "add.php?xml=[.]">
- *  </a:remove>
- * </code>
- *
- * Javascript:
- * Each action has a method associated with it that exists on the element that
- * the action rule is assigned to. The method has the same name as the action 
- * and can be called from javascript. For instance, the {@link baseclass.multiselect.binding.remove remove action}:
- * <code>
- *  myTree.remove();
- *  myTree.remove(dataNode);
- * </code>
- *
- * Add:
- * Adding {@link term.datanode data nodes} to an element is a bit more advanced because the origin of
- * the new data can be encoded in {@link baseclass.multiselect.binding.add the add action rule}. 
- * There are three ways to provide the data to add a node. 
- * 
- * The first is by calling the add method using javascript.
- * <code>
- *  <a:list id="myList">
- *      <a:add set="{comm.addProduct([.])}" />
- *  </a:list>
- *  <a:script>
- *      myList.add('<product name="USB drive" type="storage" />');
- *  </a:script>
- * </code>
- *
- * The second by specifying the template as a child of the add action rule:
- * <code>
- *  <a:add set="{comm.addProduct([.])}">
- *      <product name="USB drive" type="storage" />
- *  </a:add>
- * </code>
- * The third way gets the added node from the server.
- * <code>
- *  <a:rpc id="comm" protocol="cgi">
- *      <a:method 
- *        name = "createNewProduct" 
- *        url  = "http://yourserver.com/create_product.php" />
- *  </a:rpc>
- *  <a:list id="myList" width="200">
- *      <a:bindings>
- *          <a:caption match="[text()]" />
- *          <a:value match="[text()]" />
- *          <a:each match="[product]" />
- *      </a:bindings>
- *      <a:add get="{comm.createNewProduct()}" />
- *      <a:model>
- *          <data>
- *              <product>LCD Panel</product>
- *          </data>
- *      </a:model>
- *  </a:list>
- *  <a:button onclick="myList.add()">Add product</a:button>
- * </code>
- *
- * Purging:
- * Sometimes it's necesary to not send the changes directly to the server. For
- * instance when the application offers a <i>save</i> button. To achieve this
- * set the {@link element.actiontracker.attribute.realtime realtime attribute}
- * of the actiontracker to false. The save button can call the 
- * {@link element.actiontracker.method.purge purge method} to have the 
- * actiontracker send the calls.
- * <code>
- *  <a:actiontracker id="myAt" realtime="false" />
- *  <a:list actiontracker="myAt" />
- *  <a:button onclick="myAt.purge()">Save</a:button>
- * </code>
- * N.B. At a certain amount of changes this way will become inefficient and 
- * you'll want to send the state of your data to the server directly. You can
- * do that like this:
- * <code>
- *  <a:list id="myList" width="200">
- *      <a:bindings>
- *          <a:caption match="[text()]" />
- *          <a:value match="[text()]" />
- *          <a:each match="[product]" />
- *      </a:bindings>
- *      <a:model>
- *          <data>
- *              <product>LCD Panel</product>
- *          </data>
- *      </a:model>
- *      <a:rename />
- *      <a:remove />
- *  </a:list>
- *  <a:button onclick="myList.getModel().submit('save.php', myList.xmlRoot)">
- *      Save
- *  </a:button>
- * </code>
- * See also {@link element.model.method.submit}.
- * 
- * Transactions:
- * A transaction is a 
- * set of changes to data which are treated as one change. When one of the 
- * changes in the set fails, all the changes will be cancelled. In the case of
- * a gui this is happens when a user decides to cancel after 
- * making several changes. A good example are the well known <i>Properties</i> 
- * windows with an ok, cancel and apply button. 
- *
- * When a user edits data, for instance user information, all the changes are
- * seen as one edit and put on the undo stack as a single action. Thus clicking
- * undo will undo the entire transaction, not just the last change done by that
- * user in the edit window. Transaction support both optimistic and pessimistic 
- * locking. For more information on transactions see {@link baseclass.transaction}.
- */
  
 /**
- * @term datanode A data node is the term used for any xml node (attribute, 
- * element, textnode or otherwise) that is used in a databound context. So when
- * xml is loaded into a {@link element.model model} we refer to those xml nodes 
- * as data nodes.
- */
- 
-/**
- * Element containing information on how databound elements process data.
+ * An element containing information on how databound elements process data.
+ *
  * The {@link term.smartbinding smartbinding} element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
- * send to their original data source ({@link element.actions actions}) and
- * which {@link term.datanode data nodes} can be dragged and dropped ({@link element.dragdrop dragdrop}).
- * Example:
+ * send to their original data source ({@link apf.actions actions}) and
+ * which {@link term.datanode data nodes} can be dragged and dropped ({@link apf.DragDrop dragdrop}).
+ * 
+ * #### Remarks
+ *
+ * Each element has its own set of binding rules it uses to render the data 
+ * elements. The same goes for it's actions. To give an example, a slider has 
+ * one action called 'change'. This action is called when then value of the 
+ * slider changes. A tree element has several actions - among others: 'add',
+ * 'remove', 'move', 'copy' and 'rename'. 
+ * 
+ * Smartbindings enable many other features in a Ajax.org Platform
+ * application. Actions done by the user can be undone by calling 
+ * {@link apf.actiontracker.undo} of the element. The 
+ * Remote Databinding element can send changes on data to other clients.
+ *
+ * This element is created especially for reuse. Multiple elements can reference
+ * a single smartbinding element by setting the value of the 'smartbinding'
+ * attribute to the ID of this smartbinding element. If an element is only used
+ * for a single other element it can be set as it's child. In fact, each of the
+ * children of the smartbinding element can exist outside the smartbinding
+ * element and referenced indepently.
+ *
+ * #### Example
+ *
  * A simple example of a smartbinding transforming data into representation
- * <code>
+ * 
+ * ```xml
  *  <a:smartbinding id="sbProducts">
  *          <a:bindings>
  *               <a:caption match="[text()]" />
@@ -49900,15 +50362,18 @@ apf.aml.setElement("skin", apf.skin);
  *               </data>
  *           </a:model>
  *      </a:list>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * This is an elaborate example showing how to create a filesystem tree with
  * files and folders in a tree. The smartbinding element describes how the
  * files and folders are transformed to tree elements and how actions within
- * the tree are sent to the data source. In this case {@link teleport.webdav WebDAV}
+ * the tree are sent to the data source; in this case, WebDAV.
  * is used. The drag and drop rules specify which elements can be dragged and
  * where they can be dropped.
- * <code>
+ * 
+ * ```xml
  *  <a:smartbinding id="sbFilesystem" model="{myWebdav.getRoot()}">
  *      <a:bindings>
  *          <a:insert match="[folder]" get="{myWebdav.readdir([@path])}" />
@@ -49949,29 +50414,14 @@ apf.aml.setElement("skin", apf.skin);
  *              : "unknown.png");
  *      }
  *  </a:script>
- * </code>
- * Remarks:
- * Each element has it's own set of binding rules it uses to render the data 
- * elements. The same goes for it's actions. To give an example, a slider has 
- * one action called 'change'. This action is called when then value of the 
- * slider changes. A tree element has several actions - among others: 'add',
- * 'remove', 'move', 'copy' and 'rename'. 
- * 
- * Smartbindings enable many other features in a Ajax.org Platform
- * application. Actions done by the user can be undone by calling 
- * {@link element.actiontracker.method.undo} of the element. The 
- * Remote Databinding element can send changes on data to other clients.
+ * ```
  *
- * This element is created especially for reuse. Multiple elements can reference
- * a single smartbinding element by setting the value of the 'smartbinding'
- * attribute to the ID of this smartbinding element. If an element is only used
- * for a single other element it can be set as it's child. In fact, each of the
- * children of the smartbinding element can exist outside the smartbinding
- * element and referenced indepently.
- * Example:
+ * #### Example
+ *
  * This example shows a smartbinding element which references to its children as
  * stand alone elements.
- * <code>
+ * 
+ * ```xml
  *  <a:bindings id="bndExample">
  *      ...
  *  </a:bindings>
@@ -49991,12 +50441,17 @@ apf.aml.setElement("skin", apf.skin);
  *
  *  <a:list smartbinding="sbExample" />
  *  <a:tree binding="bndExample" action="actExample" model="example.php" />
- * </code>
- * Example:
+ * ```
+ *
+ * 
+ * #### Example
+ *
  * The shortest method to add binding rules to an element is as follows:
- * <code>
+ * 
+ * ```xml
  *  <a:tree each="[file|folder]" caption="[@name]" icon="[@icon]" />
- * </code>
+ * ```
+ *
  * @see baseclass.databinding
  * @see baseclass.databinding.attribute.smartbinding
  * @see term.smartbinding
@@ -50005,10 +50460,11 @@ apf.aml.setElement("skin", apf.skin);
  * 
  * @define smartbinding
  * @allowchild bindings, actions, ref, action, dragdrop, model
- * @addnode smartbinding, global
  *
- * @constructor
+ *
+ * @class apf.smartbinding
  * @apfclass
+ * @inherits apf.AmlElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -50119,9 +50575,9 @@ apf.smartbinding = function(struct, tagName){
     };
     
     /**
-     * Loads xml data in the model of this smartbinding element.
+     * Loads XML data in the model of this smartbinding element.
      * 
-     * @param  {mixed}  xmlNode the {@link term.datanode data node} loaded into
+     * @param  {Mixed}  xmlNode the {@link term.datanode data node} loaded into
      * the model of this smartbinding element. This can be an XMLElement, a 
      * string or null. 
      * @private
@@ -50135,16 +50591,18 @@ apf.smartbinding = function(struct, tagName){
         //for all elements do clear(state);
     };
     
-    /**
+    /*
      * @private
      *
      * @attribute {String} bindings the id of the bindings element that contains 
      * the {@link term.binding binding rules} for all elements connected to 
      * this smartbinding element
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     *   
+     * ```xml
      *  <a:smartbinding id="sbExample" bindings="bndExample" />
-     * </code>
+     * ```
      * @see element.bindings
      * @see term.binding
      * @see term.smartbinding
@@ -50152,37 +50610,45 @@ apf.smartbinding = function(struct, tagName){
      * @attribute {String} actions  the id of the actions element that provides 
      * the {@link term.action action rules} for all elements connected to 
      * this smartbinding element
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:smartbinding id="sbExample" actions="actExample" />
-     * </code>
-     * @see element.actions
+     * ```
+     * @see apf.actions
      * @see term.action
      * @see term.smartbinding
      *
      * @attribute {String} dragdrop the id of the dragdrop element that provides 
      * the drag and drop rules for all elements connected to this smartbinding 
      * element
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:smartbinding id="sbExample" bindings="bndExample" />
-     * </code>
-     * @see element.dragdrop
+     * ```
+     * @see apf.DragDrop
      * @see term.smartbinding
      *
      * @attribute {String} model    the id of the model element that provides 
      * the data for all elements connected to this smartbinding element.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:smartbinding id="sbExample" model="mdlExample" />
-     * </code>
+     * ```
      * @see element.model
      * @see term.smartbinding
      *
      * @define bindings element containing all the binding rules for the data 
      * bound elements referencing this element.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:bindings id="bndFolders" >
      *      <a:caption match="[@name]" />
      *      <a:icon match="[@icon]" />
@@ -50190,11 +50656,11 @@ apf.smartbinding = function(struct, tagName){
      *  </a:bindings>
      *
      *  <a:tree bindings="bndFolders" />
-     * </code>
-     * @see element.smartbinding
+     * ```
+     * @see apf.smartbinding
      * @allowchild {bindings}
-     * @addnode smartbinding, global
-     * @addnode smartbinding, global
+     *
+     *
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode.hasFeature(apf.__DATABINDING__))
@@ -50233,7 +50699,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/**
+/*
  * @todo docs
  */
 apf.BindingLoadRule = function(struct, tagName){
@@ -50283,76 +50749,112 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 /**
- * Element allowing a user to select a value from a list, which is 
+ * An element allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
- * Example:
- * A simple dropdown with inline items.
- * <code>
- *  <a:dropdown>
- *      <a:item>The Netherlands</a:item>
- *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:dropdown>
- * </code>
- * Example:
- * A databound dropdown with items loaded from an xml file.
- * <code>
- *  <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
- * </code>
- * Example:
- * A databound dropdown using the bindings element
- * <code>
- *  <a:dropdown model="friends.xml">
- *      <a:bindings>
- *          <a:caption  match = "[@name]" />
- *          <a:css      match = "[self::node()[@type='best']]" value="bestfriend" />
- *          <a:each     match = "[friend]" />
- *      </a:bindings>
- *  </a:dropdown>
- * </code>
- * Example:
- * A small form.
- * <code>
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data>
- *          <name>Mike</name>
- *          <city>amsterdam</city>
- *      </data>
- *  </a:model>
  * 
- *  <a:bar model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[name]" />
- *    
- *      <a:label>City</a:label>
- *      <a:dropdown value="[mdlForm::city]" model="cities.xml">
- *          <a:bindings>
- *              <a:caption match="[text()]" />
- *              <a:value match="[@value]" />
- *              <a:each match="[city]" />
- *          </a:bindings>
- *      </a:dropdown>
- *    
- *      <a:button default="true" action="submit">Submit</a:button>
- *  </a:bar>
- * </code>
+ * #### Example: Simple Dropdown
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown initial-message="Choose a country" skin="black_dropdown">
+ *       <a:item>America</a:item>
+ *       <a:item>Armenia</a:item>
+ *       <a:item>The Netherlands</a:item>
+ *   </a:dropdown>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Loading Items From XML
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" skin="black_dropdown" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Capturing and Emitting Events
  *
- * @event slidedown Fires when the calendar slides open.
- *   cancelable: Prevents the calendar from sliding open
- * @event slideup   Fires when the calendar slides up.
- *   cancelable: Prevents the calendar from sliding up
+ * A databound dropdown using the bindings element
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <a:table columns="100, 100, 100, 100" cellheight="19" padding="5">
+ *   <!-- startcontent -->
+ *       <a:model id="mdlDD5">
+ *           <data>
+ *               <friend name="Arnold"></friend>
+ *               <friend name="Carmen"></friend>
+ *               <friend name="Giannis"></friend>
+ *               <friend name="Mike"></friend>
+ *               <friend name="Rik"></friend>
+ *               <friend name="Ruben"></friend>
+ *           </data>
+ *       </a:model>
+ *       <a:textbox id="txtAr"></a:textbox>
+ *       <a:dropdown
+ *         id          = "friendDD"
+ *         model       = "mdlDD5"
+ *         each        = "[friend]"
+ *         caption     = "[@name]"
+ *         onslidedown = "txtAr.setValue('slide down')"
+ *         onslideup   = "txtAr.setValue('slide up')" />
+ *       <a:button onclick="friendDD.slideDown()">Slide Down</a:button>
+ *       <a:button onclick="friendDD.slideUp()">Slide Up</a:button>
+ *   <!-- endcontent -->
+ *   </a:table>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Dynamically Adding Entries
  *
- * @constructor
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="friendMdl">
+ *       <data>
+ *           <friend name="Arnold" />
+ *           <friend name="Carmen" />
+ *           <friend name="Giannis" />
+ *           <friend name="Mike" />
+ *           <friend name="Rik" />
+ *           <friend name="Ruben" />
+ *       </data>
+ *   </a:model>
+ *   <a:dropdown
+ *     id      = "dd"
+ *     model   = "friendMdl"
+ *     each    = "[friend]"
+ *     caption = "[@name]">
+ *   </a:dropdown>
+ *   <a:button width="110" onclick="dd.add('&lt;friend name=&quot;Lucas&quot; />')">New Name?</a:button>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * @class apf.dropdown
  * @define dropdown
+ * @form
  * @allowchild item, {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseList
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ */
+/**
+ * @event slidedown Fires when the dropdown slides open.
+ * @cancelable Prevents the dropdown from sliding open
+ */
+/**
+ *  @event slideup   Fires when the dropdown slides up.
+ *  @cancelable Prevents the dropdown from sliding up
+ *
  */
 apf.dropdown = function(struct, tagName){
     this.$init(tagName || "dropdown", apf.NODE_VISIBLE, struct);
@@ -50364,7 +50866,7 @@ apf.dropdown = function(struct, tagName){
     this.$animSpeed       = 20;
     this.$itemSelectEvent = "onmouseup";
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.dragdrop      = false;
     this.reselectable  = true;
@@ -50380,11 +50882,13 @@ apf.dropdown = function(struct, tagName){
         "initial-message", "fill");
     
     /**
-     * @attribute {String} initial-message the message displayed by this element
+     * @attribute {String} initial-message Sets or gets the message displayed by this element
      * when it doesn't have a value set. This property is inherited from parent 
      * nodes. When none is found it is looked for on the appsettings element. 
      *
-     * @attribute {Number} maxitems the number of items that are shown at the 
+     */
+     /**
+     * @attribute {Number} maxitems Sets or gets the number of items that are shown at the 
      * same time in the container.
      */
     this.$propHandlers["maxitems"] = function(value){
@@ -50402,9 +50906,9 @@ apf.dropdown = function(struct, tagName){
         this.$setStyleClass(this.oSlider, e.value);
     });
     
-    /**** Public methods ****/
+    // *** Public methods *** //
     
-    /**
+    /*
      * Toggles the visibility of the container with the list elements. It opens
      * or closes it using a slide effect.
      * @private
@@ -50420,7 +50924,7 @@ apf.dropdown = function(struct, tagName){
             this.slideDown(e);
     };
 
-    /**
+    /*
      * Shows the container with the list elements using a slide effect.
      * @private
      */
@@ -50468,7 +50972,7 @@ apf.dropdown = function(struct, tagName){
         });
     };
     
-    /**
+    /*
      * Hides the container with the list elements using a slide effect.
      * @private
      */
@@ -50488,7 +50992,7 @@ apf.dropdown = function(struct, tagName){
         return false;
     };
     
-    /**** Private methods and event handlers ****/
+    // *** Private methods and event handlers *** //
 
     //@todo apf3.0 why is this function called 6 times on init.
     this.$setLabel = function(value){
@@ -50548,7 +51052,7 @@ apf.dropdown = function(struct, tagName){
 
     this.addEventListener("popuphide", this.slideUp);
     
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     
     this.addEventListener("keydown", function(e){
@@ -50626,7 +51130,7 @@ apf.dropdown = function(struct, tagName){
     }, true);
     
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.$getNewContext("main");
@@ -50789,30 +51293,51 @@ apf.aml.setElement("application", apf.application);
 
 
 /**
- * Element displaying a skinnable rectangle which can contain other 
- * aml elements. This element is used by other elements such as the 
- * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other aml elements.
- * Remarks:
- * This component is used in the accordion element to create its sections. In
- * the statusbar the panel element is an alias of bar.
+ * This element displays a skinnable rectangle that can contain other
+ * AML elements. 
+ * 
+ * It's used by other elements, such as the
+ * toolbar and statusbar elements, to specify sections.
  *
- * @constructor
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *  <!-- startcontent -->
+ *    <a:splitbutton id="btnTestRun" caption  = "Run tests"/>
+ *  <!-- endcontent -->
+ *  </a:window>
+ * </a:application>
+ * ```
+ * 
+ * #### Remarks
  *
- * @define bar, panel, menubar
- * @attribute {String} icon the url pointing to the icon image.
- * @attribute {Boolean} collapsed   collapse panel on load, default is false
- * Possible values:
- *     true    panel is collapsed
- *     false   panel is not collapsed
- * @attribute {String} title   describes content in panel
+ * This component is used in the accordian element to create its sections. In
+ * the statusbar, the panel element is an alias of `bar`.
+ *
+ * @class apf.splitbutton
+ * @define splitbutton
+ * @container
  * @allowchild button
  * @allowchild {elements}, {anyaml}
- * @addnode elements
+ *
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ */
+/**
+ * @attribute {String} icon Sets or gets the url pointing to the icon image.
+ */
+/**
+ * @attribute {Boolean} [collapsed=false]  Sets or gets collapse panel on load.
+ */
+/**
+ * @attribute {String} title   Describes the content in a panel
  */
 apf.splitbutton = function(struct, tagName){
     this.$init(tagName || "splitbutton", apf.NODE_VISIBLE, struct);
@@ -50820,87 +51345,109 @@ apf.splitbutton = function(struct, tagName){
 
 (function(){
     this.$focussable = false;
-    
+
+    this.$booleanProperties["disabled-split"] = 1;
+    //this.$supportedProperties.push("disabled-split", "button-skin");
+
     this.$propHandlers["caption"] = function(value) {
         this.$button1.setProperty("caption", value);
-    }
-    
+    };
+
     this.$propHandlers["icon"] = function(value) {
         this.$button1.setProperty("icon", value);
-    }
-    
+    };
+
     this.$propHandlers["tooltip"] = function(value) {
         this.$button1.setProperty("tooltip", value);
-    }
-    
+    };
+
     this.$propHandlers["hotkey"] = function(value) {
         this.$button1.setProperty("hotkey", value);
-    }
+    };
 
     this.$propHandlers["disabled"] = function(value) {
         this.$button1.setProperty("disabled", value);
         this.$button2.setProperty("disabled", value);
-    }
-    
+    };
+
+    this.$propHandlers["disabled-split"]= function(value) {
+        this.$button2.setProperty("disabled", value);
+    };
+
+    this.$propHandlers["button-skin"] = function(value) {
+        this.$button1.setProperty("skin", value);
+        this.$button2.setProperty("skin", value);
+    };
+
+    this.$propHandlers["class"] = function(value){
+        apf.setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
+        this.$lastClassValue = value;
+    };
+
     this.$propHandlers["submenu"] = function(value) {
         this.$button2.setProperty("submenu", value);
-        
+
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
             if (!self[value].$splitInited) {
+                _self.dispatchEvent("submenu.init");
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
                     var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
                         - apf.getAbsolutePosition(split.$button1.$ext)[0];
-                    
+
                     this.$ext.style.marginLeft = "-" + diff + "px";
                 });
                 self[value].$splitInited = true;
             }
-            
+
             this.removeEventListener("mousedown", arguments.callee);
         });
-    }
-    
+    };
+
     this.$draw = function(){
         var _self = this;
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
-        //this.$ext.style.overflow = "hidden";
-        //this.$ext.style.position = "relative";
-        
-        var skin = this.getAttribute("skin") || this.localName;
-        
+
+        var skin = this["button-skin"] || this.getAttribute("skin") || this.localName;
+
         this.$button1 = new apf.button({
             htmlNode: this.$ext,
             parentNode: this,
+            skinset: this.getAttribute("skinset"),
             skin: skin,
             "class": "main",
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
+                if (_self.$button2.disabled)
+                    return;
                 _self.$button2.$setState("Over", {});
-                
+
                 _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 apf.setStyleClass(this.$ext, "", ["primary"]);
+                if (_self.$button2.disabled)
+                    return;
                 _self.$button2.$setState("Out", {});
-                
+
                 _self.dispatchEvent("mouseout", { button: this });
             },
             onclick: function(e) {
                 _self.dispatchEvent("click");
             }
         });
-        
+
         this.$button2 = new apf.button({
             htmlNode: this.$ext,
             parentNode: this,
+            skinset: this.getAttribute("skinset"),
             skin: skin,
             "class": "arrow",
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button1.$setState("Over", {});
-                
+
                 _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
@@ -50912,16 +51459,19 @@ apf.splitbutton = function(struct, tagName){
                     apf.setStyleClass(this.$ext, "primary");
                     _self.$button1.$setState("Over", {});
                 }
-                
+
                 _self.dispatchEvent("mouseout", { button: this });
+            },
+            onclick: function(e) {
+                _self.dispatchEvent("split.click", e);
             }
         });
     };
 
     this.$loadAml = function(x){
-        
+
     };
-    
+
 }).call(apf.splitbutton.prototype = new apf.GuiElement());
 
 apf.aml.setElement("splitbutton",  apf.splitbutton);
@@ -50980,30 +51530,64 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 /**
- * Element displaying a skinnable rectangle which can contain other 
- * aml elements. This element is used by other elements such as the 
- * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other aml elements.
- * Remarks:
+ * This element displays a skinnable rectangle which can contain other 
+ * AML elements. Often, it's also used in place of a regular HTML `<div>`.
+ *
+ *
+ * #### Example
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400"
+ *       >
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Remarks
+ *
  * This component is used in the accordion element to create its sections. In
- * the statusbar the panel element is an alias of bar.
+ * the `apf.statusbar`, the panel element is an alias of [[apf.bar]].
  *
- * @constructor
- *
- * @define bar, panel, menubar
- * @attribute {String} icon the url pointing to the icon image.
- * @attribute {Boolean} collapsed   collapse panel on load, default is false
- * Possible values:
- *     true    panel is collapsed
- *     false   panel is not collapsed
- * @attribute {String} title   describes content in panel
- * @allowchild button
- * @allowchild {elements}, {anyaml}
- * @addnode elements
- *
+ * @class apf.bar
+ * @inherits apf.Presentation
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ *
+ * @define bar
+ * @container
+ * @allowchild button
+ * @allowchild {elements}, {anyaml}
+ *
+ */
+/**
+ * @attribute {String} icon Sets or gets the URL pointing to the icon image.
+ */
+/**
+ *  @attribute {Boolean} [collapsed=false]  Sets or gets the collapse panel on load
+ * 
+ */
+/**
+ * @attribute {String} title  Sets or gets the title string
  */
 apf.section = function(struct, tagName){
     this.$init(tagName || "section", apf.NODE_VISIBLE, struct);
@@ -51158,10 +51742,12 @@ apf.aml.setElement("section", apf.section);
 
 
 /**
- * Element that groups state elements together and
+ * An element that groups state elements together and
  * provides a way to set a default state.
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:state-group
  *    loginMsg.visible  = "false"
  *    winLogin.disabled = "false">
@@ -51177,9 +51763,14 @@ apf.aml.setElement("section", apf.section);
  *          winLogin.disabled = "true" />
  *      <a:state id="stIdle" />
  *  </a:state-group>
- * </code>
- * @addnode elements
- * @see element.state
+ * ```
+ *
+ * @class apf.stateGroup
+ * @define state-group
+ * @logic
+ * @inherits apf.AmlElement
+ *
+ * @see apf.state
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -51277,64 +51868,66 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 /**
- * Element displaying a skinnable menu of items which can be choosen.
- * Based on the context of the menu, items can be shown and hidden. That's
- * why this element is often called a contextmenu.
- * Example:
- * <code>
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2"></a:iconmap>
+ * This element displays a skinnable menu of items which can be choosen.
  * 
- *  <a:menu id="msub">
- *      <a:item icon="tbicons:12">test</a:item>
- *      <a:item icon="tbicons:14">test2</a:item>
- *  </a:menu>
+ * Based on the context of the menu, items can be shown and hidden. 
  * 
- *  <a:menu id="mmain">
- *      <a:item icon="tbicons:1">table_wizard</a:item>
- *      <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
- *      <a:divider></a:divider>
- *      <a:radio>item 1</a:radio>
- *      <a:radio>item 2</a:radio>
- *      <a:radio>item 3</a:radio>
- *      <a:radio>item 4</a:radio>
- *      <a:divider></a:divider>
- *      <a:check hotkey="Ctrl+T">item check 1</a:check>
- *      <a:check hotkey="F3">item check 2</a:check>
- *      <a:divider></a:divider>
- *      <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
- *      <a:item icon="tbicons:10">table_wizard</a:item>
- *  </a:menu>
- * 
- *  <a:window 
- *    visible     = "true" 
- *    width       = "200"
- *    height      = "190"
- *    contextmenu = "mmain"
- *    center      = "true">
- *  </a:window>
- * </code>
- * @see baseclass.guielement.event.contextmenu
  *
- * @event display   Fires when the contextmenu is shown.
- * @event itemclick Fires when a user presses the mouse button while over a child of this element.
- *   object:
- *   {String} value the value of the clicked element.
+ * #### Example
+ * 
+ * ```xml, demo
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *       <a:item>Tutorials</a:item>
+ *       <a:item icon="email.png">Contact</a:item>
+ *       <a:divider></a:divider>
+ *       <a:item 
+ *         icon    = "application_view_icons.png"
+ *         hotkey  = "Ctrl+T"
+ *         onclick = "setTimeout(function(){alert('You did it');}, 1000)">
+ *         Tutorials</a:item>
+ *       <a:divider />
+ *       <a:item disabled="true">Visit Ajax.org</a:item>
+ *       <a:item>Exit</a:item>
+ *   </a:menu>
+ *   <a:window
+ *     width     = "400"
+ *     height    = "150"
+ *     visible   = "true"
+ *     resizable = "true"
+ *     title     = "Mail message"
+ *     skin      = "bk-window2">
+ *       <a:toolbar>
+ *           <a:menubar>
+ *               <a:button submenu="menu1">File</a:button>
+ *               <a:button submenu="menu1" disabled="true">Edit</a:button>
+ *           </a:menubar>
+ *       </a:toolbar>
+ *   </a:window>
+ *   <!-- endcontent -->
+ *  </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.menu
  * @define menu
+ * @selection
  * @allowchild item, divider, check, radio
- * @addnode elements
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @inherits apf.Presentation
+ */
+/**
+ * @event display   Fires when the contextmenu is shown.
+ */
+/**
+ * @event itemclick Fires when a user presses the mouse button while over a child of this element.
+ * @param {Object} e The standard event object. The following property is available:
+ *   - `value` ([[String]]): the value of the clicked element.
+ *
  */
 apf.menu = function(struct, tagName){
     this.$init(tagName || "menu", apf.NODE_VISIBLE, struct);
@@ -51348,7 +51941,7 @@ apf.menu = function(struct, tagName){
     //var _self         = this;
     //var blurring      = false;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //this.zindex    = 10000000;
     this.visible   = false;
@@ -51452,18 +52045,18 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     var lastFocus;
 
     /**
      * Shows the menu, optionally within a certain context.
-     * @param {Number}     x        the left position of the menu.
-     * @param {Number}     y        the top position of the menu.
-     * @param {Boolean}    noanim   whether to animate the showing of this menu.
-     * @param {AMLElement} opener   the element that is the context of this menu.
-     * @param {XMLElement} xmlNode  the {@link term.datanode data node} that provides data context to the menu child nodes.
-     * @see baseclass.guielement.event.contextmenu
+     * @param {Number}     x        The left position of the menu.
+     * @param {Number}     y        The top position of the menu.
+     * @param {Boolean}    noanim   Whether to animate the showing of this menu.
+     * @param {apf.AmlElement} opener   The element that is the context of this menu.
+     * @param {XMLElement} xmlNode  The {@link term.datanode data node} that provides data context to the menu child nodes.
+     * @see apf.GuiElement@contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
@@ -51586,8 +52179,8 @@ apf.menu = function(struct, tagName){
     };
 
     /**
-     * Returns the current value of this element.
-     * @return {String}
+     * Returns the current group value of this element.
+     * @return {String} The current selected value.
      */
     this.getValue = function(group){
         return this.getSelected(group).value || "";
@@ -51595,8 +52188,8 @@ apf.menu = function(struct, tagName){
 
     /**
      * Retrieves the selected element from a group of radio elements.
-     * @param {String} group the name of the group.
-     * @return {radio} the selected radio element.
+     * @param {String} group The name of the group.
+     * @return {apf.radiobutton} The selected radio element.
      */
     this.getSelected = function(group){
         var nodes = this.childNodes;
@@ -51610,12 +52203,12 @@ apf.menu = function(struct, tagName){
         }
 
         return false;
-    }
+    };
 
     /**
      * Selects an element within a radio group.
-     * @param {String} group  the name of the group.
-     * @param {String} value  the value of the item to select.
+     * @param {String} group  The name of the group.
+     * @param {String} value  The value of the item to select.
      */
     this.select = function(group, value){
         var nodes = this.childNodes;
@@ -51633,7 +52226,7 @@ apf.menu = function(struct, tagName){
         }
     };
 
-    /**** Events ****/
+    // *** Events *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -51794,7 +52387,7 @@ apf.menu = function(struct, tagName){
     this.addEventListener("blur", forceHide);
     this.addEventListener("popuphide", forceHide);
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$pHtmlNode = document.body;
@@ -51950,19 +52543,70 @@ apf.aml.setElement("menu", apf.menu);
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
- * @constructor
- * @define button, submit, trigger, reset
- * @addnode elements
+ *
+ * #### Example: Working with Events
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 100" cellheight="24">
+ *      <a:label>Onclick event</a:label>
+ *      <a:button
+ *        skin    = "btn-default-css3"
+ *        class   = "btn-green"
+ *        width   = "120"
+ *        onclick = "alert('Button has been clicked')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseover event</a:label>
+ *      <a:button 
+ *        skin        = "btn-default-css3"
+ *        class       = "btn-red"
+ *        width       = "120"
+ *        onmouseover = "alert('Button has been hovered')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseout event</a:label>
+ *      <a:button 
+ *        width      = "120"
+ *        onmouseout = "alert('Mouse hover out button')">
+ *          Example button</a:button>
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Interactions and Colors
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="250" cellheight="24">
+ *  <!-- startcontent -->
+ *  <a:button
+ *    onclick = "b1.setAttribute('width', '200')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 200px</a:button>
+ *  <a:button 
+ *    onclick = "b1.setAttribute('width', '50')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 50px</a:button>
+ *  <a:button id="b1" color="#FF8203">Test</a:button>
+ *  <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
+ * @class apf.button
+ * @inherits apf.BaseButton
+ * @define button
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
- *
+ * @form
  * @inherits apf.BaseButton
  */
 apf.submit  = function(struct, tagName){
     this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
 };
+
 
 apf.trigger = function(struct, tagName){
     this.$init(tagName || "trigger", apf.NODE_VISIBLE, struct);
@@ -51983,7 +52627,7 @@ apf.button  = function(struct, tagName){
     this.$isLeechingSkin = false;
     this.$canLeechSkin   = true;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable  = apf.KEYBOARD; // This object can get the focus
     this.value        = null;
@@ -52097,28 +52741,46 @@ apf.button  = function(struct, tagName){
     });
 
     /**
-     * @attribute {String}  icon     the url from which the icon image is loaded.
-     * @attribute {Boolean} state    whether this boolean is a multi state button.
-     * @attribute {String}  value    the initial value of a state button.
-     * @attribute {String}  color    the text color of the caption of this element.
-     * @attribute {String}  caption  the text displayed on this element indicating the action when the button is pressed.
-     * @attribute {String}  action   one of the default actions this button can perform when pressed.
-     *   Possible values:
-     *   undo     Executes undo on the action tracker of the target element.
-     *   redo     Executes redo on the action tracker of the target element.
-     *   remove   Removes the selected node(s) of the target element.
-     *   add      Adds a node to the target element.
-     *   rename   Starts the rename function on the target element.
-     *   login    Calls log in on the auth element with the values of the textboxes of type username and password.
-     *   logout   Calls lot out on the auth element.
-     *   submit   Submits the data of a model specified as the target.
-     *   ok       Executes a commitTransaction() on the target element, and closes or hides that element.
-     *   cancel   Executes a rollbackTransaction() on the target element, and closes or hides that element.
-     *   apply    Executes a commitTransaction() on the target element.
-     *   close    Closes the target element.
-     * @attribute {String}  target   id of the element to apply the action to. Defaults to the parent container.
-     * @attribute {Number}  default  Search depth for which this button is the default action. 1 specifies the direct parent. 2 the parent of this parent. Et cetera.
-     * @attribute {String}  submenu  the name of the contextmenu to display when the button is pressed.
+     * @attribute {String}  icon     Sets or gets the url from which the icon image is loaded.
+     */
+    /**
+     * @attribute {Boolean} state    Sets or gets whether this boolean is a multi state button.
+     */
+    /**
+     * @attribute {String}  value    Sets or gets the initial value of a state button.
+     */
+    /**
+     * @attribute {String}  color    Sets or gets the text color of the caption of this element.
+     */
+    /**
+     * @attribute {String}  caption  Sets or gets the text displayed on this element indicating the action when the button is pressed.
+     */
+    /**
+     *  @attribute {String}  action   Sets or gets one of the default actions this button can perform when pressed.
+     *   
+     * The possible values include:
+     *
+     *   - `undo`:     Executes undo on the action tracker of the target element.
+     *   - `redo`:     Executes redo on the action tracker of the target element.
+     *   - `remove`:   Removes the selected node(s) of the target element.
+     *   - `add`:      Adds a node to the target element.
+     *   - `rename`:   Starts the rename function on the target element.
+     *   - `login`:    Calls log in on the auth element with the values of the textboxes of type username and password.
+     *   - `logout`:   Calls lot out on the auth element.
+     *   - `submit`:   Submits the data of a model specified as the target.
+     *   - `ok`:       Executes a `commitTransaction()` on the target element, and closes or hides that element.
+     *   - `cancel`:   Executes a `rollbackTransaction()` on the target element, and closes or hides that element.
+     *   - `apply`:    Executes a `commitTransaction()` on the target element.
+     *   - `close`:    Closes the target element.
+     */
+    /**
+     * @attribute {String}  target   Sets or gets the id of the element to apply the action to. Defaults to the parent container.
+     */
+    /**
+     * @attribute {Number}  default  Sets or gets the search depth for which this button is the default action. `1` specifies the direct parent, `2` specifies the parent of this parent, _.e.t.c._
+     */
+    /**
+     * @attribute {String}  submenu  Sets or gets the name of the contextmenu to display when the button is pressed.
      */
     //this.$booleanProperties["default"] = true;
     this.$booleanProperties["state"]   = true;
@@ -52185,14 +52847,16 @@ apf.button  = function(struct, tagName){
 
     
     /**
-     * @attribute {String} hotkey the key combination a user can press
+     * @attribute {String} hotkey Sets or gets the key combination a user can press
      * to active the function of this element. Use any combination of
-     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * [[keys: Ctrl]], [[keys: Shift]], [[keys: Alt]], [[keys: F1]]-[[keys: F12]], and alphanumerical characters. Use a
      * space, a minus or plus sign as a seperator.
-     * Example:
-     * <code>
+     *
+     * #### Example
+     *
+     * ```xml
      *  <a:button hotkey="Ctrl-Z">Undo</a:button>
-     * </code>
+     * ```
      */
     this.$propHandlers["hotkey"] = function(value){
         if (this.$hotkey)
@@ -52333,10 +52997,6 @@ apf.button  = function(struct, tagName){
         return false;
     }
 
-    /**
-     * @attribute {string} submenu If this attribute is set, the button will
-     * function like a menu button
-     */
     this.$propHandlers["submenu"] = function(value){
         if (!value){
             if (this.value && this.parentNode) {
@@ -52362,34 +53022,39 @@ apf.button  = function(struct, tagName){
     };
     
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
+     * specified in the `values` attribute.
      * @param {String} value the new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
     };
-    
+
+    /**
+     * If this button is a submenu, this method shows it.
+     */    
     this.showMenu = function(){
         if (this.submenu && !this.value)
             menuDown.call(this);
-    }
-    
+    };
+    /**
+     * If this button is a submenu, this method hides it.
+     */     
     this.hideMenu = function(){
         if (this.submenu && this.value)
             menuDown.call(this);
-    }
+    };
 
     /**
-     * Sets the text displayed as caption of this element.
+     * Sets the text displayed as a caption of this element.
      *
-     * @param  {String}  value  required  The string to display.
-     * @see    baseclass.validation
+     * @param  {String}  value   The string to display.
+     * @see    apf.Validation
      */
     this.setCaption = function(value){
         this.setProperty("caption", value, false, true);
@@ -52398,9 +53063,7 @@ apf.button  = function(struct, tagName){
     /**
      * Sets the URL of the icon displayed on this element.
      *
-     * @param  {String}  value  required  The URL to the location of the icon.
-     * @see    element.button
-     * @see    element.modalwindow
+     * @param  {String}  value   The URL to the location of the icon.
      */
     this.setIcon = function(url){
         this.setProperty("icon", url, false, true);
@@ -52408,7 +53071,7 @@ apf.button  = function(struct, tagName){
     
     
 
-    /**** Private state methods ****/
+    // *** Private state methods *** //
 
     this.$setStateBehaviour = function(value){
         this.value     = value || false;
@@ -52472,7 +53135,7 @@ apf.button  = function(struct, tagName){
     };
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.addEventListener("$skinchange", function(e){
         if (this.tooltip)
@@ -52570,31 +53233,37 @@ apf.aml.setElement("button",  apf.button);
 
 
 /**
- * Item of a menu displaying a clickable area.
- * Example:
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2" />
- *  <a:menu id="menu1">
- *      <a:item icon="tbicons:1">Tutorials</a:item>
- *      <a:item icon="tbicons:5">Contact</a:item>
- *  </a:menu>
- *  <a:toolbar>
+ * Represents an item in a menu, displaying a clickable area.
+ * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *      <a:item>Tutorials</a:item>
+ *      <a:item>Contact</a:item>
+ *   </a:menu>
+ *   <a:toolbar>
  *      <a:menubar>
  *          <a:button submenu="menu1">File</a:button>
  *      </a:menubar>
- *  </a:toolbar>
- * </code>
+ *   </a:toolbar>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.item
+ * @selection
  * @define item
- * @constructor
+ * @inherits apf.Presentation
  *
+ */
+/**
  * @event click Fires when a user presses the mouse button while over this element.
- *   object:
- *   {XMLElement} xmlContext the xml data node that was selected in the opener at the time of showing the context menu.
- *   {AMLElement} opener the element that was clicked upon when showing the context menu.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *  - xmlContext ([[XMLElement]]): The XML data node that was selected in the opener at the time of showing the context menu.
+ *  - opener ([[apf.AmlElement]]): The element that was clicked upon when showing the context menu.
  */
 apf.item  = function(struct, tagName){
     this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
@@ -52610,7 +53279,7 @@ apf.item  = function(struct, tagName){
 
     this.implement(apf.ChildValue);
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
@@ -52625,10 +53294,12 @@ apf.item  = function(struct, tagName){
                                    "type", "values");
 
     /**
-     * @attribute {String} [submenu] the id of the menu that is shown
+     * @attribute {String} submenu Sets or gets the id of the menu that is shown
      * when the user hovers over this menu item.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:menu id="msub">
      *      <a:item icon="tbicons:12">test</a:item>
      *      <a:item icon="tbicons:14">test2</a:item>
@@ -52643,23 +53314,26 @@ apf.item  = function(struct, tagName){
      *          <a:button submenu="mmain">File</a:button>
      *      </a:menubar>
      *  </a:toolbar>
-     * </code>
+     * ```
      */
     this.$propHandlers["submenu"] = function(value){
         apf.setStyleClass(this.$ext, "submenu");
     }
     
     /**
-     * @attribute {String} value the value of this element.
+     * @attribute {String} value Sets or gets the value of this element.
      */
 
     /**
-     * @attribute {String} [select] the xpath statement which works on the
-     * xml context of the parent menu element to determine whether this
+     * @attribute {String} [select] Sets or gets the XPath statement which works on the
+     * XML context of the parent menu element to determine whether this
      * item is shown.
-     * Example:
-     * This example shows a list
-     * <code>
+     * 
+     * #### Example
+     * 
+     * This example shows a list:
+     * 
+     * ```xml
      *   <a:menu id="mnuTest">
      *       <a:item match="[person]" method="send">Send an E-mail</a:item>
      *       <a:item match="[phone]" method="call">Call Number</a:item>
@@ -52697,7 +53371,7 @@ apf.item  = function(struct, tagName){
      *       <a:contextmenu menu="mnuXY" match="[computer]" />
      *       <a:contextmenu menu="mnuTest" />
      *   </a:list>
-     * </code>
+     * ```
      */
     this.$propHandlers["select"] = function(value){
         this.select = value
@@ -52706,17 +53380,19 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} [group] the name of the group this item belongs
+     * @attribute {String} [group] Sets or gets the name of the group this item belongs
      * to.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:menu>
      *      <a:item type="radio" group="example">item 1</a:item>
      *      <a:item type="radio" group="example">item 2</a:item>
      *      <a:item type="radio" group="example">item 3</a:item>
      *      <a:item type="radio" group="example">item 4</a:item>
      *  </a:menu>
-     * </code>
+     * ```
      */
     this.$propHandlers["group"] = function(value){
         if (this.$group && this.$group.$removeRadio)
@@ -52749,14 +53425,16 @@ apf.item  = function(struct, tagName){
 
     
     /**
-     * @attribute {String} hotkey the key combination a user can press
+     * @attribute {String} hotkey Sets or gets the key combination a user can press
      * to active the function of this element. Use any combination of
-     * Ctrl, Shift, Alt, F1-F12 and alphanumerical characters. Use a
+     * [[keys: Ctrl]], [[keys: Shift]], [[keys: Alt]], [[keys: F1]]-[[keys: F12]], and alphanumerical characters. Use a
      * space, a minus or plus sign as a seperator.
-     * Example:
-     * <code>
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:item hotkey="Ctrl+Q">Quit</a:item>
-     * </code>
+     * ```
      */
     this.$propHandlers["hotkey"] = function(value){
         if (!this.$amlLoaded) {
@@ -52807,7 +53485,7 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} icon the url of the image used as an icon or
+     * @attribute {String} icon Sets or gets the URL of the image used as an icon or
      * a reference to an iconmap.
      */
     this.$propHandlers["icon"] = function(value){
@@ -52816,7 +53494,7 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} caption the text displayed on the item.
+     * @attribute {String} caption Sets or gets the text displayed on the item.
      */
     this.$propHandlers["caption"] = function(value){
         if (this.$caption)
@@ -52824,11 +53502,12 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {String} type the function of this item
-     * Possible values:
-     * item
-     * check
-     * radio
+     * @attribute {String} type Sets or gets the function of this item.
+     * 
+     * Possible values include:
+     * - `"item"`
+     * - `"check"`
+     * - `"radio"`
      */
     this.$propHandlers["type"] = function(value){
         apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
@@ -52864,7 +53543,7 @@ apf.item  = function(struct, tagName){
     };
     
     /**
-     * @attribute {Boolean} checked whether the item is checked.
+     * @attribute {Boolean} checked Sets or gets whether the item is checked.
      */
     this.$propHandlers["checked"] = function(value){
         if (this.type != "check")
@@ -52910,7 +53589,7 @@ apf.item  = function(struct, tagName){
     }
 
     /**
-     * @attribute {Boolean} selected whether the item is selected.
+     * @attribute {Boolean} selected Sets or gets whether the item is selected.
      */
     this.$propHandlers["selected"] = function(value){
         if (this.type != "radio")
@@ -52927,7 +53606,7 @@ apf.item  = function(struct, tagName){
     }
     
     /**
-     * @attribute {Boolean} disabled whether the item is active.
+     * @attribute {Boolean} disabled Sets or gets whether the item is active.
      */
     this.$propHandlers["disabled"] = function(value){
         if (apf.isTrue(value) || value == -1)
@@ -52936,7 +53615,7 @@ apf.item  = function(struct, tagName){
             apf.setStyleClass(this.$ext, "", ["disabled"]);
     }
 
-    /**** Dom Hooks ****/
+    // *** Dom Hooks *** //
 
     //@todo apf3.0
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
@@ -52949,7 +53628,7 @@ apf.item  = function(struct, tagName){
         }
     });
 
-    /**** Events ****/
+    // *** Events *** //
 
     this.$down = function(){
 
@@ -53096,7 +53775,7 @@ apf.item  = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(isSkinSwitch){
         var p = this.parentNode;
@@ -53246,7 +53925,7 @@ apf.item  = function(struct, tagName){
             this.$ext.parentNode.insertBefore(this.$ext, this.nextSibling.$ext);
     };
     
-    /**
+    /*
      * @private
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
@@ -53371,53 +54050,156 @@ apf.aml.setElement("param", apf.param);
 
 //@todo DOCUMENT the modules too
 
+
 /**
- * Element displaying a rectangular area wich allows a
- * user to type information. The information typed can be
- * restricted by using this.$masking. The information can also
- * be hidden from view when used in password mode. By adding an 
- * {@link element.autocomplete autocomplete element} as a child the 
- * value for the textbox can be looked up as you type. By setting the 
- * {@link element.textbox.attribute.mask mask atribute}, complex data input 
- * validation is done while the users types.
- * 
- * @constructor
- * @define input, secret, textarea, textbox
- * @allowchild autocomplete, {smartbinding}
- * @addnode elements
+ * This element displays a rectangular area which allows a
+ * user to type information. 
  *
+ * The information typed can be
+ * restricted by using `this.$masking`. The information can also
+ * be hidden from view when used in password mode. 
+ *
+ * By adding an 
+ * autocomplete element as a child, the 
+ * value for the textbox can be looked up as you type. By setting the 
+ * {@link apf.textbox.mask mask attribute}, complex data input 
+ * validation is done while the user types.
+ *
+ * #### Example: Simple Boxes
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="150">
+ *   <!-- startcontent -->
+ *   <a:textbox value="Text"></a:textbox>
+ *   <a:textbox value="Text" disabled="true" initial-message="I'm disabled!"></a:textbox>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ *
+ * #### Example: Validation
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label for="lbl2">Please enter a minimum of three characters</a:label>
+ *   <a:textbox 
+ *     id         = "lbl2"
+ *     minlength  = "3" 
+ *     maxlength  = "5" 
+ *     invalidmsg = "Invalid! Please enter a minimum of three characters" />
+ *     <a:label for="lbl3">Enter your email address</a:label>
+ *   <a:textbox 
+ *     id         = "lbl3"
+ *     datatype   = "a:email" 
+ *     invalidmsg = "Invalid! Please enter a proper email address" />
+ *   <a:label 
+ *     caption = "A US Phone Number" 
+ *     for     = "txt71">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask = "(000)0000-0000;;_" 
+ *     id   = "txt71" />
+ *   <a:label 
+ *     caption = "A Date"
+ *     for     = "txt73">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask       = "00-00-0000;;_"
+ *     datatype   = "xsd:date"
+ *     invalidmsg = "Invalid date; Please enter a correct date"
+ *     id         = "txt73" />
+ *   <a:label 
+ *     caption = "A MAC Address" 
+ *     for     = "txt75" ></a:label>
+ *   <a:textbox 
+ *     mask = "XX-XX-XX-XX-XX-XX;;_"
+ *     id   = "txt75" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example: A Regular Box
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400">
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.textbox
+ * @define textbox
+ * @allowchild autocomplete, {smartbinding}
+ *
+ * @form
  * @inherits apf.StandardBinding
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.1
  *
+ *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ *
  * Sets the value based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlTextbox">
  *      <data name="Lukasz"></data>
  *  </a:model>
  *  <a:textbox model="mdlTextbox" value="[@name]" />
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ * ```xml
  *  <a:model id="mdlTextbox">
  *      <data name="Lukasz"></data>
  *  </a:model>
  *  <a:textbox value="[mdlTextbox::@name]" />
- * </code>
+ * ```
  *
+ */
+/**
  * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+ */
+/**
  * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
+ */
+/**
  * @event mousedown Fires when the user presses a mousebutton while over this element. 
+ */
+/**
  * @event keyup     Fires when the user lets go of a keyboard button while this element is focussed. 
- *   object:
- *   {Number}  keyCode   which key was pressed. This is an ascii number.
+ * @param {Object} e The standard event object. It contains the following property:
+ *  - keyCode ([[Number]]): which key was pressed. This is an ascii number.
+ */
+/**
  * @event clear     Fires when the content of this element is cleared. 
  */
 apf.input    = function(struct, tagName){
@@ -53468,8 +54250,8 @@ apf.textbox  = function(struct, tagName){
     this.multiline         = false;
 
     /**
-     * @attribute {Boolean} realtime whether the value of the bound data is
-     * updated as the user types it, or only when this element looses focus or
+     * @attribute {Boolean} realtime Defines whether the value of the bound data is
+     * updated as the user types it, or only when this element loses focus or
      * the user presses enter.
      */
     this.$booleanProperties["readonly"]    = true;
@@ -53480,10 +54262,11 @@ apf.textbox  = function(struct, tagName){
         "focusselect", "realtime", "type", "rows", "cols", "kbclear");
 
     /**
-     * @attribute {String} value the text of this element
-     * @todo apf3.0 check use of this.$propHandlers["value"].call
+     * @attribute {String} value Sets or gets the text of this element
+     * 
      */
     this.$propHandlers["value"] = function(value, prop, force, initial){
+    // @todo apf3.0 check use of this.$propHandlers["value"].call
         if (!this.$input || !initial && this.getValue() == value)
             return;
 
@@ -53524,57 +54307,76 @@ apf.textbox  = function(struct, tagName){
     });
 
     /**
-     * @attribute {String} mask a complex input pattern that the user should
-     * adhere to. This is a string which is a combination of special and normal
-     * characters. Then comma seperated it has two options. The first option
-     * specifies whether the non input characters (the chars not typed by the
+     * @attribute {String} mask Sets or gets a complex input pattern that the user should
+     * adhere to. 
+     * 
+     * This is a string which is a combination of special and normal
+     * characters. It is comma seperated, and thus has two options. The first option
+     * specifies whether the non-input characters (the chars not typed by the
      * user) are in the value of this element. The second option specifies the
      * character that is displayed when the user hasn't yet filled in a
      * character.
-     *   Characters:
-     *   0  Any digit
-     *   1  The number 1 or 2.
-     *   9  Any digit or a space.
-     *   #  User can enter a digit, space, plus or minus sign.
-     *   L  Any alpha character, case insensitive.
-     *   ?  Any alpha character, case insensitive or space.
-     *   A  Any alphanumeric character.
-     *   a  Any alphanumeric character or space.
-     *   X  Hexadecimal character, case insensitive.
-     *   x  Hexadecimal character, case insensitive or space.
-     *   &  Any whitespace.
-     *   C  Any character.
-     *   !  Causes the input mask to fill from left to right instead of from right to left.
-     *   '  The start or end of a literal part.
-     *   "  The start or end of a literal part.
-     *   >  Converts all characters that follow to uppercase.
-     *   <  Converts all characters that follow to lowercase.
-     *   \  Cancel the special meaning of a character.
-     * Example:
-     * An american style phone number.
-     * <code>
+     *
+     *  The following characters are possible:
+     *
+     *   - `0`: any digit
+     *   - `1`: the number 1 or 2.
+     *   - `9`: any digit or a space.
+     *   - `#`: user can enter a digit, space, plus or minus sign.
+     *   - `L`: any alpha character, case insensitive.
+     *   - `?`: any alpha character, case insensitive or space.
+     *   - `A`: any alphanumeric character.
+     *   - `a`: any alphanumeric character or space.
+     *   - `X`: hexadecimal character, case insensitive.
+     *   - `x`: hexadecimal character, case insensitive or space.
+     *   - `&`: any whitespace.
+     *   - `C`: any character.
+     *   - `!`: causes the input mask to fill from left to right instead of from right to left.
+     *   - `'`: the start or end of a literal part.
+     *   - `"`: the start or end of a literal part.
+     *   - `>`: converts all characters that follow to uppercase.
+     *   - `<`: converts all characters that follow to lowercase.
+     *   - `\`: cancel the special meaning of a character.
+     * 
+     * #### Example
+     *
+     * An American phone number:
+     *
+     * ```xml
      *  <a:textbox mask="(000)0000-0000;;_" />
-     * </code>
-     * Example:
-     * A dutch postal code
-     * <code>
+     * ```
+     * 
+     * #### Example
+     *
+     * A Dutch postal code:
+     *
+     * ```xml
      *  <a:textbox mask="0000 AA;;_" />
-     * </code>
-     * Example:
+     * ```
+     * 
+     * #### Example
+     *
      * A date
-     * <code>
+     * 
+     * ```xml
      *  <a:textbox mask="00-00-0000;;_" datatype="xsd:date" />
-     * </code>
-     * Example:
+     * ```
+     * 
+     * #### Example
+     *
      * A serial number
-     * <code>
+     * 
+     * ```xml
      *  <a:textbox mask="'WCS74'0000-00000;1;_" />
-     * </code>
-     * Example:
+     * ```
+     * 
+     * #### Example
+     *
      * A MAC address
-     * <code>
+     * 
+     * ```xml
      *  <a:textbox mask="XX-XX-XX-XX-XX-XX;;_" />
-     * </code>
+     * ```
      */
     this.$propHandlers["mask"] = function(value){
         if (this.mask.toLowerCase() == "password")// || !apf.hasMsRangeObject)
@@ -53600,9 +54402,9 @@ apf.textbox  = function(struct, tagName){
     //};
 
     /**
-     * @attribute {String} initial-message the message displayed by this element
+     * @attribute {String} initial-message Sets or gets the message displayed by this element
      * when it doesn't have a value set. This property is inherited from parent
-     * nodes. When none is found it is looked for on the appsettings element.
+     * nodes. When none is found, it is looked for on the appsettings element.
      */
     this.$propHandlers["initial-message"] = function(value){
         if (value) {
@@ -53621,7 +54423,7 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} rows the row length for a text area
+     * @attribute {Number} rows Sets or gets the row length for a text area.
      */
     this.$propHandlers["rows"] = function(value){
         if (this.$input.tagName.toLowerCase() == "textarea" && value) {
@@ -53633,7 +54435,7 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} cols the column height for a text area
+     * @attribute {Number} cols Sets or gets the column height for a text area.
      */
     this.$propHandlers["cols"] = function(value){
         if (this.$input.tagName.toLowerCase() == "textarea" && value) {
@@ -53645,7 +54447,7 @@ apf.textbox  = function(struct, tagName){
     };
     
     /**
-     * @attribute {Boolean} focusselect whether the text in this element is
+     * @attribute {Boolean} focusselect Sets or gets whether the text in this element is
      * selected when this element receives focus.
      */
     this.$propHandlers["focusselect"] = function(value){
@@ -53661,11 +54463,11 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} type the type or function this element represents.
-     * This can be any arbitrary name. Although there are some special values.
-     *   Possible values:
-     *   username   this element is used to type in the name part of login credentials.
-     *   password   this element is used to type in the password part of login credentials.
+     * @attribute {String} type Sets or gets the type or function this element represents.
+     * This can be any arbitrary name, although there are some special values:
+     *   
+     *   - `"username"`: this element is used to type in the name part of login credentials.
+     *   - `"password"`: this element is used to type in the password part of login credentials.
      */
     this.$propHandlers["type"] = function(value){
         if (value && "password|username".indexOf(value) > -1
@@ -53679,22 +54481,25 @@ apf.textbox  = function(struct, tagName){
         return true;
     };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         return this.setProperty("value", value, false, true);
     };
-    
+
+    /**
+     * Clears an element's value.
+     */    
     this.clear = function(){
         this.setProperty("value", "");
-    }
+    };
     
     //@todo cleanup and put initial-message behaviour in one location
     this.$clear = function(noEvent){
@@ -53708,11 +54513,11 @@ apf.textbox  = function(struct, tagName){
         
         if (!noEvent)
             this.dispatchEvent("clear");//@todo this should work via value change
-    }
+    };
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         var v;
@@ -53936,7 +54741,7 @@ apf.textbox  = function(struct, tagName){
         clearInterval(fTimer);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         var _self       = this,
@@ -54253,21 +55058,55 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 /**
- * Element displaying a rectangle containing arbitrary (X)HTML.
+ * This element displays a rectangle containing arbitrary (X)HTML.
+ *
  * This element can be databound and use databounding rules to
- * convert data into (X)HTML using for instance XSLT or JSLT.
+ * convert data into (X)HTML using--for instance--XSLT or JSLT.
  *
- * @constructor
+ * #### Example: Some simple text
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text width="300">
+ *   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. 
+ *   </a:text>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Using Scrolldown
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text id="txtExample"
+ *     width      = "300"
+ *     height     = "100" 
+ *     scrolldown = "true">
+ *       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. Quisque semper sem dignissim quam ullamcorper et lobortis arcu eleifend. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce ac commodo mi. Pellentesque sit amet magna sed velit volutpat volutpat. Nam lobortis sem sed tortor accumsan dictum. Donec scelerisque rhoncus cursus. Mauris dui dolor, vehicula quis lacinia quis, facilisis et eros. Nulla facilisi. Donec urna velit, adipiscing non sollicitudin at, sodales id lorem. Fusce fringilla, magna id pellentesque egestas, neque risus luctus mauris, vel porttitor libero tortor et augue. Integer euismod porttitor mi, at viverra nulla pharetra vel. Etiam odio elit, volutpat a porttitor eu, posuere nec augue. Phasellus placerat lacus ut augue tempor consectetur. 
+ *   </a:text>
+ *   <a:button 
+ *     onclick="txtExample.setValue(txtExample.getValue() + '&lt;br />A new line!')">
+ *       Add a line
+ *   </a:button>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.text
  * @define text
- * @addnode elements
  *
+ * @form
  * @inherits apf.Cache
+ * @inherits apf.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.1
- * @todo Please refactor this object
+ * 
  */
+// @todo Please refactor this object
 apf.text = function(struct, tagName){
     this.$init(tagName || "text", apf.NODE_VISIBLE, struct);
     
@@ -54289,16 +55128,19 @@ apf.text = function(struct, tagName){
 
     this.$textTimer = this.$lastMsg = this.$lastClass = this.$changedHeight = null;
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     /**
-     * @attribute {Boolean} scrolldown  whether this elements viewport is always
+     * @attribute {Boolean} scrolldown  Sets or gets whether this element's viewport is always
      *                                  scrolled down. This is especially useful
      *                                  when this element is used to displayed
      *                                  streaming content such as a chat conversation.
-     * @attribute {Boolean} secure      whether the content loaded in this element
+     *
+     */
+    /**
+     * @attribute {Boolean} secure      Sets or gets whether the content loaded in this element
      *                                  should be filtered in order for it to not
-     *                                  be able to execute javascript. This is
+     *                                  be able to execute JavaScript. This is
      *                                  especially useful when the content does
      *                                  not come from a trusted source, like a
      *                                  web service or xmpp feed.
@@ -54364,7 +55206,7 @@ apf.text = function(struct, tagName){
     }*/
 
     /**
-     * @attribute {String} value the contents of this element. This can be text or html or xhtml.
+     * @attribute {String} value Sets or gets the contents of this element. This can be text, html, xhtml.
      */
     this.$propHandlers["value"] = function(value, prop, force, forceAdd){
         if (this.each)
@@ -54409,7 +55251,7 @@ apf.text = function(struct, tagName){
     this.$eachHandler = function(value) {
         this.$attrExcludePropBind = apf.extend({}, this.$attrExcludePropBind);
         this.$attrExcludePropBind.value = value ? 2 : 0;
-    }
+    };
     this.addEventListener("prop.each", this.$eachHandler);
     
     this.addEventListener("$clear", function(){
@@ -54421,19 +55263,19 @@ apf.text = function(struct, tagName){
     // @todo replace this stub with something that does something
     this.$moveNode = function() {};
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
     this.addValue = function(value){
         this.$propHandlers["value"].call(this, value, null, null, true);
         this.dispatchEvent("prop.value", {value: this.value});
-    }
+    };
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -54441,7 +55283,7 @@ apf.text = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.$container.innerHTML;
@@ -54449,7 +55291,7 @@ apf.text = function(struct, tagName){
     
     
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -54486,7 +55328,7 @@ apf.text = function(struct, tagName){
     }, true);
     
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$canLoadData = function(){
         return this.$attrBindings.value ? true : false;
@@ -54524,7 +55366,7 @@ apf.text = function(struct, tagName){
     this.$updateNode =
     this.$moveNode   = apf.K;
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$ext = this.$getExternal();
@@ -54740,63 +55582,66 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 /**
- * Element displaying a two state button which is one of a grouped set.
+ * This element displays a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be selected at the same time.
- * Example:
- * <code>
- *  <a:frame caption="Options">
- *      <a:radiobutton>Option 1</a:radiobutton>
- *      <a:radiobutton>Option 2</a:radiobutton>
- *      <a:radiobutton>Option 3</a:radiobutton>
- *      <a:radiobutton>Option 4</a:radiobutton>
- *  </a:frame>
- * </code>
- * Example:
- * This example shows radio buttons with an explicit group set:
- * <code>
- *  <a:label>Options</a:label>
- *  <a:radiobutton group="g1">Option 1</a:radiobutton>
- *  <a:radiobutton group="g1">Option 2</a:radiobutton>
+ * 
+ * #### Example: Settings Groups
  *
- *  <a:label>Choices</a:label>
- *  <a:group id="g2" value="[mdlForm::choice]">
- *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
- *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
- *  </a:grou>
- * </code>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 150" cellheight="20">
+ *   <!-- startcontent -->
+ *     <a:label>Options</a:label> 
+ *     <a:label>Choices</a:label> 
+ *     <a:radiobutton group="g2">Option 1</a:radiobutton> 
+ *     <a:radiobutton group="g3">Choice 1</a:radiobutton> 
+ *     <a:radiobutton group="g2">Option 2</a:radiobutton>
+ *     <a:radiobutton group="g3">Choice 2</a:radiobutton>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.radiobutton
  * @define radiobutton
  * @allowchild {smartbinding}
- * @addnode elements
  *
+ * @form
  * @inherits apf.Presentation
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ *
  * Sets the selection based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:radiobutton group="g2" bindings="bndExample" value="1">Choice 1</a:radiobutton>
  *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
  *
  *  <a:bindings id="bndExample">
  *      <a:value match="[@value]" />
  *  </a:bindings>
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ *
+ * ```xml
  *  <a:radiobutton group="g2" value="[@value]" value="1">Choice 1</a:radiobutton>
  *  <a:radiobutton group="g2" value="2">Choice 2</a:radiobutton>
- * </code>
+ * ```
  *
- * @event click Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
- * @see baseclass.amlnode.event.afterchange
+ */
+/**
+ * @event click Fires when the user presses a mousebutton while over this element and then lets the mousebutton go. 
+ * @see apf.AmlNode@afterchange
  */
 apf.radiobutton = function(struct, tagName){
     this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
@@ -54820,16 +55665,17 @@ apf.radiobutton = function(struct, tagName){
         selected: 1
     }, this.$attrExcludePropBind);*/
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$booleanProperties["selected"] = true;
     this.$supportedProperties.push("value", "background", "group",
         "label", "selected", "tooltip", "icon");
 
     /**
-     * @attribute {String} group the name of the group to which this radio
+     * @attribute {String} group Sets or gets the name of the group to which this radio
      * button belongs. Only one item in the group can be selected at the same
-     * time. When no group is specified the parent container functions as the
+     * time. 
+     * When no group is specified the parent container functions as the
      * group; only one radiobutton within that parent can be selected.
      */
     this.$propHandlers["group"] = function(value){
@@ -54868,14 +55714,14 @@ apf.radiobutton = function(struct, tagName){
     };
     
     /**
-     * @attribute {String} tooltip the tooltip of this radio button.
+     * @attribute {String} tooltip Sets or gets the tooltip of this radio button.
      */
     this.$propHandlers["tooltip"] = function(value){
         this.$ext.setAttribute("title", value);
     };
 
     /**
-     * @attribute {String} icon the icon for this radiobutton
+     * @attribute {String} icon Sets or gets the icon for this radiobutton
      */
     this.$propHandlers["icon"] = function(value){
         
@@ -54891,7 +55737,7 @@ apf.radiobutton = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} label the label for this radiobutton
+     * @attribute {String} label Sets or gets the label for this radiobutton
      */
     this.$propHandlers["label"] = function(value){
         if (value)
@@ -54904,7 +55750,7 @@ apf.radiobutton = function(struct, tagName){
     };
 
     /**
-     * @attribute {String} selected whether this radiobutton is the selected one in the group it belongs to.
+     * @attribute {Boolean} selected Sets or gets  whether this radiobutton is the selected one in the group it belongs to.
      */
     this.$propHandlers["selected"] = function(value){
         if (!this.$group)
@@ -54922,24 +55768,20 @@ apf.radiobutton = function(struct, tagName){
     });
 
     /**
-     * @attribute {string} background sets a multistate background. The arguments
-     * are seperated by pipes '|' and are in the order of:
-     * 'imagefilename|mapdirection|nrofstates|imagesize'
-     * The mapdirection argument may have the value of 'vertical' or 'horizontal'.
-     * The nrofstates argument specifies the number of states the iconfile contains:
-     * 1 - normal
-     * 2 - normal, hover
-     * 3 - normal, hover, down
-     * 4 - normal, hover, down, disabled
-     * The imagesize argument specifies how high or wide each icon is inside the
-     * map, depending of the mapdirection argument.
+     * @attribute {String} background Sets a multistate background. The arguments
+     * are seperated by pipes (`'|'`) and are in the order of: `'imagefilename|mapdirection|nrofstates|imagesize'`
+     * 
+     * {:multiStateDoc}
      *
-     * Example:
-     * A 3 state picture where each state is 16px high, vertically spaced
-     * <code>
+     * 
+     * #### Example
+     * 
+     * Here's a three state picture where each state is 16px high, vertically spaced:
+     * 
+     * ```xml
      * background="threestates.gif|vertical|3|16"
-     * </code>
-     * @see baseclass.basebutton
+     * ```
+     * @see apf.BaseButton
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
@@ -54955,16 +55797,16 @@ apf.radiobutton = function(struct, tagName){
             oNode.style.backgroundRepeat = "";
             this.$background = null;
         }
-    }
+    };
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -54972,7 +55814,7 @@ apf.radiobutton = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value
      */
     this.getValue = function(){
         return this.value;
@@ -54980,7 +55822,7 @@ apf.radiobutton = function(struct, tagName){
     
     this.select = function(){
         this.setProperty("selected", true, false, true);
-    }
+    };
     
     /*this.uncheck = function(){
         this.setProperty("selected", false, false, true);
@@ -54988,11 +55830,11 @@ apf.radiobutton = function(struct, tagName){
     
     this.getGroup = function(){
         return this.$group;
-    }
+    };
     
     
 
-    /**
+    /*
      * Sets the selected state and related value
      */
     this.$check = function(visually){
@@ -55011,7 +55853,7 @@ apf.radiobutton = function(struct, tagName){
         this.doBgSwitch(1);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$enable = function(){
         if (this.oInput)
@@ -55094,7 +55936,7 @@ apf.radiobutton = function(struct, tagName){
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
     };
 
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
 
     
     this.addEventListener("keydown", function(e){
@@ -55135,7 +55977,7 @@ apf.radiobutton = function(struct, tagName){
     }, true);
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         //Build Main Skin
@@ -55175,6 +56017,28 @@ apf.radiobutton = function(struct, tagName){
 
 apf.aml.setElement("radiobutton", apf.radiobutton);
 
+/**
+ * An element that defines groups for radio buttons.
+ * 
+ * #### Example
+ *
+ * This example shows radio buttons with an explicit group set:
+ *
+ * ```xml
+ *  <a:label>Options</a:label>
+ *  <a:radiobutton group="g1">Option 1</a:radiobutton>
+ *  <a:radiobutton group="g1">Option 2</a:radiobutton>
+ *
+ *  <a:label>Choices</a:label>
+ *  <a:group id="g2" value="[mdlForm::choice]">
+ *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
+ *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
+ *  </a:group>
+ * ```
+ *
+ * @class apf.group
+ * @define group
+ */
 apf.$group = apf.group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
     
@@ -55240,7 +56104,7 @@ apf.$group = apf.group = function(struct, tagName){
         
         if (rb.selectedItem == rb)
             this.setProperty("value", null);
-    }
+    };
 
     /**
      * Sets the current value of this element.
@@ -55251,7 +56115,7 @@ apf.$group = apf.group = function(struct, tagName){
     
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.value;
@@ -55259,7 +56123,7 @@ apf.$group = apf.group = function(struct, tagName){
 
     this.$draw = function(){
         this.$ext = this.$int = this.$pHtmlNode;
-    }
+    };
 };
 apf.$group.prototype = new apf.GuiElement();
 
@@ -55409,15 +56273,43 @@ apf.aml.setElement("loader", apf.loader);
 
 
 /**
- * @define vsplitbox Container that stacks two children vertically.
- * @see element.hsplitbox
- * @define hsplitbox Container that stacks two children horizontally.
- * @addnode elements
- * @constructor
+ * 
+ * A container that stacks two children vertically. 
+ * 
+ * Programatically, this is identical to a regular [[vbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:vbox>`; however,
+ * the performance improvements in using a `<a:vsplitbox>` are massive.
+ *
+ * @class apf.vsplitbox
+ * @define vsplitbox
+ * @layout
+ *
+ * @inheritDoc apf.hsplitbox
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       3.0
+ * @see element.hsplitbox
+ */
+/**
+ *
+ * A container that stacks two children horizontally.
+ * 
+ * Programatically, this is identical to a regular [[apf.hbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:hbox>`; however,
+ * the performance improvements in using a `<a:hsplitbox>` are massive.
+ *
+ * @class apf.hsplitbox
+ * @define hsplitbox 
+ * @layout
+ * @inherits apf.GuiElement
+ *
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0\
+ * @see element.vsplitbox
  */
 apf.hsplitbox = function(struct, tagName){
     this.$init(tagName || "hsplitbox", apf.NODE_VISIBLE, struct);
@@ -55434,7 +56326,7 @@ apf.vsplitbox = function(struct, tagName){
     this.edge = 0;
     this.$edge = [0,0,0,0];
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -55442,8 +56334,10 @@ apf.vsplitbox = function(struct, tagName){
     this.$layout     = true;
     
     /**
-     * @attribute {String}  padding      the space between each element. Defaults to 2.
-     * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
+     * @attribute {String}  [padding="2"]      Sets or gets the space between each element.
+     */
+    /**
+     * @attribute {String}  [edge="5 5 5 5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      */
     this.$booleanProperties["splitter"] = true;
     this.$supportedProperties.push("padding", "edge", "splitter");
@@ -55855,7 +56749,7 @@ apf.vsplitbox = function(struct, tagName){
             this.$handle.hide();
     }
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)
@@ -56562,26 +57456,17 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
+
 /**
-* @define actions  element containing all the action rules for the data 
+ * This element allows you to define some rules containing all the action rules for the data 
  * bound elements referencing this element.
- * Example:
- * <code>
- *  <a:actions id="actPerson" >
- *      <a:add set="{comm.addPerson([.])}">
- *          <person name="New person" />
- *      </a:add
- *      <a:rename set="{comm.renamePerson([@id], [@name])}" />
- *      <a:remove match="[@new]" set="{comm.removePerson([@id])}"/>
- *  </a:actions>
- *
- *  <a:tree actions="actPerson" />
- * </code>
+ * 
  * @allowchild {actions}
- * @addnode smartbinding, global
  *
- * @constructor
- * @apfclass
+ * @class apf.actions
+ * @inherits apf.AmlElement
+ * @define actions
+ * @logic
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -56622,7 +57507,7 @@ apf.actions = function(struct, tagName){
         amlNode.dispatchEvent("actionsunload", {bindings: this});
     };
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;
@@ -56665,59 +57550,80 @@ apf.aml.setElement("actions", apf.actions);
 
 
 /** 
- * This element is used to choosing number by plus/minus buttons.
- * When plus button is clicked longer, number growing up faster. The same
- * situation is for minus button. It's possible to increment and decrement
- * value by moving mouse cursor up or down with clicked input. Max and
- * min attributes define range with allowed values.
- * 
- * Example:
- * Spinner element with start value equal 6 and allowed values from range
- * (-100, 200)
- * <code>
- *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
- * </code>
- * 
- * Example:
- * Sets the value based on data loaded into this component.
- * <code>
- *  <a:model id="mdlSpinner">
- *      <data value="56"></data>
- *  </a:model>
- *  <a:spinner value="[@value]" model="mdlSpinner" />
- * </code>
-
- * Example:
- * Is showing usage of model in spinner connected with textbox
- * <code>
- *  <a:model id="mdlTest">
- *      <overview page="1" pages="50" />
- *  </a:model>
- *  <a:spinner 
- *    id      = "spinner" 
- *    min     = "0" 
- *    max     = "[@pages]" 
- *    model   = "mdlTest" 
- *    value   = "[@page]" 
- *    caption = "[@page] of [@pages]">
- *  </a:spinner>
- *  <a:textbox value="{spinner.caption}"></a:textbox>
- * </code>
- * 
- * @attribute {Number}   max       maximal allowed value, default is 64000
- * @attribute {Number}   min       minimal allowed value, default is -64000
- * @attribute {Number}   value     actual value displayed in component
- * 
- * @classDescription     This class creates a new spinner
- * @return {Spinner}     Returns a new spinner
+ * This element is used to choose a number via plus/minus buttons.
  *
- * @author      
+ * When the plus button is clicked/held longer, the number increments faster. The same
+ * situation occurs for the minus button. It's also possible to increment and decrement
+ * value by moving mouse cursor up or down with clicked input. 
+ * 
+ * Max and min attributes define the range of allowed values.
+ * 
+ * #### Example: Setting Maximum and Minimum Ranges
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *    <a:spinner value="6" min="-6" max="12" width="200"></a:spinner>
+ *  <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Loading Data
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlSpinner">
+ *       <data value="56"></data>
+ *   </a:model>
+ *   <a:spinner value="[@value]" model="mdlSpinner" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Connecting to a Textbox
+ *
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlTest">
+ *     <overview page="1" pages="10" />
+ *   </a:model>
+ *   <a:spinner 
+ *     id      = "spinner" 
+ *     min     = "0" 
+ *     max     = "[@pages]" 
+ *     model   = "mdlTest" 
+ *     value   = "[@page]" 
+ *     caption = "[@page] of [@pages]">
+ *   </a:spinner>
+ *   <a:textbox value="{spinner.caption}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * @class apf.spinner
+ * @define spinner
+ * @form
  * @version     %I%, %G%
  * 
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
+ * @inheritsElsewhere apf.XForms
  *
+ */
+/**
+ * @attribute {Number}   [max=64000]       Sets or gets the maximum allowed value
+ */
+/**
+ * @attribute {Number}   [min=-64000]      Sets or gets the minimal allowed value
+ */
+/**
+ *  @attribute {Number}   value     Sets or gets the actual value displayed in component
+ * 
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  */
@@ -56777,8 +57683,8 @@ apf.spinner = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value) {
        this.setProperty("value", value, false, true);
@@ -56786,16 +57692,22 @@ apf.spinner = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current element value
      */
     this.getValue = function() {
         return this.value;
     };
-    
+
+    /**
+     * Increments the spinner by one.
+     */
     this.increment = function() {
         this.change(parseInt(this.oInput.value) + 1);
     };
-    
+
+    /**
+     * Decrements the spinner by one.
+     */    
     this.decrement = function() {
         this.change(parseInt(this.oInput.value) - 1);
     };
@@ -56882,8 +57794,12 @@ apf.spinner = function(struct, tagName){
     };
     
     /**
-     * @event click     Fires when the user presses a mousebutton while over this element and then let's the mousebutton go. 
+     * @event click     Fires when the user presses a mousebutton while over this element and then lets the mousebutton go. 
+     */
+    /**
      * @event mouseup   Fires when the user lets go of a mousebutton while over this element. 
+     */
+    /**
      * @event mousedown Fires when the user presses a mousebutton while over this element. 
      */
     this.$draw = function() {
@@ -57207,84 +58123,158 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 /**
- * Element functioning as the central access point for xml data. Data can be
- * retrieved from any data source using data instructions. Data can be
- * submitted using data instructions in a similar way to html form posts. The
- * modal can be reset to it's original state. It has support for offline use and
- * {@link element.remove synchronization between multiple clients}.
- * Example:
- * <code>
- *  <a:model src="products.xml" />
- * </code>
- * Example:
- * A small form where the bound data is submitted to a server using a model.
- * <code>
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data name="Lukasz" address="Poland"></data>
- *  </a:model>
+ * This element functions as the central access point for XML data. Data can be
+ * retrieved from any data source using data instructions. Data can also be
+ * submitted using data instructions in a similar way to HTML form posts. 
+ *
+ * The modal can be reset to its original state. It has support for offline use and
+ * synchronization between multiple clients.
  * 
- *  <a:frame model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[@name]" />
- *      <a:label>Address</a:label>
- *      <a:textarea 
- *        value  = "[@address]" 
- *        width  = "100" 
- *        height = "50" />
- *      <a:button 
- *        default = "true" 
- *        action  = "submit">Submit</a:button>
- *  </a:frame>
- * </code>
+ * #### Example: Loading A Model 
+ * 
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:model id="mdl1">
+ *      <data>
+ *          <row content="This is a row 1" />
+ *          <row content="This is a row 2" />
+ *          <row content="This is a row 3" />
+ *      </data>
+ *  </a:model>
+ *  <a:hbox height="20">
+ *      <a:label>List component:</a:label>
+ *  </a:hbox>
+ *  <a:list 
+ *    model    = "mdl1" 
+ *    each     = "[row]"
+ *    caption  = "[@content]" 
+ *    icon     = "[@icon]" 
+ *    width    = "400">
+ *  </a:list>
+ *  <a:hbox height="30" margin="7 0 3 0">
+ *      <a:label>Datagrid component:</a:label>
+ *  </a:hbox>
+ *  <a:datagrid width="400" height="100" model="mdl1">
+ *      <a:each match="[row]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@content]" 
+ *            width   = "100%" />
+ *      </a:each>
+ *  </a:datagrid>
+ *  <!-- endcontent -->
+ * </a:application>
+ * 
+ * #### Example
  *
- * @event beforeretrieve    Fires before a request is made to retrieve data.
- *   cancelable: Prevents the data from being retrieved.
- * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
- * @event receive           Fires when data is successfully retrieved
- *   object:
- *   {String} data  the retrieved data
- * @event beforeload        Fires before data is loaded into the model.
- *   cancelable:
- * @event afterload         Fires after data is loaded into the model.
- * @event beforesubmit      Fires before data is submitted.
- *   cancelable: Prevents the submit.
- *   object:
- *   {String} instruction The data instruction used to store the data.
- * @event submiterror       Fires when submitting data has failed.
- * @event submitsuccess     Fires when submitting data was successfull.
- * @event aftersubmit       Fires after submitting data.
- * @event error             Fires when a communication error has occured while making a request for this element.
- *   cancelable: Prevents the error from being thrown.
- *   bubbles:
- *   object:
- *   {Error}          error     the error object that is thrown when the event callback doesn't return false.
- *   {Number}         state     the state of the call
- *     Possible values:
- *     apf.SUCCESS  the request was successfull
- *     apf.TIMEOUT  the request has timed out.
- *     apf.ERROR    an error has occurred while making the request.
- *     apf.OFFLINE  the request was made while the application was offline.
- *   {mixed}          userdata  data that the caller wanted to be available in the callback of the http request.
- *   {XMLHttpRequest} http      the object that executed the actual http request.
- *   {String}         url       the url that was requested.
- *   {Http}           tpModule  the teleport module that is making the request.
- *   {Number}         id        the id of the request.
- *   {String}         message   the error message.
+ * A small form where the bound data is submitted to a server using a model:
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlForm" submission="save_form.asp">
+ *       <data name="Lukasz" address="Poland"></data>
+ *   </a:model>
+ *  
+ *   <a:frame model="mdlForm">
+ *       <a:label>Name</a:label>
+ *       <a:textbox value="[@name]" />
+ *       <a:label>Address</a:label>
+ *       <a:textarea 
+ *         value  = "[@address]" 
+ *         width  = "100" 
+ *         height = "50" />
+ *       <a:button 
+ *         default = "true" 
+ *         action  = "submit">Submit</a:button>
+ *   </a:frame>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.model
+ * @inherits apf.AmlElement
  * @define model
+ * @logic
  * @allowchild [cdata], instance, load, submission
- * @addnode smartbinding, global
- * @attribute  {String}  src          the data instruction on how to load data from the data source into this model.
- * @attribute  {String}  submission   the data instruction on how to record the data from the data source from this model.
- * @attribute  {String}  session      the data instruction on how to store the session data from this model.
- * @attribute  {Boolean} autoinit     whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
- * @attribute  {Boolean} enablereset  whether to save the original state of the data. This enables the use of the reset() call.
- * @attribute  {String}  remote       the id of the {@link element.remote} element to use for data synchronization between multiple clients.
  *
+ * 
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
+ * 
+ */
+/**
+ * @attribute  {String}  src          Sets or gets the data instruction on how to load data from the data source into this model.
+ */
+/**
+ * @attribute  {String}  submission   Sets or gets the data instruction on how to record the data from the data source from this model.
+ */
+/**
+ * @attribute  {String}  session      Sets or gets the data instruction on how to store the session data from this model.
+ */
+/**
+ * @attribute  {Boolean} autoinit     Sets or gets whether to initialize the model immediately. If set to false you are expected to call init() when needed. This is useful when the system has to log in first.
+ */
+/**
+ * @attribute  {Boolean} enablereset  Sets or gets whether to save the original state of the data. This enables the use of the reset() call.
+ */
+/**
+ * @attribute  {String}  remote       Sets or gets the id of the remote element to use for data synchronization between multiple clients.
+ */
+/**
+ * @event beforeretrieve    Fires before a request is made to retrieve data.
+ * @cancelable Prevents the data from being retrieved.
+ */
+/**
+ * @event afterretrieve     Fires when the request to retrieve data returns both on success and failure.
+ */
+/**
+ * @event receive           Fires when data is successfully retrieved
+ * @param {Object} e The standard event object. It contains the following property:
+ *  - `data` (([String])):  the retrieved data
+ */
+/**
+ * @event beforeload        Fires before data is loaded into the model.
+ * @cancelable
+ */
+/**
+ * @event afterload         Fires after data is loaded into the model.
+ */
+/**
+ * @event beforesubmit      Fires before data is submitted.
+ * @cancelable Prevents the submit.
+ * @param {Object} e The standard event object. It contains the following property:
+ *   - `instruction` ([[String]]):  the data instruction used to store the data.
+ */
+/**
+ * @event submiterror       Fires when submitting data has failed.
+ */
+/**
+ * @event submitsuccess     Fires when submitting data was successfull.
+ */
+/**
+ * @event aftersubmit       Fires after submitting data.
+ */
+/**
+ * @event error             Fires when a communication error has occured while making a request for this element.
+ * @cancelable Prevents the error from being thrown.
+ * @bubbles
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - `error` ([[Error]]): the error object that is thrown when the event callback doesn't return false.
+ *   - `state` ([[Number]]): the state of the call. Possible values include:
+ *     - `apf.SUCCESS`:  the request was successfull
+ *     - `apf.TIMEOUT`:  the request has timed out.
+ *     - `apf.ERROR`:  an error has occurred while making the request.
+ *     - `apf.OFFLINE`:  the request was made while the application was offline.
+ *   - `userdata` (`Mixed`): data that the caller wanted to be available in the callback of the HTTP request.
+ *   - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
+ *   - `url` ([[String]]): the URL that was requested.
+ *   - `tpModule` ([[apf.http]]): the teleport module that is making the request.
+ *   - `id` ([[Number]]): the id of the request.
+ *   - `message` ([[String]]): the error message.
+ *
  */
 apf.model = function(struct, tagName){
     this.$init(tagName || "model", apf.NODE_HIDDEN, struct);
@@ -57367,14 +58357,14 @@ apf.model = function(struct, tagName){
     
 
     /**
-     * Registers a aml element to this model in order for the aml element to
+     * Registers an AML element to this model in order for the AML element to
      * receive data loaded in this model.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be registered.
-     * @param  {String}      [xpath]  the xpath query which is executed on the
+     * @param  {apf.AmlElement}  amlNode  The AML element to be registered.
+     * @param  {String}      [xpath]  The XPath query which is executed on the
      *                                data of the model to select the node to be
-     *                                loaded in the <code>amlNode</code>.
-     * @return  {Model}  this model
+     *                                loaded in the `amlNode`.
+     * @return  {apf.model}  This model
      * @private
      */
     this.register = function(amlNode, xpath){
@@ -57387,7 +58377,7 @@ apf.model = function(struct, tagName){
         if (amlNode.$model && !isReloading)
             amlNode.$model.unregister(amlNode);
 
-        //Register the aml node
+        //Register the AML node
         var item = this.$amlNodes[amlNode.$uniqueId] = {
             amlNode : amlNode, 
             xpath   : xpath
@@ -57438,12 +58428,12 @@ apf.model = function(struct, tagName){
         this.$amlNodes[amlNode.$uniqueId].xpath = xpath;
     };
 
-    /**
-     * Removes a aml element from the group of registered aml elements.
-     * The aml element will not receive any updates from this model, however
-     * the data loaded in the aml element is not unloaded.
+    /*
+     * Removes an AML element from the group of registered AML elements.
+     * The AML element will not receive any updates from this model, however
+     * the data loaded in the AML element is not unloaded.
      *
-     * @param  {AMLElement}  amlNode  The aml element to be unregistered.
+     * @param  {apf.AmlElement}  amlNode  The AML element to be unregistered.
      * @private
      */
     this.unregister = function(amlNode){
@@ -57456,7 +58446,7 @@ apf.model = function(struct, tagName){
         amlNode.dispatchEvent("unloadmodel");
     };
 
-    /**
+    /*
      * @private
      */
     this.getXpathByAmlNode = function(amlNode){
@@ -57467,7 +58457,7 @@ apf.model = function(struct, tagName){
         return n.xpath;
     };
     
-    /**
+    /*
      * @private
      */
     this.$loadInAmlNode = function(item){
@@ -57603,9 +58593,10 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Gets a copy of current state of the xml of this model.
+     * Gets a copy of current state of the XML of this model.
      *
-     * @return  {XMLNode}  context of this model
+     * @return  {XMLNode}  The context of this model, or `false` if there's no data
+     * 
      */
     this.getXml = function(){
         return this.data
@@ -57614,11 +58605,11 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Sets a value of an XMLNode based on an xpath statement executed on the data of this model.
+     * Sets a value of an XMLNode based on an XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @param  {String}  value  the value to set.
-     * @return  {XMLNode}  the changed XMLNode
+     * @param  {String}  xpath  The xpath used to select a XMLNode.
+     * @param  {String}  value  The value to set.
+     * @return  {XMLNode}  The changed XMLNode
      */
     this.setQueryValue = function(xpath, value){
         if (!this.data)
@@ -57634,11 +58625,11 @@ apf.model = function(struct, tagName){
     };
     
     /**
-     * Sets a value of a set of xml nodes based on an xpath statement executed on the data of this model.
+     * Sets a value of a set of XML nodes based on an XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a the nodeset.
-     * @param  {String}  value  the value to set.
-     * @return  {XMLNodeSet}  the changed XMLNodeSet
+     * @param  {String}  xpath  The xpath used to select a the nodeset.
+     * @param  {String}  value  The value to set.
+     * @return  {NodeList}  The changed XMLNodeSet
      */
     this.setQueryValues = function(xpath, value){
         if (!this.data)
@@ -57652,10 +58643,10 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
+     * Gets the value of an XMLNode based on a XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @return  {String}  value of the XMLNode
+     * @param  {String}  xpath  The XPath used to select a XMLNode.
+     * @return  {String}  The value of the XMLNode
      */
     this.queryValue = function(xpath){
         if (!this.data)
@@ -57665,10 +58656,10 @@ apf.model = function(struct, tagName){
     };
 	
     /**
-     * Gets the value of an XMLNode based on a xpath statement executed on the data of this model.
+     * Gets the values of an XMLNode based on a XPath statement executed on the data of this model.
      *
-     * @param  {String}  xpath  the xpath used to select a XMLNode.
-     * @return  {String}  value of the XMLNode
+     * @param  {String}  xpath  The xpath used to select a XMLNode.
+     * @return  {[String]}  The values of the XMLNode
      */	
     this.queryValues = function(xpath){
         if (!this.data)
@@ -57678,10 +58669,10 @@ apf.model = function(struct, tagName){
     };
 	
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes an XPath statement on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param  {String}   xpath    The XPath used to select the XMLNode(s).
+     * @return  {Mixed} The result of the selection, either an [[XMLNode]] or a [[NodeList]]
      */
     this.queryNode = function(xpath){
         if (!this.data)
@@ -57691,10 +58682,10 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Executes an xpath statement on the data of this model
+     * Executes XPath statements on the data of this model
      *
-     * @param  {String}   xpath    the xpath used to select the XMLNode(s).
-     * @return  {variant}  XMLNode or NodeList with the result of the selection
+     * @param  {String}   xpath    The XPath used to select the XMLNode(s).
+     * @return  {Mixed} The result of the selection, either an [[XMLNode]] or a [[NodeList]]
      */
     this.queryNodes = function(xpath){
         if (!this.data)
@@ -57704,8 +58695,11 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Appends a copy of the xmlNode or model to this model as a child
-     * of it's root node
+     * Appends a copy of the `xmlNode` or model to this model as a child
+     * of its root node
+     * @param {XMLNode} xmlNode The XML node to append
+     * @param {String} [xpath] The path to a node to append to
+     * @returns {XMLNode} The appended node
      */
     this.appendXml = function(xmlNode, xpath){
         var insertNode = xpath
@@ -57728,7 +58722,7 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Removes xmlNode from this model 
+     * Removes an XML node from this model.
      */
     this.removeXml = function(xmlNode){
         if (!this.data) return;
@@ -57768,7 +58762,7 @@ apf.model = function(struct, tagName){
 
     /**
      * Sets a new saved point based on the current state of the data in this
-     * model. The reset() method returns the model to this point.
+     * model. The `reset()` method returns the model to this point.
      */
     this.savePoint = function(){
         this.$copy = apf.xmldb.getCleanCopy(this.data);
@@ -57788,11 +58782,11 @@ apf.model = function(struct, tagName){
         item.amlNode.load(xmlNode);
     };
 
-    /**
-     * @private
-     */
     //@todo refactor this to use .blah instead of getAttribute
     //@todo move this to propHandlers
+    /*
+     * @private
+     */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var x = this.$aml;
         if (this.parentNode && this.parentNode.hasFeature(apf.__DATABINDING__)) {
@@ -57838,11 +58832,11 @@ apf.model = function(struct, tagName){
         return this;
     });
 
+    //callback here is private
     /**
      * Loads the initial data into this model.
-     * @see element.model.attribute.init
+     * @see apf.model.init
      */
-    //callback here is private
     this.init = function(callback){
         if (this.session) {
             this.$loadFrom(this.session, {isSession: true});
@@ -57857,14 +58851,14 @@ apf.model = function(struct, tagName){
 
     /* *********** LOADING ****************/
 
-    /**
+    /*
      * Loads data into this model using a data instruction.
-     * @param {String}     instruction  the data instrution how to retrieve the data.
+     * @param {String}     instruction  The data instrution how to retrieve the data.
      * @param {Object}     options
      *   Properties:
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
      *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
+     *   {Mixed}      []        Custom properties available in the data instruction.
      */
     this.$loadFrom = function(instruction, options){
         
@@ -57956,7 +58950,7 @@ apf.model = function(struct, tagName){
     };
     
     /**
-     * Loads the data from the datasource specified for init.
+     * Loads the data from the datasource specified for [[apf.model.init]].
      */
     this.reload = function(){
         if (!this.data)
@@ -57969,15 +58963,15 @@ apf.model = function(struct, tagName){
     };
 
     /**
-     * Loads data in this model
+     * Loads data into this model.
      *
-     * @param  {mixed} [xmlNode]  the data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an xml string. null will clear the data from this model.
-     * @param {Object}     options
-     *   Properties:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that provides context to the data instruction.
-     *   {Function}   callback  the code executed when the data request returns.
-     *   {mixed}      []        Custom properties available in the data instruction.
-     *   {Boolean}    [nocopy]   Whether the data loaded will not overwrite the reset point.
+     * @param  {Mixed} [xmlNode]  The data to load in this model. A string specifies the data instruction how to retrieve the data, which can be an XML string. `null` will clear the data from this model.
+     * @param {Object} [options] Additional options to pass. This can contain the following properties:
+     *   
+     *   - `xmlNode` ([[XMLElement]]):   the {@link term.datanode data node} that provides context to the data instruction.
+     *   - `callback` ([[Function]]): the code executed when the data request returns.
+     *   - `[]` (`Mixed`): custom properties available in the data instruction.
+     *   - `[nocopy]` ([[Boolean]]): specifies whether the data loaded will not overwrite the reset point.
      */
     this.load = function(xmlNode, options){
         if (typeof xmlNode == "string") {
@@ -58123,18 +59117,18 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("update", {xmlNode: xmlNode, action: action, undoObj: UndoObj});
     };
 
-    /**** INSERT ****/
+    // *** INSERT *** //
 
-    /**
+    /*
      * Inserts data into the data of this model using a data instruction.
-     * @param {String}     instruction  the data instrution how to retrieve the data.
-     * @param {Object}     options
-     *   Properties:
-     *   {XMLElement} insertPoint  the parent element for the inserted data.
-     *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
-     *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
-     *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     * @param {String}     instruction  The data instrution indicating how to retrieve the data.
+     * @param {Object}     options      Additional options to pass. This can contain the following properties:
+     *   
+     *   - `insertPoint` ([[XMLElement]]): the parent element for the inserted data.
+     *   - `clearContents` ([[Boolean]]): whether the contents of the insertPoint should be cleared before inserting the new children.
+     *   - `copyAttributes` ([[Boolean]]): whether the attributes of the merged element are copied.
+     *   - `callback` ([[Function]]): the code executed when the data request returns.
+     *   - `[]` (`Mixed`): custom properties available in the data instruction.
      */
     this.$insertFrom = function(instruction, options){
         if (!instruction) return false;
@@ -58189,14 +59183,14 @@ apf.model = function(struct, tagName){
     /**
      * Inserts data in this model as a child of the currently loaded data.
      *
-     * @param  {XMLElement} XMLRoot         the {@link term.datanode data node} to insert into this model.
-     * @param {Object}     options
-     *   Properties:
-     *   {XMLElement} insertPoint  the parent element for the inserted data.
-     *   {Boolean}    clearContents wether the contents of the insertPoint should be cleared before inserting the new children.
-     *   {Boolean}    copyAttributes  wether the attributes of the merged element are copied.
-     *   {Function}   callback     the code executed when the data request returns.
-     *   {mixed}      <>           Custom properties available in the data instruction.
+     * @param  {XMLElement} XMLRoot         The {@link term.datanode data node} to insert into this model.
+     * @param {Object}     options Additional options to pass. This can contain the following properties:
+     *   
+     *   - `insertPoint` ([[XMLElement]]): the parent element for the inserted data.
+     *   - `clearContents` ([[Boolean]]): specifies whether the contents of the `insertPoint` should be cleared before inserting the new children.
+     *   - `copyAttributes` ([[Boolean]]): specifies whether the attributes of the merged element are copied.
+     *   - `callback` ([[Function]]): the code executed when the data request returns.
+     *   - `[]` (`Mixed`): Custom properties available in the data instruction.
      */
     this.insert = function(xmlNode, options){
         if (typeof xmlNode == "string") {
@@ -58240,9 +59234,13 @@ apf.model = function(struct, tagName){
     /* *********** SUBMISSION ****************/
 
     /**
-     * Serialize the full XML DOM to a format specified by 'type'
+     * Serialize the full XML DOM to a format specified by 'type'.
      * 
-     * @param {String} type  how to serialize the data
+     * @param {String} type  Indicates how to serialize the data. Possible values include:
+     *   - `xml`, for `application/xml`
+     *   - `form`, for `application/x-www-form-urlencoded`
+     *   - `json`, for `application/json`
+     * @returns {String} The serialized XML.
      */
     this.convertXml = function(type) {
         if (!type)
@@ -58253,16 +59251,16 @@ apf.model = function(struct, tagName){
 
     /**
      * Submit the data of the model to a data source.
-     * @param {String} instruction  the instruction for sending the data, or the url to send the data to.
-     * @param {String} type         how to serialize the data.
-     *   Possible values:
-     *   xml, application/xml
-     *   form, application/x-www-form-urlencoded
-     *   json, application/json
-     * @param {XMLElement} xmlNode  the data node to send to the server.
+     * @param {String} instruction  The instruction for sending the data, or the URL to send the data to.
+     * @param {String} [type]         Indicates how to serialize the data. Possible values include:
+     *   - `xml`, for `application/xml`
+     *   - `form`, for `application/x-www-form-urlencoded` (the default)
+     *   - `json`, for `application/json`
+     * @param {XMLElement} [xmlNode]  The data node to send to the server.
+     * @param {Object} [options] A list of additional options to pass; these are the same as [[apf.saveData]]. Available properties include:
+     *                           {:saveDataOptions}
      */
-     //@todo rewrite this for apf3.0
-    this.submit = function(instruction, type, xmlNode, options){
+    this.submit = function(instruction, type, xmlNode, options){ //@todo rewrite this for apf3.0
         if (!instruction)
             instruction = this.submission;
         
@@ -58745,14 +59743,15 @@ apf.rpc = function(struct, tagName){
         var auth,
             url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url),
             o    = apf.extend({
-                callback      : pCallback,
-                async         : node.async,
-                userdata      : node.userdata,
-                nocache       : (this.nocache === false) ? false : true,
-                data          : data,
-                useXML        : this.$useXml || node.type == "xml",
-                caching       : node.caching,
-                ignoreOffline : node["ignore-offline"]
+                callback        : pCallback,
+                async           : node.async,
+                userdata        : node.userdata,
+                nocache         : (this.nocache === false) ? false : true,
+                data            : data,
+                useXML          : this.$useXml || node.type == "xml",
+                caching         : node.caching,
+                ignoreOffline   : node["ignore-offline"],
+                withCredentials : node.withCredentials === false ? false : true
             }, options);
 
         
@@ -58975,21 +59974,27 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 /**
- * Element showing an error message when the attached element 
- * is in erroneous state and has the invalidmsg="" attribute specified.
- * In most cases the errorbox element is implicit and will be created 
+ * An element showing an error message when the attached element 
+ * is in erroneous state and has the `invalidmsg=""` attribute specified.
+ *
+ * In most cases, the errorbox element is implicit and will be created 
  * automatically. 
- * Example:
- * <code>
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:errorbox>
  *      Invalid e-mail address entered.
  *  </a:errorbox>
- * </code>
- * Remarks:
- * In most cases the errorbox element is not created directly but implicitly
+ * ```
+ * 
+ * #### Remarks
+ *
+ * In most cases the errorbox element is not created directly, but implicitly
  * by a validationgroup. An element that goes into an error state will
  * show the errorbox.
- * <code>
+ * 
+ * ```xml
  *  <a:bar validgroup="vgForm">
  *      <a:label>Phone number</a:label>
  *      <a:textbox id="txtPhone"
@@ -59005,30 +60010,32 @@ apf.aml.setElement("rpc", apf.rpc);
  *          invalidmsg = "Please enter a password of at least four characters" />
  *      <a:button onclick="vgForm.validate()">Validate</a:button>
  *  </a:bar>
- * </code>
+ * ```
  *
  * To check if the element has valid information entered, leaving the textbox
- * (focussing another element) will trigger a check. Programmatically a check
+ * (focussing another element) will trigger a check. A programmatic check
  * can be done using the following code:
- * <code>
+ * 
+ * ```javascript
  *  txtPhone.validate();
  * 
  *  //Or use the html5 syntax
  *  txtPhone.checkValidity();
- * </code>
+ * ```
  *
  * To check for the entire group of elements use the validation group. For only 
  * the first non-valid element the errorbox is shown. That element also receives
  * focus.
- * <code>
+ * 
+ * ```javascript
  *  vgForm.validate();
- * </code>
+ * ```
  *
- * @constructor
+ * @class apf.errorbox
  * @define errorbox
  * 
  * @allowchild {anyxhtml}
- * @addnode elements
+ *
  *
  * @inherits apf.Presentation
  *
@@ -59080,7 +60087,7 @@ apf.errorbox = function(struct, tagName){
     
     /**
      * Sets the message of the errorbox.
-     * @param {String} value 
+     * @param {String} value The message to set.
      */
     this.setMessage = function(value){
         if (value && value.indexOf(";") > -1) {
@@ -59158,7 +60165,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/**
+/*
  * @todo docs
  */
 apf.BindingQuicksandRule = function(struct, tagName){
@@ -59466,433 +60473,13 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 /**
- * Element giving the user a visual choice to pick a color just like Photoshop
- * does it!
- *
- * @constructor
- * @define colorpicker
- * @addnode elements
- *
- * @author      Mike de Boer (mike AT javeline DOT com)
- * @version     %I%, %G%
- * @since       3.0
- *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- *
- * @attribute {String} value the color that is selected in the color picker.
- *
- * @binding value  Determines the way the value for the element is retrieved
- * from the bound data.
- * Example:
- * Sets the color based on data loaded into this component.
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker 
- *    model = "mdlColor" 
- *    value = "[@color]" />
- * </code>
- */
-apf.colorpicker = function(struct, tagName){
-    this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
-};
-
-(function(){
-    this.value       = "ff0000";
-    this.changeTimer = null;
-
-    var c = apf.color;
-
-    this.$supportedProperties.push("color", "red", "green", "blue", "hue",
-        "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
-
-    this.$propHandlers["red"]        =
-    this.$propHandlers["green"]      =
-    this.$propHandlers["blue"]       =
-    this.$propHandlers["hue"]        =
-    this.$propHandlers["saturation"] = 
-    this.$propHandlers["brightness"] = 
-    this.$propHandlers["hex"]        = function(val, prop) {
-        clearTimeout(this.changeTimer);
-        var _self = this;
-        this.changeTimer = $setTimeout(function() {
-            _self.$change(prop);
-        });
-    };
-
-    this.$propHandlers["value"] = function(val) {
-        this.$restoreOriginal();
-    };
-
-    this.$restoreOriginal = function() {
-        var hsb = c.hexToHSB(this.value);
-        this.hue = hsb.h;
-        this.saturation = hsb.s;
-        this.brightness = hsb.b;
-        this.$change();
-        this.oCustomColor.style.backgroundColor = 
-            (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
-    };
-
-    this.$change = function(prop) {
-        var hsb = c.fixHSB({
-            h: this.hue,
-            s: this.saturation,
-            b: this.brightness
-        });
-        
-        var hex = c.HSBToHex(hsb);
-        var rgb = c.HSBToRGB(hsb);
-
-        this.oNewColor.style.backgroundColor = "#" + hex;
-
-        if (prop != "red" && prop != "green" && prop != "blue") {
-            this.setProperty("red", rgb.r);
-            this.setProperty("green", rgb.g);
-            this.setProperty("blue", rgb.b);
-        }
-        if (prop != "hue" && prop != "saturation" && prop != "brightness") {
-            this.setProperty("hue", hsb.h);
-            this.setProperty("saturation", hsb.s);
-            this.setProperty("brightness", hsb.b);
-        }
-        if (prop != "hex")
-            this.setProperty("hex", hex);
-
-        this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
-        this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
-        this.oSelectorInd.style.left = parseInt(150 * hsb.s / 100, 10) + "px";
-        this.oSelectorInd.style.top  = parseInt(150 * (100 - hsb.b) / 100, 10) + "px";
-    };
-
-    this.$draw = function() {
-        if (!this.id)
-            this.setProperty("id", "colorpicker" + this.$uniqueId);
-
-        //Build Main Skin
-        this.$ext          = this.$getExternal();
-        this.oSelector     = this.$getLayoutNode("main", "selector", this.$ext);
-        this.oSelectorInd  = this.$getLayoutNode("main", "selector_indic", this.$ext);
-        this.oHue          = this.$getLayoutNode("main", "hue", this.$ext);
-        this.oNewColor     = this.$getLayoutNode("main", "newcolor", this.$ext);
-        this.oCustomColor  = this.$getLayoutNode("main", "customcolor", this.$ext);
-        this.oInputs       = this.$getLayoutNode("main", "inputs", this.$ext);
-
-        this.$restoreOriginal();
-
-        //attach behaviours
-        var _self = this,
-            doc   = (!document.compatMode || document.compatMode == 'CSS1Compat')
-                ? document.html : document.body;
-        function stopMoving() {
-            document.onmousemove = document.onmouseup = null;
-            _self.$change();
-            return false;
-        }
-        function selectorDown() {
-            var el  = this,
-                pos = apf.getAbsolutePosition(el);
-            
-            function selectorMove(e) {
-                e = e || event;
-                var pageX = e.pageX || e.clientX + (doc ? doc.scrollLeft : 0),
-                    pageY = e.pageY || e.clientY + (doc ? doc.scrollTop  : 0);
-                // only the saturation and brightness change...
-                _self.brightness = parseInt(100 * (150 - Math.max(0, Math.min(150,
-                    (pageY - pos[1])))) / 150, 10);
-                _self.saturation = parseInt(100 * (Math.max(0, Math.min(150,
-                    (pageX - pos[0])))) / 150, 10);
-                _self.$change();
-                pos = apf.getAbsolutePosition(el);
-                return false;
-            }
-            document.onmousemove = selectorMove;
-            document.onmouseup   = function(e) {
-                selectorMove(e);
-                return stopMoving(e);
-            };
-        }
-        
-        function hueDown(e) {
-            var el  = this,
-                pos = apf.getAbsolutePosition(el);
-
-            function hueMove(e) {
-                e = e || event;
-                var pageY = e.pageY || e.clientY + (doc ? doc.scrollTop : 0);
-                _self.hue  = parseInt(360 * (150 - Math.max(0,
-                    Math.min(150, (pageY - pos[1])))) / 150, 10);
-                _self.$change();
-                pos = apf.getAbsolutePosition(el);
-            }
-            document.onmousemove = hueMove;
-            document.onmouseup   = function(e) {
-                hueMove(e);
-                return stopMoving(e);
-            };
-        }
-        this.oSelector.onmousedown       = selectorDown;
-        this.oHue.parentNode.onmousedown = hueDown;
-        this.oCustomColor.onmousedown    = function() {
-            _self.$restoreOriginal();
-        };
-
-        function spinnerChange(e) {
-            var o     = e.currentTarget;
-            var isRGB = false;
-            if (o.id.indexOf("hue") > -1) {
-                _self.hue = e.value;
-            }
-            else if (o.id.indexOf("saturation") > -1) {
-                _self.saturation = e.value;
-            }
-            else if (o.id.indexOf("brightness") > -1) {
-                _self.brightness = e.value;
-            }
-            else if (o.id.indexOf("red") > -1) {
-                _self.red = e.value;
-                isRGB = true;
-            }
-            else if (o.id.indexOf("green") > -1) {
-                _self.green = e.value;
-                isRGB = true;
-            }
-            else if (o.id.indexOf("blue") > -1) {
-                _self.blue = e.value;
-                isRGB = true;
-            }
-
-            if (isRGB) {
-                var hsb = c.RGBToHSB({r: _self.red, g: _self.green, b: _self.blue});
-                _self.hex = c.HSBToHex(hsb);
-                _self.hue = hsb.h;
-                _self.saturation = hsb.s;
-                _self.brightness = hsb.b;
-            }
-            else {
-                _self.hex = c.HSBToHex({h: _self.hue, s: _self.saturation, b: _self.brightness});
-            }
-
-            _self.$change(isRGB ? "red" : "hue");
-        }
-
-        //append APF widgets for additional controls
-        var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
-        new apf.hbox({
-            htmlNode: this.oInputs,
-            skinset: skin,
-            left: 212,
-            top: 52,
-            width: 150,
-            padding: 3,
-            childNodes: [
-                new apf.vbox({
-                    padding: 3,
-                    edge: "0 10 0 0",
-                    childNodes: [
-                        new apf.hbox({
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "R:",
-                                    "for": this.id + "_red"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_red",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 255,
-                                    value: "{" + this.id + ".red}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "G:",
-                                    "for": this.id + "_green"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_green",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 255,
-                                    value: "{" + this.id + ".green}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "B:",
-                                    "for": this.id + "_blue"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_blue",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 255,
-                                    value: "{" + this.id + ".blue}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        })
-                    ]
-                }),
-                new apf.vbox({
-                    padding: 3,
-                    childNodes: [
-                        new apf.hbox({
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "H:",
-                                    "for": this.id + "_hue"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_hue",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 360,
-                                    value: "{" + this.id + ".hue}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "S:",
-                                    "for": this.id + "_saturation"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_saturation",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 100,
-                                    value: "{" + this.id + ".saturation}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "B:",
-                                    "for": this.id + "_brightness"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_brightness",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 100,
-                                    value: "{" + this.id + ".brightness}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        })
-                    ]
-                })
-            ]
-        });
-
-        new apf.label({
-            htmlNode: this.oInputs,
-            skinset: skin,
-            left: 212,
-            top: 144,
-            width: 14,
-            caption: "#",
-            "for": this.id + "_hex"
-        });
-
-        this.$input = new apf.textbox({
-            htmlNode: this.oInputs,
-            skinset: skin,
-            skin: this["skin-textbox"],
-            mask: "<XXXXXX;;_",
-            left: 222,
-            top: 140,
-            width: 60,
-            value: "{" + this.id + ".hex}",
-            onafterchange: function(e) {
-                _self.hex = c.fixHex(e.value);
-                var hsb   = c.hexToHSB(_self.hex);
-                _self.hue = hsb.h;
-                _self.saturation = hsb.s;
-                _self.brightness = hsb.b;
-                _self.$change();
-            }
-        });
-    };
-
-    this.$destroy = function() {
-        this.$ext = this.oSelector = this.oSelectorInd = this.oHue =
-            this.oNewColor = this.oCustomColor = this.oInputs = null;
-    };
-
-}).call(apf.colorpicker.prototype = new apf.StandardBinding());
-
-
-apf.aml.setElement("colorpicker", apf.colorpicker);
-
-
-
-
-
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/**
- * @define bindings element containing all the binding rules for the data 
+ * An element containing all the binding rules for the data 
  * bound elements referencing this element.
- * Example:
- * <code>
+ *
+ * 
+ * #### Example:
+ *
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -59910,10 +60497,13 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
  *    height   = "200" 
  *    model    = "mdlList" 
  *    bindings = "bndFolders" />
- * </code>
- * @see element.smartbinding
+ * ```
  *
- * @constructor
+ * @see apf.smartbinding
+ *
+ * @class apf.bindings
+ * @define bindings 
+ * @inherits apf.AmlElement
  * @apfclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -59986,7 +60576,7 @@ apf.bindings = function(struct, tagName){
         }
     }
     
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var nodes = this.childNodes;
@@ -60205,24 +60795,23 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 /**
- * Element giving the user a visual choice of several colors presented in a
- * grid.
+ * Element giving the user a visual choice to pick a color just like Photoshop
+ * does it!
  *
  * @constructor
  * @define colorpicker
- * @addnode elements
  *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
+ *
+ * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
- * @since       0.4
+ * @since       3.0
  *
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inherits apf.XForms
  *
- * @attribute {String} color the color that is selected in the color picker.
+ * @attribute {String} value the color that is selected in the color picker.
  *
- * @binding value  Determines the way the value for the element is retrieved 
+ * @binding value  Determines the way the value for the element is retrieved
  * from the bound data.
  * Example:
  * Sets the color based on data loaded into this component.
@@ -60234,326 +60823,370 @@ apf.aml.setElement("bindings", apf.bindings);
  *    model = "mdlColor" 
  *    value = "[@color]" />
  * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker value="[mdlColor::@color]" />
- * </code>
  */
 apf.colorpicker = function(struct, tagName){
     this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
 };
 
 (function(){
-    this.implement(
-        
-        apf.StandardBinding
-        
-        
-        ,apf.DataAction
-        
-        
-    );
-    //Options
-    this.$focussable = true; // This object can get the focus
+    this.value       = "ff0000";
+    this.changeTimer = null;
 
-    // PUBLIC METHODS
-    this.setValue = function(value, type){
-        //this.value = value;
-        if (!type) type = "RGBHEX";
-        var a;
-        switch (type) {
-            case "HSL":
-                this.fill(value[0], value[1], value[2]);
-                break;
-            case "RGB":
-                a = RGBtoHLS(value[0], value[1], value[2]);
-                this.fill(a[0], a[1], a[2]);
-                break;
-            case "RGBHEX":
-                var RGB = arguments[0].match(/(..)(..)(..)/);
-                a = RGBtoHLS(Math.hexToDec(RGB[0]),
-                    Math.hexToDec(RGB[1]), Math.hexToDec(RGB[2]));
-                this.fill(a[0], a[1], a[2]);
-                break;
-        }
-    };
+    var c = apf.color;
 
-    this.getValue = function(type){
-        return HSLRangeToRGB(cH, cS, cL);
-    };
+    this.$supportedProperties.push("color", "red", "green", "blue", "hue",
+        "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
 
-    // PRIVATE METHODS
-    var cL       = 120,
-        cS       = 239,
-        cH       = 0,
-        cHex     = "#FF0000",
-        HSLRange = 240;
-
-    function HSLRangeToRGB(H, S, L){
-        return HSLtoRGB(H / (HSLRange - 1), S / HSLRange,
-            Math.min(L / HSLRange, 1))
-    };
-
-    function RGBtoHLS(R,G,B){
-        var RGBMAX = 255,
-            HLSMAX = HSLRange,
-            UNDEF  = (HLSMAX*2/3),
-
-        /* calculate lightness */
-             cMax = Math.max(Math.max(R,G), B),
-             cMin = Math.min(Math.min(R,G), B);
-        L = (((cMax + cMin) * HLSMAX) + RGBMAX) / (2 * RGBMAX);
-
-        if (cMax == cMin) {           /* r=g=b --> achromatic case */
-            S = 0;                    /* saturation */
-            H = UNDEF;                /* hue */
-        }
-        /* chromatic case */
-        else {
-            /* saturation */
-            if (L <= (HLSMAX/2))
-                S = (((cMax - cMin) * HLSMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
-            else
-                S = (((cMax - cMin) * HLSMAX) + ((2 * RGBMAX - cMax - cMin) / 2))
-                  / (2 * RGBMAX - cMax - cMin);
-
-            /* hue */
-            Rdelta = (((cMax - R) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Gdelta = (((cMax - G) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Bdelta = (((cMax - B) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-
-            if (R == cMax)
-                H = Bdelta - Gdelta;
-            else if (G == cMax)
-                H = (HLSMAX / 3) + Rdelta - Bdelta;
-            else
-                H = ((2 * HLSMAX) / 3) + Gdelta - Rdelta;
-
-            if (H < 0)
-                H += HLSMAX;
-            if (H > HLSMAX)
-                H -= HLSMAX;
-        }
-
-        return [H, S, L];
-    }
-
-    function hueToColorValue(hue){
-        var V;
-
-        if (hue < 0)
-            hue = hue + 1
-        else if (hue > 1)
-            hue = hue - 1;
-
-        if (6 * hue < 1)
-            V = M1 + (M2 - M1) * hue * 6
-        else if (2 * hue < 1)
-            V = M2
-        else if (3 * hue < 2)
-            V = M1 + (M2 - M1) * (2 / 3 - hue) * 6
-        else
-            V = M1;
-
-        return Math.max(Math.floor(255 * V), 0);
-    };
-
-    function HSLtoRGB(H, S, L){
-        var R,  G,  B;
-
-        if (S == 0)
-            G = B = R = Math.round (255 * L);
-        else {
-            M2 = (L <= 0.5) ? (L * (1 + S)) : (L + S - L * S);
-
-            M1 = 2 * L - M2;
-            R = hueToColorValue(H + 1 / 3);
-            G = hueToColorValue(H);
-            B = hueToColorValue(H - 1 / 3);
-        }
-
-        return Math.decToHex(R) + "" + Math.decToHex(G) + "" + Math.decToHex(B);
-    };
-
-    this.fill = function(H, S, L){
-        var Hex    = HSLRangeToRGB(H,S,L);
-        this.value = Hex;
-
-        //RGB
-        var RGB            = Hex.match(/(..)(..)(..)/);
-        this.tbRed.value   = Math.hexToDec(RGB[1]);
-        this.tbGreen.value = Math.hexToDec(RGB[2]);
-        this.tbBlue.value  = Math.hexToDec(RGB[3]);
-
-        //HSL
-        this.tbHue.value       = Math.round(H);
-        this.tbSatern.value    = Math.round(S);
-        this.tbLuminance.value = Math.round(L);
-
-        //HexRGB
-        this.tbHexColor.value  = Hex;
-
-        //Shower
-        this.shower.style.backgroundColor = Hex;
-
-        //Luminance
-        var HSL120                        = HSLRangeToRGB(H, S, 120);
-        this.bar1.style.backgroundColor   = HSL120;
-        this.bgBar1.style.backgroundColor = HSLRangeToRGB(H, S, 240);
-        this.bar2.style.backgroundColor   = HSLRangeToRGB(H, S, 0);
-        this.bgBar2.style.backgroundColor = HSL120;
-    };
-
-    this.movePointer = function(e){
-        e = e || event;
-
-        var ty = this.pHolder.ty;
-        if ((e.clientY - ty >= 0) && (e.clientY - ty
-          <= this.pHolder.offsetHeight - this.pointer.offsetHeight + 22))
-            this.pointer.style.top = e.clientY - ty;
-        if (e.clientY - ty < 21)
-            this.pointer.style.top = 21;
-        if (e.clientY - ty
-          > this.pHolder.offsetHeight - this.pointer.offsetHeight + 19)
-            this.pointer.style.top = this.pHolder.offsetHeight
-                - this.pointer.offsetHeight + 19;
-
-        // 255 - posY:
-        cL = (255 - (this.pointer.offsetTop - 22)) / 2.56 * 2.4;
-        this.fill(cH, cS, cL);
-
-        e.returnValue  = false;
-        e.cancelBubble = true;
-    };
-
-    this.setLogic = function(){
+    this.$propHandlers["red"]        =
+    this.$propHandlers["green"]      =
+    this.$propHandlers["blue"]       =
+    this.$propHandlers["hue"]        =
+    this.$propHandlers["saturation"] = 
+    this.$propHandlers["brightness"] = 
+    this.$propHandlers["hex"]        = function(val, prop) {
+        if (this.$ignoreSetProperty)
+            return;
+        clearTimeout(this.changeTimer);
         var _self = this;
-        this.pHolder.style.zIndex = 10;
-        this.pHolder.onmousedown  = function(){
-            this.ty = apf.getAbsolutePosition(this)[1] - 20;
+        this.changeTimer = $setTimeout(function() {
+            _self.$change(prop);
+        });
+    };
 
-            _self.movePointer();
-            document.onmousemove = _self.movePointer
-            document.onmouseup   = function(){ this.onmousemove = function(){}; };
+    this.$propHandlers["value"] = function(val) {
+        this.$restoreOriginal();
+    };
+
+    this.$restoreOriginal = function() {
+        var hsb = c.hexToHSB(this.value);
+        this.hue = hsb.h;
+        this.saturation = hsb.s;
+        this.brightness = hsb.b;
+        this.$change();
+        this.oCustomColor.style.backgroundColor = 
+            (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
+    };
+
+    this.$change = function(prop) {
+        if (!prop || /hsb|hue|saturation|brightness/.test(prop)) {
+            prop = "hsb";
+            var hsb = c.fixHSB({h: this.hue, s: this.saturation, b: this.brightness});
+            var hex = c.HSBToHex(hsb);
+            var rgb = c.HSBToRGB(hsb);
+        } else if (/red|green|blue|rgb/.test(prop)) {
+            prop = "rgb";
+            var rgb = c.fixRGB({r: this.red, g: this.green, b: this.blue});
+            var hex = c.RGBToHex(rgb);
+            var hsb = c.RGBToHSB(rgb);
+        } else {
+            prop = "hex";
+            var hex = c.fixHex(this.hex);
+            var hsb = c.hexToHSB(hex);
+            var rgb = c.hexToRGB(hex);
         }
 
-        this.container.onmousedown = function(e){
-            e = e || event;
+        this.oNewColor.style.backgroundColor = "#" + hex;
 
-            this.active = true;
-            if (e.srcElement == this) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-            _self.point.style.display = "none";
-
-            e.cancelBubble = true;
+        this.$ignoreSetProperty = true;
+        if (prop != "rgb") {
+            this.setProperty("red", rgb.r);
+            this.setProperty("green", rgb.g);
+            this.setProperty("blue", rgb.b);
         }
-
-        this.container.onmouseup = function(e){
-            e = e || event;
-            this.active               = false;
-            _self.point.style.top     = e.offsetY - _self.point.offsetHeight - 2;
-            _self.point.style.left    = e.offsetX - _self.point.offsetWidth - 2;
-            _self.point.style.display = "block";
-
-            _self.change(_self.tbHexColor.value);
+        if (prop != "hsb") {
+            this.setProperty("hue", hsb.h);
+            this.setProperty("saturation", hsb.s);
+            this.setProperty("brightness", hsb.b);
         }
+        if (prop != "hex")
+            this.setProperty("hex", hex);
+        this.$ignoreSetProperty = false;
+        
+        this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
+        this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
+        this.oSelectorInd.style.left = parseInt(150 * hsb.s / 100, 10) + "px";
+        this.oSelectorInd.style.top  = parseInt(150 * (100 - hsb.b) / 100, 10) + "px";
+    };
 
-        this.container.onmousemove = function(e){
-            e = e || event;
-            if (this.active) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-        }
+    this.$draw = function() {
+        if (!this.id)
+            this.setProperty("id", "colorpicker" + this.$uniqueId);
 
-        /*this.tbHexColor.host =
-        this.tbRed.host =
-        this.tbGreen.host =
-        this.tbBlue.host = this;
-        this.tbHexColor.onblur = function(){_self.setValue("RGBHEX", this.value);}
-        this.tbRed.onblur = function(){_self.setValue("RGB", this.value, _self.tbGreen.value, _self.tbBlue.value);}
-        this.tbGreen.onblur = function(){_self.setValue("RGB", _self.tbRed.value, this.value, _self.tbBlue.value);}
-        this.tbBlue.onblur = function(){_self.setValue("RGB", _self.tbRed.value, _self.tbGreen.value, this.value);}
-        */
-    }
-
-    // Databinding
-    this.$mainBind = "color";
-
-    this.$draw = function(parentNode, clear){
         //Build Main Skin
-        this.$ext    = this.$getExternal();
+        this.$ext          = this.$getExternal();
+        this.oSelector     = this.$getLayoutNode("main", "selector", this.$ext);
+        this.oSelectorInd  = this.$getLayoutNode("main", "selector_indic", this.$ext);
+        this.oHue          = this.$getLayoutNode("main", "hue", this.$ext);
+        this.oNewColor     = this.$getLayoutNode("main", "newcolor", this.$ext);
+        this.oCustomColor  = this.$getLayoutNode("main", "customcolor", this.$ext);
+        this.oInputs       = this.$getLayoutNode("main", "inputs", this.$ext);
 
-        this.tbRed   = this.$getLayoutNode("main", "red", this.$ext);
-        this.tbGreen = this.$getLayoutNode("main", "green", this.$ext);
-        this.tbBlue  = this.$getLayoutNode("main", "blue", this.$ext);
+        this.$restoreOriginal();
 
-        this.tbHue       = this.$getLayoutNode("main", "hue", this.$ext);
-        this.tbSatern    = this.$getLayoutNode("main", "satern", this.$ext);
-        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.$ext);
-
-        this.tbHexColor  = this.$getLayoutNode("main", "hex", this.$ext);
-        var _self = this;
-        this.tbHexColor.onchange = function(){
-            _self.setValue(this.value, "RGBHEX");
-        };
-
-        this.shower = this.$getLayoutNode("main", "shower", this.$ext);
-
-        this.bar1   = this.$getLayoutNode("main", "bar1", this.$ext);
-        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.$ext);
-        this.bar2   = this.$getLayoutNode("main", "bar2", this.$ext);
-        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.$ext);
-
-        this.pHolder   = this.$getLayoutNode("main", "pholder", this.$ext);
-        this.pointer   = this.$getLayoutNode("main", "pointer", this.$ext);
-        this.container = this.$getLayoutNode("main", "container", this.$ext);
-        this.point     = this.$getLayoutNode("main", "point", this.$ext);
-
-        var nodes = this.$ext.getElementsByTagName("input");
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].onselectstart = function(e){
+        //attach behaviours
+        var _self = this,
+            doc   = (!document.compatMode || document.compatMode == 'CSS1Compat')
+                ? document.html : document.body;
+        function stopMoving() {
+            document.onmousemove = document.onmouseup = null;
+            _self.$change();
+            return false;
+        }
+        function selectorDown() {
+            var el  = this,
+                pos = apf.getAbsolutePosition(el);
+            
+            function selectorMove(e) {
                 e = e || event;
-                e.cancelBubble = true;
+                var pageX = e.pageX || e.clientX + (doc ? doc.scrollLeft : 0),
+                    pageY = e.pageY || e.clientY + (doc ? doc.scrollTop  : 0);
+                // only the saturation and brightness change...
+                _self.brightness = parseInt(100 * (150 - Math.max(0, Math.min(150,
+                    (pageY - pos[1])))) / 150, 10);
+                _self.saturation = parseInt(100 * (Math.max(0, Math.min(150,
+                    (pageX - pos[0])))) / 150, 10);
+                _self.$change();
+                pos = apf.getAbsolutePosition(el);
+                return false;
+            }
+            document.onmousemove = selectorMove;
+            document.onmouseup   = function(e) {
+                selectorMove(e);
+                return stopMoving(e);
             };
         }
+        
+        function hueDown(e) {
+            var el  = this,
+                pos = apf.getAbsolutePosition(el);
 
-        this.setLogic();
+            function hueMove(e) {
+                e = e || event;
+                var pageY = e.pageY || e.clientY + (doc ? doc.scrollTop : 0);
+                _self.hue  = parseInt(360 * (150 - Math.max(0,
+                    Math.min(150, (pageY - pos[1])))) / 150, 10);
+                _self.$change();
+                pos = apf.getAbsolutePosition(el);
+            }
+            document.onmousemove = hueMove;
+            document.onmouseup   = function(e) {
+                hueMove(e);
+                return stopMoving(e);
+            };
+        }
+        this.oSelector.onmousedown       = selectorDown;
+        this.oHue.parentNode.onmousedown = hueDown;
+        this.oCustomColor.onmousedown    = function() {
+            _self.$restoreOriginal();
+        };
 
-        this.setValue("ffffff");
-        //this.fill(cH, cS, cL);
-    }
+        function spinnerChange(e) {
+            var o     = e.currentTarget;
+            var isRGB = false;
+            if (o.id.indexOf("hue") > -1) {
+                _self.hue = e.value;
+            }
+            else if (o.id.indexOf("saturation") > -1) {
+                _self.saturation = e.value;
+            }
+            else if (o.id.indexOf("brightness") > -1) {
+                _self.brightness = e.value;
+            }
+            else if (o.id.indexOf("red") > -1) {
+                _self.red = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("green") > -1) {
+                _self.green = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("blue") > -1) {
+                _self.blue = e.value;
+                isRGB = true;
+            }
 
-    this.$loadAml = function(x){
-        if (x.getAttribute("color"))
-            this.setValue(x.getAttribute("color"));
-    }
+            _self.$change(isRGB ? "red" : "hue");
+        }
 
-    this.$destroy = function(){
-        this.container.host  =
-        this.tbRed.host      =
-        this.tbGreen.host    =
-        this.tbBlue.host     =
-        this.tbHexColor.host =
-        this.pHolder.host    = null;
-    }
-}).call(apf.colorpicker.prototype = new apf.GuiElement());
+        //append APF widgets for additional controls
+        var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
+        new apf.hbox({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            left: 212,
+            top: 52,
+            width: 150,
+            padding: 3,
+            childNodes: [
+                new apf.vbox({
+                    padding: 3,
+                    edge: "0 10 0 0",
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "R:",
+                                    "for": this.id + "_red"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_red",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".red}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "G:",
+                                    "for": this.id + "_green"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_green",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".green}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_blue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_blue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".blue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new apf.vbox({
+                    padding: 3,
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "H:",
+                                    "for": this.id + "_hue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_hue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 360,
+                                    value: "{" + this.id + ".hue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "S:",
+                                    "for": this.id + "_saturation"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_saturation",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".saturation}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_brightness"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_brightness",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".brightness}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        });
+
+        new apf.label({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            left: 212,
+            top: 144,
+            width: 14,
+            caption: "#",
+            "for": this.id + "_hex"
+        });
+
+        this.$input = new apf.textbox({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            skin: this["skin-textbox"],
+            mask: "<XXXXXX;;_",
+            left: 222,
+            top: 140,
+            width: 60,
+            value: "{" + this.id + ".hex}",
+            onafterchange: function(e) {
+                _self.hex = c.fixHex(e.value);
+                var hsb   = c.hexToHSB(_self.hex);
+                _self.hue = hsb.h;
+                _self.saturation = hsb.s;
+                _self.brightness = hsb.b;
+                _self.$change();
+            }
+        });
+    };
+
+    this.$destroy = function() {
+        this.$ext = this.oSelector = this.oSelectorInd = this.oHue =
+            this.oNewColor = this.oCustomColor = this.oInputs = null;
+    };
+
+}).call(apf.colorpicker.prototype = new apf.StandardBinding());
+
 
 apf.aml.setElement("colorpicker", apf.colorpicker);
 
@@ -60586,24 +61219,48 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 /**
- * element specifying which menu is shown when a
- * contextmenu is requested by a user for a aml node.
- * Example:
- * This example shows a list that shows the mnuRoot menu when the user
- * right clicks on the root {@link term.datanode data node}. Otherwise the mnuItem menu is
- * shown.
- * <code>
- *  <a:list>
- *      <a:contextmenu menu="mnuRoot" match="[root]" />
- *      <a:contextmenu menu="mnuItem" />
- *  </a:list>
- * </code>
- * @attribute {String} menu   the id of the menu element.
- * @attribute {String} select the xpath executed on the selected element of the databound element which determines whether this contextmenu is shown.
+ * This element specifies which menu is shown when a
+ * contextmenu is requested by a user for a AML node.
+ * 
+ * #### Example
  *
+ * This example shows a list that shows the mnuRoot menu when the user
+ * right clicks on the root {@link term.datanode data node}. Otherwise the `mnuItem` menu is
+ * shown.
+ *
+ * ```xml, demo
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="ctxMenu">
+ *       <a:item>Choice 1!</a:item>
+ *       <a:item>Choice 2!</a:item>
+ *   </a:menu>
+ *   <a:list width="300" id="list1">
+ *       <a:contextmenu menu="ctxMenu" />
+ *       <a:item>The Netherlands</a:item>
+ *       <a:item>United States of America</a:item>
+ *       <a:item>Poland</a:item>
+ *   </a:list>
+ *   <!-- endcontent -->
+ *   Right-click on the list to reveal the context menu!
+ *  </a:application>
+ * ```
+ *
+ * @class apf.contextmenu
+ * @define contextmenu
+ * @inherits apf.AmlElement
+ * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ */
+/**
+ * @attribute {String} menu  Sets or gets the id of the menu element.
+ */
+/**
+ * @attribute {String} select Sets or gets the XPath executed on the selected element of the databound element which determines whether this context menu is shown.
+ *
+ * 
  */
 apf.contextmenu = function(){
     this.$init("contextmenu", apf.NODE_HIDDEN);
@@ -60775,92 +61432,54 @@ apf.StateServer = {
 }
 
 /**
- * Element that specifies a certain state of (a part of) the application. With
- * state we mean a collection of properties on objects that have a certain
- * value at one time. This element allows you to specify which properties on
+ * This element specifies a certain state of (a part of) the application. By
+ * "state", we mean a collection of properties on objects that have a certain
+ * value at one time. 
+ * 
+ * This element allows you to specify which properties on
  * which elements should be set when a state is activated. This element can
  * belong to a state-group containing multiple elements with a default state.
- * Example:
- * This example shows a log in window and four state elements in a state-group.
- * <code>
- *   <a:appsettings>
- *       <a:auth 
- *         login         = "{comm.login(username, password)}" 
- *         logout        = "{comm.logout()}"
- *         autostart     = "false"
- *         window        = "winLogin"
- *         fail-state    = "stFail"
- *         error-state   = "stError"
- *         login-state   = "stIdle"
- *         logout-state  = "stLoggedOut"
- *         waiting-state = "stLoggingIn" />
- *   </a:appsettings>
- *   <a:teleport>
- *       <a:rpc id="comm" protocol="cgi">
- *           <a:method name="login" url="http://localhost/login.php">
- *               <a:param name="username" />
- *               <a:param name="password" />
- *           </a:method>
- *           <a:method name="logout" url="http://localhost/logout.php" />
- *       </a:rpc>
- *   </a:teleport>
- *  
- *   <a:state-group
- *     loginMsg.visible  = "false"
- *     winLogin.disabled = "false">
- *       <a:state id="stFail"
- *         loginMsg.value    = "Username or password incorrect"
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stError"
- *         loginMsg.value    = "An error has occurred. Please check your network."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stLoggingIn"
- *         loginMsg.value    = "Please wait whilst logging in..."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "true"
- *         btnLogout.visible = "false" />
- *       <a:state id="stIdle"
- *         btnLogout.visible = "true" />
- *       <a:state id="stLoggedOut"
- *         btnLogout.visible = "false"
- *         loginMsg.visible  = "false"
- *         winLogin.disabled = "false" />
- *  </a:state-group>
  * 
- *  <a:window id="winLogin" visible="true" width="400" height="400">
- *      <a:label>Username</a:label>
- *      <a:textbox type="username" value="Lukasz" />
- *  
- *      <a:label>Password</a:label>
- *      <a:textbox type="password" value="ppp" />
+ * #### Example
  * 
- *      <a:label id="loginMsg" />
- *      <a:button action="login">Log in</a:button>
- *  </a:window>
- *  <a:button id="btnLogout" visible="false" action="logout">Log out</a:button>
- * </code>
- * Example:
- * This example shows a label using property binding to get it's caption
- * based on the current state.
- * <code>
- *  <a:state group="stRole" id="stUser" caption="You are a user" active="true" />
- *  <a:state group="stRole" id="stAdmin" caption="You have super powers" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:state 
+ *     group   = "stRole" 
+ *     id      = "stUser" 
+ *     caption = "You are a user" 
+ *     active  = "true" />
+ *   <a:state 
+ *      group   = "stRole" 
+ *      id      = "stAdmin" 
+ *      caption = "You have super powers" />
+ *   <a:label caption="{stRole.caption}" />
+ *   <a:hbox height="34" width="200" margin="10 0 0 0">
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stUser.activate()">State - User</a:button>
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stAdmin.activate()">State - Admin</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- *  <a:label value="{stRole.caption}" />
- *  <a:button onclick="stAdmin.activate()">Become admin</a:button>
- * </code>
- *
- * @event change Fires when the active property of this element changes.
- *
- * @constructor
+ * @class apf.state
  * @define state
- * @addnode global
+ *
+ * @logic
+ * @inherits apf.AmlElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
+ */
+/**
+ * @event change Fires when the active property of this element changes.
+ *
  */
 apf.state = function(struct, tagName){
     this.$init(tagName || "state", apf.NODE_HIDDEN, struct);
@@ -60871,7 +61490,7 @@ apf.state = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.$supportedProperties.push("active");
     this.$booleanProperties["active"] = true;
@@ -60932,14 +61551,14 @@ apf.state = function(struct, tagName){
     };
 
 
-    /**** Public methods ****/
+    // *** Public methods *** //
 
     
 
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * @param {String} value Sets the new value of this element
      */
     this.setValue = function(value){
         this.active = 9999;
@@ -60966,7 +61585,7 @@ apf.state = function(struct, tagName){
     
     
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$propHandlers["group"] = function(value){  
         if (value) {
@@ -61041,56 +61660,65 @@ apf.aml.setElement("state", apf.state);
 /**
  * Any child element of this element is placed in a table. The size of the 
  * columns and rows of the table can be set by attributes. Child elements can
- * span multiple columns. Using '*' as a size indicator will use the remaining
+ * span multiple columns. Using `'*' `as a size indicator will use the remaining
  * size for that column or row, when the table's size is set.
- * Example:
+ * 
+ * #### Example
+ *
  * This example shows a window with a table and two buttons that change the 
- * orientation of the table runtime. The textarea and it's label have a span set
- * to '*'. This means they will span the entire width of all columns, no matter
+ * orientation of the table runtime. The textarea and its label have a span set
+ * to `'*'`. This means they will span the entire width of all columns, no matter
  * how many columns there are.
- * <code>
- *  <a:window visible="true" width="500" height="400">
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:window visible="true" width="500" height="260" title="Form">
+ *  <!-- startcontent -->
  *      <a:table id="tableTest" 
  *        columns = "80, *"
  *        edge    = "10 10 10 10"
  *        padding = "5"
  *        bottom  = "35"
  *        top     = "0">
- *          <a:label>Name</a:label>
- *          <a:textbox />
- *          <a:label>Address</a:label>
- *          <a:textarea height="50" />
- *          <a:label>Country</a:label>
- *          <a:dropdown />
- *          
- *          <a:label span="*">Message</a:label>
- *          <a:textarea id="txtMessage" 
- *            height = "*" 
- *            span   = "*" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox />
+ *        <a:label>Address</a:label>
+ *        <a:textarea height="50" />
+ *        <a:label>Country</a:label>
+ *        <a:dropdown>
+ *            <a:item>America</a:item>
+ *            <a:item>Armenia</a:item>
+ *            <a:item>The Netherlands</a:item>
+ *        </a:dropdown>
+ *  
+ *        <a:label span="*">Message</a:label>
+ *        <a:textarea id="txtMessage" 
+ *          height = "*" 
+ *          span   = "*" />
  *      </a:table>
- *      
+ * 
  *      <a:button 
  *        caption = "Two Columns"
  *        bottom  = "10"
  *        left    = "10"
  *        onclick = "tableTest.setAttribute('columns', '80, *');"/>
- *              
+ * 
  *      <a:button 
  *        bottom  = "10"
  *        left    = "125"
  *        caption = "Four Columns"
  *        onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
+ *  <!-- endcontent -->
  *  </a:window>
- * </code>
- * Remarks:
- * This is one of three positioning methods.
- * See {@link baseclass.alignment}
- * See {@link baseclass.anchoring}
+ * </a:application>
+ * ```
  *
+ * @class apf.table
  * @define table
  * @allowchild {elements}, {anyaml}
- * @addnode elements
- * @constructor
+ *
+ * @container
+ * @inherits apf.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -61101,7 +61729,7 @@ apf.table = function(struct, tagName){
 };
 
 (function(){
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$focussable = false;
     this.$useLateDom = true; 
@@ -61113,17 +61741,28 @@ apf.table = function(struct, tagName){
     this.cellheight = 19;
     
     /**
-     * @attribute {String} columns      a comma seperated list of column sizes. A column size can be specified in a number (size in pixels) or using a number and a % sign to indicate a percentage. A '*' indicates the column spans the rest space. There can be only one '*' in the column string.
-     * Example:
-     * <code>
+     * @attribute {Number | String} columns      Sets or gets a comma seperated list of column sizes. 
+     *                                  A column size can be specified in a number (size in pixels), or using a number and a `"%"` sign to indicate a percentage. 
+     *                                  A `'*'` indicates the column spans the rest space. There can be only one `'*'` in the column string.
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:table columns="150, *, 20%" />
-     * </code>
-     * @attribute {String} padding      the space between each element. Defaults to 2.
-     * @attribute {String} edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
-     * Example:
-     * <code>
+     * ```
+     *
+     */
+    /**
+     * @attribute {String} [padding=2]     Sets or gets the space between each element.
+     */
+    /**
+     * @attribute {String} [edge="5 5 5 5"]        Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * 
+     * #### Example
+     * 
+     * ```xml
      *  <a:table edge="10 10 40 10" />
-     * </code>
+     * ````
      */
     this.$supportedProperties.push("columns", "padding", "edge", 
         "cellheight", "span");
@@ -61411,7 +62050,7 @@ apf.table = function(struct, tagName){
     });
     */
     
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
     
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e.$doOnlyAdmin || e.currentTarget == this)
@@ -61516,16 +62155,42 @@ apf.aml.setElement("table", apf.table);
  
 
 
-/**
+/** 
+ * Define some action rules.
+ *
+ * @class apf.ActionRule
+ * @inherits apf.AmlElement
+ */
+// @todo Doc do all of these.
+/*
  * @attribute {String} match
+ */
+/* 
  * @attribute {String} set
+ */
+/* 
  * @attribute {String} undo
+ */
+/* 
  * @attribute {String} lock
+ */
+// @todo Doc ALL of these
+/*
  * @define update
+ */
+/* 
  * @attribute {String} get 
+ */
+/* 
  * @attribute {String} parent
+ */
+/* 
  * @define add
+ */
+/* 
  * @attribute {Boolean} get 
+ */
+/*
  * @attribute {Boolean} parent
  */
 apf.ActionRule = function(struct, tagName){
@@ -61557,7 +62222,7 @@ apf.ActionRule = function(struct, tagName){
         delete this["c" + prop];
     }
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
@@ -61668,26 +62333,37 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 /**
- * element that loads javascript into the application
- * either from it's first child or from a file.
- * Example:
- * <code>
+ * This element loads JavaScript into the application.
+ * 
+ * #### Example
+ *
+ * ```xml
  *  <a:script src="code.js" />
- * </code>
- * Example:
- * <code>
+ * ```
+ *
+ * #### Example
+ *
+ * ```xml
  *  <a:script>//<!-- 
  *      for (var i = 0; i < 2; i++) {
  *          alert(i);
  *      }
  *  //--></a:script>
- * </code>
- * @attribute {String} src the location of the script file.
- * @addnode global, anyaml
+ * ```
  *
+ * @class apf.script
+ * @inherits apf.AmlElement
+ * @define script
+ * @logic
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
+ *
+ */
+/**
+ * @attribute {String} src the location of the script file.
+ *
+ *
  */
 apf.script = function(){
     this.$init("script", apf.NODE_HIDDEN);
@@ -61782,55 +62458,68 @@ apf.aml.setElement("script", apf.script);
 
 
 /**
- * Element displaying a skinnable list of options which can be selected.
- * Selection of multiple items can be allowed. Items can be renamed
+ * This element displays a skinnable list of options which can be selected.
+ * 
+ * Selection of multiple items is allowed. Items can be renamed
  * and removed. The list can be used as a collection of checkboxes or 
  * radiobuttons. This is especially useful for use in forms.
+ * 
  * This element is one of the most often used elements. It can display lists
- * of items in a cms style interface or display a list of search results in 
+ * of items in a CMS-style interface, or display a list of search results in 
  * a more website like interface.
- * Example:
- * A simple list with inline items.
- * <code>
- *  <a:list multimatch="[false]">
+ * 
+ * #### Example: A Simple List
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list>
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:list>
- * </code>
- * Example:
- * A databound list with items loaded from an xml file.
- * <code>
- *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
- * </code>
- * Example:
- * A databound list using the bindings element
- * <code>
- *  <a:model id="mdlList">
- *      <data>
- *          <item date="2009-11-12" deleted="0"></item>
- *          <item date="2009-11-11" deleted="0"></item>
- *          <item date="2009-11-10" deleted="0"></item>
- *          <item date="2009-11-09" deleted="1"></item>
- *          <item date="2009-11-08" deleted="1"></item>
- *      </data>
- *  </a:model>
- *  <a:list id="list" width="200" height="200" model="mdlList">
- *      <a:bindings>
- *          <a:caption match="[@date]" />
- *          <a:each match="[item[not(@deleted='1')]]" />
- *      </a:bindings>
- *  </a:list>
- * </code>
- *
- * @event click Fires when a user presses a mouse button while over this element.
- *
- * @constructor
- * @define list, select, select1, thumbnail
+ *      <a:item>United Kingdom</a:item> 
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Loading from a Model
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list 
+ *     model   = "/api/resources/xml/friends.xml"
+ *     each    = "[friend]"
+ *     caption = "[@name]"
+ *     icon    = "[@icon]"
+ *     width   = "300">
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Using XPaths
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list model="/api/apf/resources/xml/friends.xml" width="300">
+ *       <a:each match="[friend]">
+ *           <a:caption match="[@name]" />
+ *           <a:icon 
+ *             match = "[node()[@name='Ruben' or @name='Matt']]" 
+ *             value = "/api/apf/resources/icons/medal_gold_1.png" />
+ *           <a:icon value="/api/apf/resources/icons/medal_silver_1.png" />
+ *       </a:each>
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * @class apf.list
+ * @define list
  * @allowchild {smartbinding}
- * @addnode elements
  *
+ * @selection
  * @inherits apf.BaseList
  * @inherits apf.Rename
  *
@@ -61838,48 +62527,14 @@ apf.aml.setElement("script", apf.script);
  * @version     %I%, %G%
  * @since       0.4
  */
+/**
+ * @event click Fires when a user presses a mouse button while over this element.
+ */
+
 apf.list      = function(struct, tagName){
     this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
 };
 
-/**
- * Example:
- * A small product search application using a list to display results.
- * <code>
- *  <a:bar>
- *      <h1>Search for a product</h1>
- *      <a:textbox id="txtSearch" selectfocus="true" />
- *      <a:button onclick="search()" default="true">Search</a:button>
- *  </a:bar>
- * 
- *  <a:model id="mdlSearch">
- *      <data>
- *          <item title="Title 1" src="siteimg/slideshow_img/img1_small.jpg" descr="Descr 1"></item>
- *          <item title="Title 2" src="siteimg/slideshow_img/img2_small.jpg" descr="Descr 2"></item>
- *      </data>
- *  </a:model>
- * 
- *  <a:thumbnail 
- *    model         = "mdlSearch"
- *    autoselect    = "false" 
- *    width         = "400"
- *    height        = "400"
- *    caching       = "false" 
- *    empty-message = "No products found">
- *      <a:bindings>
- *          <a:caption match="[@title]" />
- *          <a:image match="[@src]" />
- *          <a:each match="[item]" />
- *      </a:bindings>
- *  </a:thumbnail>
- * 
- *  <a:script>
- *      function search(){
- *          mdlSearch.$loadFrom("http://localhost/search.php?keyword=" + txtSearch.getValue());
- *      }
- *  </a:script>
- * </code>
- */
 apf.thumbnail = function(struct, tagName){
     this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
 };
@@ -61917,7 +62572,7 @@ apf.select1   = function(struct, tagName){
     
     
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     this.$supportedProperties.push("appearance", "mode", "more", "thumbsize", "morepos");
     
@@ -61943,13 +62598,15 @@ apf.select1   = function(struct, tagName){
     
     
     /**
-     * @attribute {String} appearance the type of select this element is. 
-     * This is an xforms property and only available if apf is compiled 
-     * with __WITH_XFORMS set to 1.
-     *   Possible values:
-     *   full     depending on the tagName this element is either a list of radio options or of checked options.
-     *   compact  this elements functions like a list with multiselect off.
-     *   minimal  this element functions as a dropdown element.
+     * @attribute {String} appearance Sets or gets the type of select this element is. 
+     * This is an xforms property and only available if APF is compiled 
+     * with `__WITH_XFORMS` set to `1`.
+     *   
+     * Possible values include:
+     * 
+     *   - `"full"` :    depending on the tagName this element is either a list of radio options or of checked options.
+     *   - `"compact"`:  this elements functions like a list with multiselect off.
+     *   - `"minimal"`:  this element functions as a dropdown element.
      */
     this.$propHandlers["appearance"] = function(value){
         
@@ -61959,12 +62616,15 @@ apf.select1   = function(struct, tagName){
     /**
      * @attribute {String} more Adds a new item to the list and lets the users 
      * type in the new name. This is especially useful in the interface when 
-     * {@link element.list.attribute.mode} is set to check or radio. For instance in a form.
-     * Example:
+     * the mode is set to check or radio--for instance in a form.
+     * 
+     * #### Example
+     * 
      * This example shows a list in form offering the user several options. The
      * user can add a new option. A server script could remember the addition
      * and present it to all new users of the form.
-     * <code>
+     * 
+     * ```xml
      *  <a:model id="mdlSuggestions">
      *      <suggestions>
      *          <question key="krant">
@@ -61990,7 +62650,7 @@ apf.select1   = function(struct, tagName){
      *         </a:add>
      *     </a:actions>
      *  </a:list>
-     * </code>
+     * ```
      */
     this.$propHandlers["more"] = function(value){
         if (value) {
@@ -62057,13 +62717,13 @@ apf.select1   = function(struct, tagName){
     }*/
     
     
-    /**** Keyboard support ****/
+    // *** Keyboard support *** //
     
     
     this.addEventListener("keydown", this.$keyHandler, true);
     
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         this.appearance = this.getAttribute("appearance") || "compact";
@@ -62145,12 +62805,15 @@ apf.aml.setElement("list",      apf.list);
  * @binding each Determines the list of elements for which each
  * gets a visual representation within the element. It also can determine
  * the sequence of how the elements are visualized by offering a way to
- * specify the sort order. (N.B. The sorting mechanism is very similar to
- * that of XSLT)
- * Example:
+ * specify the sort order. The sorting mechanism is very similar to
+ * that of XSLT.
+ *
+ * #### Example
+ *
  * This example contains a list that displays elements with the tagName
- * 'mail' that do not have a deleted attribute set to 1.
- * <code>
+ * `'mail'` that do not have a deleted attribute set to 1.
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -62166,11 +62829,14 @@ apf.aml.setElement("list",      apf.list);
  *          <a:each match="[item[not(@deleted='1')]]" />
  *      </a:bindings>
  *  </a:list>
- * </code>
- * Example:
+ * ```
+ * 
+ * #### Example
+ *
  * This example shows how to use the each rule to order files based
  * on their modified data.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12"></item>
@@ -62182,10 +62848,13 @@ apf.aml.setElement("list",      apf.list);
  *          <a:caption match="[@date]" />
  *      </a:each>
  *  </a:list>
- * </code>
- * Example:
- * This example shows how to do complex sorting using a javascript callback function.
- * <code>
+ * ```
+ * 
+ * #### Example
+ * 
+ * This example shows how to do complex sorting using a JavaScript callback function.
+ * 
+ * ```xml
  *  <a:model id="mdlList">
  *      <data>
  *          <item date="2009-11-12" deleted="0"></item>
@@ -62205,44 +62874,65 @@ apf.aml.setElement("list",      apf.list);
  *          <a:caption match="[@date]" />
  *      </a:each>
  *  </a:list>
- * </code>
- * @attribute {String} match        an xpath statement which selects the nodes
+ * ```
+ *
+ */
+/**
+ * @attribute {String} match        Sets or gets an XPath statement which selects the nodes
  *                                  which will be rendered.
- * @attribute {String} sort         an xpath statement which selects the value
+ */
+/**
+ * @attribute {String} sort         Sets or gets an XPath statement which selects the value
  *                                  which is subject to the sorting algorithm.
- * @attribute {String} data-type    the way sorting is executed. See
- *                                  {@link baseclass.multiselectbinding.binding.each.attribute.sort-method}
- *                                  on how to specify a custom sort method.
- *   Possible values:
- *   string  Sorts alphabetically
- *   number  Sorts based on numerical value (i.e. 9 is lower than 10).
- *   date    Sorts based on the date sequence (21-6-1980 is lower than 1-1-2000).
- *           See {@link baseclass.multiselectbinding.binding.each.attribute.date-format}
- *           on how to specify the date format.
- * @attribute {String} date-format  the format of the date on which is sorted.
- *   Possible values:
- *   YYYY   Full year
- *   YY     Short year
- *   DD     Day of month
- *   MM     Month
- *   hh     Hours
- *   mm     Minutes
- *   ss     Seconds
- * Example:
- * <code>
+ */
+/**
+ * @attribute {String} data-type    Sets or gets the way sorting is executed. 
+ *   The possible values include:
+ *
+ *   - `string`:  Sorts alphabetically
+ *   - `number`:  Sorts based on numerical value (_i.e._, 9 is lower than 10).
+ *   - `date`:    Sorts based on the date sequence (`21-6-1980` is lower than `1-1-2000`).
+ */
+/**
+ * @attribute {String} date-format  Sets or gets the format of the date on which is sorted.
+ *   
+ *  The possible values include:
+ *
+ *   - `YYYY`:   Full year
+ *   - `YY`:     Short year
+ *   - `DD`:     Day of month
+ *   - `MM`:     Month
+ *   - `hh`:     Hours
+ *   - `mm`:     Minutes
+ *   - `ss`:     Seconds
+ * 
+ * 
+ * #### Example
+ *
+ * ```
  *  date-format="DD-MM-YYYY"
- * </code>
- * @attribute {String} sort-method  the name of a javascript function to executed
+ * ```
+ */
+/**
+ * @attribute {String} sort-method  Sets or gets the name of a JavaScript function to execute
  *                                  to determine the value to sort on.
- * @attribute {String} order        the order of the sorted list.
- *   Possible values:
- *   ascending  Default sorting order
- *   descending Reverses the default sorting order.
- * @attribute {String} case-order   whether upper case characters have preference
+ */
+/**
+ * @attribute {String} order        Sets or gets the order of the sorted list.
+ *   
+ *  The possible values include:
+ *
+ *   - `ascending`:  Default sorting order
+ *   - `descending`: Reverses the default sorting order
+ */
+/**
+ * @attribute {String} case-order   Sets or gets whether upper case characters have preference
  *                                  above lower case characters.
- *   Possible values:
- *   upper-first    Upper case characters are higher.
- *   lower-first    Lower case characters are higher.
+ *   
+ *  The possible values include:
+ *
+ *   - `upper-first`:    Upper case characters are higher.
+ *   - `lower-first`:    Lower case characters are higher.
  */
 apf.BindingEachRule = function(struct, tagName){
     this.$init(tagName, apf.NODE_HIDDEN, struct);
@@ -62343,7 +63033,7 @@ apf.BindingEachRule = function(struct, tagName){
         return newEach.join("|");
     }
     
-    /**
+    /*
      *      <a:each 
      *         match="[group|item]"
      *         filter="{tb.value}"
@@ -62471,7 +63161,8 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/**
+// @todo doc
+/*
  * @attribute {String} formula 
  * @attribute {Number} length
  * @attribute {String} delimiter
@@ -62534,22 +63225,29 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 /**
- * Element displaying a frame with a caption, containing other elements. This
- * element is called a fieldset in html.
- * Example:
- * <code>
- *  <a:frame caption="Options">
+ * This element displays a frame with a caption that can contain other elements. It's
+ * element is analogous to the `<fieldset>` in HTML.
+ * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *    <!-- startcontent -->
+ *    <a:frame caption="Options">
  *      <a:radiobutton value="1">Option 1</a:radiobutton>
  *      <a:radiobutton value="2">Option 2</a:radiobutton>
  *      <a:radiobutton value="3">Option 3</a:radiobutton>
  *      <a:radiobutton value="4">Option 4</a:radiobutton>
- *  </a:frame>
- * </code>
+ *    </a:frame>
+ *    <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
- * @define fieldset, frame
+ * @class apf.frame
+ * @define frame
+ * @container
  * @allowchild {elements}, {anyaml}
- * @addnode elements:frame
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -62576,10 +63274,10 @@ apf.frame    = function(struct, tagName){
     
     
     
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
     
     /**
-     * @attribute {String} caption the text of the caption. 
+     * @attribute {String} caption Sets or gets the caption text. 
      */
     this.$supportedProperties.push("caption", "url");
     this.$propHandlers["caption"] = function(value){
@@ -62592,7 +63290,7 @@ apf.frame    = function(struct, tagName){
     };
     
     /**
-     * @attribute {String} icon the location of the image.
+     * @attribute {String} icon Sets or gets the location of the image.
      */
     this.$propHandlers["icon"] = function(value){
         var oIcon = this.$getLayoutNode("main", "icon", this.$ext);
@@ -62602,7 +63300,10 @@ apf.frame    = function(struct, tagName){
             oIcon.style.display = value ? "block" : "none";
         apf.skins.setIcon(oIcon, value, this.iconPath);
     };
-    
+
+    /**
+     * @attribute {String} icon Sets or gets the URL location (if this is an iframe).
+     */
     this.$propHandlers["url"] = function(value){
         var node = this.oCaption;
         if (node.tagName == "A" || node.nodeType != 1) 
@@ -62615,14 +63316,14 @@ apf.frame    = function(struct, tagName){
     };
     
     /** 
-     * Sets the text of the title of this element
-     * @param {String} value the text of the title.
+     * Sets the text of the title of this element.
+     * @param {String} value The text of the title.
      */
     this.setTitle = function(value){
         this.setProperty("title", value);
     };
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin
@@ -62683,48 +63384,113 @@ apf.aml.setElement("frame", apf.frame);
 
 
 /**
- * Element graphically representing a percentage value which increases
- * automatically with time. This element is most often used to show the progress
+ * This element graphically represents a percentage value which increases
+ * automatically with time. 
+ *
+ * This element is most often used to show the progress
  * of a process. The progress can be either indicative or exact.
- * Example:
- * This example shows a progress bar that is only visible when an application is
- * synchronizing it's offline changes. When in this process it shows the exact
- * progress of the sync process.
- * <code>
- *  <a:progressbar
- *    value   = "{apf.offline.progress}"
- *    visible = "{apf.offline.syncing}" />
- *  </code>
+ * 
+ * #### Example: A Simple Progressbar
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
+ * #### Example: Progressbars with Varying Speeds
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     id    = "pb1"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb1.start();
+ *   //--></a:script>
+ *   </a:progressbar>
+ * 
+ *   <a:progressbar 
+ *     id    = "pb2"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb2.start(50);
+ *   //--></a:script>
+ *   </a:progressbar>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Dynmically Controlling the Progressbar
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar
+ *     id    = "pb3"
+ *     min   = "0"
+ *     max   = "100"
+ *     value = "0"
+ *     width = "300" />
+ *   <a:table 
+ *     columns    = "80, 80, 80, 80"
+ *     cellheight = "24" 
+ *     margin     = "15 0">
+ *       <a:button onclick="pb3.start()">Start</a:button>
+ *       <a:button onclick="pb3.pause()">Pause</a:button>
+ *       <a:button onclick="pb3.stop()">Stop</a:button>
+ *       <a:button onclick="pb3.clear()">Clear</a:button>
+ *       <a:button onclick="pb3.enable()">Enable</a:button>
+ *       <a:button onclick="pb3.disable()">Disable</a:button>
+ *   </a:table>
+ * </a:application>
+ * ```
+ * 
+ * @class apf.progressbar
+ * @define progressbar
  * @allowchild {smartbinding}
- * @addnode elements:progressbar
  *
+ * @form
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- *
+ * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
- *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ * 
  * Sets the progress position based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model>
  *      <data progress="50"></data>
  *  </a:model>
  *  <a:progressbar min="0" max="100" value="[@progress]" />
- * </code>
- * Example:
+ * ```
+ *
  * A shorter way to write this is:
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlProgress">
  *      <data progress="50"></data>
  *  </a:model>
  *  <a:progressbar value="[mdlProgress::@progress]" />
- * </code>
+ * ```
  */
 apf.progress    = function(struct, tagName){
     this.$init(tagName || "progress", apf.NODE_VISIBLE, struct);
@@ -62740,7 +63506,7 @@ apf.progressbar = function(struct, tagName){
 
     this.$focussable = false; // This object can get the focus
 
-    /**** Properties and Attributes ****/
+    // *** Properties and Attributes *** //
 
     this.value = 0;
     this.min   = 0;
@@ -62750,8 +63516,10 @@ apf.progressbar = function(struct, tagName){
     this.$timer;
 
     /**
-     * @attribute {Boolean} autostart whether the progressbar starts automatically.
-     * @attribute {Boolean} autohide  whether the progressbar hides when the progress is at 100%. Setting this to true will hide the progressbar at start when autostart is not set to true.
+     * @attribute {Boolean} autostart Sets or gets whether the progressbar starts automatically.
+     */
+    /**
+     * @attribute {Boolean} autohide  Sets or gets whether the progressbar hides when the progress is at 100%. Setting this to `true` hides the progressbar at start when autostart is not set to `true`.
      */
     this.$booleanProperties["autostart"] = true;
     this.$booleanProperties["autohide"] = true;
@@ -62759,7 +63527,7 @@ apf.progressbar = function(struct, tagName){
     this.$supportedProperties.push("value", "min", "max", "autostart", "autohide");
     
     /**
-     * @attribute {String} value the position of the progressbar stated between 
+     * @attribute {String} value Sets or gets the position of the progressbar stated between 
      * the min and max value.
      */
     this.$propHandlers["value"] = function(value){
@@ -62784,29 +63552,29 @@ apf.progressbar = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} min the minimum value the progressbar may have. This is
-     * the value that the progressbar has when it's at its start position.
+     * @attribute {Number} min Sets or gets the minimum value the progressbar may have. This is
+     * the value that the progressbar has when it is at its start position.
      */
     this.$propHandlers["min"] = function(value){
         this.min = parseFloat(value);
-    }
+    };
 
     /**
-     * @attribute {Number} max the maximum value the progressbar may have. This is
-     * the value that the progressbar has when it's at its end position.
+     * @attribute {Number} max Sets or gets the maximum value the progressbar may have. This is
+     * the value that the progressbar has when it is at its end position.
      */
     this.$propHandlers["max"] = function(value){
         this.max = parseFloat(value);
-    }
+    };
 
-    /**** Public Methods ****/
+    // *** Public Methods *** //
 
     
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -62814,7 +63582,7 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value.
      */
     this.getValue = function(){
         return this.value;
@@ -62824,11 +63592,10 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Resets the progress indicator.
-     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
      */
     this.clear = function(){
         this.$clear();
-    }
+    };
 
     this.$clear = function(restart, restart_time){
         clearInterval(this.$timer);
@@ -62851,7 +63618,7 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Starts the progress indicator.
-     * @param {Number} start the time between each step in milliseconds.
+     * @param {Number} start Sets or gets the time between each step in milliseconds.
      */
     this.start = function(time){
         if (this.autohide)
@@ -62882,7 +63649,9 @@ apf.progressbar = function(struct, tagName){
 
     /**
      * Stops the progress indicator from moving.
-     * @param {Boolean} restart whether a this.$timer should start with a new indicative progress indicator.
+     * @param {Boolean} restart Specifies whether a `this.$timer` should start with a new indicative progress indicator.
+     * @param {Number} [time=500] The internal (in milliseconds)
+     * @param {Number} [restart_time] The time for the next restart to occur
      */
     this.stop = function(restart, time, restart_time){
         clearInterval(this.$timer);
@@ -62894,7 +63663,7 @@ apf.progressbar = function(struct, tagName){
         }, time || 500);
     };
 
-    /**** Private methods ****/
+    // *** Private methods *** //
 
     this.$step = function(){
         if (this.value == this.max) 
@@ -62903,7 +63672,7 @@ apf.progressbar = function(struct, tagName){
         this.setValue(this.value + 1);
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(clear, parentNode, Node, transform){
         //Build Main Skin
@@ -63100,12 +63869,16 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 /**
- * Element displaying a page and several buttons allowing a
+ * An element displaying a page and several buttons allowing a
  * user to switch between the pages. Each page can contain
- * arbitrary aml. Each page can render it's content during
- * startup of the application or when the page is activated.
- * Example:
- * <code>
+ * arbitrary AML. Each page can render its content during
+ * startup of the application, or when the page is activated.
+ *
+ * #### Example
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <!-- startcontent -->
  *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">
  *          <a:checkbox>Example</a:checkbox>
@@ -63121,12 +63894,15 @@ apf.aml.setElement("drop", apf.BindingDndRule);
  *          <a:checkbox>This better?</a:checkbox>
  *      </a:page>
  *  </a:tab>
- * </code>
+ * <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
- * @define tab, pages, switch
+ * @class apf.tab
+ * @define tab
+ * @container
  * @allowchild page
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -63155,7 +63931,7 @@ apf.tab       = function(struct, tagName){
 (function(){
     this.$focussable = apf.KEYBOARD; // This object can get the focus from the keyboard
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(bSkinChange){
         //Build Main Skin
@@ -63199,73 +63975,144 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 /**
- * Element specifying the settings of the application.
+ * This element specifies the settings of the APF application.
+ * 
+ * @class apf.appsettings
  * @define appsettings
- * @addnode global
- * @attribute {Boolean} debug                   whether the debug screen is shown at startup.
- * @see core.apf.object.debugwin
- * @see core.apf.object.console
- * @attribute {String}  name                    the name of the application, used by many different services to uniquely identify the application.
- * @attribute {Boolean} disable-right-click     whether a user can get the browsers contextmenu when the right mouse button is clicked.
- * @see element.contextmenu
- * @attribute {Boolean} allow-select            whether general text in the application can be selected.
- * @attribute {Boolean} allow-blur              whether it's possible to blur an element while not giving the focus to another element. Defaults to true.
- * @attribute {Boolean} auto-disable-actions    whether smartbinding actions are by default disabled.
+ * @logic
+ * @inherits apf.AmlElement
+ * @allowchild auth, authentication, offline, printer, defaults
+ * 
+ */
+// @todo describe defaults
+/**
+ * @attribute {Boolean} debug                   Sets or gets whether the debug screen is shown at startup.
+ * 
+ */
+/**
+ * @attribute {String}  name                    Sets or gets the name of the application; used by many different services to uniquely identify the application.
+ */
+/**
+ * @attribute {Boolean} disable-right-click     Sets or gets whether a user can get the browser's contextmenu when the right mouse button is clicked.
+ * @see apf.contextmenu
+ */
+/**
+ * @attribute {Boolean} allow-select            Sets or gets whether general text in the application can be selected.
+ */
+/**
+ * @attribute {Boolean} allow-blur              Sets or gets whether its possible to blur an element while not giving the focus to another element. Defaults to `true`.
+ */
+/**
+ * @attribute {Boolean} auto-disable-actions    Sets or gets whether smartbinding actions are by default disabled.
  * @see term.action
- * @attribute {Boolean} auto-disable            whether elements that don't have content loaded are automatically disabled.
- * @attribute {Boolean} disable-f5              whether the F5 key for refreshing is disabled.
- * @attribute {Boolean} auto-hide-loading       whether the load screen defined by the loader element is automatically hidden. Setting this to false enables you to control when the loading screen is hidden. Use the following code to do so:
- * <code>
+ */
+/**
+ * @attribute {Boolean} auto-disable            Sets or gets whether elements that don't have content loaded are automatically disabled.
+ */
+/**
+ * @attribute {Boolean} disable-f5              Sets or gets whether the F5 key for refreshing is disabled.
+ */
+/**
+ * @attribute {Boolean} auto-hide-loading       Sets or gets whether the load screen defined by the loader element is automatically hidden. Setting this to `false` enables you to control when the loading screen is hidden. 
+ * 
+ * The following code shows how this can be done:
+ *
+ * ```javascript
  *  apf.document.getElementsByTagName("a:loader")[0].hide()
  *  //or
  *  loaderId.hide()
- * </code>
- * @attribute {Boolean} disable-space           whether the space button default behaviour of scrolling the page is disabled.
- * @attribute {Boolean} disable-backspace       whether the backspace button default behaviour of going to the previous history state is disabled.
- * @attribute {String}  default-page            the name of the default page if none is specified using the #. Defaults to "home". See {object.history}.
- * @see element.history
- * @attribute {Boolean} undokeys                whether the undo and redo keys (in windows they are ctrl-Z and ctrl-Y) are enabled.
- * @see element.actiontracker
- * @attribute {String, Boolean} outline         whether an outline of an element is shown while dragging or resizing.
- * @see baseclass.interactive
- * @attribute {String, Boolean} drag-outline    whether an outline of an element is shown while dragging.
- * @see baseclass.interactive
- * @attribute {String, Boolean} resize-outline  whether an outline of an element is shown while resizing.
- * @see baseclass.interactive
- * @attribute {String}  baseurl                 the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instruction}.
- * @see teleport.http
- * @see term.datainstruction
- * @attribute {String}  loading-message         the global value for the loading message of elements during a loading state.
- * @see baseclass.databinding.attribute.loading-message
- * @attribute {String}  offline-message         the global value for the offline message of elements not able to display content while offline.
- * @see baseclass.databinding.attribute.offline-message
- * @attribute {String}  empty-message           the global value for the empty message of elements containing no contents.
- * @see baseclass.databinding.attribute.empty-message
- * @attribute {String}  model                   the default model for this application.
- * @see element.model
- * @attribute {String}  realtime                the global value whether bound values are realtime updated. When set to false elements do not update until they lose focus.
- * @see element.editor.attribute.realtime
- * @see element.textbox.attribute.realtime
- * @see element.slider.attribute.realtime
- * @attribute {String}  skinset                 the skin set used by the application.
- * @see baseclass.presentation.attribute.skinset
- * @attribute {String}  storage                 the {@link core.storage storage provider} to be used for key/value storage.
- * @see core.storage
- * @attribute {String}  offline                 the {@link core.storage storage provider} to be used for offline support.
- * @see element.offline
- * @attribute {String}  login                   the {@link term.datainstruction data instruction} which logs a user into the application.
- * @see element.auth
- * @attribute {String}  logout                  the {@link term.datainstruction data instruction} which logs a user out of the application.
- * @see element.auth
- * @attribute {String}  iepngfix                whether the fix for PNG images with transparency should be applied. Default is false.
- * @attribute {String}  iepngfix-elements       a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied.
- * @attribute {Boolean} iphone-fullscreen       whether the application should cover the entire screen of the iPhone. Default is true.
- * @attribute {String}  iphone-statusbar        the style of the statusbar of the iPhone webbrowser. Posssible values: 'default', black-translucent' or 'black'.
- * @attribute {String}  iphone-icon             path pointing to the icon that should be used when this application is put on the iPhone Dashboard.
- * @attribute {Boolean} iphone-icon-is-glossy   whether the icon specified with 'iphone-icon' already is glossy or if the iPhone OS should apply that effect. Default is false.
- * @attribute {Boolean} iphone-fixed-viewport   whether the viewport of the application is fixed and whether the zoom should be enabled. Default is true.
- * @allowchild auth, authentication, offline, printer, defaults
- * @todo describe defaults
+ * ```
+ */
+/**
+ * @attribute {Boolean} disable-space           Sets or gets whether the space button default behavior of scrolling the page is disabled.
+ */
+/**
+ * @attribute {Boolean} disable-backspace       Sets or gets whether the backspace button default behavior of going to the previous history state is disabled.
+ */
+/**
+ * @attribute {String}  default-page            Sets or gets the name of the default page if none is specified using the `#`. Defaults to `"home"`.
+ * @see apf.history
+ */
+/**
+ * @attribute {Boolean} undokeys                Sets or gets whether the undo and redo keyboard bindings are enabled.
+ * @see apf.actiontracker
+ */
+/**
+ * @attribute {String | Boolean} outline         Sets or gets whether an outline of an element is shown while dragging or resizing.
+ * @see apf.Interactive
+ */
+/**
+ * @attribute {String | Boolean} drag-outline    Sets or gets whether an outline of an element is shown while dragging.
+ * @see apf.Interactive
+ */
+/**
+ * @attribute {String | Boolean} resize-outline  Sets or gets whether an outline of an element is shown while resizing.
+ * @see apf.Interactive
+ */
+/**
+ * @attribute {String}  baseurl                 Sets or gets the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instructions}.
+ * 
+ */
+/**
+ * @attribute {String}  loading-message         Sets or gets the global value for the loading message of elements during a loading state.
+ * @see apf.DataBinding.loading-message
+ */
+/**
+ * @attribute {String}  offline-message         Sets or gets the global value for the offline message of elements not able to display content while offline.
+ * @see apf.DataBinding.offline-message
+ */
+/**
+ * @attribute {String}  empty-message           Sets or gets the global value for the empty message of elements containing no contents.
+ * @see apf.DataBinding.empty-message
+ */
+/**
+ * @attribute {String}  model                   Sets or gets the default model for this application.
+ * @see apf.model
+ */
+/**
+ * @attribute {String}  realtime                Sets or gets the global value whether bound values are updated realtime. When set to `false`, elements do not update until they lose focus.
+ * 
+ */
+/**
+ * @attribute {String}  skinset                 Sets or gets the skin set used by the application.
+ * @see apf.Presentation.skinset
+ */
+/**
+ * @attribute {String}  storage                 Sets or gets the storage provider to be used for key/value storage.
+ * 
+ */
+/**
+ * @attribute {String}  offline                 Sets or gets the storage provider to be used for offline support.
+ * 
+ */
+/**
+ * @attribute {String}  login                   Sets or gets the {@link term.datainstruction data instruction} which logs a user into the application.
+ * 
+ */
+/**
+ * @attribute {String}  logout                  Sets or gets the {@link term.datainstruction data instruction} which logs a user out of the application.
+ * 
+ */
+/**
+ * @attribute {String}  iepngfix                Sets or gets whether the fix for PNG images with transparency should be applied. Default is `false`.
+ */
+/**
+ * @attribute {String}  iepngfix-elements       Sets or gets a comma-seperated list of CSS identifiers (classes) to which the transparent-PNG fix will be applied.
+ */
+/**
+ * @attribute {Boolean} iphone-fullscreen       Sets or gets whether the application should cover the entire screen of the iPhone. Default is ztruez.
+ */
+/**
+ * @attribute {String}  iphone-statusbar        Sets or gets the style of the statusbar of the iPhone webbrowser. Posssible values: `'default'`, `'black-translucent'` or `'black'`.
+ */
+/**
+ * @attribute {String}  iphone-icon             Sets or gets path pointing to the icon that should be used when this application is put on the iPhone Dashboard.
+ */
+/**
+ * @attribute {Boolean} iphone-icon-is-glossy   Sets or gets whether the icon specified with 'iphone-icon' already is glossy or if the iPhone OS should apply that effect. Default is `false`.
+ */
+/**
+ * @attribute {Boolean} iphone-fixed-viewport   Sets or gets whether the viewport of the application is fixed and whether the zoom should be enabled. Default is `true`.
  */
 apf.appsettings = function(struct, tagName){
     this.$init(tagName || "appsettings", apf.NODE_HIDDEN, struct);
@@ -63387,8 +64234,10 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 /**
- * all elements within the comment tag are ignored by the parser.
+ * All elements within the comment tag are ignored by the parser.
  *
+ * @class apf.comment
+ * @define comment
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
@@ -63525,7 +64374,7 @@ apf.scrollbar = function(struct, tagName){
             viewport = new apf.ViewPortHtml(viewport);
         
         this.$attach(viewport);
-    }
+    };
     
     /**
      * @todo detach
@@ -64259,7 +65108,7 @@ apf.ViewPortAml = function(amlNode){
         }
     }
     
-    /**** Private ****/
+    // *** Private *** //
     
     this.$getHtmlHost = function(){
         var htmlNode = this.amlNode.$int || this.amlNode.$container;
@@ -64301,13 +65150,13 @@ apf.ViewPortAml = function(amlNode){
 }).call(apf.ViewPortAml.prototype);
 
 apf.ViewPortHtml = function(htmlNode){
-    /**** Private ****/
+    // *** Private *** //
     
     this.$getHtmlHost = function(){
         return htmlNode;
     }
     
-    /**** Init ****/
+    // *** Init *** //
     
     var _self = this;
     
@@ -64480,7 +65329,13 @@ apf.aml.setElement("config", apf.AmlConfig);
  * position specified by the position attribute. After the timeout has passed
  * the popup will dissapear automatically. When the mouse hovers over the popup
  * it doesn't dissapear.
+ * 
+ * @class apf.event
+ * @define event
+ * @inherits apf.AmlElement
  *
+ */
+/**
  * @event click Fires when the user clicks on the representation of this event.
  */
 apf.event = function(struct, tagName){
@@ -64639,7 +65494,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/**
+/*
  * @todo docs
  */
 apf.BindingColorRule = function(struct, tagName){
@@ -64735,84 +65590,56 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 /**
- * Notification element, which shows popups when events occur. Similar
- * to growl on the OSX platform.
- * Example:
- * <code>
- *  <a:notifier position="bottom-right" margin="10 10">
- *      <a:event 
- *        when    = "{offline.onLine}"
- *        message = "You are currently working offline"
- *        icon    = "icoOffline.gif" />
- *      <a:event 
- *        when    = "{!offline.onLine}"
- *        message = "You are online"
- *        icon    = "icoOnline.gif" />
- *      <a:event 
- *        when    = "{offline.syncing}" 
- *        message = "Your changes are being synced" 
- *        icon    = "icoSyncing.gif" />
- *      <a:event 
- *        when    = "{!offline.syncing}"
- *        message = "Syncing done"
- *        icon    = "icoDone.gif" />
- *  </a:notifier>
- * </code>
- * Example:
- * Notifier with 4 notifications which appears and stays over the 3 seconds
- * begins to the top right corner and goes to the left. First notification will
- * be displayed when value in textbox will be bigger than 4. In next two cases 
- * notification will be shown when notifier's position or arrange attribute will 
- * be changed. In the last case notification will be shown when date 2008-12-24 
- * will be selected on calendar.
- * <code>
- *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
- *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
- *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
- *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
- *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
- *  </a:notifier>
- * </code>
  * 
+ * A notification element, which shows popups when events occur. Similar in concept
+ * to [growl](http://growl.info/) on the OSX platform.
+ * 
+ * @class apf.notifier
  * @define notifier
- * @attribute   {String}   position     Vertical and horizontal element's start
- *                                      position, it can be changed in any time,
- *                                      default is 'top-right'
- *     Possible values:
- *     top-right       element is placed in top-right corner of browser window
- *     top-left        element is placed in top-left corner of browser window
- *     bottom-right    element is placed in bottom-right corner of browser window
- *     bottom-left     element is placed in bottom-left corner of browser window
- *     center-center   element is placed in the middle of browser window
- *     right-top       element is placed in top-right corner of browser window
- *     left-top        element is placed in top-left corner of browser window
- *     right-bottom    element is placed in bottom-right corner of browser window
- *     left-bottom     element is placed in bottom-left corner of browser window
- *     center-center   element is placed in the middle of browser window
- * @attribute   {String}   margin       It's a free space around popup element,
- *                                      default is '10 10 10 10' pixels
- * @attribute   {String}   columnsize   Specify element width and col width where
- *                                      element will be displayed, default is 300 pixels
- * @attribute   {String}   arrange      popup elements can be displayed in rows
- *                                      or columns, default is 'vertical'
- *     Possible values:
- *     vertical     element will be displayed in rows
- *     horizontal   element will be displayed in columns
- * @attribute   {String}   timeout      After the timeout has passed the popup
- *                                      will dissapear automatically. When the
- *                                      mouse hovers over the popup it doesn't
- *                                      dissapear, default is 2 seconds
- * $attribute   {String}   onclick      It's an action executed after user click
- *                                      on notifier cloud
- * 
- * @constructor
- *
+ * @media
  * @inherits apf.Presentation
  * 
- * @author      
  * @version     %I%, %G% 
  * 
  * @allowchild event
+ *
+ */
+/**
+ * @attribute   {String}   position     Sets or gets the vertical and horizontal element's start
+ *                                      position. The possible values include:
+ *     - `"top-right"`:       the element is placed in top-right corner of browser window (this is the default)
+ *     - `"top-left"`:        the element is placed in top-left corner of browser window
+ *     - `"bottom-right"`:    the element is placed in bottom-right corner of browser window
+ *     - `"bottom-left"`:     the element is placed in bottom-left corner of browser window
+ *     - `"center-center"`:   the element is placed in the middle of browser window
+ *     - `"right-top"`:       the element is placed in top-right corner of browser window
+ *     - `"left-top"`:        the element is placed in top-left corner of browser window
+ *     - `"right-bottom"`:    the element is placed in bottom-right corner of browser window
+ *     - `"left-bottom"`:     the element is placed in bottom-left corner of browser window
+ *     - `"center-center"`:   the element is placed in the middle of browser window
+ */
+/**
+ * @attribute   {String}   margin       Defines the free space around a popup element.
+ *                                      Defaults to '10 10 10 10' pixels
+ */
+/**
+ * @attribute   {String|Number}   columnsize   Specifies the element's width and col width, where the
+ *                                      element will be displayed. Defaults to 300px.
+ */
+/**
+ * @attribute   {String}   [arrange="vertical"]      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
+ *                                      or columns (`"horizontal"`).
+ */
+/**
+ * @attribute   {String}   [timeout=2]     After the timeout has passed, the popup
+ *                                      disappears automatically. When the
+ *                                      mouse is hovering over the popup, it doesn't
+ *                                      disappears.
+ */
+/**
+ * @attribute   {String}   onclick      An action executed after a user clicks
+ *                                      on the notifier.
+ * 
  */
 apf.notifier = function(struct, tagName){
     this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
@@ -64875,13 +65702,11 @@ apf.notifier = function(struct, tagName){
     }
 
     /**
-     * Function creates new notifie popup element
+     * Creates a new notification popup.
      * 
-     * @param {String}  message  Message content displaing in popup element,
-     *                           default is [No message]
-     * @param {String}  icon     Path to icon file relative to "icon-path" which
-     *                           is set in skin declaration
-     * @param {Object}  ev       object representation of event
+     * @param {String}  [message=""]  The message content displayed in the popup element
+     * @param {String}  [icon]     The path to the icon file ,relative to "icon-path" which
+     *                           is set in the skin declaration
      * 
      */
     this.popup = function(message, icon, ev) {
@@ -65112,7 +65937,7 @@ apf.notifier = function(struct, tagName){
         }
     };
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function() {
         //Build Main Skin
@@ -65156,12 +65981,44 @@ apf.aml.setElement("event", apf.event);
 
 
 /**
- * A page in a pageable element. (i.e. a page in {@link element.tab})
+ * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
  *
- * @constructor
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *      <a:tab anchors="10 10 10 10"> 
+ *          <a:page caption="General"> 
+ *              <a:checkbox>Example</a:checkbox> 
+ *              <a:button>Example</a:button> 
+ *          </a:page> 
+ *          <a:page caption="Advanced"> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *          </a:page> 
+ *          <a:page caption="Ajax.org"> 
+ *              <a:checkbox>This ok?</a:checkbox> 
+ *              <a:checkbox>This better?</a:checkbox> 
+ *          </a:page> 
+ *      </a:tab> 
+ *  </a:window>
+ *  <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * @class apf.page
  * @define  page
+ * @container
+ * @inherits apf.Presentation
  * @allowchild  {elements}, {anyaml}
- * @addnode elements
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -65183,7 +66040,7 @@ apf.page = function(struct, tagName){
     
     /**
      * Sets the caption of the button of this element.
-     * @param {String} caption the text displayed on the button of this element.
+     * @param {String} caption The text displayed on the button of this element.
      */
     this.setCaption = function(caption){
         this.setProperty("caption", caption, false, true);
@@ -65191,14 +66048,14 @@ apf.page = function(struct, tagName){
 
     /**
      * Sets the icon of the button of this element.
-     * @param {String} icon the icon displayed on the button of this element.
+     * @param {String} icon The icon displayed on the button of this element.
      */
     this.setIcon = function(icon) {
         this.setProperty("icon", icon, false, true);
     };
     
 
-    /**** Delayed Render Support ****/
+    // *** Delayed Render Support *** //
 
     
     //Hack
@@ -65215,7 +66072,7 @@ apf.page = function(struct, tagName){
     });
      
 
-    /**** Properties ****/
+    // *** Properties *** //
 
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
@@ -65226,7 +66083,7 @@ apf.page = function(struct, tagName){
 
     
     /**
-     * @attribute {Boolean} closebtn whether this page's button shows a close button inside it.
+     * @attribute {Boolean} closebtn Sets or gets whether this page's button shows a close button inside it.
      */
     this.$propHandlers["closebtn"] = function(value){
         //if (!this.$amlLoaded || !this.parentNode.$hasButtons)
@@ -65260,7 +66117,7 @@ apf.page = function(struct, tagName){
     
 
     /**
-     * @attribute {String} caption the text displayed on the button of this element.
+     * @attribute {String} caption Sets or gets the text displayed on the button of this element.
      */
     this.$propHandlers["tooltip"] = function(value){
         if (!this.parentNode)
@@ -65273,7 +66130,7 @@ apf.page = function(struct, tagName){
     }
 
     /**
-     * @attribute {String} caption the text displayed on the button of this element.
+     * @attribute {String} caption Sets or gets the text displayed on the button of this element.
      */
     this.$propHandlers["caption"] = function(value){
         if (!this.parentNode)
@@ -65351,7 +66208,7 @@ apf.page = function(struct, tagName){
     };
 
     /**
-     * @attribute {Boolean} fake whether this page actually contains elements or
+     * @attribute {Boolean} fake Sets or gets whether this page actually contains elements or
      * only provides a button in the pageable parent element.
      */
     this.$propHandlers["fake"] = function(value){
@@ -65372,7 +66229,7 @@ apf.page = function(struct, tagName){
             this.$activate();
     };
 
-    /**** DOM Hooks ****/
+    // *** DOM Hooks *** //
 
     this.addEventListener("DOMNodeRemoved", function(e){
         if (e && e.currentTarget != this)
@@ -65415,7 +66272,7 @@ apf.page = function(struct, tagName){
                 e.$beforeNode && e.$beforeNode.$button || null);
     }, true);
 
-    /**** Private state functions ****/
+    // *** Private state functions *** //
 
     this.$position = 0;
     this.$first = function(remove){
@@ -65740,7 +66597,11 @@ apf.page = function(struct, tagName){
                             oHtml.style.left     = "";
                             
                             var reorder = _self.nextSibling != aml;
-                            _self.parentNode.insertBefore(_self, aml);
+                            var lastNode;
+                            if (!(lastNode = apf.findHost(_self.$button.nextSibling)) || lastNode === _self.parentNode.lastChild)
+                                _self.parentNode.appendChild(_self);
+                            else
+                                _self.parentNode.insertBefore(_self, aml);
                             div.parentNode.removeChild(div);
                             if (reorder) {
                                 _self.parentNode.dispatchEvent("reorder", {
@@ -65796,7 +66657,7 @@ apf.page = function(struct, tagName){
         this.$btnPressed     = false;
     }
 
-    /**** Init ****/
+    // *** Init *** //
 
     this.$canLeechSkin = true;
     
@@ -65968,12 +66829,13 @@ apf.method = function(struct, tagName){
 (function(){
     this.$parsePrio = "002";
     
-    this.$booleanProperties["async"]          = true;
-    this.$booleanProperties["caching"]        = true;
-    this.$booleanProperties["ignore-offline"] = true;
+    this.$booleanProperties["async"]                 = true;
+    this.$booleanProperties["caching"]               = true;
+    this.$booleanProperties["ignore-offline"]        = true;
+    this.$booleanProperties["cors-with-credentials"] = true;
 
     this.$supportedProperties.push("name", "receive", "async", "caching",
-        "ignore-offline", "method-name", "type", "url");
+        "ignore-offline", "method-name", "type", "url", "cors-with-credentials");
 
     this.$propHandlers["ignore-offline"] = function(value){
         this.ignoreOffline = value;
@@ -65982,8 +66844,12 @@ apf.method = function(struct, tagName){
     this.$propHandlers["method-name"] = function(value){
         this.methodName = value;
     };
+    
+    this.$propHandlers["cors-with-credentials"] = function(value){
+        this.withCredentials = value;
+    };
 
-    /**** DOM Handlers ****/
+    // *** DOM Handlers *** //
 
     this.addEventListener("DOMNodeInserted", function(e){
         if (this.parentNode.$addMethod && e.currentTarget == this)
@@ -66080,7 +66946,7 @@ apf.aml.setElement("method", apf.method);
 
 
 
-/**
+/*
  * Element implementing WebDAV remote filesystem protocol.
  * WebDAV stands for "Web-based Distributed Authoring and Versioning". It is a
  * set of extensions to the HTTP protocol which allows users to collaboratively
@@ -66147,7 +67013,7 @@ apf.aml.setElement("method", apf.method);
  *      {String}       data       the ASCI representation of the file content-body
  *
  * @define webdav
- * @addnode teleport
+ *
  *
  * @author      Mike de Boer
  * @version     %I%, %G%
@@ -66157,7 +67023,7 @@ apf.aml.setElement("method", apf.method);
  * @inherits apf.Class
  * @inherits apf.BaseComm
  * @inherits apf.http
- * @namespace apf
+ * 
  *
  * @default_private
  */
@@ -66193,8 +67059,8 @@ apf.webdav = function(struct, tagName){
      * Simple helper function to store session variables in the private space.
      *
      * @param {String} name
-     * @param {mixed}  value
-     * @type  {mixed}
+     * @param {Mixed}  value
+     * @type  {Mixed}
      * @private
      */
     this.$regVar = function(name, value) {
@@ -66208,7 +67074,7 @@ apf.webdav = function(struct, tagName){
      * stored in the private space by register()
      *
      * @param {String} name
-     * @type  {void}
+     * 
      * @private
      */
     function unregister() {
@@ -66225,7 +67091,7 @@ apf.webdav = function(struct, tagName){
      * space.
      *
      * @param {String} name
-     * @type  {mixed}
+     * @type  {Mixed}
      * @private
      */
     this.$getVar = function(name) {
@@ -66240,12 +67106,12 @@ apf.webdav = function(struct, tagName){
      *
      * @param {Function}  fCallback    Function to execute when the request was successful
      * @param {String}    sPath        Path to the WebDAV resource
-     * @param {sBody}     [sBody]      Optional body text (used for PUTs, for example)
+     * @param {String}    [sBody]      Optional body text (used for PUTs, for example)
      * @param {Object}    [oHeaders]   Additional headers in key: value format
      * @param {Boolean}   [bUseXml]    Tells the function whether to return XML. Defaults to FALSE
      * @param {Object}    [oBinary]    Object with properties for binary upload in modern browsers
      * @param {Function}  [fCallback2] Optional second callback, passed to fCallback as arguments. Used mainly by the data instructions
-     * @type  {void}
+     * 
      */
     this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, oBinary, fCallback2) {
         if (!this.$getVar("authenticated")) {
@@ -66399,7 +67265,7 @@ apf.webdav = function(struct, tagName){
      * sign-on for WebDAV
      *
      * @param {Function} callback Will be executed upon successful authentication
-     * @type  {void}
+     * 
      * @private
      */
     function onAuth(callback) {
@@ -66446,7 +67312,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   username Username of the password-protected WebDAV resource
      * @param {String}   password Password in plaintext format
      * @param {Function} callback Function to be executed when the authentication succeeded
-     * @type  {void}
+     * 
      */
     this.authenticate = function(username, password, callback) {
         this.$regVar("auth-username", username);
@@ -66472,7 +67338,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Unset all cached values.
      *
-     * @type {void}
+     * 
      */
     this.reset = function() {
         unregister.call(this, "authenticated");
@@ -66489,7 +67355,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {String}   sPath    Path to the file or directory on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.exists = function(sPath, callback) {
         this.getProperties(sPath, 0, function(data, state, extra) {
@@ -66503,7 +67369,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.readFile =
     this.read = function(sPath, callback) {
@@ -66530,11 +67396,11 @@ apf.webdav = function(struct, tagName){
     /**
      * Reads the contents of a directory resource (one level deep) and passes
      * the resulting XML to a  callback function to be processed further.
-     * see {@link teleport.webdav.method.getProperties}
+     * 
      *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.readdir = function(sPath, callback) {
         if (sPath.charAt(sPath.length - 1) != "/")
@@ -66548,7 +67414,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   sPath      Path of the new directory on the WebDAV server
      * @param {Boolean}  [bLock]    Whether to require a lock before copy
      * @param {Function} [callback] Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.mkdir = function(sPath, bLock, callback) {
         if (bLock) {
@@ -66584,11 +67450,11 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Reads the properties of a resource on the server.
-     * see {@link teleport.webdav.method.getProperties}
+     * 
      *
      * @param {String}   sPath    Path to the resource on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.list = function(sPath, callback) {
         return this.getProperties(sPath, 0, callback);
@@ -66603,7 +67469,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bLock]   Whether to require a lock before write
      * @param {Object}   [oBinary] Object with properties for binary upload in modern browsers
      * @param {Function} callback  Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.writeFile =
     this.write = function(sPath, sContent, bLock, oBinary, callback) {
@@ -66649,7 +67515,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
      * @param {Boolean}  [bLock]      Whether to require a lock before copy
      * @param {Function} callback     Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo)
@@ -66699,7 +67565,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
      * @param {Boolean}  [bLock]      Whether to require a lock before move
      * @param {Function} callback     Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
@@ -66753,7 +67619,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
      * @param {Boolean}  [bLock]  Whether to require a lock before remove
      * @param {Function} callback Function to execute when the request was successful
-     * @type  {void}
+     * 
      */
     this.remove = function(sPath, bLock, callback) {
         if (bLock) {
@@ -66818,7 +67684,7 @@ apf.webdav = function(struct, tagName){
      * prevent the resource being modified by another user before the transaction
      * of this user has finished or even started.
      *
-     * @see teleport.webdav.method.unlock
+     *
      * @param {String}   sPath      Path to the resource on the server to be locked
      * @param {Number}   [iDepth]   Depth of lock recursion down the tree, should be '1' or 'Infinity'
      * @param {Number}   [iTimeout] Lifetime of the lock, in seconds. Defaults to Infinite.
@@ -66860,10 +67726,9 @@ apf.webdav = function(struct, tagName){
      * Wrapper function that centrally manages the unlocking of resources that
      * have been locked earlier on.
      *
-     * @see teleport.webdav.method.lock
      * @param {Object}   oLock    Object representing a Lock on a resource
      * @param {Function} callback Function that is executed upon a successful UNLOCK request
-     * @type  {void}
+     * 
      */
     this.unlock = function(oLock, callback) {
         if (typeof oLock == "string")
@@ -66901,7 +67766,7 @@ apf.webdav = function(struct, tagName){
      * @param {XmlDocument} data  Actual XML data, received from the server
      * @param {Number}      state Internal - APF defined - state of the request
      * @param {Object}      extra Simple object that contains additional request data
-     * @type  {void}
+     * 
      * @private
      */
     function registerLock(data, state, extra) {
@@ -66939,7 +67804,7 @@ apf.webdav = function(struct, tagName){
      * Removes a Lock token/ object from the stack.
      *
      * @param {String} sPath Path pointing to the resource on the server
-     * @type  {void}
+     * 
      * @private
      */
     function unregisterLock(sPath) {
@@ -66975,7 +67840,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {Object}  oLock   Simple object that represents a validated Lock
      * @param {Boolean} bFailed Tells whether the requesting function may be excuted
-     * @type  {void}
+     * 
      * @private
      */
     function purgeLockedStack(oLock, bFailed) {
@@ -66995,7 +67860,7 @@ apf.webdav = function(struct, tagName){
      * @param {Number}   iDepth   Depth of lock recursion down the tree, should be '1' or 'Infinity'
      * @param {Function} callback Function that is executed upon a successful LOCK request
      * @param {Object}   oHeaders Additional headers in key: value format
-     * @type  {void}
+     * 
      */
     this.getProperties = function(sPath, iDepth, callback, oHeaders) {
         // Note: caching is being done by an external model
@@ -67082,7 +67947,7 @@ apf.webdav = function(struct, tagName){
      * @param {Number}      state    Internal - APF defined - state of the request
      * @param {Object}      extra    Simple object that contains additional request data
      * @param {Function}    callback Function to be executed when all the property packets have been parsed
-     * @type  {void}
+     * 
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {
@@ -67445,41 +68310,77 @@ apf.webdav.STATUS_CODES = {
 
 
 /**
- * Element providing a sortable, selectable grid containing scrollable 
- * information. Grid columns can be reordered and resized.
- * Example:
- * This example shows a datagrid width several columns mixing percentage and
- * fixed size columns.
- * <code>
- *  <a:model id="mdlNews">
- *      <data>
- *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
- *          <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
- *          <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
- *      </data>
- *  </a:model>
- *  <a:datagrid model="mdlNews" options="move|size">
- *      <a:each match="[news]">
- *          <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
- *          <a:column caption="Date" value="[@date]" width="70" />
- *          <a:column caption="Title" width="180" value="[@title]" />
- *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
- *      </a:each>
- *  </a:datagrid>
- * </code>
+ * This element  provides a sortable, selectable grid containing scrollable 
+ * information. The grid columns can be reordered and resized.
+ * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdl">
+ *         <data>
+ *             <news name="Ajax" icon="note.png" count="54"></news>
+ *             <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+ *             </news>
+ *             <news name="Android" icon="note.png" count="2"></news>
+ *             <news name="Apple" icon="note.png" count="11"></news>
+ *             <news name="Aptana" icon="note.png" count="30"></news>
+ *             <news name="Canvas" icon="note.png" count="115"></news>
+ *             <news name="Chrome" icon="note.png" count="9"></news>
+ *             <news name="ColdFusion" icon="note.png" count="10"></news>
+ *             <news name="CSS" icon="note.png" count="176"></news>
+ *             <news name="Dojo" icon="note.png" count="224"></news>
+ *             <news name="JavaScript" icon="note.png" count="1218"></news>
+ *             <news name="JSON" icon="note.png" count="59"></news>
+ *             <news name="Mac" icon="note.png" count="1"></news>
+ *             <news name="Mozilla" icon="note.png" count="11"></news>
+ *         </data>
+ *   </a:model>
+ *   <a:datagrid 
+ *     width    = "500" 
+ *     id       = "dg1"
+ *     model    = "mdl"
+ *     height   = "150"> 
+ *       <a:each match="[news]"> 
+ *           <a:column 
+ *             type   = "icon" 
+ *             width  = "16" 
+ *             value  = "[@icon]" />
+ *           <a:column 
+ *             caption = "Name" 
+ *             value   = "[@name]"
+ *             width   = "100%" /> 
+ *           <a:column 
+ *             caption = "Article counter" 
+ *             width   = "180" 
+ *             value   = "[@count]" />
+ *       </a:each> 
+ *   </a:datagrid>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.datagrid
  * @define datagrid
- * @addnode elements
+ * @selection
+ *
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.BaseTree
+ * @inherits apf.Cache
+ * @inherits apf.StandardBinding
+ * @inherits apf.Rename
+ * @inherits apf.MultiselectBinding
  *
+ */
+/**
  * @binding invalidmsg  Determines the error message that is shown when a cell is not valid.
- * @binding description Determines the text that is displayed under the expanded row.
+ */
+/**
+ *  @binding description Determines the text that is displayed under the expanded row.
  */
 apf.datagrid = function(struct, tagName){
     this.$init(tagName || "datagrid", apf.NODE_VISIBLE, struct);
@@ -67524,17 +68425,19 @@ apf.datagrid = function(struct, tagName){
     
 
     /**
-     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
+     * @attribute {Boolean} iframe  Sets or gets whether this element is rendered inside an iframe. This is only supported for IE. Default is `false` for datagrid and `true` for spreadsheet and propedit.
      */
     this.$booleanProperties["iframe"]     = true;
 
      
     
     /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     * @attribute {String} mode Sets or gets the way this element interacts with the user.
+     *   
+     * Possible values include:
+     *
+     *   - `check`:  The user can select a single item from this element. The selected item is indicated.
+     *   - `radio`: The user can select multiple items from this element. Each selected item is indicated.
      */
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
@@ -67573,7 +68476,7 @@ apf.datagrid = function(struct, tagName){
         o.scrollTop = (Q.offsetTop) - 21;
     }
 
-    /**** Keyboard Support ****/
+    // *** Keyboard Support *** //
     
     
     /*function keyHandler(e){
@@ -67853,7 +68756,7 @@ apf.datagrid = function(struct, tagName){
     
     
     
-    /**** Focus ****/
+    // *** Focus *** //
     // Too slow for IE
     
     
@@ -67906,7 +68809,7 @@ apf.datagrid = function(struct, tagName){
         hideEditor.call(this);
     };
     
-    /**** Databinding ****/
+    // *** Databinding *** //
     
     this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
         var rules = e.bindings["column"];
@@ -68453,11 +69356,11 @@ apf.datagrid = function(struct, tagName){
     };
     this.addEventListener("beforeselect", hideEditor);
     
-    /**** Column management ****/
+    // *** Column management *** //
 
     /**
      * Returns a column definition object based on the column number.
-     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
+     * @param {Number} nr The heading number; this number is based on the sequence of the column elements.
      */
     this.getColumn = function(nr){
         return this.$headings[nr || this.$lastcol || 0];
@@ -68465,18 +69368,18 @@ apf.datagrid = function(struct, tagName){
     
     /** 
      * Resizes a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
-     * @param {Number} newsize  the new size of the column.
-     * @todo optimize but bringing down the string concats
+     * @param {Number} nr      The heading number; this number is based on the sequence of the column elements. 
+     * @param {Number} newsize  The new size of the column.
+     *
      */
-    this.resizeColumn = function(nr, newsize){
+    this.resizeColumn = function(nr, newsize){ //  @todo optimize but bringing down the string concats
         var h = this.$headings[nr];
         h.resize(newsize);
     };
 
     /**
      * Hides a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
+     * @param {Number} nr      The heading number; this number is based on the sequence of the column elements. 
      */
     this.hideColumn = function(nr){
         var h = this.$headings[nr];
@@ -68485,7 +69388,7 @@ apf.datagrid = function(struct, tagName){
     
     /**
      * Shows a hidden column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
+     * @param {Number} nr      The heading number; this number is based on the sequence of the column elements. 
      */
     this.showColumn = function(nr){
         var h = this.$headings[nr];
@@ -68494,7 +69397,7 @@ apf.datagrid = function(struct, tagName){
     
     /**
      * Sorts a column.
-     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
+     * @param {Number} hid The heading number; this number is based on the sequence of the column elements.
      */
     this.sortColumn = function(hid){
         var h = this.$headings[nr];
@@ -68503,15 +69406,15 @@ apf.datagrid = function(struct, tagName){
     
     /**
      * Moves a column to another position.
-     * @param {Number} fromHid the heading number of the column to move; this number is based on the sequence of the column elements.
-     * @param {Number} toHid   the position the column is moved to;
+     * @param {Number} from The heading number of the column to move; this number is based on the sequence of the column elements.
+     * @param {Number} to   The position to move the column to
      */
     this.moveColumn = function(from, to){
         var h = this.$headings[nr];
         h.move(to);
     }
     
-    /**** Init ****/
+    // *** Init *** //
 
     this.$draw = function(){
         this.$drawBase();
@@ -68722,44 +69625,61 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 /**
- * Element displaying a text in the user interface, usually specifying
- * a description of another element. When the user clicks on the label it 
- * can set the focus to the connected aml element.
- * Example:
- * This example uses the for attribute to connect the label to the form element.
- * <code>
- *  <a:label for="txtAddress">Address</a:label>
- *  <a:textbox id="txtAddress" value="Some text" />
- * </code>
+ * An element displaying a text in the user interface, usually specifying
+ * a description of another element. When the user clicks on the label, it 
+ * can set the focus to the connected AML element.
+ * 
+ * #### Example: Connecting with "For"
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label 
+ *     for       = "txtAddress"
+ *     disabled  = "true" 
+ *     caption   = "Disabled label"></a:label>
+ *   <a:textbox id="txtAddress" />
+ *   <a:label 
+ *     for   = "txtAddress2">Not Disabled</a:label>
+ *   <a:textbox id="txtAddress2" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.label
+ * @define label
  * @allowchild {smartbinding}
- * @addnode elements
  *
+ * @form 
  * @inherits apf.BaseSimple
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
- *
+ */
+/**
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ * 
  * Sets the label text based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlLabel">
  *      <data text="Some text"></data>
  *  </a:model>
  *  <a:label model="mdlLabel" value="[@text]" />
- * </code>
- * Example:
+ * ```
+ * 
  * A shorter way to write this is:
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlLabel">
  *      <data text="Some text"></data>
  *  </a:model>
  *  <a:label value="[mdlLabel::@text]" />
- * </code>
+ * ```
  */
 apf.label = function(struct, tagName){
     this.$init(tagName || "label", apf.NODE_VISIBLE, struct);
@@ -68783,7 +69703,7 @@ apf.label = function(struct, tagName){
     /**
      * Sets the value of this element. This should be one of the values
      * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -68791,7 +69711,7 @@ apf.label = function(struct, tagName){
     
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current value
      */
     this.getValue = function(){
         return this.value;
@@ -68800,12 +69720,17 @@ apf.label = function(struct, tagName){
     
     
     /** 
-     * @attribute {String} caption the text displayed in the area defined by this 
+     * @attribute {String} caption Sets or gets the text displayed in the area defined by this 
      * element. Using the value attribute provides an alternative to using
      * the text using a text node.
      *
-     * @attribute {String} for the id of the element that receives the focus 
+     */
+    /**
+     * @attribute {String} for Sets or gets the id of the element that receives the focus 
      * when the label is clicked on.
+     */
+    /**
+     * @attribute {String} textalign Sets or gets the text alignment value for the label.
      */
     this.$supportedProperties.push("caption", "for", "textalign");
     this.$propHandlers["caption"] = function(value){
@@ -68906,40 +69831,42 @@ apf.aml.setElement("label", apf.label);
 
 
 /**
- * Element displaying a picture. This element can read databound resources.
- * Example:
+ * The element displays a picture. This element can read databound resources.
+ * 
+ * #### Example
+ * 
  * This example shows a list with pictures. When one is selected its displayed
- * in the img element.
- * <code>
+ * in the `<a:img>` element:
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
  *  <a:model id="mdlPictures"> 
- *      <pictures> 
- *          <picture title="Landscape" src="img1.jpg" />
- *          <picture title="Animal" src="img2.jpg" />
- *          <picture title="River" src="img3.jpg" />
- *      </pictures> 
- *  </a:model>
- *  <a:list 
- *    id     = "lstPics" 
- *    skin   = "thumbnail" 
- *    height = "200" 
- *    width  = "400" 
- *    model  = "mdlPictures">
- *      <a:each match = "[picture]" >
- *          <a:name match="[@title]" />
- *          <a:image match="[@src]">path/to/image/[@src]</a:image>
- *      </a:each>
- *  </a:list>
- *  <a:img 
- *    model  = "{lstPics.selected}" 
- *    value  = "path/to/image/[@src]" 
- *    width  = "200" 
- *    height = "200" />
- * </code>
+ *       <data> 
+ *           <picture title="Ceiling Cat" src="http://htstatic.ibsrv.net/forums/honda-tech/ceiling-cat/ceiling-cat-6.jpg" />
+ *           <picture title="Maru" src="http://1.bp.blogspot.com/_4Cb_t7BLaIA/TCY3jyIx4SI/AAAAAAAAAbw/K-Ey_u36y8o/s400/maru+the+japanese+cat.jpg" />
+ *           <picture title="Lime Cat" src="http://www.cs.brown.edu/orgs/artemis/2012/catsoftheworld/lime-cat.jpg" />
+ *       </data> 
+ *   </a:model>
+ *   <a:list 
+ *     id     = "lstPics" 
+ *     model  = "mdlPictures">
+ *       <a:each match="[picture]" >
+ *           <a:caption match="[@title]" />
+ *       </a:each>
+ *   </a:list>
+ *   <a:img 
+ *     model  = "{lstPics.selected}" 
+ *     value  = "[@src]" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
  *
- * @constructor
+ * @class apf.img
  * @define img
+ * @media
  * @allowchild {smartbinding}
- * @addnode elements
+ *
  *
  * @inherits apf.BaseSimple
  *
@@ -68947,13 +69874,20 @@ apf.aml.setElement("label", apf.label);
  * @version     %I%, %G%
  * @since       0.4
  *
+ */
+/**
  * @event click Fires when a user presses a mouse button while over this element.
  *
- * @binding value  Determines the way the value for the element is retrieved 
+ */
+/**
+ *  @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
- * Example:
+ * 
+ * #### Example
+ * 
  * Sets the image source based on data loaded into this component.
- * <code>
+ * 
+ * ```xml
  *  <a:model id="mdlPictures"> 
  *      <data src="path/to/image.jpg" /> 
  *  </a:model>
@@ -68962,7 +69896,7 @@ apf.aml.setElement("label", apf.label);
  *    value  = "[@src]" 
  *    width  = "300" 
  *    height = "300" />
- * </code>
+ * ```
  */
 apf.img = function(struct, tagName){
     this.$init(tagName || "img", apf.NODE_VISIBLE, struct);
@@ -68977,8 +69911,8 @@ apf.preview = function(struct, tagName){
     
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the values attribute.
-     * @param {String} value the new value of this element
+     * specified in the `values` attribute.
+     * @param {String} value The new value of this element
      */
     this.setValue = function(value){
         this.setProperty("value", value, false, true);
@@ -68986,7 +69920,7 @@ apf.preview = function(struct, tagName){
     
     /**
      * Returns the current value of this element.
-     * @return {String}
+     * @return {String} The current image
      */
     this.getValue = function(value){
         return this.value;
@@ -68996,7 +69930,7 @@ apf.preview = function(struct, tagName){
     
     this.$supportedProperties.push("value", "src");
     /**
-     * @attribute {String} value the url location of the image displayed.
+     * @attribute {String} value Sets or gets the url location of the image displayed.
      */
     this.$propHandlers["src"] = 
     this.$propHandlers["value"] = function(value){
@@ -69046,7 +69980,7 @@ apf.preview = function(struct, tagName){
             this.oImg.style.display = "none";
     });
     
-    /**** Init ****/
+    // *** Init *** //
     
     this.$draw = function(){
         //Build Main Skin
@@ -69417,10 +70351,10 @@ apf.actiontracker.actions = {
 
 /**
  * UndoData is the command object for the actiontracker. Each instance of this class
- * contains information about a single event in the application. It can be undone
+ * contains information about a single event in the application. It can be undone,
  * and it knows how to synchronize the change to a (remote) data source.
  *
- * @constructor
+ * @class apf.UndoData
  * @default_private
  */
 apf.UndoData = function(settings, at){
@@ -69475,7 +70409,7 @@ apf.UndoData = function(settings, at){
 
     /**
      * Save the change to a data source.
-     * @param {Boolean} undo whether the change is undone.
+     * @param {Boolean} undo Specifies whether the change is undone.
      */
     this.saveChange = function(undo, at, callback){
         //Grouped undo/redo support
@@ -71155,7 +72089,7 @@ apf.start();
  *
  */
 
-/**
+/*
  * Bootloader for Ajax.org Platform
  *
  * Include apf.js, then just go about it as you would with the
@@ -71188,7 +72122,7 @@ apf.start();
  *
  */
 
-/**
+/*
  * Bootloader for Ajax.org Platform
  *
  * Include apf.js, then just go about it as you would with the 

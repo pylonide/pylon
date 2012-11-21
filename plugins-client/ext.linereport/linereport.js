@@ -9,8 +9,11 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var language = require("ext/language/language");
 var editors = require("ext/editors/editors");
+var settings = require("ext/settings/settings");
+var autosave = require("ext/autosave/autosave");
 
 module.exports = ext.register("ext/linereport/linereport", {
     name     : "linereport",
@@ -21,8 +24,10 @@ module.exports = ext.register("ext/linereport/linereport", {
     deps     : [language, editors],
     nodes    : [],
     
-    buffers : {},
-    saveTriggers : {},
+    stdoutBuffers : {},
+    stderrBuffers : {},
+    saveTriggers  : {},
+    firstUsed     : false,
     
     hook: function() {
         var _self = this;
@@ -36,9 +41,19 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
     
     onWorkerMessage : function(event) {
-        var doc = window.tabEditors.getPage().$doc;
+        if (ide.readonly || this.isCollabSlave()) {
+            this.disabled = true;
+            return;
+        }
+        
+        if (!this.firstUsed && event.data.path) {
+            this.firstUsed = true;
+            this.onFirstUse(event);
+        }
+        
+        var doc = window.tabEditors.getPage() && window.tabEditors.getPage().$doc;
         var path = event.data.path;
-        if (ext.disabled || !doc || (path && path !== doc.getNode().getAttribute("path")))
+        if (ext.disabled || !doc || (path && path !== util.stripWSFromPath(doc.getNode().getAttribute("path"))))
             return;
         function send() {
             window.ide.send(event.data.command);
@@ -49,42 +64,57 @@ module.exports = ext.register("ext/linereport/linereport", {
             this.saveTriggers[path] = send;
     },
     
+    isCollabSlave : function() {
+         var collab = require("core/ext").extLut["ext/collaborate/collaborate"];
+         // Use != here instead of !== since we may compare numbers and strings. Yup.
+         return collab && collab.ownerUid && collab.myUserId != collab.ownerUid;
+    },
+    
     onServerMessage : function(event) {
-        var id = event.message.extra && event.message.extra.linereport_id;
+        var message = event.message;
+        var id = message.extra && message.extra.linereport_id;
         if (!id)
             return;
-        switch (event.message.type) {
+        switch (message.type) {
             case "npm-module-data":
-                this.buffers[id] = (this.buffers[id] || "") + event.message.data;
+                if (event.message.stream === "stdout")
+                    this.stdoutBuffers[id] = (this.stdoutBuffers[id] || "") + event.message.data;
+                else
+                    this.stderrBuffers[id] = (this.stderrBuffers[id] || "") + event.message.data;
+
                 break;
             case "npm-module-exit":
                 language.worker.emit("linereport_invoke_result", {data: {
                     id: id,
                     code: event.message.code,
-                    output: this.buffers[id] || ""
+                    stdout: this.stdoutBuffers[id] || "",
+                    stderr: this.stderrBuffers[id] || ""
                 }});
-                delete this.buffers[id];
+                if (this.stdoutBuffers[id])
+                    delete this.stdoutBuffers[id];
+                if (this.stderrBuffers[id])
+                    delete this.stderrBuffers[id];
                 break;
         }
     },
     
     onFileSave: function(event) {
-        if (this.saveTriggers[event.oldpath]) {
-            this.saveTriggers[event.oldpath]();
-            delete this.saveTriggers[event.oldpath];
+        var oldPath = util.stripWSFromPath(event.oldpath);
+        if (this.saveTriggers[oldPath]) {
+            this.saveTriggers[oldPath]();
+            delete this.saveTriggers[oldPath];
         }
     },
     
-    enable: function() {
-        this.disabled = false;
-    },
-
-    disable: function() {
-        this.disabled = true;
-    },
-
-    destroy: function() {
-        this.disabled = true;
+    onFirstUse: function(event) {
+        // Enable autosave since it makes linereport trigger automatically
+        autosave.isAutoSaveEnabled = true;
+        settings.model.setQueryValue("general/@autosaveenabled", true);
+        ide.dispatchEvent("track_action", {
+            type: "linereport_firstuse",
+            language: event.data.language,
+            source: event.data.source
+        });
     }
     
 });

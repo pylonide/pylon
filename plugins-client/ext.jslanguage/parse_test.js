@@ -6,7 +6,8 @@ if (typeof process !== "undefined") {
 define(function(require, exports, module) {
 
 var assert = require("ace/test/assertions");
-//var handler = require('ext/jslanguage/jshint');
+var handler = require("./parse");
+var scopeHandler = require("./scope_analyzer");
 var LanguageWorker = require('ext/language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
@@ -17,7 +18,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "hello();");
+        worker.switchFile("test.js", "javascript", "hello();", null, "");
         worker.parse(function(ast) {
             assert.equal(ast, '[Call(Var("hello"),[])]');
         });
@@ -28,7 +29,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "hello(");
+        worker.switchFile("test.js", "javascript", "hello(", null, "");
         worker.parse(function(ast) {
             assert.equal(ast, '[Call(Var("hello"),[])]');
         });
@@ -39,7 +40,7 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/parse");
         assert.equal(worker.handlers.length, 1);
-        worker.switchFile("test.js", "javascript", "console.log\n\n\n\n");
+        worker.switchFile("test.js", "javascript", "console.log\n\n\n\n", null, "");
         worker.parse(function(ast) {
             assert.equal(ast, '[PropAccess(Var("console"),"log")]');
         });

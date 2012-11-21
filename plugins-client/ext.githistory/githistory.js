@@ -2,7 +2,9 @@
  * File history browser & comparison tool for Cloud9 IDE
  * 
  * TODO:
- * 
+ *
+ * Remove ceEditor (see http://100procentjan.nl/c9/3rlzgl.jpeg)
+ *
  * Implement "Restore" functionality
  *  - Popup about what just happened ("Changes have not been committed")
  *  - Set ceEditor's content
@@ -1096,25 +1098,6 @@ module.exports = ext.register("ext/githistory/githistory", {
         anchor.on("change", function() {
             updateFloat();
         });
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

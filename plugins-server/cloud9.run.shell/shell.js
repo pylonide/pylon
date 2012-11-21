@@ -36,6 +36,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
+    this.url = options.url;
     this.extra = options.extra;
     this.encoding = options.encoding;
 
@@ -139,13 +140,13 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         }
 
         child.on("exit", function(code) {
+            self.pid = 0;
             emit({
                 "type": self.name + "-exit",
                 "pid": pid,
                 "code": code,
                 "extra": self.extra
             });
-            self.pid = 0;
         });
 
         process.nextTick(function() {

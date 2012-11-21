@@ -218,6 +218,8 @@ module.exports = ext.register("ext/panels/panels", {
 
         this.mnuPanelsNone.setAttribute("selected", false);
         panelExt.mnuItem.select(); //Will set setting too
+        
+        panelExt.panel.setTitle(panelExt.button && panelExt.button.caption || "Workspace Files");
     },
 
     deactivate : function(noButton, anim){
@@ -299,25 +301,9 @@ module.exports = ext.register("ext/panels/panels", {
         });
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("View/~", 200);
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

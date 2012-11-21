@@ -55,8 +55,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
             bindKey : {mac: "Shift-Command-J", win: "Ctrl-Shift-J"},
             hint: "reformat the current JSON document",
             isAvailable : function(editor){
-                if (editor && editor.ceEditor) {
-                    var range = editor.ceEditor.$editor.getSelectionRange();
+                if (editor && editor.amlEditor && editor.amlEditor.$editor.path == "ext/code/code") {
+                    var range = editor.amlEditor.$editor.getSelectionRange();
                     return range.start.row == range.end.row 
                       && range.start.column == range.end.column
                 }
@@ -68,9 +68,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
             }
         });
         
-        var mnuItem;
         this.nodes.push(
-            mnuItem = menus.addItemByPath("Tools/Format JSON", new apf.item({
+            menus.addItemByPath("Tools/Format JSON", new apf.item({
                 command : "formatjson"
             }), 500)
         );
@@ -80,26 +79,10 @@ module.exports = ext.register("ext/formatjson/formatjson", {
         this.winFormat = winFormat;
     },
     
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-    
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-    
     destroy : function(){
         commands.removeCommandByName("formatjson");
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
         this.winFormat.destroy(true, true);
+        this.$destroy();
     }
 });
 

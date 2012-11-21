@@ -1,12 +1,12 @@
-**UPDATE for May 2012**: If you cloned Cloud9 prior to May 2012, we have upgraded the
-architecture of the codebase. This makes it simpler to maintain Cloud9, but
-it affects the way you pull updates and hack on subcomponents. See the _Installation and Usage_
-section below to grok the changes.
+**Issues on c9.io** If you have questions regarding the hosted service at [c9.io](http://c9.io)
+including issues with accounts or payments,
+please file them at [support.c9.io](http://support.cloud9ide.com/home) rather than as a
+GitHub issue in this repository.
 
 # Cloud9 IDE
 
 Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client.
-It is very actively maintained by about 15 developers in both Amsterdam and San Francisco and is one
+It is very actively maintained by about 20 developers in both Amsterdam and San Francisco and is one
 component of the hosted service at [c9.io](http://c9.io). The version available here runs on your local system.
 
 Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors
@@ -163,7 +163,7 @@ Cloud9 wouldn't be where it is now without contributions. Feel free to fork and 
 1. [The Individual CLA](https://github.com/ajaxorg/cloud9/raw/master/doc/Contributor_License_Agreement-v2.pdf): use this version if you're working on an ajax.org project in your spare time, or can clearly claim ownership of copyright in what you'll be submitting.
 2. [The Corporate CLA](https://github.com/ajaxorg/cloud9/raw/master/doc/Corporate_Contributor_License_Agreement-v2.pdf): have your corporate lawyer review and submit this if your company is going to be contributing to ajax.org projects
 
-If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email.
+If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email. Please indicate a contact person or pull request your CLA relates to so we can quickly process and handle your agreement. Once you've submitted it, you no longer need to send one for subsequent submissions.
 
 Email: cla@c9.io
 

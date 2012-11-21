@@ -75,8 +75,11 @@ module.exports = function setup(options, imports, register) {
             local: options.local
         });
 
-        var server = connect.getModule()();
+        var connectModule = connect.getModule();
+        var server = connectModule();
         connect.useAuth(baseUrl, server);
+        connect.useStart(connectModule.query());
+        connect.useSession(connectModule.csrf());
 
         server.use(function(req, res, next) {
             req.parsedUrl = parseUrl(req.url);
@@ -94,13 +97,13 @@ module.exports = function setup(options, imports, register) {
                     return;
                 }
 
-				// Guard against `Can't set headers after they are sent. Error: Can't set headers after they are sent.`.
-				try {
-                next();
-                pause.resume();
-				} catch(err) {
-					console.error(err.stack);
-				}
+                // Guard against `Can't set headers after they are sent. Error: Can't set headers after they are sent.`.
+                try {
+                    next();
+                    pause.resume();
+                } catch(err) {
+                    console.error(err.stack);
+                }
             });
         });
 

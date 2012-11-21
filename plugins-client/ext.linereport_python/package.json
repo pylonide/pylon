@@ -1,0 +1,14 @@
+{
+    "name": "ext.linereport_python",
+    "version": "0.0.1",
+    "main": "linereport-python-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.linereport_python"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

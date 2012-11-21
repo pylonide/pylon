@@ -15,7 +15,6 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, language],
-    nodes   : [],
     alone   : true,
 
     init : function() {
@@ -24,15 +23,7 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
         // indirectly invoked by scope_analyzer: 'ext/jslanguage/jshint'
         language.registerLanguageHandler('ext/jslanguage/debugger');
         language.registerLanguageHandler('ext/jslanguage/outline');
-    },
-    
-    enable : function() {
-    },
-
-    disable : function() {
-    },
-
-    destroy : function() {
+        language.registerLanguageHandler('ext/jslanguage/jumptodef');
     }
 });
 

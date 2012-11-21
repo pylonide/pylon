@@ -414,27 +414,10 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         this.enable();
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable && item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable && item.disable();
-        });
-    },
-
     destroy : function(){
         this.stop();
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         panels.unregister(this);
+        this.$destroy();
     }
 });
 

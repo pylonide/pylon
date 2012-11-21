@@ -57,7 +57,7 @@ module.exports = ext.register("ext/stripws/stripws", {
             name: "stripws",
             hint: "strip whitespace at the end of each line",
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path == "ext/code/code";
             },
             exec: function(){
                 ext.initExtension(self);
@@ -95,29 +95,19 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     enable: function () {
         ext.initExtension(this);
-        this.nodes.each(function(item) {
-            item.enable();
-        });
-
+        this.$enable();
         this.stripws = function() { strip(); };
     },
 
     disable: function () {
-        this.nodes.each(function(item) {
-            item.disable();
-        });
-
+        this.$disable();
         this.stripws = function() {};
     },
 
     destroy: function () {
         menus.remove("Tools/Strip Whitespace");
         commands.removeCommandByName("stripws");
-
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });

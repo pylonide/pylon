@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 "use strict";
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
@@ -31,9 +32,9 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         
         var isAvailable = function(editor, event){
             if (apf.activeElement && apf.activeElement.localName == "codeeditor")
-                return !(event instanceof KeyboardEvent);
+                return !(event instanceof KeyboardEvent) && !ide.readonly;
             
-            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming;
+            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming && !ide.readonly;
         };
         
         commands.addCommand({
@@ -87,10 +88,6 @@ module.exports = ext.register("ext/clipboard/clipboard", {
                 command : "paste"
             }), 600)
         );
-    },
-
-    init : function (amlNode) {
-        // do nothing
     },
 
     cut: function() {
@@ -147,23 +144,11 @@ module.exports = ext.register("ext/clipboard/clipboard", {
 
     $getAce : function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
-    },
-    
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
+        var amlEditor = editor.amlEditor;
+        return amlEditor.$editor;
     },
 
     destroy : function(){
@@ -172,10 +157,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         menus.remove("Edit/Copy");
         menus.remove("Edit/Paste");
         
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

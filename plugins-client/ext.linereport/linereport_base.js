@@ -18,22 +18,24 @@ var callbacks = {};
 var resultCache = {}; // // map command to doc to result array
 var inProgress = {}; // map command to boolean
 var nextJob = {}; // map command to function
-    
+
 worker.init = function() {
+    worker.$isInited = false; // allow children to still be inited
     worker.sender.on("linereport_invoke_result", function(event) {
         worker.$onInvokeResult(event.data);
     });
 };
 
 worker.initReporter = function(checkInstall, performInstall, callback) {
-   worker.$invoke(checkInstall, null, function(code, output) {
-       if (code !== 0) {
-           // console.log(performInstall);
-           worker.$invoke(performInstall, null, callback);
-       } else {
-           callback();
-       }
-   });
+    // TODO: make sure IDE is online
+    worker.$invoke(checkInstall, null, function(code, stdout, stderr) {
+        if (code !== 0) {
+            // console.log(performInstall);
+            worker.$invoke(performInstall, null, callback);
+        } else {
+            callback();
+        }
+    });
 },
 
 worker.invokeReporter = function(command, processLine, callback) {
@@ -41,8 +43,8 @@ worker.invokeReporter = function(command, processLine, callback) {
         
     resultCache[command] = resultCache[command] || {};
     var doc = this.doc.getValue();
-    if (resultCache[command][doc])
-        return callback(resultCache[command][doc]);
+    if (resultCache[command]['_' + doc])
+        return callback(resultCache[command]['_' + doc]);
     resultCache[command] = {};
     if (inProgress[command])
         return nextJob[command] = invoke;
@@ -53,15 +55,17 @@ worker.invokeReporter = function(command, processLine, callback) {
         inProgress[command] = setTimeout(function() {
             delete inProgress[command];
         }, REPORTER_TIMEOUT);
-        _self.$invoke(command, worker.path, function(code, output) {
+        _self.$invoke(command, worker.path, function(code, stdout, stderr) {
             var doc = _self.doc.getValue();
-            var result = resultCache[command][doc] = _self.parseOutput(output, processLine);
+            resultCache[command] = resultCache[command] || {};
+            var result = resultCache[command]['_' + doc] =
+                _self.parseOutput(stdout, processLine).concat(_self.parseOutput(stderr, processLine));
             setTimeout(function() {
-                if (resultCache[command][doc])
-                    delete resultCache[command][doc];
+                if (resultCache[command] && resultCache[command]['_' + doc])
+                    delete resultCache[command]['_' + doc];
             }, CACHE_TIMEOUT);
             if (result.length === 0 && code !== 0)
-                console.log("External tool produced an error that could not be parsed:", output);
+                console.log("External tool produced an error that could not be parsed:\n", stderr + '\n' + stdout);
             
             if (inProgress[command]) {
                 clearTimeout(inProgress[command]);
@@ -83,7 +87,7 @@ worker.onDocumentOpen = function(path, doc, oldPath, callback) {
 
 worker.$invoke = function(command, path, callback) {
     var id = commandId++;
-    var command = {
+    var commandData = {
         command: "sh",
         argv: ["sh", "-c", command],
         line: command,
@@ -93,14 +97,19 @@ worker.$invoke = function(command, path, callback) {
         extra: { linereport_id: id }
     };
     callbacks[id] = callback;
-    this.sender.emit("linereport_invoke", { command: command, path: path });
+    this.sender.emit("linereport_invoke", {
+        command: commandData,
+        path: path,
+        language: this.language,
+        source: this.$source
+    });
 };
 
 worker.$onInvokeResult = function(event) {
    // Note: invoked at least once for each linereport_base instance
    if (!callbacks[event.id])
        return; // already handled
-   callbacks[event.id](event.code, event.output);
+   callbacks[event.id](event.code, event.stdout, event.stderr);
    delete callbacks[event.id];
 };
 
@@ -111,7 +120,7 @@ worker.parseOutput = function(output, processLine) {
         var line = lines[i];
         if (processLine)
             line = processLine(line);
-        var result = line.charAt ? this.$parseOutputLine(line) : line;
+        var result = (line && line.charAt) ? this.$parseOutputLine(line) : line;
         if (result)
             results.push(result);
     }

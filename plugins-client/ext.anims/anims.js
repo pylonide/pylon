@@ -48,7 +48,7 @@ module.exports = ext.register("ext/anims/anims", {
         var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
 
         if (shouldAnimate) {
-            Firmin.animate(aNode.$ext || aNode, options, options.duration || 0.2, function() {
+            Firmin.animate(aNode.$ext || aNode, options, options && options.duration || 0.2, function() {
                 (aNode.$ext || aNode).style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 finish && finish(); //setTimeout(finish, 30);
             });
@@ -123,19 +123,6 @@ module.exports = ext.register("ext/anims/anims", {
 
             finish && finish();
         }
-    },
-
-    init : function(){
-
-    },
-
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
     }
 });
 

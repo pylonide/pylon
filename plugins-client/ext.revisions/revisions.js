@@ -1,4 +1,4 @@
-/*global winQuestionRev winQuestionRevMsg ceEditor revisionsPanel mnuContextTabs
+/*global winQuestionRev winQuestionRevMsg revisionsPanel mnuContextTabs
  * mnuCtxEditor tabEditors mnuCtxEditorCut pgRevisions lstRevisions revisionsInfo
  */
 
@@ -33,9 +33,9 @@ markup = markup.replace("{ide.staticPrefix}", ide.staticPrefix);
 var skin = require("text!ext/revisions/skin.xml");
 var Util = require("ext/revisions/revisions_util");
 var cssString = require("text!ext/revisions/style.css");
+var Code = require("ext/code/code");
 
 var beautify = require("ext/beautify/beautify");
-var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
@@ -84,7 +84,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Initializes the plugin if it is not initialized yet, and shows/hides its UI.
      **/
     toggle: function() {
-        if (!editors.currentEditor.ceEditor)
+        if (editors.currentEditor.path !== "ext/code/code")
             return;
 
         ext.initExtension(this);
@@ -100,7 +100,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             name: "revisionpanel",
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
-            isAvailable: function(editor) { return editor && !!editor.ceEditor; },
+            isAvailable: function(editor) {
+                return editor && editor.path == "ext/code/code";
+            },
             exec: function () { self.toggle(); }
         });
 
@@ -187,7 +189,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.offlineQueue = JSON.parse(localStorage.offlineQueue);
             }
             catch(e) {
-                console.error("Error loading revisions from local storage", e);
+                this.offlineQueue = [];
             }
         }
 
@@ -227,7 +229,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         ide.addEventListener("init.ext/code/code", function(e) {
-            self.panel = ceEditor.parentNode.appendChild(self.panel);
+            self.panel = e.ext.amlEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
 
@@ -321,6 +323,9 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
+        if (e.action == "remove")
+            return;
+        
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -351,7 +356,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var doc = data.doc;
         if (!doc.acedoc)
             return;
-            
+
         var page = doc.$page || tabEditors.getPage();
 
         this.$switchToPageModel(page);
@@ -900,7 +905,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || tabEditors.getPage().$doc);
-        return doc.acedoc.doc.$isTree;
+        return doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
     /**
@@ -1101,7 +1106,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * read-only session.
      **/
     previewRevision: function(id, value, ranges, newSession) {
-        var editor = ceEditor.$editor;
+        var editor = Code.amlEditor.$editor;
         var session = editor.getSession();
         var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
 
@@ -1117,9 +1122,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             ranges.forEach(function(range) {
                 Util.addCodeMarker(newSession, doc, range[4], {
-                    fromRow: range[0],
+                    fromRow: range[0] - 1,
                     fromCol: range[1],
-                    toRow: range[2],
+                    toRow: range[2] - 1,
                     toCol: range[3]
                 });
             });
@@ -1157,15 +1162,15 @@ module.exports = ext.register("ext/revisions/revisions", {
      * contains the latest content.
      **/
     goToEditView: function() {
-        if (typeof ceEditor === "undefined")
+        if (!Code.amlEditor)
             return;
 
         var revObj = this.$getRevisionObject(CoreUtil.getDocPath());
         if (revObj.realSession) {
-            ceEditor.$editor.setSession(revObj.realSession);
+            Code.amlEditor.$editor.setSession(revObj.realSession);
         }
-        ceEditor.$editor.setReadOnly(false);
-        ceEditor.show();
+        Code.amlEditor.$editor.setReadOnly(false);
+        Code.amlEditor.show();
     },
 
     /**
@@ -1337,7 +1342,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.model.setQueryValue("general/@revisionsvisible", true);
 
         if (!this.panel.visible) {
-            ceEditor.$ext.style.right = BAR_WIDTH + "px";
+            Code.amlEditor.$ext.style.right = BAR_WIDTH + "px";
             page.$showRevisions = true;
             this.panel.show();
             ide.dispatchEvent("revisions.visibility", {
@@ -1346,8 +1351,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
 
             beautify.disable();
-            quicksearch.offsetWidth = quicksearch.defaultOffset + BAR_WIDTH;
-            quicksearch.updateBarPosition();
             statusbar.offsetWidth = BAR_WIDTH;
             statusbar.setPosition();
             stripws.disable();
@@ -1377,7 +1380,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hide: function() {
         settings.model.setQueryValue("general/@revisionsvisible", false);
-        ceEditor.$ext.style.right = "0";
+        Code.amlEditor.$ext.style.right = "0";
         var page = tabEditors.getPage();
         if (!page) {
             return;
@@ -1388,8 +1391,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
 
         beautify.enable();
-        quicksearch.offsetWidth = quicksearch.defaultOffset;
-        quicksearch.updateBarPosition();
         statusbar.offsetWidth = 0;
         statusbar.setPosition();
         stripws.enable();
@@ -1467,25 +1468,19 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     enable: function() {
-        this.nodes.each(function(item) {
-            item.enable();
-        });
         this.enableEventListeners();
+        this.$enable();
     },
 
     disable: function() {
         this.hide();
-        this.nodes.each(function(item){
-            item.disable();
-        });
-
         tabEditors.getPages().forEach(function(page) {
             if (page.$mdlRevisions) {
                 delete page.$mdlRevisions;
             }
         }, this);
-
         this.disableEventListeners();
+        this.$disable();
     },
 
     destroy: function() {
@@ -1510,11 +1505,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.worker.terminate();
             this.worker = null;
         }
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });

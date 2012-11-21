@@ -370,7 +370,7 @@ module.exports = ext.register("ext/menus/menus", {
 
     getMenuId : function(path){
         var menu = this.menus[path];
-        return menu.id;
+        return menu && menu.id;
     },
 
     restore : function(preview){
@@ -429,6 +429,7 @@ module.exports = ext.register("ext/menus/menus", {
 
     destroy : function(){
         this.hbox.destroy(true, true);
+        this.$destroy();
         //this.splitter.destroy(true, true);
     }
 });

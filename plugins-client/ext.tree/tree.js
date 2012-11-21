@@ -43,7 +43,7 @@ function $cancelWhenOffline() {
 }
 
 module.exports = ext.register("ext/tree/tree", {
-    name             : "Project Files",
+    name             : "Workspace Files",
     dev              : "Cloud9 IDE, Inc.",
     alone            : true,
     type             : ext.GENERAL,
@@ -74,7 +74,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Register this panel on the left-side panels
         panels.register(this, {
             position : 1000,
-            caption: "Project Files",
+            caption: "Workspace Files",
             "class": "project_files",
             command: "opentreepanel"
         });
@@ -191,16 +191,18 @@ module.exports = ext.register("ext/tree/tree", {
          * and adds nodes
          */
         ide.addEventListener("treechange", function(e) {
-            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, "");
-            var parent = trFiles.getModel().data.selectSingleNode(path);
+            var path = "//node()[@path='" + e.path.replace(/'/g, "\\'").replace(/\\/g, "\\\\") + "']";
+            var parent = trFiles.getModel().data.selectSingleNode(path)
 
             if (!parent)
                 return;
 
-            var nodes   = parent.childNodes;
-            var files   = e.files;
+            var nodes = parent.childNodes;
+            var files = {};
+            
+            e.files.forEach(function(f) {
+                files[f.name] = f;
+            });
 
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
                 for (var file in files) {
@@ -227,11 +229,11 @@ module.exports = ext.register("ext/tree/tree", {
             for (var filename in files) {
                 var file = files[filename];
 
-                var xmlNode = apf.n("<" + apf.escapeXML(file.type) + " />")
-                    .attr("type", file.type)
-                    .attr("name", filename)
-                    .attr("path", path + "/" + filename)
-                    .node();
+                var xmlNode = new apf.getXml("<" + apf.escapeXML(file.type) + " />");
+                xmlNode.setAttribute("type", file.type);
+                xmlNode.setAttribute("name", file.name);
+                xmlNode.setAttribute("path", path + "/" + file.name);
+                
                 trFiles.add(xmlNode, parent);
             }
         });
@@ -407,21 +409,14 @@ module.exports = ext.register("ext/tree/tree", {
                 rename(args[1], args[0], filename, count > 0);
             }
         });
-
-        trFiles.addEventListener("beforestoprename", this.$beforestoprename = function(e) {
-            if (!ide.onLine && !ide.offlineFileSystemSupport)
-                return false;
-
-            return fs.beforeStopRename(e.value);
-        });
-
+        
         trFiles.addEventListener("beforerename", this.$beforerename = function(e){
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
 
             if (trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
-
+            
             // check for a path with the same name, which is not allowed to rename to:
             var path = e.args[0].getAttribute("path"),
                 newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]).toLowerCase();
@@ -442,7 +437,9 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
             }
 
-            fs.beforeRename(e.args[0], e.args[1]);
+            if (fs.beforeRename(e.args[0], e.args[1]) === false) {
+                return false;
+            }
         });
 
         trFiles.addEventListener("beforemove", this.$beforemove = function(e){
@@ -764,27 +761,10 @@ module.exports = ext.register("ext/tree/tree", {
         return false;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         commands.removeCommandByName("opentreepanel");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-
         panels.unregister(this);
+        this.$destroy();
     }
 });
 

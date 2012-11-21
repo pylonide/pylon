@@ -23,8 +23,6 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     nodes    : [],
     autodisable : ext.ONLINE | ext.LOCAL,
     
-    init : function(amlNode) {},
-
     hook : function() {
         var _self = this;
         menus.addItemByPath("Tools/Git/Blame", new apf.item({
@@ -33,7 +31,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 _self.startBlame();
             },
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path === "ext/code/code";
             }
         }), 500);
         
@@ -42,7 +40,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 _self.startBlame();
             },
             isAvailable : function(editor){
-                return editor && editor.ceEditor;
+                return editor && editor.path === "ext/code/code";
             }
         }), 909);
     },
@@ -200,25 +198,9 @@ module.exports = ext.register("ext/gitblame/gitblame", {
         }
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("Tools/Git/Blame");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 
