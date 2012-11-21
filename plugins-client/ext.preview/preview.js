@@ -77,6 +77,7 @@ module.exports = ext.register(_name, {
             width : 400,
             "min-width" : 400,
             barNum: 2,
+            headerVisibility: "false",
             sections : [{
                 width : 360,
                 height: 300,
