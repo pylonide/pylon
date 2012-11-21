@@ -1,11 +1,11 @@
 {
-    "name": "ext.quicksearch",
+    "name": "ext.csslanguage",
     "version": "0.0.1",
-    "main": "quicksearch-ext.js",
+    "main": "csslanguage-ext.js",
     "private": true,
     "plugin": {
         "provides": [
-            "ext.quicksearch"
+            "ext.csslanguage"
         ],
         "consumes": [
             "client-plugins"

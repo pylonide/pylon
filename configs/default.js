@@ -98,6 +98,7 @@ var config = [
             "ext/help/help",
             "ext/linereport/linereport",
             "ext/linereport_php/linereport_php",
+            "ext/linereport_python/linereport_python",
             //"ext/ftp/ftp",
             "ext/code/code",
             "ext/statusbar/statusbar",
@@ -133,6 +134,8 @@ var config = [
             "ext/guidedtour/guidedtour",
             "ext/quickstart/quickstart",
             "ext/jslanguage/jslanguage",
+            "ext/csslanguage/csslanguage",
+            "ext/htmllanguage/htmllanguage",
             "ext/autotest/autotest",
             "ext/closeconfirmation/closeconfirmation",
             "ext/codetools/codetools",
@@ -141,7 +144,6 @@ var config = [
             //"ext/githistory/githistory",
             "ext/autosave/autosave",
             "ext/revisions/revisions",
-            "ext/quicksearch/quicksearch",
             "ext/language/liveinspect"
             //"ext/splitview/splitview"
             //"ext/minimap/minimap"

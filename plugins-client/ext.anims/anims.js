@@ -123,19 +123,6 @@ module.exports = ext.register("ext/anims/anims", {
 
             finish && finish();
         }
-    },
-
-    init : function(){
-
-    },
-
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
     }
 });
 

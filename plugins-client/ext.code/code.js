@@ -46,14 +46,16 @@ var SupportedModes = {
     c9search: ["C9Search", "c9search", "text/x-c9search", "hidden"],
     c_cpp: ["C, C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
     clojure: ["Clojure", "clj", "text/x-script.clojure"],
-    coffee: ["CoffeeScript", "coffee|*Cakefile", "text/x-script.coffeescript"],
+    coffee: ["CoffeeScript", "*Cakefile|coffee|cf", "text/x-script.coffeescript"],
     coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion", "other"],
     csharp: ["C#", "cs", "text/x-csharp"],
     css: ["CSS", "css", "text/css"],
+    dart:       ["Dart", "dart", "text/x-dart"],
     diff:       ["Diff", "diff|patch", "text/x-diff", "other"],
     glsl:       ["Glsl", "glsl|frag|vert", "text/x-glsl", "other"],
     golang: ["Go", "go", "text/x-go"],
     groovy: ["Groovy", "groovy", "text/x-groovy", "other"],
+    haml: ["Haml", "haml", "text/haml", "other"],
     haxe: ["haXe", "hx", "text/haxe", "other"],
     html: ["HTML", "htm|html|xhtml", "text/html"],
     jade:       ["Jade", "jade", "text/x-jade"],
@@ -64,10 +66,13 @@ var SupportedModes = {
     jsx:        ["JSX", "jsx", "text/x-jsx", "other"],
     latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
     less: ["LESS", "less", "text/x-less"],
+    lisp: ["Lisp", "lisp|scm|rkt", "text/x-lisp", "other"],
     liquid: ["Liquid", "liquid", "text/x-liquid", "other"],
     lua: ["Lua", "lua", "text/x-lua"],
     luapage:    ["LuaPage"      , "lp", "text/x-luapage", "other"],
+    makefile: ["Makefile", "*GNUmakefile|*makefile|*Makefile|*OCamlMakefile|make", "text/x-makefile", "other"],
     markdown: ["Markdown", "md|markdown", "text/x-markdown", "other"],
+    objectivec: ["Objective-C", "m", "text/objective-c", "other"],
     ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml", "other"],
     perl: ["Perl", "pl|pm", "text/x-script.perl"],
     pgsql: ["pgSQL", "pgsql", "text/x-pgsql", "other"],
@@ -79,6 +84,7 @@ var SupportedModes = {
     scala: ["Scala", "scala", "text/x-scala"],
     scss: ["SCSS", "scss|sass", "text/x-scss"],
     sh: ["SH", "sh|bash|bat", "application/x-sh"],
+    stylus: ["Stylus", "styl|stylus", "text/x-stylus"],
     sql: ["SQL", "sql", "text/x-sql"],
     svg: ["SVG", "svg", "image/svg+xml", "other"],
     tcl:        ["Tcl"          , "tcl", "text/x-tcl", "other"],
@@ -394,7 +400,8 @@ module.exports = ext.register("ext/code/code", {
                 ["showprintmargin", "true"],
                 ["showindentguides", "true"],
                 ["printmargincolumn", "80"],
-                ["behaviors", ""],
+                ["behaviors", "true"],
+                ["wrapbehaviors", "false"],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],
@@ -411,6 +418,15 @@ module.exports = ext.register("ext/code/code", {
                 ["fadefoldwidgets", "true"],
                 ["animatedscroll", "true"]
             ]);
+            
+            // Enable bracket insertion by default, even if it was disabled before,
+            // migrating old users that had it disabled by default
+            var defaulted = e.model.queryValue("editors/code/@behaviorsdefaulted");
+            if (defaulted !== "true") {
+                e.model.setQueryValue("editors/code/@behaviorsdefaulted", "true");
+                e.model.setQueryValue("editors/code/@behaviors", "true");
+                e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
+            }
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
@@ -765,25 +781,6 @@ module.exports = ext.register("ext/code/code", {
     init: function(amlPage) {
         var _self = this;
 
-        if (window.__defineGetter__ && !window.cloud9config.packed) {
-            function getCeEditor() {
-                var d = document.createElement("div");
-                d.style.position = "absolute";
-                d.style.zIndex = 100001;
-                d.style.left = ((apf.getWindowWidth() / 2) - 200) + "px";
-                d.style.top = ((apf.getWindowHeight() / 2) - 200) + "px";
-                d.addEventListener("click", function () {
-                    document.body.removeChild(d);
-                });
-                var i = document.createElement("img");
-                i.src = "http://100procentjan.nl/c9/3rlzgl.jpeg";
-                d.appendChild(i);
-                document.body.appendChild(d);
-            }
-            window.__defineGetter__("ceEditor", getCeEditor);
-            this.__defineGetter__("ceEditor", getCeEditor);
-        }
-
         _self.amlEditor = codeEditor_dontEverUseThisVariable;
         _self.amlEditor.show();
 
@@ -963,14 +960,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     enable : function() {
-        if (this.disabled === false)
-            return;
-
-        this.disabled = false;
-
-        this.menus.each(function(item){
-            item.enable();
-        });
+        this.$enable();
 
         this.nodes.each(function(item){
             item.show();
@@ -978,14 +968,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     disable : function() {
-        if (this.disabled)
-            return;
-
-        this.disabled = true;
-
-        this.menus.each(function(item){
-            item.disable();
-        });
+        this.$disable();
 
         this.nodes.each(function(item){
             item.hide();
@@ -1000,16 +983,11 @@ module.exports = ext.register("ext/code/code", {
         commands.removeCommands(defaultCommands);
         commands.removeCommands(MultiSelectCommands);
 
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-
         if (this.amlEditor) {
             this.amlEditor.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
-
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

@@ -85,6 +85,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["highlightselectedword"]    = true;
     this.$booleanProperties["autohidehorscrollbar"]     = true;
     this.$booleanProperties["behaviors"]                = true;
+    this.$booleanProperties["wrapbehaviors"]            = true;
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
@@ -96,7 +97,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "scrollspeed", "showindentguides",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
+        "behaviors", "wrapbehaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
         "gutterline");
 
     this.$getCacheKey = function(value) {
@@ -151,17 +152,18 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             if (value.nodeType) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
+                //@todo replace this by a proper function
+                if (value.nodeType > 1 && value.nodeType < 5)
+                    value = value.nodeValue;
+                else
+                    value = value.firstChild && value.firstChild.nodeValue;
             }
 
-            doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
-              ? value
-              : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
-                    ? value.nodeValue
-                    : value.firstChild && value.firstChild.nodeValue || ""))));
+            doc = new EditSession(new ProxyDocument(new Document(value || "")));
+            doc.setUndoManager(new UndoManager());
+            doc.setMode(this.getMode(this.syntax));
 
             doc.cacheId = key;
-            doc.setUndoManager(new UndoManager());
-
             if (key)
                 this.$cache[key] = doc;
         }
@@ -199,7 +201,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setSession(doc);
     };
-
+    
     this.afterOpenFile = function(doc, path) {
     };
 
@@ -252,7 +254,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
     };
-    
+
     this.$propHandlers["showindentguides"] = function(value, prop, initial) {
         this.$editor.setDisplayIndentGuides(value);
     };
@@ -322,6 +324,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     this.$propHandlers["behaviors"] = function(value, prop, initial) {
         this.$editor.setBehavioursEnabled(value);
+    };
+    this.$propHandlers["wrapbehaviors"] = function(value, prop, initial) {
+        this.$editor.setWrapBehavioursEnabled(value);
     };
 
     var propModelHandler = this.$propHandlers["model"];
@@ -497,7 +502,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.scrollspeed = ed.getScrollSpeed();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
-        
+
         //@todo this is a workaround for a bug in handling boolean properties in apf.$setDynamicProperty
         this.activeline = ed.getHighlightActiveLine();//true;
         this.gutterline = ed.getHighlightGutterLine();//true;
@@ -506,6 +511,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
         this.highlightselectedword = ed.getHighlightSelectedWord();
         this.behaviors = !ed.getBehavioursEnabled();
+        this.wrapbehaviors = ed.getWrapBehavioursEnabled();
             
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
@@ -571,19 +577,19 @@ apf.codebox = function(struct, tagName) {
 
         this.$input.style.textShadow = "none";
         var ace = this.createSingleLineAceEditor(this.$input);
-        
+
         // disable unneded commands
         ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline", "findnext", "findprevious"]);
         // todo is there a property for these?
         ace.commands.removeCommands(["indent", "outdent"])
-        
+
         this.$editor = this.ace = ace;
         ace.renderer.setPadding(0);
         this.ace.codebox = this;
-        
+
         ace.on("focus", function() {
             dom.removeCssClass(ace.codebox.$ext, "tb_textboxInitial");
-            
+
             if (ace.renderer.initialMessageNode) {
                 ace.renderer.scroller.removeChild(ace.renderer.initialMessageNode);
                 ace.renderer.initialMessageNode = null;
@@ -594,7 +600,7 @@ apf.codebox = function(struct, tagName) {
             if (ace.$isFocused || ace.session.getValue())
                 return;
             dom.addCssClass(ace.codebox.$ext, "tb_textboxInitial");
-            
+
             if (ace.renderer.initialMessageNode)
                 return;
             ace.renderer.initialMessageNode = document.createTextNode(ace.codebox["initial-message"]);
@@ -606,10 +612,10 @@ apf.codebox = function(struct, tagName) {
         // ace.on("resize", function(){apf.layout.forceResize();});
     };
     this.getValue = function() {
-        return this.ace.session.getValue();
+        return this.ace.getValue();
     };
     this.setValue = function(val) {
-        return this.ace.session.doc.setValue(val);
+        return this.ace.setValue(val);
     };
     this.select = function() {
         return this.ace.selectAll();
@@ -635,14 +641,14 @@ apf.codebox = function(struct, tagName) {
         this.ace.commands.exec(command, this.ace);
     };
 
-    this.createSingleLineAceEditor = function(el) {        
+    this.createSingleLineAceEditor = function(el) {
         var renderer = new VirtualRenderer(el);
         el.style.overflow = "hidden";
         renderer.scrollBar.element.style.top = "0";
         renderer.scrollBar.element.style.display = "none";
         renderer.scrollBar.orginalWidth = renderer.scrollBar.width;
         renderer.scrollBar.width = 0;
-        renderer.content.style.height = "auto"; 
+        renderer.content.style.height = "auto";
 
         renderer.screenToTextCoordinates = function(x, y) {
             var pos = this.pixelToScreenCoordinates(x, y);
@@ -651,7 +657,7 @@ apf.codebox = function(struct, tagName) {
                 Math.max(pos.column, 0)
             );
         };
-        
+
         renderer.maxLines = 4;
         renderer.$computeLayerConfigWithScroll = renderer.$computeLayerConfig;
         renderer.$computeLayerConfig = function() {
@@ -659,11 +665,11 @@ apf.codebox = function(struct, tagName) {
             var height = this.session.getScreenLength() * this.lineHeight;
             if (config.height != height) {
                 var vScroll = height > this.maxLines * this.lineHeight;
-                
+
                 if (vScroll != this.$vScroll) {
                     if (vScroll) {
                         this.scrollBar.element.style.display = "";
-                        this.scrollBar.width = this.scrollBar.orginalWidth; 
+                        this.scrollBar.width = this.scrollBar.orginalWidth;
                         this.container.style.height = config.height + "px";
                         height = config.height;
                         this.scrollTop = height - this.maxLines * this.lineHeight;
@@ -671,24 +677,24 @@ apf.codebox = function(struct, tagName) {
                         this.scrollBar.element.style.display = "none";
                         this.scrollBar.width = 0;
                     }
-                    
+
                     this.onResize();
                     this.$vScroll = vScroll;
-                }                
-                
+                }
+
                 if (this.$vScroll)
                     return renderer.$computeLayerConfigWithScroll();
-                
+
                 this.container.style.height = height + "px";
                 this.scroller.style.height = height + "px";
                 this.content.style.height = height + "px";
                 this._emit("resize");
             }
-            
+
             var longestLine = this.$getLongestLine();
             var lastRow = this.session.getLength();
 
-            this.scrollTop = 0;            
+            this.scrollTop = 0;
             config.width = longestLine;
             config.padding = this.$padding;
             config.firstRow = 0;
@@ -698,7 +704,7 @@ apf.codebox = function(struct, tagName) {
             config.characterWidth = this.characterWidth;
             config.minHeight = height;
             config.maxHeight = height;
-            config.offset = 0;            
+            config.offset = 0;
             config.height = height;
 
             this.$gutterLayer.element.style.marginTop = 0 + "px";
@@ -716,9 +722,9 @@ apf.codebox = function(struct, tagName) {
         editor.setShowPrintMargin(false);
         editor.renderer.setShowGutter(false);
         editor.renderer.setHighlightGutterLine(false);
-        
+
         editor.$mouseHandler.$focusWaitTimout = 0;
-        
+
         return editor;
     },
 

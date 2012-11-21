@@ -95,16 +95,6 @@ module.exports = ext.register("ext/offline/offline", {
             offline.goOnline();
     },
 
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
-        //Remove all events
-    },
-
     bringExtensionsOnline : function(){
         var exts = ext.extensions;
         for (var i = 0, l = exts.length; i < l; i++) {

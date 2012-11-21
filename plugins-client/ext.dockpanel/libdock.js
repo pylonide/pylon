@@ -827,7 +827,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             bar.show();
             bar.vbox.hide();
-            bar.parentNode.removeChild(bar.vbox);
+            if (bar.parentNode)
+                bar.parentNode.removeChild(bar.vbox);
             bar.vbox.expanded = false;
             bar.splitter.hide();
         }

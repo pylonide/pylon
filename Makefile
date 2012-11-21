@@ -56,6 +56,10 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
         $(wildcard plugins-client/ext.codecomplete/*/*) \
         $(wildcard plugins-client/ext.jslanguage/*) \
         $(wildcard plugins-client/ext.jslanguage/*/*) \
+        $(wildcard plugins-client/ext.csslanguage/*) \
+        $(wildcard plugins-client/ext.csslanguage/*/*) \
+        $(wildcard plugins-client/ext.htmllanguage/*) \
+        $(wildcard plugins-client/ext.htmllanguage/*/*) \
         $(wildcard plugins-client/ext.jsinfer/*) \
         $(wildcard plugins-client/ext.jsinfer/*/*) \
         $(wildcard node_modules/treehugger/lib/*) \
@@ -69,8 +73,11 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
 	ln -s `pwd`/plugins-client/ext.language /tmp/c9_worker_build/ext/language
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
+	ln -s `pwd`/plugins-client/ext.csslanguage /tmp/c9_worker_build/ext/csslanguage
+	ln -s `pwd`/plugins-client/ext.htmllanguage /tmp/c9_worker_build/ext/htmllanguage
 	ln -s `pwd`/plugins-client/ext.linereport /tmp/c9_worker_build/ext/linereport
 	ln -s `pwd`/plugins-client/ext.linereport_php /tmp/c9_worker_build/ext/linereport_php
+	ln -s `pwd`/plugins-client/ext.linereport_python /tmp/c9_worker_build/ext/linereport_python
 	node Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 

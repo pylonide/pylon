@@ -246,25 +246,6 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         }
         
         panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
-    },
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 

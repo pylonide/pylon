@@ -75,6 +75,7 @@
                       caption  = "Clear" 
                       onclick  = "
                         txtCode.clear();
+                        txtInteractiveOutput.clear();
                       " />
                     <a:divider skin2="c9-divider"/>
                     <a:dropdown id="lstScripts"
@@ -96,8 +97,8 @@
                   onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime          = "true"
                   syntax            = "javascript"
-                  border            = "0" 
-                  model             = "{require('core/settings').model}" 
+                  border            = "0"
+                  minheight         = "30"
                   value             = "[auto/console/input]"
                   softtabs          = "[editors/code/@softtabs]"
                   tabsize           = "[editors/code/@tabsize]"
@@ -109,14 +110,15 @@
                   animatedscroll    = "[editors/code/@animatedscroll]"
                   fontsize          = "[editors/code/@fontsize]"
                   showprintmargin   = "false"
+                  caching           = "false"
                   highlightselectedword = "[editors/code/@highlightselectedword]"
                   printmargincolumn = "0" />
                 <a:text id="txtInteractiveOutput"
                   class      = "interactive_output"
-                  height     = "150"
                   scrolldown = "true"
                   focussable = "true"
                   textselect = "true" 
+                  height     = "60"
                   scrollbar  = "sbShared 20 2 2" />
             </a:vsplitbox>
         </a:page>
