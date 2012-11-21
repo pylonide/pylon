@@ -38,6 +38,7 @@ module.exports = ext.register(_name, {
         "terminal": true
     },
     nodes   : [],
+    live    : null,
 
     _getDockButton: function() {
         var buttons = dock.getButtons(this._name);
@@ -68,9 +69,10 @@ module.exports = ext.register(_name, {
                     var page = tabEditors.getPage();
                     if (page.$editor === _self)
                         return;
-                    var file = page.$model.data;
-                    var url = location.protocol + "//" + location.host + file.getAttribute("path");
-                    _self.preview(url);
+                    var doc = page.$doc;
+                    var path = doc.getNode().getAttribute("path");
+                    var url = location.protocol + "//" + location.host + path;
+                    _self.preview(url, {path: path, value: doc.getValue()});
                 }
             }), 10)
         );
@@ -107,6 +109,8 @@ module.exports = ext.register(_name, {
             _self.enable();
         });
 
+        ide.addEventListener("afterfilesave", _self.onFileSave.bind(_self));
+
         ide.addEventListener("closefile", function(e){
             if (tabEditors.getPages().length == 1)
                 _self.disable();
@@ -115,7 +119,21 @@ module.exports = ext.register(_name, {
         ext.initExtension(this);
     },
 
-    preview : function (url) {
+    onFileSave: function () {
+        if (!this.live)
+            return;
+        var _self = this;
+        var page = tabEditors.getPages().filter(function (page) {
+            return _self.live.path === page.$doc.getNode().getAttribute("path");
+        })[0];
+        if (page)
+            this.live.value = page.$doc.getValue();
+        var iframe = this.getIframe().$ext;
+        var html = iframe.contentWindow.document.getElementsByTagName("html")[0];
+        html.innerHTML = this.live.value;
+    },
+
+    preview : function (url, live) {
         // window.open(url, "_blank");
         pgPreview.setCaption(apf.getFilename(url));
         var bar = this._getDockBar();
@@ -125,6 +143,7 @@ module.exports = ext.register(_name, {
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
+        this.live = live;
     },
 
     popup: function (url) {
