@@ -107,6 +107,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     // JSON parse COULD fail
                     try {
                         state = JSON.parse(strSettings);
+                        var defaultBars = _self.defaultState.bars;
+                        for (var i = 0; i < defaultBars.length; i++)
+                           state.bars[i] = state.bars[i] || defaultBars[i];
                     }
                     catch (ex) {}
                 }
@@ -193,8 +196,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     destroy : function(){
         menus.remove("View/Dock Panels/Restore Default");
         menus.remove("View/Dock Panels/~", 200);
-
         this.layout.clearState();
+        this.$destroy();
     },
 
     register : function(name, type, options, getPage){
