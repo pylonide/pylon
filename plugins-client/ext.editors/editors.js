@@ -1052,7 +1052,6 @@ module.exports = ext.register("ext/editors/editors", {
         var _self   = this;
         var tabs    = tabEditors;
         var row     = options.row;
-        var column  = options.column || 0;
         var text    = options.text;
         var node    = options.node;
         var path    = options.path || (node && node.getAttribute("path"));
@@ -1064,6 +1063,7 @@ module.exports = ext.register("ext/editors/editors", {
             row -= 1;
             var endRow = typeof options.endRow == "number" ? options.endRow - 1 : row;
             var endColumn = options.endColumn;
+            var column = options.column || (options.getColumn ? options.getColumn() : 0);
 
             ace.session.unfold({row: row, column: column || 0});
             if (typeof endColumn == "number")
