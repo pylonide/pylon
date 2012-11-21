@@ -534,6 +534,7 @@ apf.menu = function(struct, tagName){
     function forceHide(e){
         if (this.$showingSubMenu || this.pinned
                 || apf.isChildOf(e.fromElement, e.toElement)
+                || apf.isChildOf(e.toElement, e.fromElement)
                 || apf.isChildOf(this, e.toElement) || (e.name !== "popuphide" && !e.toElement))
             return;
 
