@@ -426,14 +426,15 @@ apf.rpc = function(struct, tagName){
         var auth,
             url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url),
             o    = apf.extend({
-                callback      : pCallback,
-                async         : node.async,
-                userdata      : node.userdata,
-                nocache       : (this.nocache === false) ? false : true,
-                data          : data,
-                useXML        : this.$useXml || node.type == "xml",
-                caching       : node.caching,
-                ignoreOffline : node["ignore-offline"]
+                callback        : pCallback,
+                async           : node.async,
+                userdata        : node.userdata,
+                nocache         : (this.nocache === false) ? false : true,
+                data            : data,
+                useXML          : this.$useXml || node.type == "xml",
+                caching         : node.caching,
+                ignoreOffline   : node["ignore-offline"],
+                withCredentials : node.withCredentials === false ? false : true
             }, options);
 
         //#ifdef __WITH_AUTH
