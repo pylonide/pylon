@@ -154,8 +154,7 @@ apf.http = function(){
     };
 
     //#ifdef __WITH_STORAGE && __WITH_HTTP_CACHE
-    var namespace = apf.config.name + ".apf.http";
-
+    
     /**
      * Saves the APF HTTP cache to the available storage engine.
      */
@@ -241,6 +240,7 @@ apf.http = function(){
      *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
      *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
      *   - contentType ([[String]]): The mime type of the message
+     *   - withCredentials ([[Boolean]]): Value of the withCredentials field for CORS requests
      *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
@@ -438,6 +438,15 @@ apf.http = function(){
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
             }
 
+            var withCredentials = false;
+            if ("withCredentials" in options) {
+                withCredentials = options.withCredentials;
+            }
+            else {
+                withCredentials = (apf.config && apf.config["cors-with-credentials"]) || false;
+            }
+
+            http.withCredentials = withCredentials;
             http.open(this.method || options.method || "GET", httpUrl, async);
 
             if (options.username) {

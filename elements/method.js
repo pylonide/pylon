@@ -68,12 +68,13 @@ apf.method = function(struct, tagName){
 (function(){
     this.$parsePrio = "002";
     
-    this.$booleanProperties["async"]          = true;
-    this.$booleanProperties["caching"]        = true;
-    this.$booleanProperties["ignore-offline"] = true;
+    this.$booleanProperties["async"]                 = true;
+    this.$booleanProperties["caching"]               = true;
+    this.$booleanProperties["ignore-offline"]        = true;
+    this.$booleanProperties["cors-with-credentials"] = true;
 
     this.$supportedProperties.push("name", "receive", "async", "caching",
-        "ignore-offline", "method-name", "type", "url");
+        "ignore-offline", "method-name", "type", "url", "cors-with-credentials");
 
     this.$propHandlers["ignore-offline"] = function(value){
         this.ignoreOffline = value;
@@ -81,6 +82,10 @@ apf.method = function(struct, tagName){
     
     this.$propHandlers["method-name"] = function(value){
         this.methodName = value;
+    };
+    
+    this.$propHandlers["cors-with-credentials"] = function(value){
+        this.withCredentials = value;
     };
 
     // *** DOM Handlers *** //
