@@ -133,32 +133,32 @@ exports.removeInteractive = function (amlNode) {
 
 // map mime-type to css class; see ext.main/style/icons/file_icons/sprite
 var SupportedIcons = {
-   "application/xhtml+xml":"sprite-file_icons-html",
-   "text/css": "sprite-file_icons-css",
-   "text/x-scss": "sprite-file_icons-css",
-   "text/x-sass": "sprite-file_icons-css",
-   "text/html":"sprite-file_icons-html",
+    "application/xhtml+xml":"html",
+    "text/css": "css",
+    "text/x-scss": "css",
+    "text/x-sass": "css",
+    "text/html":"html",
     "application/pdf":"page_white_acrobat",
-    "image":"sprite-file_icons-image",
-    "application/xml":".sprite-file_icons-page_white_code_red",
-    "image/svg+xml": ".sprite-file_icons-page_white_picture",
-    "text/plain": ".sprite-file_icons-page_white_text",
-    "application/javascript": ".sprite-file_icons-page_white_code",
-    "application/json": ".sprite-file_icons-page_white_code",
-    "text/x-script.python": ".sprite-file_icons-page_white_code",
-    "text/x-script.ocaml": ".sprite-file_icons-page_white_code",
-    "text/x-script.clojure": ".sprite-file_icons-page_white_code",
-    "application/x-httpd-php": ".sprite-file_icons-page_white_php",
-    "application/x-sh": ".sprite-file_icons-page_white_wrench",
-    "text/x-coldfusion": ".sprite-file_icons-page_white_coldfusion",
-    "text/x-script.ruby": ".sprite-file_icons-page_white_ruby",
-    "text/x-script.coffeescript": ".sprite-file_icons-page_white_cup",
-    "text/cpp": ".sprite-file_icons-page_white_cplusplus",
-    "text/x-c": ".sprite-file_icons-page_white_c",
-    "text/x-csharp": ".sprite-file_icons-page_white_csharp",
-    "text/text/x-java-source": ".sprite-file_icons-page_white_cup",
-    "text/x-markdown": ".sprite-file_icons-page_white_text",
-    "text/x-xquery": ".sprite-file_icons-page_white_code"
+    "image":"image",
+    "application/xml":"page_white_code_red",
+    "image/svg+xml": "page_white_picture",
+    "text/plain": "page_white_text",
+    "application/javascript": "page_white_code",
+    "application/json": "page_white_code",
+    "text/x-script.python": "page_white_code",
+    "text/x-script.ocaml": "page_white_code",
+    "text/x-script.clojure": "page_white_code",
+    "application/x-httpd-php": "page_white_php",
+    "application/x-sh": "page_white_wrench",
+    "text/x-coldfusion": "page_white_coldfusion",
+    "text/x-script.ruby": "page_white_ruby",
+    "text/x-script.coffeescript": "page_white_cup",
+    "text/cpp": "page_white_cplusplus",
+    "text/x-c": "page_white_c",
+    "text/x-csharp": "page_white_csharp",
+    "text/text/x-java-source": "page_white_cup",
+    "text/x-markdown": "page_white_text",
+    "text/x-xquery": "page_white_code"
 };
 
 var contentTypes = {
@@ -234,15 +234,13 @@ var contentTypes = {
 };
 
 exports.getFileIcon = function(xmlNode) {
-    var name = xmlNode.getAttribute("name");
-    var icon  = "page_white_text";
-    var ext;
+    if (xmlNode.getAttribute("type") === "folder")
+        return "folder";
 
-    if (name) {
-        ext = name.split(".").pop().toLowerCase();
-        icon = SupportedIcons[contentTypes[ext]] || "page_white_text";
-    }
-    return ".sprite-file_icons-" + icon;
+    var name = xmlNode.getAttribute("name");
+    var ext = name !== null ? name.split(".").pop().toLowerCase() : "text/plain";
+
+    return SupportedIcons[contentTypes[ext]] || "page_white_text";
 };
 
 
