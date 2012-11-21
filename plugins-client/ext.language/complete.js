@@ -31,7 +31,6 @@ var SHOW_DOC_DELAY_MOUSE_OVER = 100;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
-var CONCORDE_DELAY = 70;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
@@ -95,13 +94,6 @@ function isHtml() {
  * is deleted.
  */
 function replaceText(editor, match) {
-    // Replace text asynchronously in case Concorde didn't update the editor yet
-    setTimeout(function() {
-        asyncReplaceText(editor, match);
-    }, CONCORDE_DELAY);
-}
-
-function asyncReplaceText(editor, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var session = editor.getSession();
@@ -296,7 +288,7 @@ module.exports = {
             
             var docHead;
             if (match.type) {
-                var shortType = _self.$guidToShortString(match.type)
+                var shortType = _self.$guidToShortString(match.type);
                 if (shortType) {
                     match.meta = shortType;
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
@@ -385,7 +377,9 @@ module.exports = {
             txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
-            this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
+            this.docElement.innerHTML += '<p><a' +
+                ' onclick="require(\'ext/preview/preview\').preview(\'' + selected.docUrl + '\'); return false;"' +
+                ' href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
         this.docElement.innerHTML += '</span>';
     },
 

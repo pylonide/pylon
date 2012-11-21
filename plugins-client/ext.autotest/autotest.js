@@ -57,18 +57,6 @@ module.exports = ext.register("ext/autotest/autotest", {
                 noderunner.run(path, [], false);
             }
         });
-    },
-
-    init : function(amlNode) {
-    },
-    
-    enable : function() {
-    },
-
-    disable : function() {
-    },
-
-    destroy : function() {
     }
 });
 

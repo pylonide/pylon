@@ -108,7 +108,8 @@
                 env: <%env%>,
                 settings: <%settingsXml%>,
                 packed: <%packed%>,
-                packedName: <%packedName%>
+                packedName: <%packedName%>,
+                _csrf: <%_csrf%>
             };
 
             // prevent console messages from crashing our app!
@@ -165,7 +166,6 @@
                     aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
-                    aceConfig.set("suffix", ".js?staticUrl=" + cloud9config.staticUrl);
 
                     //Load extensions
                     if (!cloud9config.packed) {

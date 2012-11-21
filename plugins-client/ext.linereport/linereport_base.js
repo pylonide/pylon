@@ -120,7 +120,7 @@ worker.parseOutput = function(output, processLine) {
         var line = lines[i];
         if (processLine)
             line = processLine(line);
-        var result = line.charAt ? this.$parseOutputLine(line) : line;
+        var result = (line && line.charAt) ? this.$parseOutputLine(line) : line;
         if (result)
             results.push(result);
     }
