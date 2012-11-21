@@ -108,8 +108,13 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     try {
                         state = JSON.parse(strSettings);
                         var defaultBars = _self.defaultState.bars;
-                        for (var i = 0; i < defaultBars.length; i++)
-                           state.bars[i] = state.bars[i] || defaultBars[i];
+                        for (var i = 0, l = Math.max(state.bars.length, defaultBars.length); i < l; i++) {
+                            if (!defaultBars[i])
+                                return state.bars[i] = null;
+                            // Code update adding more dockables
+                            if (!state.bars[i] || state.bars[i].sections.length < defaultBars[i].sections.length)
+                                state.bars[i] = defaultBars[i];
+                       }
                     }
                     catch (ex) {}
                 }
