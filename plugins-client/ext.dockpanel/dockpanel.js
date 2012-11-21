@@ -107,6 +107,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     // JSON parse COULD fail
                     try {
                         state = JSON.parse(strSettings);
+                        var defaultBars = _self.defaultState.bars;
+                        for (var i = 0; i < defaultBars.length; i++)
+                           state.bars[i] = state.bars[i] || defaultBars[i];
                     }
                     catch (ex) {}
                 }
