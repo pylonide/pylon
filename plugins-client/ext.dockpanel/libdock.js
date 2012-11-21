@@ -665,7 +665,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var _self = this;
 
             if (bar.$dockData.minWidth)
-                pNode.minWidth = bar.$dockData.minWidth;
+                pNode.minwidth = bar.$dockData.minWidth;
 
             bar.vbox = pNode.insertBefore(new apf.vbox({
                 padding   : 0,
