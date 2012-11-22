@@ -3494,7 +3494,7 @@
             height: 1px;
         }
         .ace_smooth_loading .loading_progress {
-            background: url(images/loader_progressbar_blueline.png) repeat-x;
+            background-color: #38A3FF;
             position: absolute;
             height: 1px;
         }
