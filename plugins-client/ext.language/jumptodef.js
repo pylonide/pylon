@@ -163,7 +163,7 @@ module.exports = {
         var line = editor.getDocument().getLine(oldPos.row);
         if (!line)
             return;
-        var preceding = util.retrievePreceedingIdentifier(line, cursor.column);
+        var preceding = util.retrievePrecedingIdentifier(line, cursor.column);
         var column = cursor.column - preceding.length;
         if (column === oldPos.column)
             column = this.$getFirstColumn(cursor.row);
