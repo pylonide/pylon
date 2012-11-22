@@ -73,7 +73,10 @@ function fetchText(staticPrefix, path) {
 }
 
 /** @deprecated Use retrievePrecedingIdentifier */
-exports.retrievePreceedingIdentifier = retrievePrecedingIdentifier;
+exports.retrievePreceedingIdentifier = function() {
+    console.error("Deprecated: 'retrievePreceedingIdentifier' - use 'retrievePrecedingIdentifier' instead"); 
+    retrievePrecedingIdentifier.apply(this, arguments);
+};
 exports.retrievePrecedingIdentifier = retrievePrecedingIdentifier;
 exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;
 exports.findCompletions = findCompletions;
