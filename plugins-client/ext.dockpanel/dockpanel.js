@@ -215,11 +215,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
                 var uId = _self.getButtons(name, type);
                 if (uId.length && (uId = uId[0].uniqueId)) {
-                    layout.show(uId, true);
-                    if (layout.isExpanded(uId) < 0)
-                        layout.showMenu(uId);
+                    if (this.value) {
+                        layout.hide(uId);
+                    }
+                    else {
+                        layout.show(uId, true);
+                        if (layout.isExpanded(uId) < 0)
+                            layout.showMenu(uId);
 
-                    page.parentNode.set(page);
+                        page.parentNode.set(page);
+                    }
                 }
             }
         }), options.menuIndex);
