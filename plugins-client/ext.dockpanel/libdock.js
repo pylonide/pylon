@@ -71,6 +71,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     
     function hasVisibleChildren(list){
         for (var i = 0; i < list.length; i++) {
+            if (!list[i])
+                continue;
             var l2 = list[i].buttons || list[i].sections;
             if (l2) {
                 if (hasVisibleChildren(l2))
@@ -84,9 +86,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     
     function findNextKnownNode(list, index){
         for (var i = index; i < list.length; i++) {
-            if (list[i].uniqueId 
-              && lookup[list[i].uniqueId].node
-              && lookup[list[i].uniqueId].node.parentNode)
+            if (list[i] && list[i].uniqueId &&
+              lookup[list[i].uniqueId].node &&
+              lookup[list[i].uniqueId].node.parentNode)
                 return lookup[list[i].uniqueId].node;
         }
     }
@@ -139,13 +141,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         hboxParent.setWidth(l.getLeft() + l.getWidth() - f.getLeft());
-    }
+    };
     
     this.checkBars = function (){
         var bar, bars = state.bars;
         for (var i = bars.length - 1; i >= 0; i--) {
             bar = bars[i];
-            if (bar.cache && bar.cache.childNodes.length == 1) {
+            if (bar && bar.cache && bar.cache.childNodes.length == 1) {
                 bar.cache.destroy(true, true);
                 delete bar.cache;
                 //bars.remove(bar);
@@ -153,7 +155,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
         
         this.resizeMainHbox();
-    }
+    };
     
     function registerLookup(node){
         if (!node.$dockData.uniqueId)
