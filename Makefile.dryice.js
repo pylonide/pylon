@@ -44,15 +44,13 @@ function worker(project) {
 
     // We don't get a return value from dryice, so we monkey patch error handling
     var yeOldeError = console.error;
-    console.error = function(msg) {
-        if (msg.indexOf("Failed to find module:") > -1)
-            return console.log(msg);
+    console.error = function() {
         yeOldeError();
-        yeOldeError("@@@@ FATAL ERROR: DRYICE FAILED", msg);
+        yeOldeError("@@@@ FATAL ERROR: DRYICE FAILED", arguments);
         yeOldeError();
         process.exit(1);
     };
-
+    
     copy({
         source: [
             copy.source.commonjs({
@@ -91,7 +89,7 @@ function worker(project) {
         filter: [ /* copy.filter.uglifyjs */],
         dest: __dirname + "/plugins-client/lib.ace/www/worker/worker-language.js"
     });
-
+    
     console.error = yeOldeError;
 }
 
