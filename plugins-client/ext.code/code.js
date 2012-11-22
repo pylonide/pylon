@@ -902,13 +902,13 @@ module.exports = ext.register("ext/code/code", {
                     loaderBg.className = "loading_bg";
                     loaderBg.style.width = loadingWidth + "px";
                     loaderBg.style.left = padding + "px";
-                    loaderBg.style.top = container.offsetHeight/2 + "px";
+                    loaderBg.style.top = 0.4 * container.offsetHeight + "px";
                     bgMessage.appendChild(loaderBg);
 
                     loaderProgress = document.createElement("div");
                     loaderProgress.className = "loading_progress";
                     loaderProgress.style.left = padding + "px";
-                    loaderProgress.style.top = container.offsetHeight/2 + "px";
+                    loaderProgress.style.top = 0.4 * container.offsetHeight + "px";
                     bgMessage.appendChild(loaderProgress);
                     updateProgress(10);
                 }
