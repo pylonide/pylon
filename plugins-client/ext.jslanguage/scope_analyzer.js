@@ -617,7 +617,7 @@ handler.analyze = function(doc, ast, callback) {
                             return;
                         markers.push({
                             pos: decl.getPos(),
-                            type: 'warning',
+                            type: 'info',
                             level: 'info',
                             message: 'Unused variable.'
                         });
