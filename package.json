@@ -20,6 +20,7 @@
         "simple-template": "0.0.1",
 
         "optimist": "0.3.4",
+        "dryice": "0.4.10",
 
         "mappings": "0.1.x",
         "amd-loader": "0.0.4",
@@ -48,8 +49,7 @@
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/bee2a82c6d5e2875024bfdc83937e98092ccf04f"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/b22d7ad712f76a7e7b1070ab339d567dfbf059b1"],
-        "dryice":       ["npm", "https://github.com/ajaxorg/dryice/tarball/87728b051c6d503a3cae9fd17a26e387092eebc0"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/b22d7ad712f76a7e7b1070ab339d567dfbf059b1"]
     },
 
     "repository" : {
