@@ -113,6 +113,8 @@
             };
 
             window.onerror = function(m, u, l) {
+                if (m.match(/Load timeout for modules:/) || m.match(/Script error/))
+                    return;
                 clearSplash();
             };
 
