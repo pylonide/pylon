@@ -14,6 +14,7 @@ var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var Range = require("ace/range").Range;
+var c9console = require("ext/console/console");
 
 /*global dbg dbgCallStack dgStack mdlDbgSources mdlDbgStack tabEditors*/
 
@@ -52,7 +53,8 @@ module.exports = {
             var scriptId = script.getAttribute("scriptid");
             var value = e.value || e.doc.getValue();
             dbg.main.changeLive(scriptId, value, false, function(e) {
-                //console.log("v8 updated", e);
+                c9console.log("v8 updated", e);
+                console.log(e)
             });
         });
 
