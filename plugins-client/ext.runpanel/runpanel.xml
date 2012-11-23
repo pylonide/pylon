@@ -2,6 +2,7 @@
 
     <a:menu id="mnuRunCfg" 
       skin  = "mnuRunCfg"
+      skinset = "runpanel"
       class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}"
       ondisplay = "require('ext/runpanel/runpanel').onOpenMenuRunCfg()">
         <div class="window">
@@ -23,6 +24,7 @@
                           border  = "0"
                           flex    = "1"
                           skin    = "runconfigurations"
+                          skinset = "runpanel"
                           class   = "openfile rundebug"
                           autoselect    = "false"
                           onafterselect = "

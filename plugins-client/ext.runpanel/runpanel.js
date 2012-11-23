@@ -29,6 +29,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
+    skin    : {
+        id  : "runpanel",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/runpanel/style/images/"
+    },
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
