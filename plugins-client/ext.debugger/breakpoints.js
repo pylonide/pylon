@@ -155,10 +155,12 @@ module.exports = {
 
             var session = editor.session;
             var bp = session.getBreakpoints()[row];
-            var i = bp ? bp.indexOf("disabled") == -1 ? 1 : 2 : 0;
-            if (e.getShiftKey())
-                i = (i + 1) %3;
-            bp = [" ace_breakpoint ", " ace_breakpoint disabled ", null][i];
+            if (e.getShiftKey()) {
+                var isDisabled = bp && bp.indexOf("disabled") != -1;
+                bp = isDisabled ? " ace_breakpoint " : " ace_breakpoint disabled";
+            } else {
+                bp = bp ? "" : " ace_breakpoint ";
+            }
 
             session.setBreakpoint(row, bp);
             _self.addBreakpointToModel(session, row);
@@ -166,7 +168,7 @@ module.exports = {
     },
     initSession: function(session) {
         session.$breakpointListener = function(e) {
-            if (!this.c9doc.isInited || !this.$breakpoints.length)
+            if (!this.c9doc || !this.c9doc.isInited || !this.$breakpoints.length)
                 return;
             var delta = e.data;
             var range = delta.range;

@@ -374,7 +374,7 @@ var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
 handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
 
     var matches = completeUtil.findCompletions(identifier, SCOPE_ARRAY);
     callback(matches.map(function(m) {

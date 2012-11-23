@@ -46,7 +46,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         }]);
     }
     else {
-        var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+        var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
         var allIdentifiers = Object.keys(htmlSnippets);
         var matches = completeUtil.findCompletions(identifier, allIdentifiers);
         callback(matches.map(function(m) {

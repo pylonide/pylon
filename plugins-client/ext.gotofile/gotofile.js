@@ -278,8 +278,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             var glue  = end + start;
 
             var c = array.length;
+            var i = 0;
             var arrN = [];
-            while(c--) { arrN.unshift(c); }
+            while(i < c) { arrN.push(i++); }
 
             data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
                 + start + arrN.join(glue) + end + "</d:response></d:multistatus>");

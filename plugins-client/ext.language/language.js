@@ -121,6 +121,10 @@ module.exports = ext.register("ext/language/language", {
         }
     },
 
+    isWorkerEnabled : function () {
+        return !useUIWorker;
+    },
+
     isInferAvailable : function() {
         return cloud9config.hosted || !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
     },
