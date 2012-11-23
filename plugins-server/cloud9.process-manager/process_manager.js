@@ -61,7 +61,48 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
 
                 self.processes[child.pid] = child;
                 callback(null, child.pid, child);
+                self.tcpChecker(runnerId, child, eventName);
             });
+        });
+    };
+
+    this.tcpChecker = function (runnerId, child, eventName) {
+        if (this.runnerTypes().indexOf(runnerId) === -1)
+            return;
+
+        var self = this;
+        var i = 0;
+        var tcpIntervals = [500, 1000, 2000, 4000, 8000];
+        function checkTCP() {
+            self.exec("shell", {
+                command: "lsof",
+                args: ["-i", ":8080"]
+            }, function(err, pid) {
+            }, function(code, stdout, stderr) {
+                if (code)
+                    return;
+                // If an app is consuming the port 8080,
+                // then it must be the user-app is a server and it has started
+                if (stdout) {
+                    var msg = {
+                        "type": runnerId + "-web-start",
+                        "pid": child.pid,
+                        "url": child.url
+                    };
+                    self.eventEmitter.emit(eventName, msg);
+                }
+                else if (++i < tcpIntervals.length) {
+                    setTimeout(checkTCP, tcpIntervals[i]);
+                }
+            });
+        }
+        setTimeout(checkTCP, tcpIntervals[i]);
+    };
+
+    this.runnerTypes = function() {
+        var exclude = ["npm", "shell", "run-npm"];
+        return Object.keys(this.runners).filter(function(runner) {
+            return exclude.indexOf(runner) === -1;
         });
     };
 

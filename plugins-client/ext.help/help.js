@@ -121,25 +121,6 @@ define(function(require, exports, module) {
 
         launchTwitter: function() {
             alert("Let's go to Twitter!");
-        },
-
-        enable: function() {
-            this.nodes.each(function(item) {
-                item.enable();
-            });
-        },
-
-        disable: function() {
-            this.nodes.each(function(item) {
-                item.disable();
-            });
-        },
-
-        destroy: function() {
-            this.nodes.each(function(item) {
-                item.destroy(true, true);
-            });
-            this.nodes = [];
         }
     });
 

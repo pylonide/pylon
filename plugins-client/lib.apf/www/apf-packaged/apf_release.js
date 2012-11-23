@@ -11982,7 +11982,7 @@ apf.Sort = function(xmlNode){
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
- * @namespace apf
+ * 
  */
 
 apf.resize = function() {
@@ -14271,6 +14271,7 @@ apf.http = function(){
      *   - caching ([[Boolean]]): Specifies whether the request should use internal caching.
      *   - ignoreOffline ([[Boolean]]): Specifies whether to ignore offline catching.
      *   - contentType ([[String]]): The mime type of the message
+     *   - withCredentials ([[Boolean]]): Value of the withCredentials field for CORS requests
      *   - callback ([[Function]]): The handler that gets called whenever the
      *                            request completes succesfully or with an error,
      *                            or when the request times out.
@@ -14370,6 +14371,15 @@ apf.http = function(){
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
             }
 
+            var withCredentials = false;
+            if ("withCredentials" in options) {
+                withCredentials = options.withCredentials;
+            }
+            else {
+                withCredentials = (apf.config && apf.config["cors-with-credentials"]) || false;
+            }
+
+            http.withCredentials = withCredentials;
             http.open(this.method || options.method || "GET", httpUrl, async);
 
             if (options.username) {
@@ -15047,10 +15057,10 @@ apf.DOMParser = function(){};
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
-    
+
     this.$waitQueue  = {}
     this.$callCount  = 0;
-    
+
     // privates
     var RE     = [
             /\<\!(DOCTYPE|doctype)[^>]*>/,
@@ -15058,7 +15068,7 @@ apf.DOMParser.prototype = new (function(){
             /<\s*\/?\s*(?:\w+:\s*)[\w-]*[\s>\/]/g
         ],
         XPATH  = "//@*[not(contains(local-name(), '.')) and not(translate(local-name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = local-name())]";
-    
+
     this.parseFromString = function(xmlStr, mimeType, options){
         var xmlNode;
         if (this.caseInsensitive) {
@@ -15072,12 +15082,12 @@ apf.DOMParser.prototype = new (function(){
             x.ownerDocument.setProperty("SelectionNamespaces",
                                     "xmlns:a='" + apf.ns.aml + "'");
             */
-        
+
             if (!this.supportNamespaces)
                 str = str.replace(/xmlns\=\"[^"]*\"/g, "");
-        
+
             
-        
+
             var xmlNode = apf.getXmlDom(str);
             if (apf.xmlParseError) apf.xmlParseError(xmlNode);
             xmlNode = xmlNode.documentElement;
@@ -15089,13 +15099,13 @@ apf.DOMParser.prototype = new (function(){
 
         return this.parseFromXml(xmlNode, options);
     };
-    
+
     //@todo prevent leakage by not recording .$aml
     this.parseFromXml = function(xmlNode, options){
         var doc, docFrag, amlNode, beforeNode;
-        if (!options) 
+        if (!options)
             options = {};
-        
+
         if (!options.delayedRender && !options.include) {
             //Create a new document
             if (options.doc) {
@@ -15109,9 +15119,9 @@ apf.DOMParser.prototype = new (function(){
             }
             if (options.host)
                 doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
+
             
-            
-            
+
             //Let's start building our tree
             amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
             (docFrag || doc).appendChild(amlNode);
@@ -15121,7 +15131,7 @@ apf.DOMParser.prototype = new (function(){
         else {
             amlNode    = options.amlNode;
             doc        = options.doc;
-            
+
             if (options.include) {
                 var n = amlNode.childNodes;
                 var p = n.indexOf(options.beforeNode);
@@ -15131,7 +15141,7 @@ apf.DOMParser.prototype = new (function(){
 
         //Set parse context
         this.$parseContext = [amlNode, options];
-        
+
         this.$addParseState(amlNode, options || {});
 
         //First pass - Node creation
@@ -15148,7 +15158,7 @@ apf.DOMParser.prototype = new (function(){
                 if (!newNode) continue; //for preserveWhiteSpace support
 
                 cNodes[cL = cNodes.length] = newNode; //Add to children
-                
+
                 //Set tree refs
                 newNode.parentNode = amlNode;
                 if (cL > 0)
@@ -15157,17 +15167,17 @@ apf.DOMParser.prototype = new (function(){
                 //Create children
                 if (!newNode.render && newNode.canHaveChildren && (nNodes = node.childNodes).length)
                     recur(newNode, nNodes);
-                
+
                 //newNode.$aml = node; //@todo should be deprecated...
-                
+
                 //Store high prio nodes for prio insertion
                 if (newNode.$parsePrio) {
                     if (newNode.$parsePrio == "001") {
                         newNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                         continue;
                     }
-                        
-                    (nodelist[newNode.$parsePrio] || (prios.push(newNode.$parsePrio) 
+
+                    (nodelist[newNode.$parsePrio] || (prios.push(newNode.$parsePrio)
                       && (nodelist[newNode.$parsePrio] = []))).push(newNode); //for second pass
                 }
             }
@@ -15175,7 +15185,7 @@ apf.DOMParser.prototype = new (function(){
             amlNode.firstChild = cNodes[0];
             amlNode.lastChild  = cNodes[cL];
         })(amlNode, xmlNode.childNodes);
-        
+
         if (options.include && rest.length) {
             var index = n.length - 1;
             n.push.apply(n, rest);
@@ -15192,7 +15202,7 @@ apf.DOMParser.prototype = new (function(){
             };
             return (docFrag || doc);
         }
-        
+
         //Second pass - Document Insert signalling
         prios.sort();
         var i, j, l, l2;
@@ -15203,7 +15213,7 @@ apf.DOMParser.prototype = new (function(){
             }
         }
 
-        if (this.$waitQueue[amlNode.$uniqueId] 
+        if (this.$waitQueue[amlNode.$uniqueId]
           && this.$waitQueue[amlNode.$uniqueId].$shouldWait)
             return (docFrag || doc);
 
@@ -15218,26 +15228,26 @@ apf.DOMParser.prototype = new (function(){
 
         return (docFrag || doc);
     };
-    
+
     this.$isPaused = function(amlNode){
-        return this.$waitQueue[amlNode.$uniqueId] && 
+        return this.$waitQueue[amlNode.$uniqueId] &&
           this.$waitQueue[amlNode.$uniqueId].$shouldWait > 0;
     }
-    
+
     this.$addParseState = function(amlNode, options){
-        var waitQueue = this.$waitQueue[amlNode.$uniqueId] 
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId]
             || (this.$waitQueue[amlNode.$uniqueId] = [])
         waitQueue.pushUnique(options);
-        
+
         return waitQueue;
     }
-    
+
     this.$pauseParsing = function(amlNode, options){
         var waitQueue = this.$waitQueue[amlNode.$uniqueId];
         if (!waitQueue.$shouldWait) waitQueue.$shouldWait = 0;
         waitQueue.$shouldWait++;
     }
-    
+
     this.$continueParsing = function(amlNode, options){
         if (!amlNode)
             amlNode = apf.document.documentElement;
@@ -15245,33 +15255,33 @@ apf.DOMParser.prototype = new (function(){
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
-            
+
             if (item.$shouldWait && --item.$shouldWait)
                 return false;
-            
+
             var node = amlNode.parentNode;
             while (node && node.nodeType == 1) {
-                if (this.$waitQueue[node.$uniqueId] 
+                if (this.$waitQueue[node.$uniqueId]
                   && this.$waitQueue[node.$uniqueId].$shouldWait)
                     return false;
                 node = node.parentNode;
             }
-            
+
             var parseAmlNode = apf.all[uId];
-            
             delete this.$waitQueue[uId];
-            for (var i = 0; i < item.length; i++) {
-                this.$parseState(parseAmlNode, item[i]);
+            if (parseAmlNode) {
+                for (var i = 0; i < item.length; i++)
+                    this.$parseState(parseAmlNode, item[i]);
             }
-            
+
             //@todo Check for shouldWait here?
         }
         else
             this.$parseState(amlNode, options || {});
-        
+
         delete this.$parseContext;
     }
-    
+
     this.$parseState = function(amlNode, options) {
         this.$callCount++;
 
@@ -15280,7 +15290,7 @@ apf.DOMParser.prototype = new (function(){
                 nodelist = amlNode.$parseOptions.nodelist,
                 i, j, l, l2, node;
             delete amlNode.$parseOptions;
-            
+
             //Second pass - Document Insert signalling
             prios.sort();
             for (i = 0, l = prios.length; i < l; i++) {
@@ -15304,32 +15314,32 @@ apf.DOMParser.prototype = new (function(){
                 if (!(node = nodes[i]).$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
-                
+
                 //Create children
                 if (!node.render && (nNodes = node.childNodes).length)
                     _recur(nNodes);
             }
         })(amlNode.childNodes);
-        
+
         if (!--this.$callCount && !options.delay)
             apf.queue.empty();
-        
+
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
     };
-    
+
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){
         var o;
-        
+
         switch (nodeType) {
             case 1:
                 var id, prefix;
                 if (xmlNode) {
-                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml) 
+                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml)
                       && !(prefix = doc.$prefixes[namespaceURI])) {
                         doc.$prefixes[prefix = xmlNode.prefix || xmlNode.scopeName || ""] = namespaceURI;
                         doc.$namespaceURIs[namespaceURI] = prefix;
-                        
+
                         if (!doc.namespaceURI && !prefix) {
                             doc.namespaceURI = namespaceURI;
                             doc.prefix       = prefix;
@@ -15342,17 +15352,17 @@ apf.DOMParser.prototype = new (function(){
                 }
 
                 
-                
+
                 var els = apf.namespaces[namespaceURI].elements;
 
                 
-                
+
                 o = new (els[nodeName] || els["@default"])(null, nodeName);
-                
+
                 o.prefix       = prefix || "";
                 o.namespaceURI = namespaceURI;
                 o.tagName      = prefix ? prefix + ":" + nodeName : nodeName;
-        
+
                 if (xmlNode) {
                     if ((id = xmlNode.getAttribute("id")) && !self[id])
                         o.$propHandlers["id"].call(o, o.id = id);
@@ -15360,7 +15370,7 @@ apf.DOMParser.prototype = new (function(){
                     //attributes
                     var attr = xmlNode.attributes, n;
                     for (var a, na, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(na = new apf.AmlAttr(o, 
+                        o.attributes.push(na = new apf.AmlAttr(o,
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         
                         if (n == "render")
@@ -15371,7 +15381,7 @@ apf.DOMParser.prototype = new (function(){
                             na.$triggerUpdate();
                     }
                 }
-                
+
                 break;
             case 2:
                 o = new apf.AmlAttr();
@@ -15386,10 +15396,10 @@ apf.DOMParser.prototype = new (function(){
                 else {
                     o.prefix = doc.$prefixes[namespaceURI];
                 }
-                
+
                 break;
             case 3:
-                if (xmlNode) 
+                if (xmlNode)
                     nodeValue = xmlNode && xmlNode.nodeValue;
                 if (!this.preserveWhiteSpace && !(nodeValue || "").trim())
                     return;
@@ -15433,10 +15443,10 @@ apf.DOMParser.prototype = new (function(){
                 o = new apf.AmlDocumentFragment();
                 break;
         }
-        
-        o.ownerDocument = doc;    
+
+        o.ownerDocument = doc;
         o.$aml          = xmlNode;
-        
+
         return o;
     };
 })();
@@ -15456,7 +15466,7 @@ apf.AmlNamespace.prototype = {
     setElement : function(tagName, fConstr){
         return this.elements[tagName] = fConstr;
     },
-    
+
     setProcessingInstruction : function(target, fConstr){
         this.processingInstructions[target] = fConstr;
     }
@@ -20614,6 +20624,13 @@ apf.GuiElement = function(){
     
     this.$booleanProperties["visible"]          = true;
     
+    /**
+     * @attribute {Boolean} draggable If true, the element can be dragged around the screen.
+     */    
+    /**
+     * @attribute {Boolean} resizable If true, the element can by resized by the user.
+     * 
+     */
     
     this.$supportedProperties.push("draggable", "resizable");
     
@@ -22083,22 +22100,26 @@ apf.validator.validityState = function(){
  *
  * #### Example
  * 
- * ```xml
- *  <a:bar validgroup="vgExample">
- *      <a:label>Number</a:label>
- *      <a:textbox required="true" min="3" max="10" 
- *        invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
- *      <a:label>Name</a:label>
- *      <a:textbox required="true" minlength="3" 
- *        invalidmsg="Invalid Entry;Please enter your name" />
- *      <a:label>Message</a:label>
- *      <a:textarea required="true" 
- *        invalidmsg="Invalid Message;Please enter a message!" />
- *
- *      <a:button onclick="if(vgExample.isValid()) alert('valid!')">
- *          Validate
- *      </a:button>
- *  </a:bar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:bar validgroup="vgExample">
+ *        <a:label>Number</a:label>
+ *        <a:textbox required="true" min="3" max="10" 
+ *          invalidmsg="Invalid Entry;Please enter a number between 3 and 10" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox required="true" minlength="3" 
+ *          invalidmsg="Invalid Entry;Please enter your name" />
+ *        <a:label>Message</a:label>
+ *        <a:textarea required="true" 
+ *          invalidmsg="Invalid Message;Please enter a message!" />
+ *   
+ *        <a:button onclick="if(vgExample.isValid()) alert('valid!')">
+ *            Validate
+ *        </a:button>
+ *    </a:bar>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
  * @class apf.Validation
@@ -32409,6 +32430,8 @@ apf.BaseList = function(){
                     o.stopRename();\
                  else if (!o.renaming && o.hasFocus() && isSelected == 1) \
                     this.dorename = true;\
+                 if (event.button == 2 && isSelected)\
+                    return;\
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
@@ -33693,7 +33716,7 @@ apf.$viewportVirtual = function(amlNode){
     };
     
     /**
-     * @note This function only supports single dimension items (also no grid, like thumbnails)
+     * Note: this function only supports single dimension items (also no grid, like thumbnails)
      */
     this.resize = function(limit, updateScrollbar){
         this.cache = null;
@@ -34002,7 +34025,6 @@ apf.__DRAGDROP__ = 1 << 5;
  * This is a simple example, enabling drag & drop for a list:
  *
  * ```xml
- *
  *  <a:list
  *    drag     = "true"
  *    drop     = "true"
@@ -34092,6 +34114,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *      </a:model>
  *  </a:datagrid>
  *```
+ * 
  * @class apf.DragDrop
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -35527,9 +35550,9 @@ apf.__INTERACTIVE__ = 1 << 21;
  * @version     %I%, %G%
  * @since       1.0
  *
- * @see element.appsettings.attribute.outline
- * @see element.appsettings.attribute.resize-outline
- * @see element.appsettings.attribute.drag-outline
+ * @see apf.appsettings.outline
+ * @see apf.appsettings.resize-outline
+ * @see apf.appsettings.drag-outline
  */
 /**
  * @attribute {Boolean} draggable Sets or gets whether an element is draggable. The user will
@@ -41009,7 +41032,7 @@ apf.CodeCompilation = function(code){
 
 
 /**
- * Object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
+ * An object that represents a URI, broken down to its parts, according to [RFC3986](http://tools.ietf.org/html/rfc3986).
  *
  * All parts are publicly accessible after parsing, like 'url.port' or 'url.host'.
  * 
@@ -44628,30 +44651,42 @@ apf.WinServer = {
 }
 
 /**
- * An element displaying a skinnable, draggable window with optionally
- * a min, max, edit and close button. This element is also used
- * as a portal widget container. Furthermore, this element supports
- * docking in an alignment layout.
+ * This element displays a skinnable, draggable window. It can be given
+ * a minimum and miximum width and height, as well as keybindings and various buttons. 
+ * 
  * 
  * #### Example
  * 
- * ```xml
- *  <a:window 
- *    id        = "winMail"
- *    modal     = "false"
- *    buttons   = "min|max|close"
- *    title     = "Mail message"
- *    icon      = "icoMail.gif"
- *    visible   = "true"
- *    resizable = "true"
- *    minwidth  = "300"
- *    minheight = "290"
- *    width     = "500"
- *    height    = "400">
- *  </a:window>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *     <a:window 
+ *       id        = "winMail"
+ *       buttons   = "min|max|close"
+ *       title     = "Mail Message"
+ *       visible   = "true"
+ *       resizable = "true"
+ *       width     = "500"
+ *       modal     = "true"
+ *       height    = "400"
+ *       skin      = "bk-window2">
+ *       <a:vbox>
+ *           <a:hbox margin="5px">
+ *               <a:label for="to" caption="To:"/>
+ *               <a:textbox id="to" margin="0 0 0 5" width="140" />
+ *           </a:hbox>
+ *           <a:hbox margin="5">
+ *               <a:label for="subject" caption="Subject:" />
+ *               <a:textbox id="subject" width="140" />
+ *           </a:hbox>
+ *           <a:textarea height="200" width="400"/>
+ *       </a:vbox>
+ *     </a:window>
+ *   <!-- endcontent -->
+ * </a:application> 
  * ```
  *
- * @class apf.modalwindow 
+ * @class apf.window 
  * @define window
  * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}
@@ -46100,7 +46135,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
  * @attribute {String} name     the unique identifier of the service
  * @attribute {String} login    the {@link term.datainstruction data instruction} on how to log in to a service
  * @attribute {String} logout   the {@link term.datainstruction data instruction} on how to log out of a service
- * @see element.appsettings
+ * @see apf.appsettings
  *
  * @default_private
  */
@@ -46581,15 +46616,38 @@ apf.aml.setElement("auth", apf.auth);
 
 
 /**
- * Element displaying a clickable rectangle having two states which
+ * This element displays a clickable rectangle with two states that
  * can be toggled by user interaction.
  * 
- * #### Example
+ * #### Example: Setting and Retrieving Values
  *
- * ```xml
- *  <a:checkbox values="full|empty">the glass is full</a:checkbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox 
+ *   id      = "ch1" 
+ *   values  = "full|empty" 
+ *   checked = "true">Full</a:checkbox>
+ *   <a:textbox value="the glass is {ch1.value}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
+ * #### Example: Disabled Values
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:checkbox checked="true">Option 1</a:checkbox>
+ *   <a:checkbox>Option 2</a:checkbox>
+ *   <a:checkbox checked="true" disabled="true">Option 3</a:checkbox>
+ *   <a:checkbox disabled="true">Option 4</a:checkbox>
+ *   <a:checkbox label="Option 5" />
+ *   <a:checkbox label="Option 6" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.checkbox
  *
  * @define checkbox
@@ -46883,40 +46941,45 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 /**
- * An element displaying a bar containing buttons and other AML elements.
+ * This element displays a bar containing buttons and other AML elements.
+ * 
  * This element is usually positioned in the top of an application allowing
  * the user to choose from grouped buttons.
  *
  * #### Example
  *
- * ```xml
- *  <a:menu id="menu5">
- *      <a:item>About us</a:item>
- *      <a:item>Help</a:item>
- *  </a:menu>
- *  <a:menu id="menu6">
- *      <a:item icon="email.png">Tutorials</a:item>
- *      <a:item>Live Helps</a:item>
- *      <a:divider></a:divider>
- *      <a:item>Visit Ajax.org</a:item>
- *      <a:item>Exit</a:item>
- *  </a:menu>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
  *  <a:window 
  *    id          = "winMail"
- *    contextmenu = "menu6"
+ *    contextmenu = "fileMenu"
  *    width       = "300"
  *    height      = "200" 
  *    visible     = "true"
  *    resizable   = "true" 
- *    title       = "Mail message"
- *    icon        = "email.png">
+ *    title       = "An App">
+ *  <!-- startcontent -->
  *      <a:toolbar>
  *          <a:menubar>
- *              <a:button submenu="menu6">File</a:button>
- *              <a:button submenu="menu5">Edit</a:button>
+ *              <a:button submenu="fileMenu">File</a:button>
+ *              <a:button submenu="editMenu">Edit</a:button>
  *          </a:menubar>
  *      </a:toolbar>
+ * 
+ *     <a:menu id="editMenu">
+ *          <a:item>About us</a:item>
+ *          <a:item>Help</a:item>
+ *      </a:menu>
+ *      <a:menu id="fileMenu">
+ *          <a:item icon="email.png">Tutorials</a:item>
+ *          <a:item>Live Helps</a:item>
+ *          <a:divider></a:divider>
+ *          <a:item>Visit Ajax.org</a:item>
+ *          <a:item>Exit</a:item>
+ *      </a:menu>
+ *  <!-- endcontent -->
  *  </a:window>
+ * </a:application>
  * ```
  *
  * @class apf.toolbar
@@ -47336,26 +47399,21 @@ apf.aml.setElement("source", apf.source);
 
 
 /**
- * Element the keeps track of all user actions that are triggered in GUI
+ * This element the keeps track of all user actions that are triggered in GUI
  * elements. 
  * 
- * This element maintains a stack of actions and knows how to
- * undo & redo them. It is aware of how to synchronize the changes to the
+ * This element maintains a stack of actions, and knows how to
+ * undo and redo them. It is also aware of how to synchronize the changes to the
  * backend data store.
  * 
- * #### Example
- *
- * ```javascript
- *   datagrid.getActionTracker().undo();
- * ```
  * 
  * #### Remarks
  *
- * With offline support enabled the actiontracker can
+ * With offline support enabled, the actiontracker can
  * serialize both its undo stack and its execution stack such that these can
- * be kept in between application sessions. This means that a user will be able
+ * be kept in-between application sessions. This means that a user will be able
  * to close the application and start it at a later date whilst keeping his or
- * her entire undo/redo stack. Furthermore all changes done whilst being offline
+ * her entire undo/redo stack. Furthermore, all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
  * @class apf.actiontracker
@@ -48488,13 +48546,24 @@ apf.aml.setElement("remote", apf.remote);
 /**
  * A container that stacks its children vertically.
  * 
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:vbox width="100">
+ *       <a:button height="28" edge="5">Button 1</a:button>
+ *       <a:button height="28" edge="5">Button 2</a:button>
+ *       <a:button height="28" edge="5">Button 3</a:button>
+ *   </a:vbox>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.vbox
  * @layout
  * @define vbox 
  * 
- * #### Example
- * 
- * {:hboxExample}
  * 
  * @see element.hbox
  * 
@@ -48508,25 +48577,23 @@ apf.aml.setElement("remote", apf.remote);
  * 
  * #### Example
  * 
- * ```xml
- *  <a:hbox height="500" width="600">
- *      <a:vbox height="500" width="500">
- *          <a:bar height="250" caption="Top bar" />
- *          <a:hbox width="500" height="250">
- *              <a:bar width="150" caption="Bottom left bar"/>
- *              <a:bar width="350" caption="Bottom Right bar"/>
- *          </a:hbox>
- *      </a:vbox>
- *      <a:bar width="100" caption="Right bar"/>
- *  </a:hbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:hbox height="29" width="300" lean="right" margin="5 0 0 0">
+ *       <a:button width="100" edge="5">Button 1</a:button>
+ *       <a:button width="100">Button 2</a:button>
+ *       <a:button width="100">Button 3</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
- * {: #hboxExample}
  * 
- * @see element.vbox
  * 
  * #### Remarks
  * 
- * Firefox has some issues. 
+ * Firefox has some issues:
+ * 
  * 1. Sometimes it's necessary to put a fixed width to have it calculate the right
  * height value.
  * 2. Using flex="1" on non fixed height/width tree's will give unexpected results.
@@ -48538,6 +48605,7 @@ apf.aml.setElement("remote", apf.remote);
  * @define hbox
  * @layout
  * 
+ * @see element.vbox
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
@@ -48564,13 +48632,13 @@ apf.vbox = function(struct, tagName){
     var input    = {"INPUT":1, "SELECT":1, "TEXTAREA":1}
 
     /**
-     * @attribute {String}  padding=2      Sets or gets the space between each element.
+     * @attribute {String}  [padding=2]      Sets or gets the space between each element.
      */
     /**
      * @attribute {Boolean} reverse      Sets or gets whether the sequence of the elements is in reverse order.
      */
     /**
-     * @attribute {String}  edge="5,5,5,5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
+     * @attribute {String}  [edge="5,5,5,5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence (_.i.e._. `top right bottom left`).
      * 
      * #### Example
      * 
@@ -49562,46 +49630,80 @@ apf.aml.setElement("vbox", apf.vbox);
  * can grow by fetching more data when the user requests it.
  *
  *
- * #### Example
+ * #### Example: A Simple Tree
  *
- * A tree with inline items:
- *
- * ```xml
- *  <a:tree id="tree" align="right">
- *      <a:item caption="root" icon="icoUsers.gif">
- *          <a:item icon="icoUsers.gif" caption="test">
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *              <a:item icon="icoUsers.gif" caption="test" />
- *          </a:item>
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *          <a:item icon="icoUsers.gif" caption="test" />
- *      </a:item>
- *  </a:tree>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:tree id="tree" align="right">
+ *       <a:item caption="root" icon="/api/apf/resources/icons/icoUsers.gif">
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test">
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           </a:item>
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *       </a:item>
+ *   </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * #### Example
+ * #### Example: Using a Model
  *
  * A tree using a model:
  *
- * ```xml
- *  <a:tree model="filesystem.xml">
- *      <a:caption match="[@caption]" />
- *      <a:caption match="[@filename]" />
- *      <a:icon match="[@icon]" />
- *      <a:each match="[drive|file|folder]" />
- *  </a:tree>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
+ *   <a:tree model="filesystem">
+ *        <a:caption match="[@caption]" />
+ *        <a:caption match="[@filename]" />
+ *        <a:each match="[drive|file|folder]" />
+ *    </a:tree>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * An inline tree description that draws the same as the above example:
+ * #### Example: An Inline Tree
+ * 
+ * An inline tree that draws the same as the above example:
  *
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="filesystem">
+ *       <data>
+ *           <folder caption="goo">
+ *             <file caption="goo" filename="goo.js" />
+ *             <file caption="goo2.js" filename="goo2.js"></file>
+ *             <file caption="goo3.js"  />
+ *           </folder>
+ *           <folder caption="foo_folder" >
+ *             <file caption="foo.js" filename="foo.hs"></file>
+ *           </folder>
+ *       </data>
+ *   </a:model>
  *  <a:tree 
- *    model   = "filesystem.xml"
+ *    model   = "filesystem"
  *    caption = "[@caption|@filename]"
- *    icon    = "[@icon]"
  *    each    = "[drive|file|folder]" />
+ *  <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.tree
@@ -49995,17 +50097,20 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 /**
- * An element specifying the skin of an application.
+ * This element specifies the skin of an application.
  *
- * #### Example
- *
- * ```xml
- *  <a:skin src="perspex.xml"
- *    name       = "perspex"
- *    media-path = "http://example.com/images"
- *    icon-path  = "http://icons.example.com" />
- * ```
+ * For Cloud9, the skin is provided for you, and thus, you generally won't need
+ * to provide a new skin for a piece of AML.
  * 
+ * #### Example
+ * 
+ * ```xml
+ * <a:skin src="perspex.xml"
+ *  name       = "perspex"
+ *  media-path = "http://example.com/images"
+ *  icon-path  = "http://icons.example.com" />
+ * ```
+ *  
  * @class apf.skin
  * @inherits apf.AmlElement
  * @define skin
@@ -50647,68 +50752,87 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
  * An element allowing a user to select a value from a list, which is 
  * displayed when the user clicks a button.
  * 
- * #### Example
- *
- * A simple dropdown with inline items.
+ * #### Example: Simple Dropdown
  * 
- * ```xml
- *  <a:dropdown>
- *      <a:item>The Netherlands</a:item>
- *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:dropdown>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown initial-message="Choose a country" skin="black_dropdown">
+ *       <a:item>America</a:item>
+ *       <a:item>Armenia</a:item>
+ *       <a:item>The Netherlands</a:item>
+ *   </a:dropdown>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
- *
- * A databound dropdown with items loaded from an xml file.
+ * #### Example: Loading Items From XML
  * 
- * ```xml
- *  <a:dropdown model="friends.xml" each="[friend]" caption="[@name]" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" skin="black_dropdown" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Capturing and Emitting Events
  *
  * A databound dropdown using the bindings element
  * 
- * ```xml
- *  <a:dropdown model="friends.xml">
- *      <a:bindings>
- *          <a:caption  match = "[@name]" />
- *          <a:css      match = "[self::node()[@type='best']]" value="bestfriend" />
- *          <a:each     match = "[friend]" />
- *      </a:bindings>
- *  </a:dropdown>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <a:table columns="100, 100, 100, 100" cellheight="19" padding="5">
+ *   <!-- startcontent -->
+ *       <a:model id="mdlDD5">
+ *           <data>
+ *               <friend name="Arnold"></friend>
+ *               <friend name="Carmen"></friend>
+ *               <friend name="Giannis"></friend>
+ *               <friend name="Mike"></friend>
+ *               <friend name="Rik"></friend>
+ *               <friend name="Ruben"></friend>
+ *           </data>
+ *       </a:model>
+ *       <a:textbox id="txtAr"></a:textbox>
+ *       <a:dropdown
+ *         id          = "friendDD"
+ *         model       = "mdlDD5"
+ *         each        = "[friend]"
+ *         caption     = "[@name]"
+ *         onslidedown = "txtAr.setValue('slide down')"
+ *         onslideup   = "txtAr.setValue('slide up')" />
+ *       <a:button onclick="friendDD.slideDown()">Slide Down</a:button>
+ *       <a:button onclick="friendDD.slideUp()">Slide Up</a:button>
+ *   <!-- endcontent -->
+ *   </a:table>
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Dynamically Adding Entries
  *
- * A small form:
- * 
- * ```xml
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data>
- *          <name>Mike</name>
- *          <city>amsterdam</city>
- *      </data>
- *  </a:model>
- * 
- *  <a:bar model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[name]" />
- *    
- *      <a:label>City</a:label>
- *      <a:dropdown value="[mdlForm::city]" model="cities.xml">
- *          <a:bindings>
- *              <a:caption match="[text()]" />
- *              <a:value match="[@value]" />
- *              <a:each match="[city]" />
- *          </a:bindings>
- *      </a:dropdown>
- *    
- *      <a:button default="true" action="submit">Submit</a:button>
- *  </a:bar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="friendMdl">
+ *       <data>
+ *           <friend name="Arnold" />
+ *           <friend name="Carmen" />
+ *           <friend name="Giannis" />
+ *           <friend name="Mike" />
+ *           <friend name="Rik" />
+ *           <friend name="Ruben" />
+ *       </data>
+ *   </a:model>
+ *   <a:dropdown
+ *     id      = "dd"
+ *     model   = "friendMdl"
+ *     each    = "[friend]"
+ *     caption = "[@name]">
+ *   </a:dropdown>
+ *   <a:button width="110" onclick="dd.add('&lt;friend name=&quot;Lucas&quot; />')">New Name?</a:button>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.dropdown
@@ -51169,11 +51293,26 @@ apf.aml.setElement("application", apf.application);
 
 
 /**
- * An element displaying a skinnable rectangle which can contain other
- * AML elements. This element is used by other elements such as the
- * toolbar and statusbar element to specify sections within those elements
- * which in turn can contain other AML elements.
+ * This element displays a skinnable rectangle that can contain other
+ * AML elements. 
+ * 
+ * It's used by other elements, such as the
+ * toolbar and statusbar elements, to specify sections.
  *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *  <!-- startcontent -->
+ *    <a:splitbutton id="btnTestRun" caption  = "Run tests"/>
+ *  <!-- endcontent -->
+ *  </a:window>
+ * </a:application>
+ * ```
+ * 
  * #### Remarks
  *
  * This component is used in the accordian element to create its sections. In
@@ -51195,7 +51334,7 @@ apf.aml.setElement("application", apf.application);
  * @attribute {String} icon Sets or gets the url pointing to the icon image.
  */
 /**
- * @attribute {Boolean} collapsed=false  Sets or gets collapse panel on load.
+ * @attribute {Boolean} [collapsed=false]  Sets or gets collapse panel on load.
  */
 /**
  * @attribute {String} title   Describes the content in a panel
@@ -51251,6 +51390,7 @@ apf.splitbutton = function(struct, tagName){
         var _self = this;
         this.$button2.addEventListener("mousedown", function() {
             if (!self[value].$splitInited) {
+                _self.dispatchEvent("submenu.init");
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
                     var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
@@ -51268,8 +51408,6 @@ apf.splitbutton = function(struct, tagName){
     this.$draw = function(){
         var _self = this;
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
-        //this.$ext.style.overflow = "hidden";
-        //this.$ext.style.position = "relative";
 
         var skin = this["button-skin"] || this.getAttribute("skin") || this.localName;
 
@@ -51323,6 +51461,9 @@ apf.splitbutton = function(struct, tagName){
                 }
 
                 _self.dispatchEvent("mouseout", { button: this });
+            },
+            onclick: function(e) {
+                _self.dispatchEvent("split.click", e);
             }
         });
     };
@@ -51389,13 +51530,38 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 /**
- * Element displaying a skinnable rectangle which can contain other 
- * AML elements. 
+ * This element displays a skinnable rectangle which can contain other 
+ * AML elements. Often, it's also used in place of a regular HTML `<div>`.
  *
- * This element is used by other elements such as the 
- * [[apf.toolbar]] and `apf.statusbar` elements to specify sections within those elements
- * which in turn can contain other AML elements.
  *
+ * #### Example
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400"
+ *       >
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * #### Remarks
  *
  * This component is used in the accordion element to create its sections. In
@@ -51417,7 +51583,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
  * @attribute {String} icon Sets or gets the URL pointing to the icon image.
  */
 /**
- *  @attribute {Boolean} collapsed=false  Sets or gets the collapse panel on load
+ *  @attribute {Boolean} [collapsed=false]  Sets or gets the collapse panel on load
  * 
  */
 /**
@@ -51702,58 +51868,51 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 /**
- * An element displaying a skinnable menu of items which can be choosen.
+ * This element displays a skinnable menu of items which can be choosen.
  * 
- * Based on the context of the menu, items can be shown and hidden. That's
- * why this element is often called a contextmenu.
+ * Based on the context of the menu, items can be shown and hidden. 
  * 
- *
  *
  * #### Example
  * 
- * ```xml
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2"></a:iconmap>
- * 
- *  <a:menu id="msub">
- *      <a:item icon="tbicons:12">test</a:item>
- *      <a:item icon="tbicons:14">test2</a:item>
- *  </a:menu>
- * 
- *  <a:menu id="mmain">
- *      <a:item icon="tbicons:1">table_wizard</a:item>
- *      <a:item icon="tbicons:2" hotkey="Ctrl+M">table_wizard</a:item>
- *      <a:divider></a:divider>
- *      <a:radio>item 1</a:radio>
- *      <a:radio>item 2</a:radio>
- *      <a:radio>item 3</a:radio>
- *      <a:radio>item 4</a:radio>
- *      <a:divider></a:divider>
- *      <a:check hotkey="Ctrl+T">item check 1</a:check>
- *      <a:check hotkey="F3">item check 2</a:check>
- *      <a:divider></a:divider>
- *      <a:item icon="tbicons:11" submenu="msub">table_wizard</a:item>
- *      <a:item icon="tbicons:10">table_wizard</a:item>
- *  </a:menu>
- * 
- *  <a:window 
- *    visible     = "true" 
- *    width       = "200"
- *    height      = "190"
- *    contextmenu = "mmain"
- *    center      = "true">
- *  </a:window>
+ * ```xml, demo
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *       <a:item>Tutorials</a:item>
+ *       <a:item icon="email.png">Contact</a:item>
+ *       <a:divider></a:divider>
+ *       <a:item 
+ *         icon    = "application_view_icons.png"
+ *         hotkey  = "Ctrl+T"
+ *         onclick = "setTimeout(function(){alert('You did it');}, 1000)">
+ *         Tutorials</a:item>
+ *       <a:divider />
+ *       <a:item disabled="true">Visit Ajax.org</a:item>
+ *       <a:item>Exit</a:item>
+ *   </a:menu>
+ *   <a:window
+ *     width     = "400"
+ *     height    = "150"
+ *     visible   = "true"
+ *     resizable = "true"
+ *     title     = "Mail message"
+ *     skin      = "bk-window2">
+ *       <a:toolbar>
+ *           <a:menubar>
+ *               <a:button submenu="menu1">File</a:button>
+ *               <a:button submenu="menu1" disabled="true">Edit</a:button>
+ *           </a:menubar>
+ *       </a:toolbar>
+ *   </a:window>
+ *   <!-- endcontent -->
+ *  </a:application>
  * ```
  *
  * @class apf.menu
  * @define menu
  * @selection
  * @allowchild item, divider, check, radio
- * @see apf.GuiElement@contextmenu
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -52384,6 +52543,55 @@ apf.aml.setElement("menu", apf.menu);
  * Element displaying a clickable rectangle that visually confirms to the
  * user when the area is clicked and then executes a command.
  *
+ *
+ * #### Example: Working with Events
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 100" cellheight="24">
+ *      <a:label>Onclick event</a:label>
+ *      <a:button
+ *        skin    = "btn-default-css3"
+ *        class   = "btn-green"
+ *        width   = "120"
+ *        onclick = "alert('Button has been clicked')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseover event</a:label>
+ *      <a:button 
+ *        skin        = "btn-default-css3"
+ *        class       = "btn-red"
+ *        width       = "120"
+ *        onmouseover = "alert('Button has been hovered')">
+ *          Example button</a:button>
+ *      <a:label>Onmouseout event</a:label>
+ *      <a:button 
+ *        width      = "120"
+ *        onmouseout = "alert('Mouse hover out button')">
+ *          Example button</a:button>
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Interactions and Colors
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="250" cellheight="24">
+ *  <!-- startcontent -->
+ *  <a:button
+ *    onclick = "b1.setAttribute('width', '200')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 200px</a:button>
+ *  <a:button 
+ *    onclick = "b1.setAttribute('width', '50')" 
+ *    width   = "250">
+ *      Click me to resize Test button to 50px</a:button>
+ *  <a:button id="b1" color="#FF8203">Test</a:button>
+ *  <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ * 
  * @class apf.button
  * @inherits apf.BaseButton
  * @define button
@@ -53025,26 +53233,24 @@ apf.aml.setElement("button",  apf.button);
 
 
 /**
- * An item in a menu, displaying a clickable area.
+ * Represents an item in a menu, displaying a clickable area.
  * 
  * #### Example
  * 
- * ```xml
- *  <a:iconmap 
- *    id     = "tbicons" 
- *    src    = "toolbar.icons.gif"
- *    type   = "horizontal" 
- *    size   = "20" 
- *    offset = "2,2" />
- *  <a:menu id="menu1">
- *      <a:item icon="tbicons:1">Tutorials</a:item>
- *      <a:item icon="tbicons:5">Contact</a:item>
- *  </a:menu>
- *  <a:toolbar>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="menu1">
+ *      <a:item>Tutorials</a:item>
+ *      <a:item>Contact</a:item>
+ *   </a:menu>
+ *   <a:toolbar>
  *      <a:menubar>
  *          <a:button submenu="menu1">File</a:button>
  *      </a:menubar>
- *  </a:toolbar>
+ *   </a:toolbar>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
  * @class apf.item
@@ -53846,7 +54052,7 @@ apf.aml.setElement("param", apf.param);
 
 
 /**
- * An element that displays a rectangular area which allows a
+ * This element displays a rectangular area which allows a
  * user to type information. 
  *
  * The information typed can be
@@ -53856,8 +54062,90 @@ apf.aml.setElement("param", apf.param);
  * By adding an 
  * autocomplete element as a child, the 
  * value for the textbox can be looked up as you type. By setting the 
- * {@link apf.textbox.mask mask atribute}, complex data input 
+ * {@link apf.textbox.mask mask attribute}, complex data input 
  * validation is done while the user types.
+ *
+ * #### Example: Simple Boxes
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="150">
+ *   <!-- startcontent -->
+ *   <a:textbox value="Text"></a:textbox>
+ *   <a:textbox value="Text" disabled="true" initial-message="I'm disabled!"></a:textbox>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
+ * ```
+ *
+ * #### Example: Validation
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label for="lbl2">Please enter a minimum of three characters</a:label>
+ *   <a:textbox 
+ *     id         = "lbl2"
+ *     minlength  = "3" 
+ *     maxlength  = "5" 
+ *     invalidmsg = "Invalid! Please enter a minimum of three characters" />
+ *     <a:label for="lbl3">Enter your email address</a:label>
+ *   <a:textbox 
+ *     id         = "lbl3"
+ *     datatype   = "a:email" 
+ *     invalidmsg = "Invalid! Please enter a proper email address" />
+ *   <a:label 
+ *     caption = "A US Phone Number" 
+ *     for     = "txt71">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask = "(000)0000-0000;;_" 
+ *     id   = "txt71" />
+ *   <a:label 
+ *     caption = "A Date"
+ *     for     = "txt73">
+ *   </a:label>
+ *   <a:textbox 
+ *     mask       = "00-00-0000;;_"
+ *     datatype   = "xsd:date"
+ *     invalidmsg = "Invalid date; Please enter a correct date"
+ *     id         = "txt73" />
+ *   <a:label 
+ *     caption = "A MAC Address" 
+ *     for     = "txt75" ></a:label>
+ *   <a:textbox 
+ *     mask = "XX-XX-XX-XX-XX-XX;;_"
+ *     id   = "txt75" />
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ *
+ * #### Example: A Regular Box
+ *
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *     <!-- startcontent -->
+ *     <a:bar id="winGoToFile"
+ *       width     = "500" 
+ *       skin      = "winGoToFile"
+ *       minheight = "35"
+ *       maxheight = "400">
+ *         <a:vbox id="vboxGoToFile" edge="5 5 5 5" padding="5" anchors2="0 0 0 0">
+ *             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+ *             <a:list id="dgGoToFile"
+ *               class           = "searchresults noscrollbar"
+ *               skin            = "lineselect"
+ *               maxheight       = "350"
+ *               scrollbar       = "sbShared 32 7 7"
+ *               viewport        = "virtual"
+ *               multiselect     = "true"
+ *               empty-message   = "A filelist would go here.">
+ *             </a:list>
+ *         </a:vbox>
+ *     </a:bar>
+ *     <!-- endcontent -->
+ * </a:application>
+ * ```
  * 
  * @class apf.textbox
  * @define textbox
@@ -54770,11 +55058,42 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 /**
- * An element that displays a rectangle containing arbitrary (X)HTML.
+ * This element displays a rectangle containing arbitrary (X)HTML.
  *
  * This element can be databound and use databounding rules to
  * convert data into (X)HTML using--for instance--XSLT or JSLT.
  *
+ * #### Example: Some simple text
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text width="300">
+ *   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. 
+ *   </a:text>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Using Scrolldown
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:text id="txtExample"
+ *     width      = "300"
+ *     height     = "100" 
+ *     scrolldown = "true">
+ *       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. Quisque semper sem dignissim quam ullamcorper et lobortis arcu eleifend. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce ac commodo mi. Pellentesque sit amet magna sed velit volutpat volutpat. Nam lobortis sem sed tortor accumsan dictum. Donec scelerisque rhoncus cursus. Mauris dui dolor, vehicula quis lacinia quis, facilisis et eros. Nulla facilisi. Donec urna velit, adipiscing non sollicitudin at, sodales id lorem. Fusce fringilla, magna id pellentesque egestas, neque risus luctus mauris, vel porttitor libero tortor et augue. Integer euismod porttitor mi, at viverra nulla pharetra vel. Etiam odio elit, volutpat a porttitor eu, posuere nec augue. Phasellus placerat lacus ut augue tempor consectetur. 
+ *   </a:text>
+ *   <a:button 
+ *     onclick="txtExample.setValue(txtExample.getValue() + '&lt;br />A new line!')">
+ *       Add a line
+ *   </a:button>
+ *   <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.text
  * @define text
  *
@@ -55263,34 +55582,24 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 /**
- * An element displaying a two state button which is one of a grouped set.
+ * This element displays a two state button which is one of a grouped set.
  * Only one of these buttons in the set can be selected at the same time.
  * 
- * #### Example
+ * #### Example: Settings Groups
  *
- * ```xml
- *  <a:frame caption="Options">
- *      <a:radiobutton>Option 1</a:radiobutton>
- *      <a:radiobutton>Option 2</a:radiobutton>
- *      <a:radiobutton>Option 3</a:radiobutton>
- *      <a:radiobutton>Option 4</a:radiobutton>
- *  </a:frame>
- * ```
- * 
- * #### Example
- *
- * This example shows radio buttons with an explicit group set:
- *
- * ```xml
- *  <a:label>Options</a:label>
- *  <a:radiobutton group="g1">Option 1</a:radiobutton>
- *  <a:radiobutton group="g1">Option 2</a:radiobutton>
- *
- *  <a:label>Choices</a:label>
- *  <a:group id="g2" value="[mdlForm::choice]">
- *      <a:radiobutton value="c1">Choice 1</a:radiobutton>
- *      <a:radiobutton value="c2">Choice 2</a:radiobutton>
- *  </a:group>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:table columns="100, 150" cellheight="20">
+ *   <!-- startcontent -->
+ *     <a:label>Options</a:label> 
+ *     <a:label>Choices</a:label> 
+ *     <a:radiobutton group="g2">Option 1</a:radiobutton> 
+ *     <a:radiobutton group="g3">Choice 1</a:radiobutton> 
+ *     <a:radiobutton group="g2">Option 2</a:radiobutton>
+ *     <a:radiobutton group="g3">Choice 2</a:radiobutton>
+ *   <!-- endcontent -->
+ *  </a:table>
+ * </a:application>
  * ```
  *
  * @class apf.radiobutton
@@ -55965,7 +56274,12 @@ apf.aml.setElement("loader", apf.loader);
 
 /**
  * 
- * A container that stacks two children vertically.
+ * A container that stacks two children vertically. 
+ * 
+ * Programatically, this is identical to a regular [[vbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:vbox>`; however,
+ * the performance improvements in using a `<a:vsplitbox>` are massive.
  *
  * @class apf.vsplitbox
  * @define vsplitbox
@@ -55981,6 +56295,11 @@ apf.aml.setElement("loader", apf.loader);
 /**
  *
  * A container that stacks two children horizontally.
+ * 
+ * Programatically, this is identical to a regular [[apf.hbox]], except that it can
+ * only accept two children, and uses absolute positioning. Because of this, there
+ * is more work required to construct AML that matches a regular `<a:hbox>`; however,
+ * the performance improvements in using a `<a:hsplitbox>` are massive.
  *
  * @class apf.hsplitbox
  * @define hsplitbox 
@@ -56015,10 +56334,10 @@ apf.vsplitbox = function(struct, tagName){
     this.$layout     = true;
     
     /**
-     * @attribute {String}  padding="2"      Sets or gets the space between each element.
+     * @attribute {String}  [padding="2"]      Sets or gets the space between each element.
      */
     /**
-     * @attribute {String}  edge="5 5 5 5"         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * @attribute {String}  [edge="5 5 5 5"]         Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      */
     this.$booleanProperties["splitter"] = true;
     this.$supportedProperties.push("padding", "edge", "splitter");
@@ -57139,23 +57458,9 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 /**
- * Defines some rules containing all the action rules for the data 
+ * This element allows you to define some rules containing all the action rules for the data 
  * bound elements referencing this element.
  * 
- * #### Example 
- *
- * ```xml
- *  <a:actions id="actPerson" >
- *      <a:add set="{comm.addPerson([.])}">
- *          <person name="New person" />
- *      </a:add
- *      <a:rename set="{comm.renamePerson([@id], [@name])}" />
- *      <a:remove match="[@new]" set="{comm.removePerson([@id])}"/>
- *  </a:actions>
- *
- *  <a:tree actions="actPerson" />
- * ```
- *
  * @allowchild {actions}
  *
  * @class apf.actions
@@ -57253,43 +57558,49 @@ apf.aml.setElement("actions", apf.actions);
  * 
  * Max and min attributes define the range of allowed values.
  * 
- * #### Example
+ * #### Example: Setting Maximum and Minimum Ranges
  *
- * Here's a spinner element with  a start value equal to `6` and allowed values from range
- * (-100, 200)
- * 
- * ```xml
- *  <a:spinner value="6" min="-99" max="199" width="200"></a:spinner>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *    <a:spinner value="6" min="-6" max="12" width="200"></a:spinner>
+ *  <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
- *
- * Setting the value based on data loaded into this component:
+ * #### Example: Loading Data
  * 
- * ```xml
- *  <a:model id="mdlSpinner">
- *      <data value="56"></data>
- *  </a:model>
- *  <a:spinner value="[@value]" model="mdlSpinner" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlSpinner">
+ *       <data value="56"></data>
+ *   </a:model>
+ *   <a:spinner value="[@value]" model="mdlSpinner" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Connecting to a Textbox
  *
- * Showing the usage of a model in a spinner connected with a textbox:
  * 
- * ```xml
- *  <a:model id="mdlTest">
- *      <overview page="1" pages="50" />
- *  </a:model>
- *  <a:spinner 
- *    id      = "spinner" 
- *    min     = "0" 
- *    max     = "[@pages]" 
- *    model   = "mdlTest" 
- *    value   = "[@page]" 
- *    caption = "[@page] of [@pages]">
- *  </a:spinner>
- *  <a:textbox value="{spinner.caption}"></a:textbox>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlTest">
+ *     <overview page="1" pages="10" />
+ *   </a:model>
+ *   <a:spinner 
+ *     id      = "spinner" 
+ *     min     = "0" 
+ *     max     = "[@pages]" 
+ *     model   = "mdlTest" 
+ *     value   = "[@page]" 
+ *     caption = "[@page] of [@pages]">
+ *   </a:spinner>
+ *   <a:textbox value="{spinner.caption}"></a:textbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.spinner
@@ -57303,10 +57614,10 @@ apf.aml.setElement("actions", apf.actions);
  *
  */
 /**
- * @attribute {Number}   max=64000       Sets or gets the maximum allowed value
+ * @attribute {Number}   [max=64000]       Sets or gets the maximum allowed value
  */
 /**
- * @attribute {Number}   min=-64000      Sets or gets the minimal allowed value
+ * @attribute {Number}   [min=-64000]      Sets or gets the minimal allowed value
  */
 /**
  *  @attribute {Number}   value     Sets or gets the actual value displayed in component
@@ -57812,40 +58123,73 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 /**
- * An element functioning as the central access point for XML data. Data can be
- * retrieved from any data source using data instructions. Data can be
- * submitted using data instructions in a similar way to html form posts. 
+ * This element functions as the central access point for XML data. Data can be
+ * retrieved from any data source using data instructions. Data can also be
+ * submitted using data instructions in a similar way to HTML form posts. 
  *
  * The modal can be reset to its original state. It has support for offline use and
  * synchronization between multiple clients.
  * 
- * #### Example
- *
- * ```xml
- *  <a:model src="products.xml" />
- * ```
+ * #### Example: Loading A Model 
  * 
- * #### Example
- *
- * A small form where the bound data is submitted to a server using a model.
- * 
- * ```xml
- *  <a:model id="mdlForm" submission="save_form.asp">
- *      <data name="Lukasz" address="Poland"></data>
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:model id="mdl1">
+ *      <data>
+ *          <row content="This is a row 1" />
+ *          <row content="This is a row 2" />
+ *          <row content="This is a row 3" />
+ *      </data>
  *  </a:model>
+ *  <a:hbox height="20">
+ *      <a:label>List component:</a:label>
+ *  </a:hbox>
+ *  <a:list 
+ *    model    = "mdl1" 
+ *    each     = "[row]"
+ *    caption  = "[@content]" 
+ *    icon     = "[@icon]" 
+ *    width    = "400">
+ *  </a:list>
+ *  <a:hbox height="30" margin="7 0 3 0">
+ *      <a:label>Datagrid component:</a:label>
+ *  </a:hbox>
+ *  <a:datagrid width="400" height="100" model="mdl1">
+ *      <a:each match="[row]">
+ *          <a:column 
+ *            caption = "Name" 
+ *            value   = "[@content]" 
+ *            width   = "100%" />
+ *      </a:each>
+ *  </a:datagrid>
+ *  <!-- endcontent -->
+ * </a:application>
  * 
- *  <a:frame model="mdlForm">
- *      <a:label>Name</a:label>
- *      <a:textbox value="[@name]" />
- *      <a:label>Address</a:label>
- *      <a:textarea 
- *        value  = "[@address]" 
- *        width  = "100" 
- *        height = "50" />
- *      <a:button 
- *        default = "true" 
- *        action  = "submit">Submit</a:button>
- *  </a:frame>
+ * #### Example
+ *
+ * A small form where the bound data is submitted to a server using a model:
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdlForm" submission="save_form.asp">
+ *       <data name="Lukasz" address="Poland"></data>
+ *   </a:model>
+ *  
+ *   <a:frame model="mdlForm">
+ *       <a:label>Name</a:label>
+ *       <a:textbox value="[@name]" />
+ *       <a:label>Address</a:label>
+ *       <a:textarea 
+ *         value  = "[@address]" 
+ *         width  = "100" 
+ *         height = "50" />
+ *       <a:button 
+ *         default = "true" 
+ *         action  = "submit">Submit</a:button>
+ *   </a:frame>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.model
@@ -59399,14 +59743,15 @@ apf.rpc = function(struct, tagName){
         var auth,
             url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url),
             o    = apf.extend({
-                callback      : pCallback,
-                async         : node.async,
-                userdata      : node.userdata,
-                nocache       : (this.nocache === false) ? false : true,
-                data          : data,
-                useXML        : this.$useXml || node.type == "xml",
-                caching       : node.caching,
-                ignoreOffline : node["ignore-offline"]
+                callback        : pCallback,
+                async           : node.async,
+                userdata        : node.userdata,
+                nocache         : (this.nocache === false) ? false : true,
+                data            : data,
+                useXML          : this.$useXml || node.type == "xml",
+                caching         : node.caching,
+                ignoreOffline   : node["ignore-offline"],
+                withCredentials : node.withCredentials === false ? false : true
             }, options);
 
         
@@ -60128,429 +60473,6 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 /**
- * Element giving the user a visual choice to pick a color just like Photoshop
- * does it!
- *
- * @constructor
- * @define colorpicker
- *
- *
- * @author      Mike de Boer (mike AT javeline DOT com)
- * @version     %I%, %G%
- * @since       3.0
- *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- *
- * @attribute {String} value the color that is selected in the color picker.
- *
- * @binding value  Determines the way the value for the element is retrieved
- * from the bound data.
- * Example:
- * Sets the color based on data loaded into this component.
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker 
- *    model = "mdlColor" 
- *    value = "[@color]" />
- * </code>
- */
-apf.colorpicker = function(struct, tagName){
-    this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
-};
-
-(function(){
-    this.value       = "ff0000";
-    this.changeTimer = null;
-
-    var c = apf.color;
-
-    this.$supportedProperties.push("color", "red", "green", "blue", "hue",
-        "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
-
-    this.$propHandlers["red"]        =
-    this.$propHandlers["green"]      =
-    this.$propHandlers["blue"]       =
-    this.$propHandlers["hue"]        =
-    this.$propHandlers["saturation"] = 
-    this.$propHandlers["brightness"] = 
-    this.$propHandlers["hex"]        = function(val, prop) {
-        clearTimeout(this.changeTimer);
-        var _self = this;
-        this.changeTimer = $setTimeout(function() {
-            _self.$change(prop);
-        });
-    };
-
-    this.$propHandlers["value"] = function(val) {
-        this.$restoreOriginal();
-    };
-
-    this.$restoreOriginal = function() {
-        var hsb = c.hexToHSB(this.value);
-        this.hue = hsb.h;
-        this.saturation = hsb.s;
-        this.brightness = hsb.b;
-        this.$change();
-        this.oCustomColor.style.backgroundColor = 
-            (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
-    };
-
-    this.$change = function(prop) {
-        var hsb = c.fixHSB({
-            h: this.hue,
-            s: this.saturation,
-            b: this.brightness
-        });
-        
-        var hex = c.HSBToHex(hsb);
-        var rgb = c.HSBToRGB(hsb);
-
-        this.oNewColor.style.backgroundColor = "#" + hex;
-
-        if (prop != "red" && prop != "green" && prop != "blue") {
-            this.setProperty("red", rgb.r);
-            this.setProperty("green", rgb.g);
-            this.setProperty("blue", rgb.b);
-        }
-        if (prop != "hue" && prop != "saturation" && prop != "brightness") {
-            this.setProperty("hue", hsb.h);
-            this.setProperty("saturation", hsb.s);
-            this.setProperty("brightness", hsb.b);
-        }
-        if (prop != "hex")
-            this.setProperty("hex", hex);
-
-        this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
-        this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
-        this.oSelectorInd.style.left = parseInt(150 * hsb.s / 100, 10) + "px";
-        this.oSelectorInd.style.top  = parseInt(150 * (100 - hsb.b) / 100, 10) + "px";
-    };
-
-    this.$draw = function() {
-        if (!this.id)
-            this.setProperty("id", "colorpicker" + this.$uniqueId);
-
-        //Build Main Skin
-        this.$ext          = this.$getExternal();
-        this.oSelector     = this.$getLayoutNode("main", "selector", this.$ext);
-        this.oSelectorInd  = this.$getLayoutNode("main", "selector_indic", this.$ext);
-        this.oHue          = this.$getLayoutNode("main", "hue", this.$ext);
-        this.oNewColor     = this.$getLayoutNode("main", "newcolor", this.$ext);
-        this.oCustomColor  = this.$getLayoutNode("main", "customcolor", this.$ext);
-        this.oInputs       = this.$getLayoutNode("main", "inputs", this.$ext);
-
-        this.$restoreOriginal();
-
-        //attach behaviours
-        var _self = this,
-            doc   = (!document.compatMode || document.compatMode == 'CSS1Compat')
-                ? document.html : document.body;
-        function stopMoving() {
-            document.onmousemove = document.onmouseup = null;
-            _self.$change();
-            return false;
-        }
-        function selectorDown() {
-            var el  = this,
-                pos = apf.getAbsolutePosition(el);
-            
-            function selectorMove(e) {
-                e = e || event;
-                var pageX = e.pageX || e.clientX + (doc ? doc.scrollLeft : 0),
-                    pageY = e.pageY || e.clientY + (doc ? doc.scrollTop  : 0);
-                // only the saturation and brightness change...
-                _self.brightness = parseInt(100 * (150 - Math.max(0, Math.min(150,
-                    (pageY - pos[1])))) / 150, 10);
-                _self.saturation = parseInt(100 * (Math.max(0, Math.min(150,
-                    (pageX - pos[0])))) / 150, 10);
-                _self.$change();
-                pos = apf.getAbsolutePosition(el);
-                return false;
-            }
-            document.onmousemove = selectorMove;
-            document.onmouseup   = function(e) {
-                selectorMove(e);
-                return stopMoving(e);
-            };
-        }
-        
-        function hueDown(e) {
-            var el  = this,
-                pos = apf.getAbsolutePosition(el);
-
-            function hueMove(e) {
-                e = e || event;
-                var pageY = e.pageY || e.clientY + (doc ? doc.scrollTop : 0);
-                _self.hue  = parseInt(360 * (150 - Math.max(0,
-                    Math.min(150, (pageY - pos[1])))) / 150, 10);
-                _self.$change();
-                pos = apf.getAbsolutePosition(el);
-            }
-            document.onmousemove = hueMove;
-            document.onmouseup   = function(e) {
-                hueMove(e);
-                return stopMoving(e);
-            };
-        }
-        this.oSelector.onmousedown       = selectorDown;
-        this.oHue.parentNode.onmousedown = hueDown;
-        this.oCustomColor.onmousedown    = function() {
-            _self.$restoreOriginal();
-        };
-
-        function spinnerChange(e) {
-            var o     = e.currentTarget;
-            var isRGB = false;
-            if (o.id.indexOf("hue") > -1) {
-                _self.hue = e.value;
-            }
-            else if (o.id.indexOf("saturation") > -1) {
-                _self.saturation = e.value;
-            }
-            else if (o.id.indexOf("brightness") > -1) {
-                _self.brightness = e.value;
-            }
-            else if (o.id.indexOf("red") > -1) {
-                _self.red = e.value;
-                isRGB = true;
-            }
-            else if (o.id.indexOf("green") > -1) {
-                _self.green = e.value;
-                isRGB = true;
-            }
-            else if (o.id.indexOf("blue") > -1) {
-                _self.blue = e.value;
-                isRGB = true;
-            }
-
-            if (isRGB) {
-                var hsb = c.RGBToHSB({r: _self.red, g: _self.green, b: _self.blue});
-                _self.hex = c.HSBToHex(hsb);
-                _self.hue = hsb.h;
-                _self.saturation = hsb.s;
-                _self.brightness = hsb.b;
-            }
-            else {
-                _self.hex = c.HSBToHex({h: _self.hue, s: _self.saturation, b: _self.brightness});
-            }
-
-            _self.$change(isRGB ? "red" : "hue");
-        }
-
-        //append APF widgets for additional controls
-        var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
-        new apf.hbox({
-            htmlNode: this.oInputs,
-            skinset: skin,
-            left: 212,
-            top: 52,
-            width: 150,
-            padding: 3,
-            childNodes: [
-                new apf.vbox({
-                    padding: 3,
-                    edge: "0 10 0 0",
-                    childNodes: [
-                        new apf.hbox({
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "R:",
-                                    "for": this.id + "_red"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_red",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 255,
-                                    value: "{" + this.id + ".red}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "G:",
-                                    "for": this.id + "_green"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_green",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 255,
-                                    value: "{" + this.id + ".green}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "B:",
-                                    "for": this.id + "_blue"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_blue",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 255,
-                                    value: "{" + this.id + ".blue}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        })
-                    ]
-                }),
-                new apf.vbox({
-                    padding: 3,
-                    childNodes: [
-                        new apf.hbox({
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "H:",
-                                    "for": this.id + "_hue"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_hue",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 360,
-                                    value: "{" + this.id + ".hue}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "S:",
-                                    "for": this.id + "_saturation"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_saturation",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 100,
-                                    value: "{" + this.id + ".saturation}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        }),
-                        new apf.hbox({
-                            edge: "0 0 3 0",
-                            childNodes: [
-                                new apf.label({
-                                    width: 14,
-                                    caption: "B:",
-                                    "for": this.id + "_brightness"
-                                }),
-                                new apf.spinner({
-                                    id: this.id + "_brightness",
-                                    skin: this["skin-spinner"],
-                                    realtime: true,
-                                    width: 45,
-                                    min: 0,
-                                    max: 100,
-                                    value: "{" + this.id + ".brightness}",
-                                    onafterchange: spinnerChange
-                                })
-                            ]
-                        })
-                    ]
-                })
-            ]
-        });
-
-        new apf.label({
-            htmlNode: this.oInputs,
-            skinset: skin,
-            left: 212,
-            top: 144,
-            width: 14,
-            caption: "#",
-            "for": this.id + "_hex"
-        });
-
-        this.$input = new apf.textbox({
-            htmlNode: this.oInputs,
-            skinset: skin,
-            skin: this["skin-textbox"],
-            mask: "<XXXXXX;;_",
-            left: 222,
-            top: 140,
-            width: 60,
-            value: "{" + this.id + ".hex}",
-            onafterchange: function(e) {
-                _self.hex = c.fixHex(e.value);
-                var hsb   = c.hexToHSB(_self.hex);
-                _self.hue = hsb.h;
-                _self.saturation = hsb.s;
-                _self.brightness = hsb.b;
-                _self.$change();
-            }
-        });
-    };
-
-    this.$destroy = function() {
-        this.$ext = this.oSelector = this.oSelectorInd = this.oHue =
-            this.oNewColor = this.oCustomColor = this.oInputs = null;
-    };
-
-}).call(apf.colorpicker.prototype = new apf.StandardBinding());
-
-
-apf.aml.setElement("colorpicker", apf.colorpicker);
-
-
-
-
-
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/**
  * An element containing all the binding rules for the data 
  * bound elements referencing this element.
  *
@@ -60873,24 +60795,23 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 /**
- * Element giving the user a visual choice of several colors presented in a
- * grid.
+ * Element giving the user a visual choice to pick a color just like Photoshop
+ * does it!
  *
  * @constructor
  * @define colorpicker
  *
  *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
- * @since       0.4
+ * @since       3.0
  *
  * @inherits apf.StandardBinding
  * @inherits apf.DataAction
- * @inheritsElsewhere apf.XForms
  *
- * @attribute {String} color the color that is selected in the color picker.
+ * @attribute {String} value the color that is selected in the color picker.
  *
- * @binding value  Determines the way the value for the element is retrieved 
+ * @binding value  Determines the way the value for the element is retrieved
  * from the bound data.
  * Example:
  * Sets the color based on data loaded into this component.
@@ -60902,326 +60823,370 @@ apf.aml.setElement("bindings", apf.bindings);
  *    model = "mdlColor" 
  *    value = "[@color]" />
  * </code>
- * Example:
- * A shorter way to write this is:
- * <code>
- *  <a:model id="mdlColor">
- *      <data color="#000099"></data>
- *  </a:model>
- *  <a:colorpicker value="[mdlColor::@color]" />
- * </code>
  */
 apf.colorpicker = function(struct, tagName){
     this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
 };
 
 (function(){
-    this.implement(
-        
-        apf.StandardBinding
-        
-        
-        ,apf.DataAction
-        
-        
-    );
-    //Options
-    this.$focussable = true; // This object can get the focus
+    this.value       = "ff0000";
+    this.changeTimer = null;
 
-    // PUBLIC METHODS
-    this.setValue = function(value, type){
-        //this.value = value;
-        if (!type) type = "RGBHEX";
-        var a;
-        switch (type) {
-            case "HSL":
-                this.fill(value[0], value[1], value[2]);
-                break;
-            case "RGB":
-                a = RGBtoHLS(value[0], value[1], value[2]);
-                this.fill(a[0], a[1], a[2]);
-                break;
-            case "RGBHEX":
-                var RGB = arguments[0].match(/(..)(..)(..)/);
-                a = RGBtoHLS(Math.hexToDec(RGB[0]),
-                    Math.hexToDec(RGB[1]), Math.hexToDec(RGB[2]));
-                this.fill(a[0], a[1], a[2]);
-                break;
-        }
-    };
+    var c = apf.color;
 
-    this.getValue = function(type){
-        return HSLRangeToRGB(cH, cS, cL);
-    };
+    this.$supportedProperties.push("color", "red", "green", "blue", "hue",
+        "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
 
-    // PRIVATE METHODS
-    var cL       = 120,
-        cS       = 239,
-        cH       = 0,
-        cHex     = "#FF0000",
-        HSLRange = 240;
-
-    function HSLRangeToRGB(H, S, L){
-        return HSLtoRGB(H / (HSLRange - 1), S / HSLRange,
-            Math.min(L / HSLRange, 1))
-    };
-
-    function RGBtoHLS(R,G,B){
-        var RGBMAX = 255,
-            HLSMAX = HSLRange,
-            UNDEF  = (HLSMAX*2/3),
-
-        /* calculate lightness */
-             cMax = Math.max(Math.max(R,G), B),
-             cMin = Math.min(Math.min(R,G), B);
-        L = (((cMax + cMin) * HLSMAX) + RGBMAX) / (2 * RGBMAX);
-
-        if (cMax == cMin) {           /* r=g=b --> achromatic case */
-            S = 0;                    /* saturation */
-            H = UNDEF;                /* hue */
-        }
-        /* chromatic case */
-        else {
-            /* saturation */
-            if (L <= (HLSMAX/2))
-                S = (((cMax - cMin) * HLSMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
-            else
-                S = (((cMax - cMin) * HLSMAX) + ((2 * RGBMAX - cMax - cMin) / 2))
-                  / (2 * RGBMAX - cMax - cMin);
-
-            /* hue */
-            Rdelta = (((cMax - R) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Gdelta = (((cMax - G) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-            Bdelta = (((cMax - B) * (HLSMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
-
-            if (R == cMax)
-                H = Bdelta - Gdelta;
-            else if (G == cMax)
-                H = (HLSMAX / 3) + Rdelta - Bdelta;
-            else
-                H = ((2 * HLSMAX) / 3) + Gdelta - Rdelta;
-
-            if (H < 0)
-                H += HLSMAX;
-            if (H > HLSMAX)
-                H -= HLSMAX;
-        }
-
-        return [H, S, L];
-    }
-
-    function hueToColorValue(hue){
-        var V;
-
-        if (hue < 0)
-            hue = hue + 1
-        else if (hue > 1)
-            hue = hue - 1;
-
-        if (6 * hue < 1)
-            V = M1 + (M2 - M1) * hue * 6
-        else if (2 * hue < 1)
-            V = M2
-        else if (3 * hue < 2)
-            V = M1 + (M2 - M1) * (2 / 3 - hue) * 6
-        else
-            V = M1;
-
-        return Math.max(Math.floor(255 * V), 0);
-    };
-
-    function HSLtoRGB(H, S, L){
-        var R,  G,  B;
-
-        if (S == 0)
-            G = B = R = Math.round (255 * L);
-        else {
-            M2 = (L <= 0.5) ? (L * (1 + S)) : (L + S - L * S);
-
-            M1 = 2 * L - M2;
-            R = hueToColorValue(H + 1 / 3);
-            G = hueToColorValue(H);
-            B = hueToColorValue(H - 1 / 3);
-        }
-
-        return Math.decToHex(R) + "" + Math.decToHex(G) + "" + Math.decToHex(B);
-    };
-
-    this.fill = function(H, S, L){
-        var Hex    = HSLRangeToRGB(H,S,L);
-        this.value = Hex;
-
-        //RGB
-        var RGB            = Hex.match(/(..)(..)(..)/);
-        this.tbRed.value   = Math.hexToDec(RGB[1]);
-        this.tbGreen.value = Math.hexToDec(RGB[2]);
-        this.tbBlue.value  = Math.hexToDec(RGB[3]);
-
-        //HSL
-        this.tbHue.value       = Math.round(H);
-        this.tbSatern.value    = Math.round(S);
-        this.tbLuminance.value = Math.round(L);
-
-        //HexRGB
-        this.tbHexColor.value  = Hex;
-
-        //Shower
-        this.shower.style.backgroundColor = Hex;
-
-        //Luminance
-        var HSL120                        = HSLRangeToRGB(H, S, 120);
-        this.bar1.style.backgroundColor   = HSL120;
-        this.bgBar1.style.backgroundColor = HSLRangeToRGB(H, S, 240);
-        this.bar2.style.backgroundColor   = HSLRangeToRGB(H, S, 0);
-        this.bgBar2.style.backgroundColor = HSL120;
-    };
-
-    this.movePointer = function(e){
-        e = e || event;
-
-        var ty = this.pHolder.ty;
-        if ((e.clientY - ty >= 0) && (e.clientY - ty
-          <= this.pHolder.offsetHeight - this.pointer.offsetHeight + 22))
-            this.pointer.style.top = e.clientY - ty;
-        if (e.clientY - ty < 21)
-            this.pointer.style.top = 21;
-        if (e.clientY - ty
-          > this.pHolder.offsetHeight - this.pointer.offsetHeight + 19)
-            this.pointer.style.top = this.pHolder.offsetHeight
-                - this.pointer.offsetHeight + 19;
-
-        // 255 - posY:
-        cL = (255 - (this.pointer.offsetTop - 22)) / 2.56 * 2.4;
-        this.fill(cH, cS, cL);
-
-        e.returnValue  = false;
-        e.cancelBubble = true;
-    };
-
-    this.setLogic = function(){
+    this.$propHandlers["red"]        =
+    this.$propHandlers["green"]      =
+    this.$propHandlers["blue"]       =
+    this.$propHandlers["hue"]        =
+    this.$propHandlers["saturation"] = 
+    this.$propHandlers["brightness"] = 
+    this.$propHandlers["hex"]        = function(val, prop) {
+        if (this.$ignoreSetProperty)
+            return;
+        clearTimeout(this.changeTimer);
         var _self = this;
-        this.pHolder.style.zIndex = 10;
-        this.pHolder.onmousedown  = function(){
-            this.ty = apf.getAbsolutePosition(this)[1] - 20;
+        this.changeTimer = $setTimeout(function() {
+            _self.$change(prop);
+        });
+    };
 
-            _self.movePointer();
-            document.onmousemove = _self.movePointer
-            document.onmouseup   = function(){ this.onmousemove = function(){}; };
+    this.$propHandlers["value"] = function(val) {
+        this.$restoreOriginal();
+    };
+
+    this.$restoreOriginal = function() {
+        var hsb = c.hexToHSB(this.value);
+        this.hue = hsb.h;
+        this.saturation = hsb.s;
+        this.brightness = hsb.b;
+        this.$change();
+        this.oCustomColor.style.backgroundColor = 
+            (this.value.substr(0, 1) != "#" ? "#" : "") + this.value;
+    };
+
+    this.$change = function(prop) {
+        if (!prop || /hsb|hue|saturation|brightness/.test(prop)) {
+            prop = "hsb";
+            var hsb = c.fixHSB({h: this.hue, s: this.saturation, b: this.brightness});
+            var hex = c.HSBToHex(hsb);
+            var rgb = c.HSBToRGB(hsb);
+        } else if (/red|green|blue|rgb/.test(prop)) {
+            prop = "rgb";
+            var rgb = c.fixRGB({r: this.red, g: this.green, b: this.blue});
+            var hex = c.RGBToHex(rgb);
+            var hsb = c.RGBToHSB(rgb);
+        } else {
+            prop = "hex";
+            var hex = c.fixHex(this.hex);
+            var hsb = c.hexToHSB(hex);
+            var rgb = c.hexToRGB(hex);
         }
 
-        this.container.onmousedown = function(e){
-            e = e || event;
+        this.oNewColor.style.backgroundColor = "#" + hex;
 
-            this.active = true;
-            if (e.srcElement == this) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-            _self.point.style.display = "none";
-
-            e.cancelBubble = true;
+        this.$ignoreSetProperty = true;
+        if (prop != "rgb") {
+            this.setProperty("red", rgb.r);
+            this.setProperty("green", rgb.g);
+            this.setProperty("blue", rgb.b);
         }
-
-        this.container.onmouseup = function(e){
-            e = e || event;
-            this.active               = false;
-            _self.point.style.top     = e.offsetY - _self.point.offsetHeight - 2;
-            _self.point.style.left    = e.offsetX - _self.point.offsetWidth - 2;
-            _self.point.style.display = "block";
-
-            _self.change(_self.tbHexColor.value);
+        if (prop != "hsb") {
+            this.setProperty("hue", hsb.h);
+            this.setProperty("saturation", hsb.s);
+            this.setProperty("brightness", hsb.b);
         }
+        if (prop != "hex")
+            this.setProperty("hex", hex);
+        this.$ignoreSetProperty = false;
+        
+        this.oSelector.style.background = "#" + c.HSBToHex({h: hsb.h, s: 100, b: 100});
+        this.oHue.style.top          = parseInt(150 - 150 * hsb.h / 360, 10) + "px";
+        this.oSelectorInd.style.left = parseInt(150 * hsb.s / 100, 10) + "px";
+        this.oSelectorInd.style.top  = parseInt(150 * (100 - hsb.b) / 100, 10) + "px";
+    };
 
-        this.container.onmousemove = function(e){
-            e = e || event;
-            if (this.active) {
-                if (e.offsetX >= 0 && e.offsetX <= 256
-                  && e.offsetY >= 0 && e.offsetY <= 256) {
-                    cS = (256 - e.offsetY) / 2.56 * 2.4
-                    cH = e.offsetX / 2.56 * 2.39
-                }
-                _self.fill(cH, cS, cL);
-                _self.shower.style.backgroundColor = _self.currentColor;
-            }
-        }
+    this.$draw = function() {
+        if (!this.id)
+            this.setProperty("id", "colorpicker" + this.$uniqueId);
 
-        /*this.tbHexColor.host =
-        this.tbRed.host =
-        this.tbGreen.host =
-        this.tbBlue.host = this;
-        this.tbHexColor.onblur = function(){_self.setValue("RGBHEX", this.value);}
-        this.tbRed.onblur = function(){_self.setValue("RGB", this.value, _self.tbGreen.value, _self.tbBlue.value);}
-        this.tbGreen.onblur = function(){_self.setValue("RGB", _self.tbRed.value, this.value, _self.tbBlue.value);}
-        this.tbBlue.onblur = function(){_self.setValue("RGB", _self.tbRed.value, _self.tbGreen.value, this.value);}
-        */
-    }
-
-    // Databinding
-    this.$mainBind = "color";
-
-    this.$draw = function(parentNode, clear){
         //Build Main Skin
-        this.$ext    = this.$getExternal();
+        this.$ext          = this.$getExternal();
+        this.oSelector     = this.$getLayoutNode("main", "selector", this.$ext);
+        this.oSelectorInd  = this.$getLayoutNode("main", "selector_indic", this.$ext);
+        this.oHue          = this.$getLayoutNode("main", "hue", this.$ext);
+        this.oNewColor     = this.$getLayoutNode("main", "newcolor", this.$ext);
+        this.oCustomColor  = this.$getLayoutNode("main", "customcolor", this.$ext);
+        this.oInputs       = this.$getLayoutNode("main", "inputs", this.$ext);
 
-        this.tbRed   = this.$getLayoutNode("main", "red", this.$ext);
-        this.tbGreen = this.$getLayoutNode("main", "green", this.$ext);
-        this.tbBlue  = this.$getLayoutNode("main", "blue", this.$ext);
+        this.$restoreOriginal();
 
-        this.tbHue       = this.$getLayoutNode("main", "hue", this.$ext);
-        this.tbSatern    = this.$getLayoutNode("main", "satern", this.$ext);
-        this.tbLuminance = this.$getLayoutNode("main", "luminance", this.$ext);
-
-        this.tbHexColor  = this.$getLayoutNode("main", "hex", this.$ext);
-        var _self = this;
-        this.tbHexColor.onchange = function(){
-            _self.setValue(this.value, "RGBHEX");
-        };
-
-        this.shower = this.$getLayoutNode("main", "shower", this.$ext);
-
-        this.bar1   = this.$getLayoutNode("main", "bar1", this.$ext);
-        this.bgBar1 = this.$getLayoutNode("main", "bgbar1", this.$ext);
-        this.bar2   = this.$getLayoutNode("main", "bar2", this.$ext);
-        this.bgBar2 = this.$getLayoutNode("main", "bgbar2", this.$ext);
-
-        this.pHolder   = this.$getLayoutNode("main", "pholder", this.$ext);
-        this.pointer   = this.$getLayoutNode("main", "pointer", this.$ext);
-        this.container = this.$getLayoutNode("main", "container", this.$ext);
-        this.point     = this.$getLayoutNode("main", "point", this.$ext);
-
-        var nodes = this.$ext.getElementsByTagName("input");
-        for (var i = 0; i < nodes.length; i++) {
-            nodes[i].onselectstart = function(e){
+        //attach behaviours
+        var _self = this,
+            doc   = (!document.compatMode || document.compatMode == 'CSS1Compat')
+                ? document.html : document.body;
+        function stopMoving() {
+            document.onmousemove = document.onmouseup = null;
+            _self.$change();
+            return false;
+        }
+        function selectorDown() {
+            var el  = this,
+                pos = apf.getAbsolutePosition(el);
+            
+            function selectorMove(e) {
                 e = e || event;
-                e.cancelBubble = true;
+                var pageX = e.pageX || e.clientX + (doc ? doc.scrollLeft : 0),
+                    pageY = e.pageY || e.clientY + (doc ? doc.scrollTop  : 0);
+                // only the saturation and brightness change...
+                _self.brightness = parseInt(100 * (150 - Math.max(0, Math.min(150,
+                    (pageY - pos[1])))) / 150, 10);
+                _self.saturation = parseInt(100 * (Math.max(0, Math.min(150,
+                    (pageX - pos[0])))) / 150, 10);
+                _self.$change();
+                pos = apf.getAbsolutePosition(el);
+                return false;
+            }
+            document.onmousemove = selectorMove;
+            document.onmouseup   = function(e) {
+                selectorMove(e);
+                return stopMoving(e);
             };
         }
+        
+        function hueDown(e) {
+            var el  = this,
+                pos = apf.getAbsolutePosition(el);
 
-        this.setLogic();
+            function hueMove(e) {
+                e = e || event;
+                var pageY = e.pageY || e.clientY + (doc ? doc.scrollTop : 0);
+                _self.hue  = parseInt(360 * (150 - Math.max(0,
+                    Math.min(150, (pageY - pos[1])))) / 150, 10);
+                _self.$change();
+                pos = apf.getAbsolutePosition(el);
+            }
+            document.onmousemove = hueMove;
+            document.onmouseup   = function(e) {
+                hueMove(e);
+                return stopMoving(e);
+            };
+        }
+        this.oSelector.onmousedown       = selectorDown;
+        this.oHue.parentNode.onmousedown = hueDown;
+        this.oCustomColor.onmousedown    = function() {
+            _self.$restoreOriginal();
+        };
 
-        this.setValue("ffffff");
-        //this.fill(cH, cS, cL);
-    }
+        function spinnerChange(e) {
+            var o     = e.currentTarget;
+            var isRGB = false;
+            if (o.id.indexOf("hue") > -1) {
+                _self.hue = e.value;
+            }
+            else if (o.id.indexOf("saturation") > -1) {
+                _self.saturation = e.value;
+            }
+            else if (o.id.indexOf("brightness") > -1) {
+                _self.brightness = e.value;
+            }
+            else if (o.id.indexOf("red") > -1) {
+                _self.red = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("green") > -1) {
+                _self.green = e.value;
+                isRGB = true;
+            }
+            else if (o.id.indexOf("blue") > -1) {
+                _self.blue = e.value;
+                isRGB = true;
+            }
 
-    this.$loadAml = function(x){
-        if (x.getAttribute("color"))
-            this.setValue(x.getAttribute("color"));
-    }
+            _self.$change(isRGB ? "red" : "hue");
+        }
 
-    this.$destroy = function(){
-        this.container.host  =
-        this.tbRed.host      =
-        this.tbGreen.host    =
-        this.tbBlue.host     =
-        this.tbHexColor.host =
-        this.pHolder.host    = null;
-    }
-}).call(apf.colorpicker.prototype = new apf.GuiElement());
+        //append APF widgets for additional controls
+        var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
+        new apf.hbox({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            left: 212,
+            top: 52,
+            width: 150,
+            padding: 3,
+            childNodes: [
+                new apf.vbox({
+                    padding: 3,
+                    edge: "0 10 0 0",
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "R:",
+                                    "for": this.id + "_red"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_red",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".red}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "G:",
+                                    "for": this.id + "_green"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_green",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".green}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_blue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_blue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 255,
+                                    value: "{" + this.id + ".blue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new apf.vbox({
+                    padding: 3,
+                    childNodes: [
+                        new apf.hbox({
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "H:",
+                                    "for": this.id + "_hue"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_hue",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 360,
+                                    value: "{" + this.id + ".hue}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "S:",
+                                    "for": this.id + "_saturation"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_saturation",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".saturation}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        }),
+                        new apf.hbox({
+                            edge: "0 0 3 0",
+                            childNodes: [
+                                new apf.label({
+                                    width: 14,
+                                    caption: "B:",
+                                    "for": this.id + "_brightness"
+                                }),
+                                new apf.spinner({
+                                    id: this.id + "_brightness",
+                                    skin: this["skin-spinner"],
+                                    realtime: true,
+                                    width: 45,
+                                    min: 0,
+                                    max: 100,
+                                    value: "{" + this.id + ".brightness}",
+                                    onafterchange: spinnerChange
+                                })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        });
+
+        new apf.label({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            left: 212,
+            top: 144,
+            width: 14,
+            caption: "#",
+            "for": this.id + "_hex"
+        });
+
+        this.$input = new apf.textbox({
+            htmlNode: this.oInputs,
+            skinset: skin,
+            skin: this["skin-textbox"],
+            mask: "<XXXXXX;;_",
+            left: 222,
+            top: 140,
+            width: 60,
+            value: "{" + this.id + ".hex}",
+            onafterchange: function(e) {
+                _self.hex = c.fixHex(e.value);
+                var hsb   = c.hexToHSB(_self.hex);
+                _self.hue = hsb.h;
+                _self.saturation = hsb.s;
+                _self.brightness = hsb.b;
+                _self.$change();
+            }
+        });
+    };
+
+    this.$destroy = function() {
+        this.$ext = this.oSelector = this.oSelectorInd = this.oHue =
+            this.oNewColor = this.oCustomColor = this.oInputs = null;
+    };
+
+}).call(apf.colorpicker.prototype = new apf.StandardBinding());
+
 
 apf.aml.setElement("colorpicker", apf.colorpicker);
 
@@ -61254,7 +61219,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 /**
- * An element specifying which menu is shown when a
+ * This element specifies which menu is shown when a
  * contextmenu is requested by a user for a AML node.
  * 
  * #### Example
@@ -61263,16 +61228,27 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
  * right clicks on the root {@link term.datanode data node}. Otherwise the `mnuItem` menu is
  * shown.
  *
- * ```xml
- *  <a:list>
- *      <a:contextmenu menu="mnuRoot" match="[root]" />
- *      <a:contextmenu menu="mnuItem" />
- *  </a:list>
+ * ```xml, demo
+ *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:menu id="ctxMenu">
+ *       <a:item>Choice 1!</a:item>
+ *       <a:item>Choice 2!</a:item>
+ *   </a:menu>
+ *   <a:list width="300" id="list1">
+ *       <a:contextmenu menu="ctxMenu" />
+ *       <a:item>The Netherlands</a:item>
+ *       <a:item>United States of America</a:item>
+ *       <a:item>Poland</a:item>
+ *   </a:list>
+ *   <!-- endcontent -->
+ *   Right-click on the list to reveal the context menu!
+ *  </a:application>
  * ```
  *
  * @class apf.contextmenu
- * @inherits apf.AmlElement
  * @define contextmenu
+ * @inherits apf.AmlElement
  * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -61456,8 +61432,8 @@ apf.StateServer = {
 }
 
 /**
- * An element that specifies a certain state of (a part of) the application. With
- * state we mean a collection of properties on objects that have a certain
+ * This element specifies a certain state of (a part of) the application. By
+ * "state", we mean a collection of properties on objects that have a certain
  * value at one time. 
  * 
  * This element allows you to specify which properties on
@@ -61465,81 +61441,32 @@ apf.StateServer = {
  * belong to a state-group containing multiple elements with a default state.
  * 
  * #### Example
- *
- * This example shows a log in window and four state elements in a state-group.
  * 
- * ```xml
- *   <a:appsettings>
- *       <a:auth 
- *         login         = "{comm.login(username, password)}" 
- *         logout        = "{comm.logout()}"
- *         autostart     = "false"
- *         window        = "winLogin"
- *         fail-state    = "stFail"
- *         error-state   = "stError"
- *         login-state   = "stIdle"
- *         logout-state  = "stLoggedOut"
- *         waiting-state = "stLoggingIn" />
- *   </a:appsettings>
- *   <a:teleport>
- *       <a:rpc id="comm" protocol="cgi">
- *           <a:method name="login" url="http://localhost/login.php">
- *               <a:param name="username" />
- *               <a:param name="password" />
- *           </a:method>
- *           <a:method name="logout" url="http://localhost/logout.php" />
- *       </a:rpc>
- *   </a:teleport>
- *  
- *   <a:state-group
- *     loginMsg.visible  = "false"
- *     winLogin.disabled = "false">
- *       <a:state id="stFail"
- *         loginMsg.value    = "Username or password incorrect"
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stError"
- *         loginMsg.value    = "An error has occurred. Please check your network."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "false" />
- *       <a:state id="stLoggingIn"
- *         loginMsg.value    = "Please wait whilst logging in..."
- *         loginMsg.visible  = "true"
- *         winLogin.disabled = "true"
- *         btnLogout.visible = "false" />
- *       <a:state id="stIdle"
- *         btnLogout.visible = "true" />
- *       <a:state id="stLoggedOut"
- *         btnLogout.visible = "false"
- *         loginMsg.visible  = "false"
- *         winLogin.disabled = "false" />
- *  </a:state-group>
- * 
- *  <a:window id="winLogin" visible="true" width="400" height="400">
- *      <a:label>Username</a:label>
- *      <a:textbox type="username" value="Lukasz" />
- *  
- *      <a:label>Password</a:label>
- *      <a:textbox type="password" value="ppp" />
- * 
- *      <a:label id="loginMsg" />
- *      <a:button action="login">Log in</a:button>
- *  </a:window>
- *  <a:button id="btnLogout" visible="false" action="logout">Log out</a:button>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:state 
+ *     group   = "stRole" 
+ *     id      = "stUser" 
+ *     caption = "You are a user" 
+ *     active  = "true" />
+ *   <a:state 
+ *      group   = "stRole" 
+ *      id      = "stAdmin" 
+ *      caption = "You have super powers" />
+ *   <a:label caption="{stRole.caption}" />
+ *   <a:hbox height="34" width="200" margin="10 0 0 0">
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stUser.activate()">State - User</a:button>
+ *       <a:button 
+ *         width   = "100" 
+ *         onclick = "stAdmin.activate()">State - Admin</a:button>
+ *   </a:hbox>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * #### Example
- *
- * This example shows a label using property binding to get it's caption
- * based on the current state.
- * 
- * ```xml
- *  <a:state group="stRole" id="stUser" caption="You are a user" active="true" />
- *  <a:state group="stRole" id="stAdmin" caption="You have super powers" />
- *
- *  <a:label value="{stRole.caption}" />
- *  <a:button onclick="stAdmin.activate()">Become admin</a:button>
- * ```
  * @class apf.state
  * @define state
  *
@@ -61743,41 +61670,48 @@ apf.aml.setElement("state", apf.state);
  * to `'*'`. This means they will span the entire width of all columns, no matter
  * how many columns there are.
  * 
- * ```xml
- *  <a:window visible="true" width="500" height="400">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:window visible="true" width="500" height="260" title="Form">
+ *  <!-- startcontent -->
  *      <a:table id="tableTest" 
  *        columns = "80, *"
  *        edge    = "10 10 10 10"
  *        padding = "5"
  *        bottom  = "35"
  *        top     = "0">
- *          <a:label>Name</a:label>
- *          <a:textbox />
- *          <a:label>Address</a:label>
- *          <a:textarea height="50" />
- *          <a:label>Country</a:label>
- *          <a:dropdown />
- *          
- *          <a:label span="*">Message</a:label>
- *          <a:textarea id="txtMessage" 
- *            height = "*" 
- *            span   = "*" />
+ *        <a:label>Name</a:label>
+ *        <a:textbox />
+ *        <a:label>Address</a:label>
+ *        <a:textarea height="50" />
+ *        <a:label>Country</a:label>
+ *        <a:dropdown>
+ *            <a:item>America</a:item>
+ *            <a:item>Armenia</a:item>
+ *            <a:item>The Netherlands</a:item>
+ *        </a:dropdown>
+ *  
+ *        <a:label span="*">Message</a:label>
+ *        <a:textarea id="txtMessage" 
+ *          height = "*" 
+ *          span   = "*" />
  *      </a:table>
- *      
+ * 
  *      <a:button 
  *        caption = "Two Columns"
  *        bottom  = "10"
  *        left    = "10"
  *        onclick = "tableTest.setAttribute('columns', '80, *');"/>
- *              
+ * 
  *      <a:button 
  *        bottom  = "10"
  *        left    = "125"
  *        caption = "Four Columns"
  *        onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
+ *  <!-- endcontent -->
  *  </a:window>
+ * </a:application>
  * ```
- *
  *
  * @class apf.table
  * @define table
@@ -61819,10 +61753,10 @@ apf.table = function(struct, tagName){
      *
      */
     /**
-     * @attribute {String} padding=2     Sets or gets the space between each element.
+     * @attribute {String} [padding=2]     Sets or gets the space between each element.
      */
     /**
-     * @attribute {String} edge="5 5 5 5"        Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
+     * @attribute {String} [edge="5 5 5 5"]        Sets or gets the space between the container and the elements, space seperated in pixels for each side. Similar to CSS in the sequence of `top right bottom left`.
      * 
      * #### Example
      * 
@@ -62399,8 +62333,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 /**
- * An element that loads JavaScript into the application,
- * either from its first child or from a file.
+ * This element loads JavaScript into the application.
  * 
  * #### Example
  *
@@ -62525,7 +62458,7 @@ apf.aml.setElement("script", apf.script);
 
 
 /**
- * An element displaying a skinnable list of options which can be selected.
+ * This element displays a skinnable list of options which can be selected.
  * 
  * Selection of multiple items is allowed. Items can be renamed
  * and removed. The list can be used as a collection of checkboxes or 
@@ -62535,50 +62468,53 @@ apf.aml.setElement("script", apf.script);
  * of items in a CMS-style interface, or display a list of search results in 
  * a more website like interface.
  * 
- * #### Example
+ * #### Example: A Simple List
  * 
- * A simple list with inline items.
- * 
- * ```xml
- *  <a:list multimatch="[false]">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list>
  *      <a:item>The Netherlands</a:item>
  *      <a:item>United States of America</a:item>
- *      <a:item>United Kingdom</a:item>
- *      ...
- *  </a:list>
+ *      <a:item>United Kingdom</a:item> 
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Loading from a Model
  * 
- * A databound list with items loaded from an xml file.
- * 
- * ```xml
- *  <a:list model="friends.xml" each="[friend]" caption="[@name]" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list 
+ *     model   = "/api/resources/xml/friends.xml"
+ *     each    = "[friend]"
+ *     caption = "[@name]"
+ *     icon    = "[@icon]"
+ *     width   = "300">
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  * 
- * #### Example
+ * #### Example: Using XPaths
  * 
- * A databound list using the bindings element
- * 
- * ```xml
- *  <a:model id="mdlList">
- *      <data>
- *          <item date="2009-11-12" deleted="0"></item>
- *          <item date="2009-11-11" deleted="0"></item>
- *          <item date="2009-11-10" deleted="0"></item>
- *          <item date="2009-11-09" deleted="1"></item>
- *          <item date="2009-11-08" deleted="1"></item>
- *      </data>
- *  </a:model>
- *  <a:list id="list" width="200" height="200" model="mdlList">
- *      <a:bindings>
- *          <a:caption match="[@date]" />
- *          <a:each match="[item[not(@deleted='1')]]" />
- *      </a:bindings>
- *  </a:list>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:list model="/api/apf/resources/xml/friends.xml" width="300">
+ *       <a:each match="[friend]">
+ *           <a:caption match="[@name]" />
+ *           <a:icon 
+ *             match = "[node()[@name='Ruben' or @name='Matt']]" 
+ *             value = "/api/apf/resources/icons/medal_gold_1.png" />
+ *           <a:icon value="/api/apf/resources/icons/medal_silver_1.png" />
+ *       </a:each>
+ *   </a:list>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
- *
- * 
  * @class apf.list
  * @define list
  * @allowchild {smartbinding}
@@ -63289,18 +63225,22 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 /**
- * An element displaying a frame with a caption, containing other elements. This
- * element is called a "fieldset" in HTML.
+ * This element displays a frame with a caption that can contain other elements. It's
+ * element is analogous to the `<fieldset>` in HTML.
  * 
  * #### Example
  * 
- * ```xml
- *  <a:frame caption="Options">
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *    <!-- startcontent -->
+ *    <a:frame caption="Options">
  *      <a:radiobutton value="1">Option 1</a:radiobutton>
  *      <a:radiobutton value="2">Option 2</a:radiobutton>
  *      <a:radiobutton value="3">Option 3</a:radiobutton>
  *      <a:radiobutton value="4">Option 4</a:radiobutton>
- *  </a:frame>
+ *    </a:frame>
+ *    <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.frame
@@ -63444,26 +63384,80 @@ apf.aml.setElement("frame", apf.frame);
 
 
 /**
- * An element that graphically represents a percentage value which increases
+ * This element graphically represents a percentage value which increases
  * automatically with time. 
  *
  * This element is most often used to show the progress
  * of a process. The progress can be either indicative or exact.
  * 
- * #### Example
+ * #### Example: A Simple Progressbar
  * 
- * This example shows a progress bar that is only visible when an application is
- * synchronizing it's offline changes. When in this process it shows the exact
- * progress of the sync process.
- * 
- * ```xml
- *  <a:progressbar
- *    value   = "{apf.offline.progress}"
- *    visible = "{apf.offline.syncing}" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
- * @class apf.progress
- * @define progress
+ * #### Example: Progressbars with Varying Speeds
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar 
+ *     id    = "pb1"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb1.start();
+ *   //--></a:script>
+ *   </a:progressbar>
+ * 
+ *   <a:progressbar 
+ *     id    = "pb2"
+ *     min   = "0" 
+ *     max   = "100" 
+ *     value = "40" 
+ *     width = "300"><a:script>//<!--
+ *     pb2.start(50);
+ *   //--></a:script>
+ *   </a:progressbar>
+ * </a:application>
+ * ```
+ * 
+ * #### Example: Dynmically Controlling the Progressbar
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:progressbar
+ *     id    = "pb3"
+ *     min   = "0"
+ *     max   = "100"
+ *     value = "0"
+ *     width = "300" />
+ *   <a:table 
+ *     columns    = "80, 80, 80, 80"
+ *     cellheight = "24" 
+ *     margin     = "15 0">
+ *       <a:button onclick="pb3.start()">Start</a:button>
+ *       <a:button onclick="pb3.pause()">Pause</a:button>
+ *       <a:button onclick="pb3.stop()">Stop</a:button>
+ *       <a:button onclick="pb3.clear()">Clear</a:button>
+ *       <a:button onclick="pb3.enable()">Enable</a:button>
+ *       <a:button onclick="pb3.disable()">Disable</a:button>
+ *   </a:table>
+ * </a:application>
+ * ```
+ * 
+ * @class apf.progressbar
+ * @define progressbar
  * @allowchild {smartbinding}
  *
  * @form
@@ -63656,7 +63650,7 @@ apf.progressbar = function(struct, tagName){
     /**
      * Stops the progress indicator from moving.
      * @param {Boolean} restart Specifies whether a `this.$timer` should start with a new indicative progress indicator.
-     * @param {Number} time=500 The internal (in milliseconds)
+     * @param {Number} [time=500] The internal (in milliseconds)
      * @param {Number} [restart_time] The time for the next restart to occur
      */
     this.stop = function(restart, time, restart_time){
@@ -63882,7 +63876,9 @@ apf.aml.setElement("drop", apf.BindingDndRule);
  *
  * #### Example
  *
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <!-- startcontent -->
  *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">
  *          <a:checkbox>Example</a:checkbox>
@@ -63898,6 +63894,8 @@ apf.aml.setElement("drop", apf.BindingDndRule);
  *          <a:checkbox>This better?</a:checkbox>
  *      </a:page>
  *  </a:tab>
+ * <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.tab
@@ -63977,7 +63975,8 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 /**
- * An element specifying the settings of the APF application.
+ * This element specifies the settings of the APF application.
+ * 
  * @class apf.appsettings
  * @define appsettings
  * @logic
@@ -65595,49 +65594,6 @@ apf.aml.setElement("color", apf.BindingColorRule);
  * A notification element, which shows popups when events occur. Similar in concept
  * to [growl](http://growl.info/) on the OSX platform.
  * 
- * #### Example
- *
- * ```xml
- *  <a:notifier position="bottom-right" margin="10 10">
- *      <a:event 
- *        when    = "{offline.onLine}"
- *        message = "You are currently working offline"
- *        icon    = "icoOffline.gif" />
- *      <a:event 
- *        when    = "{!offline.onLine}"
- *        message = "You are online"
- *        icon    = "icoOnline.gif" />
- *      <a:event 
- *        when    = "{offline.syncing}" 
- *        message = "Your changes are being synced" 
- *        icon    = "icoSyncing.gif" />
- *      <a:event 
- *        when    = "{!offline.syncing}"
- *        message = "Syncing done"
- *        icon    = "icoDone.gif" />
- *  </a:notifier>
- * ```
- *
- * #### Example:
- *
- * Notifier with four notifications which appears and stays over three seconds.
- * It begins at the top-right corner and goes to the left. 
- * 
- * First, the notification will
- * be displayed when value in textbox will be bigger than four. In the following two cases, 
- * the notification will be shown when the notifier's `position` or `arrange` attribute is 
- *  changed. In the last case the notification is shown when the date `2008-12-24` 
- * is selected on calendar.
- * 
- * ```xml
- *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
- *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
- *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
- *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
- *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
- *  </a:notifier>
- * ```
- * 
  * @class apf.notifier
  * @define notifier
  * @media
@@ -65671,11 +65627,11 @@ apf.aml.setElement("color", apf.BindingColorRule);
  *                                      element will be displayed. Defaults to 300px.
  */
 /**
- * @attribute   {String}   arrange="vertical"      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
+ * @attribute   {String}   [arrange="vertical"]      Sets or gets the how the popup elements are displayed, either rows (`"vertical"`)
  *                                      or columns (`"horizontal"`).
  */
 /**
- * @attribute   {String}   timeout=2     After the timeout has passed, the popup
+ * @attribute   {String}   [timeout=2]     After the timeout has passed, the popup
  *                                      disappears automatically. When the
  *                                      mouse is hovering over the popup, it doesn't
  *                                      disappears.
@@ -65748,7 +65704,7 @@ apf.notifier = function(struct, tagName){
     /**
      * Creates a new notification popup.
      * 
-     * @param {String}  message=""  The message content displayed in the popup element
+     * @param {String}  [message=""]  The message content displayed in the popup element
      * @param {String}  [icon]     The path to the icon file ,relative to "icon-path" which
      *                           is set in the skin declaration
      * 
@@ -66027,6 +65983,36 @@ apf.aml.setElement("event", apf.event);
 /**
  * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
  *
+ * #### Example
+ * 
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
+ *  <a:window 
+ *    visible = "true" 
+ *    width   = "400" 
+ *    height  = "150" 
+ *    title   = "Simple Tab" >
+ *      <a:tab anchors="10 10 10 10"> 
+ *          <a:page caption="General"> 
+ *              <a:checkbox>Example</a:checkbox> 
+ *              <a:button>Example</a:button> 
+ *          </a:page> 
+ *          <a:page caption="Advanced"> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *              <a:checkbox>Test checkbox</a:checkbox> 
+ *          </a:page> 
+ *          <a:page caption="Ajax.org"> 
+ *              <a:checkbox>This ok?</a:checkbox> 
+ *              <a:checkbox>This better?</a:checkbox> 
+ *          </a:page> 
+ *      </a:tab> 
+ *  </a:window>
+ *  <!-- endcontent -->
+ * </a:application>
+ * ```
+ * 
  * @class apf.page
  * @define  page
  * @container
@@ -66843,12 +66829,13 @@ apf.method = function(struct, tagName){
 (function(){
     this.$parsePrio = "002";
     
-    this.$booleanProperties["async"]          = true;
-    this.$booleanProperties["caching"]        = true;
-    this.$booleanProperties["ignore-offline"] = true;
+    this.$booleanProperties["async"]                 = true;
+    this.$booleanProperties["caching"]               = true;
+    this.$booleanProperties["ignore-offline"]        = true;
+    this.$booleanProperties["cors-with-credentials"] = true;
 
     this.$supportedProperties.push("name", "receive", "async", "caching",
-        "ignore-offline", "method-name", "type", "url");
+        "ignore-offline", "method-name", "type", "url", "cors-with-credentials");
 
     this.$propHandlers["ignore-offline"] = function(value){
         this.ignoreOffline = value;
@@ -66856,6 +66843,10 @@ apf.method = function(struct, tagName){
     
     this.$propHandlers["method-name"] = function(value){
         this.methodName = value;
+    };
+    
+    this.$propHandlers["cors-with-credentials"] = function(value){
+        this.withCredentials = value;
     };
 
     // *** DOM Handlers *** //
@@ -67032,7 +67023,7 @@ apf.aml.setElement("method", apf.method);
  * @inherits apf.Class
  * @inherits apf.BaseComm
  * @inherits apf.http
- * @namespace apf
+ * 
  *
  * @default_private
  */
@@ -68319,30 +68310,55 @@ apf.webdav.STATUS_CODES = {
 
 
 /**
- * Element providing a sortable, selectable grid containing scrollable 
- * information. Grid columns can be reordered and resized.
+ * This element  provides a sortable, selectable grid containing scrollable 
+ * information. The grid columns can be reordered and resized.
  * 
  * #### Example
- *
- * This example shows a datagrid width several columns mixing percentage and
- * fixed size columns.
  * 
- * ```xml
- *  <a:model id="mdlNews">
- *      <data>
- *          <news title="text 1" subtitle="text 11" date="2009-11-18"></news>
- *          <news title="text 2" subtitle="text 21" date="2009-11-19"></news>
- *          <news title="text 3" subtitle="text 31" date="2009-11-20"></news>
- *      </data>
- *  </a:model>
- *  <a:datagrid model="mdlNews" options="move|size">
- *      <a:each match="[news]">
- *          <a:column caption="Icon" type="icon" width="40" value="newspaper.png" />
- *          <a:column caption="Date" value="[@date]" width="70" />
- *          <a:column caption="Title" width="180" value="[@title]" />
- *          <a:column caption="Subtitle" value="[@subtitle]" width="100" />
- *      </a:each>
- *  </a:datagrid>
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:model id="mdl">
+ *         <data>
+ *             <news name="Ajax" icon="note.png" count="54"></news>
+ *             <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+ *             </news>
+ *             <news name="Android" icon="note.png" count="2"></news>
+ *             <news name="Apple" icon="note.png" count="11"></news>
+ *             <news name="Aptana" icon="note.png" count="30"></news>
+ *             <news name="Canvas" icon="note.png" count="115"></news>
+ *             <news name="Chrome" icon="note.png" count="9"></news>
+ *             <news name="ColdFusion" icon="note.png" count="10"></news>
+ *             <news name="CSS" icon="note.png" count="176"></news>
+ *             <news name="Dojo" icon="note.png" count="224"></news>
+ *             <news name="JavaScript" icon="note.png" count="1218"></news>
+ *             <news name="JSON" icon="note.png" count="59"></news>
+ *             <news name="Mac" icon="note.png" count="1"></news>
+ *             <news name="Mozilla" icon="note.png" count="11"></news>
+ *         </data>
+ *   </a:model>
+ *   <a:datagrid 
+ *     width    = "500" 
+ *     id       = "dg1"
+ *     model    = "mdl"
+ *     height   = "150"> 
+ *       <a:each match="[news]"> 
+ *           <a:column 
+ *             type   = "icon" 
+ *             width  = "16" 
+ *             value  = "[@icon]" />
+ *           <a:column 
+ *             caption = "Name" 
+ *             value   = "[@name]"
+ *             width   = "100%" /> 
+ *           <a:column 
+ *             caption = "Article counter" 
+ *             width   = "180" 
+ *             value   = "[@count]" />
+ *       </a:each> 
+ *   </a:datagrid>
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.datagrid
@@ -69610,15 +69626,24 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 /**
  * An element displaying a text in the user interface, usually specifying
- * a description of another element. When the user clicks on the label it 
+ * a description of another element. When the user clicks on the label, it 
  * can set the focus to the connected AML element.
  * 
- * #### Example
- * This example uses the `for` attribute to connect the label to the form element.
+ * #### Example: Connecting with "For"
  * 
- * ```xml
- *  <a:label for="txtAddress">Address</a:label>
- *  <a:textbox id="txtAddress" value="Some text" />
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *   <!-- startcontent -->
+ *   <a:label 
+ *     for       = "txtAddress"
+ *     disabled  = "true" 
+ *     caption   = "Disabled label"></a:label>
+ *   <a:textbox id="txtAddress" />
+ *   <a:label 
+ *     for   = "txtAddress2">Not Disabled</a:label>
+ *   <a:textbox id="txtAddress2" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.label
@@ -69806,37 +69831,35 @@ apf.aml.setElement("label", apf.label);
 
 
 /**
- * An element displaying a picture. This element can read databound resources.
+ * The element displays a picture. This element can read databound resources.
  * 
  * #### Example
  * 
  * This example shows a list with pictures. When one is selected its displayed
- * in the `img` element.
+ * in the `<a:img>` element:
  * 
- * ```xml
+ * ```xml, demo
+ * <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <!-- startcontent -->
  *  <a:model id="mdlPictures"> 
- *      <pictures> 
- *          <picture title="Landscape" src="img1.jpg" />
- *          <picture title="Animal" src="img2.jpg" />
- *          <picture title="River" src="img3.jpg" />
- *      </pictures> 
- *  </a:model>
- *  <a:list 
- *    id     = "lstPics" 
- *    skin   = "thumbnail" 
- *    height = "200" 
- *    width  = "400" 
- *    model  = "mdlPictures">
- *      <a:each match = "[picture]" >
- *          <a:name match="[@title]" />
- *          <a:image match="[@src]">path/to/image/[@src]</a:image>
- *      </a:each>
- *  </a:list>
- *  <a:img 
- *    model  = "{lstPics.selected}" 
- *    value  = "path/to/image/[@src]" 
- *    width  = "200" 
- *    height = "200" />
+ *       <data> 
+ *           <picture title="Ceiling Cat" src="http://htstatic.ibsrv.net/forums/honda-tech/ceiling-cat/ceiling-cat-6.jpg" />
+ *           <picture title="Maru" src="http://1.bp.blogspot.com/_4Cb_t7BLaIA/TCY3jyIx4SI/AAAAAAAAAbw/K-Ey_u36y8o/s400/maru+the+japanese+cat.jpg" />
+ *           <picture title="Lime Cat" src="http://www.cs.brown.edu/orgs/artemis/2012/catsoftheworld/lime-cat.jpg" />
+ *       </data> 
+ *   </a:model>
+ *   <a:list 
+ *     id     = "lstPics" 
+ *     model  = "mdlPictures">
+ *       <a:each match="[picture]" >
+ *           <a:caption match="[@title]" />
+ *       </a:each>
+ *   </a:list>
+ *   <a:img 
+ *     model  = "{lstPics.selected}" 
+ *     value  = "[@src]" />
+ *   <!-- endcontent -->
+ * </a:application>
  * ```
  *
  * @class apf.img

@@ -107,6 +107,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     // JSON parse COULD fail
                     try {
                         state = JSON.parse(strSettings);
+                        var defaultBars = _self.defaultState.bars;
+                        for (var i = 0, l = Math.max(state.bars.length, defaultBars.length); i < l; i++) {
+                            if (!defaultBars[i]) {
+                                state.bars[i] = null;
+                                continue;
+                            }
+                            // Code update adding more dockables
+                            if (!state.bars[i] || state.bars[i].sections.length < defaultBars[i].sections.length)
+                                state.bars[i] = defaultBars[i];
+                       }
                     }
                     catch (ex) {}
                 }
@@ -193,8 +203,8 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     destroy : function(){
         menus.remove("View/Dock Panels/Restore Default");
         menus.remove("View/Dock Panels/~", 200);
-
         this.layout.clearState();
+        this.$destroy();
     },
 
     register : function(name, type, options, getPage){

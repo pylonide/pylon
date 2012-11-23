@@ -278,8 +278,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             var glue  = end + start;
 
             var c = array.length;
+            var i = 0;
             var arrN = [];
-            while(c--) { arrN.unshift(c); }
+            while(i < c) { arrN.push(i++); }
 
             data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
                 + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
@@ -547,35 +548,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         return false;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            if (item.enable)
-                item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            if (item.disable)
-                item.disable();
-        });
-    },
-
     destroy : function(){
         commands.removeCommandByName("gotofile");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
         winGoToFile.destroy(true, true);
-        this.nodes = [];
-        
+        this.$destroy();
+
         ide.removeEventListener("init.ext/editors/editors", this.$initEditorExt);
         ide.removeEventListener("extload", this.$extLoad);
         ide.removeEventListener("closefile", this.$closeFile);
         ide.removeEventListener("newfile", this.$newFile);
         ide.removeEventListener("removefile", this.$removeFile);
-        
         ide.removeEventListener("closepopup", this.$closepopup);
         ide.removeEventListener("beforewatcherchange", this.$beforewatcherchange);
     }

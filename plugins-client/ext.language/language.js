@@ -26,6 +26,7 @@ var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 var keyhandler = require("ext/language/keyhandler");
 var jumptodef = require("ext/language/jumptodef");
+var menus = require("ext/menus/menus");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
@@ -37,7 +38,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Language Services",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, code],
+    deps    : [editors, code, menus],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -118,6 +119,10 @@ module.exports = ext.register("ext/language/language", {
                     this.$startWorker_orig();
             };
         }
+    },
+
+    isWorkerEnabled : function () {
+        return !useUIWorker;
     },
 
     isInferAvailable : function() {
@@ -270,20 +275,12 @@ module.exports = ext.register("ext/language/language", {
     },
 
     enable: function () {
-        this.nodes.each(function (item) {
-            item.enable();
-        });
-
-        this.disabled = false;
+        this.$enable();
         this.setPath();
     },
 
     disable: function () {
-        this.nodes.each(function (item) {
-            item.disable();
-        });
-
-        this.disabled = true;
+        this.$disable();
         marker.addMarkers({data:[]}, this.editor);
     },
 
@@ -292,11 +289,7 @@ module.exports = ext.register("ext/language/language", {
         marker.destroy();
         complete.destroy();
         refactor.destroy();
-
-        this.nodes.each(function (item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

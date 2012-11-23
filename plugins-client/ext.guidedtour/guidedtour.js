@@ -430,12 +430,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
     },
 
-    enable: function() {
-        this.nodes.each(function(item) {
-            item.enable();
-        });
-    },
-
     closeTG: function() {
         var _self = this;
         winTourGuide.hide();
@@ -468,19 +462,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             require("ext/sidebar/sidebar").animateToDefaultWidth();
 
         };
-    },
-
-    disable: function() {
-        this.nodes.each(function(item) {
-            item.disable();
-        });
-    },
-
-    destroy: function() {
-        this.nodes.each(function(item) {
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 
