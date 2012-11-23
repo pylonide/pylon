@@ -112,6 +112,10 @@
                 _csrf: <%_csrf%>
             };
 
+            window.onerror = function(m, u, l) {
+                clearSplash();
+            };
+
             // prevent console messages from crashing our app!
             if (typeof window["console"] == "undefined") {
                 var K = function() {};
