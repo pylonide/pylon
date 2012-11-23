@@ -22,8 +22,7 @@ handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
             return callback(null);
         }
         
-        // invoke the callback with the position of the last declared variable
-        callback(data.declarations[data.declarations.length - 1]);
+        callback(data.declarations);
     });
 };
 

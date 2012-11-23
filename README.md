@@ -165,7 +165,7 @@ Cloud9 wouldn't be where it is now without contributions. Feel free to fork and 
 
 If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email. Please indicate a contact person or pull request your CLA relates to so we can quickly process and handle your agreement. Once you've submitted it, you no longer need to send one for subsequent submissions.
 
-Email: cla@c9.io
+Email: CLA@c9.io
 
 Fax: +31 (0) 206388953
 

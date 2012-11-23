@@ -217,18 +217,6 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 if (cmd)
                     _self.removeCommand(cmd);
             });
-        },
-    
-        enable : function(){
-            
-        },
-    
-        disable : function(){
-            
-        },
-    
-        destroy : function(){
-            
         }
     })
 );

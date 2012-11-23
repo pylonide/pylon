@@ -24,24 +24,6 @@ module.exports = ext.register("ext/codecomplete/codecomplete", {
         language.registerLanguageHandler('ext/codecomplete/snippet_completer');
         language.registerLanguageHandler("ext/codecomplete/mode_completer");
         language.registerLanguageHandler('ext/codecomplete/open_files_local_completer');
-    },
-
-    enable : function() {
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function() {
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function() {
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
     }
 });
 

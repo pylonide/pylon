@@ -8,7 +8,8 @@
       autoHideLoading           = "false"
       storage                   = "cookie"
       baseurl                   = "{apf.host ? apf.host : ''}"
-      requested-with-getparam   = "xhr" />
+      requested-with-getparam   = "xhr"
+      csrf-token                = "{'_csrf=' + window.cloud9config._csrf}"/>
 
     <!-- default model -->
     <a:model />
@@ -36,7 +37,7 @@
                 <a:divider skin="c9-divider" visible="false" />
             </a:bar>
         </a:bar>
-        
+
         <a:hsplitbox>
             <a:vsplitbox id="consoleRow" splitter="true">
                 <a:vsplitbox id="searchRow">

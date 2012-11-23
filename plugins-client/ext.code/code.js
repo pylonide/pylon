@@ -955,14 +955,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     enable : function() {
-        if (this.disabled === false)
-            return;
-
-        this.disabled = false;
-
-        this.menus.each(function(item){
-            item.enable();
-        });
+        this.$enable();
 
         this.nodes.each(function(item){
             item.show();
@@ -970,14 +963,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     disable : function() {
-        if (this.disabled)
-            return;
-
-        this.disabled = true;
-
-        this.menus.each(function(item){
-            item.disable();
-        });
+        this.$disable();
 
         this.nodes.each(function(item){
             item.hide();
@@ -992,16 +978,11 @@ module.exports = ext.register("ext/code/code", {
         commands.removeCommands(defaultCommands);
         commands.removeCommands(MultiSelectCommands);
 
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-
         if (this.amlEditor) {
             this.amlEditor.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
-
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

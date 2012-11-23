@@ -321,6 +321,11 @@ Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidenc
     return result;
 };
 
+Scope.prototype.declareAlias = function(kind, originalName, newName) {
+    var vars = this.getVars(kind);
+    vars["_" + newName] = vars["_" + originalName];
+};
+
 Scope.prototype.getVars = function(kind) {
     if (kind)
         return this.vars[kind] = this.vars[kind] || {};
@@ -369,7 +374,7 @@ var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
 handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
 
     var matches = completeUtil.findCompletions(identifier, SCOPE_ARRAY);
     callback(matches.map(function(m) {

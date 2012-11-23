@@ -108,7 +108,12 @@
                 env: <%env%>,
                 settings: <%settingsXml%>,
                 packed: <%packed%>,
-                packedName: <%packedName%>
+                packedName: <%packedName%>,
+                _csrf: <%_csrf%>
+            };
+
+            window.onerror = function(m, u, l) {
+                clearSplash();
             };
 
             // prevent console messages from crashing our app!
@@ -173,7 +178,7 @@
                     aceConfig.set("workerPath", "[%workerUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
-                    
+
                     //Load extensions
                     apf.addEventListener("load", function(){
                         require(plugins, function() {

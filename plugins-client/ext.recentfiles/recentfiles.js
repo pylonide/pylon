@@ -19,9 +19,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     name        : "Recent Files",
     alone       : true,
     type        : ext.GENERAL,
-    deps        : [],
     offline     : false,
-
     nodes       : [],
 
     init : function(){
@@ -164,25 +162,9 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         this.menu.selectNodes("item")[0].disable();
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("File/Open Recent");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

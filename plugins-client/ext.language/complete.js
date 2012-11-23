@@ -31,7 +31,6 @@ var SHOW_DOC_DELAY_MOUSE_OVER = 100;
 var HIDE_DOC_DELAY = 1000;
 var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
-var CONCORDE_DELAY = 70;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 330;
 var MENU_SHOWN_ITEMS = 9;
@@ -95,19 +94,12 @@ function isHtml() {
  * is deleted.
  */
 function replaceText(editor, match) {
-    // Replace text asynchronously in case Concorde didn't update the editor yet
-    setTimeout(function() {
-        asyncReplaceText(editor, match);
-    }, CONCORDE_DELAY);
-}
-
-function asyncReplaceText(editor, match) {
     var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var session = editor.getSession();
     var line = session.getLine(pos.row);
     var doc = session.getDocument();
-    var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+    var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
     
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
@@ -129,7 +121,7 @@ function asyncReplaceText(editor, match) {
     var prefixWhitespace = line.substring(0, i);
     
     // Remove HTML duplicate '<' completions
-    var preId = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+    var preId = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
     if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
         newText = newText.substring(1);
 
@@ -296,13 +288,13 @@ module.exports = {
             
             var docHead;
             if (match.type) {
-                var shortType = _self.$guidToShortString(match.type)
+                var shortType = _self.$guidToShortString(match.type);
                 if (shortType) {
                     match.meta = shortType;
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
                 }
             }
-            var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+            var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
             var trim = match.meta ? " maintrim" : "";
             if (!isInferAvailable || match.icon) {
                 html += '<span class="main' + trim + '"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span>';
@@ -385,7 +377,9 @@ module.exports = {
             txtCompleterDoc.parentNode.hide();
         }
         if (selected && selected.docUrl)
-            this.docElement.innerHTML += '<p><a href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
+            this.docElement.innerHTML += '<p><a' +
+                ' onclick="require(\'ext/preview/preview\').preview(\'' + selected.docUrl + '\'); return false;"' +
+                ' href="' + selected.docUrl + '" target="c9doc">(more)</a></p>';
         this.docElement.innerHTML += '</span>';
     },
 
@@ -537,7 +531,7 @@ module.exports = {
             replaceText(editor, matches[0]);
         }
         else if (matches.length > 0) {
-            var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, matches[0].identifierRegex);
+            var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, matches[0].identifierRegex);
             this.showCompletionBox(matches, identifier);
         }
         else {
