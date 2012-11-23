@@ -450,6 +450,7 @@ handler.analyze = function(doc, ast, callback) {
                         }
                     }
                     else {
+                        node[0].setAnnotation("scope", scope);
                         scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e, inCallback, inLoop);
