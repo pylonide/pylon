@@ -81,31 +81,25 @@ module.exports = ext.register("ext/debugger/debugger", {
             bindKey: {mac: "Command-Return", win: "Ctrl-Return"},
             hint:  "execute selection in interactive window",
             exec: function(editor) {
-                var menu = dock.getButtons("ext/debugger/debugger", "dbInteractive")[0];
-                dock.layout.showMenu(menu.uniqueId);
-                dbInteractive.parentNode.set(dbInteractive);
-
-                txtCode.focus();
-                var range = editor.getSelectionRange();
-                var val = range.isEmpty()
-                    ? editor.session.getLine(range.start.row)
-                    : editor.session.getTextRange(range);
-
-                txtCode.$editor.setValue(val.trim());
-                require("ext/debugger" + "/inspector").consoleTextHandler({keyCode:13,ctrlKey:true});
+                if (apf.activeElement == editor.amlEditor) {
+                    tabConsole.set("tabDbgInteractive");
+                    txtCode.focus();
+                    editor = editor.amlEditor.$editor;
+                    var range = editor.getSelectionRange();
+                    var val = range.isEmpty()
+                        ? editor.session.getLine(range.start.row)
+                        : editor.session.getTextRange(range);
+                    txtCode.$editor.setValue(val.trim(), 1);
+                }
+                require("ext/debugger" + "/inspector").evaluateConsoleText();
             },
             isAvailable: function(editor, event) {
                 if (dbg.state != "stopped")
                     return false;
                 if (event instanceof KeyboardEvent &&
-                  (!apf.activeElement || !apf.activeElement.$editor || apf.activeElement.$editor.path != "ext/code/code"))
+                  (!apf.activeElement || !apf.activeElement.$editor || apf.activeElement.tagName != "a:codeeditor"))
                     return false;
                 return true;
-            },
-            findEditor: function(editor) {
-                if (editor && editor.amlEditor)
-                    return editor.amlEditor.$editor;
-                return editor;
             }
         });
 
@@ -122,11 +116,11 @@ module.exports = ext.register("ext/debugger/debugger", {
         var name = "ext/debugger/debugger"; //this.name
 
         dock.addDockable({
-            expanded : 1,
-            width    : 300,
+            expanded : -1,
+            width    : 330,
             sections : [{
                 height     : 30,
-                width      : 150,
+                width      : 220,
                 minHeight  : 30,
                 noflex     : true,
                 draggable  : false,
@@ -155,7 +149,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 height : 300,
                 flex : 3,
                 buttons : [
-                    { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
+                    { caption: "Interactive", ext : [name, "dbgWatch"], hidden: true},
                     { caption: "Variables", ext : [name, "dbgVariable"], hidden: true}
                 ]
             }, {
@@ -183,8 +177,8 @@ module.exports = ext.register("ext/debugger/debugger", {
         breakpoints.hook();
         sources.hook();
 
-        dock.register(name, "dbInteractive", {
-            menu : "Debugger/Interactive",
+        dock.register(name, "dbgWatch", {
+            menu : "Debugger/Watch",
             primary : {
                 backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
                 defaultState: { x: -8, y: -130 },
@@ -192,7 +186,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             }
         }, function(type) {
             ext.initExtension(_self);
-            return dbInteractive;
+            return dbgWatch;
         });
 
         dock.register(name, "dbgVariable", {
@@ -216,6 +210,8 @@ module.exports = ext.register("ext/debugger/debugger", {
 
             return dbgVariable;
         });
+
+
 
         function onAttach(debugHandler, pid, runner) {
             if (!_self.inited)
@@ -268,6 +264,15 @@ module.exports = ext.register("ext/debugger/debugger", {
     init : function(amlNode) {
         sources.init();
         breakpoints.init();
+
+        tabConsole.add("Interactive", "tabDbgInteractive");
+        tabDbgInteractive.insertBefore(dbgInteractive);
+        tabConsole.addEventListener("afterswitch", function(e){
+            if (e.currentTarget.activepage == "tabDbgInteractive") {
+                apf.layout.forceResize(dbgInteractive.$ext);
+            }
+        });
+        apf.xmldb.setAttribute(tabDbgInteractive, "disabled", "{!dbg.state}");
     },
 
     activate : function(){

@@ -189,7 +189,7 @@ BODY {
 }
 
 .text.interactive_output {
-    border-top: 1px solid #999;
+    border-right: 1px solid #999;
     padding: 5px 10px;
     font-family: menlo,courier new,fixed,swiss,sans-serif;
     font-size: 12px;

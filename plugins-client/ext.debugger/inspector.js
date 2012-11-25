@@ -78,11 +78,8 @@ exports.applyChange = function(xmlNode){
     }
 };
 
-exports.consoleTextHandler = function(e) {
-    if (!(e.keyCode == 13 && e.ctrlKey))
-        return;
-
-    var expression = txtCode.getValue().trim();
+exports.evaluateConsoleText = function(expression) {
+    expression = expression || txtCode.getValue().trim();
     if (!expression)
         return;
 

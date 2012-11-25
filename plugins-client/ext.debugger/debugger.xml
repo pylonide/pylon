@@ -19,12 +19,12 @@
                   command  = "stepover"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:button id="btnStepInto" tooltip="Step Into"
-                  icon     = "stepinto.png" 
+                  icon     = "stepinto.png"
                   skin     = "c9-sidepanelsbutton"
-                  command  = "stepinto" 
+                  command  = "stepinto"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:button id="btnStepOut" tooltip="Step Out"
-                  icon     = "stepback.png" 
+                  icon     = "stepback.png"
                   skin     = "c9-sidepanelsbutton"
                   command  = "stepout"
                   disabled = "{dbg.state != 'stopped'}" />
@@ -38,7 +38,7 @@
                   value    = "[{mdlDbgBreakpoints}::@breakOnExceptions]"/>
                 <a:divider skin="c9-divider" />
                 <!--<a:button id="btnStepThrough" tooltip="Step Through"
-                  icon     = "stepthrough.png" 
+                  icon     = "stepthrough.png"
                   skin     = "c9-sidepanelsbutton"
                   command  = "stepout"
                   disabled = "{dbg.state != 'stopped'}" />-->
@@ -67,71 +67,31 @@
                 </a:each>
             </a:datagrid>
         </a:page>
-        <a:page id="dbInteractive" caption="Interactive" render="runtime">
-            <a:toolbar>
-                <a:bar border="0 0 1 0">
-                    <a:button
-                      disabled = "{!dbg.state}"
-                      caption  = "Execute" 
-                      tooltip  = "Ctrl+Enter"
-                      onclick  = "
-                        require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
-                      " />
-                    <a:button
-                      disabled2 = "{!txtCode.value.trim()}"
-                      caption  = "Clear" 
-                      onclick  = "
-                        txtCode.clear();
-                        txtInteractiveOutput.clear();
-                      " />
-                    <a:divider skin2="c9-divider"/>
-                    <a:dropdown id="lstScripts"
-                      skin2       = "black_dropdown"
-                      margin     = "3 0 0 4"
-                      width      = "120"
-                      maxitems   = "10"
-                      model      = "mdlDbgSources"
-                      disabled   = "{dbg.state == null}" 
-                      each       = "[file]"
-                      caption    = "[@text]"
-                      autoselect = "false"
-                      icon       = "debugger/file_obj.gif" />
-                </a:bar>
-            </a:toolbar>
-            <a:vsplitbox anchors="29 0 0 0" splitter="true" class="topsplitter">
-                <a:codeeditor id="txtCode" 
-                  disabled          = "{!dbg.state}"
-                  onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
-                  realtime          = "true"
-                  syntax            = "javascript"
-                  border            = "0"
-                  minheight         = "30"
-                  value             = "[auto/console/input]"
-                  softtabs          = "[editors/code/@softtabs]"
-                  tabsize           = "[editors/code/@tabsize]"
-                  scrollspeed       = "[editors/code/@scrollspeed]"
-                  theme             = "[editors/code/@theme]"
-                  selectstyle       = "[editors/code/@selectstyle]"
-                  activeline        = "[editors/code/@activeline]"
-                  showinvisibles    = "[editors/code/@showinvisibles]"
-                  animatedscroll    = "[editors/code/@animatedscroll]"
-                  fontsize          = "[editors/code/@fontsize]"
-                  showprintmargin   = "false"
-                  caching           = "false"
-                  highlightselectedword = "[editors/code/@highlightselectedword]"
-                  printmargincolumn = "0" />
-                <a:text id="txtInteractiveOutput"
-                  class      = "interactive_output"
-                  scrolldown = "true"
-                  focussable = "true"
-                  textselect = "true" 
-                  height     = "60"
-                  scrollbar  = "sbShared 20 2 2" />
-            </a:vsplitbox>
+        <a:page id="dbgWatch" caption="Watch" render="runtime">
+           <a:datagrid id="dgVars2"
+              anchors    = "0 0 0 0"
+              border     = "0"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
+              options    = "size|move"
+              prerender  = "false"
+              caching    = "false"
+              model      = "[{dbg.activeframe}::vars]"
+              disabled   = "{dbg.state != 'stopped'}"
+              loading-message = "Calculating...">
+                <a:actions />
+                <a:each match="[item|globals]" sort="[@name]">
+                    <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dbg.activeframe})}"/>
+                    <a:insert match="[item[@children='true']]" get="{adbg.loadObject(dbg, %[.])}" />
+                    <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
+                    <a:column caption="Value" value="[@value]" width="60%" />
+                    <a:column caption="Type" value="[@type]" width="50"/>
+                </a:each>
+            </a:datagrid>
         </a:page>
         <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"
-              anchors    = "0 0 0 0" 
+              anchors    = "0 0 0 0"
               border     = "0"
               class      = "noscrollbar"
               scrollbar  = "sbShared 20 2 2"
@@ -173,5 +133,71 @@
             </a:list>
         </a:page>
     </a:tab>
-    
+    <a:hsplitbox anchors="0 0 0 0"  flex = "1" splitter="true" id="dbgInteractive">
+        <a:vbox width="400" anchors="29 0 0 0"  >
+            <a:toolbar>
+                <a:bar border="0 0 1 0">
+                    <a:button
+                      caption  = "Execute"
+                      tooltip  = "Ctrl+Enter"
+                      onclick  = "
+                        require('ext/debugger/inspector').evaluateConsoleText();
+                        txtCode.focus();
+                      " />
+                    <a:button
+                      caption  = "Clear"
+                      onclick  = "
+                        txtCode.clear();
+                        txtInteractiveOutput.clear();
+                        txtCode.focus();
+                      " />
+                    <a:divider skin2="c9-divider"/>
+                    <a:dropdown id="lstScripts"
+                      skin2       = "black_dropdown"
+                      margin     = "3 0 0 4"
+                      width      = "220"
+                      maxitems   = "50"
+                      model      = "mdlDbgSources"
+                      disabled   = "{dbg.state == null}"
+                      each       = "[file]"
+                      caption    = "[@text]"
+                      autoselect = "false"
+                      icon       = "debugger/file_obj.gif" />
+                </a:bar>
+            </a:toolbar>
+            <a:vbox anchors="0 0 0 0" flex="1" >
+                <a:text id="txtInteractiveOutput"
+                  class      = "interactive_output"
+                  scrolldown = "true"
+                  focussable = "true"
+                  textselect = "true"
+                  flex       = "1"
+                  anchors    = "0 0 0 0"
+                  scrollbar  = "sbShared 20 2 2" />
+            </a:vbox>
+        </a:vbox>
+        <a:vsplitbox >
+            <a:codeeditor id="txtCode"
+              realtime          = "true"
+              syntax            = "javascript"
+              border            = "0"
+              flex              = "1"
+              minheight         = "30"
+              value             = "[{require('core/settings').model}::auto/console/input]"
+              softtabs          = "[{require('core/settings').model}::editors/code/@softtabs]"
+              tabsize           = "[{require('core/settings').model}::editors/code/@tabsize]"
+              scrollspeed       = "[{require('core/settings').model}::editors/code/@scrollspeed]"
+              theme             = "[{require('core/settings').model}::editors/code/@theme]"
+              selectstyle       = "[{require('core/settings').model}::editors/code/@selectstyle]"
+              activeline        = "[{require('core/settings').model}::editors/code/@activeline]"
+              showinvisibles    = "[{require('core/settings').model}::editors/code/@showinvisibles]"
+              animatedscroll    = "[{require('core/settings').model}::editors/code/@animatedscroll]"
+              fontsize          = "[{require('core/settings').model}::editors/code/@fontsize]"
+              showprintmargin   = "false"
+              caching           = "false"
+              highlightselectedword = "[{require('core/settings').model}::editors/code/@highlightselectedword]"
+              printmargincolumn = "0" />
+        </a:vsplitbox>
+    </a:hsplitbox>
+
 </a:application>

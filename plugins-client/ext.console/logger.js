@@ -246,7 +246,8 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     //      so we have to trigger the scrollbar update ourselves
     if (window["tabConsole"]) {
         setTimeout(function(){
-            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+            var scrollbar = tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0]
+            scrollbar && scrollbar.$update();
         }, 1000);
     }
 };
