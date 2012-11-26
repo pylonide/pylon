@@ -26,7 +26,7 @@ outlineHandler.handlesLanguage = function(language) {
 outlineHandler.outline = function(doc, ast, callback) {
     if (!ast)
         return callback();
-    callback({ body : extractOutline(doc, ast) });
+    callback({ body : outlineSync(doc, ast) });
 };
     
 function fargsToString(fargs) {
@@ -87,7 +87,7 @@ function fixStringPos(doc, node) {
 }
 
 // This is where the fun stuff happens
-function extractOutline(doc, node) {
+var outlineSync = outlineHandler.outlineSync = function(doc, node, includeProps) {
     var results = [];
     node.traverseTopDown(
         // e.x = function(...) { ... }  -> name is x
@@ -99,7 +99,7 @@ function extractOutline(doc, node) {
                 name: name + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 displayPos: b.e.cons === 'PropAccess' && getIdentifierPosBefore(doc, this[1].getPos()) || b.e.getPos(),
-                items: extractOutline(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         },
@@ -110,7 +110,7 @@ function extractOutline(doc, node) {
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 displayPos: b.x.getPos(),
-                items: extractOutline(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         },
@@ -121,12 +121,14 @@ function extractOutline(doc, node) {
                 name: b.x.value + fargsToString(b.fargs),
                 pos: this[1].getPos(),
                 displayPos: getIdentifierPosBefore(doc, this.getPos()),
-                items: extractOutline(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         },
-        /* UNDONE: properties in outline
         'PropertyInit(x, e)', function(b) {
+            if (!includeProps)
+                return;
+            
             results.push({
                 icon: 'property',
                 name: b.x.value,
@@ -135,9 +137,8 @@ function extractOutline(doc, node) {
             });
             return this;
         },
-        */
         'VarDeclInit(x, e)', 'ConstDeclInit(x, e)', function(b) {
-            var items = extractOutline(doc, b.e);
+            var items = outlineSync(doc, b.e, includeProps);
             if (items.length === 0)
                 return this;
             results.push({
@@ -150,7 +151,7 @@ function extractOutline(doc, node) {
             return this;
         },
         'PropertyInit(x, e)', function(b) {
-            var items = extractOutline(doc, b.e);
+            var items = outlineSync(doc, b.e, includeProps);
             if (items.length === 0)
                 return this;
             results.push({
@@ -166,7 +167,7 @@ function extractOutline(doc, node) {
             var name = expressionToName(b.x);
             if (!name)
                 return false;
-            var items = extractOutline(doc, b.e);
+            var items = outlineSync(doc, b.e, includeProps);
             if (items.length === 0)
                 return this;
             results.push({
@@ -188,7 +189,7 @@ function extractOutline(doc, node) {
                 name: eventHandler.s[0].value,
                 pos: this.getPos(),
                 displayPos: fixStringPos(doc, eventHandler.s),
-                items: eventHandler.body && extractOutline(doc, eventHandler.body)
+                items: eventHandler.body && outlineSync(doc, eventHandler.body, includeProps)
             });
             return this;
         },
@@ -207,7 +208,7 @@ function extractOutline(doc, node) {
                         icon: 'method',
                         name: name + '[callback]' + fargsToString(b.fargs),
                         pos: this.getPos(),
-                        items: extractOutline(doc, b.body)
+                        items: outlineSync(doc, b.body, includeProps)
                     });
                     foundFunction = true;
                 }
@@ -223,13 +224,13 @@ function extractOutline(doc, node) {
                 name: b.name.value + fargsToString(b.fargs),
                 pos: this.getPos(),
                 displayPos: b.name.getPos(),
-                items: extractOutline(doc, b.body)
+                items: outlineSync(doc, b.body, includeProps)
             });
             return this;
         }
     );
     return results;
-}
+};
 
 var tryExtractEventHandler = outlineHandler.tryExtractEventHandler = function(node, ignoreBind) {
     var result;

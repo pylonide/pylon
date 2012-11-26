@@ -23,6 +23,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
+var themes = require("ext/themes/themes");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
@@ -427,11 +428,6 @@ module.exports = ext.register("ext/code/code", {
                 e.model.setQueryValue("editors/code/@behaviors", "true");
                 e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
             }
-
-            // pre load theme
-            var theme = e.model.queryValue("editors/code/@theme");
-            if (theme)
-                require([theme], function() {});
 
             // pre load custom mime types
             _self.getCustomTypes(e.model);
@@ -867,36 +863,84 @@ module.exports = ext.register("ext/code/code", {
         });
 
         // display feedback while loading files
-        var isOpen, bgMessage, animationEndTimeout;
+        var isOpen, bgMessage, loaderProgress, updateProgressInterval, animationEndTimeout;
         var checkLoading = function(e) {
             if (!_self.amlEditor.xmlRoot)
                 return;
-            var loading = _self.amlEditor.xmlRoot.hasAttribute("loading");
+            var xmlRoot = _self.amlEditor.xmlRoot;
+            var loading = xmlRoot.hasAttribute("loading");
             var container = _self.amlEditor.$editor.container;
 
-            if (loading) {
-                if (!bgMessage || !bgMessage.parentNode) {
-                    bgMessage = bgMessage|| document.createElement("div");
-                    container.parentNode.appendChild(bgMessage);
-                }
-                var isDark = container.className.indexOf("ace_dark") != -1;
-                bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
+            // loading calcs
+            var padding = container.offsetWidth / 5;
+            var loadingWidth = container.offsetWidth - 2*padding;
 
-                bgMessage.textContent = "Loading " + _self.amlEditor.xmlRoot.getAttribute("name");
+            function updateProgress (progress) {
+                xmlRoot.setAttribute("loading_progress", progress);
+                loaderProgress.style.width = (progress * loadingWidth / 100) + "px";
+            }
+
+            function clearProgress() {
+                xmlRoot.setAttribute("loading_progress", 0);
+                loaderProgress.style.width = 0 + "px";
+            }
+
+            if (loading) {
+                var theme = themes.getActiveTheme();
+                if (!bgMessage || !bgMessage.parentNode) {
+                    bgMessage = bgMessage || document.createElement("div");
+                    bgMessage.className = "ace_smooth_loading";
+                    bgMessage.style.backgroundColor = theme ? theme.bg : "gray";
+                    container.parentNode.appendChild(bgMessage);
+
+                    var loaderBg = document.createElement("div");
+                    loaderBg.className = "loading_bg";
+                    loaderBg.style.width = loadingWidth + "px";
+                    loaderBg.style.left = padding + "px";
+                    loaderBg.style.top = 0.4 * container.offsetHeight + "px";
+                    bgMessage.appendChild(loaderBg);
+
+                    loaderProgress = document.createElement("div");
+                    loaderProgress.className = "loading_progress";
+                    loaderProgress.style.left = padding + "px";
+                    loaderProgress.style.top = 0.4 * container.offsetHeight + "px";
+                    bgMessage.appendChild(loaderProgress);
+                    updateProgress(10);
+                }
                 container.style.transitionProperty = "opacity";
-                container.style.transitionDuration = "300ms";
+                container.style.transitionDuration = "100ms";
                 container.style.pointerEvents = "none";
                 container.style.opacity = 0;
                 isOpen = true;
+
+                clearInterval(updateProgressInterval);
+                updateProgressInterval = setInterval(function () {
+                    var progress = parseFloat(xmlRoot.getAttribute("loading_progress"), 10);
+                    var step;
+                    if (progress < 35)
+                        step = 3;
+                    else if (progress < 70)
+                        step = 1;
+                    else if (progress < 90)
+                        step = 0.25;
+                    if (step)
+                        updateProgress(progress + step);
+                }, 30);
                 clearTimeout(animationEndTimeout);
             } else if (isOpen) {
-                isOpen = false;
-                container.style.opacity = 1;
-                container.style.pointerEvents = "";
+                clearInterval(updateProgressInterval);
+                updateProgress(100);
+                setTimeout(function () {
+                    isOpen = false;
+                    clearProgress();
+                    container.style.opacity = 1;
+                    container.style.pointerEvents = "";
+                }, 40);
+
                 animationEndTimeout = setTimeout(function() {
                     if (bgMessage.parentNode)
                         bgMessage.parentNode.removeChild(bgMessage);
-                }, 350);
+                }, 100);
             }
         };
 

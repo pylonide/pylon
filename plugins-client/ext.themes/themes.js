@@ -23,8 +23,9 @@ module.exports = ext.register("ext/themes/themes", {
     nodes   : [],
     
     defaultTheme : "ace/theme/textmate", //Default Theme
-    currTheme : "", 
-    saved   : false,
+    currTheme    : "",
+    activeTheme  : null,
+    saved        : false,
 
     register : function(themes){
         var _self = this;
@@ -110,6 +111,8 @@ module.exports = ext.register("ext/themes/themes", {
                 _self.setThemedGUI(path);
             }, 10);
         }
+
+        this.activeTheme = theme;
         
         this.isDark = theme.isDark;
         
@@ -157,6 +160,8 @@ module.exports = ext.register("ext/themes/themes", {
         
         var bg = apf.getStyleRule("." + aceClass + " .ace_gutter", "backgroundColor");
         var fg = apf.getStyleRule("." + aceClass + " .ace_gutter", "color");
+        theme.bg = bg;
+        theme.fg = fg;
         
         apf.importStylesheet([
             (apf.isGecko ? [] : 
@@ -214,6 +219,10 @@ module.exports = ext.register("ext/themes/themes", {
             
             _self.setThemedGUI(theme);
         });
+    },
+
+    getActiveTheme : function() {
+        return this.activeTheme;
     },
     
     enable : function(){

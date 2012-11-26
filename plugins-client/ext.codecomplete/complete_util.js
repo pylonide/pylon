@@ -75,7 +75,7 @@ function fetchText(staticPrefix, path) {
 /** @deprecated Use retrievePrecedingIdentifier */
 exports.retrievePreceedingIdentifier = function() {
     console.error("Deprecated: 'retrievePreceedingIdentifier' - use 'retrievePrecedingIdentifier' instead"); 
-    retrievePrecedingIdentifier.apply(this, arguments);
+    return retrievePrecedingIdentifier.apply(null, arguments);
 };
 exports.retrievePrecedingIdentifier = retrievePrecedingIdentifier;
 exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;

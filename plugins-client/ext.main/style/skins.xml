@@ -1261,7 +1261,7 @@
             width: 18px;
             height: 18px;
         }
-        
+
         .dim14-14.btn_icon_only {
             width: 14px;
             height: 14px;
@@ -2882,7 +2882,7 @@
 
             text-shadow   : #068e02 0px 1px 0px;
         }
-        
+
         .btn-default-css3.btn-green2 {
             background-image: linear-gradient(bottom, #088e04 0%, #30a12d 100%);
             background-image: -o-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
@@ -2892,7 +2892,7 @@
 
             text-shadow   : rgba(0,0,0,0.25) 0px 1px 0px;
         }
-        
+
         .btn-default-css3Over.btn-green {
             background-image: linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
             background-image: -o-linear-gradient(bottom, rgb(53,164,51) 0%, rgb(109,183,67) 100%);
@@ -2916,7 +2916,7 @@
             background-image: -webkit-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
             background-image: -ms-linear-gradient(bottom, rgb(73,165,20) 0%, rgb(2,141,0) 100%);
         }
-        
+
         .btn-default-css3Down.btn-green2 {
             background-image: linear-gradient(bottom, #30a12d 0%, #088e04 100%);
             background-image: -o-linear-gradient(bottom, #30a12d 0%, #088e04 100%);
@@ -2935,7 +2935,7 @@
             text-shadow   : #3da110 0px 1px 0px;
             color: #037a01;
         }
-        
+
         .btn-default-css3Disabled.btn-green2 {
             background-image: linear-gradient(bottom, #088e04 0%, #30a12d 100%);
             background-image: -o-linear-gradient(bottom, #088e04 0%, #30a12d 100%);
@@ -3029,7 +3029,7 @@
             border-top: 1px solid #dd5757;
         }
         /*-----------*/
-        
+
         .no-bold.btn-default-css3 {
             font-weight: normal;
             color: #cecece;
@@ -3066,11 +3066,11 @@
         .win-deploy-target .btn-default-simple {
             font-size          : 11px;
         }
-        
+
         .size-13.btn-default-simple {
             font-size: 13px;
         }
-        
+
         .no-bold.btn-default-simple {
             font-weight: normal;
             color: #cecece;
@@ -3353,11 +3353,11 @@
             color : #C0C0C0;
             top         : 0;
         }
-        
+
         .cbblack.cbcontainer.dark-bg span {
             text-shadow: #000 0px 1px 0px;
         }
-        
+
         .cbblack.cbcontainer .checkbox {
             width      : 16px;
             height     : 17px;
@@ -3392,11 +3392,11 @@
         .cbblack.cbcontainerDisabled .checkbox {
             background-position : 0 -102px;
         }
-        
+
         .cbblack.cbcontainerDisabled.cbcontainerChecked .checkbox {
             background-position : 0 -119px;
         }
-        
+
         .cbblack.cbcontainerDisabled span {
             color : #bebebe;
         }
@@ -3549,20 +3549,19 @@
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_smooth_loading {
-            background-image: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: linear-gradient(180deg,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
             -moz-box-sizing: border-box;
             box-sizing: border-box;
-            color: dimgray;
             height: 100%;
-            padding-left: 10px;
         }
-        .ace_smooth_loading.ace_dark {
-            background-image: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);            
-            background-image: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);            
-            background-image: linear-gradient(180deg,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);            
-            color: lightgray;
+        .ace_smooth_loading .loading_bg {
+            background: url(images/loader_progressbar_bg.png) repeat-x;
+            position: absolute;
+            height: 1px;
+        }
+        .ace_smooth_loading .loading_progress {
+            background-color: #38A3FF;
+            position: absolute;
+            height: 1px;
         }
         .ace_editor {
             position: relative;
@@ -5141,11 +5140,11 @@
             padding: 0 18px 0 0;
             position: relative;
         }
-        
+
         .single-arrow.dropdown-dark-glossy {
             padding: 0 25px 0 0;
         }
-        
+
         .dropdown-dark-glossy .label {
             color: #C0DABE;
             display: inline-block;
@@ -5154,7 +5153,7 @@
             overflow: hidden;
             padding: 0 0 0 8px;
         }
-        
+
         .dropdown-dark-glossy .button {
             background: url(images/dropdown-dark-glossy/button.png) no-repeat 3px 6px;
             display: inline-block;
@@ -5164,12 +5163,12 @@
             top: 0;
             width: 16px;
         }
-        
+
         .single-arrow.dropdown-dark-glossy .button {
             background: url(images/dropdown-dark-glossy/arrow.png) no-repeat 5px 10px;
             width: 23px;
         }
-        
+
         .dropdown-dark-glossy .button:before {
             background: url(images/dropdown-dark-glossy/divider.png) no-repeat 50% 0;
             content: "";
@@ -5771,19 +5770,19 @@
         .menu-bk .label {
             color: #F1F1F1;
         }
-        
+
         .label.graylabel {
             color: #CECECE;
         }
-        
+
         .label.size-12 {
             font-size: 12px;
         }
-        
+
         .label.arial {
             font-family: Arial;
         }
-        
+
         .label.dark-bg {
             text-shadow: #000 0px 1px 0px;
         }
@@ -5890,12 +5889,12 @@
             text-align : center;
             background : transparent;
         }
-        
+
         .searchresults span strong {
             color: #76A913;
         }
-        
-        .searchresults > div.selected > span > strong, 
+
+        .searchresults > div.selected > span > strong,
         .treeOutline .item-fix.selected > span > strong,
         .searchresults .selected span strong {
             color: #DCFFA0;
@@ -8686,16 +8685,16 @@
             box-shadow: none;
             height: 23px;
         }
-        .btnRun .main { 
-            background-position: 0px -434px; 
+        .btnRun .main {
+            background-position: 0px -434px;
             margin-right: 3px;
             overflow: visible;
         }
         .btnRun .main.c9-dropdown-btnOver {
-            background-position: 0px -457px; 
+            background-position: 0px -457px;
         }
         .btnRun .main:after {
-            background-position: -397px -424px; 
+            background-position: -397px -424px;
             content: "";
             display: block;
             left: 100%;
@@ -8712,29 +8711,29 @@
             top: 2px;
         }
         .btnRun .main.c9-dropdown-btnOver:after {
-            background-position: -397px -457px; 
+            background-position: -397px -457px;
         }
-        .btnRun .c9-dropdown-btnDown.main { 
-            background-position: 0px -490px; 
+        .btnRun .c9-dropdown-btnDown.main {
+            background-position: 0px -490px;
         }
-        .btnRun .c9-dropdown-btnDown.main:after { 
-            background-position: -397px -490px; 
+        .btnRun .c9-dropdown-btnDown.main:after {
+            background-position: -397px -490px;
         }
 
-        .btnRun .arrow { 
-            background-position: -400px -424px; 
-            width: 16px; 
+        .btnRun .arrow {
+            background-position: -400px -424px;
+            width: 16px;
         }
-        .btnRun .c9-dropdown-btnOver.arrow { 
-            background-position: -400px -457px; 
+        .btnRun .c9-dropdown-btnOver.arrow {
+            background-position: -400px -457px;
         }
-        .btnRun .c9-dropdown-btnDown.arrow { 
-            background-position: -400px -490px; 
+        .btnRun .c9-dropdown-btnDown.arrow {
+            background-position: -400px -490px;
         }
         .btnRun .arrow .c9-arrow {
             display: none;
         }
-        
+
         .testpanel .fm-content .c9-header-plus {
             top: -31px;
             right: 32px;
@@ -10460,11 +10459,11 @@
     .editor_tab.hidetabs .btnsesssioncontainer:hover .tab_middle{
         text-indent: 0;
     }*/
-    
+
     .editor_tab:not(.empty) .editor_bg {
         display: none;
     }
-    
+
     .editor_tab:not(.empty) {
         background: #F0F0F0 none;
     }
@@ -11623,7 +11622,7 @@
             position : relative;
             height   : 25px;
         }
-        
+
         .dark-bg.searchbox_textbox {
             height: auto;
             -webkit-box-shadow:  0px 0 8px 0 rgba(0, 0, 0, 0.6);
@@ -11631,7 +11630,11 @@
             border-radius: 3px;
             border          : 1px solid #000;
         }
-        
+
+        .docs_searchbox.searchbox_textbox {
+            height: 34px;
+        }
+
         .searchbox_textbox .sbtb_middle {
             height           : 19px;
             padding          : 2px 25px 2px 4px;
@@ -11650,7 +11653,7 @@
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
         }
-        
+
         .dark-bg.searchbox_textbox .sbtb_middle{
             height : auto !important;
             padding : 4px 7px 3px 7px;
@@ -11663,7 +11666,15 @@
             outline         : none;
             text-overflow   : ellipsis;
         }
-        
+
+        .docs_searchbox.searchbox_textbox .sbtb_middle {
+            height: 28px;
+            -webkit-box-shadow: inset 0px 1px 4px 0px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px #ffffff; ;
+            box-shadow: inset 0px 1px 4px 0px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px #ffffff; ;
+            background: #ffffff;
+            border: 1px solid #d2d2d2;
+        }
+
         .searchbox_textbox .sbtb_middle INPUT {
             border           : 0;
             height           : 17px;
@@ -11687,16 +11698,26 @@
             width: 100%;
             padding : 0;
         }
-        
+
+        .docs_searchbox.searchbox_textbox.searchbox_textboxInitial .sbtb_middle INPUT {
+            color: #acacac;
+        }
+
+        .docs_searchbox.searchbox_textbox .sbtb_middle INPUT {
+            margin-top: 6px;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+
         .searchbox_textbox.small_font .sbtb_middle,
-            .searchbox_textbox.small_font .sbtb_middle INPUT {
+        .searchbox_textbox.small_font .sbtb_middle INPUT {
             font-size: 11px;
         }
 
         .searchbox_textboxInitial .sbtb_middle INPUT {
             color : #777777;
         }
-        
+
         .dark-bg.searchbox_textboxInitial .sbtb_middle input {
             color: #bababa;
             text-shadow : #ffffff 0px 1px 0px;
@@ -11722,6 +11743,23 @@
             background-position : 0 -18px;
         }
 
+        .docs_searchbox.searchbox_textbox .sbtb_icon {
+            background-image: url(images/search-icon.png);
+            top: 9px;
+            right: 9px;
+            width: 20px;
+            left: auto;
+            display: block !important;
+        }
+
+        .docs_searchbox.searchbox_textboxFocus .sbtb_icon {
+            background-position: 0 0;
+        }
+
+        .docs_searchbox.searchbox_textbox.searchbox_hasValue .sbtb_icon {
+            display: none !important;
+        }
+
         .searchbox_textboxFocus .btnclose {
             position : absolute;
             right : 8px;
@@ -11730,11 +11768,21 @@
             height : 14px;
             background : url(images/btnclose.gif) no-repeat 0 0;
             display : none;
-            cursor: pointer;
         }
 
         .searchbox_textboxFocus .btnclose:hover{
             background-position : 0 -14px;
+        }
+
+        .docs_searchbox.searchbox_textbox .btnclose {
+            top: 11px;
+            right: 8px;
+            background : url(images/close-search-icon.png) no-repeat 0 0;
+            display: none;
+        }
+
+        .docs_searchbox.searchbox_textbox .btnclose:hover {
+            background-position: 0 -20px;
         }
     ]]></a:style>
 
@@ -11742,11 +11790,11 @@
         <a:main input="div[2]/input" button="div[3]">
             <div class="searchbox_textbox">
                 <div class="sbtb_arrow"/>
-                <!--div class="sbtb_icon"/-->
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
                 <div class="btnclose"> </div>
+                <div class="sbtb_icon"/>
             </div>
         </a:main>
     </a:presentation>
@@ -12278,6 +12326,7 @@
         .filemgr-tree:not(.treeOutline) .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
+            top: 2px;
         }
         .treeOutline .item-fix.root.min .item SPAN {
             background-image:url(images/tree_close_arrow_small.png) !important;
@@ -12313,16 +12362,22 @@
         }
 
         .filemgr-tree .item LABEL .caption {
+            width: 123px;
             font-family : Tahoma, Arial;
             font-size   : 11px;
             display:block;
             position:relative;
             overflow:hidden;
             height:16px;
-            padding:1px 0 0 23px;
+            padding:1px 0 0 20px;
             text-decoration:none;
             white-space: nowrap;
         }
+
+        .filemgr-tree .folder .item label .caption {
+            top: -2px;
+        }
+
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
             color       : #101010;
         }
@@ -12465,13 +12520,39 @@
         .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
             opacity : 0.5;
         }
+
+        .filemgr-tree .item label {background-image:url(icons/file_tree/file_tree.png);background-repeat:no-repeat}
+        .filemgr-tree div.page_white_wrench label{background-position:0px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_text label{background-position:-16px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_ruby label{background-position:0px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_picture label{background-position:-16px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_php label{background-position:-32px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_h label{background-position:-32px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_go label{background-position:0px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_flash label{background-position:-16px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cup label,div.page_white_cup span{background-position:-32px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_csharp label{background-position:-48px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cplusplus label{background-position:-48px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_coldfusion label{background-position:-48px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code_red label{background-position:0px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code label{background-position:-16px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_c label{background-position:-32px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_actionscript label{background-position:-48px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_acrobat label{background-position:-64px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white label{background-position:-64px -16px;width:16px;height:16px;}
+        .filemgr-tree div.image label{background-position:-80px 0px;width:14px;height:14px;}
+        .filemgr-tree div.html label{background-position:-64px -32px;width:16px;height:11px;}
+        .filemgr-tree div.css label{background-position:-64px -43px;width:16px;height:11px;}
+        .filemgr-tree div.folder label{background-position:0px -64px;width:15px;height:15px;}
+
+        .filemgr-tree div.item-fix div.label-content {padding-left: 5px};
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
         }
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
-            padding:2px 0 0 23px;
+            padding:2px 0 0 20px;
         }
 
         #txt_rename {
@@ -13122,7 +13203,7 @@
                 line-height: 24px;
                 border-radius: 3px;
             }
-            
+
             .addnew_btnOver {
                 background-image: -webkit-linear-gradient(top, #3C3C3C 0, #343434 50%, #272727 51%, #333 100%);
                 background-image:    -moz-linear-gradient(top, #3C3C3C 0, #343434 50%, #272727 51%, #333 100%);
@@ -13131,7 +13212,7 @@
                 box-shadow: 0 1px 0 0 rgba(237,237,237,.15) inset;
                 background-color: #292929;
             }
-    
+
             .addnew_btn .icon {
                 top: 3px;
                 display: inline-block;
@@ -13142,7 +13223,7 @@
                 background-position: 0 0;
                 background-repeat: no-repeat;
             }
-            
+
             .addnew_btn .label {
                 position: relative;
                 top: -3px;
@@ -13151,29 +13232,29 @@
                 color: #bed6b2;
                 text-shadow: 0px 1px 0px #151515;
             }
-            
+
             .addnew_btnDown {
                 background-image: -webkit-linear-gradient(top, #232323 0, #212121 100%);
                 background-image:    -moz-linear-gradient(top, #232323 0, #212121 100%);
                 background-image:         linear-gradient(top, #232323 0, #212121 100%);
             }
-            
+
             .addnew_btnDisabled {
                 background: none;
                 border-color: transparent;
                 box-shadow: none;
             }
-            
+
             .addnew_btnDisabled .label {
                 color: #242424;
                 text-shadow: 0px 1px 0px #515151;
             }
-            
+
             .addnew_btnDisabled .icon {
                 background-position: 0 -18px;
             }
         ]]></a:style>
-    
+
         <a:presentation>
             <a:main
               icon       = "span[1]"
@@ -13182,7 +13263,7 @@
             </a:main>
         </a:presentation>
     </a:button>
-    
+
     <a:codebox name="codebox">
         <a:style><![CDATA[
             .ace_one-line .ace_cursor {

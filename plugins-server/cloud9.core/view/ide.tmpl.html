@@ -113,6 +113,8 @@
             };
 
             window.onerror = function(m, u, l) {
+                if (m.match(/Load timeout for modules:/) || m.match(/Script error/))
+                    return;
                 clearSplash();
             };
 
@@ -134,24 +136,31 @@
             else {
                var apfLoc = "";
             }
+            
+            var config = <%requirejsConfig%>; 
 
-            var config = <%requirejsConfig%>;
+            // configure text plugin to use XHR for crossorigin requests instead of falling back to .js files
+            config.config = {text: {useXhr: function(){return true;}}};
 
             require(config, [apfLoc], function(){
 
                 if (!cloud9config.packed) {
-                    var list = ["core/ide", "core/ext", "core/util",
-                    "core/settings", "ext/main/main", "ext/editors/editors",
-                    "ace/editor"];
+                    main();
                 }
                 else {
-                    var list = ["[%staticUrl%]/" + (cloud9config.packedName.length > 0 ? cloud9config.packedName : "c9os.min.js")];
+                    var packedFile = "[%staticUrl%]/" + (cloud9config.packedName || "c9os.min.js");
+                    require([packedFile], main);
                 }
-
+                
+                preloaderImgs();
+            });
+            
+            function main() {
+                var list = ["core/ide", "core/ext", "core/util", 
+                "core/settings", "ext/main/main", "ext/editors/editors",
+                "ace/editor"];
                 require(list, function(ide, ext, util){
-                    if (!cloud9config.packed) {
-                        var plugins = <%plugins%>;
-                    }
+                    var plugins = <%plugins%>;
 
                     // if you pass `force=true` into the querystring, then
                     // we bypass the browser check
@@ -172,30 +181,19 @@
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
 
                     //Load extensions
-                    if (!cloud9config.packed) {
-                        apf.addEventListener("load", function(){
-                            require(plugins, function() {
-                                loadAndBegin(ide, plugins);
-                            });
+                    apf.addEventListener("load", function(){
+                        require(plugins, function() {
+                            loadAndBegin(ide, plugins);
                         });
-                    }
-                    else {
-                        apf.addEventListener("load", function() {
-                            var ide = require("core/ide");
-                            window.ide = ide;
-                            loadAndBegin(ide, list);
-                        });
-                    }
-
+                    });
                 });
-                preloaderImgs();
-            });
+            }
 
             function loadAndBegin(ide, plugins) {
                 ide.dispatchEvent("extload", {modules: plugins});
 
                 cloud9config.totalTime = new Date() - cloud9config.startdate;
-                console.log("Total Load Time "
+                console.log("Total Load Time " 
                     + (cloud9config.totalTime) + "ms");
 
                 clearSplash();
