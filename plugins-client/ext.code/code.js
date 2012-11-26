@@ -419,7 +419,7 @@ module.exports = ext.register("ext/code/code", {
                 ["fadefoldwidgets", "true"],
                 ["animatedscroll", "true"]
             ]);
-            
+
             // Enable bracket insertion by default, even if it was disabled before,
             // migrating old users that had it disabled by default
             var defaulted = e.model.queryValue("editors/code/@behaviorsdefaulted");
