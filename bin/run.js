@@ -1,1 +1,1 @@
-/Users/timglaser/c9/cloud9/node_modules/runjs/runjs
+../node_modules/runjs/runjs
