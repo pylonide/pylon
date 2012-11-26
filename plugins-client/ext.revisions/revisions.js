@@ -95,6 +95,11 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hook: function() {
+        // We don't want to have revisions for guests.
+        if (ide.readonly) {
+            return;
+        }
+
         var self = this;
         commands.addCommand({
             name: "revisionpanel",
@@ -325,7 +330,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     onExternalChange: function(e) {
         if (e.action == "remove")
             return;
-        
+
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -992,7 +997,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.send(options);
     },
 
-    
+
 
     /**
      * Revisions#applyRevision(id, value)
