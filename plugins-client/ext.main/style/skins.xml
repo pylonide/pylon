@@ -3484,20 +3484,19 @@
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_smooth_loading {
-            background-image: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: linear-gradient(180deg,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
             -moz-box-sizing: border-box;
             box-sizing: border-box;
-            color: dimgray;
             height: 100%;
-            padding-left: 10px;
         }
-        .ace_smooth_loading.ace_dark {
-            background-image: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);            
-            background-image: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);            
-            background-image: linear-gradient(180deg,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);            
-            color: lightgray;
+        .ace_smooth_loading .loading_bg {
+            background: url(images/loader_progressbar_bg.png) repeat-x;
+            position: absolute;
+            height: 1px;
+        }
+        .ace_smooth_loading .loading_progress {
+            background-color: #38A3FF;
+            position: absolute;
+            height: 1px;
         }
         .ace_editor {
             position: relative;
@@ -12029,6 +12028,7 @@
         .filemgr-tree:not(.treeOutline) .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
+            top: 2px;
         }
         .treeOutline .item-fix.root.min .item SPAN {
             background-image:url(images/tree_close_arrow_small.png) !important;
@@ -12064,16 +12064,22 @@
         }
 
         .filemgr-tree .item LABEL .caption {
+            width: 123px;
             font-family : Tahoma, Arial;
             font-size   : 11px;
             display:block;
             position:relative;
             overflow:hidden;
             height:16px;
-            padding:1px 0 0 23px;
+            padding:1px 0 0 20px;
             text-decoration:none;
             white-space: nowrap;
         }
+
+        .filemgr-tree .folder .item label .caption {
+            top: -2px;
+        }
+
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
             color       : #101010;
         }
@@ -12216,13 +12222,39 @@
         .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
             opacity : 0.5;
         }
+
+        .filemgr-tree .item label {background-image:url(icons/file_tree/file_tree.png);background-repeat:no-repeat}
+        .filemgr-tree div.page_white_wrench label{background-position:0px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_text label{background-position:-16px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_ruby label{background-position:0px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_picture label{background-position:-16px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_php label{background-position:-32px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_h label{background-position:-32px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_go label{background-position:0px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_flash label{background-position:-16px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cup label,div.page_white_cup span{background-position:-32px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_csharp label{background-position:-48px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cplusplus label{background-position:-48px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_coldfusion label{background-position:-48px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code_red label{background-position:0px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code label{background-position:-16px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_c label{background-position:-32px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_actionscript label{background-position:-48px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_acrobat label{background-position:-64px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white label{background-position:-64px -16px;width:16px;height:16px;}
+        .filemgr-tree div.image label{background-position:-80px 0px;width:14px;height:14px;}
+        .filemgr-tree div.html label{background-position:-64px -32px;width:16px;height:11px;}
+        .filemgr-tree div.css label{background-position:-64px -43px;width:16px;height:11px;}
+        .filemgr-tree div.folder label{background-position:0px -64px;width:15px;height:15px;}
+
+        .filemgr-tree div.item-fix div.label-content {padding-left: 5px};
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
         }
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
-            padding:2px 0 0 23px;
+            padding:2px 0 0 20px;
         }
 
         #txt_rename {

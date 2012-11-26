@@ -140,9 +140,8 @@
             var config = <%requirejsConfig%>; 
 
             // configure text plugin to use XHR for crossorigin requests instead of falling back to .js files
-            if (!cloud9config.packed) {
-                config.config = {text: {useXhr: function(){return true;}}};
-            }
+            config.config = {text: {useXhr: function(){return true;}}};
+
             require(config, [apfLoc], function(){
 
                 if (!cloud9config.packed) {
