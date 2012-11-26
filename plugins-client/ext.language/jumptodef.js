@@ -86,10 +86,10 @@ module.exports = {
     $getFirstColumn: function(row) {
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
-            return 1;
+            return 0;
         var line = editor.getDocument().getLine(row);
         if (!line)
-            return 1;
+            return 0;
         return line.match(/^(\s*)/)[1].length;
     },
     
@@ -140,9 +140,14 @@ module.exports = {
             if (!lastResult.isDeferred)
                 break;
         }
+        
+        var _self = this;
         var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
+        
         editors.gotoDocument({
-            column: lastResult.column !== undefined ? lastResult.column : this.$getFirstColumn(lastResult.row),
+            getColumn: function() {
+                return lastResult.column !== undefined ? lastResult.column : _self.$getFirstColumn(lastResult.row);
+            }, 
             row: lastResult.row + 1,
             node: path ? undefined : tabEditors.getPage().xmlRoot,
             animate: true,
@@ -158,7 +163,7 @@ module.exports = {
         var line = editor.getDocument().getLine(oldPos.row);
         if (!line)
             return;
-        var preceding = util.retrievePreceedingIdentifier(line, cursor.column);
+        var preceding = util.retrievePrecedingIdentifier(line, cursor.column);
         var column = cursor.column - preceding.length;
         if (column === oldPos.column)
             column = this.$getFirstColumn(cursor.row);

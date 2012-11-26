@@ -131,7 +131,7 @@ function inCompletableCodeContext(line, column, id) {
 }
 
 function preceededByIdentifier(line, column, postfix) {
-    var id = completionUtil.retrievePreceedingIdentifier(line, column);
+    var id = completionUtil.retrievePrecedingIdentifier(line, column);
     if(postfix) id += postfix;
     return id !== "" && !(id[0] >= '0' && id[0] <= '9') &&
         (inCompletableCodeContext(line, column, id) || isRequireJSCall(line, column, id));
@@ -140,7 +140,7 @@ function preceededByIdentifier(line, column, postfix) {
 function isRequireJSCall(line, column, identifier) {
     if (editors.currentEditor.amlEditor.syntax !== "javascript" || !language.isInferAvailable())
         return false;
-    var id = identifier || completionUtil.retrievePreceedingIdentifier(line, column, REQUIRE_ID_REGEX);
+    var id = identifier || completionUtil.retrievePrecedingIdentifier(line, column, REQUIRE_ID_REGEX);
     var LENGTH = 'require("'.length;
     var start = column - id.length - LENGTH;
 

@@ -101,12 +101,7 @@
                              match = "[folder]"
                              get   = "{location.host &amp;&amp; davProject.readdir([@path])}" />
                            <a:caption match="[@name]" />
-                           <a:icon
-                             match = "[folder]"
-                             value = "folder.png" />
-                           <a:icon
-                             match = "[file]"
-                             value = "{require('core/util').getFileIcon(%[.])}" />
+                           <a:css match="[project|file|folder]" value="{require('core/util').getFileIcon(%[.])}" />
                            <a:css match="[file]" value="file_item"></a:css>
                         </a:each>
                         <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />

@@ -126,7 +126,7 @@ var config = [
             "ext/offline/offline",
             "ext/stripws/stripws",
             //"ext/testpanel/testpanel",
-            "ext/nodeunit/nodeunit",
+            //"ext/nodeunit/nodeunit",
             "ext/zen/zen",
             "ext/codecomplete/codecomplete",
             "ext/vim/vim",
