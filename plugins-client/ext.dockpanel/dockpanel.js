@@ -124,6 +124,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 ide.dispatchEvent("dockpanel.load.settings", {state: state});
                 _self.layout.loadState(state);
                 _self.loaded = true;
+                ide.dispatchEvent("dockpanel.loaded", {state: state});
 
                 _self.setParentHboxTop(
                     apf.isFalse(settings.model.queryValue("auto/tabs/@show")) ? -15 : 0,
