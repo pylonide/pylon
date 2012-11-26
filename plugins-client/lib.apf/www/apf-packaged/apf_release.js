@@ -52369,6 +52369,7 @@ apf.menu = function(struct, tagName){
     function forceHide(e){
         if (this.$showingSubMenu || this.pinned
                 || apf.isChildOf(e.fromElement, e.toElement)
+                || apf.isChildOf(e.toElement, e.fromElement)
                 || apf.isChildOf(this, e.toElement) || (e.name !== "popuphide" && !e.toElement))
             return;
 
@@ -67023,7 +67024,7 @@ apf.aml.setElement("method", apf.method);
  * @inherits apf.Class
  * @inherits apf.BaseComm
  * @inherits apf.http
- * 
+ *
  *
  * @default_private
  */
@@ -67049,7 +67050,8 @@ apf.webdav = function(struct, tagName){
      *                                    should be passed
      */
     this.$booleanProperties["showhidden"]  = true;
-    this.$supportedProperties.push("showhidden", "force-host");
+    this.$booleanProperties["extra-properties"]  = true;
+    this.$supportedProperties.push("showhidden", "extra-properties", "force-host");
 
     this.$propHandlers["showhidden"]  = function(value) {
         this.$showHidden = value;
@@ -67074,7 +67076,7 @@ apf.webdav = function(struct, tagName){
      * stored in the private space by register()
      *
      * @param {String} name
-     * 
+     *
      * @private
      */
     function unregister() {
@@ -67111,7 +67113,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}   [bUseXml]    Tells the function whether to return XML. Defaults to FALSE
      * @param {Object}    [oBinary]    Object with properties for binary upload in modern browsers
      * @param {Function}  [fCallback2] Optional second callback, passed to fCallback as arguments. Used mainly by the data instructions
-     * 
+     *
      */
     this.doRequest = function(fCallback, sPath, sBody, oHeaders, bUseXml, oBinary, fCallback2) {
         if (!this.$getVar("authenticated")) {
@@ -67265,7 +67267,7 @@ apf.webdav = function(struct, tagName){
      * sign-on for WebDAV
      *
      * @param {Function} callback Will be executed upon successful authentication
-     * 
+     *
      * @private
      */
     function onAuth(callback) {
@@ -67293,7 +67295,7 @@ apf.webdav = function(struct, tagName){
             authRequired = true;
         }
 
-        var auth = this.ownerDocument 
+        var auth = this.ownerDocument
            && this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
@@ -67312,7 +67314,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   username Username of the password-protected WebDAV resource
      * @param {String}   password Password in plaintext format
      * @param {Function} callback Function to be executed when the authentication succeeded
-     * 
+     *
      */
     this.authenticate = function(username, password, callback) {
         this.$regVar("auth-username", username);
@@ -67338,7 +67340,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Unset all cached values.
      *
-     * 
+     *
      */
     this.reset = function() {
         unregister.call(this, "authenticated");
@@ -67355,7 +67357,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {String}   sPath    Path to the file or directory on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * 
+     *
      */
     this.exists = function(sPath, callback) {
         this.getProperties(sPath, 0, function(data, state, extra) {
@@ -67369,7 +67371,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * 
+     *
      */
     this.readFile =
     this.read = function(sPath, callback) {
@@ -67396,11 +67398,11 @@ apf.webdav = function(struct, tagName){
     /**
      * Reads the contents of a directory resource (one level deep) and passes
      * the resulting XML to a  callback function to be processed further.
-     * 
+     *
      *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * 
+     *
      */
     this.readdir = function(sPath, callback) {
         if (sPath.charAt(sPath.length - 1) != "/")
@@ -67414,7 +67416,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   sPath      Path of the new directory on the WebDAV server
      * @param {Boolean}  [bLock]    Whether to require a lock before copy
      * @param {Function} [callback] Function to execute when the request was successful
-     * 
+     *
      */
     this.mkdir = function(sPath, bLock, callback) {
         if (bLock) {
@@ -67450,11 +67452,11 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Reads the properties of a resource on the server.
-     * 
+     *
      *
      * @param {String}   sPath    Path to the resource on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
-     * 
+     *
      */
     this.list = function(sPath, callback) {
         return this.getProperties(sPath, 0, callback);
@@ -67469,7 +67471,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bLock]   Whether to require a lock before write
      * @param {Object}   [oBinary] Object with properties for binary upload in modern browsers
      * @param {Function} callback  Function to execute when the request was successful
-     * 
+     *
      */
     this.writeFile =
     this.write = function(sPath, sContent, bLock, oBinary, callback) {
@@ -67515,7 +67517,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
      * @param {Boolean}  [bLock]      Whether to require a lock before copy
      * @param {Function} callback     Function to execute when the request was successful
-     * 
+     *
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo)
@@ -67565,7 +67567,7 @@ apf.webdav = function(struct, tagName){
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
      * @param {Boolean}  [bLock]      Whether to require a lock before move
      * @param {Function} callback     Function to execute when the request was successful
-     * 
+     *
      */
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
@@ -67619,7 +67621,7 @@ apf.webdav = function(struct, tagName){
      * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
      * @param {Boolean}  [bLock]  Whether to require a lock before remove
      * @param {Function} callback Function to execute when the request was successful
-     * 
+     *
      */
     this.remove = function(sPath, bLock, callback) {
         if (bLock) {
@@ -67661,7 +67663,7 @@ apf.webdav = function(struct, tagName){
         aCont.push("</D:", reportName, ">");
 
         this.method = "REPORT";
-        
+
         return this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status, 10);
             if (state != apf.SUCCESS) {
@@ -67728,7 +67730,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {Object}   oLock    Object representing a Lock on a resource
      * @param {Function} callback Function that is executed upon a successful UNLOCK request
-     * 
+     *
      */
     this.unlock = function(oLock, callback) {
         if (typeof oLock == "string")
@@ -67766,7 +67768,7 @@ apf.webdav = function(struct, tagName){
      * @param {XmlDocument} data  Actual XML data, received from the server
      * @param {Number}      state Internal - APF defined - state of the request
      * @param {Object}      extra Simple object that contains additional request data
-     * 
+     *
      * @private
      */
     function registerLock(data, state, extra) {
@@ -67804,7 +67806,7 @@ apf.webdav = function(struct, tagName){
      * Removes a Lock token/ object from the stack.
      *
      * @param {String} sPath Path pointing to the resource on the server
-     * 
+     *
      * @private
      */
     function unregisterLock(sPath) {
@@ -67840,7 +67842,7 @@ apf.webdav = function(struct, tagName){
      *
      * @param {Object}  oLock   Simple object that represents a validated Lock
      * @param {Boolean} bFailed Tells whether the requesting function may be excuted
-     * 
+     *
      * @private
      */
     function purgeLockedStack(oLock, bFailed) {
@@ -67860,7 +67862,7 @@ apf.webdav = function(struct, tagName){
      * @param {Number}   iDepth   Depth of lock recursion down the tree, should be '1' or 'Infinity'
      * @param {Function} callback Function that is executed upon a successful LOCK request
      * @param {Object}   oHeaders Additional headers in key: value format
-     * 
+     *
      */
     this.getProperties = function(sPath, iDepth, callback, oHeaders) {
         // Note: caching is being done by an external model
@@ -67947,7 +67949,7 @@ apf.webdav = function(struct, tagName){
      * @param {Number}      state    Internal - APF defined - state of the request
      * @param {Object}      extra    Simple object that contains additional request data
      * @param {Function}    callback Function to be executed when all the property packets have been parsed
-     * 
+     *
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {
@@ -68037,13 +68039,29 @@ apf.webdav = function(struct, tagName){
         if (extra)
             extra.data = oItem;
 
-        return oItem.xml = "<" + sType + " path=\"" + apf.escapeXML(sPath) +
+        var aXml = ["<" + sType + " path=\"" + apf.escapeXML(sPath) +
             "\" type=\"" + sType + "\" size=\"" + oItem.size + "\" name=\"" +
             apf.escapeXML(oItem.name) + "\" contenttype=\"" + oItem.contentType +
             "\" modifieddate=\"" + oItem.lastModified + "\" creationdate=\"" +
             oItem.creationDate + "\" lockable=\"" + oItem.lockable.toString() +
             "\" hidden=\"" + bHidden.toString() + "\" executable=\"" +
-            oItem.executable.toString() + "\"/>";
+            oItem.executable.toString() + "\""];
+
+        if (this["extra-properties"]) {
+            var oNode,
+                aNodes = oNode.selectNodes("//a:*"),
+                i = 0,
+                l = aNodes.length;
+            for (; i < l; ++i) {
+                oNode = aNodes[i];
+                if (oNode.firstChild && oNode.firstChild.nodeValue) {
+                    aXml.push(" " + oNode.localName + "=\"" +
+                        oNode.firstChild.nodeValue + "\"");
+                }
+            }
+        }
+
+        return oItem.xml = aXml.join("") + "/>";
     }
 
     
