@@ -111,7 +111,7 @@ module.exports = {
                 cb({model : _self.model, ext : _self});
             }
             catch(e){
-                console.error(e.message);
+                console.log(e.message, e.stack);
             }
         }
     },

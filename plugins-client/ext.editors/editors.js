@@ -92,7 +92,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (typeof noAnim == "undefined") {
             noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
         }
-        
+
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
@@ -817,7 +817,7 @@ module.exports = ext.register("ext/editors/editors", {
                 }
                 else {
                     anims.animate(tabEditors.$buttons, {
-                        paddingRight: "4px",
+                        paddingRight: (hboxDockPanel.width - 26 > 0 ? hboxDockPanel.width - 26 : 0) + "px",
                         timingFunction: e.options.timingFunction,
                         duration: e.options.duration
                     }, function(){
