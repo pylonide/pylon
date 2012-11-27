@@ -11488,6 +11488,7 @@
             background-image    : url(images/searchbox_textbox_icon.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
+            display: none;
         }
 
         .searchbox_textboxFocus .sbtb_icon {
