@@ -141,6 +141,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
 
         hboxParent.setWidth(l.getLeft() + l.getWidth() - f.getLeft());
+        tabEditors.$buttons.style.right = (this.$parentHBox.width - 30 > 0 ? this.$parentHBox.width - 30 : 0) + "px";
     };
 
     this.checkBars = function (){
