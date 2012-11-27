@@ -143,7 +143,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             );
         });
 
-
         // Declaration of event listeners
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
@@ -756,7 +755,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (message.body && message.body.revisions) {
                     revObj.allRevisions = message.body.revisions;
                 }
-
                 revObj.compactRevisions = Util.generateCompactRevisions(revObj);
                 if (!message.nextAction || !message.id) {
                     if (page && CoreUtil.getDocPath(page) === message.path &&
@@ -996,8 +994,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         ide.send(options);
     },
-
-
 
     /**
      * Revisions#applyRevision(id, value)

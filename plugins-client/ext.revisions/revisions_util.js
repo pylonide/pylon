@@ -69,7 +69,7 @@ exports.generateCompactRevisions = function(revObj) {
         if (last.length === 0 || (!isRestoring(id) && !isRestoring(last[0]))) {
             last.push(id);
         }
-        else { 
+        else {
             prev.push([id]);
         }
         return prev;

@@ -43,8 +43,13 @@ module.exports = function setup(options, imports, register) {
         // This queue makes sure that changes are saved asynchronously but orderly
         this.savingQueue = Async.queue(function(data, callback) {
             var msg = data.message;
-            _self.saveSingleRevision.call(_self, msg.path, msg.revision, function(err, revisionInfo) {
-                callback.call(_self, err, revisionInfo, data._user, msg, data._error);
+            _self.saveSingleRevision.call(_self, msg.path, msg.revision, function(err, revisions) {
+                var revMeta = {
+                    revision: revisions,
+                    absPath: _self.getRevisionsPath(msg.path + "." + FILE_SUFFIX)
+                };
+
+                callback.call(_self, err, revMeta, data._user, msg, data._error);
             });
         }, 1);
     }
@@ -69,8 +74,7 @@ module.exports = function setup(options, imports, register) {
                 }
 
                 _self.broadcastRevisions.call(_self, revObj, user, {
-                    path: message.path,
-                    _revPath: revisionInfo.absPath
+                    path: message.path
                 });
             });
         };
@@ -529,15 +533,12 @@ module.exports = function setup(options, imports, register) {
                 fs.writeFile(data.revPath, data.content, "utf8", function(err) {
                     if (err) return data.cb(err);
 
-                    data.cb.call(_self, null, {
-                        absPath: data.revPath,
-                        path: data.realPath,
-                        revision: data.revision.ts
-                    });
+                    var obj = {};
+                    obj[data.revision.ts] = data.revision;
+                    data.cb.call(_self, null, obj);
                 });
             });
         };
-
     }).call(RevisionsPlugin.prototype);
 
     imports.sandbox.getProjectDir(function(err, projectDir) {
