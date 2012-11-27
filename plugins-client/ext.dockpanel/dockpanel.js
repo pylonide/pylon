@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
- /*global hboxDockPanel*/
+ /*global hboxDockPanel barButtonContainer*/
 
 define(function(require, exports, module) {
 
@@ -135,6 +135,18 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         ide.addEventListener("tabs.visible", function(e){
             _self.setParentHboxTop(!e.value ? -15 : 0, e.noanim);
+        });
+
+        ide.addEventListener("tab.afterswitch", function(e) {
+            _self.updateTabsMaxWidth();
+        });
+
+        ide.addEventListener("closefile", function(e) {
+            _self.updateTabsMaxWidth();
+        });
+
+        ide.addEventListener("afteropenfile", function() {
+            _self.updateTabsMaxWidth();
         });
 
         this.nodes.push(
@@ -412,11 +424,15 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 _self.layout.show(button.uniqueId);
             });
         });
+
+        this.updateTabsMaxWidth();
     },
 
     hideBar : function(bar){
         if (bar.cache)
             bar.cache.hide();
+
+        this.updateTabsMaxWidth();
     },
 
     expandBar : function(bar){
@@ -569,6 +585,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 document.title = _self.initDocTitle;
             }
         }
+    },
+
+    updateTabsMaxWidth: function(){
+        tabEditors.$buttons.style.right = (hboxDockPanel.width - 30 > 0 ? hboxDockPanel.width - 30 : 0) + "px";
     }
 });
 });
