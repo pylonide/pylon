@@ -22,7 +22,9 @@ var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
 var commands = require("ext/commands/commands");
 
-/*global stProcessRunning*/
+/*global stProcessRunning, barTools, mnuContext, btnRun, tabEditors, mnuCtxEditor,
+mnuCtxEditorRevisions, lstRunCfg, tabDebug, tabDebugButtons, cbRunDbgDebugMode,
+btnRunDbgRun, mnuRunCfg, txtCmdArgs, trFiles*/
 
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",
@@ -45,7 +47,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     nodes : [],
     model : new apf.model(),
-    
+
     disableLut: {
         "terminal": true
     },
@@ -54,9 +56,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (ide.readonly)
             return;
         var _self = this;
-        
+
         ext.initExtension(this);
-        
+
         commands.addCommand({
             name: "run",
             "hint": "run or debug an application (stops the app if running)",
@@ -116,7 +118,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         this.nodes.push(
             this.model = new apf.model().load("<configurations />"),
-            
+
             menus.addItemByPath("View/Tabs/Run This File", new apf.item({
                 command : "runthistab",
                 disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
@@ -157,7 +159,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             var runConfigs = e.model.queryNode("auto/configurations");
             var activeCfg = e.model.queryNode("auto/configurations/config[@active='true']");
             if (!activeCfg) {
-                activeCfg = e.model.queryNode("auto/configurations/config")
+                activeCfg = e.model.queryNode("auto/configurations/config");
                 if (activeCfg) {
                     apf.xmldb.setAttribute(activeCfg, "active", "true");
                     changed = true;
@@ -165,18 +167,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
             var lastCfg = e.model.queryNode("auto/configurations/config[@last='true']");
             if (!lastCfg) {
-                var lastCfg = activeCfg;
+                lastCfg = activeCfg;
                 if (lastCfg) {
                     apf.xmldb.setAttribute(lastCfg, "last", "true");
                     changed = true;
                 }
             }
-            
+
             if (changed)
                 settings.save();
             _self.model.load(runConfigs);
         });
-        
+
         ide.addEventListener("init.ext/editors/editors", function(e) {
             ide.addEventListener("tab.afterswitch", function(e){
                 _self.enable();
@@ -186,8 +188,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     _self.disable();
             });
         });
-        
-        ide.addEventListener("init.ext/code/code", function() {
+
+        ide.addEventListener("init.ext/revisions/revisions", function() {
             _self.nodes.push(
                 mnuCtxEditor.insertBefore(new apf.item({
                     id : "mnuCtxEditorRunThisFile",
@@ -196,9 +198,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
                 }), mnuCtxEditorRevisions),
                 mnuCtxEditor.insertBefore(new apf.divider(), mnuCtxEditorRevisions)
-            )
+            );
         });
-        
+
         var hasBreaked = false;
         stProcessRunning.addEventListener("deactivate", function(){
             if (!_self.autoHidePanel())
@@ -279,24 +281,25 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.importCssString(cssString);
 
         lstRunCfg.addEventListener("click", function(e){
+            var xmlNode;
             if (e.htmlEvent.target.className == "radiobutton") {
                 var active = _self.model.queryNode("config[@active='true']");
                 if (active)
                     apf.xmldb.removeAttribute(active, "active");
-                
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
+
+                xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
                 apf.xmldb.setAttribute(xmlNode, "active", "true");
-                
+
                 var caption = apf.isTrue(cbRunDbgDebugMode.value) ? 'Run in Debug Mode' : 'Run';
                 btnRunDbgRun.setCaption(caption);
-                
+
                 lstRunCfg.stopRename();
             }
-            
+
             if (e.htmlEvent.target.className == "btnDelete") {
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
+                xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
                 this.remove(xmlNode);
-                
+
                 // set new active config if active config was deleted
                 xmlNode = lstRunCfg.$model.queryNode("config");
                 if (xmlNode) {
@@ -305,7 +308,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                         lstRunCfg.select(xmlNode);
                     });
                 }
-                
+
                 lstRunCfg.stopRename();
             }
         });
@@ -348,7 +351,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             name = "Untitled";
             extension = path = "";
         }
-        
+
         var hasConfigs = require("ext/runpanel/runpanel").model.queryNodes("config").length;
         if (hasConfigs) {
             // check if name already exists
@@ -359,11 +362,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     idx++;
                     newname = name + " " + idx;
                 }
-                
+
                 name = newname;
             }
         }
-        
+
         var tagName = !temp ? "config" : "tempconfig";
         var cfg = apf.n("<" + tagName + " />")
             .attr("path", path)
@@ -380,12 +383,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             apf.xmldb.setAttribute(node, "active", "true");
             //apf.setStyleClass(apf.xmldb.findHtmlNode(node, lstRunCfg), "active");
         }
-        
+
         lstRunCfg.select(node);
-        
+
         if (!temp)
             lstRunCfg.startRename(node);
-        
+
         return node;
     },
 
@@ -395,17 +398,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (lastCfg)
             lstRunCfg.select(lastCfg);
     },
-        
+
     removeTempConfig : function() {
         var tempNode = settings.model.queryNode("auto/configurations/tempconfig[@last='true']");
         if (tempNode)
             apf.xmldb.removeNode(tempNode);
-            
+
         var lastNode = settings.model.queryNode("auto/configurations/config[@last='true']");
         if (lastNode)
             lstRunCfg.select(lastNode);
     },
-    
+
     autoHidePanel : function(){
         return apf.isTrue(settings.model.queryValue("auto/configurations/@autohide"));
     },
@@ -426,15 +429,15 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         else {
             node = this.model.queryNode("config[@active='true']");
         }
-        
+
         if (!node) {
             // display Run button as pressed instead of splitbutton
             apf.setStyleClass(btnRun.$button1.$ext, "c9-runbtnDown")
             apf.setStyleClass(mnuRunCfg.$ext, "fromRunBtn");
-            
+
             btnRun.$button2.dispatchEvent("mousedown");
             apf.setStyleClass(btnRun.$button2.$ext, "", ["c9-runbtnDown"]);
-            
+
             mnuRunCfg.addEventListener("hide", function() {
                 apf.setStyleClass(mnuRunCfg.$ext, null, ["fromRunBtn"]);
                 mnuRunCfg.removeEventListener("hide", arguments.callee);
@@ -443,30 +446,30 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         }
         else if (node.tagName == "tempconfig")
             node = this.addConfig();
-            
+
         this.runConfig(node);
 
         ide.dispatchEvent("track_action", {type: node.getAttribute("debug") ? "debug" : "run"});
     },
-    
+
     runThisFile : function() {
         var file = trFiles.selected;
         var node = this.addConfig(true, file);
-        
+
         this.runConfig(node);
 
         ide.dispatchEvent("track_action", {type: node.getAttribute("debug") ? "debug" : "run"});
     },
-    
+
     runThisTab : function() {
         var file = ide.getActivePageModel();
         var node = this.addConfig(true, file);
-        
+
         this.runConfig(node);
 
         ide.dispatchEvent("track_action", {type: node.getAttribute("debug") ? "debug" : "run"});
     },
-    
+
     runConfig : function(config) {
         //ext.initExtension(this);
         var model = settings.model;
@@ -474,34 +477,27 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (saveallbeforerun)
             save.saveall();
 
-        debug = config.getAttribute("debug") == "true";
-/*
-        if (config.tagName == "config") {
-            var lastNode = apf.queryNode(config, "../node()[@last]");
-            if (lastNode)
-                apf.xmldb.removeAttribute(lastNode, "last");
-            apf.xmldb.setAttribute(config, "last", "true");
-        }
-*/
+        var debug = config.getAttribute("debug") == "true";
+
         if (mnuRunCfg.visible)
             mnuRunCfg.hide();
             //mnuRunCfg.$ext.style.display = "none";
-        
+
         if (config.tagName == "tempconfig") {
             this.removeTempConfig();
         }
-        
+
         self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations
         // will vary over time
         ide.dispatchEvent("beforeRunning");
-        
+
         var prevRunNode = this.model.data.selectSingleNode('node()[@running="true"]');
         if (prevRunNode)
             prevRunNode.removeAttribute("running");
         config.setAttribute("running", "true");
         settings.save();
-        
+
         var args = config.getAttribute("args");
         noderunner.run(
             config.getAttribute("path"),
@@ -515,6 +511,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         noderunner.stop();
 
         //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
+    },
+
+    onHelpClick: function() {
+        var page = "running_and_debugging_code";
+        if (ide.infraEnv)
+            require("ext/documentation/documentation").show(page);
+        else
+            window.open("https://docs.c9.io/" + page + ".html");
     },
 
     enable : function(){

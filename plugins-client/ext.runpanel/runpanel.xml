@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
 
-    <a:menu id="mnuRunCfg" 
+    <a:menu id="mnuRunCfg"
       skin  = "mnuRunCfg"
       skinset = "runpanel"
       class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}"
@@ -13,13 +13,13 @@
                         <a:hbox height="26" align="center" edge="2 0 0 2">
                         <a:button id="btnAddRunConf"
                           onclick  = "require('ext/runpanel/runpanel').addConfig()"
-                          skin     = "addnew_btn" 
-                          caption  = "Add New" 
+                          skin     = "addnew_btn"
+                          caption  = "Add New"
                           icon     = "plus2.png" />
                         </a:hbox>
                     </div>
                     <div class="black">
-                        <a:list id="lstRunCfg" 
+                        <a:list id="lstRunCfg"
                           model   = "{require('ext/runpanel/runpanel').model}"
                           border  = "0"
                           flex    = "1"
@@ -43,90 +43,73 @@
                 <div class="col col2">
                     <div class="title">
                         <a:hbox height="28" align="center" edge="1 9 0 7">
-                            <a:checkbox 
+                            <a:checkbox
                               id    = "cbRunCfgAdvanced"
-                              label = "Advanced" 
+                              label = "Advanced"
                               skin  = "checkbox_black"
-                              class = "dark-bg" 
+                              class = "dark-bg"
                               value = "[{require('ext/settings/settings').model}::auto/configurations/@showruncfglist]"
                               onclick = "
                                 apf.setStyleClass(mnuRunCfg.$ext, (this.checked ? 'showList' : ''), [(this.checked ? '' : 'showList')])
                               " />
                             <a:filler />
-                            <a:button 
-                              skin    = "btn_icon_only" 
-                              class   = "dim18-18" 
-                              icon    = "info.png" 
-                              onclick = "window.open('https://docs.c9.io/running_and_debugging_code.html')" />
+                            <a:button
+                              skin    = "btn_icon_only"
+                              class   = "dim18-18"
+                              icon    = "info.png"
+                              onclick = "require('ext/runpanel/runpanel').onHelpClick()" />
                         </a:hbox>
                     </div>
                     <div class="gray">
                         <a:bar skin="basic">
                             <a:vbox edge="5 9 5 8" validgroup="vgRunDbg">
-                                <!--a:hbox>
-                                    <a:label width="100" skin="black_label">Name</a:label>
-                                    <a:textbox id="txtRunCfgName" 
-                                      skin = "black_textbox"
-                                      flex="1"
-                                      realtime="true"
-                                      value="[{lstRunCfg.selected}::@name]"/>
-                                </a:hbox-->
                                 <a:hbox height="36" align="center">
                                     <a:label width="93" class="graylabel size-12 arial dark-bg">File to run:</a:label>
-                                    <a:textbox 
+                                    <a:textbox
                                       id       = "txtFileToRun"
-                                      skin     = "searchbox_textbox" 
-                                      class    = "dark-bg"  
-                                      flex     = "1" 
+                                      skin     = "searchbox_textbox"
+                                      class    = "dark-bg"
+                                      flex     = "1"
                                       value    = "[{lstRunCfg.selected}::@path]"
-                                      required = "true" 
+                                      required = "true"
                                       invalidmsg = "Please enter a file" />
                                 </a:hbox>
-                                
+
                                 <a:hbox height="36" align="center">
-                                    <a:model id="mdlRunnerSelector">
-                                        <data>
-                                            <element caption="Default" value="default" />
-                                            <element caption="Node.js (Auto)" value="node auto" />
-                                            <element caption="Node.js 0.8.x" value="node 0.8" />
-                                            <element caption="Node.js 0.6.x" value="node 0.6" />
-                                            <element caption="Apache+PHP" value="apache" />
-                                            <element caption="PHP CLI" value="php" />
-                                            <element caption="Python" value="python" />
-                                            <element caption="Ruby" value="ruby" />
-                                        </data>
-                                </a:model>
-                                  <a:label width="93" class="graylabel size-12 arial dark-bg">Runtime:</a:label>
-                                  <a:dropdown id="ddRunnerSelector"
-                                      model     = "mdlRunnerSelector"
+                                    <a:label width="93" class="graylabel size-12 arial dark-bg">Runtime:</a:label>
+                                    <a:dropdown id="ddRunnerSelector"
                                       flex      = "1"
-                                      disabled  = "{!lstRunCfg.selected}"
-                                      value     = "[{lstRunCfg.selected}::@value]"
+                                      value     = "{[{lstRunCfg.selected}::@value] || 'auto'}"
                                       default   = "default"
                                       skin      = "dropdown-dark-glossy"
-                                      class     = "single-arrow"
-                                      each      = "[element]"
-                                      caption   = "[@caption]"
-                                      eachvalue = "[@value]" />
+                                      class     = "single-arrow">
+                                        <a:item caption="Auto" value="auto" />
+                                        <a:item caption="Node.js (Auto)" value="node auto" />
+                                        <a:item caption="Node.js 0.8.x" value="node 0.8" />
+                                        <a:item caption="Node.js 0.6.x" value="node 0.6" />
+                                        <a:item caption="Apache+PHP" value="apache" />
+                                        <a:item caption="PHP CLI" value="php" />
+                                        <a:item caption="Python" value="python" />
+                                        <a:item caption="Ruby" value="ruby" />
+                                        <a:item caption="Other..." value="other" />
+                                    </a:dropdown>
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
                                     <a:label width="93" class="graylabel size-12 arial dark-bg">Cmd Line Args</a:label>
-                                    <a:textbox id="txtCmdArgs" 
-                                      skin     = "searchbox_textbox" 
-                                      class    = "dark-bg" 
-                                      flex     = "1" 
-                                      value    = "[{lstRunCfg.selected}::@args]" 
-                                      disabled = "{!lstRunCfg.selected}"
+                                    <a:textbox id="txtCmdArgs"
+                                      skin     = "searchbox_textbox"
+                                      class    = "dark-bg"
+                                      flex     = "1"
+                                      value    = "[{lstRunCfg.selected}::@args]"
                                       initial-message = "Optional"/>
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
                                     <a:label width="93" class="graylabel size-12 arial dark-bg">Debug Mode</a:label>
                                     <a:checkbox id="cbRunDbgDebugMode"
-                                      class = "underlined dark-bg" 
+                                      class = "underlined dark-bg"
                                       label = "Enabled by default"
                                       skin  = "checkbox_black"
-                                      value = "[{lstRunCfg.selected}::@debug]"
-                                      checked = "{this.value}" />
+                                      value = "[{lstRunCfg.selected}::@debug]" />
                                 </a:hbox>
                                 <a:divider skin="c9-divider-hor" margin="0 -9 0 -8" />
                                 <a:hbox edge="11 0 0 0" pack="end" align="center" padding="17">
@@ -144,7 +127,7 @@
                                       onclick = "
                                         if (vgRunDbg.validate()) {
                                             require('ext/runpanel/runpanel').run();
-                                        }" 
+                                        }"
                                       />
                                 </a:hbox>
                             </a:vbox>
