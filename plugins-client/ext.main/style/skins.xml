@@ -12921,7 +12921,7 @@
             .ace_one-line .ace_cursor {
                 border-left-width: 1px;
             }
-            .ace_one-line .ace_cursor.ace_hidden {
+            .ace_one-line .ace_hidden-cursors {
                 opacity: 0;
             }
             .ace_one-line .ace_scroller {
