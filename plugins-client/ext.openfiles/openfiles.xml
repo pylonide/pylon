@@ -45,8 +45,8 @@
           skin        = "tree">
             <a:each match="[file]" sort="[@name]" sort-method="filesort">
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.] + (cbShowFiles.checked ? ' - ' + [../@path].split('/').slice(-2).join('/') : '')}" />
-                <a:css match="[project|file|folder]" value="{require('core/util').getFileIcon(%[.])}" />
-                <a:icon match="[project|file|folder]" value="{require('core/ide').staticPrefix}/ext/main/style/icons/file_tree/file_tree.png" />
+                <a:icon match="[folder|project]" value="folder.png" />
+                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
             </a:each>
             <a:remove match="[file|folder]" />
         </a:list>

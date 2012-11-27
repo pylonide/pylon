@@ -131,13 +131,12 @@ exports.removeInteractive = function (amlNode) {
     }
 };
 
-// map mime-type to css class; see ext.main/style/icons/file_icons/sprite
 var SupportedIcons = {
-    "application/xhtml+xml":"html",
-    "text/css": "css",
-    "text/x-scss": "css",
-    "text/x-sass": "css",
-    "text/html":"html",
+   "application/xhtml+xml":"html",
+   "text/css": "css",
+   "text/x-scss": "css",
+   "text/x-sass": "css",
+   "text/html":"html",
     "application/pdf":"page_white_acrobat",
     "image":"image",
     "application/xml":"page_white_code_red",
@@ -234,13 +233,15 @@ var contentTypes = {
 };
 
 exports.getFileIcon = function(xmlNode) {
-    if (xmlNode.getAttribute("type") === "folder")
-        return "folder";
-
     var name = xmlNode.getAttribute("name");
-    var ext = name !== null ? name.split(".").pop().toLowerCase() : "text/plain";
+    var icon  = "page_white_text";
+    var ext;
 
-    return SupportedIcons[contentTypes[ext]] || "page_white_text";
+    if (name) {
+        ext = name.split(".").pop().toLowerCase();
+        icon = SupportedIcons[contentTypes[ext]] || "page_white_text";
+    }
+    return icon + ".png";
 };
 
 

@@ -157,20 +157,12 @@ module.exports = ext.register("ext/zen/zen", {
                 page.appendChild(button);
         });
 
-        ide.addEventListener("enterzen", function() {
-            vbMain.parentNode.appendChild(new apf.vbox({
-                anchors: "0 0 0 0",
-                id: "vbZen",
-                "class": "vbZen",
-                visible: false
-            }));
-
-            vbZen.addEventListener("resize", function(e) {
-                if (_self.isFocused) {
-                    _self.calculatePositions();
-                }
-            });
-        });
+        vbMain.parentNode.appendChild(new apf.vbox({
+            anchors: "0 0 0 0",
+            id: "vbZen",
+            "class": "vbZen",
+            visible: false
+        }));
 
         setTimeout(function() {
             _self.updateButtonPosition();
@@ -178,6 +170,12 @@ module.exports = ext.register("ext/zen/zen", {
 
         this.animateZen = document.getElementById("animateZen");
         this.animateZenPosition = document.getElementById("animateZenPosition");
+
+        vbZen.addEventListener("resize", function(e) {
+            if (_self.isFocused) {
+                _self.calculatePositions();
+            }
+        });
 
         ide.addEventListener("exitfullscreen", function() {
             _self.escapeFromZenMode(false, true);
@@ -303,8 +301,6 @@ module.exports = ext.register("ext/zen/zen", {
      * @param {boolean} slow Whether to slow down the animation
      */
     enterIntoZenMode : function(slow) {
-        ide.dispatchEvent("enterzen");
-
         var _self = this;
         
         var activeElement = apf.document.activeElement;
@@ -384,8 +380,6 @@ module.exports = ext.register("ext/zen/zen", {
     escapeFromZenMode : function(slow, fromExitEvent) {
         if (this.isFocused === false)
             return;
-
-        ide.dispatchEvent("escapezen");
 
         var _self = this;
         
