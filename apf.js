@@ -2391,7 +2391,7 @@ apf.setTimeout = function(f, t){
 }*/
 
 document.documentElement.className += " has_apf";
-document.documentElement.style.display = "none";
+document.body && (document.body.style.display = "none");
 
 apf.browserDetect();
 apf.Init.run("apf");
