@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
- /*global hboxDockPanel*/
+ /*global hboxDockPanel barButtonContainer*/
 
 define(function(require, exports, module) {
 
@@ -124,6 +124,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 ide.dispatchEvent("dockpanel.load.settings", {state: state});
                 _self.layout.loadState(state);
                 _self.loaded = true;
+                ide.dispatchEvent("dockpanel.loaded", {state: state});
 
                 _self.setParentHboxTop(
                     apf.isFalse(settings.model.queryValue("auto/tabs/@show")) ? -15 : 0,
@@ -134,6 +135,18 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         ide.addEventListener("tabs.visible", function(e){
             _self.setParentHboxTop(!e.value ? -15 : 0, e.noanim);
+        });
+
+        ide.addEventListener("tab.afterswitch", function(e) {
+            _self.updateTabsMaxWidth();
+        });
+
+        ide.addEventListener("closefile", function(e) {
+            _self.updateTabsMaxWidth();
+        });
+
+        ide.addEventListener("afteropenfile", function() {
+            _self.updateTabsMaxWidth();
         });
 
         this.nodes.push(
@@ -216,21 +229,28 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var layout = this.layout, _self = this;
 
         panel[type].mnuItem = menus.addItemByPath(
-          "View/Dock Panels/" + options.menu.split("/").pop(),
+          (options.menuPath || "View/Dock Panels/") + options.menu.split("/").pop(),
           new apf.item({
             id      : "mnu" + type,
             type    : "check",
             onclick : function(){
                 var page = getPage();
 
-                var uId = _self.getButtons(name, type)[0].uniqueId;
-                layout.show(uId, true);
-                if (layout.isExpanded(uId) < 0)
-                    layout.showMenu(uId);
+                var uId = _self.getButtons(name, type);
+                if (uId.length && (uId = uId[0].uniqueId)) {
+                    if (this.value) {
+                        layout.hide(uId);
+                    }
+                    else {
+                        layout.show(uId, true);
+                        if (layout.isExpanded(uId) < 0)
+                            layout.showMenu(uId);
 
-                page.parentNode.set(page);
+                        page.parentNode.set(page);
+                    }
+                }
             }
-        }));
+        }), options.menuIndex);
     },
 
     //@todo
@@ -404,11 +424,15 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 _self.layout.show(button.uniqueId);
             });
         });
+
+        this.updateTabsMaxWidth();
     },
 
     hideBar : function(bar){
         if (bar.cache)
             bar.cache.hide();
+
+        this.updateTabsMaxWidth();
     },
 
     expandBar : function(bar){
@@ -561,6 +585,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 document.title = _self.initDocTitle;
             }
         }
+    },
+
+    updateTabsMaxWidth: function(){
+        tabEditors.$buttons.style.right = (hboxDockPanel.width - 30 > 0 ? hboxDockPanel.width - 30 : 0) + "px";
     }
 });
 });

@@ -56,7 +56,7 @@ module.exports = ext.register("ext/linereport/linereport", {
         if (ext.disabled || !doc || (path && path !== util.stripWSFromPath(doc.getNode().getAttribute("path"))))
             return;
         function send() {
-            window.ide.send(event.data.command);
+            ide.send(event.data.command);
         }
         if (!path || !doc.getNode().getAttribute("changed") || doc.getNode().getAttribute("changed") == "0")
             send();
