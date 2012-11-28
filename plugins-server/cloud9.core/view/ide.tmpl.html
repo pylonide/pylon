@@ -54,7 +54,7 @@
                 loadingIde.appendChild(header);
                 loadingIde.appendChild(content);
                 loadingIde.appendChild(footer);
-                document.body.appendChild(loadingIde);
+                document.documentElement.appendChild(loadingIde);
                 
                 var dots = document.getElementById("dots");
                 var cnt  = 0;
@@ -68,14 +68,9 @@
                 
                 var loadingDiv = document.getElementById("loadingide");
                 if (loadingDiv)
-                    document.body.removeChild(loadingDiv);
+                    document.documentElement.removeChild(loadingDiv);
             }
-            var createSplashInterval = setInterval(function() {
-                if (document.body) {
-                    createSplash();
-                    clearInterval(createSplashInterval);
-                }
-            }, 10);
+            createSplash();
         </script>
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
