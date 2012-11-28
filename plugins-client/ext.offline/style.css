@@ -1,0 +1,38 @@
+.offline-indicator {
+    background-image: linear-gradient(bottom, rgb(248,216,170) 0%, rgb(250,227,193) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(248,216,170) 0%, rgb(250,227,193) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(248,216,170) 0%, rgb(250,227,193) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(248,216,170) 0%, rgb(250,227,193) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(248,216,170) 0%, rgb(250,227,193) 100%);
+
+    -moz-border-radius    : 0 0 6px 6px;
+    -webkit-border-radius : 0 0 6px 6px;
+    border-radius         : 0 0 6px 6px;
+
+    color: #956726;
+    text-shadow: #fff4e4 0px 1px 0px;
+
+    border: 2px solid #fff;
+    border-top-width: 1px;
+
+    width: 235px;
+    padding: 5px 8px 6px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+
+    -webkit-box-shadow:  0px 3px 2px 0px rgba(0, 0, 0, 0.15);
+    box-shadow:  0px 3px 2px 0px rgba(0, 0, 0, 0.15);
+
+    text-align: center;
+}
+.offline-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff;
+    opacity: 0.4;
+    z-index: 0;
+}
