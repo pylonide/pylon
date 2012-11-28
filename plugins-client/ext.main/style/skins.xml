@@ -54,6 +54,14 @@
         .fakehbox.static{
             position : static;
         }
+
+        .bar-offline-cover {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -128,7 +136,7 @@
     <a:style><![CDATA[
         body > .vbox,
         .editor_tab .curbtn .tab_middle {
-            background-color: #e8e8e8 !important; /*#0c9*/
+        	background-color: #e8e8e8 !important; /*#0c9*/
         }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar expanded
@@ -255,6 +263,11 @@
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
+        }
+
+        .c9-menu-bar .c9-mbar-bcont .c9-simple-btnDisabled.c9-mbar-minimize:hover {
+            background-position: 0 -70px;
+            cursor: default;
         }
         .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
@@ -1691,6 +1704,10 @@
         .hbox > DIV > .c9-menu-btn {
             height : 25px;
             margin: 0 !important;
+        }
+
+        .c9-menu-btnDisabled.c9-menu-btn .c9-label {
+            color: #999;
         }
     ]]></a:style>
 
@@ -9516,9 +9533,6 @@
         padding : 0 0 0 0;
         margin : 0 auto;
         position:relative;
-
-        background: rgba(24,24,24,.9) url(images/c9-noise.png);
-        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
     }
 
     .editor_tab .btnsesssioncontainer {
@@ -9535,7 +9549,7 @@
         */
         clip: rect(0px 3000px 28px 0px);
 
-        /*background: rgba(24,24,24,.9) url(images/c9-noise.png);*/
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
         position : relative;
         z-index : 100;
 
@@ -9543,7 +9557,7 @@
            -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
                 box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;*/
 
-        /*box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;*/
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
         margin-bottom: 1px;
 
         display : -webkit-box;
@@ -10258,7 +10272,7 @@
     }
 
     .editor_tab:not(.empty) {
-        /*background: #F0F0F0 none;*/
+        background: #F0F0F0 none;
     }
 ]]></a:style>
 <a:style condition="apf.isGecko">
@@ -12081,6 +12095,7 @@
         .filemgr-tree:not(.treeOutline) .item-fix.root .item SPAN {
             background-image:url(images/tree_close_arrow_small.png);
             background-repeat: no-repeat;
+            top: 2px;
         }
         .treeOutline .item-fix.root.min .item SPAN {
             background-image:url(images/tree_close_arrow_small.png) !important;
@@ -12116,16 +12131,22 @@
         }
 
         .filemgr-tree .item LABEL .caption {
+            width: 123px;
             font-family : Tahoma, Arial;
             font-size   : 11px;
             display:block;
             position:relative;
             overflow:hidden;
             height:16px;
-            padding:1px 0 0 23px;
+            padding:1px 0 0 20px;
             text-decoration:none;
             white-space: nowrap;
         }
+
+        .filemgr-tree .folder .item label .caption {
+            top: -2px;
+        }
+
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
             color       : #101010;
         }
@@ -12268,13 +12289,39 @@
         .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
             opacity : 0.5;
         }
+
+        .filemgr-tree .item label {background-image:url(icons/file_tree/file_tree.png);background-repeat:no-repeat}
+        .filemgr-tree div.page_white_wrench label{background-position:0px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_text label{background-position:-16px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_ruby label{background-position:0px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_picture label{background-position:-16px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_php label{background-position:-32px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_h label{background-position:-32px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_go label{background-position:0px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_flash label{background-position:-16px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cup label,div.page_white_cup span{background-position:-32px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_csharp label{background-position:-48px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cplusplus label{background-position:-48px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_coldfusion label{background-position:-48px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code_red label{background-position:0px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code label{background-position:-16px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_c label{background-position:-32px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_actionscript label{background-position:-48px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_acrobat label{background-position:-64px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white label{background-position:-64px -16px;width:16px;height:16px;}
+        .filemgr-tree div.image label{background-position:-80px 0px;width:14px;height:14px;}
+        .filemgr-tree div.html label{background-position:-64px -32px;width:16px;height:11px;}
+        .filemgr-tree div.css label{background-position:-64px -43px;width:16px;height:11px;}
+        .filemgr-tree div.folder label{background-position:0px -64px;width:15px;height:15px;}
+
+        .filemgr-tree div.item-fix div.label-content {padding-left: 5px};
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
         }
         .filemgr-tree.not(treeOutline) .item LABEL .caption {
-            padding:2px 0 0 23px;
+            padding:2px 0 0 20px;
         }
 
         #txt_rename {
@@ -12921,7 +12968,7 @@
             .ace_one-line .ace_cursor {
                 border-left-width: 1px;
             }
-            .ace_one-line .ace_hidden-cursors {
+            .ace_one-line .ace_cursor.ace_hidden {
                 opacity: 0;
             }
             .ace_one-line .ace_scroller {
