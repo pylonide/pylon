@@ -817,7 +817,7 @@ module.exports = ext.register("ext/editors/editors", {
                 }
                 else {
                     anims.animate(tabEditors.$buttons, {
-                        paddingRight: (hboxDockPanel.width - 26 > 0 ? hboxDockPanel.width - 26 : 0) + "px",
+                        paddingRight: "4px",
                         timingFunction: e.options.timingFunction,
                         duration: e.options.duration
                     }, function(){
