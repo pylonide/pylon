@@ -1,18 +1,18 @@
 .language_highlight_default {
     position: absolute;
-    border-bottom: dotted 1px green;
+    border-bottom: solid 1px green;
     z-index: 2000;
 }
 
 .language_highlight_error {
     position: absolute;
-    border-bottom: dotted 1px rgb(224, 4, 4);
+    border-bottom: solid 1px rgb(224, 4, 4);
     z-index: 2000;
 }
 
 .language_highlight_warning {
     position: absolute;
-    border-bottom: dotted 1px #DDC50F;
+    border-bottom: solid 1px #DDC50F;
     z-index: 2000;
 }
 
