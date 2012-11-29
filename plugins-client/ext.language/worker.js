@@ -623,7 +623,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
 
         _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
-            _self.sender.emit("definition", { pos: pos, results: results });
+            _self.sender.emit("definition", { pos: pos, results: results || [] });
         });
     };
 
@@ -632,7 +632,7 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
 
         _self.$getDefinitionDeclarations(pos.row, pos.column, function(results) {
-            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!results.length });
+            _self.sender.emit("isJumpToDefinitionAvailableResult", { value: !!(results && results.length) });
         });
     };
 
