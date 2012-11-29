@@ -54,6 +54,14 @@
         .fakehbox.static{
             position : static;
         }
+
+        .bar-offline-cover {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -255,6 +263,11 @@
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
+        }
+
+        .c9-menu-bar .c9-mbar-bcont .c9-simple-btnDisabled.c9-mbar-minimize:hover {
+            background-position: 0 -70px;
+            cursor: default;
         }
         .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
@@ -1704,6 +1717,10 @@
         .hbox > DIV > .c9-menu-btn {
             height : 25px;
             margin: 0 !important;
+        }
+
+        .c9-menu-btnDisabled.c9-menu-btn .c9-label {
+            color: #999;
         }
     ]]></a:style>
 
