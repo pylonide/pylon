@@ -29,7 +29,7 @@ module.exports = ext.register("ext/offline/offline", {
         var _self   = this;
         var barCover = barOfflineCover;
         tabEditors.appendChild(barCover);
-        barCover.parentNode.removeNode(barCover)
+        barCover.removeNode();
 
         var offline = this.offline = new Offline("cloud9", (window.location.pathname + "/$reconnect").replace(/\/\//g, "/"));
 
