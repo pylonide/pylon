@@ -25,7 +25,7 @@ var skin = require("text!ext/runpanel/skin.xml");
 var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
 
-/*global stProcessRunning, barTools, mnuContext, btnRun, tabEditors, mnuCtxEditor,
+/*global stProcessRunning, barTools, mnuContextTabs, btnRun, tabEditors, mnuCtxEditor,
 mnuCtxEditorRevisions, lstRunCfg, tabDebug, tabDebugButtons, cbRunDbgDebugMode,
 btnRunDbgRun, mnuRunCfg, txtCmdArgs, trFiles, ddRunnerSelector, hbxOtherRuntime*/
 
@@ -134,13 +134,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 command : "runthistab",
                 disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
             }), 400),
-            Menus.addItemByPath("View/Tabs/~", new apf.divider(), 300),
-            Menus.addItemByPath("~", new apf.divider(), 800, mnuContext),
-            Menus.addItemByPath("Run This File", new apf.item({
-                command : "runthistab",
-                disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
-            }), 850, mnuContext)
+            Menus.addItemByPath("View/Tabs/~", new apf.divider(), 300)
         );
+
+        ide.addEventListener("init.ext/tabbehaviors/tabbehaviors", function(){
+            _self.nodes.push(
+                Menus.addItemByPath("~", new apf.divider(), 800, mnuContextTabs),
+                Menus.addItemByPath("Run This File", new apf.item({
+                    command : "runthistab",
+                    disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
+                }), 850, mnuContextTabs)
+            );
+        });
 
         Tooltip.add(btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications, or run your <span>PHP</span>, <span>Python</span>, or <span>Ruby</span> code.\

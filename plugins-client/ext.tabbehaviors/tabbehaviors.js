@@ -7,7 +7,7 @@
 
 define(function(require, exports, module) {
 
-/*global tabEditors mnuContextTabs mnuContext trFiles*/
+/*global tabEditors mnuContextTabs trFiles*/
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -73,6 +73,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     init : function(amlNode){
         var _self = this;
+        var mnuContext;
 
         this.commands.each(function(item){
             var a = item[item.length - 1];
