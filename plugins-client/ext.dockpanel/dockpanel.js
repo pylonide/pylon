@@ -125,17 +125,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 _self.layout.loadState(state);
                 _self.loaded = true;
                 ide.dispatchEvent("dockpanel.loaded", {state: state});
-
-                _self.setParentHboxTop(
-                    apf.isFalse(settings.model.queryValue("auto/tabs/@show")) ? -15 : 0,
-                    apf.isFalse(settings.model.queryValue("general/@animateui"))
-                );
             });
         });
 
-        ide.addEventListener("tabs.visible", function(e){
-            _self.setParentHboxTop(!e.value ? -15 : 0, e.noanim);
-        });
+        _self.updateParentHboxTop();
+        ide.addEventListener("menus.restore", _self.updateParentHboxTop);        
+        ide.addEventListener("menus.minimize", _self.updateParentHboxTop);
 
         this.nodes.push(
             menus.addItemByPath("View/Dock Panels/", null, 150),
@@ -166,15 +161,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         );
     },
 
-    setParentHboxTop : function(top, noAnim){
-        if (noAnim) {
-            hboxDockPanel.$ext.style.top = top + "px";
-        }
-        else {
-            anims.animate(hboxDockPanel.$ext, {
-                top: top + "px"
-            });
-        }
+    updateParentHboxTop : function() {
+        var hbox = hboxDockPanel.$ext;
+        var top = menus.minimized ? 22 : 3;
+        hbox.style.paddingTop = top + "px";
     },
 
     saveSettings : function(){
