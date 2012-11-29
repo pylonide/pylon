@@ -202,14 +202,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         ide.addEventListener("init.ext/code/code", function() {
             setTimeout(function() {
+                var beforeNode = typeof mnuCtxEditorRevisions != "undefined"
+                    ? mnuCtxEditorRevisions
+                    : mnuCtxEditorCut;
                 _self.nodes.push(
                     mnuCtxEditor.insertBefore(new apf.item({
                         id : "mnuCtxEditorRunThisFile",
                         caption : "Run This File",
                         command: "runthistab",
                         disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
-                    }), mnuCtxEditorRevisions),
-                    mnuCtxEditor.insertBefore(new apf.divider(), mnuCtxEditorRevisions)
+                    }), beforeNode),
+                    mnuCtxEditor.insertBefore(new apf.divider(), beforeNode)
                 );
             });
         });
