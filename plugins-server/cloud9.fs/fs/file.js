@@ -41,7 +41,6 @@ require("util").inherits(jsDAV_FS_File, jsDAV_FS_Node);
             });
         }
         else {
-
             this.vfs.mkfile(path, {}, function(err, meta) {
                 if (err)
                     return callback(err);
@@ -81,6 +80,8 @@ require("util").inherits(jsDAV_FS_File, jsDAV_FS_Node);
                 // can continue handling the request.
                 callback();
             });
+
+            if (stream.resume) stream.resume();
         });
 
     };
