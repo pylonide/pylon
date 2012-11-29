@@ -326,14 +326,13 @@ module.exports = ext.register("ext/debugger/debugger", {
             ["resume", "stepinto", "stepover", "stepout"]);
 
         this.nodes.each(function(item){
-            item.destroy(true, true);
             dock.unregisterPage(item);
         });
 
         tabDebug.destroy(true, true);
         this.$layoutItem.destroy(true, true);
 
-        this.nodes = [];
+        this.$destroy();
     },
 
     registerDebugHandler : function(handler) {

@@ -13,7 +13,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
-    
+
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
@@ -321,6 +321,11 @@ Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidenc
     return result;
 };
 
+Scope.prototype.declareAlias = function(kind, originalName, newName) {
+    var vars = this.getVars(kind);
+    vars["_" + newName] = vars["_" + originalName];
+};
+
 Scope.prototype.getVars = function(kind) {
     if (kind)
         return this.vars[kind] = this.vars[kind] || {};
@@ -369,7 +374,7 @@ var SCOPE_ARRAY = Object.keys(GLOBALS).concat(KEYWORDS);
 
 handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
 
     var matches = completeUtil.findCompletions(identifier, SCOPE_ARRAY);
     callback(matches.map(function(m) {
@@ -383,7 +388,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
     }));
 };
 
-handler.analyze = function(doc, ast, callback) {
+handler.analyze = function(value, ast, callback) {
     var handler = this;
     var markers = [];
     
@@ -445,6 +450,7 @@ handler.analyze = function(doc, ast, callback) {
                         }
                     }
                     else {
+                        node[0].setAnnotation("scope", scope);
                         scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e, inCallback, inLoop);
@@ -621,21 +627,20 @@ handler.analyze = function(doc, ast, callback) {
             }
         }
     }
-    
+
     var jshintMarkers = [];
     var jshintGlobals = {};
     if (handler.isFeatureEnabled("jshint")) {
-        jshintMarkers = jshint.analyzeSync(doc, ast);
+        jshintMarkers = jshint.analyzeSync(value, ast);
         jshintGlobals = jshint.getGlobals();
     }
-    
+
     if (ast) {
         var rootScope = new Scope();
         scopeAnalyzer(rootScope, ast);
-        callback(markers.concat(jshintMarkers));
-    } else {
-        callback(jshintMarkers);
     }
+
+    callback(markers.concat(jshintMarkers));
 };
 
 var isCallbackCall = function(node) {
@@ -672,6 +677,7 @@ var isCallback = function(node) {
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
+
     var markers = [];
     var enableRefactorings = [];
     
@@ -736,6 +742,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
 handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!fullAst)
         return callback();
+
     var v;
     var mainNode;
     currentNode.rewrite(

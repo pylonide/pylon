@@ -71,14 +71,11 @@
         "ext/main/main", 
         "treehugger/traverse",
         "treehugger/js/parse",
-        "v8debug/Breakpoint",
-        "v8debug/ChromeDebugMessageStream",
-        "v8debug/WSChromeDebugMessageStream",
-        "v8debug/WSV8DebuggerService",
-        "v8debug/DevToolsService",
-        "v8debug/StandaloneV8DebuggerService",
-        "v8debug/V8DebuggerService",
+        "v8debug/util",
         "v8debug/V8Debugger"
+    ],
+    exclude: [
+        "text"
     ],
     out: "./src/core.packed.js",
     inlineText: true,

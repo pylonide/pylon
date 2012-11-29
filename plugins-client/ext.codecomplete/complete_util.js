@@ -2,7 +2,7 @@ define(function(require, exports, module) {
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
-function retrievePreceedingIdentifier(text, pos, regex) {
+function retrievePrecedingIdentifier(text, pos, regex) {
     regex = regex || ID_REGEX;
     var buf = [];
     for (var i = pos-1; i >= 0; i--) {
@@ -72,7 +72,12 @@ function fetchText(staticPrefix, path) {
         return false;
 }
 
-exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
+/** @deprecated Use retrievePrecedingIdentifier */
+exports.retrievePreceedingIdentifier = function() {
+    console.error("Deprecated: 'retrievePreceedingIdentifier' - use 'retrievePrecedingIdentifier' instead"); 
+    return retrievePrecedingIdentifier.apply(null, arguments);
+};
+exports.retrievePrecedingIdentifier = retrievePrecedingIdentifier;
 exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;
 exports.findCompletions = findCompletions;
 exports.fetchText = fetchText;

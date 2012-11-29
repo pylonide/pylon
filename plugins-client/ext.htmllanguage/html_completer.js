@@ -36,17 +36,17 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 "\">^^", "</", match[1] || "div", ">"].join("");
         }
         callback([{
-              name        : match[1]+match[2]+match[3],
-              replaceText : replaceText,
-              doc         : "<pre>" + replaceText.replace("\^\^", "&#9251;") + "</pre>",
-              icon        : null,
-              meta        : "Jade-Haml",
-              idRegex     : JADE_ID_REGEX,
-              priority    : 100
+              name            : match[1]+match[2]+match[3],
+              replaceText     : replaceText,
+              doc             : "<pre>" + replaceText.replace("\^\^", "&#9251;") + "</pre>",
+              icon            : null,
+              meta            : "Jade-Haml",
+              identifierRegex : JADE_ID_REGEX,
+              priority        : 100
         }]);
     }
     else {
-        var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+        var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
         var allIdentifiers = Object.keys(htmlSnippets);
         var matches = completeUtil.findCompletions(identifier, allIdentifiers);
         callback(matches.map(function(m) {

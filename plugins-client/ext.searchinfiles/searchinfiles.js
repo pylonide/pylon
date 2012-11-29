@@ -710,28 +710,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         session.$searchHighlight = null;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         menus.remove("Find/~", 10000);
         menus.remove("Find in Files...");
 
         commands.removeCommandByName("searchinfiles");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 }, libsearch));
 

@@ -42,14 +42,9 @@ module.exports = ext.register("ext/richtext/richtext", {
     },
 
     destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-
         if (this.rteEditor)
             this.rteEditor.destroy(true, true);
-
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

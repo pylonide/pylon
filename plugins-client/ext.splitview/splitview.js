@@ -25,6 +25,7 @@ var mnuCloneView, mnuSplitAlign;
 
 var restoring = false;
 var restoreQueue = [];
+var SUPPORTED_EDITORS = ["ext/code/code", "ext/preview/preview"];
 
 module.exports = ext.register("ext/splitview/splitview", {
     name     : "Split View",
@@ -549,8 +550,6 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
 
     updateSplitView: function(previous, next) {
-        //if (restoring)
-        //    return;
         var editor;
         var doc = next.$doc;
         var at  = next.$at;
@@ -590,7 +589,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             editor.show();
             return;
         }
-
+console.log("showing split?");
         Splits.show(split);
         mnuSplitAlign.setAttribute("checked", split.gridLayout == "3rows");
 
@@ -791,31 +790,15 @@ module.exports = ext.register("ext/splitview/splitview", {
         var editor;
         for (var i = 0, l = arguments.length; i < l; ++i) {
             editor = arguments[i];
-            if (!editor || editor.path != "ext/code/code")
+            if (!editor || SUPPORTED_EDITORS.indexOf(editor.path) === -1)
                 return false;
         }
         return true;
     },
 
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
     destroy : function(){
         Commands.removeCommandsByName(["mergetableft", "mergetabright"]);
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

@@ -36,7 +36,6 @@ var cssString = require("text!ext/revisions/style.css");
 var Code = require("ext/code/code");
 
 var beautify = require("ext/beautify/beautify");
-var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
@@ -96,6 +95,11 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hook: function() {
+        // We don't want to have revisions for guests.
+        if (ide.readonly) {
+            return;
+        }
+
         var self = this;
         commands.addCommand({
             name: "revisionpanel",
@@ -138,7 +142,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }), mnuCtxEditorCut)
             );
         });
-
 
         // Declaration of event listeners
         this.$onMessageFn = this.onMessage.bind(this);
@@ -326,7 +329,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     onExternalChange: function(e) {
         if (e.action == "remove")
             return;
-        
+
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -726,7 +729,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
 
-                    this.generateCompactRevisions(revObj);
+                    revObj.compactRevisions = Util.generateCompactRevisions(revObj);
                     ide.dispatchEvent("revisionSaved", {
                         ts: ts,
                         path: message.path,
@@ -752,8 +755,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (message.body && message.body.revisions) {
                     revObj.allRevisions = message.body.revisions;
                 }
-
-                this.generateCompactRevisions(revObj);
+                revObj.compactRevisions = Util.generateCompactRevisions(revObj);
                 if (!message.nextAction || !message.id) {
                     if (page && CoreUtil.getDocPath(page) === message.path &&
                         page.$showRevisions === true) {
@@ -991,88 +993,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         options.subCommand = "getRevisionHistory";
 
         ide.send(options);
-    },
-
-    /**
-     * Revisions#generateCompactRevisions() -> Object
-     *
-     * Creates a compacted revisions object from the extended revisions object
-     * returned from the server. A compacted revisions object (CRO) is a revision
-     * object with less detailed revisions, and it does that by grouping revisions
-     * that are close in time. That lapse in time is determined by the `TIMELAPSE`
-     * constant.
-     *
-     * Assumes that `allRevisions` is populated at this point.
-     **/
-    generateCompactRevisions: function(revObj) {
-        var all = revObj.allRevisions;
-        if (!all)
-            return;
-
-        var compactRevisions = {};
-        var finalTS = [];
-        var isRestoring = function(id) { return all[id] && all[id].restoring; };
-
-        // This extracts the timestamps that belong to 'restoring' revisions to
-        // put them in their own slot, since we don't want them to be grouped in
-        // the compacted array. They should be independent of the compacting to
-        // not confuse the user.
-        var repack = function(prev, id) {
-            var last = prev[prev.length - 1];
-            if (last.length === 0 || (!isRestoring(id) && !isRestoring(last[0]))) {
-                last.push(id);
-            }
-            else { prev.push([id]); }
-            return prev;
-        };
-
-        var timestamps = Util.keysToSortedArray(revObj.allRevisions);
-        Util.compactRevisions(timestamps).forEach(function(ts) {
-            finalTS.push.apply(finalTS, ts.__reduce(repack, [[]]));
-        });
-
-        revObj.groupedRevisionIds = finalTS;
-
-        finalTS.forEach(function(tsGroup) {
-            // The property name will be the id of the last timestamp in the group.
-            var id = tsGroup[tsGroup.length - 1];
-            var groupObj = finalTS[id] = {
-                // Store first timestamp in the group, for future nextActions
-                first: tsGroup[0],
-                patch: []
-            };
-
-            // We get all the properties from the revision that has the last
-            // timestamp in the group
-            Object.keys(all[id]).forEach(function(key) {
-                if (key !== "patch") { groupObj[key] = all[id][key]; }
-            });
-
-            var contributors = [];
-            tsGroup.forEach(function(ts) {
-                if (all[ts]) {
-                    // Add the patch to the list. In this case, and because of
-                    // the Diff format nature, it will just work by concatenating
-                    // strings.
-                    groupObj.patch.push(all[ts].patch);
-
-                    // Add the contributors to every revision in the group to the
-                    // contributors in the head revision `contributors` array.
-                    if (all[ts].contributors) {
-                        all[ts].contributors.forEach(function(ct) {
-                            if (contributors.indexOf(ct) === -1) {
-                                contributors.push(ct);
-                            }
-                        });
-                    }
-                }
-            });
-            groupObj.contributors = contributors;
-            compactRevisions[id] = groupObj;
-        });
-
-        revObj.compactRevisions = compactRevisions;
-        return compactRevisions;
     },
 
     /**
@@ -1352,8 +1272,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
 
             beautify.disable();
-            quicksearch.offsetWidth = quicksearch.defaultOffset + BAR_WIDTH;
-            quicksearch.updateBarPosition();
             statusbar.offsetWidth = BAR_WIDTH;
             statusbar.setPosition();
             stripws.disable();
@@ -1394,8 +1312,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
 
         beautify.enable();
-        quicksearch.offsetWidth = quicksearch.defaultOffset;
-        quicksearch.updateBarPosition();
         statusbar.offsetWidth = 0;
         statusbar.setPosition();
         stripws.enable();
@@ -1473,25 +1389,19 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     enable: function() {
-        this.nodes.each(function(item) {
-            item.enable();
-        });
         this.enableEventListeners();
+        this.$enable();
     },
 
     disable: function() {
         this.hide();
-        this.nodes.each(function(item){
-            item.disable();
-        });
-
         tabEditors.getPages().forEach(function(page) {
             if (page.$mdlRevisions) {
                 delete page.$mdlRevisions;
             }
         }, this);
-
         this.disableEventListeners();
+        this.$disable();
     },
 
     destroy: function() {
@@ -1516,11 +1426,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.worker.terminate();
             this.worker = null;
         }
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 });

@@ -201,11 +201,8 @@ return module.exports = ext.register("ext/minimap/minimap", {
     },
 
     destroy: function() {
-        this.nodes.each(function(item) {
-            return item.destroy();
-        });
+        this.$destroy();
         this.hide();
-        this.nodes = [];
         this.map.destroy();
         this.map = null;
         this.panel.destroy(true, true);

@@ -37,7 +37,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             name: "savetabsession",
             hint: "save the current tab state as a new session",
             msg: "Save tab session.",
-            bindKey: {mac: "Shift-Ctrl-S", win: "Shift-Ctrl-S"},
+            bindKey: {mac: "Ctrl-Shift-S", win: "Alt-Shift-S"},
             exec: function () {
                 ext.initExtension(_self);
                 winSaveSessionAs.show();
@@ -230,10 +230,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         menus.enable("View/Tabs/Load Tab Session");
         menus.enable("View/Tabs/Save Tab Session");
         menus.enable("View/Tabs/Delete Tab Session");
-
-        this.nodes.each(function(item){
-            item.enable();
-        });
+        this.$enable();
     },
 
     disable : function(){
@@ -241,10 +238,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         menus.disable("View/Tabs/Load Tab Session");
         menus.disable("View/Tabs/Save Tab Session");
         menus.disable("View/Tabs/Delete Tab Session");
-
-        this.nodes.each(function(item){
-            item.disable();
-        });
+        this.$disable();
     },
 
     destroy : function(){
@@ -252,11 +246,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         menus.remove("View/Tabs/Load Tab Session");
         menus.remove("View/Tabs/Save Tab Session");
         menus.remove("View/Tabs/Delete Tab Session");
-
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

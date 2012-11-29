@@ -15,7 +15,7 @@ var handler = module.exports = Object.create(baseLanguageHandler);
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
-    
+
 handler.parse = function(code, callback) {
     var result;
     try {
@@ -44,7 +44,7 @@ handler.getPos = function(node, callback) {
 
 /* Ready to be enabled to replace Narcissus, when mature
 
-handler.analyze = function(doc, ast) {
+handler.analyze = function(value, ast) {
     var error = ast.getAnnotation("error");
     if (error)
         return [{

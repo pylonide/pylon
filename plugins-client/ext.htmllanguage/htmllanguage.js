@@ -15,20 +15,10 @@ module.exports = ext.register("ext/htmllanguage/htmllanguage", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, language],
-    nodes   : [],
     alone   : true,
 
     init : function() {
         language.registerLanguageHandler("ext/htmllanguage/html_completer");
-    },
-
-    enable : function() {
-    },
-
-    disable : function() {
-    },
-
-    destroy : function() {
     }
 });
 

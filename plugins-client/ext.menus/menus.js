@@ -150,7 +150,7 @@ module.exports = ext.register("ext/menus/menus", {
                 value && "{ide.commandManager." + value + "}" || "");
 
             this.onclick = function(){
-                commands.exec(value);
+                commands.exec(value, null, {source: "click"});
                 var command = commands.commands[value];
                 if (command && command.focusContext)
                     self["req"+"uire"]("ext/editors/editors").currentEditor.focus();
@@ -429,6 +429,7 @@ module.exports = ext.register("ext/menus/menus", {
 
     destroy : function(){
         this.hbox.destroy(true, true);
+        this.$destroy();
         //this.splitter.destroy(true, true);
     }
 });

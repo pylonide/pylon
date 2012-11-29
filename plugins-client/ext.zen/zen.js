@@ -546,29 +546,20 @@ module.exports = ext.register("ext/zen/zen", {
 
     enable : function(){
         btnZenFullscreen.show();
-        this.nodes.each(function(item){
-            item.enable();
-        });
+        this.$enable();
     },
 
     disable : function(){
         if (this.isFocused)
             this.escapeFromZenMode(false, false);
         btnZenFullscreen.hide();
-        this.nodes.each(function(item){
-            item.disable();
-        });
+        this.$disable();
     },
 
     destroy : function(){
         menus.remove("View/Zen");
-        
         commands.removeCommandsByName(["zen", "zenslow"]);
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 

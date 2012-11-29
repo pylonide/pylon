@@ -8,7 +8,8 @@ define(function(require, exports, module) {
 var ide     = require("core/ide");
 var ext     = require("core/ext");
 var Offline = require("ext/offline/lib-offline");
-var markup  = require("text!ext/offline/skin.xml");
+var markup  = require("text!ext/offline/offline.xml");
+var css     = require("text!ext/offline/style.css");
 
 module.exports = ext.register("ext/offline/offline", {
     dev      : "Ajax.org",
@@ -16,14 +17,20 @@ module.exports = ext.register("ext/offline/offline", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-
+    css      : css,
     offlineStartup : 0,
 
     /**
      * Init method to create the offline logic
      */
     init : function(){
+        apf.importCssString(this.css || "");
+
         var _self   = this;
+        var barCover = barOfflineCover;
+        tabEditors.appendChild(barCover);
+        barCover.removeNode();
+
         var offline = this.offline = new Offline("cloud9", (window.location.pathname + "/$reconnect").replace(/\/\//g, "/"));
 
         // preload the offline images programmatically:
@@ -49,8 +56,13 @@ module.exports = ext.register("ext/offline/offline", {
 
             if (ide.local)
                 offlineNotifyDialog.show();
-			
+
             _self.bringExtensionsOffline();
+
+            if (!window.barOfflineCover)
+                tabEditors.appendChild(barOfflineCover);
+
+            barOfflineCover.show();
         });
 
         // make sure that ide.onLine is actual 1 here already
@@ -69,6 +81,8 @@ module.exports = ext.register("ext/offline/offline", {
             if (ide.local)
                 offlineNotifyDialog.hide();
 
+            if (window.barOfflineCover)
+                barOfflineCover.hide();
         });
 
         ide.addEventListener("localOffline", function(e) {
@@ -89,20 +103,10 @@ module.exports = ext.register("ext/offline/offline", {
 
         if (this.offlineStartup)
             ide.dispatchEvent("afteroffline"); // Faking offline startup
-        
+
         // We may miss the first socketConnect event
         if (ide.connected)
             offline.goOnline();
-    },
-
-    enable : function(){
-    },
-
-    disable : function(){
-    },
-
-    destroy : function(){
-        //Remove all events
     },
 
     bringExtensionsOnline : function(){

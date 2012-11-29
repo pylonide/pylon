@@ -255,9 +255,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 // browser doesn't recognize (no mime-type), so... let's check on file name
                 // containing a . as well, it will only change behavior in Chrome a.t.m.
                 // and as of Chrome 21 folder upload is available there
-                (files.length == 1 && files[0].type == "" && 
+                (files.length == 1 && files[0].type == "" &&
                     files[0].name.indexOf(".") === -1)) {
-                    
+
             ext.initExtension(this);
 
             winNoFolderSupport.show();
@@ -592,7 +592,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         if (!_self.worker)
                             _self.initWorker();
 
-                        _self.worker.postMessage({cmd: "connect", id: file.name, file: file, path: file.targetFolder.getAttribute("path")});
+                        _self.worker.postMessage({
+                            cmd: "connect",
+                            id: file.name,
+                            file: file,
+                            path: file.targetFolder.getAttribute("path"),
+                            _csrf: apf.config["csrf-token"]
+                        });
                     }
                 }
                 _self.upload = upload;
@@ -748,26 +754,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         form.append("upload", file);
 
         return form;
-    },
-
-
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
     }
 });
 
