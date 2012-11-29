@@ -44,6 +44,8 @@ module.exports = ext.register("ext/zen/zen", {
     handleLeftMove : false,
     handleRightMove : false,
 
+    entered: false,
+
     nodes : [],
 
     hook : function(){
@@ -158,18 +160,22 @@ module.exports = ext.register("ext/zen/zen", {
         });
 
         ide.addEventListener("enterzen", function() {
-            vbMain.parentNode.appendChild(new apf.vbox({
-                anchors: "0 0 0 0",
-                id: "vbZen",
-                "class": "vbZen",
-                visible: false
-            }));
+            // prevent adding vbZen every time the button is clicked
+            if (!_self.entered) {
+                _self.entered = true;
+                vbMain.parentNode.appendChild(new apf.vbox({
+                    anchors: "0 0 0 0",
+                    id: "vbZen",
+                    "class": "vbZen",
+                    visible: false
+                }));
 
-            vbZen.addEventListener("resize", function(e) {
-                if (_self.isFocused) {
-                    _self.calculatePositions();
-                }
-            });
+                vbZen.addEventListener("resize", function(e) {
+                    if (_self.isFocused) {
+                        _self.calculatePositions();
+                    }
+                });
+            }
         });
 
         setTimeout(function() {
@@ -552,29 +558,20 @@ module.exports = ext.register("ext/zen/zen", {
 
     enable : function(){
         btnZenFullscreen.show();
-        this.nodes.each(function(item){
-            item.enable();
-        });
+        this.$enable();
     },
 
     disable : function(){
         if (this.isFocused)
             this.escapeFromZenMode(false, false);
         btnZenFullscreen.hide();
-        this.nodes.each(function(item){
-            item.disable();
-        });
+        this.$disable();
     },
 
     destroy : function(){
         menus.remove("View/Zen");
-        
         commands.removeCommandsByName(["zen", "zenslow"]);
-        
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
+        this.$destroy();
     }
 });
 
