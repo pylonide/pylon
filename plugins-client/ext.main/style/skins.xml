@@ -12137,9 +12137,9 @@
             font-size   : 11px;
             display:block;
             position:relative;
-            overflow:hidden;
+            overflow:visible;
             height:16px;
-            padding:1px 0 0 23px;
+            padding:1px 0 0 20px;
             text-decoration:none;
             white-space: nowrap;
         }
@@ -12285,6 +12285,54 @@
         .filemgr-tree .syncing_added, .filemgr-tree .syncing_added.selected{
             opacity : 0.5;
         }
+
+        /* Single sprite for tree file icons; if you ever add a new one, make sure it's 16px by 16px !!! */
+
+        .filemgr-tree div.page_white_wrench div.label-content label,
+        .filemgr-tree div.page_white_text div.label-content label,
+        .filemgr-tree div.page_white_ruby div.label-content label,
+        .filemgr-tree div.page_white_picture div.label-content label,
+        .filemgr-tree div.page_white_php div.label-content label,
+        .filemgr-tree div.page_white_h div.label-content label,
+        .filemgr-tree div.page_white_go div.label-content label,
+        .filemgr-tree div.page_white_flash div.label-content label,
+        .filemgr-tree div.page_white_cup div.label-content label,
+        .filemgr-tree div.page_white_csharp div.label-content label,
+        .filemgr-tree div.page_white_cplusplus div.label-content label,
+        .filemgr-tree div.page_white_coldfusion div.label-content label,
+        .filemgr-tree div.page_white_code_red div.label-content label,
+        .filemgr-tree div.page_white_code div.label-content label,
+        .filemgr-tree div.page_white_c div.label-content label,
+        .filemgr-tree div.page_white_actionscript div.label-content label,
+        .filemgr-tree div.page_white_acrobat div.label-content label,
+        .filemgr-tree div.page_white div.label-content label,
+        .filemgr-tree div.image div.label-content label,
+        .filemgr-tree div.html div.label-content label,
+        .filemgr-tree div.folder div.label-content label,
+        .filemgr-tree div.css div.label-content label{background-image:url('icons/file_tree/file_tree.png');background-repeat:no-repeat}
+        .filemgr-tree div.page_white_wrench div.label-content label{background-position:0px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_text div.label-content label{background-position:-16px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_ruby div.label-content label{background-position:0px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_picture div.label-content label{background-position:-16px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_php div.label-content label{background-position:-32px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_h div.label-content label{background-position:-32px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_go div.label-content label{background-position:0px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_flash div.label-content label{background-position:-16px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cup div.label-content label{background-position:-32px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_csharp div.label-content label{background-position:-48px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_cplusplus div.label-content label{background-position:-48px -16px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_coldfusion div.label-content label{background-position:-48px -32px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code_red div.label-content label{background-position:0px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_code div.label-content label{background-position:-16px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_c div.label-content label{background-position:-32px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_actionscript div.label-content label{background-position:-48px -48px;width:16px;height:16px;}
+        .filemgr-tree div.page_white_acrobat div.label-content label{background-position:-64px 0px;width:16px;height:16px;}
+        .filemgr-tree div.page_white div.label-content label{background-position:-64px -16px;width:16px;height:16px;}
+        .filemgr-tree div.image div.label-content label{background-position:-64px -32px;width:16px;height:16px;}
+        .filemgr-tree div.html div.label-content label{background-position:-64px -48px;width:16px;height:16px;}
+        .filemgr-tree div.folder div.label-content label{background-position:0px -64px;width:16px;height:16px;}
+        .filemgr-tree div.css div.label-content label{background-position:-16px -64px;width:16px;height:16px;}
+
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {

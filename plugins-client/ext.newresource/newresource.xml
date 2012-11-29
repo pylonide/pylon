@@ -19,14 +19,20 @@
               margin    = "10 10 10 10"
               caption   = "[@caption]"
               icon      = "[@icon]"
-              class     = "noscrollbar"
+              class     = "noscrollbar newFileTemplate"
               scrollbar = "sbShared 12 12 55"
               each      = "item"
-              eachvalue = "[@value]"
-              style     = "overflow:hidden"
+              eachvalue = "[@name]"
+              style     = "overflow:hidden; background: white; border: 1px white"
+              skin      = "tree"
               onafterchoose = "
                 btnFileTemplateSave.dispatchEvent('click');
-              " />
+              ">
+              <a:each match="[item]">
+                  <a:caption  value="[@caption]" />
+                  <a:css match="[item]" value="{require('core/util').getFileIcon(%[.])}" />
+              </a:each>
+            </a:list>
             <a:hbox pack="end" padding="7" edge="10">
                 <a:button id="btnFileTemplateSave" width="80" default="2"
                   class="btn-green" skin="btn-default-css3" caption="Create"
@@ -45,9 +51,9 @@
 
     <a:model id="mdlFileTemplates">
         <templates>
-            <item value="txt" icon="page_white_text.png" caption="Text file"><![CDATA[]]></item>
-            <item value="js" icon="page_white_code.png" caption="JavaScript file"><![CDATA[]]></item>
-            <item value="js" icon="page_white_code.png" caption="Unit Test"><![CDATA["use strict";
+            <item name=".txt" icon="file_tree/file_tree.png" css="page_white_text" caption="Text file"><![CDATA[]]></item>
+            <item name=".js" icon="file_tree/file_tree.png" css="page_white_code" caption="JavaScript file"><![CDATA[]]></item>
+            <item name=".js" icon="file_tree/file_tree.png" css="page_white_code" caption="Unit Test"><![CDATA["use strict";
 require("./support/paths");
 
 var assert = require("assert");
@@ -64,9 +70,9 @@ module.exports = {
 if (typeof module !== "undefined" && module === require.main) {
     require("asyncjs").test.testcase(module.exports).exec()
 }]]></item>
-            <item value="stest" icon="page_white_code.png" caption="Selenium Test"><![CDATA[{}]]></item>
-            <item value="coffee" icon="page_white_code.png" caption="CoffeeScript file"><![CDATA[]]></item>
-            <item value="html" icon="html.png" caption="HTML file"><![CDATA[<!DOCTYPE html>
+            <item name=".stest" icon="file_tree/file_tree.png" css="page_white_code" caption="Selenium Test"><![CDATA[{}]]></item>
+            <item name=".coffee" icon="file_tree/file_tree.png" css="page_white_code" caption="CoffeeScript file"><![CDATA[]]></item>
+            <item name=".html" icon="file_tree/file_tree.png" css="html" caption="HTML file"><![CDATA[<!DOCTYPE html>
 <html>
     <head>
         <title> </title>
@@ -76,24 +82,24 @@ if (typeof module !== "undefined" && module === require.main) {
     </body>
 </html>
 ]]></item>
-            <item value="xml" icon="page_white_code_red.png" caption="XML file"><![CDATA[]]></item>
-            <item value="xq" icon="page_white_code.png" caption="XQuery file"><![CDATA[xquery version "1.0";
+            <item name=".xml" icon="file_tree/file_tree.png" css="page_white_code_red" caption="XML file"><![CDATA[]]></item>
+            <item name=".xq" icon="file_tree/file_tree.png" css="page_white_code" caption="XQuery file"><![CDATA[xquery version "1.0";
 let $message := "Hello World!"
 return <results>
   <message>{$message}</message>
 </results>]]></item>
-            <item value="css" icon="css.png" caption="CSS file"><![CDATA[]]></item>
-            <item value="scss" icon="css.png" caption="SCSS file"><![CDATA[]]></item>
-            <item value="svg" icon="page_white_picture.png" caption="SVG file"><![CDATA[]]></item>
-            <item value="py" icon="script_code.png" caption="Python file"><![CDATA[]]></item>
-            <item value="php" icon="page_white_php.png" caption="PHP file"><![CDATA[<?php
+            <item name=".css" icon="file_tree/file_tree.png" css="css" caption="CSS file"><![CDATA[]]></item>
+            <item name=".scss" icon="file_tree/file_tree.png" css="css" caption="SCSS file"><![CDATA[]]></item>
+            <item name=".svg" icon="file_tree/file_tree.png" css="page_white_picture" caption="SVG file"><![CDATA[]]></item>
+            <item name=".py" icon="file_tree/file_tree.png" css="page_white_code" caption="Python file"><![CDATA[]]></item>
+            <item name=".php" icon="file_tree/file_tree.png" css="page_white_php" caption="PHP file"><![CDATA[<?php
 
 ?>]]></item>
-            <item value="rb" icon="page_white_ruby.png" caption="Ruby file"><![CDATA[]]></item>
-            <item value="mli" icon="page_white_code.png" caption="OCaml file"><![CDATA[]]></item>
-            <item value="clj" icon="page_white_code.png" caption="Clojure file"><![CDATA[]]></item>
-            <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
-            <item value="js" icon="page_white_code.png" caption="Express file"><![CDATA[// *******************************************************
+            <item name=".rb" icon="file_tree/file_tree.png" css="page_white_ruby" caption="Ruby file"><![CDATA[]]></item>
+            <item name=".mli" icon="file_tree/file_tree.png" css="page_white_code" caption="OCaml file"><![CDATA[]]></item>
+            <item name=".clj" icon="file_tree/file_tree.png" css="page_white_code" caption="Clojure file"><![CDATA[]]></item>
+            <item name=".md" icon="file_tree/file_tree.png" css="page_white_text" caption="Markdown"><![CDATA[]]></item>
+            <item name=".js" icon="file_tree/file_tree.png" css="page_white_code" caption="Express file"><![CDATA[// *******************************************************
 // expressjs template
 //
 // assumes: npm install express
@@ -125,7 +131,7 @@ app.configure('production', function(){
 });
 // *******************************************************
 ]]></item>
-            <item value="js" icon="page_white_code.png" caption="Node.js web server"><![CDATA[var http = require('http');
+            <item name=".js" icon="file_tree/file_tree.png" css="page_white_code" caption="Node.js web server"><![CDATA[var http = require('http');
 http.createServer(function (req, res) {
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end('Hello World from Cloud9\n');
