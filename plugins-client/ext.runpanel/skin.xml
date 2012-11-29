@@ -8,7 +8,7 @@
                 cursor: default;
                 height: 197px;
             }
-    
+
             .listRC .rcItem{
                 color      : #cecece;
                 text-shadow   : #000 0px 1px 0px;
@@ -19,7 +19,7 @@
                 border-top:1px solid transparent;
                 border-bottom:1px solid transparent;
             }
-    
+
             .listRC .content{
                 cursor : pointer;
                 font-family : Arial, Tahoma;
@@ -30,7 +30,7 @@
                 text-overflow: ellipsis;
                 width: 115px;
             }
-    
+
             .listRC .content div{
                 font-family : Courier New;
                 padding : 2px 0 0 0;
@@ -38,7 +38,7 @@
                 white-space : nowrap;
                 overflow : hidden;
             }
-    
+
             .listRC .radiobutton {
                 width      : 16px;
                 height     : 17px;
@@ -48,19 +48,19 @@
                 left : 8px;
                 top : 2px;
             }
-    
+
             .listRC .rcItem .radiobutton:hover{
                 background-position : 0 -119px;
             }
-    
+
             .listRC .rcItem .radiobutton:active{
                 background-position : 0 -17px;
             }
-    
+
             .listRC .active .radiobutton:active {
                 background-position : 0 -51px !important;
             }
-    
+
             .listRC .selected {
                 border-top:1px solid #55a2e0;
                 border-bottom:1px solid #1166aa;
@@ -70,23 +70,23 @@
                 background : -moz-linear-gradient(center bottom, #1680d5 0%, #3692db 100%) repeat scroll 0 0 transparent;
                 color: #ffffff;
             }
-    
+
             .listRC .active .radiobutton {
                 background-position : 0 -34px;
             }
-    
+
             .listRC .active .radiobutton:hover{
                 background-position : 0 -102px;
             }
-    
+
             .listRCDisabled .radiobutton {
                 background-position : 0 -68px;
             }
-    
+
             .listRCDisabled .rcItem {
                 color : #bebebe;
             }
-    
+
             .listRC .rcItem.hover .btnDelete {
                 width               : 16px;
                 height              : 19px;
@@ -97,27 +97,27 @@
                 background-repeat   : no-repeat;
                 background-position : 0 0;
             }
-    
+
             .listRC .rcItem.hover .btnDelete:hover {
                 background-position : -15px 0;
             }
-    
+
             .listRC .rcItem.hover .btnDelete:active {
                 background-position : -31px 0;
             }
-    
+
             .listRC .selected .btnDelete {
                 background-position : 0 0;
             }
-    
+
             .listRC .selected .btnDelete:hover {
                 background-position : -15px 0;
             }
-    
+
             .listRC .selected .btnDelete:active {
                 background-position : -31px 0;
             }
-            
+
             .listRC #txt_rename{
                 border: 1px solid #bbb;
                 padding: 0px 15px 1px 1px;
@@ -130,10 +130,10 @@
                 height: 13px;
                 width: 100px;
                 display: block;
-                
+
             }
         ]]></a:style>
-    
+
         <a:presentation>
             <a:main container=".">
                 <div class="listRC">
@@ -170,12 +170,9 @@
                 height: 226px;
                 margin: -13px 0 0 -64px;
                 position: relative;
-                /*
-                -webkit-transition: all .2s ease;
-                -moz-transition: all .2s ease;
-                transition: all .2s ease;
-                */
-    
+            }
+            .mnuRunCfg.withOther .window {
+                height: 262px;
             }
             .mnuRunCfg .window .fbox {
                 height: 100%;
@@ -284,7 +281,7 @@
             .mnuRunCfg.showList .window .col1 {
                 width: 175px;
             }
-            
+
             .mnuRunCfg.fromRunBtn .window {
                 margin: -13px 0 0 -104px;
             }
@@ -292,7 +289,7 @@
         <a:presentation>
             <a:main container="." overlay="strong">
                 <blockquote class='mnuRunCfg'>
-    
+
                 </blockquote>
             </a:main>
         </a:presentation>

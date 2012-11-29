@@ -3,8 +3,7 @@
     <a:menu id="mnuRunCfg"
       skin  = "mnuRunCfg"
       skinset = "runpanel"
-      class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}"
-      ondisplay = "require('ext/runpanel/runpanel').onOpenMenuRunCfg()">
+      class = "{([{require('ext/settings/settings').model}::auto/configurations/@showruncfglist] == 'true' ? 'showList' : '')}">
         <div class="window">
             <div class="tooltip"></div>
             <div class="fbox">
@@ -79,7 +78,6 @@
                                     <a:label width="93" class="graylabel size-12 arial dark-bg">Runtime:</a:label>
                                     <a:dropdown id="ddRunnerSelector"
                                       flex      = "1"
-                                      value     = "{[{lstRunCfg.selected}::@value] || 'auto'}"
                                       default   = "default"
                                       skin      = "dropdown-dark-glossy"
                                       class     = "single-arrow">
@@ -93,6 +91,15 @@
                                         <a:item caption="Ruby" value="ruby" />
                                         <a:item caption="Other..." value="other" />
                                     </a:dropdown>
+                                </a:hbox>
+                                <a:hbox id="hbxOtherRuntime" height="36" align="center" visible="false">
+                                    <a:label width="93" class="graylabel size-12 arial dark-bg">Other runtime</a:label>
+                                    <a:textbox id="txtOtherRuntime"
+                                      skin     = "searchbox_textbox"
+                                      class    = "dark-bg"
+                                      flex     = "1"
+                                      value    = "[{lstRunCfg.selected}::@runtime]"
+                                      initial-message = "auto"/>
                                 </a:hbox>
                                 <a:hbox height="36" align="center">
                                     <a:label width="93" class="graylabel size-12 arial dark-bg">Cmd Line Args</a:label>

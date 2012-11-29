@@ -9,22 +9,25 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var noderunner = require("ext/noderunner/noderunner");
-var panels = require("ext/panels/panels");
-var settings = require("ext/settings/settings");
-var menus = require("ext/menus/menus");
-var tooltip = require("ext/tooltip/tooltip");
-var dock = require("ext/dockpanel/dockpanel");
-var save = require("ext/save/save");
+var util = require("core/util");
+
+var Noderunner = require("ext/noderunner/noderunner");
+var Panels = require("ext/panels/panels");
+var Settings = require("ext/settings/settings");
+var Menus = require("ext/menus/menus");
+var Tooltip = require("ext/tooltip/tooltip");
+var Dock = require("ext/dockpanel/dockpanel");
+var Save = require("ext/save/save");
+var Commands = require("ext/commands/commands");
+
 var markup = require("text!ext/runpanel/runpanel.xml");
 var skin = require("text!ext/runpanel/skin.xml");
 var markupSettings = require("text!ext/runpanel/settings.xml");
 var cssString = require("text!ext/runpanel/style.css");
-var commands = require("ext/commands/commands");
 
 /*global stProcessRunning, barTools, mnuContext, btnRun, tabEditors, mnuCtxEditor,
 mnuCtxEditorRevisions, lstRunCfg, tabDebug, tabDebugButtons, cbRunDbgDebugMode,
-btnRunDbgRun, mnuRunCfg, txtCmdArgs, trFiles*/
+btnRunDbgRun, mnuRunCfg, txtCmdArgs, trFiles, ddRunnerSelector, hbxOtherRuntime*/
 
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",
@@ -39,11 +42,19 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
-    deps    : [noderunner],
+    deps    : [Noderunner],
 
     defaultWidth : 270,
 
     excludedTypes : {"xml":1, "html":1, "css":1, "txt":1, "png": 1, "jpg": 1, "gif": 1},
+    configProps: ["path", "name", "value", "args", "debug", "extension", "runner"],
+    // see parseSubstitutions() to see what this does...
+    substitutionErrors: {
+        curfile: {
+            title: "No active file opened yet!",
+            body: "Please open a file first."
+        }
+    },
 
     nodes : [],
     model : new apf.model(),
@@ -52,14 +63,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         "terminal": true
     },
 
-    hook : function(){
+    hook: function(){
         if (ide.readonly)
             return;
         var _self = this;
 
         ext.initExtension(this);
 
-        commands.addCommand({
+        Commands.addCommand({
             name: "run",
             "hint": "run or debug an application (stops the app if running)",
             "commands": {
@@ -74,7 +85,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         });
 
-        commands.addCommand({
+        Commands.addCommand({
             name: "stop",
             "hint": "stop a running node program on the server",
             "commands": {
@@ -86,7 +97,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         });
 
-        commands.addCommand({
+        Commands.addCommand({
             name: "runthisfile",
             "hint": "run or debug this file (stops the app if running)",
             exec: function () {
@@ -94,7 +105,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         });
 
-        commands.addCommand({
+        Commands.addCommand({
             name: "runthistab",
             "hint": "run or debug current file (stops the app if running)",
             exec: function () {
@@ -102,7 +113,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         });
 
-        menus.$insertByIndex(barTools, new apf.splitbutton({
+        Menus.$insertByIndex(barTools, new apf.splitbutton({
             id              : "btnRun",
             skin            : "run-splitbutton",
             checked         : "[{lstRunCfg.selected}::@debug]",
@@ -119,19 +130,19 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         this.nodes.push(
             this.model = new apf.model().load("<configurations />"),
 
-            menus.addItemByPath("View/Tabs/Run This File", new apf.item({
+            Menus.addItemByPath("View/Tabs/Run This File", new apf.item({
                 command : "runthistab",
                 disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
             }), 400),
-            menus.addItemByPath("View/Tabs/~", new apf.divider(), 300),
-            menus.addItemByPath("~", new apf.divider(), 800, mnuContext),
-            menus.addItemByPath("Run This File", new apf.item({
+            Menus.addItemByPath("View/Tabs/~", new apf.divider(), 300),
+            Menus.addItemByPath("~", new apf.divider(), 800, mnuContext),
+            Menus.addItemByPath("Run This File", new apf.item({
                 command : "runthistab",
                 disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
             }), 850, mnuContext)
         );
 
-        tooltip.add(btnRun.$button1, {
+        Tooltip.add(btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications, or run your <span>PHP</span>, <span>Python</span>, or <span>Ruby</span> code.\
             For more help, check out our guided tour in the Help menu.",
             width : "203px",
@@ -139,17 +150,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             hideonclick : true
         });
 
-        settings.addSettings("General", markupSettings);
+        Settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
-            settings.setDefaults("auto/node-version", [
+            Settings.setDefaults("auto/node-version", [
                 ["version", "auto"]
             ]);
 
-            settings.setDefaults("general", [
+            Settings.setDefaults("general", [
                 ["saveallbeforerun", "false"]
             ]);
 
-            settings.setDefaults("auto/configurations", [
+            Settings.setDefaults("auto/configurations", [
                 ["debug", "true"],
                 ["autohide", "true"],
                 ["showruncfglist", "false"]
@@ -175,7 +186,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
 
             if (changed)
-                settings.save();
+                Settings.save();
             _self.model.load(runConfigs);
         });
 
@@ -189,16 +200,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             });
         });
 
-        ide.addEventListener("init.ext/revisions/revisions", function() {
-            _self.nodes.push(
-                mnuCtxEditor.insertBefore(new apf.item({
-                    id : "mnuCtxEditorRunThisFile",
-                    caption : "Run This File",
-                    command: "runthistab",
-                    disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
-                }), mnuCtxEditorRevisions),
-                mnuCtxEditor.insertBefore(new apf.divider(), mnuCtxEditorRevisions)
-            );
+        ide.addEventListener("init.ext/code/code", function() {
+            setTimeout(function() {
+                _self.nodes.push(
+                    mnuCtxEditor.insertBefore(new apf.item({
+                        id : "mnuCtxEditorRunThisFile",
+                        caption : "Run This File",
+                        command: "runthistab",
+                        disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
+                    }), mnuCtxEditorRevisions),
+                    mnuCtxEditor.insertBefore(new apf.divider(), mnuCtxEditorRevisions)
+                );
+            });
         });
 
         var hasBreaked = false;
@@ -207,22 +220,22 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 return;
 
             var name = "ext/debugger/debugger";
-            dock.hideSection(name, false);
+            Dock.hideSection(name, false);
             hasBreaked = false;
 
-            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            var bar = Dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             if (!bar.extended)
-                dock.hideBar(bar);
+                Dock.hideBar(bar);
         });
         stProcessRunning.addEventListener("activate", function(){
             var debug = apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
             if (!debug || !_self.autoHidePanel())
                 return;
 
-            var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            var bar = Dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
             delete bar.cache;
             if (!bar.extended)
-                dock.showBar(bar);
+                Dock.showBar(bar);
         });
         ide.addEventListener("dbg.break", function(){
             var debug = apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
@@ -232,14 +245,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             hasBreaked = true;
 
             var name = "ext/debugger/debugger";
-            dock.showSection(name, false);
+            Dock.showSection(name, false);
 
-            var uId = dock.getButtons(name, "pgDebugNav")[0].uniqueId;
-            if (dock.layout.isExpanded(uId) < 0)
-                dock.layout.showMenu(uId);
+            var uId = Dock.getButtons(name, "pgDebugNav")[0].uniqueId;
+            if (Dock.layout.isExpanded(uId) < 0)
+                Dock.layout.showMenu(uId);
 
-            //var bar = dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
-            //dock.expandBar(bar);
+            //var bar = Dock.getBars("ext/debugger/debugger", "pgDebugNav")[0];
+            //Dock.expandBar(bar);
         });
 
         // When we are not in debug mode and we close a page it goes back to be
@@ -255,14 +268,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
     },
 
-    saveSelection : function() {
+    saveSelection: function() {
         if (lstRunCfg.selected) {
             if (lstRunCfg.selected.tagName == "config") {
                 var node = this.model.data.selectSingleNode('config[@last="true"]');
                 if (node)
                     node.removeAttribute("last");
                 lstRunCfg.selected.setAttribute("last", "true");
-                settings.save();
+                Settings.save();
             }
         }
         else
@@ -273,7 +286,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         */
     },
 
-    init : function(amlNode){
+    init: function(amlNode){
         if (ide.readonly)
             return;
         var _self = this;
@@ -283,17 +296,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         lstRunCfg.addEventListener("click", function(e){
             var xmlNode;
             if (e.htmlEvent.target.className == "radiobutton") {
+                // radio button clicked, set configuration as 'active'
                 var active = _self.model.queryNode("config[@active='true']");
-                if (active)
-                    apf.xmldb.removeAttribute(active, "active");
-
                 xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode);
+                if (active && active !== xmlNode)
+                    apf.xmldb.removeAttribute(active, "active");
                 apf.xmldb.setAttribute(xmlNode, "active", "true");
-
-                var caption = apf.isTrue(cbRunDbgDebugMode.value) ? 'Run in Debug Mode' : 'Run';
-                btnRunDbgRun.setCaption(caption);
-
-                lstRunCfg.stopRename();
             }
 
             if (e.htmlEvent.target.className == "btnDelete") {
@@ -313,13 +321,68 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
         });
 
+        lstRunCfg.addEventListener("afterselect", function(e) {
+            // IMPORTANT: there might no node selected (yet), so assume that `xmlNode`
+            // may be empty.
+            var xmlNode = e.selected;
+            // here goes what needs to happen when a run config is selected
+            var caption = apf.isTrue(cbRunDbgDebugMode.value) ? "Run in Debug Mode" : "Run";
+            btnRunDbgRun.setCaption(caption);
+
+            var value = xmlNode && xmlNode.getAttribute("runtime") || "auto";
+            if (value != "auto" && Noderunner.runners.indexOf(value.split(" ")[0]) === -1)
+                value = "other";
+            if (ddRunnerSelector.value != value)
+                ddRunnerSelector.choose(value);
+
+            lstRunCfg.stopRename();
+        });
+
+        mnuRunCfg.addEventListener("prop.visible", function(e) {
+            // onShow:
+            if (e.value) {
+                _self.removeTempConfig();
+                var lastCfg = _self.model.queryNode("config[@last='true']");
+                if (lastCfg) {
+                    lstRunCfg.select(lastCfg);
+                }
+                else {
+                    var page = tabEditors.getPage();
+                    if (!page)
+                        return;
+                    _self.addConfig(true);
+                }
+            }
+        });
+
+        ddRunnerSelector.addEventListener("beforeselect", function(e) {
+            var node = e.selected;
+            if (this.selected && this.selected === node)
+                return;
+            var runner = node.value || "auto";
+            var activeRuntime = lstRunCfg.selected && lstRunCfg.selected.getAttribute("runtime");
+            if (runner == "other") {
+                apf.setStyleClass(mnuRunCfg.$ext, "withOther", []);
+                hbxOtherRuntime.show();
+
+                if (activeRuntime && this.selected && Noderunner.runners.indexOf(runner.split(" ")[0]) > -1)
+                    apf.xmldb.removeAttribute(lstRunCfg.selected, "runtime");
+            }
+            else {
+                hbxOtherRuntime.hide();
+                apf.setStyleClass(mnuRunCfg.$ext, null, ["withOther"]);
+                if (activeRuntime && this.selected)
+                    apf.xmldb.setAttribute(lstRunCfg.selected, "runtime", node.value);
+            }
+        });
+
         setTimeout(function() {
             if (lstRunCfg.$model)
                 lstRunCfg.select(lstRunCfg.$model.queryNode("config[@last='true']"));
         });
     },
 
-    duplicate : function() {
+    duplicate: function() {
         var config = lstRunCfg.selected;
         if (!config)
             return;
@@ -330,59 +393,52 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         mnuRunCfg.show();
     },
 
-    addConfig : function(temp, runfile) {
-        var path, name, value, args, debug, file = runfile || ide.getActivePageModel();
-        var extension = "";
+    addConfig: function(temp, runfile) {
+        var props = {};
+        var file = runfile || ide.getActivePageModel();
 
-        var tempNode = settings.model.queryNode("auto/configurations/tempconfig[@last='true']");
+        var tempNode = Settings.model.queryNode("auto/configurations/tempconfig[@last='true']");
         if (tempNode && !runfile) {
-            path = tempNode.getAttribute("path");
-            name = tempNode.getAttribute("name");
-            value = tempNode.getAttribute("value");
-            args = tempNode.getAttribute("args");
-            debug = tempNode.getAttribute("debug");
+            this.configProps.forEach(function(prop) {
+                props[prop] = tempNode.getAttribute(prop);
+            });
             apf.xmldb.removeNode(tempNode);
         }
         else if (file) {
-            path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
-            name  = file.getAttribute("name");
+            props.path = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
+            props.name = file.getAttribute("name");
         }
         else {
-            name = "Untitled";
-            extension = path = "";
+            props.name = "Untitled";
+            props.extension = props.path = "";
         }
 
         var hasConfigs = require("ext/runpanel/runpanel").model.queryNodes("config").length;
         if (hasConfigs) {
             // check if name already exists
             var idx = 1, newname;
-            if (this.model.queryNode("config[@name='" + name + "']")) {
-                newname = name + " " + idx;
+            if (this.model.queryNode("config[@name='" + props.name + "']")) {
+                newname = props.name + " " + idx;
                 while (this.model.queryNode("config[@name='" + newname + "']")) {
                     idx++;
-                    newname = name + " " + idx;
+                    newname = props.name + " " + idx;
                 }
 
-                name = newname;
+                props.name = newname;
             }
         }
 
         var tagName = !temp ? "config" : "tempconfig";
-        var cfg = apf.n("<" + tagName + " />")
-            .attr("path", path)
-            .attr("name", name)
-            .attr("value", value || "")
-            .attr("extension", extension)
-            .attr("args", args || "")
-            .attr("debug", debug || "true").node();
+        var cfg = apf.n("<" + tagName + " />");
+        this.configProps.forEach(function(prop) {
+            cfg.attr(prop, props[prop] || "");
+        });
 
-        var node = this.model.appendXml(cfg);
+        var node = this.model.appendXml(cfg.node());
 
         // if this is the only config, make it active
-        if (tagName == "config" && !hasConfigs) {
+        if (tagName == "config" && !hasConfigs)
             apf.xmldb.setAttribute(node, "active", "true");
-            //apf.setStyleClass(apf.xmldb.findHtmlNode(node, lstRunCfg), "active");
-        }
 
         lstRunCfg.select(node);
 
@@ -392,39 +448,34 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         return node;
     },
 
-    onOpenMenuRunCfg : function() {
-        this.removeTempConfig();
-        var lastCfg = this.model.queryNode("config[@last='true']");
-        if (lastCfg)
-            lstRunCfg.select(lastCfg);
-    },
+    removeTempConfig: function() {
+        var tempNodes = Settings.model.queryNodes("auto/configurations/tempconfig");
+        if (tempNodes) {
+            for (var i = tempNodes.length - 1; i >= 0; --i)
+                apf.xmldb.removeNode(tempNodes[i]);
+        }
 
-    removeTempConfig : function() {
-        var tempNode = settings.model.queryNode("auto/configurations/tempconfig[@last='true']");
-        if (tempNode)
-            apf.xmldb.removeNode(tempNode);
-
-        var lastNode = settings.model.queryNode("auto/configurations/config[@last='true']");
+        var lastNode = Settings.model.queryNode("auto/configurations/config[@last='true']");
         if (lastNode)
             lstRunCfg.select(lastNode);
     },
 
-    autoHidePanel : function(){
-        return apf.isTrue(settings.model.queryValue("auto/configurations/@autohide"));
+    autoHidePanel: function(){
+        return apf.isTrue(Settings.model.queryValue("auto/configurations/@autohide"));
     },
 
-    shouldRunInDebugMode : function(){
-        return apf.isTrue(settings.model.queryValue('auto/configurations/@debug'));
+    shouldRunInDebugMode: function(){
+        return apf.isTrue(Settings.model.queryValue('auto/configurations/@debug'));
     },
 
-    run : function(debug) {
+    run: function(debug) {
         var node;
 
         if (window.mnuRunCfg && mnuRunCfg.visible) {
             if (lstRunCfg.selected)
                 node = lstRunCfg.selected;
-            else {
-                node = this.addConfig(true);}
+            else
+                node = this.addConfig(true);
         }
         else {
             node = this.model.queryNode("config[@active='true']");
@@ -432,17 +483,19 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         if (!node) {
             // display Run button as pressed instead of splitbutton
-            apf.setStyleClass(btnRun.$button1.$ext, "c9-runbtnDown")
+            apf.setStyleClass(btnRun.$button1.$ext, "c9-runbtnDown");
             apf.setStyleClass(mnuRunCfg.$ext, "fromRunBtn");
 
             btnRun.$button2.dispatchEvent("mousedown");
             apf.setStyleClass(btnRun.$button2.$ext, "", ["c9-runbtnDown"]);
 
-            mnuRunCfg.addEventListener("hide", function() {
+            var onHide;
+            mnuRunCfg.addEventListener("hide", onHide = function() {
                 apf.setStyleClass(mnuRunCfg.$ext, null, ["fromRunBtn"]);
-                mnuRunCfg.removeEventListener("hide", arguments.callee);
+                mnuRunCfg.removeEventListener("hide", onHide);
             });
-            return this.addConfig(true);
+            this.addConfig(true);
+            return;
         }
         else if (node.tagName == "tempconfig")
             node = this.addConfig();
@@ -452,7 +505,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         ide.dispatchEvent("track_action", {type: node.getAttribute("debug") ? "debug" : "run"});
     },
 
-    runThisFile : function() {
+    runThisFile: function() {
         var file = trFiles.selected;
         var node = this.addConfig(true, file);
 
@@ -461,7 +514,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         ide.dispatchEvent("track_action", {type: node.getAttribute("debug") ? "debug" : "run"});
     },
 
-    runThisTab : function() {
+    runThisTab: function() {
         var file = ide.getActivePageModel();
         var node = this.addConfig(true, file);
 
@@ -470,22 +523,20 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         ide.dispatchEvent("track_action", {type: node.getAttribute("debug") ? "debug" : "run"});
     },
 
-    runConfig : function(config) {
+    runConfig: function(config) {
         //ext.initExtension(this);
-        var model = settings.model;
+        var model = Settings.model;
         var saveallbeforerun = apf.isTrue(model.queryValue("general/@saveallbeforerun"));
         if (saveallbeforerun)
-            save.saveall();
+            Save.saveall();
 
-        var debug = config.getAttribute("debug") == "true";
+        var debug = apf.isTrue(config.getAttribute("debug"));
 
         if (mnuRunCfg.visible)
             mnuRunCfg.hide();
-            //mnuRunCfg.$ext.style.display = "none";
 
-        if (config.tagName == "tempconfig") {
+        if (config.tagName == "tempconfig")
             this.removeTempConfig();
-        }
 
         self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations
@@ -496,42 +547,69 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (prevRunNode)
             prevRunNode.removeAttribute("running");
         config.setAttribute("running", "true");
-        settings.save();
+        Settings.save();
 
-        var args = config.getAttribute("args");
-        noderunner.run(
-            config.getAttribute("path"),
-            args ? args.split(" ") : [],
+        var _self = this;
+        var args = (config.getAttribute("args") || "").split(" ").map(function(arg) {
+            return _self.parseSubstitutions(arg);
+        }).filter(function(arg) {
+            return !!arg;
+        });
+        var path = this.parseSubstitutions(config.getAttribute("path"));
+        if (!path)
+            return;
+
+        Noderunner.run(
+            path,
+            args,
             debug,
-            config.getAttribute("value")
+            config.getAttribute("value"),
+            (config.getAttribute("runtime") || "").split(" ")[0]
         );
     },
 
-    stop : function() {
-        noderunner.stop();
+    parseSubstitutions: function(str, runfile) {
+        var file = runfile || ide.getActivePageModel();
+        var subs = {};
 
-        //dock.hideSection(["ext/run/run", "ext/debugger/debugger"]);
+        // construct supported substitutions;
+        subs.curfile = file ? file.getAttribute("path") : "";
+
+        // replace subs:
+        var _self = this;
+        return str.replace(/\{([\w]*)\}/g, function(m, sub) {
+            var errObj = _self.substitutionErrors[sub];
+            if (subs[sub])
+                return subs[sub];
+            else if (errObj)
+                util.alert("Error", errObj.title, errObj.body);
+            return "";
+        });
+    },
+
+    stop: function() {
+        Noderunner.stop();
     },
 
     onHelpClick: function() {
         var page = "running_and_debugging_code";
         if (ide.infraEnv)
-            require("ext/documentation/documentation").show(page);
+            require("ext/docum" + "entation/documentation").show(page);
         else
             window.open("https://docs.c9.io/" + page + ".html");
     },
 
-    enable : function(){
+    enable: function(){
         var page = tabEditors.getPage();
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
-        if(this.disableLut[contentType])
+        if (this.disableLut[contentType])
             return this.disable();
         this.$enable();
     },
 
-    destroy : function(){
-        commands.removeCommandsByName(["run", "stop"]);
-        panels.unregister(this);
+    destroy: function(){
+        Commands.removeCommandsByName(["run", "stop"]);
+        Panels.unregister(this);
         this.$destroy();
     }
 });
