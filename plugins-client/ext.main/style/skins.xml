@@ -4222,7 +4222,12 @@
             padding : 2px 0 1px 24px;
         }
     ]]></a:style>
-
+    <a:style condition="apf.isIphone"><![CDATA[
+        .datagrid .records, .noscrollbar .records {
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+    ]]></a:style>
 
     <a:presentation>
         <a:main head="div[1]" container="div[3]" pointer="div[2]" widthdiff="1" iframe2="true">
@@ -7235,6 +7240,11 @@
             -moz-border-radius    : 6px 6px 0 0;
             -webkit-border-radius : 6px 6px 0 0;
             border-radius         : 6px 6px 0 0;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .bk-window.relative .bk-header {
@@ -12302,6 +12312,13 @@
         .filemgr-dragtree2 .item LABEL .caption {
             height          : 16px;
             padding         : 3px 0 0 20px;
+        }
+    ]]></a:style>
+    
+    <a:style condition="apf.isIphone"><![CDATA[
+        .filemgr-tree {
+            -webkit-overflow-scrolling : touch;
+            overflow-y: scroll;
         }
     ]]></a:style>
 

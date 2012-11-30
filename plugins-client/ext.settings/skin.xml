@@ -74,6 +74,12 @@
             }
             
         ]]></a:style>
+        <a:style condition="apf.isIphone"><![CDATA[
+            .bar-preferences {
+                -webkit-overflow-scrolling : touch;
+                overflow-y: scroll;
+            }
+        ]]></a:style>
     
         <a:presentation>
             <a:main container=".">
