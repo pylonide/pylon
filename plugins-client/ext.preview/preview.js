@@ -9,13 +9,14 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var settings = require("core/settings");
+var settings = require("ext/settings/settings");
 var menus = require("ext/menus/menus");
 var dock = require("ext/dockpanel/dockpanel");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/preview/preview.xml");
 var skin    = require("text!ext/preview/skin.xml");
 var css     = require("text!ext/preview/style/style.css");
+var markupSettings = require("text!ext/preview/settings.xml");
 
 var _name = "ext/preview/preview";
 
@@ -46,12 +47,18 @@ module.exports = ext.register(_name, {
         return dock.getBars(this._name, this._button)[0];
     },
 
+    _getButton: function () {
+        return dock.getButtons(this._name, this._button)[0];
+    },
+
     onLoad: function () {
         
     },
 
     hook : function() {
         var _self = this;
+
+        settings.addSettings("Previewer", markupSettings);
 
         this.nodes.push(
             menus.$insertByIndex(barTools, new apf.button({
@@ -115,11 +122,14 @@ module.exports = ext.register(_name, {
 
         ide.addEventListener("settings.save", function(e){
             if (_self.inited) {
+                var button = _self._getButton();
                 var url = txtPreview.getValue();
                 if (url) {
-                    var prev = { url: url };
-                    if (_self.live)
-                        prev.live = {path: _self.live.path};
+                    var prev = {
+                        visible: button.hidden && button.hidden === -1,
+                        url: url,
+                        live: _self.live && {path: _self.live.path}
+                    };
                     e.model.setQueryValue("auto/preview/text()", JSON.stringify(prev));
                 }
             }
@@ -127,10 +137,15 @@ module.exports = ext.register(_name, {
 
         ide.addEventListener("extload", function(e){
             ide.addEventListener("settings.load", function(e){
+                settings.setDefaults("preview", [
+                    ["running_app", "false"]
+                ]);
+
                 var json = e.model.queryValue("auto/preview/text()");
                 if (json) {
                     var prev = JSON.parse(json);
-                    _self.refresh(prev.url, prev.live);
+                    if (prev.visible)
+                        _self.refresh(prev.url, prev.live);
                 }
             });
         });
@@ -181,6 +196,7 @@ module.exports = ext.register(_name, {
     close: function () {
         dock.hideSection(this._name, this._button);
         this.live = null;
+        settings.save();
     },
 
     init : function() {
