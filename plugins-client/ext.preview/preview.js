@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var settings = require("core/settings");
 var menus = require("ext/menus/menus");
 var dock = require("ext/dockpanel/dockpanel");
 var editors = require("ext/editors/editors");
@@ -112,6 +113,28 @@ module.exports = ext.register(_name, {
                 _self.disable();
         });
 
+        ide.addEventListener("settings.save", function(e){
+            if (_self.inited) {
+                var url = txtPreview.getValue();
+                if (url) {
+                    var prev = { url: url };
+                    if (_self.live)
+                        prev.live = {path: _self.live.path};
+                    e.model.setQueryValue("auto/preview/text()", JSON.stringify(prev));
+                }
+            }
+        });
+
+        ide.addEventListener("extload", function(e){
+            ide.addEventListener("settings.load", function(e){
+                var json = e.model.queryValue("auto/preview/text()");
+                if (json) {
+                    var prev = JSON.parse(json);
+                    _self.refresh(prev.url, prev.live);
+                }
+            });
+        });
+
         ext.initExtension(this);
     },
 
@@ -152,6 +175,7 @@ module.exports = ext.register(_name, {
         url = url || txtPreview.getValue();
         frmPreview.$ext.src = url;
         txtPreview.setValue(url);
+        settings.save();
     },
 
     close: function () {
