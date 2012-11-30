@@ -54,6 +54,14 @@
         .fakehbox.static{
             position : static;
         }
+
+        .bar-offline-cover {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -128,7 +136,7 @@
     <a:style><![CDATA[
         body > .vbox,
         .editor_tab .curbtn .tab_middle {
-        	background-color: #e8e8e8 !important; /*#0c9*/
+            background-color: #e8e8e8 !important; /*#0c9*/
         }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar expanded
@@ -255,6 +263,11 @@
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
+        }
+
+        .c9-menu-bar .c9-mbar-bcont .c9-simple-btnDisabled.c9-mbar-minimize:hover {
+            background-position: 0 -70px;
+            cursor: default;
         }
         .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
@@ -1691,6 +1704,10 @@
         .hbox > DIV > .c9-menu-btn {
             height : 25px;
             margin: 0 !important;
+        }
+
+        .c9-menu-btnDisabled.c9-menu-btn .c9-label {
+            color: #999;
         }
     ]]></a:style>
 
@@ -3484,20 +3501,19 @@
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_smooth_loading {
-            background-image: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: linear-gradient(180deg,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.12) 100%);
             -moz-box-sizing: border-box;
             box-sizing: border-box;
-            color: dimgray;
             height: 100%;
-            padding-left: 10px;
         }
-        .ace_smooth_loading.ace_dark {
-            background-image: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);
-            background-image: linear-gradient(180deg,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.12) 100%);
-            color: lightgray;
+        .ace_smooth_loading .loading_bg {
+            background: url(images/loader_progressbar_bg.png) repeat-x;
+            position: absolute;
+            height: 1px;
+        }
+        .ace_smooth_loading .loading_progress {
+            background-color: #38A3FF;
+            position: absolute;
+            height: 1px;
         }
         .ace_editor {
             position: relative;
@@ -9594,6 +9610,9 @@
         padding : 0 0 0 0;
         margin : 0 auto;
         position:relative;
+
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
     }
 
     .editor_tab .btnsesssioncontainer {
@@ -9610,7 +9629,7 @@
         */
         clip: rect(0px 3000px 28px 0px);
 
-        background: rgba(24,24,24,.9) url(images/c9-noise.png);
+        /*background: rgba(24,24,24,.9) url(images/c9-noise.png);*/
         position : relative;
         z-index : 100;
 
@@ -9618,7 +9637,7 @@
            -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
                 box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;*/
 
-        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;
+        /*box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;*/
         margin-bottom: 1px;
 
         display : -webkit-box;
@@ -10333,7 +10352,7 @@
     }
 
     .editor_tab:not(.empty) {
-        background: #F0F0F0 none;
+        /*background: #F0F0F0 none;*/
     }
 ]]></a:style>
 <a:style condition="apf.isGecko">
@@ -11491,6 +11510,10 @@
             height   : 25px;
         }
 
+        .docs_searchbox.searchbox_textbox {
+            height: 34px;
+        }
+
         .searchbox_textbox .sbtb_middle {
             height           : 19px;
             padding          : 2px 25px 2px 4px;
@@ -11511,6 +11534,14 @@
             box-shadow: 0px 1px 0px #ffffff;
         }
 
+        .docs_searchbox.searchbox_textbox .sbtb_middle {
+            height: 28px;
+            -webkit-box-shadow: inset 0px 1px 4px 0px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px #ffffff; ;
+            box-shadow: inset 0px 1px 4px 0px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px #ffffff; ;
+            background: #ffffff;
+            border: 1px solid #d2d2d2;
+        }
+
         .searchbox_textbox .sbtb_middle INPUT {
             border           : 0;
             height           : 17px;
@@ -11522,8 +11553,18 @@
             width: 100%;
         }
 
+        .docs_searchbox.searchbox_textbox.searchbox_textboxInitial .sbtb_middle INPUT {
+            color: #acacac;
+        }
+
+        .docs_searchbox.searchbox_textbox .sbtb_middle INPUT {
+            margin-top: 6px;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+
         .searchbox_textbox.small_font .sbtb_middle,
-            .searchbox_textbox.small_font .sbtb_middle INPUT {
+        .searchbox_textbox.small_font .sbtb_middle INPUT {
             font-size: 11px;
         }
 
@@ -11544,10 +11585,28 @@
             background-image    : url(images/searchbox_textbox_icon.png);
             background-position : 0 0;
             background-repeat   : no-repeat;
+            display: none;
         }
 
         .searchbox_textboxFocus .sbtb_icon {
             background-position : 0 -18px;
+        }
+
+        .docs_searchbox.searchbox_textbox .sbtb_icon {
+            background-image: url(images/search-icon.png);
+            top: 9px;
+            right: 9px;
+            width: 20px;
+            left: auto;
+            display: block !important;
+        }
+
+        .docs_searchbox.searchbox_textboxFocus .sbtb_icon {
+            background-position: 0 0;
+        }
+
+        .docs_searchbox.searchbox_textbox.searchbox_hasValue .sbtb_icon {
+            display: none !important;
         }
 
         .searchbox_textboxFocus .btnclose {
@@ -11558,11 +11617,21 @@
             height : 14px;
             background : url(images/btnclose.gif) no-repeat 0 0;
             display : none;
-            cursor: pointer;
         }
 
         .searchbox_textboxFocus .btnclose:hover{
             background-position : 0 -14px;
+        }
+
+        .docs_searchbox.searchbox_textbox .btnclose {
+            top: 11px;
+            right: 8px;
+            background : url(images/close-search-icon.png) no-repeat 0 0;
+            display: none;
+        }
+
+        .docs_searchbox.searchbox_textbox .btnclose:hover {
+            background-position: 0 -20px;
         }
     ]]></a:style>
 
@@ -11570,11 +11639,11 @@
         <a:main input="div[2]/input" button="div[3]">
             <div class="searchbox_textbox">
                 <div class="sbtb_arrow"/>
-                <!--div class="sbtb_icon"/-->
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
                 <div class="btnclose"> </div>
+                <div class="sbtb_icon"/>
             </div>
         </a:main>
     </a:presentation>
