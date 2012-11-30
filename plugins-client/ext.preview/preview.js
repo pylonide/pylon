@@ -125,6 +125,8 @@ module.exports = ext.register(_name, {
         if (page)
             this.live.value = page.$doc.getValue();
         var iframe = this.getIframe().$ext;
+        if (!iframe || !iframe.contentWindow)
+            return;
         var html = iframe.contentWindow.document.getElementsByTagName("html")[0];
         html.innerHTML = this.live.value;
     },
@@ -142,7 +144,7 @@ module.exports = ext.register(_name, {
 
     popup: function (url) {
         url = url || txtPreview.getValue();
-        var w = window.open(url, "_blank");
+        window.open(url, "_blank");
     },
 
     refresh: function (url) {
@@ -154,13 +156,14 @@ module.exports = ext.register(_name, {
 
     close: function () {
         dock.hideSection(this._name, this._button);
+        this.live = null;
     },
 
     init : function() {
         apf.importCssString(this.css || "");
     },
 
-    getIframe: function(editor) {
+    getIframe: function() {
         return pgPreview.selectSingleNode("iframe");
     },
 
@@ -170,6 +173,11 @@ module.exports = ext.register(_name, {
         if(this.disableLut[contentType])
             return this.disable();
         this.$enable();
+    },
+
+    disable: function() {
+        this.live = null;
+        this.$disable();
     }
 });
 
