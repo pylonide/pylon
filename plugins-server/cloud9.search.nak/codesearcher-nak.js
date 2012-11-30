@@ -10,14 +10,13 @@
 var path = require("path");
 
 module.exports = function setup(options, imports, register) {
-  var nakCmd = options.nakCmd;
 
   var codesearcher = {
       assembleFilelistCommand: function (options) {
         var args;
 
         args = ["-l",                                                     // filenames only   
-                "-p", path.join(__dirname, "..", "cloud9.ide.search", ".agignore")]; // use the Cloud9 ignore file                     
+                "-a", path.join(__dirname, "..", "cloud9.ide.search", ".nakignore")]; // use the Cloud9 ignore file                     
         
         if (options.showHiddenFiles)
             args.push("-H");
@@ -26,12 +25,7 @@ module.exports = function setup(options, imports, register) {
             args.push("-m", options.maxdepth);
 
         args.push(options.path);
-
-        args.unshift(nakCmd);
-        args = ["-c", args.join(" ")];
-
-        args.command = "bash";
-
+        
         return args;
     },
 
@@ -41,7 +35,7 @@ module.exports = function setup(options, imports, register) {
         if (!query)
             return;
 
-        args = ["-p", path.join(__dirname, "..", "cloud9.ide.search", ".agignore"),  // use the Cloud9 ignore file
+        args = ["-a", path.join(__dirname, "..", "cloud9.ide.search", ".nakignore"),  // use the Cloud9 ignore file
                 "--c9Format"];                            // format for parseResult to consume
 
         if (!options.casesensitive)

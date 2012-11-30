@@ -7,6 +7,7 @@
 
 "use strict";
 
+var Fs = require("fs");
 var Path = require("path");
 
 module.exports = function() {
@@ -38,21 +39,17 @@ module.exports = function() {
         if (!args)
             return onExit(1, "Invalid arguments");
 
-        vfs.spawn(args.command, { args: args, cwd: options.path, stdoutEncoding: "utf8", stderrEncoding: "utf8" }, function(err, meta) {
-            if (err || !meta.process)
-                return onExit(1, err);
+        var nakstream = Fs.createReadStream(Path.normalize(__dirname + "/../../node_modules/nak/build/nak.vfs_concat.js"));
 
-            var stderr = "";
-            meta.process.stdout.on("data", function(data) {
-                onData(data);
-            });
-
-            meta.process.stderr.on("data", function(data) {
-                stderr += data;
-            });
+        vfs.extend("nak", {stream: nakstream, redefine: true}, function (err, meta) {
+            if (err) throw err;
+            var api = meta.api;
             
-            meta.process.on("exit", function(code) {
-                onExit(code, stderr);
+            api.execute(args, function (err, result) {
+                if (err) return onExit(1, err);
+
+                onData(result);
+                onExit(0, null);
             });
         });
     };

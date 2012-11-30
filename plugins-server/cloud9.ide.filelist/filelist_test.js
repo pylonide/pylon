@@ -17,7 +17,6 @@ var Os = require("os");
 var Fs = require("fs");
 var Path = require("path");
 
-var agModule = require("../cloud9.search.ag");
 var nakModule = require("../cloud9.search.nak");
 Fs.exists = Fs.exists || Path.exists;
 
@@ -26,11 +25,9 @@ var basePath = Path.join(__dirname, "fixtures");
 var outsidePath = "/../../../../../etc";
 
 var options1 = {
-        path: "",
         showHiddenFiles: true
     },
     options2 = {
-        path: "",
         showHiddenFiles: false
     },
     options3 = {
@@ -39,42 +36,24 @@ var options1 = {
     };
 
 describe("filelist", function() {
-    var o;
+    var o = new Filelist();
     var vfs = VfsLocal({ root: "/" });
 
-    var platform = Os.platform(),
-        arch = Os.arch(),
-        agCmd = Path.join(__dirname, "..", "cloud9.search.ag", [platform, arch].join("_"), "ag"),
-        nakCmd = "node " + Path.join(__dirname, "..", "..", "node_modules", "nak", "bin", "nak");
-
-    var AgLib = agModule({
-        agCmd: agCmd,
-        test: true
-    });
+    var nakCmd = "node " + Path.join(__dirname, "..", "..", "node_modules", "nak", "build", "nak.vfs_concat.js");
 
     var NakLib = nakModule({
         nakCmd: nakCmd,
         test: true
     });
 
-    var useAg;
-
-    Fs.exists(agCmd, function(exists) {
-        useAg = exists;
-        beforeEach(function() {
-            o = new Filelist();
-            o.setEnv({ 
-                basePath: basePath
-            });
-        });
+    o = new Filelist();
+        o.setEnv({ 
+            basePath: basePath,
+            searchType: NakLib
     });
 
     it("should get filelist, including hidden files and binaries",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
-        
-        o.setEnv({ 
-            searchType: AgLib
-        });
+        var out = "";
 
         o.exec(options1, vfs,
             // data
@@ -83,48 +62,20 @@ describe("filelist", function() {
             },
             // exit
             function(code, stderr) {
-                if (useAg) {
-                    Assert.equal(code, 0);
-                    var files = out.split("\n").filter(function(file) { return !!file; }).sort();
+                Assert.equal(code, 0);
+                var files = out.split("\n").filter(function(file) { return !!file; }).sort();
+                
+                Assert.equal(files[2], basePath + "/level1/Toasty.gif");
+                Assert.equal(files[3], basePath + "/level1/level2/.hidden");
+                Assert.equal(files[4], basePath + "/level1/level2/.level3a/.hidden");
 
-                    Assert.equal(files[2], basePath + "/level1/Toasty.gif");
-                    Assert.equal(files[3], basePath + "/level1/level2/.hidden");
-                    Assert.equal(files[4], basePath + "/level1/level2/.level3a/.hidden");
-                }  
-
-                o.setEnv({ 
-                    searchType: NakLib
-                });
-
-                out = options1.path = "";
-
-                o.exec(options1, vfs,
-                    // data
-                    function(data) {
-                        out += data;
-                    },
-                    // exit
-                    function(code, stderr) {
-                        Assert.equal(code, 0);
-                        var files = out.split("\n").filter(function(file) { return !!file; }).sort();
-
-                        Assert.equal(files[2], basePath + "/level1/Toasty.gif");
-                        Assert.equal(files[3], basePath + "/level1/level2/.hidden");
-                        Assert.equal(files[4], basePath + "/level1/level2/.level3a/.hidden");
-
-                        next();
-                    }
-                );
+                next();
             }
         );
     });
 
     it("should get filelist, without hidden files",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
-
-        o.setEnv({ 
-            searchType: AgLib
-        });
+        var out = "";
 
         o.exec(options2, vfs,
             // data
@@ -133,46 +84,18 @@ describe("filelist", function() {
             },
             // exit
             function(code, stderr) {
-                if (useAg) {
-                    Assert.equal(code, 0);
-                    var files = out.split("\n").filter(function(file) { return !!file; }).sort();
+                Assert.equal(code, 0);
+                var files = out.split("\n").filter(function(file) { return !!file; }).sort();
+                Assert.equal(files[3], basePath + "/level1/level2/level2.rb");
+                Assert.equal(files[4], basePath + "/level1/level2/level3/level4/level4.txt");
 
-                    Assert.equal(files[3], basePath + "/level1/level2/level2.rb");
-                    Assert.equal(files[4], basePath + "/level1/level2/level3/level4/level4.txt");
-                }
-
-                    
-                o.setEnv({ 
-                    searchType: NakLib
-                });
-
-                out = options2.path = "";
-
-                o.exec(options2, vfs,
-                    // data
-                    function(data) {
-                        out += data;
-                    },
-                    // exit
-                    function(code, stderr) {
-                        Assert.equal(code, 0);
-                        var files = out.split("\n").filter(function(file) { return !!file; }).sort();
-                        Assert.equal(files[3], basePath + "/level1/level2/level2.rb");
-                        Assert.equal(files[4], basePath + "/level1/level2/level3/level4/level4.txt");
-
-                        next();
-                    }
-                );
+                next();
             }
         );
     });
 
     it("should not be possible to get a filelist from outside the root path ",  function(next) {
-        var out = "", agCount = "", agFileCount = "", agLines = "";
-
-        o.setEnv({ 
-            searchType: AgLib
-        });
+        var out = "";
 
         o.exec(options3, vfs,
             // data

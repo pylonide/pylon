@@ -24,23 +24,6 @@ var vfsUrl = "/vfs";
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || process.env.IP || "localhost";
 
-// decide whether to use ag or nak for filelist and searchinfiles plugins
-var platform = os.platform(),
-    arch = os.arch(),
-    agCmd = path.join(__dirname, "..", "plugins-server", "cloud9.search.ag", [platform, arch].join("_"), "ag"),
-    nakCmd = "node " + path.join(__dirname, "..", "node_modules", "nak", "bin", "nak"),
-    codeSearcher = fs.existsSync(agCmd) ? 
-                   {
-                     packagePath: "./cloud9.search.ag",
-                     agCmd: agCmd,
-                     nakCmd: nakCmd // needed for replace
-                   }
-                   :
-                   {
-                     packagePath: "./cloud9.search.nak",
-                     nakCmd: nakCmd
-                   };
-
 var config = [
     {
         packagePath: "connect-architect/connect",
@@ -220,7 +203,7 @@ var config = [
     "./cloud9.ide.filelist",
     "./cloud9.ide.search",
     "./cloud9.ide.run-node",
-    codeSearcher,
+    "./cloud9.search.nak",
     {
         packagePath: "./cloud9.ide.run-npm-module",
         allowShell: true
