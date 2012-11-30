@@ -144,8 +144,8 @@ var config = [
             //"ext/githistory/githistory",
             "ext/autosave/autosave",
             "ext/revisions/revisions",
-            "ext/language/liveinspect"
-            //"ext/splitview/splitview"
+            "ext/language/liveinspect",
+            "ext/splitview/splitview"
             //"ext/minimap/minimap"
         ]
     }, {
