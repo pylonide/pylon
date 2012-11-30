@@ -23,6 +23,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
+var themes = require("ext/themes/themes");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
@@ -42,6 +43,7 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 
 // name: ["Menu caption", "extensions", "content-type", "hidden|other"]
 var SupportedModes = {
+    abap: ["ABAP", "abap", "text/x-abap", "other"],
     asciidoc: ["AsciiDoc", "asciidoc", "text/x-asciidoc", "other"],
     c9search: ["C9Search", "c9search", "text/x-c9search", "hidden"],
     c_cpp: ["C, C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
@@ -50,26 +52,26 @@ var SupportedModes = {
     coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion", "other"],
     csharp: ["C#", "cs", "text/x-csharp"],
     css: ["CSS", "css", "text/css"],
-    dart:       ["Dart", "dart", "text/x-dart"],
-    diff:       ["Diff", "diff|patch", "text/x-diff", "other"],
-    glsl:       ["Glsl", "glsl|frag|vert", "text/x-glsl", "other"],
+    dart: ["Dart", "dart", "text/x-dart"],
+    diff: ["Diff", "diff|patch", "text/x-diff", "other"],
+    glsl: ["Glsl", "glsl|frag|vert", "text/x-glsl", "other"],
     golang: ["Go", "go", "text/x-go"],
     groovy: ["Groovy", "groovy", "text/x-groovy", "other"],
     haml: ["Haml", "haml", "text/haml", "other"],
     haxe: ["haXe", "hx", "text/haxe", "other"],
     html: ["HTML", "htm|html|xhtml", "text/html"],
-    jade:       ["Jade", "jade", "text/x-jade"],
+    jade: ["Jade", "jade", "text/x-jade"],
     java: ["Java", "java", "text/x-java-source"],
-    jsp:        ["JSP", "jsp", "text/x-jsp", "other"],
+    jsp:  ["JSP", "jsp", "text/x-jsp", "other"],
     javascript: ["JavaScript", "js", "application/javascript"],
     json: ["JSON", "json", "application/json"],
-    jsx:        ["JSX", "jsx", "text/x-jsx", "other"],
+    jsx:  ["JSX", "jsx", "text/x-jsx", "other"],
     latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
     less: ["LESS", "less", "text/x-less"],
     lisp: ["Lisp", "lisp|scm|rkt", "text/x-lisp", "other"],
     liquid: ["Liquid", "liquid", "text/x-liquid", "other"],
     lua: ["Lua", "lua", "text/x-lua"],
-    luapage:    ["LuaPage"      , "lp", "text/x-luapage", "other"],
+    luapage: ["LuaPage", "lp", "text/x-luapage", "other"],
     makefile: ["Makefile", "*GNUmakefile|*makefile|*Makefile|*OCamlMakefile|make", "text/x-makefile", "other"],
     markdown: ["Markdown", "md|markdown", "text/x-markdown", "other"],
     objectivec: ["Objective-C", "m", "text/objective-c", "other"],
@@ -79,6 +81,9 @@ var SupportedModes = {
     php: ["PHP", "php|phtml", "application/x-httpd-php"],
     powershell: ["Powershell", "ps1", "text/x-script.powershell", "other"],
     python: ["Python", "py", "text/x-script.python"],
+    r:    ["R"    , "r", "text/x-r", "other"],
+    rdoc: ["RDoc" , "Rd", "text/x-rdoc", "other"],
+    rhtml:["RHTML", "Rhtml", "text/x-rhtml", "other"],
     ruby: ["Ruby", "ru|gemspec|rake|rb", "text/x-script.ruby"],
     scad: ["OpenSCAD", "scad", "text/x-scad", "other"],
     scala: ["Scala", "scala", "text/x-scala"],
@@ -87,7 +92,7 @@ var SupportedModes = {
     stylus: ["Stylus", "styl|stylus", "text/x-stylus"],
     sql: ["SQL", "sql", "text/x-sql"],
     svg: ["SVG", "svg", "image/svg+xml", "other"],
-    tcl:        ["Tcl"          , "tcl", "text/x-tcl", "other"],
+    tcl: ["Tcl", "tcl", "text/x-tcl", "other"],
     text: ["Text", "txt", "text/plain", "hidden"],
     textile: ["Textile", "textile", "text/x-web-textile", "other"],
     typescript: ["Typescript", "ts|str", "text/x-typescript"],
@@ -418,7 +423,7 @@ module.exports = ext.register("ext/code/code", {
                 ["fadefoldwidgets", "true"],
                 ["animatedscroll", "true"]
             ]);
-            
+
             // Enable bracket insertion by default, even if it was disabled before,
             // migrating old users that had it disabled by default
             var defaulted = e.model.queryValue("editors/code/@behaviorsdefaulted");
@@ -427,11 +432,6 @@ module.exports = ext.register("ext/code/code", {
                 e.model.setQueryValue("editors/code/@behaviors", "true");
                 e.model.setQueryValue("editors/code/@wrapbehaviors", "false");
             }
-
-            // pre load theme
-            var theme = e.model.queryValue("editors/code/@theme");
-            if (theme)
-                require([theme], function() {});
 
             // pre load custom mime types
             _self.getCustomTypes(e.model);
@@ -867,36 +867,84 @@ module.exports = ext.register("ext/code/code", {
         });
 
         // display feedback while loading files
-        var isOpen, bgMessage, animationEndTimeout;
+        var isOpen, bgMessage, loaderProgress, updateProgressInterval, animationEndTimeout;
         var checkLoading = function(e) {
             if (!_self.amlEditor.xmlRoot)
                 return;
-            var loading = _self.amlEditor.xmlRoot.hasAttribute("loading");
+            var xmlRoot = _self.amlEditor.xmlRoot;
+            var loading = xmlRoot.hasAttribute("loading");
             var container = _self.amlEditor.$editor.container;
 
-            if (loading) {
-                if (!bgMessage || !bgMessage.parentNode) {
-                    bgMessage = bgMessage|| document.createElement("div");
-                    container.parentNode.appendChild(bgMessage);
-                }
-                var isDark = container.className.indexOf("ace_dark") != -1;
-                bgMessage.className = "ace_smooth_loading" + (isDark ? " ace_dark" : "");
+            // loading calcs
+            var padding = container.offsetWidth / 5;
+            var loadingWidth = container.offsetWidth - 2*padding;
 
-                bgMessage.textContent = "Loading " + _self.amlEditor.xmlRoot.getAttribute("name");
+            function updateProgress (progress) {
+                xmlRoot.setAttribute("loading_progress", progress);
+                loaderProgress.style.width = (progress * loadingWidth / 100) + "px";
+            }
+
+            function clearProgress() {
+                xmlRoot.setAttribute("loading_progress", 0);
+                loaderProgress.style.width = 0 + "px";
+            }
+
+            if (loading) {
+                var theme = themes.getActiveTheme();
+                if (!bgMessage || !bgMessage.parentNode) {
+                    bgMessage = bgMessage || document.createElement("div");
+                    bgMessage.className = "ace_smooth_loading";
+                    bgMessage.style.backgroundColor = theme ? theme.bg : "gray";
+                    container.parentNode.appendChild(bgMessage);
+
+                    var loaderBg = document.createElement("div");
+                    loaderBg.className = "loading_bg";
+                    loaderBg.style.width = loadingWidth + "px";
+                    loaderBg.style.left = padding + "px";
+                    loaderBg.style.top = 0.4 * container.offsetHeight + "px";
+                    bgMessage.appendChild(loaderBg);
+
+                    loaderProgress = document.createElement("div");
+                    loaderProgress.className = "loading_progress";
+                    loaderProgress.style.left = padding + "px";
+                    loaderProgress.style.top = 0.4 * container.offsetHeight + "px";
+                    bgMessage.appendChild(loaderProgress);
+                    updateProgress(10);
+                }
                 container.style.transitionProperty = "opacity";
-                container.style.transitionDuration = "300ms";
+                container.style.transitionDuration = "100ms";
                 container.style.pointerEvents = "none";
                 container.style.opacity = 0;
                 isOpen = true;
+
+                clearInterval(updateProgressInterval);
+                updateProgressInterval = setInterval(function () {
+                    var progress = parseFloat(xmlRoot.getAttribute("loading_progress"), 10);
+                    var step;
+                    if (progress < 35)
+                        step = 3;
+                    else if (progress < 70)
+                        step = 1;
+                    else if (progress < 90)
+                        step = 0.25;
+                    if (step)
+                        updateProgress(progress + step);
+                }, 30);
                 clearTimeout(animationEndTimeout);
             } else if (isOpen) {
-                isOpen = false;
-                container.style.opacity = 1;
-                container.style.pointerEvents = "";
+                clearInterval(updateProgressInterval);
+                updateProgress(100);
+                setTimeout(function () {
+                    isOpen = false;
+                    clearProgress();
+                    container.style.opacity = 1;
+                    container.style.pointerEvents = "";
+                }, 40);
+
                 animationEndTimeout = setTimeout(function() {
                     if (bgMessage.parentNode)
                         bgMessage.parentNode.removeChild(bgMessage);
-                }, 350);
+                }, 100);
             }
         };
 

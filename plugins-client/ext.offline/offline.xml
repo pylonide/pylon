@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">      
+<a:application xmlns:a="http://ajax.org/2005/aml">
     <a:window id = "offlineNotifyDialog"
       title   = "No Local Runtime"
       center    = "true"
@@ -18,4 +18,9 @@
             </a:text>
 	    </a:vbox>
     </a:window>
+
+    <a:bar id="barOfflineCover" class="bar-offline-cover" visible="false" zindex="100">
+        <div class="offline-cover"></div>
+        <div class="offline-indicator">Connection is lost! Trying to reach c9.io...</div>
+    </a:bar>
 </a:application>

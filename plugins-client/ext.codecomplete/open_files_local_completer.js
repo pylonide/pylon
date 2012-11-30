@@ -78,7 +78,7 @@ completer.onUpdate = function(doc, callback) {
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
     var identDict = globalWordIndex;
     
     var allIdentifiers = [];
