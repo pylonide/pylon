@@ -14,27 +14,21 @@ var editors = require("ext/editors/editors");
 var dock = require("ext/dockpanel/dockpanel");
 var Range = require("ace/range").Range;
 var search = require("ext/gotofile/search");
-var outline;
+var markup = require("text!ext/language/outline2.xml");
 
-module.exports = {
-
-    nodes: [],
+module.exports = ext.register("ext/language/outline2", {
+    name    : "Docked Outline",
+    dev     : "Ajax.org",
+    type    : ext.GENERAL,
+    nodes   : [],
+    alone   : true,
+    worker  : null,
     fullOutline : [],
+    markup  : markup,
     _name: "ext/language/outline2",
-
-    hook: function(oExt, worker) {
-        outline = oExt;
+    
+    hook: function() {
         var _self = this;
-        
-        worker.on("outline", function(event) {
-            _self.openOutline(event);
-        });
-
-        ide.addEventListener("init.ext/language/language", function() {
-            tbOutlineSearch.addEventListener("afterchange", function(e) {
-                _self.onAfterChange(e);
-            }, true);
-        });
 
         dock.addDockable({
             expanded : -1,
@@ -60,8 +54,23 @@ module.exports = {
                 activeState:  { x: -6, y: -40 }
             }
         }, function() {
-            ext.initExtension(outline);
+            ext.initExtension(_self);
             return pgOutline;
+        });
+    },
+
+    init: function () {
+        tbOutlineSearch.addEventListener("afterchange", function(e) {
+            _self.onAfterChange(e);
+        }, true);
+    },
+
+    setWorker: function (worker) {
+        this.worker = worker;
+        var _self = this;
+        worker.on("outline", function(e) {
+            ext.initExtension(_self);
+            _self.openOutline(e);
         });
     },
 
@@ -169,7 +178,7 @@ module.exports = {
         treeOutlineDocked.$container.scrollTop = 2;
         treeOutlineDocked.$container.scrollTop = 1;
         treeOutlineDocked.$container.scrollTop = 0;
-    },
-};
+    }
+});
 
 });

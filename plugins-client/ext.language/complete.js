@@ -168,7 +168,7 @@ var commands = require("ext/commands/commands");
 
 module.exports = {
     hook: function(ext, worker) {
-        var _self = complete = this;
+        var _self = this;
         language = ext;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
@@ -196,6 +196,7 @@ module.exports = {
         });
         
         this.ext = ext;
+        this.worker = worker;
     },
     
     showCompletionBox: function(matches, prefix, line, column) {
@@ -480,10 +481,6 @@ module.exports = {
                 this.updateDoc();
                 break;
         }
-    },
-    
-    setWorker: function(worker) {
-        this.worker = worker;
     },
 
     deferredInvoke: function() {

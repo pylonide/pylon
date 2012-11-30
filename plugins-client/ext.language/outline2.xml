@@ -1,0 +1,51 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:tab id="tabOutline" skin="docktab" visible="false" buttons="close">
+        <a:model id="mdlOutline2">
+            <data>
+            </data>
+        </a:model>
+        <a:page id="pgOutline" caption="Outline">
+          <a:vbox anchors="0 0 0 0">
+            <a:toolbar>
+                <a:bar height = "36">
+                    <a:hbox edge="5">
+                        <a:textbox 
+                          id              = "tbOutlineSearch"
+                          realtime        = "true"
+                          flex            = "1"
+                          skin            = "searchbox_textbox"
+                          class           = "small_font"
+                          focusselect     = "true"
+                          initial-message = "Search Outline"
+                        />
+                    </a:hbox>
+                </a:bar>
+            </a:toolbar>
+            <a:tree
+              id              = "treeOutlineDocked"
+              skin            = "outline-tree"
+              onafterchoose   = "require('ext/language/outline2').jumpTo(this.selected)"
+              onafterselect   = "require('ext/language/outline2').jumpTo(this.selected)"
+              model           = "mdlOutline2"
+              openadd         = "false"
+              startcollapsed  = "false"
+              empty-message   = "No outline avaialble"
+              flex            = "1"
+              anchors         = "0 0 0 0"
+              scrollbar       = "sbShared 2 2 2">
+                <a:each match = "[entries|entry]">
+                    <a:caption><?lm
+                        var re = new RegExp("({tbOutlineSearch.value})", 'i');
+                        var value = [@name];
+                        
+                        value.replace(re, <strong>$1</strong>);
+                        !![@meta] ? "<code style='color:gray;'> : [@meta]</code>" : "";
+                    ?></a:caption>
+              
+                    <a:icon value="{ide.staticPrefix}/ext/language/img/[@icon].png" />
+                </a:each>
+            </a:tree>
+          </a:vbox>
+        </a:page>
+    </a:tab>
+</a:application>

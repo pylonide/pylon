@@ -57,7 +57,7 @@ module.exports = ext.register("ext/language/language", {
         ide.addEventListener("extload", function() {
             var Worker = useUIWorker ? UIWorkerClient : WorkerClient;
             var worker = _self.worker = new Worker(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
-            complete.setWorker(worker);
+            outline2.setWorker(worker);
 
             ide.addEventListener("closefile", function(e){
                 var path = e.page && e.page.id;
@@ -75,7 +75,7 @@ module.exports = ext.register("ext/language/language", {
                 var path = event.node.getAttribute("path");
                 var editor = editors.currentEditor.amlEditor;
                 // background tabs=open document, foreground tab=switch to file
-                // this is needed because with concorde changeSession event is fired when document is still empty 
+                // this is needed because with concorde changeSession event is fired when document is still empty
                 var isVisible = editor.xmlRoot == event.node;
                 worker.call(isVisible ? "switchFile" : "documentOpen", [
                     util.stripWSFromPath(path),
@@ -86,12 +86,17 @@ module.exports = ext.register("ext/language/language", {
                 ]);
             });
 
+            ide.addEventListener("tab.afterswitch", function (e) {
+                ext.initExtension(_self);
+                _self.setPath();
+                worker.emit("outline", { data : { ignoreFilter: false } });
+            });
+
             // Language features
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
             outline.hook(_self, worker);
-            outline2.hook(_self, worker);
             keyhandler.hook(_self, worker);
             jumptodef.hook(_self, worker);
 
