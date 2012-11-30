@@ -4,7 +4,7 @@ this.tour = {
     steps: [
     {
         before: function() {
-            
+
         },
         el: undefined,
         div: "navbar",
@@ -76,7 +76,7 @@ this.tour = {
     }, {
         before: function() {
             tabEditors.getPage().$doc.setValue(helloWorldScript);
-            if (!save) 
+            if (!save)
                 save = require("ext/save/save");
             var page = tabEditors.getPage();
             var file = page.$model.data;
@@ -133,16 +133,16 @@ this.tour = {
             document.getElementsByClassName("tgDialog")[0].style.display = "none";
             zen.fadeZenButtonOut();
             zen.enterIntoZenMode();
-            
+
             setTimeout(function(){
                 zen.escapeFromZenMode();
                 zen.fadeZenButtonOut();
-                
+
                 setTimeout(function() {
                     document.getElementsByClassName("tgDialog")[0].style.display = "";
-                    hlElement.style.visibility = "visible";      
+                    hlElement.style.visibility = "visible";
                     winTourText.show();
-                    
+
                     require("ext/guidedtour/guidedtour").stepForward();
                 }, 250);
             }, 2300);
@@ -251,7 +251,7 @@ this.tour = {
             if(menuId)
                 dockpanel.layout.showMenu(menuId.uniqueId);
             dbgCallStack.parentNode.set(dbgCallStack);
-            
+
             txtConsoleInput.setValue("");
         },
         el: function(){
@@ -273,7 +273,7 @@ this.tour = {
     }, {
         before: function() {
             require('ext/runpanel/runpanel').stop();
-            
+
             if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-guidedTour.js']")) {
                 require("ext/console/console").evalInputCommand(txtConsoleInput.getValue());
                 txtConsoleInput.setValue("rm helloWorld-guidedTour.js");

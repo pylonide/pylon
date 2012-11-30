@@ -274,15 +274,6 @@ module.exports = ext.register("ext/splitview/splitview", {
             });
         });
 
-        ide.addEventListener("activepagemodel", function(e) {
-            var page = tabs.getPage();
-            var split = Splits.get(page)[0];
-            if (!split || !Splits.isActive(split))
-                return;
-
-            e.returnValue = split.pairs[split.activePage || 0].page.$model;
-        });
-
         ide.addEventListener("tab.create", function(e) {
             var page = e.page;
             var xmlNode = e.doc.getNode();
@@ -619,7 +610,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             editor.show();
             return;
         }
-console.log("showing split?");
+
         Splits.show(split);
         mnuSplitAlign.setAttribute("checked", split.gridLayout == "3rows");
 

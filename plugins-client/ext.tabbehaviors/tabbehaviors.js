@@ -247,7 +247,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         tabEditors.addEventListener("close", function(e) {
-            if (tabEditors.getPage() == e.page)
+            if (ide.getActivePage() == e.page)
                 this.nextTabInLine = _self.accessList[1];
         });
 
@@ -264,7 +264,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 if (_self.$dirtyNextTab) {
                     _self.accessedTab = 0;
 
-                    var page = tabEditors.getPage();
+                    var page = ide.getActivePage();
                     if (_self.accessList[_self.accessedTab] != page) {
                         _self.accessList.remove(page);
                         _self.accessList.unshift(page);
@@ -327,7 +327,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closetab: function(page) {
         if (!page) {
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
             var corrected = ide.dispatchEvent("beforeclosetab", {
                 page: page
             });
@@ -362,7 +362,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         // if ignore isn't a page instance, then fallback to current page, unless it's an object from closealltotheright/left
         if (!(ignore instanceof apf.page)) {
             if (typeof ignore === "undefined" || typeof ignore.closeall === "undefined") {
-                ignore = tabEditors.getPage();
+                ignore = ide.getActivePage();
             }
         }
 
@@ -449,7 +449,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closealltotheright : function(page) {
         if (!page)
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
         var pages = tabEditors.getPages();
 
         var currIdx = pages.indexOf(page);
@@ -465,7 +465,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closealltotheleft : function(page) {
         if (!page)
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
         var pages = tabEditors.getPages();
 
         var currIdx = pages.indexOf(page);
@@ -521,7 +521,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var bRight  = dir == "right";
         var tabs    = tabEditors;
         var pages   = tabs.getPages();
-        var curr    = tabs.getPage();
+        var curr    = ide.getActivePage();
         var currIdx = pages.indexOf(curr);
         if (!curr || pages.length == 1)
             return;
@@ -558,7 +558,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var bRight  = dir == "right";
         var tabs    = tabEditors;
         var pages   = tabs.getPages();
-        var curr    = tabs.getPage();
+        var curr    = ide.getActivePage();
         var currIdx = pages.indexOf(curr);
         var append  = false;
         if (!curr || pages.length == 1)
@@ -620,7 +620,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
      */
     revealtab: function(page, noFocus) {
         if (!page || page.command)
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
         if (!page)
             return false;
 

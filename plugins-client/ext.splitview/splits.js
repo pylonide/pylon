@@ -65,6 +65,16 @@ exports.init = function(splitView) {
         e.returnValue = correctVimMode(e);
     });
 
+    ide.addEventListener("ext.revisions.show", function(e) {
+        e.show = true;
+        e.returnValue = correctRevisionsPanel(e);
+    });
+
+    ide.addEventListener("ext.revisions.hide", function(e) {
+        e.show = false;
+        e.returnValue = correctRevisionsPanel(e);
+    });
+
     Grids.addEventListener("resize", function(e, node) {
         var correct;
         if (searchWindow && searchWindow.visible) {
@@ -385,7 +395,7 @@ exports.setActivePage = function(split, page) {
             ? exports.indexOf(split, page)
             : split.activePage);
     if (idx == -1) {
-        split.activePage = 0;
+        split.activePage = idx = 0;
         return;
     }
 
@@ -692,6 +702,15 @@ function correctVimMode(e) {
     e.editors.push.apply(e.editors, EditorClones[e.editors[0].localName]);
     if (EditorClones.cloneEditor)
         e.editors.push(EditorClones.cloneEditor);
+}
+
+function correctRevisionsPanel(e) {
+    if (!ActiveSplit)
+        return;
+    var grid = Grids.get(ActiveSplit.gridLayout);
+    if (!grid || !grid.node)
+        return;
+    return false;
 }
 
 });

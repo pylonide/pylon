@@ -76,17 +76,17 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.updateFileCache();
             }
         });
-        
+
         ide.addEventListener("closefile", this.$closeFile = function() {
             setTimeout(function(){
                 _self.updateWinPos();
             });
         });
-        
+
         ide.addEventListener("newfile", this.$newFile = function() {
             _self.updateFileCache(true);
         });
-        
+
         ide.addEventListener("removefile", this.$removeFile = function() {
             _self.updateFileCache(true);
         });
@@ -179,13 +179,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
-        
+
         winGoToFile.addEventListener("prop.visible", function(e){
             if (e.value) {
                 _self.updateWinPos();
             }
         });
-        
+
         txtGoToFile.addEventListener("blur", function(e){
             if (self.winGoToFile && winGoToFile.visible
               && !apf.isChildOf(winGoToFile, e.toElement))
@@ -204,28 +204,28 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.updateDatagrid(true);
 
         this.nodes.push(winGoToFile);
-        
+
         this.updateWinPos();
     },
-    
+
     updateWinPos : function(){
         if (!window.winGoToFile)
             return;
-        
-        if (!tabEditors.getPage() || !themes.isDark) {
+
+        if (!ide.getActivePage() || !themes.isDark) {
             winGoToFile.setProperty("top", 0);
             vboxGoToFile.setProperty("edge", "5 5 5 5");
-            
+
             winGoToFile.$ext.style.top = 0;
         }
         else {
             winGoToFile.setProperty("top", 6);
             vboxGoToFile.setProperty("edge", "1 5 5 5");
-            
+
             winGoToFile.$ext.style.top = "6px";
         }
     },
-    
+
     windowVisible : function(winValue, data){
         var _self = this;
         if (winValue) {
@@ -262,7 +262,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         }
     },
-    
+
     updateFileCache : function(isDirty){
         var _self = this;
 
@@ -286,7 +286,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
 
             _self.arrayCache = array;
-            
+
             if (self.winGoToFile && _self.lastSearch) {
                 if (!winGoToFile.visible) {
                     var $winGoToFileProVisible;
@@ -356,7 +356,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var nodes = dgGoToFile.getTraverseNodes();
         if (!nodes)
             return;
-        
+
         for (var i = Math.max(dgGoToFile.$viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
             if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
                 dgGoToFile.select(nodes[i]);

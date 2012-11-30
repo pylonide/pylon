@@ -39,7 +39,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     nodes : [],
     model : new apf.model(),
-    
+
     disableLut: {
         "terminal": true
     },
@@ -96,7 +96,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
                         if (!self.tabEditors
                           || tabEditors.length == 0
-                          || _self.excludedTypes[tabEditors.getPage().id.split(".").pop()])
+                          || _self.excludedTypes[ide.getActivePage().id.split(".").pop()])
                             _self.mnuRunCfg.firstChild.disable();
                         else
                             _self.mnuRunCfg.firstChild.enable();
@@ -223,16 +223,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         }
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
-            setActiveFile(tabEditors.getPage());
+            setActiveFile(ide.getActivePage());
 
             ide.addEventListener("tab.afterswitch", function(e){
                 setActiveFile(e.nextPage);
             });
 
             ide.addEventListener("updatefile", function(e){
-                setActiveFile(tabEditors.getPage());
+                setActiveFile(ide.getActivePage());
             });
-            
+
             ide.addEventListener("tab.afterswitch", function(e){
                 _self.enable();
             });
@@ -359,7 +359,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     addConfig : function() {
         var path, name, file = ide.getActivePageModel();
         var extension = "";
-        
+
         if (file) {
             path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
             name  = file.getAttribute("name").replace(/\.(js|py)$/,
@@ -491,7 +491,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     enable : function(){
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
             return this.disable();

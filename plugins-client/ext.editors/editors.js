@@ -365,7 +365,7 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     switchEditor : function(path){
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (!page || page.type == path)
             return;
 

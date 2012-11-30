@@ -31,10 +31,10 @@ module.exports = ext.register("ext/undo/undo", {
     undo: function() {
         if (document.activeElement && ta[document.activeElement.tagName])
             return false;
-        
+
         if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
             var _tabPage;
-            if(_tabPage = tabEditors.getPage())
+            if(_tabPage = ide.getActivePage())
                 _tabPage.$at.undo();
         }
         else if (apf.activeElement == self.trFiles) {
@@ -46,10 +46,10 @@ module.exports = ext.register("ext/undo/undo", {
     redo: function() {
         if (document.activeElement && ta[document.activeElement.tagName])
             return false;
-        
+
         if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
             var _tabPage;
-            if(_tabPage = tabEditors.getPage())
+            if(_tabPage = ide.getActivePage())
                 _tabPage.$at.redo();
         }
         else if (apf.activeElement == self.trFiles) {
