@@ -52,6 +52,7 @@ module.exports = function setup(options, imports, register) {
                     msg.stderr = stderr;
                     msg.extra = "codesearch";
                     msg.type = "exit";
+
                     self.ide.broadcast(JSON.stringify(msg), self.name);
                 }
             );

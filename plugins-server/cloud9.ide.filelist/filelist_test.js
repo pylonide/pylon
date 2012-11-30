@@ -13,12 +13,9 @@ var Assert = require("assert");
 var VfsLocal = require("vfs-local");
 var Filelist = require("./filelist");
 
-var Os = require("os");
-var Fs = require("fs");
 var Path = require("path");
 
 var nakModule = require("../cloud9.search.nak");
-Fs.exists = Fs.exists || Path.exists;
 
 var basePath = Path.join(__dirname, "fixtures");
 
@@ -50,6 +47,10 @@ describe("filelist", function() {
         o.setEnv({ 
             basePath: basePath,
             searchType: NakLib
+        });
+
+    afterEach(function(done) {
+        vfs.unextend("nak_filelist", {}, done);
     });
 
     it("should get filelist, including hidden files and binaries",  function(next) {

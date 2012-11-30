@@ -41,7 +41,7 @@ module.exports = function() {
 
         var nakstream = Fs.createReadStream(Path.normalize(__dirname + "/../../node_modules/nak/build/nak.vfs_concat.js"));
 
-        vfs.extend("nak", {stream: nakstream, redefine: true}, function (err, meta) {
+        vfs.extend("nak_filelist", {stream: nakstream, redefine: true}, function (err, meta) {
             if (err) throw err;
             var api = meta.api;
             

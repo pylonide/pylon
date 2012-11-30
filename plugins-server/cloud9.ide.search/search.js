@@ -7,6 +7,7 @@
 
 "use strict";
 
+var Fs = require("fs");
 var Path = require("path");
 
 module.exports = function() {
@@ -44,93 +45,28 @@ module.exports = function() {
         if (this.activeProcess)
             this.activeProcess.kill("SIGKILL");
 
-        vfs.spawn(args.command, { args: args, cwd: options.path, stdoutEncoding: "utf8", stderrEncoding: "utf8" }, function(err, meta) {
-            if (err || !meta.process)
-                return onExit(1, err, {
-                    count: 0,
-                    filecount: 0
-                });
 
-            var child = meta.process;
-            self.activeProcess = child;
+        var nakstream = Fs.createReadStream(Path.normalize(__dirname + "/../../node_modules/nak/build/nak.vfs_concat.js"));
 
-            var stderr = "";
-            var prevFile = null;
-            var filecount = 0;
-            var count = 0;
-        
-            child.stdout.on("data", function(data) {
-                var msg = self.parseResult(prevFile, options, data);
-                count += msg.count;
-                filecount += msg.filecount;
-                prevFile = msg.prevFile;
+        vfs.extend("nak_search", {stream: nakstream, redefine: true}, function (err, meta) {
+            if (err) throw err;
+            var api = meta.api;
+            
+            api.execute(args, function (err, result) {
+                if (err) return onExit(1, err);
 
-                if (msg)
-                    onData(msg);
-            });
+                if (/^Found/.test(result)) {
+                    // fetch the "Found %d matches in %d files" result
+                    var tally = result.match(/\d+/g);
 
-            child.stderr.on("data", function(data) {
-                stderr += data;
-            });
-
-            child.on("exit", function(code) {
-                self.processCount -= 1;
-                onExit(code, stderr, {
-                    count: count,
-                    filecount: filecount,
-                    command: args.command + " " + args.join(" ")
-                });
+                    onExit(0, null, {data: result, count: tally[0], filecount: tally[1]});
+                }
+                    
+                else
+                    onData({data: result});
             });
         });
 
         return true;
-    };
-
-    this.parseResult = function(prevFile, options, data) {
-        if (typeof data !== "string" || data.indexOf("\n") === -1)
-            return { count: 0, filecount: 0, data: "" };
-
-        var parts, file, lineno, result = "";
-        var aLines = data.split(/([\n\r\u0000]+)/g);
-        var count = 0;
-        var filecount = 0;
-        
-        if (options) {
-            for (var i = 0, l = aLines.length; i < l; ++i) {
-                parts = aLines[i].split(":");
-
-                if (parts.length < 3)
-                    continue;
-
-                var _path = parts.shift().replace(options.path, "").trimRight();
-                file = encodeURI(options.uri + _path, "/");
-
-                lineno = parseInt(parts.shift(), 10);
-                if (!lineno)
-                    continue;
-
-                ++count;
-                if (file !== prevFile) {
-                    ++filecount;
-                    if (prevFile)
-                        result += "\n \n";
-
-                    result += file + ":";
-                    prevFile = file;
-                }
-
-                result += "\n\t" + lineno + ": " + parts.join(":");
-            }
-        }
-        else {
-            console.error("options object doesn't exist", data);
-        }
-
-        return {
-            count: count,
-            filecount: filecount,
-            prevFile: prevFile,
-            data: result
-        };
     };
 };

@@ -25,7 +25,7 @@ module.exports = function setup(options, imports, register) {
             args.push("-m", options.maxdepth);
 
         args.push(options.path);
-        
+
         return args;
     },
 
@@ -35,8 +35,7 @@ module.exports = function setup(options, imports, register) {
         if (!query)
             return;
 
-        args = ["-a", path.join(__dirname, "..", "cloud9.ide.search", ".nakignore"),  // use the Cloud9 ignore file
-                "--c9Format"];                            // format for parseResult to consume
+        args = ["-a", path.join(__dirname, "..", "cloud9.ide.search", ".nakignore")];  // use the Cloud9 ignore file
 
         if (!options.casesensitive)
             args.push("-i");
@@ -50,7 +49,6 @@ module.exports = function setup(options, imports, register) {
         if (!options.regexp)
             args.push("-q");
 
-        // see above notes on ag for discussion about pattern handling
         if (options.pattern) {
             var includes = [], excludes = [];
 
@@ -67,38 +65,25 @@ module.exports = function setup(options, imports, register) {
 
             // wildcard handling will be done in nak
             if (includes.length)
-                args.push("-G", "'" + options.pattern + "'");
+                args.push("-G", options.pattern);
 
-            if (excludes.length) {
-                args.push("--ignore", "'" + excludes + "'");
-            }
+            if (excludes.length)
+                args.push("--ignore", excludes.join(", "));
         }
 
-        args.push("'" + query + "'");
+        args.push( query );
 
-        if (options.replaceAll && options.replacement) {
-            if (!options.replacement)
-                options.replacement = "";
-
-            // nak naturally suports find/replace, so no piping needed!
-            args.push("'" + options.replacement + "'");
-        }
+        if (options.replaceAll && options.replacement)
+            args.push( options.replacement );
         
         args.push(options.path);
         
-        // since we're actually calling a node binary (from a node program--nodeception!)
-        // we need to launch the script via bash and act as though the command is a string
-        args.unshift(nakCmd);
-        args = ["-c", args.join(" ")];
-        args.command = "bash";
-
         return args;
       }
    };
 
-  if (!options.test) {
+  if (!options.test)
     register(null, {codesearcher: codesearcher});
-  }
   else
     return codesearcher;
 };
