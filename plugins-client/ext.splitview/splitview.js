@@ -263,7 +263,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             _self.save();
         });
 
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             if (!e.model || !e.model.data)
                 return;
             var data = e.model.data;
@@ -714,7 +714,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
 
         restoring = true;
-        var activePage = tabs.getPage();
+        var activePage = ide.getActivePage();
 
         var node, ids, j, l2, id, dupes, hasClone, split, page, editor, active;
         for (var i = nodes.length - 1; i >= 0; --i) {
@@ -795,7 +795,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             tabs.set(activePage);
         }
         else if (active) {
-            //tabs.set(active.pairs[0].page);
+            tabs.set(active.pairs[0].page);
             Splits.update(active);
             Splits.show(active);
             mnuSplitAlign.setAttribute("checked", active.gridLayout == "3rows");
