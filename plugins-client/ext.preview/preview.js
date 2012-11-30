@@ -130,8 +130,6 @@ module.exports = ext.register(_name, {
     },
 
     preview : function (url, live) {
-        // window.open(url, "_blank");
-        pgPreview.setCaption(apf.getFilename(url));
         var bar = this._getDockBar();
         dock.showBar(bar);
         dock.expandBar(bar);
@@ -150,7 +148,6 @@ module.exports = ext.register(_name, {
     refresh: function (url) {
         var frmPreview = this.getIframe();
         url = url || txtPreview.getValue();
-        pgPreview.setAttribute("class", "loading_active");
         frmPreview.$ext.src = url;
         txtPreview.setValue(url);
     },
