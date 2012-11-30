@@ -12320,6 +12320,16 @@
             -webkit-overflow-scrolling : touch;
             overflow-y: scroll;
         }
+        
+        .filemgr-tree .item-fix .item {
+            -webkit-transform-origin: 0 0;
+            -webkit-transform: scale(1.2);
+        }
+        
+        .filemgr-tree .item label {
+            height: 20px;
+            line-height: 18px;
+        }
     ]]></a:style>
 
     <a:presentation>
