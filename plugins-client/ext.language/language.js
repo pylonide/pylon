@@ -19,7 +19,6 @@ var useUIWorker = window.location && /[?&]noworker=1/.test(window.location.searc
 var complete = require("ext/language/complete");
 var marker = require("ext/language/marker");
 var refactor = require("ext/language/refactor");
-var outline = require("ext/language/outline");
 var outline2 = require("ext/language/outline2");
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -96,7 +95,6 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
-            outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
             jumptodef.hook(_self, worker);
 

@@ -11,6 +11,8 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var editors = require("ext/editors/editors");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var dock = require("ext/dockpanel/dockpanel");
 var Range = require("ace/range").Range;
 var search = require("ext/gotofile/search");
@@ -29,6 +31,28 @@ module.exports = ext.register("ext/language/outline2", {
     
     hook: function() {
         var _self = this;
+
+
+        commands.addCommand({
+            name: "outline",
+            hint: "search for a definition and jump to it",
+            bindKey: {mac: "Command-Shift-E", win: "Ctrl-Shift-E"},
+            isAvailable : function(editor) {
+                return editor && editor.path == "ext/code/code";
+            },
+            exec: function () {
+                _self.updateOutline(true);
+            }
+        });
+        
+        var mnuItem = new apf.item({
+            command : "outline"
+        });
+
+        this.nodes.push(
+            menus.addItemByPath("Tools/Quick Outline", mnuItem, 100),
+            menus.addItemByPath("Goto/Goto Definition...", mnuItem.cloneNode(false), 110)
+        );
 
         dock.addDockable({
             expanded : -1,
