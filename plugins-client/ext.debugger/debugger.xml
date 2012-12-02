@@ -20,26 +20,27 @@
                   command  = "stepover"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:button id="btnStepInto" tooltip="Step Into"
-                  icon     = "stepinto.png" 
+                  icon     = "stepinto.png"
                   skin     = "c9-sidepanelsbutton"
-                  command  = "stepinto" 
+                  command  = "stepinto"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:button id="btnStepOut" tooltip="Step Out"
-                  icon     = "stepback.png" 
+                  icon     = "stepback.png"
                   skin     = "c9-sidepanelsbutton"
                   command  = "stepout"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:divider skin="c9-divider" />
-                <a:checkbox id="btnEnableBreakpoint" tooltip="Deactivate breakpoints"
-                  skin     = "checkbox_black"
-                  value    = "[{mdlDbgBreakpoints}::@disableBreakpoints]"/>
+                <a:checkbox id="btnEnableBreakpoint"
+                  icon    = "{this.checked?'breakpoints_hidden.png':'breakpoints_visible.png'}"
+                  tooltip = "{this.checked?'Activate breakpoints':'Deactivate breakpoints'}"
+                  value   = "[{mdlDbgBreakpoints}::@disableBreakpoints]"/>
                 <a:divider skin="c9-divider" />
                 <a:checkbox id="btnBreakOnError" tooltip="Break on Exceptions"
-                  skin     = "checkbox_black"
-                  value    = "[{mdlDbgBreakpoints}::@breakOnExceptions]"/>
+                  icon    = "pause_on_exceptions.png"
+                  value   = "[{mdlDbgBreakpoints}::@breakOnExceptions]"/>
                 <a:divider skin="c9-divider" />
                 <!--<a:button id="btnStepThrough" tooltip="Step Through"
-                  icon     = "stepthrough.png" 
+                  icon     = "stepthrough.png"
                   skin     = "c9-sidepanelsbutton"
                   command  = "stepout"
                   disabled = "{dbg.state != 'stopped'}" />-->
