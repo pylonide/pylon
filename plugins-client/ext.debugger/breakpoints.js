@@ -155,6 +155,11 @@ module.exports = {
         editor.on("guttermousedown", editor.$breakpointListener = function(e) {
             if (e.getButton()) // !editor.isFocused()
                 return;
+
+            // enable break on breakpoints
+            if (mdlDbgBreakpoints.data.hasAttribute("disableBreakpoints"))
+              apf.xmldb.removeAttribute(mdlDbgBreakpoints.data, "disableBreakpoints");
+            
             var gutterRegion = editor.renderer.$gutterLayer.getRegion(e);
             if (gutterRegion != "markers")
                 return;
@@ -217,12 +222,14 @@ module.exports = {
         var rows = [];
         var path = session.c9doc.getNode().getAttribute("path");
         var breakpoints = mdlDbgBreakpoints.queryNodes("//breakpoint[@path=" + util.escapeXpathString(path) + "]");
+        
+        var isAllDisabled = apf.isTrue(mdlDbgBreakpoints.data.getAttribute("disableBreakpoints"));
 
         for (var i = 0; i < breakpoints.length; i++) {
             var bp = breakpoints[i];
             var line = parseInt(bp.getAttribute("line"), 10);
             var offset = parseInt(bp.getAttribute("lineoffset"), 10);
-            var enabled = apf.isTrue(bp.getAttribute("enabled"));
+            var enabled = !isAllDisabled && apf.isTrue(bp.getAttribute("enabled"));
             rows[line + offset] = " ace_breakpoint " + (enabled ? "" : "disabled ");
         }
         session.$breakpoints = rows;
