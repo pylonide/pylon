@@ -1645,43 +1645,7 @@ module.exports = ext.register("ext/uimgr/uimgr", {
                             ]
                         },
                         { //skin
-                            name: "fm-window",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        buttons: "min|max|close",
-                                        height: "400",
-                                        minheight: "290",
-                                        minwidth: "300",
-                                        modal: "false",
-                                        resizable: "true",
-                                        title: "Static modal window",
-                                        visible: "true",
-                                        width: "500"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
                             name: "panel",
-                            versions: [
-                                { //version
-                                    settings: {
-                                        buttons: "min|max|close",
-                                        height: "400",
-                                        minheight: "290",
-                                        minwidth: "300",
-                                        modal: "false",
-                                        resizable: "true",
-                                        title: "Static modal window",
-                                        visible: "true",
-                                        width: "500"
-                                    }
-                                }
-                            ]
-                        },
-                        { //skin
-                            name: "window",
                             versions: [
                                 { //version
                                     settings: {
@@ -2317,7 +2281,6 @@ module.exports = ext.register("ext/uimgr/uimgr", {
             "gotoline",
             "guidedtour",
             "help",
-            "quicksearch",
             "revisions",
             "searchinfiles",
             "searchreplace",
