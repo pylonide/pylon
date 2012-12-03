@@ -123,11 +123,11 @@ module.exports = ext.register("ext/debugger/debugger", {
         var name = "ext/debugger/debugger"; //this.name
 
         dock.addDockable({
-            expanded : 1,
-            width    : 300,
+            expanded : -1,
+            width    : 330,
             sections : [{
                 height     : 30,
-                width      : 150,
+                width      : 200,
                 minHeight  : 30,
                 noflex     : true,
                 draggable  : false,
@@ -264,7 +264,32 @@ module.exports = ext.register("ext/debugger/debugger", {
                 }
             }
         });
+
+        // hack to update btnRunCommands size after adding new buttons
+        function $updateDockPanelSize() {
+            function find(s, prop, cb) {
+                var el = s && s[prop] || [];
+                for (var i = 0; i < el.length; i++){
+                    if (cb(el[i])) {
+                        stack[prop] = el[i];
+                        return true;
+                    }
+                }
+            }
+            function finder(name, cb){
+                return function(x) {return find(x, prop, cb)};
+            }
+
+            var state = dock.layout.getState(true);
+            var stack = {};
+            find(state, "bars", finder("sections", finder("buttons", function(x){
+                return x && x.id == "btnRunCommands";
+            })));
+            stack.sections.width = 220;
+        }
+        $updateDockPanelSize();
     },
+
 
     init : function(amlNode) {
         sources.init();
