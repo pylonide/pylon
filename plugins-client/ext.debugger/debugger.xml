@@ -30,14 +30,26 @@
                   command  = "stepout"
                   disabled = "{dbg.state != 'stopped'}" />
                 <a:divider skin="c9-divider" />
-                <a:checkbox id="btnEnableBreakpoint"
-                  icon    = "{this.checked?'breakpoints_hidden.png':'breakpoints_visible.png'}"
-                  tooltip = "{this.checked?'Activate breakpoints':'Deactivate breakpoints'}"
-                  value   = "[{mdlDbgBreakpoints}::@disableBreakpoints]"/>
+                <a:button id="btnEnableBreakpoint"
+                  icon    = "{apf.isTrue(this.checked)?'breakpoints_hidden.png':'breakpoints_visible.png'}"
+                  skin    = "c9-sidepanelsbutton"
+                  tooltip = "{apf.isTrue(this.checked)?'Activate breakpoints':'Deactivate breakpoints'}"
+                  checked = "[{mdlDbgBreakpoints}::@disableBreakpoints]"
+                  onclick = " apf.isTrue(this.checked)
+                    ? apf.xmldb.removeAttribute(mdlDbgBreakpoints.data, 'disableBreakpoints')
+                    : apf.xmldb.setAttribute(mdlDbgBreakpoints.data, 'disableBreakpoints', true)
+                  "
+                  />
                 <a:divider skin="c9-divider" />
-                <a:checkbox id="btnBreakOnError" tooltip="Break on Exceptions"
-                  icon    = "pause_on_exceptions.png"
-                  value   = "[{mdlDbgBreakpoints}::@breakOnExceptions]"/>
+                <a:button id="btnBreakOnError"
+                  icon    = "{apf.isTrue(this.checked)?'pause_on_exceptions.png':''}"
+                  skin    = "c9-sidepanelsbutton"
+                  checked = "[{mdlDbgBreakpoints}::@breakOnExceptions]"
+                  tooltip = "{apf.isTrue(this.checked)?'Pause on all exceptions':'Don\'t pause on exceptions'}"
+                  onclick = " apf.isTrue(this.checked)
+                    ? apf.xmldb.removeAttribute(mdlDbgBreakpoints.data, 'breakOnExceptions')
+                    : apf.xmldb.setAttribute(mdlDbgBreakpoints.data, 'breakOnExceptions', true)
+                  "/>
                 <a:divider skin="c9-divider" />
                 <!--<a:button id="btnStepThrough" tooltip="Step Through"
                   icon     = "stepthrough.png"
