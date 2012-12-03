@@ -2244,6 +2244,10 @@
 
         }
 
+        .c9-sidepanelsbuttonOver .c9-icon {
+            background-position : 0 -19px;
+        }
+        
         .c9-sidepanelsbuttonDisabled .c9-icon {
             background-position : 0 -38px;
         }
