@@ -45,6 +45,7 @@ define(function(require, exports, module) {
             && loc.indexOf("dev") === -1
             && (loc.indexOf("c9.io") > -1))
         {
+            var oldOnError = window.onerror;
             window.onerror = function(m, u, l) {
                 apf.ajax("/api/debug", {
                     method      : "POST",
@@ -56,6 +57,8 @@ define(function(require, exports, module) {
                         workspaceId : ide.workspaceId
                     })
                 });
+                if (oldOnError)
+                    oldOnError.apply(this, arguments);
             };
 
             //Catch all APF Routed errors

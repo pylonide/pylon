@@ -92,7 +92,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (typeof noAnim == "undefined") {
             noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
         }
-        
+
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");

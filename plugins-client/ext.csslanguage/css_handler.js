@@ -14,8 +14,8 @@ handler.handlesLanguage = function(language) {
     return language === "css";
 };
 
-handler.analyze = function(doc, ast, callback) {
-    callback(handler.analyzeSync(doc, ast));
+handler.analyze = function(value, ast, callback) {
+    callback(handler.analyzeSync(value, ast));
 };
 
 var CSSLint_RULESET = {
@@ -53,8 +53,7 @@ var CSSLint_RULESET = {
     "zero-units"                  : 1
 };
 
-handler.analyzeSync = function(doc, ast) {
-    var value = doc.getValue();
+handler.analyzeSync = function(value, ast) {
     value = value.replace(/^(#!.*\n)/, "//$1");
 
     var results = CSSLint.verify(value, CSSLint_RULESET);

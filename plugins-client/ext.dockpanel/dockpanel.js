@@ -107,6 +107,16 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     // JSON parse COULD fail
                     try {
                         state = JSON.parse(strSettings);
+                        var defaultBars = _self.defaultState.bars;
+                        for (var i = 0, l = Math.max(state.bars.length, defaultBars.length); i < l; i++) {
+                            if (!defaultBars[i]) {
+                                state.bars[i] = null;
+                                continue;
+                            }
+                            // Code update adding more dockables
+                            if (!state.bars[i] || state.bars[i].sections.length < defaultBars[i].sections.length)
+                                state.bars[i] = defaultBars[i];
+                       }
                     }
                     catch (ex) {}
                 }
@@ -114,17 +124,13 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 ide.dispatchEvent("dockpanel.load.settings", {state: state});
                 _self.layout.loadState(state);
                 _self.loaded = true;
-
-                _self.setParentHboxTop(
-                    apf.isFalse(settings.model.queryValue("auto/tabs/@show")) ? -15 : 0,
-                    apf.isFalse(settings.model.queryValue("general/@animateui"))
-                );
+                ide.dispatchEvent("dockpanel.loaded", {state: state});
             });
         });
 
-        ide.addEventListener("tabs.visible", function(e){
-            _self.setParentHboxTop(!e.value ? -15 : 0, e.noanim);
-        });
+        _self.updateParentHboxTop();
+        ide.addEventListener("menus.restore", _self.updateParentHboxTop);        
+        ide.addEventListener("menus.minimize", _self.updateParentHboxTop);
 
         this.nodes.push(
             menus.addItemByPath("View/Dock Panels/", null, 150),
@@ -155,15 +161,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         );
     },
 
-    setParentHboxTop : function(top, noAnim){
-        if (noAnim) {
-            hboxDockPanel.$ext.style.top = top + "px";
-        }
-        else {
-            anims.animate(hboxDockPanel.$ext, {
-                top: top + "px"
-            });
-        }
+    updateParentHboxTop : function() {
+        var hbox = hboxDockPanel.$ext;
+        var top = menus.minimized ? 22 : 3;
+        hbox.style.paddingTop = top + "px";
     },
 
     saveSettings : function(){
@@ -206,21 +207,28 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var layout = this.layout, _self = this;
 
         panel[type].mnuItem = menus.addItemByPath(
-          "View/Dock Panels/" + options.menu.split("/").pop(),
+          (options.menuPath || "View/Dock Panels/") + options.menu.split("/").pop(),
           new apf.item({
             id      : "mnu" + type,
             type    : "check",
             onclick : function(){
                 var page = getPage();
 
-                var uId = _self.getButtons(name, type)[0].uniqueId;
-                layout.show(uId, true);
-                if (layout.isExpanded(uId) < 0)
-                    layout.showMenu(uId);
+                var uId = _self.getButtons(name, type);
+                if (uId.length && (uId = uId[0].uniqueId)) {
+                    if (this.value) {
+                        layout.hide(uId);
+                    }
+                    else {
+                        layout.show(uId, true);
+                        if (layout.isExpanded(uId) < 0)
+                            layout.showMenu(uId);
 
-                page.parentNode.set(page);
+                        page.parentNode.set(page);
+                    }
+                }
             }
-        }));
+        }), options.menuIndex);
     },
 
     //@todo

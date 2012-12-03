@@ -13,6 +13,7 @@ var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
+var SyntaxDetector = require("ext/language/syntax_detector");
 var completeUtil = require("ext/codecomplete/complete_util");
 
 var lang = require("ace/lib/lang");
@@ -79,12 +80,20 @@ function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
 }
 
+function getSyntax() {
+    var editor = editors.currentEditor.amlEditor.$editor;
+    return SyntaxDetector.getContextSyntax(
+        editor.getSession().getDocument(),
+        editor.getCursorPosition(),
+        editors.currentEditor.amlEditor.syntax);
+}
+
 function isJavaScript() {
-    return editors.currentEditor.amlEditor.syntax === "javascript";
+    return getSyntax() === "javascript";
 }
 
 function isHtml() {
-    return editors.currentEditor.amlEditor.syntax === "html";
+    return getSyntax() === "html";
 }
 
 /**
@@ -99,7 +108,7 @@ function replaceText(editor, match) {
     var session = editor.getSession();
     var line = session.getLine(pos.row);
     var doc = session.getDocument();
-    var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+    var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
     
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
@@ -121,7 +130,7 @@ function replaceText(editor, match) {
     var prefixWhitespace = line.substring(0, i);
     
     // Remove HTML duplicate '<' completions
-    var preId = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+    var preId = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
     if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
         newText = newText.substring(1);
 
@@ -138,12 +147,12 @@ function replaceText(editor, match) {
     }
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
-    
+
     doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
-    
+
     var cursorCol = rowOffset ? colOffset : pos.column + colOffset - prefix.length;
-    
+
     if (line.substring(0, pos.column).match(/require\("[^\"]+$/) && isJavaScript()) {
         if (line.substr(pos.column + postfix.length, 1).match(/['"]/) || paddedLines.substr(0, 1) === '"')
             cursorCol++;
@@ -294,7 +303,7 @@ module.exports = {
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
                 }
             }
-            var prefix = completeUtil.retrievePreceedingIdentifier(line, pos.column, match.identifierRegex);
+            var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
             var trim = match.meta ? " maintrim" : "";
             if (!isInferAvailable || match.icon) {
                 html += '<span class="main' + trim + '"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span>';
@@ -531,7 +540,7 @@ module.exports = {
             replaceText(editor, matches[0]);
         }
         else if (matches.length > 0) {
-            var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column, matches[0].identifierRegex);
+            var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, matches[0].identifierRegex);
             this.showCompletionBox(matches, identifier);
         }
         else {
