@@ -47,7 +47,7 @@ module.exports = ext.register(_name, {
         return dock.getBars(this._name, this._button)[0];
     },
 
-    _getButton: function () {
+    _getDockButton: function () {
         return dock.getButtons(this._name, this._button)[0];
     },
 
@@ -55,7 +55,7 @@ module.exports = ext.register(_name, {
         
     },
 
-    hook : function() {
+    hook: function() {
         var _self = this;
 
         settings.addSettings("Previewer", markupSettings);
@@ -122,7 +122,7 @@ module.exports = ext.register(_name, {
 
         ide.addEventListener("settings.save", function(e){
             if (_self.inited) {
-                var button = _self._getButton();
+                var button = _self._getDockButton();
                 var url = txtPreview.getValue();
                 if (url) {
                     var prev = {
@@ -153,6 +153,18 @@ module.exports = ext.register(_name, {
         ext.initExtension(this);
     },
 
+    // Patch the docked section to remove the page caption
+    hidePageHeader: function () {
+        var button = this._getDockButton();
+        if (!button || !button.cache)
+            return;
+        var pNode = button.cache.$dockpage.$pHtmlNode;
+        if (pNode.children.length === 4) {
+            pNode.removeChild(pNode.children[2]);
+            pNode.children[2].style.top = 0;
+        }
+    },
+
     onFileSave: function () {
         if (!this.live)
             return;
@@ -169,11 +181,12 @@ module.exports = ext.register(_name, {
         html.innerHTML = this.live.value;
     },
 
-    preview : function (url, live) {
+    preview: function (url, live) {
         var bar = this._getDockBar();
         dock.showBar(bar);
         dock.expandBar(bar);
         dock.showSection(this._name, this._button);
+        this.hidePageHeader();
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
             this.refresh(url);
@@ -199,15 +212,16 @@ module.exports = ext.register(_name, {
         settings.save();
     },
 
-    init : function() {
+    init: function() {
         apf.importCssString(this.css || "");
+        this.hidePageHeader();
     },
 
     getIframe: function() {
         return pgPreview.selectSingleNode("iframe");
     },
 
-    enable : function() {
+    enable: function() {
         var page = tabEditors.getPage();
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
