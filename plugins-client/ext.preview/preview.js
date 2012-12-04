@@ -150,6 +150,10 @@ module.exports = ext.register(_name, {
             });
         });
 
+        ide.addEventListener("dockpanel.loaded", function (e) {
+            _self.hidePageHeader();
+        });
+
         ext.initExtension(this);
     },
 
@@ -214,7 +218,6 @@ module.exports = ext.register(_name, {
 
     init: function() {
         apf.importCssString(this.css || "");
-        this.hidePageHeader();
     },
 
     getIframe: function() {
