@@ -15,7 +15,7 @@ var markup = require("text!core/util.xml");
 exports.escapeXpathString = function(name){
     if (!name)
         return "";
-    
+
     if (name.indexOf('"') > -1) {
         var out = [];
         var parts = name.split('"');
@@ -228,7 +228,7 @@ var contentTypes = {
     "bash": "application/x-sh",
 
     "xq": "text/x-xquery",
-    
+
     "terminal": "terminal"
 };
 
@@ -298,7 +298,9 @@ exports.stripWSFromPath = function(path) {
 
 exports.getDocPath = function(page) {
     if (!page && tabEditors) {
-        page = tabEditors.getPage();
+        if (!ide.getActivePage)
+            ide = require("core/" + "ide");
+        page = ide.getActivePage();
     }
 
     // Can we rely on `name`?

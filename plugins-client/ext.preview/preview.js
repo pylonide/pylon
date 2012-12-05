@@ -50,7 +50,7 @@ module.exports = ext.register(_name, {
     },
 
     onLoad: function () {
-        
+
     },
 
     hook : function() {
@@ -65,7 +65,7 @@ module.exports = ext.register(_name, {
                 caption : "Preview",
                 disabled : true,
                 onclick : function() {
-                    var page = tabEditors.getPage();
+                    var page = ide.getActivePage();
                     if (page.$editor === _self)
                         return;
                     var file = page.$model.data;
@@ -153,7 +153,7 @@ module.exports = ext.register(_name, {
     },
 
     enable : function() {
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
             return this.disable();

@@ -6,6 +6,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+/*global tabEditors mnuContextTabs mnuSyntax */
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -25,7 +27,7 @@ var mnuCloneView, mnuSplitAlign;
 
 var restoring = false;
 var restoreQueue = [];
-var SUPPORTED_EDITORS = ["ext/code/code", "ext/preview/preview"];
+var SUPPORTED_EDITORS = ["ext/code/code", "ext/preview/preview", "ext/terminal/terminal"];
 
 module.exports = ext.register("ext/splitview/splitview", {
     name     : "Split View",
@@ -123,8 +125,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                     type    : "check",
                     checked : false,
                     isAvailable : function(){
-                        //@todo
-                        return true;
+                        return tabs.contextPage.$editor.path == "ext/code/code";
                     },
                     onclick : function() {
                         if (this.checked)
@@ -154,6 +155,9 @@ module.exports = ext.register("ext/splitview/splitview", {
         ide.addEventListener("tab.beforeswitch", function(e) {
             // the return value actually does something!
             var cancelSwitch = _self.updateSplitView(e.previousPage, e.nextPage);
+            var split = Splits.get(e.nextPage)[0];
+            if (split)
+                Splits.update(split);
 
             if (cancelSwitch) {
                 var page       = e.nextPage;
@@ -168,7 +172,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             return cancelSwitch;
         });
 
-        ide.addEventListener("pageswitch", function(e) {
+        ide.addEventListener("tab.afterswitch", function(e) {
+            var page = e.nextPage;
             if (!Splits.getActive())
                 return;
             _self.save();
@@ -178,7 +183,7 @@ module.exports = ext.register("ext/splitview/splitview", {
 
             var item;
             var syntax = mnuSyntax;
-            var value = Code.getContentType(e.page.$model.data);
+            var value = Code.getContentType(page.$model.data);
             for (var i = 0, l = syntax.childNodes.length; i < l; ++i) {
                 item = syntax.childNodes[i];
                 if (!item || !item.localName || item.localName != "item")
@@ -188,6 +193,16 @@ module.exports = ext.register("ext/splitview/splitview", {
                     break;
                 }
             }
+        });
+
+        ide.addEventListener("tab.close", function(e) {
+            if (!e.page.$clone)
+                return;
+
+            // make sure that the model and actiontracker are NOT cleared when a
+            // cloned tab page is closed, otherwise the original editor will be blank
+            delete e.page.$at;
+            delete e.page.$editor;
         });
 
         ide.addEventListener("closefile", function(e) {
@@ -230,7 +245,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         });
 
         tabs.addEventListener("tabselectclick", function(e) {
-            return _self.onTabClick(e);
+            return _self.onTabClick(e.page, e.htmlEvent.shiftKey);
         });
 
         tabs.addEventListener("tabselectmouseup", function(e) {
@@ -248,7 +263,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             _self.save();
         });
 
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             if (!e.model || !e.model.data)
                 return;
             var data = e.model.data;
@@ -257,15 +272,6 @@ module.exports = ext.register("ext/splitview/splitview", {
                     _self.restore(data);
                 });
             });
-        });
-
-        ide.addEventListener("activepagemodel", function(e) {
-            var page = tabs.getPage();
-            var split = Splits.get(page)[0];
-            if (!split || !Splits.isActive(split))
-                return;
-
-            e.returnValue = split.pairs[split.activePage || 0].page.$model;
         });
 
         ide.addEventListener("tab.create", function(e) {
@@ -289,7 +295,8 @@ module.exports = ext.register("ext/splitview/splitview", {
             if (!origPage)
                 return;
 
-            //Splits.consolidateEditorSession(origPage, origPage.$editor.amlEditor);
+            var origEditor = origPage.$editor.amlEditor;
+            Splits.consolidateEditorSession(origPage, origEditor);
             page.$doc = origPage.$doc;
             page.setAttribute("actiontracker", origPage.$at);
             page.$at = origPage.$at;
@@ -344,6 +351,8 @@ module.exports = ext.register("ext/splitview/splitview", {
                     editor: editor
                 });
 
+                page.$clone = true;
+
                 if (settings) {
                     var addPage;
                     for (i = 0, l = pages.length; i < l; ++i) {
@@ -360,13 +369,22 @@ module.exports = ext.register("ext/splitview/splitview", {
                     split.activePage = parseInt(settings.getAttribute("activepage"), 10) || 0;
                     split.gridLayout = settings.getAttribute("layout");
                 }
+
+                function syntaxListener(e) {
+                    editor.setAttribute("syntax", e.value);
+                }
+                origEditor.addEventListener("prop.syntax", syntaxListener);
+                editor.setAttribute("syntax", origEditor.syntax);
+
                 Splits.consolidateEditorSession(page, editor);
 
                 page.addEventListener("DOMNodeRemovedFromDocument", function() {
+                    editor.removeEventListener("prop.syntax", syntaxListener);
                     _self.endCloneView(page);
                 });
 
                 origPage.addEventListener("DOMNodeRemovedFromDocument", function() {
+                    tabs.remove(page, null, true);
                     _self.endCloneView(origPage);
                 });
 
@@ -471,16 +489,16 @@ module.exports = ext.register("ext/splitview/splitview", {
      *
      * @param {AmlEvent} e
      */
-    onTabClick: function(e) {
-        var page = e.page;
+    onTabClick: function(page, shiftKey) {
         var tabs = tabEditors;
         var activePage = tabs.getPage();
-        var shiftKey = e.htmlEvent.shiftKey;
+
+        var i, l;
         var ret = null;
         var split = Splits.get(activePage)[0];
 
         if (split && !shiftKey) {
-            for (var i = 0, l = split.pairs.length; i < l; ++i) {
+            for (i = 0, l = split.pairs.length; i < l; ++i) {
                 if (split.pairs[i].page !== activePage)
                     continue;
                 ret = false;
@@ -492,13 +510,10 @@ module.exports = ext.register("ext/splitview/splitview", {
             // REALLY shown)
             if (ret !== false && page !== split.pairs[0].page) {
                 tabs.set(split.pairs[0].page);
-                ret = false;
+                return false;
             }
 
-            if (!shiftKey)
-                return true;
-
-            return ret;
+            return true;
         }
         else if (shiftKey) {
             // enable split view ONLY for code editors for now...
@@ -507,9 +522,15 @@ module.exports = ext.register("ext/splitview/splitview", {
             // tabs can be merged into and unmerged from a splitview by clicking a
             // tab while holding shift
             //console.log("is clone?",apf.isTrue(page.$doc.getNode().getAttribute("clone")));
-            if (apf.isTrue(page.$doc.getNode().getAttribute("clone"))) {
-                tabs.remove(page, null, true);
-                ret = false;
+            if (split && apf.isTrue(page.$doc.getNode().getAttribute("clone"))) {
+                // close the page that contains the clone editor
+                var cloneEditor = Splits.getCloneEditor(page);
+                for (i = 0, l = split.pairs.length; i < l; ++i) {
+                    if (split.pairs[i].editor !== cloneEditor)
+                        continue;
+                    tabs.remove(split.pairs[i].page, null, true);
+                    return false;
+                }
             }
             else {
                 ret = !Splits.mutate(split, page);
@@ -589,7 +610,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             editor.show();
             return;
         }
-console.log("showing split?");
+
         Splits.show(split);
         mnuSplitAlign.setAttribute("checked", split.gridLayout == "3rows");
 
@@ -693,7 +714,7 @@ console.log("showing split?");
             return;
 
         restoring = true;
-        var activePage = tabs.getPage();
+        var activePage = ide.getActivePage();
 
         var node, ids, j, l2, id, dupes, hasClone, split, page, editor, active;
         for (var i = nodes.length - 1; i >= 0; --i) {
@@ -743,7 +764,7 @@ console.log("showing split?");
                 };
             }
 
-            split.activePage = parseInt(node.getAttribute("activepage"), 10)
+            split.activePage = parseInt(node.getAttribute("activepage"), 10);
             if (split.activePage < 0)
                 split.activePage = 0;
 
@@ -774,7 +795,7 @@ console.log("showing split?");
             tabs.set(activePage);
         }
         else if (active) {
-            //tabs.set(active.pairs[0].page);
+            tabs.set(active.pairs[0].page);
             Splits.update(active);
             Splits.show(active);
             mnuSplitAlign.setAttribute("checked", active.gridLayout == "3rows");
