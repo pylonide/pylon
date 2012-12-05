@@ -963,7 +963,7 @@ module.exports = ext.register("ext/editors/editors", {
                     copy.removeAttribute("saving");
                     pNode.appendChild(copy);
 
-                    var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
+                    var state = pages[i].$editor && pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", JSON.stringify(state));
 
