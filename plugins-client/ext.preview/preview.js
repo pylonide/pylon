@@ -58,7 +58,7 @@ module.exports = ext.register($name, {
     hook: function() {
         var _self = this;
 
-        settings.addSettings("Previewer", markupSettings);
+        settings.addSettings("General", markupSettings);
 
         this.nodes.push(
             menus.$insertByIndex(barTools, new apf.button({
@@ -122,11 +122,10 @@ module.exports = ext.register($name, {
 
         ide.addEventListener("settings.save", function(e){
             if (_self.inited) {
-                var button = _self._getDockButton();
                 var url = txtPreview.getValue();
                 if (url) {
                     var prev = {
-                        visible: button.hidden && button.hidden === -1,
+                        visible: _self.isVisible(),
                         url: url,
                         live: _self.live && {path: _self.live.path}
                     };
@@ -155,6 +154,11 @@ module.exports = ext.register($name, {
         });
 
         ext.initExtension(this);
+    },
+
+    isVisible: function () {
+        var button = this._getDockButton();
+        return button && button.hidden && button.hidden === -1;
     },
 
     // Patch the docked section to remove the page caption
