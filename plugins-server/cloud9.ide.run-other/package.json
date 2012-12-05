@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.ide.run-custom",
+    "version": "0.0.1",
+
+    "main": "./run-other.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "ide.ext.state",
+            "eventbus"
+        ]
+    }
+}

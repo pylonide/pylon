@@ -1,0 +1,19 @@
+{
+    "name": "cloud9.run.other",
+    "version": "0.0.1",
+
+    "main": "./other.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "run-other"
+        ],
+        "consumes": [
+            "process-manager",
+            "run-shell",
+            "sandbox",
+            "vfs"
+        ]
+    }
+}

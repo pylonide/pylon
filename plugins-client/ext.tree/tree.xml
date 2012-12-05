@@ -91,6 +91,8 @@
             <a:item match="[file|folder[not(@root)]]" command="copy" visible="{!require('core/ide').readonly}">Copy</a:item>
             <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" visible="{!require('core/ide').readonly}" command="paste">Paste</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
+            <a:item match="[file]" command="runthisfile" visible="{!require('core/ide').readonly}" disabled="{stProcessRunning.active}">Run this File</a:item>
+            <a:divider visible="{!require('core/ide').readonly}"/>
             <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" visible="{!require('core/ide').readonly}" 
               onclick="
                 require('ext/filesystem/filesystem').createFile();
