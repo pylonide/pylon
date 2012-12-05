@@ -518,8 +518,8 @@ exports.consolidateEditorSession = function(page, editor) {
     var session = exports.getEditorSession(page);
     if (!session && page.$editor.setDocument) {
         var defEditor = page.$editor.amlEditor;
-        var oldVal = defEditor.value;
         page.$editor.setDocument(page.$doc, page.$at);
+        var oldVal = defEditor.value;
         session = exports.getEditorSession(page);
         defEditor.setProperty("value", oldVal);
     }
