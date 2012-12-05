@@ -62,10 +62,10 @@ var SupportedModes = {
     html: ["HTML", "htm|html|xhtml", "text/html"],
     jade: ["Jade", "jade", "text/x-jade"],
     java: ["Java", "java", "text/x-java-source"],
-    jsp:  ["JSP", "jsp", "text/x-jsp", "other"],
+    jsp: ["JSP", "jsp", "text/x-jsp", "other"],
     javascript: ["JavaScript", "js", "application/javascript"],
     json: ["JSON", "json", "application/json"],
-    jsx:  ["JSX", "jsx", "text/x-jsx", "other"],
+    jsx: ["JSX", "jsx", "text/x-jsx", "other"],
     latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
     less: ["LESS", "less", "text/x-less"],
     lisp: ["Lisp", "lisp|scm|rkt", "text/x-lisp", "other"],
@@ -335,12 +335,14 @@ module.exports = ext.register("ext/code/code", {
 
                 //??? destroy doc.acesession
                 setTimeout(function() {
-                    doc.acedoc.doc.$lines = [];
-                    doc.acedoc.doc._eventRegistry = null;
-                    doc.acedoc.doc._defaultHandlers = null;
-                    doc.acedoc._eventRegistry = null;
-                    doc.acedoc._defaultHandlers = null;
-                    doc.acedoc = null;
+                    if (doc.acedoc) {
+                        doc.acedoc.doc.$lines = [];
+                        doc.acedoc.doc._eventRegistry = null;
+                        doc.acedoc.doc._defaultHandlers = null;
+                        doc.acedoc._eventRegistry = null;
+                        doc.acedoc._defaultHandlers = null;
+                        doc.acedoc = null;
+                    }
                     doc.acesession.$stopWorker();
                     doc.acesession.bgTokenizer.lines = [];
                     doc.acesession.bgTokenizer.tokenizer = null;
@@ -867,7 +869,7 @@ module.exports = ext.register("ext/code/code", {
         });
 
         // display feedback while loading files
-        var isOpen, bgMessage, loaderProgress, updateProgressInterval, animationEndTimeout;
+        var isOpen, bgMessage, loaderProgress, loaderBg, updateProgressInterval, animationEndTimeout;
         var checkLoading = function(e) {
             if (!_self.amlEditor.xmlRoot)
                 return;
@@ -891,26 +893,30 @@ module.exports = ext.register("ext/code/code", {
 
             if (loading) {
                 var theme = themes.getActiveTheme();
-                if (!bgMessage || !bgMessage.parentNode) {
-                    bgMessage = bgMessage || document.createElement("div");
+                if (!bgMessage) {
+                    bgMessage = document.createElement("div");
                     bgMessage.className = "ace_smooth_loading";
-                    bgMessage.style.backgroundColor = theme ? theme.bg : "gray";
-                    container.parentNode.appendChild(bgMessage);
 
-                    var loaderBg = document.createElement("div");
+                    loaderBg = document.createElement("div");
                     loaderBg.className = "loading_bg";
-                    loaderBg.style.width = loadingWidth + "px";
-                    loaderBg.style.left = padding + "px";
-                    loaderBg.style.top = 0.4 * container.offsetHeight + "px";
+
                     bgMessage.appendChild(loaderBg);
 
                     loaderProgress = document.createElement("div");
                     loaderProgress.className = "loading_progress";
-                    loaderProgress.style.left = padding + "px";
-                    loaderProgress.style.top = 0.4 * container.offsetHeight + "px";
                     bgMessage.appendChild(loaderProgress);
                     updateProgress(10);
                 }
+
+                if (!bgMessage.parentNode)
+                    container.parentNode.appendChild(bgMessage);
+                
+                bgMessage.style.backgroundColor = theme ? theme.bg : "gray";
+                loaderBg.style.width = loadingWidth + "px";
+                loaderBg.style.left = padding + "px";
+                loaderBg.style.top = 0.4 * container.offsetHeight + "px";
+                loaderProgress.style.left = padding + "px";
+                loaderProgress.style.top = 0.4 * container.offsetHeight + "px";
                 container.style.transitionProperty = "opacity";
                 container.style.transitionDuration = "100ms";
                 container.style.pointerEvents = "none";

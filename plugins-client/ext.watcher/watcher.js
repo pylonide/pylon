@@ -31,7 +31,7 @@ module.exports = ext.register("ext/watcher/watcher", {
         var _self = this;
 
         function checkPage() {
-            var page = tabEditors.getPage();
+            var page = ide.getActivePage();
             var data = page && page.$model && page.$model.data;
             if (!data || !data.getAttribute)
                 return;
@@ -155,7 +155,7 @@ module.exports = ext.register("ext/watcher/watcher", {
             };
 
             var pages = tabEditors.getPages();
-            
+
             if (!pages.some(getPagePath)) {
                 return;
             }
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/watcher/watcher", {
                     break;
                 case "change":
                     var messageLastMod = new Date(message.lastmod).getTime();
-                    var currentPageLastMod = new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime();
+                    var currentPageLastMod = new Date(ide.getActivePage().$model.queryValue('@modifieddate')).getTime();
                     if (!_self.changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
                         _self.changedPaths[path] = path;
                         checkPage();

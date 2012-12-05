@@ -16,7 +16,7 @@ var ide = require("core/ide");
 
 var cliCmds = exports.cliCmds = {
     w: function(editor, data) {
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (!page)
             return;
 
@@ -66,7 +66,7 @@ var cliCmds = exports.cliCmds = {
         }
     },
     x: function(editor, data) {
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (!page)
             return;
         if (page.$doc.getNode().getAttribute("changed"))
@@ -78,7 +78,7 @@ var cliCmds = exports.cliCmds = {
         cliCmds.q();
     },
     q: function(editor, data) {
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         var corrected = ide.dispatchEvent("beforeclosetab", {
             page: page
         });
@@ -92,7 +92,7 @@ var cliCmds = exports.cliCmds = {
         editors.close(page);
     },
     "q!": function() {
-        cliCmds.q(null, {force: true})
+        cliCmds.q(null, {force: true});
     }
 };
 
@@ -176,7 +176,7 @@ exports.onConsoleCommand = function(e) {
         }
         // something blocks focusing without timeout
         if (success !== false) {
-            setTimeout(function(){ 
+            setTimeout(function(){
                 if (apf.activeElement == txtConsoleInput)
                     amlEditor.focus();
             });

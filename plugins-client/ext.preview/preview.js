@@ -52,7 +52,7 @@ module.exports = ext.register($name, {
     },
 
     onLoad: function () {
-        
+
     },
 
     hook: function() {
@@ -69,7 +69,7 @@ module.exports = ext.register($name, {
                 caption : "Preview",
                 disabled : true,
                 onclick : function() {
-                    var page = tabEditors.getPage();
+                    var page = ide.getActivePage();
                     if (page.$editor === _self)
                         return;
                     var doc = page.$doc;
@@ -228,8 +228,8 @@ module.exports = ext.register($name, {
         return pgPreview.selectSingleNode("iframe");
     },
 
-    enable: function() {
-        var page = tabEditors.getPage();
+    enable : function() {
+        var page = ide.getActivePage();
         var contentType = (page && page.getModel().data.getAttribute("contenttype")) || "";
         if(this.disableLut[contentType])
             return this.disable();
