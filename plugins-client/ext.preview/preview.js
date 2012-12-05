@@ -18,16 +18,16 @@ var skin    = require("text!ext/preview/skin.xml");
 var css     = require("text!ext/preview/style/style.css");
 var markupSettings = require("text!ext/preview/settings.xml");
 
-var _name = "ext/preview/preview";
+var $name = "ext/preview/preview";
 
-module.exports = ext.register(_name, {
+module.exports = ext.register($name, {
     name    : "Preview",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
     markup  : markup,
-    _name   : _name,
-    _button : "pgPreview",
+    $name   : $name,
+    $button : "pgPreview",
     skin    : {
         id   : "previewskin",
         data : skin,
@@ -44,11 +44,11 @@ module.exports = ext.register(_name, {
     live    : null,
 
     _getDockBar: function () {
-        return dock.getBars(this._name, this._button)[0];
+        return dock.getBars(this.$name, this.$button)[0];
     },
 
     _getDockButton: function () {
-        return dock.getButtons(this._name, this._button)[0];
+        return dock.getButtons(this.$name, this.$button)[0];
     },
 
     onLoad: function () {
@@ -91,13 +91,13 @@ module.exports = ext.register(_name, {
                 height: 300,
                 buttons : [{
                     caption: "Preview Apps",
-                    ext : [this._name, this._button],
+                    ext : [this.$name, this.$button],
                     hidden : false
                 }]
             }]
         });
 
-        dock.register(this._name, this._button, {
+        dock.register(this.$name, this.$button, {
             menu : "Preview Apps",
             primary : {
                 backgroundImage: ide.staticPrefix + "/ext/main/style/images/sidebar_preview_icon.png",
@@ -189,7 +189,7 @@ module.exports = ext.register(_name, {
         var bar = this._getDockBar();
         dock.showBar(bar);
         dock.expandBar(bar);
-        dock.showSection(this._name, this._button);
+        dock.showSection(this.$name, this.$button);
         this.hidePageHeader();
         var frmPreview = this.getIframe();
         if (frmPreview.$ext.src !== url)
@@ -211,7 +211,7 @@ module.exports = ext.register(_name, {
     },
 
     close: function () {
-        dock.hideSection(this._name, this._button);
+        dock.hideSection(this.$name, this.$button);
         this.live = null;
         settings.save();
     },
