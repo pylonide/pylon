@@ -679,6 +679,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     new apf.button({
                         dock       : 1,
                         skin       : "dockheader",
+                        visible    : (bar.$dockData && bar.$dockData.headerVisibility) || "true",
                         "class"    : "expanded",
                         nosplitter : true,
                         height     : 11,

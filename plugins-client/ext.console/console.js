@@ -21,6 +21,7 @@ var markup = require("text!ext/console/console.xml");
 var theme = require("text!ext/console/themes/arthur.css");
 var inputHistory = require("ext/console/input_history");
 var anims = require("ext/anims/anims");
+var preview = require("ext/preview/preview");
 
 // Some constants used throughout the plugin
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
@@ -451,7 +452,8 @@ module.exports = ext.register("ext/console/console", {
             this.createProcessLog(message.pid, lang[1]);
             return;
         } else if ((lang = /^([\w-]+)-web-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
-            require("ext/preview/preview").preview(message.url);
+            if (apf.isTrue(settings.model.queryValue("preview/@running_app")) || preview.isVisible())
+                preview.preview(message.url);
         } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.extra && message.extra.tip) {
                 message.data = "\u001b[1;32;40m" + message.data;

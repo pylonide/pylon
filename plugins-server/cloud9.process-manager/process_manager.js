@@ -75,7 +75,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         function checkTCP() {
             self.exec("shell", {
                 command: "lsof",
-                args: ["-i", ":8080"]
+                args: ["-i", ":"+ (child.port || 8080)]
             }, function(err, pid) {
             }, function(code, stdout, stderr) {
                 if (code)
