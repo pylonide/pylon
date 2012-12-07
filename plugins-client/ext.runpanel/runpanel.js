@@ -147,7 +147,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 }
             }),
 
-            menus.$insertByIndex(barTools, new apf.splitbutton({
+            Menus.$insertByIndex(barTools, new apf.splitbutton({
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
@@ -158,7 +158,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 submenu  : "mnuRunCfg"
             }), 100),
 
-            menus.$insertByIndex(barTools, new apf.button({
+            Menus.$insertByIndex(barTools, new apf.button({
                 id       : "btnStop",
                 icon     : "stop.png",
                 caption  : "stop",
