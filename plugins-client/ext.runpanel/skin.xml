@@ -164,7 +164,7 @@
             }
             .mnuRunCfg .window {
                 border: 1px solid black;
-                /*border-bottom-width: 6px;*/
+                border-bottom-width: 6px;
                 background-color: #3C3C3C;
                 box-shadow: 0 5px 15px rgba(0,0,0,.55);
                 height: 226px;

@@ -128,53 +128,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         }), 100),
 
         this.nodes.push(
-            this.mnuRunCfg = new apf.menu({
-                "id" : "mnuRunCfg",
-                "onprop.visible" : function(e){
-                    if (e.value) {
-                        if (!this.populated) {
-                            _self.$populateMenu();
-                            this.populated = true;
-                        }
+            this.model = new apf.model().load("<configurations />"),
 
-                        if (!self.tabEditors
-                          || tabEditors.length == 0
-                          || _self.excludedTypes[ide.getActivePage().id.split(".").pop()])
-                            _self.mnuRunCfg.firstChild.disable();
-                        else
-                            _self.mnuRunCfg.firstChild.enable();
-                    }
-                }
-            }),
-
-            menus.$insertByIndex(barTools, new apf.splitbutton({
-                id       : "btnRun",
-                checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
-                icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
-                command  : "run",
-                visible  : "{!stProcessRunning.active and 1}",
-                disabled : "{!!!ide.onLine}",
-                submenu  : "mnuRunCfg"
-            }), 100),
-
-            menus.$insertByIndex(barTools, new apf.button({
-                id       : "btnStop",
-                icon     : "stop.png",
-                caption  : "stop",
-                width    : "52",
-                tooltip  : "Stop",
-                skin     : "c9-toolbarbutton-glossy",
-                command  : "stop",
-                visible  : "{stProcessRunning.active and 1}" ,
-                disabled : "{!!!ide.onLine}"
-            }), 200),
-
-//            menus.$insertByIndex(barTools, new apf.divider({
-//                skin : "c9-divider"
-//            }), 300),
-
-            this.model = new apf.model().load("<configurations />")
+            Menus.addItemByPath("View/Tabs/Run This File", new apf.item({
+                command : "runthistab",
+                disabled : "{!!!tabEditors.activepage or !!stProcessRunning.active}"
+            }), 400),
+            Menus.addItemByPath("View/Tabs/~", new apf.divider(), 300)
         );
 
         ide.addEventListener("init.ext/tabbehaviors/tabbehaviors", function(){
@@ -440,7 +400,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         lstRunCfg.select(duplicate);
         mnuRunCfg.show();
     },
-
 
     addConfig: function(temp, runfile) {
         var props = {};
