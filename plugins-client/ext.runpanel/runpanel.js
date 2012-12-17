@@ -236,7 +236,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 Dock.hideBar(bar);
         });
         stProcessRunning.addEventListener("activate", function(){
-            var debug = apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
+            var debug = lstRunCfg.selected && apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
             if (!debug || !_self.autoHidePanel())
                 return;
 
@@ -246,7 +246,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 Dock.showBar(bar);
         });
         ide.addEventListener("dbg.break", function(){
-            var debug = apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
+            var debug = lstRunCfg.selected && apf.isTrue(lstRunCfg.selected.getAttribute("debug"));
             if (!debug || !_self.autoHidePanel() || hasBreaked)
                 return;
 
