@@ -90,6 +90,9 @@ module.exports = ext.register("ext/language/language", {
                 _self.setPath();
                 worker.emit("outline", { data : { ignoreFilter: false } });
             });
+            ide.addEventListener("afterfilesave", function (e) {
+                worker.emit("outline", { data : { ignoreFilter: false } });
+            });
 
             // Language features
             marker.hook(_self, worker);
