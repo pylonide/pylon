@@ -22,6 +22,8 @@ var vfsUrl = "/vfs";
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || process.env.IP || "localhost";
 
+var useAuth = argv.username && argv.password;
+
 var config = [
     {
         packagePath: "connect-architect/connect",
@@ -219,7 +221,15 @@ var config = [
     },
     "./cloud9.ide.shell",
     "./cloud9.ide.state",
-    "./cloud9.ide.watcher"
+    "./cloud9.ide.watcher",
 ];
+
+if (useAuth) {
+    config.push({
+        packagePath: "./cloud9.connect.basic-auth",
+        username: argv.username,
+        password: argv.password
+    });
+}
 
 module.exports = config;

@@ -44,17 +44,17 @@ Install:
     # Be sure you have sourcemint installed:
 
     npm install -g sm
-    
+
     # Then:
 
     sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
-    
+
     # or
-    
+
     git clone https://github.com/ajaxorg/cloud9.git cloud9
     cd cloud9
     sm install
-    
+
 
 
 The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
@@ -62,13 +62,29 @@ and run `bin/cloud9.sh` to start:
 
     cd cloud9
     bin/cloud9.sh
-    
+
 Optionally, you may specify the directory you'd like to edit:
 
     bin/cloud9.sh -w ~/git/myproject
-    
+
 Cloud9 will be started as a web server on port `-p 3131`, you can access it by
 pointing your browser to: [http://localhost:3131](http://localhost:3131)
+
+By default Cloud9 will only listen to localhost.
+To listen to a different IP or hostname, use the `-l HOSTNAME` flag.
+If you want to listen to all IP's:
+
+    bin/cloud9.sh -l 0.0.0.0
+
+If you are listening to all IPs it is adviced to add authentication to the IDE.
+You can either do this by adding a reverse proxy in front of Cloud9,
+or use the built in basic authentication through the `--username` and `--password` flags.
+
+    bin/cloud9.sh --username leuser --password c9isawesome
+
+Cloud9 is compatible with all connect authentication layers,
+to implement your own, please see the `plugins-server/cloud9.connect.basic-auth` plugin
+on how we added basic authentication.
 
 ## Updating
 
@@ -92,7 +108,7 @@ This is somewhat equivalent to `npm link` but instead of linking to a system wid
 shared package it clones the source into the node_modules/<name> directory.
 The idea is to only "edit" when you need to make changes and when done issue
 "sm save <name>" (not yet implemented) which will pull up sourcetree to commit,
-push code and switch package back to read mode (frozen). The status page 
+push code and switch package back to read mode (frozen). The status page
 
     sm status
 
@@ -138,8 +154,8 @@ Main projects that we use as building blocks:
   * [ace](http://github.com/ajaxorg/ace) by [fjakobs]
   * [apf](http://www.ajax.org) by [ajax.org]
   * and of course [Node.JS]!
-  
-Thanks to all developers and contributors of these projects! 
+
+Thanks to all developers and contributors of these projects!
 
 [fjakobs]: http://github.com/fjakobs
 [javruben]: http://github.com/javruben
