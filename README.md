@@ -34,19 +34,13 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 ## Installation and Usage
 
+If installing on Windows, please refer to [Installation on Windows](#installation-on-windows)
+
 Requirements:
 
   * NodeJS `>= 0.6.16`
   * NPM `>= 1.1.16`
   * libxml2-dev
-
-If you're running Cloud9 on Windows you'll have to follow these steps as well:
-
-  * Install [Grep for Windows](http://gnuwin32.sourceforge.net/downlinks/grep.php)
-  * Add `C:\Program Files (x86)\GnuWin32\bin` to your [PATH](http://www.computerhope.com/issues/ch000549.htm)
-  * Open a new instance of `cmd` with elevated rights (right click 'Run as adminstrator')
-  * Now follow the steps under 'Install'
-  * *Please note that the `npm install` fails due to a libxml error, but you can ignore that for now.*
 
 Install:
 
@@ -82,6 +76,24 @@ or use the built in basic authentication through the `--username` and `--passwor
 Cloud9 is compatible with all connect authentication layers,
 to implement your own, please see the `plugins-server/cloud9.connect.basic-auth` plugin
 on how we added basic authentication.
+
+## Installation on Windows (experimental)
+
+If you're running Cloud9 on Windows you'll have to follow these steps as well:
+
+  * Install [Grep for Windows](http://gnuwin32.sourceforge.net/downlinks/grep.php)
+  * Add `C:\Program Files (x86)\GnuWin32\bin` to your [PATH](http://www.computerhope.com/issues/ch000549.htm)
+  * Open a new instance of `cmd` with elevated rights (right click 'Run as adminstrator')
+  * Now follow the steps under 'Install'
+  * *Please note that the `npm install` fails due to a libxml error, but you can ignore that for now.*
+
+To start Cloud9, please don't start through `bin/cloud9.sh` but rather via:
+
+    node server.js [args]
+
+Please note that there will be errors displayed regarding the `find` command,
+and that some features might not work.
+Feel free to improve the Windows experience and open a pull request.
 
 ## Updating
 
