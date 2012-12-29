@@ -38,24 +38,17 @@ Requirements:
 
   * NodeJS `>= 0.6.16`
   * NPM `>= 1.1.16`
+  * libxml2-dev
 
 Install:
 
-    # Be sure you have sourcemint installed:
-
-    npm install -g sm
-
-    # Then:
-
-    sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
-
-    # or
-
-    git clone https://github.com/ajaxorg/cloud9.git cloud9
+    git clone https://github.com/ajaxorg/cloud9.git
     cd cloud9
-    sm install
+    npm install
 
-
+> If installation fails with `Failed at the libxml preinstall script.` make sure you have the
+> libxml2-dev package installed.
+> For example, on Ubuntu you install this via: `sudo apt-get install libxml2-dev`.
 
 The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
 and run `bin/cloud9.sh` to start:
@@ -91,54 +84,11 @@ on how we added basic authentication.
 To update to the latest version (if this doesn't work, just make a fresh clone):
 
     git pull
-    sm update
+    npm update
 
-`sm update` does not currently install missing npm dependencies. To do so use:
+`npm update` does not currently install missing dependencies. To do so use:
 
-    sm install
-
-## Development
-
-To work on a subcomponent that is copied into node_modules, you can use `sm edit`.
-For instance, to work on ACE, run the following from the checkout root:
-
-    sm edit ace
-
-This is somewhat equivalent to `npm link` but instead of linking to a system wide
-shared package it clones the source into the node_modules/<name> directory.
-The idea is to only "edit" when you need to make changes and when done issue
-"sm save <name>" (not yet implemented) which will pull up sourcetree to commit,
-push code and switch package back to read mode (frozen). The status page
-
-    sm status
-
-shows problematic and improvement oriented action steps to improve the state of
-the program. These relate to git status and dependency changes that need to be
-made to bring the dependencies up to date and ready to publish which leads to deployment.
-
-The line on the status page will have a (W) if it is setup for editing.
-
-To launch Sourcetree for all dirty/ahead repositories in the dependency
-tree use (need to have Sourcetree command-line tools installed (`stree`)):
-
-    sm fix
-
-The sourcemint package manager works alongside NPM so to link in a
-(system-wide shared) NPM package use:
-
-    rm -R node_modules/architect
-    npm link architect
-
-`sm` always works on your program sub-tree other than pulling things in
-from the cache.
-
-To view help info for cloud9 use:
-
-    sm help
-
-To view usage info for `sm` use:
-
-    sm -h
+    npm install
 
 ## Open Source Projects Used
 

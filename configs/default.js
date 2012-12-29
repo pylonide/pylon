@@ -30,10 +30,6 @@ var config = [
         port: port,
         host: host
     }, {
-        packagePath: "./cloud9.sourcemint",
-        prefix: "/static/bundles",
-        plugins: clientExtensions
-    }, {
         packagePath: "connect-architect/connect.static",
         prefix: "/static"
     },
