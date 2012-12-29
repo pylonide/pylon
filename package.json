@@ -29,7 +29,7 @@
         "smith": "0.1.9",
         "smith.io": "0.0.36",
         "vfs-architect": "0.0.2",
-        "jsDAV": "0.2.4",
+        "jsDAV": "https://github.com/ajaxorg/jsDAV/tarball/209289355d69adde11dbcd0c83e6dd24a6d9184a",
 
         "ace": "https://github.com/ajaxorg/ace/tarball/cc2a2c9e056c6d4049f8849ec3ad72974de37177",
         "apf": "https://github.com/ajaxorg/apf/tarball/145f65bd24ae83f041418dd01a9c51d278045f3f",
