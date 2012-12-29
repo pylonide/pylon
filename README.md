@@ -40,15 +40,19 @@ Requirements:
   * NPM `>= 1.1.16`
   * libxml2-dev
 
+If you're running Cloud9 on Windows you'll have to follow these steps as well:
+
+  * Install [Grep for Windows](http://gnuwin32.sourceforge.net/downlinks/grep.php)
+  * Add `C:\Program Files (x86)\GnuWin32\bin` to your [PATH](http://www.computerhope.com/issues/ch000549.htm)
+  * Open a new instance of `cmd` with elevated rights (right click 'Run as adminstrator')
+  * Now follow the steps under 'Install'
+  * *Please note that the `npm install` fails due to a libxml error, but you can ignore that for now.*
+
 Install:
 
     git clone https://github.com/ajaxorg/cloud9.git
     cd cloud9
     npm install
-
-> If installation fails with `Failed at the libxml preinstall script.` make sure you have the
-> libxml2-dev package installed.
-> For example, on Ubuntu you install this via: `sudo apt-get install libxml2-dev`.
 
 The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
 and run `bin/cloud9.sh` to start:
