@@ -99,7 +99,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     };
 
     this.runnerTypes = function() {
-        var exclude = ["npm", "shell", "run-npm"];
+        var exclude = ["npm", "shell", "run-npm", "other"];
         return Object.keys(this.runners).filter(function(runner) {
             return exclude.indexOf(runner) === -1;
         });
