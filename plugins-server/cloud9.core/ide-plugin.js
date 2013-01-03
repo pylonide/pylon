@@ -62,6 +62,8 @@ module.exports = function setup(options, imports, register) {
             name: options.name || workspaceId,
             version: options.version || null,
             requirejsConfig: {
+                // http://requirejs.org/docs/api.html#config-waitSeconds
+                waitSeconds: 60, // long timeout for slow connections
                 baseUrl: staticPrefix,
                 paths: imports.static.getRequireJsPaths(),
                 packages: imports.static.getRequireJsPackages()
