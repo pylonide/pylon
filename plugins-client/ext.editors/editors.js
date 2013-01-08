@@ -520,8 +520,7 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (page.changed !== val) {
-                page.changed = val;
+            if (Number(model.queryValue("@changed")) !== Number(val)) {
                 model.setQueryValue("@changed", (val ? "1" : "0"));
 
                 var node = page.$model.data;

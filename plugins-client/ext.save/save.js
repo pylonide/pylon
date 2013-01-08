@@ -382,14 +382,15 @@ module.exports = ext.register("ext/save/save", {
             return this.ideIsOfflineMessage();
         }
 
-        if (callback) {
-            ide.addEventListener("afterfilesave", function(e) {
-                if (e.node == node) {
-                    callback();
-                    ide.removeEventListener("afterfilesave", arguments.callee);
-                }
-            });
-        }
+        var _self = this;
+
+        var value = doc.getValue();
+
+        // so we had this edge case where the doc is already destroyed but we still fire
+        // and undefined was returned.
+        // To prevent file emptying, we'll add an extra check here.
+        if (typeof value === "undefined")
+            return;
 
         // check if we're already saving!
         var saving = parseInt(node.getAttribute("saving"), 10);
@@ -400,9 +401,14 @@ module.exports = ext.register("ext/save/save", {
 
         apf.xmldb.setAttribute(node, "saving", "1");
 
-        var _self = this;
-
-        var value = doc.getValue();
+        if (callback) {
+            ide.addEventListener("afterfilesave", function(e) {
+                if (e.node == node) {
+                    callback();
+                    ide.removeEventListener("afterfilesave", arguments.callee);
+                }
+            });
+        }
 
         // raw fs events
         ide.dispatchEvent("fs.beforefilesave", { path: path });

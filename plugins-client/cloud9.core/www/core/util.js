@@ -279,7 +279,7 @@ exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
     }
-    return page.changed === 1;
+    return Number(page.$model.data.getAttribute("changed")) === 1;
 };
 
 exports.pageIsCode = function(page) {
