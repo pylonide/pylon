@@ -500,7 +500,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     initEditorEvents: function(page, model) {
         model = model || page.$model;
-        page.$at.addEventListener("afterchange", function(e) {
+        page.$at.addEventListener("afterchange", this.$onAfterChange = function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
@@ -520,8 +520,7 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (page.changed !== val) {
-                page.changed = val;
+            if (Number(model.queryValue("@changed")) !== Number(val)) {
                 model.setQueryValue("@changed", (val ? "1" : "0"));
 
                 var node = page.$model.data;
@@ -549,6 +548,9 @@ module.exports = ext.register("ext/editors/editors", {
     close : function(page) {
         var pages = tabEditors.getPages();
         var isLast = (pages[pages.length - 1] == page);
+
+        page.$at.removeEventListener("afterchange", this.$onAfterChange);
+
         tabEditors.remove(page);
         this.resizeTabs(isLast);
     },

@@ -22,7 +22,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     alone  : true,
     deps   : [],
     autodisable : ext.ONLINE | ext.LOCAL,
-    
+
     createFileNodeFromPath : function (path, attributes) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
@@ -83,11 +83,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     saveFile : function(path, data, callback) {
         if (!this.webdav)
             return;
-        
+
         this.webdav.write(path, data, null, function(data, state, extra) {
             if ((state == apf.ERROR && extra.status == 400 && extra.retries < 3) || state == apf.TIMEOUT)
                 return extra.tpModule.retry(extra.id);
-                
+
             callback(data, state, extra);
         });
     },
@@ -323,7 +323,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     beforeRename : function(node, name, newPath, isCopyAction, isReplaceAction) {
         var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
-        
+
         if (name) {
             // Returning false from this function will cancel the rename. We do this
             // when the name to which the file is to be renamed contains invalid
@@ -332,7 +332,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             if (!(match !== null && match[0] == name)) {
                 return false;
             }
-            
+
             newPath = path.replace(/^(.*\/)[^\/]+$/, "$1" + name);
         }
         else
@@ -367,7 +367,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             replace: isReplaceAction,
             isFolder: node.getAttribute("type") === "folder"
         });
-        
+
         // let us continue!
         return true;
     },
