@@ -420,7 +420,7 @@ module.exports = ext.register("ext/save/save", {
                 fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
                 success: state != apf.SUCCESS ? "false" : "true"
             });
-            apf.xmldb.setAttribute(node, "saving", "0");
+            apf.xmldb.removeAttribute(node, "saving");
 
             ide.dispatchEvent("fs.afterfilesave", { path: path, success: state == apf.SUCCESS });
 
