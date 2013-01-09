@@ -77,7 +77,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
 
             if (msg.type === "apache-start") {
                 var info = [
-                    "Your page is running at '" + url + suffix + "'."
+                    "Your page is running at '" + url + "'."
                 ];
 
                 options.eventEmitter.emit(options.eventName, {

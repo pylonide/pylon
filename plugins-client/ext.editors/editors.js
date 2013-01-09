@@ -520,8 +520,7 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (page.changed !== val) {
-                page.changed = val;
+            if (Number(model.queryValue("@changed")) !== Number(val)) {
                 model.setQueryValue("@changed", (val ? "1" : "0"));
 
                 var node = page.$model.data;
@@ -974,7 +973,7 @@ module.exports = ext.register("ext/editors/editors", {
                     //popup a file watch dialog to ask if the user wants to
                     //load the new file from disk, losing changes.
                     if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
-                        copy.appendChild(copy.ownerDocument.createCDATASection(
+                        copy.appendChild(copy.ownerDocument.createTextNode(
                             (pages[i].$doc.getValue() || "")
                                 .replace(/\r/g, "\\r")
                                 .replace(/\n/g, "\\n")
