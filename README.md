@@ -48,10 +48,9 @@ Install:
     cd cloud9
     npm install
 
-The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
-and run `bin/cloud9.sh` to start:
+The above install steps create a `cloud9` directory with a `bin/cloud9.sh`
+script that can be used to start Cloud9:
 
-    cd cloud9
     bin/cloud9.sh
 
 Optionally, you may specify the directory you'd like to edit:
