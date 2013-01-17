@@ -38,6 +38,7 @@ Requirements:
 
   * NodeJS `>= 0.6.16`
   * NPM `>= 1.1.16`
+  * libxml-dev
 
 Install:
 
