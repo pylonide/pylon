@@ -11541,6 +11541,10 @@
         .tb_console.tb_textboxInitial .input {
             font-size : 10px;
         }
+        
+        .tb_console.tb_textboxInitial .ace_cursor{
+            display : none;
+        }
 
         .tb_consoleDisabled .sbtb_middle {
             background      : #e2e2e2;
@@ -13333,9 +13337,6 @@
         <a:style><![CDATA[
             .ace_one-line .ace_cursor {
                 border-left-width: 1px;
-            }
-            .ace_one-line .ace_cursor.ace_hidden {
-                opacity: 0;
             }
             .ace_one-line .ace_scroller {
                 background: transparent;
