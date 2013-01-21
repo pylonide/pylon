@@ -213,7 +213,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     init: function() {
         var self = this;
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (page) {
             this.$switchToPageModel(page);
         }
@@ -242,13 +242,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
-        this.$onSwitchFileFn = this.onSwitchFile.bind(this);
-        this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
+        this.$onSwitchFileFn = this.onSwitchFile.bind(this);
 
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
-        ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
-        ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
+        ide.addEventListener("tab.afterswitch", this.$onSwitchFileFn);
 
         this.$setRevisionListClass();
     },
@@ -257,7 +255,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!CoreUtil.pageIsCode(page)) {
             return;
         }
-
         if (!page.$mdlRevisions) {
             page.$mdlRevisions = new apf.model();
         }
@@ -265,13 +262,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Commented the line below out because it would try to select
         // and update nodes in the cached representation.
         //this.$restoreSelection(page, page.$mdlRevisions);
-
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions !== true || !window.lstRevisions || CoreUtil.isNewPage(page))
+        if (page.$showRevisions !== true || !window.lstRevisions || CoreUtil.isNewPage(page) || !model.data)
             return;
 
         var selection = lstRevisions.selection;
@@ -361,7 +357,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!doc.acedoc)
             return;
 
-        var page = doc.$page || tabEditors.getPage();
+        var page = doc.$page || ide.getActivePage();
 
         this.$switchToPageModel(page);
         if (!CoreUtil.isNewPage(page)) {
@@ -428,15 +424,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onSwitchFile: function(e) {
-        this.$switchToPageModel(e.nextPage);
-    },
+        var page = ide.getActivePage();
+        this.$switchToPageModel(page);
 
-    onAfterSwitch: function(e) {
-        if (!CoreUtil.pageIsCode(e.nextPage)) {
+        if (!CoreUtil.pageIsCode(page) || !this.panel) {
             return;
         }
 
-        if (e.nextPage.$showRevisions === true) {
+        if (page.$showRevisions === true) {
             this.show();
         }
         else {
@@ -522,7 +517,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         else {
             this.loadRevision(id, "preview");
         }
-        tabEditors.getPage().$selectedRevision = id;
+        ide.getActivePage().$selectedRevision = id;
     },
 
     // Gets called twice. Why??
@@ -534,7 +529,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (typeof lstRevisions !== "undefined") {
             lstRevisions.setModel(model);
-            this.$restoreSelection(tabEditors.getPage(), model);
+            this.$restoreSelection(ide.getActivePage(), model);
         }
     },
 
@@ -694,11 +689,11 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
 
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         var revObj = this.$getRevisionObject(message.path);
 
         // guided tour magic conflicts with revisions--skip it
-        if (page && page.$model.data.getAttribute("guidedtour") === "1")
+        if (page && apf.isTrue(page.$model.data.getAttribute("guidedtour")))
             return;
 
         switch (message.subtype) {
@@ -828,7 +823,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         revObj.previewCache = {};
         this.$setRevisionListClass();
 
-        model = model || tabEditors.getPage().$mdlRevisions;
+        model = model || ide.getActivePage().$mdlRevisions;
         // Select first child upon change of list view
         setTimeout(function() {
             var node = model.data.firstChild;
@@ -844,7 +839,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function(revObj, model) {
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (CoreUtil.isNewPage(page) || !CoreUtil.pageIsCode(page)) {
             return;
         }
@@ -904,10 +899,10 @@ module.exports = ext.register("ext/revisions/revisions", {
      * otherwise
      **/
     isCollab: function(doc) {
-        if(!doc && !tabEditors.getPage())
+        if(!doc && !ide.getActivePage())
             return false;
 
-        var doc = (doc || tabEditors.getPage().$doc);
+        var doc = (doc || ide.getActivePage().$doc);
         return doc.acedoc && doc.acedoc.doc.$isTree;
     },
 
@@ -1008,7 +1003,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     applyRevision: function(id, value) {
         // Assuming that we are applying the revision to the current page. Could
         // it happen any other way?
-        var doc = tabEditors.getPage().$doc;
+        var doc = ide.getActivePage().$doc;
         doc.setValue(value);
 
         this.$setRevisionNodeAttribute(id, "loading", "false");
@@ -1253,7 +1248,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     show: function() {
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (!CoreUtil.pageIsCode(page)) {
             return;
         }
@@ -1263,7 +1258,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.model.setQueryValue("general/@revisionsvisible", true);
 
         if (!this.panel.visible) {
-            Code.amlEditor.$ext.style.right = BAR_WIDTH + "px";
+            if (ide.dispatchEvent("ext.revisions.show", { barWidth: BAR_WIDTH }) !== false)
+                Code.amlEditor.$ext.style.right = BAR_WIDTH + "px";
             page.$showRevisions = true;
             this.panel.show();
             ide.dispatchEvent("revisions.visibility", {
@@ -1290,6 +1286,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             var docPath = CoreUtil.getDocPath();
             var currentDocRevision = this.rawRevisions[docPath];
             if (!currentDocRevision && !this.waitingForRevisionHistory) {
+                this.model = model;
                 this.getRevisionHistory({ path: docPath });
             }
             else {
@@ -1301,15 +1298,15 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hide: function() {
         settings.model.setQueryValue("general/@revisionsvisible", false);
-        Code.amlEditor.$ext.style.right = "0";
-        var page = tabEditors.getPage();
+        if (ide.dispatchEvent("ext.revisions.hide", { barWidth: BAR_WIDTH }) !== false)
+            Code.amlEditor.$ext.style.right = "0";
+        var page = ide.getActivePage();
         if (!page) {
             return;
         }
 
         page.$showRevisions = false;
         this.panel.hide();
-        ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
 
         beautify.enable();
         statusbar.offsetWidth = 0;
@@ -1338,10 +1335,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
 
         if (this.$onSwitchFileFn)
-            ide.removeEventListener("tab.beforeswitch", this.$onSwitchFileFn);
-
-        if (this.$onAfterSwitchFn)
-            ide.removeEventListener("tab.afterswitch", this.$onAfterSwitchFn);
+            ide.removeEventListener("tab.afterswitch", this.$onSwitchFileFn);
 
         if (this.$afterSelectFn)
             lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
@@ -1370,10 +1364,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.addEventListener("afterfilesave", this.$onFileSaveFn);
 
         if (this.$onSwitchFileFn)
-            ide.addEventListener("tab.beforeswitch", this.$onSwitchFileFn);
-
-        if (this.$onAfterSwitchFn)
-            ide.addEventListener("tab.afterswitch", this.$onAfterSwitchFn);
+            ide.addEventListener("tab.afterswitch", this.$onSwitchFileFn);
 
         if (this.$afterSelectFn)
             lstRevisions.addEventListener("afterselect", this.$afterSelectFn);

@@ -91,11 +91,11 @@ module.exports = ext.register("ext/save/save", {
             tabEditors.addEventListener("close", _self.$close = function(e) {
                 var at = e.page.$at;
                 var node = e.page.$doc.getNode();
-                
+
                 if (node.getAttribute("deleted"))
                     return;
-                
-                if (node && (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
+
+                if (node && (at && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
                   || !at.undo_ptr && node.getAttribute("changed") == 1)
                   && (!node.getAttribute("newfile") || e.page.$doc.getValue())) {
                     ext.initExtension(_self);
@@ -126,9 +126,9 @@ module.exports = ext.register("ext/save/save", {
                                     return;
                                 delete winCloseConfirm.page;
                                 delete page.noAnim;
-                                
+
                                 page.dispatchEvent("aftersavedialogclosed");
-                                
+
                                 tabEditors.remove(page, true, page.noAnim);
                                 if (resetUndo)
                                     page.$at.undo(-1);
@@ -192,28 +192,28 @@ module.exports = ext.register("ext/save/save", {
         ide.addEventListener("afterreload", function(e){
             var doc = e.doc;
             var at = doc.$page.$at;
-            
+
             at.addEventListener("afterchange", function(){
                 at.undo_ptr = at.$undostack[at.$undostack.length-1];
                 apf.xmldb.removeAttribute(doc.getNode(), "changed");
             });
         });
-        
+
         // when we're going offline we'll disable the UI
         ide.addEventListener("afteroffline", function() {
             _self.disable();
         });
-        
+
         // when we're back online we'll first update the UI and then trigger an autosave if enabled
         ide.addEventListener("afteronline", function() {
             _self.enable();
         });
-        
+
         // if we retrieve an actual 'real' file save event then we'll set the UI state to 'saving'
         ide.addEventListener("fs.beforefilesave", function () {
             _self.setUiStateSaving();
         });
-        
+
         // and afterwards we'll show 'SAVED' or 'NOT SAVED' depending on whether it succeeded
         ide.addEventListener("fs.afterfilesave", function (e) {
             if (e.success) {
@@ -259,7 +259,7 @@ module.exports = ext.register("ext/save/save", {
                 delete winSaveAs.page;
             }
         });
-        
+
         trSaveAs.addEventListener("beforerename", this.$beforerename = function(e){
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
 
@@ -291,7 +291,7 @@ module.exports = ext.register("ext/save/save", {
     },
 
     reverttosaved : function(){
-        ide.dispatchEvent("reload", {doc : tabEditors.getPage().$doc});
+        ide.dispatchEvent("reload", {doc : ide.getActivePage().$doc});
     },
 
     saveall : function() {
@@ -340,17 +340,17 @@ module.exports = ext.register("ext/save/save", {
             callback(winCloseConfirm.all);
         });
     },
-    
+
     ideIsOfflineMessage: function() {
-        util.alert("Could not save", 
-            "Please check your connection", 
+        util.alert("Could not save",
+            "Please check your connection",
             "When your connection has been restored you can try to save the file again.");
     },
 
     // `silentsave` indicates whether the saving of the file is forced by the user or not.
     quicksave : function(page, callback, silentsave) {
         if (!page || !page.$at)
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
 
         if (!page)
             return;
@@ -377,19 +377,20 @@ module.exports = ext.register("ext/save/save", {
             this.saveas(page, callback);
             return;
         }
-        
+
         if (!ide.onLine) {
             return this.ideIsOfflineMessage();
         }
 
-        if (callback) {
-            ide.addEventListener("afterfilesave", function(e) {
-                if (e.node == node) {
-                    callback();
-                    ide.removeEventListener("afterfilesave", arguments.callee);
-                }
-            });
-        }
+        var _self = this;
+
+        var value = doc.getValue();
+
+        // so we had this edge case where the doc is already destroyed but we still fire
+        // and undefined was returned.
+        // To prevent file emptying, we'll add an extra check here.
+        if (typeof value === "undefined")
+            return;
 
         // check if we're already saving!
         var saving = parseInt(node.getAttribute("saving"), 10);
@@ -400,9 +401,14 @@ module.exports = ext.register("ext/save/save", {
 
         apf.xmldb.setAttribute(node, "saving", "1");
 
-        var _self = this;
-
-        var value = doc.getValue();
+        if (callback) {
+            ide.addEventListener("afterfilesave", function(e) {
+                if (e.node == node) {
+                    callback();
+                    ide.removeEventListener("afterfilesave", arguments.callee);
+                }
+            });
+        }
 
         // raw fs events
         ide.dispatchEvent("fs.beforefilesave", { path: path });
@@ -415,7 +421,7 @@ module.exports = ext.register("ext/save/save", {
                 success: state != apf.SUCCESS ? "false" : "true"
             });
             apf.xmldb.removeAttribute(node, "saving");
-            
+
             ide.dispatchEvent("fs.afterfilesave", { path: path, success: state == apf.SUCCESS });
 
             if (state != apf.SUCCESS) {
@@ -429,7 +435,7 @@ module.exports = ext.register("ext/save/save", {
                     // otherwise we show a message that saving failed unfortunately
                     return _self.ideIsOfflineMessage();
                 }
-                
+
                 // all other error cases
                 return util.alert(
                     "Could not save document",
@@ -502,7 +508,7 @@ module.exports = ext.register("ext/save/save", {
                 fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
                 model.load(file);
-                tabEditors.set(tabEditors.getPage());
+                tabEditors.set(ide.getActivePage());
             }
 
             apf.xmldb.removeAttribute(oldFile, "saving");
@@ -564,7 +570,7 @@ module.exports = ext.register("ext/save/save", {
     // It saves a file with a different name, involving UI.
     saveas : function(page, callback){
         if (!page || !page.$at)
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
 
         if (!page)
             return;
@@ -593,7 +599,7 @@ module.exports = ext.register("ext/save/save", {
 
     // Called by the UI 'confirm' button in winSaveAs.
     confirmSaveAs : function(page) {
-        page = page || tabEditors.getPage();
+        page = page || ide.getActivePage();
         var file = page.$model.data;
         var path = file.getAttribute("path");
         var newPath = lblPath.getProperty("caption") + txtSaveAs.getValue();
@@ -652,9 +658,9 @@ module.exports = ext.register("ext/save/save", {
 
     expandTree : function(){
         var _self = this;
-        
+
         function expand(){
-            var tabPage = tabEditors.getPage(),
+            var tabPage = ide.getActivePage(),
                 path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
                 isNew   = tabPage ? tabPage.$model.data.getAttribute('newfile') : false;
             if (!isNew)
@@ -662,7 +668,7 @@ module.exports = ext.register("ext/save/save", {
             else
                 trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
         }
-        
+
         if (trSaveAs.getModel()) {
             expand();
         }
@@ -670,7 +676,7 @@ module.exports = ext.register("ext/save/save", {
             trSaveAs.addEventListener("afterload", expand);
         }
     },
-    
+
     renameFile : function(node) {
         var path = node.getAttribute("path");
         var oldpath = node.getAttribute("oldpath");
@@ -688,35 +694,35 @@ module.exports = ext.register("ext/save/save", {
             });
         });
     },
-    
+
     /**
      * Set the UI state to 'saving'
      */
     setUiStateSaving: function () {
         btnSave.show();
-        
+
         apf.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
         apf.setStyleClass(saveStatus, "saving", ["saved"]);
         btnSave.currentState = SAVING;
         btnSave.setCaption("Saving");
     },
-    
+
     $uiStateSavedTimeout: null,
     /**
      * Set the UI state to 'saved'
      */
     setUiStateSaved: function () {
         var _self = this;
-        
+
         btnSave.show();
-        
+
         apf.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
         apf.setStyleClass(saveStatus, "saved", ["saving"]);
         btnSave.currentState = SAVED;
         btnSave.setCaption("Changes saved");
-        
+
         // after 4000 ms. we'll hide the label (clear old timeout first)
-        if (_self.$uiS$uiStateSavedTimeout) 
+        if (_self.$uiS$uiStateSavedTimeout)
             clearTimeout(_self.$ui$uiStateSavedTimeout);
 
         _self.$uiStateSavedTimeout = setTimeout(function () {
@@ -725,18 +731,18 @@ module.exports = ext.register("ext/save/save", {
             }
         }, 4000);
     },
-    
+
     setUiStateOffline: function () {
         btnSave.show();
-        
+
         // don't blink!
         apf.setStyleClass(btnSave.$ext, "saved");
         apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
-        
+
         btnSave.currentState = OFFLINE;
         btnSave.setCaption("Not saved");
     },
-    
+
     destroy : function(){
         menus.remove("File/~", 1100);
         menus.remove("File/Save All");

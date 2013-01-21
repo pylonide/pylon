@@ -436,7 +436,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     forceOpen : true
                 });
 
-                _self.searchPage = tabEditors.getPage();
+                _self.searchPage = ide.getActivePage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
                 _self.apfeditor = _self.searchPage.$editor.amlEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
@@ -501,7 +501,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             var footer = ["\n"];
             // if process failed add that info to the message
             if (message.code && message.stderr) {
-                footer.push("Search in files failed with code " + message.code + 
+                footer.push("Search in files failed with code " + message.code +
                     " (" + message.stderr + ")");
             }
             else {
@@ -509,10 +509,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 var footerData = { count: message.count, filecount: message.filecount };
                 footer.push(this.messageFooter(footerData));
             }
-            
+
             footer.push("\n", "\n", "\n");
             doc.insertLines(doc.getLength(), footer);
-            
+
             if (!chkSFConsole.checked) {
                 var node = doc.node;
                 node.setAttribute("saving", "0");

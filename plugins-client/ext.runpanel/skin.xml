@@ -1,0 +1,297 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:list name="runconfigurations">
+        <a:style><![CDATA[
+            .listRC{
+                overflow: hidden;
+                position: relative;
+                cursor: default;
+                height: 197px;
+            }
+
+            .listRC .rcItem{
+                color      : #cecece;
+                text-shadow   : #000 0px 1px 0px;
+                padding    : 0 2px 0 29px;
+                position   : relative;
+                height     : 20px;
+                line-height: 19px;
+                border-top:1px solid transparent;
+                border-bottom:1px solid transparent;
+            }
+
+            .listRC .content{
+                cursor : pointer;
+                font-family : Arial, Tahoma;
+                font-size : 11px;
+                padding : 0 0 0 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 115px;
+            }
+
+            .listRC .content div{
+                font-family : Courier New;
+                padding : 2px 0 0 0;
+                font-size : 12px;
+                white-space : nowrap;
+                overflow : hidden;
+            }
+
+            .listRC .radiobutton {
+                width      : 16px;
+                height     : 17px;
+                background : url("images/radio-black.png") no-repeat 0 0;
+                display : block;
+                position : absolute;
+                left : 8px;
+                top : 2px;
+            }
+
+            .listRC .rcItem .radiobutton:hover{
+                background-position : 0 -119px;
+            }
+
+            .listRC .rcItem .radiobutton:active{
+                background-position : 0 -17px;
+            }
+
+            .listRC .active .radiobutton:active {
+                background-position : 0 -51px !important;
+            }
+
+            .listRC .selected {
+                border-top:1px solid #55a2e0;
+                border-bottom:1px solid #1166aa;
+                filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3692db', endColorstr='#1680d5');
+                -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#3692db', endColorstr='#1680d5')";
+                background : -webkit-gradient(linear, left top, left bottom, from(#3692db), color-stop(1, #1680d5));
+                background : -moz-linear-gradient(center bottom, #1680d5 0%, #3692db 100%) repeat scroll 0 0 transparent;
+                color: #ffffff;
+            }
+
+            .listRC .active .radiobutton {
+                background-position : 0 -34px;
+            }
+
+            .listRC .active .radiobutton:hover{
+                background-position : 0 -102px;
+            }
+
+            .listRCDisabled .radiobutton {
+                background-position : 0 -68px;
+            }
+
+            .listRCDisabled .rcItem {
+                color : #bebebe;
+            }
+
+            .listRC .rcItem.hover .btnDelete {
+                width               : 16px;
+                height              : 19px;
+                position            : absolute;
+                right               : 8px;
+                top                 : 0px;
+                background-image    : url(images/delete_btn2.png);
+                background-repeat   : no-repeat;
+                background-position : 0 0;
+            }
+
+            .listRC .rcItem.hover .btnDelete:hover {
+                background-position : -15px 0;
+            }
+
+            .listRC .rcItem.hover .btnDelete:active {
+                background-position : -31px 0;
+            }
+
+            .listRC .selected .btnDelete {
+                background-position : 0 0;
+            }
+
+            .listRC .selected .btnDelete:hover {
+                background-position : -15px 0;
+            }
+
+            .listRC .selected .btnDelete:active {
+                background-position : -31px 0;
+            }
+
+            .listRC #txt_rename{
+                border: 1px solid #bbb;
+                padding: 0px 15px 1px 1px;
+                color: black;
+                text-shadow   : none;
+                word-break: keep-all;
+                overflow: visible;
+                margin-top : 0px;
+                cursor: text;
+                height: 13px;
+                width: 100px;
+                display: block;
+
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="listRC">
+                </div>
+            </a:main>
+            <a:item class="." caption="div" icon="div" select="." check="span">
+                <div class="rcItem">
+                    <span class="radiobutton"> </span>
+                    <!--div contenteditable="true" id="txt_rename"> </div-->
+                    <div class="content"> </div>
+                    <div class="btnDelete"> </div>
+                </div>
+            </a:item>
+            <a:empty caption=".">
+                <div class="message">-</div>
+            </a:empty>
+        </a:presentation>
+    </a:list>
+    <a:menu name="mnuRunCfg">
+        <a:style><![CDATA[
+            .mnuRunCfg {
+                display: none;
+                margin-left: -93px !important;
+                -webkit-transition: margin .2s ease;
+                -moz-transition: margin .2s ease;
+                transition: margin .2s ease;
+                overflow: hidden;
+            }
+            .mnuRunCfg .window {
+                border: 1px solid black;
+                border-bottom-width: 6px;
+                background-color: #3C3C3C;
+                box-shadow: 0 5px 15px rgba(0,0,0,.55);
+                height: 226px;
+                margin: -13px 0 0 -64px;
+                position: relative;
+            }
+            .mnuRunCfg.withOther .window {
+                height: 262px;
+            }
+            .mnuRunCfg .window .fbox {
+                height: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            .mnuRunCfg .window .col {
+                float: left;
+                height: 100%;
+                position: relative;
+            }
+            .mnuRunCfg .window .col1 {
+                width: 0;
+                -webkit-transition: all .2s ease;
+                -moz-transition: all .2s ease;
+                transition: all .2s ease;
+            }
+            .mnuRunCfg .window .col1:after {
+                border-left: 1px solid rgba(0,0,0,.4);
+                content: "";
+                display: block;
+                height: 100%;
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 0;
+                /*width: 100px;*/
+            }
+            .mnuRunCfg .black {
+                background-color: #313131;
+                background-image: -webkit-linear-gradient(top, rgba(0,0,0,.17), rgba(0,0,0,.45)), url(images/c9-noise-dark.png);
+                background-image: -moz-linear-gradient(top, rgba(0,0,0,.17), rgba(0,0,0,.45)), url(images/c9-noise-dark.png);
+                background-image: linear-gradient(top, rgba(0,0,0,.17), rgba(0,0,0,.45)), url(images/c9-noise-dark.png);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.15) inset;
+                height: 100%;
+            }
+            .mnuRunCfg .window .col2 {
+                width: 342px;
+            }
+            .mnuRunCfg .window .col2:after {
+                border-left: 1px solid rgba(255,255,255,.1);
+                /*content: "";*/
+                display: block;
+                height: 100%;
+                left: 0px;
+                position: absolute;
+                top: 0;
+                width: 0;
+                width: 100px;
+            }
+            .mnuRunCfg .gray {
+                background-color: #3C3C3C;
+                background-image: -webkit-linear-gradient(top, rgba(0,0,0,.10), rgba(0,0,0,.44)), url(images/c9-noise-dark.png);
+                background-image: -moz-linear-gradient(top, rgba(0,0,0,.10), rgba(0,0,0,.44)), url(images/c9-noise-dark.png);
+                background-image: linear-gradient(top, rgba(0,0,0,.10), rgba(0,0,0,.44)), url(images/c9-noise-dark.png);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.10) inset;
+                height: 100%;
+            }
+            .mnuRunCfg .window .title {
+                background-color: #484848;
+                background-image: -webkit-linear-gradient(top, rgba(0,0,0,.02), rgba(0,0,0,.22)), url(images/c9-noise-dark.png);
+                background-image: -moz-linear-gradient(top, rgba(0,0,0,.02), rgba(0,0,0,.22)), url(images/c9-noise-dark.png);
+                background-image: linear-gradient(top, rgba(0,0,0,.02), rgba(0,0,0,.22)), url(images/c9-noise-dark.png);
+                border-bottom: 1px solid rgba(0,0,0,.6);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.07) inset;
+                height: 28px;
+            }
+            .mnuRunCfg .window .tooltip {
+                height: 8px;
+                left: 50%;
+                margin-left: -7px;
+                overflow: hidden;
+                position: absolute;
+                top: -7px;
+                width: 14px;
+            }
+            .mnuRunCfg .window .tooltip:after {
+                background-color: #484848;
+                background-image: -webkit-linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,0) 45%), url(images/c9-noise-dark.png);
+                background-image: -moz-linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,0) 45%), url(images/c9-noise-dark.png);
+                background-image:  linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,0) 45%), url(images/c9-noise-dark.png);
+                box-shadow: 1px 1px 0 0 rgba(255,255,255,.12) inset, -1px -1px 0 0 black;
+                content: "";
+                display: block;
+                height: 10px;
+                left: 2px;
+                position: absolute;
+                top: 3px;
+                -webkit-transform: rotateZ(45deg);
+                -moz-transform: rotateZ(45deg);
+                transform: rotateZ(45deg);
+                width: 10px;
+                z-index: 1;
+            }
+            .mnuRunCfg.showList {
+                margin-left: -181px !important;
+            }
+            /*
+            .mnuRunCfg.showList .window {
+                margin: -13px 0 0 -239px;
+            }
+            .mnuRunCfg.showList .window .tooltip {
+                left: 309px;
+            }
+            */
+            .mnuRunCfg.showList .window .col1 {
+                width: 175px;
+            }
+
+            .mnuRunCfg.fromRunBtn .window {
+                margin: -13px 0 0 -104px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container="." overlay="strong">
+                <blockquote class='mnuRunCfg'>
+
+                </blockquote>
+            </a:main>
+        </a:presentation>
+    </a:menu>
+</a:skin>

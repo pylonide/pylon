@@ -8,7 +8,7 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 /*global Firmin vbZen tabEditors btnZenFullscreen vbMain */
 
 define(function(require, exports, module) {
@@ -20,7 +20,7 @@ var settings = require("ext/settings/settings");
 var markup = require("text!ext/zen/zen.xml");
 var skin = require("text!ext/zen/skin.xml");
 var menus = require("ext/menus/menus");
-var commands = require("ext/commands/commands"); 
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/zen/zen", {
     name     : "Zen mode",
@@ -50,7 +50,7 @@ module.exports = ext.register("ext/zen/zen", {
 
     hook : function(){
         var _self = this;
-        
+
         commands.addCommand({
             name: "zen",
             hint: "toggle zen mode",
@@ -62,7 +62,7 @@ module.exports = ext.register("ext/zen/zen", {
                 _self.zen();
             }
         });
-        
+
         commands.addCommand({
             name: "zenslow",
             hint: "toggle zen mode in slow-motion",
@@ -89,13 +89,14 @@ module.exports = ext.register("ext/zen/zen", {
 
             _self.updateButtonPosition();
         });
-        
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.offsetWidth = _self.defaultOffset + e.width;
-            else
-                _self.offsetWidth = _self.defaultOffset;
 
+        ide.addEventListener("ext.revisions.show", function(e) {
+            _self.offsetWidth = _self.defaultOffset + e.barWidth;
+            _self.updateButtonPosition();
+        });
+
+        ide.addEventListener("ext.revisions.hide", function(e) {
+            _self.offsetWidth = _self.defaultOffset;
             _self.updateButtonPosition();
         });
 
@@ -103,18 +104,18 @@ module.exports = ext.register("ext/zen/zen", {
             ide.addEventListener("tab.afterswitch", function(e){
                 if (e.nextPage.type != "ext/code/code")
                     return;
-    
+
                 if (!_self.inited) {
                     // Wait a moment for the editor to get into place
                     setTimeout(function() {
                         ext.initExtension(_self); //@matt this can be optimized (Ruben)
                     });
                 }
-                
+
                 tabEditors.removeEventListener("afterswitch", arguments.callee);
             });
         });
-        
+
         this.mnuItem = menus.addItemByPath("View/Zen Mode", new apf.item({
             caption : "Zen Mode",
             type    : "check",
@@ -149,7 +150,7 @@ module.exports = ext.register("ext/zen/zen", {
         this.setupHandleListeners();
 
         var button = btnZenFullscreen;
-        var page = tabEditors && tabEditors.getPage();
+        var page = tabEditors && ide.getActivePage();
         if (page.fake)
             page = page.relPage;
         page.appendChild(button);
@@ -267,7 +268,7 @@ module.exports = ext.register("ext/zen/zen", {
             _self.handleLeftMove = false;
             _self.handleRightMove = false;
             apf.layout.forceResize();
-            
+
             apf.dragMode = false;
         });
     },
@@ -312,7 +313,7 @@ module.exports = ext.register("ext/zen/zen", {
         ide.dispatchEvent("enterzen");
 
         var _self = this;
-        
+
         var activeElement = apf.document.activeElement;
 
         if (self.btnZenFullscreen)
@@ -339,7 +340,7 @@ module.exports = ext.register("ext/zen/zen", {
             top: "0",
             width: afWidth + "px",
             timingFunction: "ease-in-out"
-        }, slow ? 3.7 : 0.7, 
+        }, slow ? 3.7 : 0.7,
         function() {
             _self.isFocused = true;
 
@@ -349,7 +350,7 @@ module.exports = ext.register("ext/zen/zen", {
             _self.animateZen.setAttribute("style", astyles);
 
             apf.layout.forceResize();
-            
+
             _self.zenHandleLeft.style.display = "block";
             _self.zenHandleRight.style.display = "block";
 
@@ -368,7 +369,7 @@ module.exports = ext.register("ext/zen/zen", {
             }, 0.5);
 
             setTimeout(function() {
-                if (activeElement && activeElement.$focus 
+                if (activeElement && activeElement.$focus
                   && activeElement.getHeight())
                     activeElement.$focus();
             }, 100);
@@ -394,12 +395,12 @@ module.exports = ext.register("ext/zen/zen", {
         ide.dispatchEvent("escapezen");
 
         var _self = this;
-        
+
         var activeElement = apf.document.activeElement;
 
         btnZenFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
-        
+
         this.mnuItem.uncheck();
 
         this.zenHandleLeft.style.display = "none";

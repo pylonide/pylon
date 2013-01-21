@@ -75,7 +75,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         function checkTCP() {
             self.exec("shell", {
                 command: "lsof",
-                args: ["-i", ":8080"]
+                args: ["-i", ":"+ (child.port || 8080)]
             }, function(err, pid) {
             }, function(code, stdout, stderr) {
                 if (code)
@@ -99,7 +99,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     };
 
     this.runnerTypes = function() {
-        var exclude = ["npm", "shell", "run-npm"];
+        var exclude = ["npm", "shell", "run-npm", "other"];
         return Object.keys(this.runners).filter(function(runner) {
             return exclude.indexOf(runner) === -1;
         });

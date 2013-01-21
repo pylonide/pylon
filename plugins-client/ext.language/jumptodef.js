@@ -18,13 +18,13 @@ var CRASHED_JOB_TIMEOUT = 30000;
 
 module.exports = {
     nodes : [],
-    
+
     removeSpinnerNodes: [],
-    
+
     hook : function(language, worker){
         var _self = this;
         _self.worker = worker;
-        
+
         commands.addCommand({
             name : "jumptodef",
             bindKey: {mac: "F3", win: "F3"},
@@ -36,7 +36,7 @@ module.exports = {
                 _self.jumptodef();
             }
         });
-        
+
         // right click context item in ace
         ide.addEventListener("init.ext/code/code", function() {
             _self.nodes.push(
@@ -53,11 +53,11 @@ module.exports = {
                     command: "jumptodef"
                 }), 899)
             );
-            
-            // when the context menu pops up we'll ask the worker whether we've 
+
+            // when the context menu pops up we'll ask the worker whether we've
             // jumptodef available here
             apf.addListener(mnuCtxEditor, "prop.visible", function(ev) {
-                // only fire when visibility is set to true        
+                // only fire when visibility is set to true
                 if (ev.value) {
                     // because of delays we'll enable by default
                     mnuCtxEditorJumpToDef.enable();
@@ -65,12 +65,12 @@ module.exports = {
                 }
             });
         });
-        
+
         // listen to the worker's response
         worker.on("definition", function(e) {
             _self.onDefinitions(e);
         });
-        
+
         // when the analyzer tells us if the jumptodef result is available
         // we'll disable/enable the jump to definition item in the ctx menu
         worker.on("isJumpToDefinitionAvailableResult", function(ev) {
@@ -82,7 +82,7 @@ module.exports = {
             }
         });
     },
-    
+
     $getFirstColumn: function(row) {
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
@@ -92,7 +92,7 @@ module.exports = {
             return 0;
         return line.match(/^(\s*)/)[1].length;
     },
-    
+
     /**
      * Fire an event to the worker that asks whether the jumptodef is available for the
      * current position.
@@ -110,17 +110,17 @@ module.exports = {
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
-            
+
         this.activateSpinner();
 
         var sel = editor.getSelection();
         var pos = sel.getCursor();
-        
+
         this.worker.emit("jumpToDefinition", {
             data: pos
         });
     },
-    
+
     onDefinitions : function(e) {
         this.clearSpinners();
 
@@ -129,10 +129,10 @@ module.exports = {
         var editor = editors.currentEditor;
         if (!editor || editor.path != "ext/code/code" || !editor.amlEditor)
             return;
-            
+
         if (!results.length)
             return this.onJumpFailure(e, editor);
-            
+
         // We have no UI for multi jumptodef; we just take the last for now
         var lastResult;
         for (var i = results.length - 1; i >=0; i--) {
@@ -140,21 +140,21 @@ module.exports = {
             if (!lastResult.isDeferred)
                 break;
         }
-        
+
         var _self = this;
         var path = lastResult.path ? ide.davPrefix.replace(/[\/]+$/, "") + "/" + lastResult.path : undefined;
-        
+
         editors.gotoDocument({
             getColumn: function() {
                 return lastResult.column !== undefined ? lastResult.column : _self.$getFirstColumn(lastResult.row);
-            }, 
+            },
             row: lastResult.row + 1,
-            node: path ? undefined : tabEditors.getPage().xmlRoot,
+            node: path ? undefined : ide.getActivePage().xmlRoot,
             animate: true,
             path: path
         });
     },
-    
+
     onJumpFailure : function(event, editor) {
         var cursor = editor.getSelection().getCursor();
         var oldPos = event.data.pos;
@@ -170,10 +170,10 @@ module.exports = {
         var newPos = { row: cursor.row, column: column };
         editor.getSelection().setSelectionRange({ start: newPos, end: newPos });
     },
-    
+
     activateSpinner : function() {
         try {
-            var node = tabEditors.getPage().$doc.getNode();
+            var node = ide.getActivePage().$doc.getNode();
             apf.xmldb.setAttribute(node, "lookup", "1");
             this.removeSpinnerNodes.push(node);
             var _self = this;
@@ -185,13 +185,13 @@ module.exports = {
             console.error(e);
         }
     },
-    
+
     clearSpinners : function() {
         this.removeSpinnerNodes.forEach(function(node) {
             apf.xmldb.removeAttribute(node, "lookup");
         });
         this.removeSpinnerNodes = [];
     }
-    
+
 };
 });

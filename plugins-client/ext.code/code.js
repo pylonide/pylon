@@ -62,10 +62,10 @@ var SupportedModes = {
     html: ["HTML", "htm|html|xhtml", "text/html"],
     jade: ["Jade", "jade", "text/x-jade"],
     java: ["Java", "java", "text/x-java-source"],
-    jsp:  ["JSP", "jsp", "text/x-jsp", "other"],
+    jsp: ["JSP", "jsp", "text/x-jsp", "other"],
     javascript: ["JavaScript", "js", "application/javascript"],
     json: ["JSON", "json", "application/json"],
-    jsx:  ["JSX", "jsx", "text/x-jsx", "other"],
+    jsx: ["JSX", "jsx", "text/x-jsx", "other"],
     latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
     less: ["LESS", "less", "text/x-less"],
     lisp: ["Lisp", "lisp|scm|rkt", "text/x-lisp", "other"],
@@ -292,7 +292,8 @@ module.exports = ext.register("ext/code/code", {
             if (doc.isInited && doc.state)
                  _self.setState(doc, doc.state);
 
-            doc.addEventListener("prop.value", function(e) {
+            var onPropValue;
+            doc.addEventListener("prop.value", onPropValue = function(e) {
                 if (this.editor != _self)
                     return;
 
@@ -319,7 +320,8 @@ module.exports = ext.register("ext/code/code", {
             if (!isLazy)
                 amlEditor.setProperty("value", doc.acesession || "");
 
-            doc.addEventListener("retrievevalue", function(e) {
+            var onRetrieveValue;
+            doc.addEventListener("retrievevalue", onRetrieveValue = function(e) {
                 if (this.editor != _self || !doc)
                     return;
 
@@ -329,18 +331,25 @@ module.exports = ext.register("ext/code/code", {
                     return doc.acesession.getValue();
             });
 
-            doc.addEventListener("close", function(e){
+            var onClose;
+            doc.addEventListener("close", onClose = function(e){
                 if (this.editor != _self)
                     return;
 
+                doc.removeEventListener("close", onClose);
+                doc.removeEventListener("retrievevalue", onRetrieveValue);
+                doc.removeEventListener("prop.value", onPropValue);
+
                 //??? destroy doc.acesession
                 setTimeout(function() {
-                    doc.acedoc.doc.$lines = [];
-                    doc.acedoc.doc._eventRegistry = null;
-                    doc.acedoc.doc._defaultHandlers = null;
-                    doc.acedoc._eventRegistry = null;
-                    doc.acedoc._defaultHandlers = null;
-                    doc.acedoc = null;
+                    if (doc.acedoc) {
+                        doc.acedoc.doc.$lines = [];
+                        doc.acedoc.doc._eventRegistry = null;
+                        doc.acedoc.doc._defaultHandlers = null;
+                        doc.acedoc._eventRegistry = null;
+                        doc.acedoc._defaultHandlers = null;
+                        doc.acedoc = null;
+                    }
                     doc.acesession.$stopWorker();
                     doc.acesession.bgTokenizer.lines = [];
                     doc.acesession.bgTokenizer.tokenizer = null;
@@ -908,7 +917,7 @@ module.exports = ext.register("ext/code/code", {
 
                 if (!bgMessage.parentNode)
                     container.parentNode.appendChild(bgMessage);
-                
+
                 bgMessage.style.backgroundColor = theme ? theme.bg : "gray";
                 loaderBg.style.width = loadingWidth + "px";
                 loaderBg.style.left = padding + "px";

@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Util = require("core/util"); 
+var Util = require("core/util");
 
 var Save = require("ext/save/save");
 var settings = require("ext/settings/settings");
@@ -28,7 +28,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     type: ext.GENERAL,
     offline: true,
     nodes: [ ],
-    
+
     docChangeTimeout: null,
     docChangeListeners: {},
 
@@ -68,7 +68,7 @@ module.exports = ext.register("ext/autosave/autosave", {
             width : "250px",
             hideonclick : true
         });
-        
+
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
@@ -139,7 +139,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
-        this.save(tabEditors.getPage());
+        this.save(ide.getActivePage());
     },
 
     /**
@@ -151,16 +151,16 @@ module.exports = ext.register("ext/autosave/autosave", {
      **/
     save: function(page, forceSave) {
         var _self = this;
-        
+
         if (!page || !page.$at)
-            page = tabEditors.getPage();
+            page = ide.getActivePage();
 
         if (!page)
             return;
 
         if ((forceSave !== true) && (!Util.pageHasChanged(page) || !Util.pageIsCode(page)))
             return;
-            
+
         // not online? then we're not going to save it
         if (ide.onLine === false) {
             Save.setUiStateOffline();

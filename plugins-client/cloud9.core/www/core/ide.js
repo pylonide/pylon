@@ -172,18 +172,16 @@ define(function(require, exports, module) {
         }
     };
 
+    ide.getActivePage = function() {
+        return this.dispatchEvent("correctactivepage") || tabEditors.getPage() || null;
+    };
+
     ide.getActivePageModel = function() {
-        var page = tabEditors.getPage();
+        var page = this.getActivePage();
         if (!page)
             return null;
 
-        var corrected = this.dispatchEvent("activepagemodel", {
-            model: page.$model
-        });
-
-        return corrected && corrected.data
-            ? corrected.data
-            : page.$model.data;
+        return page.$model.data;
     };
 
     ide.getAllPageModels = function() {

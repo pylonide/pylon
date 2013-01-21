@@ -22,6 +22,8 @@ var vfsUrl = "/vfs";
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || process.env.IP || "localhost";
 
+var useAuth = argv.username && argv.password;
+
 var config = [
     {
         packagePath: "connect-architect/connect",
@@ -144,8 +146,8 @@ var config = [
             //"ext/githistory/githistory",
             "ext/autosave/autosave",
             "ext/revisions/revisions",
-            "ext/language/liveinspect"
-            //"ext/splitview/splitview"
+            "ext/language/liveinspect",
+            "ext/splitview/splitview"
             //"ext/minimap/minimap"
         ]
     }, {
@@ -192,6 +194,7 @@ var config = [
     "./cloud9.run.python",
     "./cloud9.run.apache",
     "./cloud9.run.php",
+    "./cloud9.run.other",
     "architect/plugins/architect.log",
     "./cloud9.ide.auth",
     "./cloud9.ide.git",
@@ -209,6 +212,7 @@ var config = [
     "./cloud9.ide.run-apache",
     "./cloud9.ide.run-ruby",
     "./cloud9.ide.run-php",
+    "./cloud9.ide.run-other",
     "./cloud9.run.python",
     "./cloud9.ide.revisions",
     {
@@ -217,7 +221,15 @@ var config = [
     },
     "./cloud9.ide.shell",
     "./cloud9.ide.state",
-    "./cloud9.ide.watcher"
+    "./cloud9.ide.watcher",
 ];
+
+if (useAuth) {
+    config.push({
+        packagePath: "./cloud9.connect.basic-auth",
+        username: argv.username,
+        password: argv.password
+    });
+}
 
 module.exports = config;

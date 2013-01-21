@@ -74,7 +74,7 @@ module.exports = ext.register("ext/language/language", {
                 var path = event.node.getAttribute("path");
                 var editor = editors.currentEditor.amlEditor;
                 // background tabs=open document, foreground tab=switch to file
-                // this is needed because with concorde changeSession event is fired when document is still empty 
+                // this is needed because with concorde changeSession event is fired when document is still empty
                 var isVisible = editor.xmlRoot == event.node;
                 worker.call(isVisible ? "switchFile" : "documentOpen", [
                     util.stripWSFromPath(path),
@@ -199,7 +199,7 @@ module.exports = ext.register("ext/language/language", {
         if (e && e.xmlNode && e.xmlNode.tagName != "language")
             return;
         // Currently no code editor active
-        if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
+        if (!editors.currentEditor || !editors.currentEditor.amlEditor || !ide.getActivePage())
             return;
         if(settings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
@@ -229,7 +229,7 @@ module.exports = ext.register("ext/language/language", {
         // Currently no code editor active
         if(!editors.currentEditor || editors.currentEditor.path != "ext/code/code" || !tabEditors.getPage() || !this.editor)
             return;
-        var path = tabEditors.getPage().getAttribute("id");
+        var path = ide.getActivePage().getAttribute("id");
         this.worker.call("switchFile", [
             util.stripWSFromPath(path),
             editors.currentEditor.amlEditor.syntax,

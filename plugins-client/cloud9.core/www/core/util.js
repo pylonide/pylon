@@ -15,7 +15,7 @@ var markup = require("text!core/util.xml");
 exports.escapeXpathString = function(name){
     if (!name)
         return "";
-    
+
     if (name.indexOf('"') > -1) {
         var out = [];
         var parts = name.split('"');
@@ -155,7 +155,7 @@ var SupportedIcons = {
     "text/cpp": "page_white_cplusplus",
     "text/x-c": "page_white_c",
     "text/x-csharp": "page_white_csharp",
-    "text/text/x-java-source": "page_white_cup",
+    "text/x-java-source": "page_white_cup",
     "text/x-markdown": "page_white_text",
     "text/x-xquery": "page_white_code"
 };
@@ -185,6 +185,7 @@ var contentTypes = {
     "xhtml": "application/xhtml+xml",
     "coffee": "text/x-script.coffeescript",
     "py": "text/x-script.python",
+    "java": "text/x-java-source",
 
     "ru": "text/x-script.ruby",
     "gemspec": "text/x-script.ruby",
@@ -228,7 +229,7 @@ var contentTypes = {
     "bash": "application/x-sh",
 
     "xq": "text/x-xquery",
-    
+
     "terminal": "terminal"
 };
 
@@ -279,7 +280,7 @@ exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
     }
-    return page.changed === 1;
+    return Number(page.$model.data.getAttribute("changed")) === 1;
 };
 
 exports.pageIsCode = function(page) {
@@ -298,7 +299,9 @@ exports.stripWSFromPath = function(path) {
 
 exports.getDocPath = function(page) {
     if (!page && tabEditors) {
-        page = tabEditors.getPage();
+        if (!ide.getActivePage)
+            ide = require("core/" + "ide");
+        page = ide.getActivePage();
     }
 
     // Can we rely on `name`?

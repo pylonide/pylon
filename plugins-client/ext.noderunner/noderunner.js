@@ -24,6 +24,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
+    runners : window.cloud9config.runners,
 
     NODE_VERSION: "auto",
 
@@ -39,7 +40,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("socketConnect", function() {
             _self.queryServerState();
         });
-
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
@@ -136,7 +136,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     debug : function() {
     },
 
-    run : function(path, args, debug, nodeVersion) {
+    run : function(path, args, debug, nodeVersion, otherRunner) {
         var runner;
         if (stProcessRunning.active || typeof path != "string")
             return false;
@@ -145,13 +145,17 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         path = path.trim();
 
-        if (nodeVersion == 'default' || !nodeVersion) {
+        if (otherRunner && this.runners.indexOf(otherRunner) === -1) {
+            runner = "other";
+            nodeVersion = otherRunner;
+        }
+        else if (nodeVersion == "default" || !nodeVersion) {
             runner = this.detectRunner(path);
-            nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
+            nodeVersion = runner == "node" ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : "auto";
         }
         else {
             runner = nodeVersion.split(" ")[0];
-            nodeVersion = nodeVersion.split(" ")[1] || 'auto';
+            nodeVersion = nodeVersion.split(" ")[1] || "auto";
         }
 
         var page = ide.getActivePageModel();

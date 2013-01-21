@@ -153,6 +153,8 @@ module.exports = ext.register("ext/editors/editors", {
                             btn.$ext.parentNode.style.overflow = "hidden";
                         }
 
+                        ide.dispatchEvent("tab.close", { page: e.page });
+
                         e.page.addEventListener("afterclose", _self.$close);
                     },
                     childNodes : [
@@ -363,7 +365,7 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     switchEditor : function(path){
-        var page = tabEditors.getPage();
+        var page = ide.getActivePage();
         if (!page || page.type == path)
             return;
 
@@ -518,8 +520,7 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (page.changed !== val) {
-                page.changed = val;
+            if (Number(model.queryValue("@changed")) !== Number(val)) {
                 model.setQueryValue("@changed", (val ? "1" : "0"));
 
                 var node = page.$model.data;
@@ -556,20 +557,26 @@ module.exports = ext.register("ext/editors/editors", {
         var at     = page.$at;
         var editor = page.$editor;
         var mdl    = page.$model;
+        var clearAll = !!(at && editor);
 
-        mdl.setQueryValue("@changed", 0);
-        page.$doc.dispatchEvent("close");
+        if (clearAll) {
+            mdl.setQueryValue("@changed", 0);
+            page.$doc.dispatchEvent("close");
+        }
 
         if (mdl.data) {
-            mdl.removeXml("data");
+            if (clearAll)
+                mdl.removeXml("data");
             ide.dispatchEvent("closefile", {xmlNode: mdl.data, page: page});
         }
 
-        //mdl.unshare();
-        mdl.destroy();
+        if (clearAll) {
+            //mdl.unshare();
+            mdl.destroy();
 
-        at.reset();
-        at.destroy();
+            at.reset();
+            at.destroy();
+        }
 
         //If there are no more pages left, reset location
         if (tabEditors.getPages().length == 1) {
@@ -955,7 +962,7 @@ module.exports = ext.register("ext/editors/editors", {
                     copy.removeAttribute("saving");
                     pNode.appendChild(copy);
 
-                    var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
+                    var state = pages[i].$editor && pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
                         copy.setAttribute("state", JSON.stringify(state));
 
@@ -966,7 +973,7 @@ module.exports = ext.register("ext/editors/editors", {
                     //popup a file watch dialog to ask if the user wants to
                     //load the new file from disk, losing changes.
                     if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
-                        copy.appendChild(copy.ownerDocument.createCDATASection(
+                        copy.appendChild(copy.ownerDocument.createTextNode(
                             (pages[i].$doc.getValue() || "")
                                 .replace(/\r/g, "\\r")
                                 .replace(/\n/g, "\\n")

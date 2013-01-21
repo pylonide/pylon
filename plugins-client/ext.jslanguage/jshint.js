@@ -48,7 +48,8 @@ handler.analyzeSync = function(value, ast) {
         loopfunc: true,
         lastsemic: true,
         multistr: true,
-        onecase: true
+        onecase: true,
+        maxerr: 10000
     });
     
     lint.errors.forEach(function(warning) {
