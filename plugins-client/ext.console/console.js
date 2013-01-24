@@ -23,6 +23,13 @@ var inputHistory = require("ext/console/input_history");
 var anims = require("ext/anims/anims");
 var preview = require("ext/preview/preview");
 
+// Temporary Terminal Hack until we can share tabs between console and editors (we need reusable editors for this)
+var Terminal = require("ext/terminal/libterm");
+var settings = require("ext/settings/settings");
+var terminal = require("ext/terminal/terminal");
+var Monitor = require("ext/terminal/monitor");
+var cssString = require("text!ext/terminal/style.css");
+
 // Some constants used throughout the plugin
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
@@ -117,11 +124,6 @@ module.exports = ext.register("ext/console/console", {
                 }
 
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
-
-                if (proc.type === "run-npm") {
-                    txtConsolePrompt.setValue("$ " + original_line.split(" ")[0]);
-                    txtConsolePrompt.show();
-                }
             }
             else {
                 command_id = this.createProcessLog(spi, proc.type);
@@ -203,22 +205,6 @@ module.exports = ext.register("ext/console/console", {
         return false;
     },
 
-    switchconsole : function() {
-        if (apf.activeElement === self.txtConsoleInput) {
-            var page = tabEditors.getPage();
-            if (page) {
-                if (page.$editor.focus)
-                    page.$editor.focus();
-            }
-        }
-        else {
-            if (this.hiddenInput)
-                this.showInput(true);
-            else
-                txtConsoleInput.focus();
-        }
-    },
-
     showOutput: function() {
         tabConsole.set("output");
     },
@@ -260,25 +246,6 @@ module.exports = ext.register("ext/console/console", {
     },
 
     evalInputCommand: function(line) {
-        if (txtConsolePrompt.visible) {
-            var htmlPage = tabConsole.getPage().$ext;
-            var loadingBlocks = htmlPage.getElementsByClassName("loading");
-            var outputBlockEl = loadingBlocks[loadingBlocks.length - 1];
-            if (outputBlockEl)
-                outputBlockEl.lastChild.innerHTML += line;
-
-            // @TODO update this to not be $uniqueId, but rather just id
-            var pageId = tabConsole.getPage().$uniqueId;
-
-            var data = {
-                command: "npm-module-stdin",
-                line: line,
-                pid: this.pageIdToPidMap[pageId].pid
-            };
-            ide.send(data);
-            return;
-        }
-
         if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults")
             tabConsole.set("console");
 
@@ -378,9 +345,6 @@ module.exports = ext.register("ext/console/console", {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
-
-        if (window.txtConsolePrompt) // fix for c9local packed
-            txtConsolePrompt.hide();
 
         if (spinnerElement) {
             logger.killBufferInterval(id);
@@ -518,8 +482,6 @@ module.exports = ext.register("ext/console/console", {
                     pid: message.pid,
                     prompt: stdin_prompt
                 };
-                txtConsolePrompt.setValue("$ " + stdin_prompt);
-                txtConsolePrompt.show();
                 break;
             case "npm-module-data":
                 if (!extra.original_line || !this.inited)
@@ -529,20 +491,6 @@ module.exports = ext.register("ext/console/console", {
                 if (!extra.original_line || !this.inited)
                     return;
                 this.pageIdToPidMap[extra.page_id] = null;
-                if (tabConsole.getPage().$uniqueId === extra.page_id) {
-                    txtConsolePrompt.hide();
-                }
-                else {
-                    // We may have reconstructed the output and have a mismatched
-                    // id
-                    // @TODO implement:
-                    // 1. Give each new page a unique "id" (NOT $uniqueId)
-                    // 2. When sending a command, include the unique ID
-                    // 3. Save the pages in settings.xml
-                    // 4. Recreate pages on refresh
-                    // 5. When this npm-module-exit message happens, don't get the
-                    //    page's uniqueId, map the "id" to the page
-                }
                 break;
             case "kill":
                 if (message.err) {
@@ -655,14 +603,6 @@ module.exports = ext.register("ext/console/console", {
             }
         });
         commands.addCommand({
-            name: "switchconsole",
-            bindKey: {mac: "Shift-Esc", win: "Shift-Esc"},
-            hint: "toggle focus between the editor and the command line",
-            exec: function () {
-                _self.switchconsole();
-            }
-        });
-        commands.addCommand({
             name: "toggleconsole",
             bindKey: {mac: "Ctrl-Esc", win: "F6"},
             exec: function () {
@@ -672,31 +612,13 @@ module.exports = ext.register("ext/console/console", {
                     _self.hide();
             }
         });
-        commands.addCommand({
-            name: "toggleinputbar",
-            exec: function () {
-                if (_self.hiddenInput)
-                    _self.showInput();
-                else
-                    _self.hideInput();
-            }
-        });
 
         this.nodes.push(
-            menus.addItemByPath("Goto/Switch to Command Line", new apf.item({
-                command : "switchconsole"
-            }), 350),
-
             this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
                 type    : "check",
                 command : "toggleconsole",
                 checked : "[{require('ext/settings/settings').model}::auto/console/@expanded]"
-            }), 700),
-            this.mnuItemInput = menus.addItemByPath("View/Command Line", new apf.item({
-                type    : "check",
-                command : "toggleinputbar",
-                checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]"
-            }), 800)
+            }), 700)
         );
 
         menus.addItemByPath("Tools/~", new apf.divider(), 30000);
@@ -734,7 +656,6 @@ module.exports = ext.register("ext/console/console", {
                 menus.addItemByPath("Tools/" + c + "/" + def[0],
                     new apf.item({
                         onclick : function(){
-                            _self.showInput();
                             txtConsoleInput.setValue(def[1]);
                             if (!def[4]) {
                                 txtConsoleInput.execCommand("Return");
@@ -749,7 +670,8 @@ module.exports = ext.register("ext/console/console", {
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/console", [
                 ["autoshow", "true"],
-                ["clearonrun", "false"]
+                ["clearonrun", "false"],
+                ["expanded", "true"]
             ]);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
@@ -760,12 +682,6 @@ module.exports = ext.register("ext/console/console", {
             }
             else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
-
-            var showInput = e.model.queryValue("auto/console/@showinput");
-            if (showInput === "")
-                _self.showInput(false, true);
-            else if (apf.isTrue(showInput))
-                _self.showInput(null, true);
         });
 
         stProcessRunning.addEventListener("activate", function() {
@@ -809,15 +725,8 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        function kdHandler(e){
-            if (!e.ctrlKey && !e.metaKey && !e.altKey
-              && !e.shiftKey && apf.isCharacter(e.keyCode))
-                txtConsoleInput.focus();
-        }
-
         tabConsole.addEventListener("afterrender", function() {
             txtOutput.addEventListener("keydown", kdHandler);
-            txtConsole.addEventListener("keydown", kdHandler);
 
             var activePage = settings.model.queryValue("auto/console/@active");
             if (activePage && !this.getPage(activePage))
@@ -829,23 +738,6 @@ module.exports = ext.register("ext/console/console", {
             this.set(activePage);
         });
 
-        tabConsole.addEventListener("afterswitch", function(e){
-            var pageNpmInfo = _self.pageIdToPidMap[e.nextPage.$uniqueId];
-            if (pageNpmInfo) {
-                txtConsolePrompt.setValue(pageNpmInfo.prompt);
-                txtConsolePrompt.show();
-            }
-            else {
-                txtConsolePrompt.hide();
-            }
-
-            // Now find any running procs
-            settings.model.setQueryValue("auto/console/@active", e.nextPage.name);
-            setTimeout(function(){
-                txtConsoleInput.focus();
-            });
-        });
-
         this.splitter = winDbgConsole.parentNode.$handle;
         this.splitter.addEventListener("dragdrop", function(e){
             settings.model.setQueryValue("auto/console/@height",
@@ -854,60 +746,118 @@ module.exports = ext.register("ext/console/console", {
 
         this.nodes.push(winDbgConsole);
 
-
-        txtConsoleInput.ace.commands.bindKeys({
-            "up": function(input) {input.setValue(_self.cliInputHistory.getPrev(), 1);},
-            "down": function(input) {input.setValue(_self.cliInputHistory.getNext(), 1);},
-            "Return": function(input) {
-                var inputVal = input.getValue().trim();
-                if (inputVal === "/?")
-                    return false;
-                _self.evalInputCommand(inputVal);
-                input.setValue("");
-                txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
-            }
-        });
-
         if (this.logged.length) {
             this.logged.forEach(function(text){
-                txtConsole.addValue(text);
+                txtOutput.addValue(text);
             });
         }
 
-        commands.addCommand({
-            name: "escapeconsole",
-            bindKey: {mac: "Esc", win: "Esc"},
-            isAvailable : function(){
-                return apf.activeElement == txtConsoleInput;
-            },
-            exec: function () {
-                _self.switchconsole();
-            }
-        });
-
-        commands.addCommand({
-            name: "abortclicommand",
-            bindKey: {mac: "Ctrl-C", win: "Ctrl-C"},
-            isAvailable : function(){
-                // Determines if any input is selected, in which case we do
-                // not want to cancel
-                if (apf.activeElement === txtConsoleInput) {
-                    var selection = window.getSelection();
-                    var range = selection.getRangeAt(0);
-                    if (range.endOffset - range.startOffset === 0)
-                        return true;
-                }
-                return false;
-            },
-            exec: function () {
-                _self.killProcess();
-            }
-        });
-
-        logger.appendConsoleFragmentsAfterInit();
-
         // when the IDE socket is ready we'll retrieve a list of running processes
         _self.getRunningServerProcesses();
+        
+        /* Initialize the Terminal - this should all be gone when tabs are the same everywhere */
+        
+        apf.importCssString(cssString);
+
+        ide.addEventListener("socketMessage", function (evt) {
+            var message = evt.message;
+            if (message.command === "ttyCallback"
+              || message.command === "ttyData"
+              || message.command === "ttyGone"
+              || message.command === "ttyResize") {
+                terminal[message.command](message);
+                settings.save();
+            }
+        });
+        
+        var barTerminal = barTerminalConsole;
+        
+        barTerminal.$focussable = true;
+        this.container = barTerminal.firstChild.$ext;
+        barTerminal.firstChild.$isTextInput = function(){return true};
+        barTerminal.firstChild.disabled = false;
+        
+        barTerminal.addEventListener("blur", function(){
+            Terminal.focus = null;
+            var cursor = document.querySelector(".terminal .reverse-video");
+            if (cursor && apf.isTrue(settings.model.queryValue("auto/terminal/blinking")))
+                cursor.parentNode.removeChild(cursor);
+            barTerminal.setAttribute("class", "c9terminal c9terminalconsole");
+        });
+
+        barTerminal.addEventListener("focus", function(){
+            barTerminal.setAttribute("class", "c9terminal c9terminalconsole c9terminalFocus");
+        });
+
+        // Keep the terminal resized
+        barTerminal.addEventListener("resize", function() {
+            if (!this.$ext.offsetWidth && !this.$ext.offsetHeight)
+                return;
+
+            this.lastWidth = this.getWidth();
+            this.lastHeight = this.getHeight();
+
+            for (var fd in terminal.terminals) {
+                var el = terminal.terminals[fd].element;
+                if (el.parentNode && el.offsetHeight)
+                    terminal.terminals[fd].onResize();
+            }
+        });
+
+        barTerminal.addEventListener("prop.blinking", function(e){
+            Terminal.cursorBlink = apf.isTrue(e.value);
+        });
+        barTerminal.addEventListener("prop.fontfamily", function(e){
+            apf.setStyleRule(".c9terminal .c9terminalcontainer .terminal",
+                "font-family",
+                e.value || "Ubuntu Mono, Monaco, Menlo, Consolas, monospace")
+        });
+        barTerminal.addEventListener("prop.fontsize", function(e){
+            apf.setStyleRule(".c9terminal .c9terminalcontainer .terminal",
+                "font-size",
+                e.value ? e.value + "px" : "10px")
+        });
+        barTerminal.addEventListener("prop.scrollback", function(e){
+            Terminal.scrollback = parseInt(e.value) || 1000;
+        });
+        
+        this.container = barTerminal.firstChild.$ext
+        
+        // Open Terminal
+        var fd = settings.model.queryValue("auto/terminal/@fd") || null;
+        terminal.newTab(function(err, terminal) {
+            if (err) {
+                util.alert(
+                    "Error opening Terminal",
+                    "Error opening Terminal",
+                    "Could not open terminal with the following reason:"
+                        + err);
+
+                return;
+            }
+
+            // Create a container and initialize the terminal in it.
+            terminal.open();
+            terminal.container = _self.container;
+            _self.container.appendChild(terminal.element);
+            terminal.onResize();
+            terminal.$monitor = new Monitor(terminal);
+
+            terminal.onResize();
+
+            apf.addListener(terminal.element, "mousedown", function(){
+                barTerminal.focus();
+            });
+            
+            _self.container.firstChild.style.background = "none";
+            
+            var fd = terminal.fd;
+            settings.model.setQueryValue("auto/terminal/@fd", fd);
+            
+            _self.terminal = terminal;
+        }, fd);
+        
+        // Terminal End
     },
 
     newtab : function() {
@@ -1038,7 +988,7 @@ module.exports = ext.register("ext/console/console", {
     logged : [],
     log : function(text){
         if (this.inited)
-            txtConsole.addValue(text);
+            txtOutput.addValue(text);
         else
             this.logged.push(text);
     },
@@ -1076,135 +1026,6 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(false);
     },
 
-    showInput : function(temporary, immediate){
-        var _self = this;
-
-        if (!this.hiddenInput)
-            return;
-
-        ext.initExtension(this);
-
-        this.$collapsedHeight = this.collapsedHeight;
-
-        cliBox.show();
-
-        if (temporary) {
-            var _self = this;
-            txtConsoleInput.addEventListener("blur", function(){
-                if (_self.hiddenInput)
-                    _self.hideInput(true);
-                txtConsoleInput.removeEventListener("blur", arguments.callee);
-            });
-            txtConsoleInput.focus();
-        }
-        else {
-            settings.model.setQueryValue("auto/console/@showinput", true);
-            this.hiddenInput = false;
-        }
-
-        var timing = "cubic-bezier(.10, .10, .25, .90)";
-        var cliExt = cliBox.$ext;
-        if (_self.hidden) {
-            cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
-            cliExt.style.bottom = "";
-
-            document.body.scrollTop = 0;
-
-            anims.animateSplitBoxNode(winDbgConsole, {
-                height: _self.collapsedHeight + "px",
-                timingFunction: timing,
-                duration: 0.2,
-                immediate: immediate
-            }, function(){
-                cliExt.style.minHeight = "";
-                cliExt.style.bottom = 0;
-                apf.layout.forceResize();
-            });
-        }
-        else {
-            cliExt.scrollTop = 0;
-            document.body.scrollTop = 0;
-
-            cliExt.style.bottom = "-" + _self.collapsedHeight + "px";
-            tabConsole.$ext.style.bottom = 0;
-
-            anims.animate(tabConsole, {
-                bottom : _self.collapsedHeight + "px",
-                timingFunction: timing,
-                duration: 0.2,
-                immediate: immediate
-            });
-
-            anims.animate(cliBox, {
-                bottom: "0px",
-                timingFunction: timing,
-                duration: 0.2,
-                immediate: immediate
-            }, function(){
-                cliBox.parentNode.$ext.style.overflow = "";
-                cliBox.setHeight(_self.collapsedHeight);
-                apf.layout.forceResize();
-            });
-        }
-    },
-
-    hideInput : function(force, immediate){
-        var _self = this;
-
-        if (!force && (!this.inited || this.hiddenInput))
-            return;
-
-        this.$collapsedHeight = 0;
-
-        var timing = "cubic-bezier(.10, .10, .25, .90)";
-        var cliExt = cliBox.$ext;
-        if (_self.hidden) {
-            cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
-            cliExt.style.bottom = "";
-
-            document.body.scrollTop = 0;
-
-            anims.animateSplitBoxNode(winDbgConsole, {
-                height: "0px",
-                timingFunction: timing,
-                duration: 0.2,
-                immediate: immediate
-            }, function(){
-                cliExt.style.minHeight = "";
-                cliExt.style.bottom = 0;
-                cliBox.hide();
-                apf.layout.forceResize();
-            });
-        }
-        else {
-            cliExt.scrollTop = 0;
-
-            document.body.scrollTop = 0;
-
-            anims.animate(tabConsole, {
-                bottom : "0px",
-                timingFunction: timing,
-                duration: 0.2,
-                immediate: immediate
-            });
-
-            anims.animate(cliBox, {
-                bottom: "-" + _self.collapsedHeight + "px",
-                timingFunction: timing,
-                duration: 0.2,
-                immediate: immediate
-            }, function(){
-                cliBox.parentNode.$ext.style.overflow = "";
-                cliBox.setHeight(0);
-                cliBox.hide();
-                apf.layout.forceResize();
-            });
-        }
-
-        settings.model.setQueryValue("auto/console/@showinput", false);
-        this.hiddenInput = true;
-    },
-
     show: function(immediate) { ext.initExtension(this); this._show(true, immediate); },
     hide: function(immediate) { this._show(false, immediate); },
 
@@ -1221,6 +1042,9 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         this.animating = true;
+        
+        if (_self.terminal && !shouldShow)
+            _self.terminal.preventResize = true;
 
         var finish = function() {
             if (_self.onFinishTimer)
@@ -1247,6 +1071,9 @@ module.exports = ext.register("ext/console/console", {
 
                 settings.model.setQueryValue("auto/console/@expanded", shouldShow);
 
+                if (_self.terminal && shouldShow)
+                    _self.terminal.preventResize = false;
+
                 apf.layout.forceResize();
             }, 100);
         };
@@ -1259,9 +1086,6 @@ module.exports = ext.register("ext/console/console", {
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
-            cliBox.$ext.style.height = "28px";
-
-            apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
             if (!immediate && animOn) {
                 if (searchPage) {
@@ -1283,7 +1107,6 @@ module.exports = ext.register("ext/console/console", {
             if (winDbgConsole.parentNode != consoleRow)
                 this.restoreConsoleHeight();
 
-            apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.maxHeight = "10000px";
 
@@ -1304,7 +1127,7 @@ module.exports = ext.register("ext/console/console", {
 
     destroy: function(){
         commands.removeCommandsByName(
-            ["help", "clear", "switchconsole", "toggleconsole",
+            ["help", "clear", "toggleconsole",
              "escapeconsole", "toggleinputbar"]);
         this.$destroy();
     }

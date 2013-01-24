@@ -34,7 +34,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         dev     : "Ajax.org",
         alone   : true,
         type    : ext.GENERAL,
-    
+        
         init : function(){
             var _self = this;
             

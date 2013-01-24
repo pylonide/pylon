@@ -1,5 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <div id="barConsoleHints" class="barConsoleHints">
-        <div id="consoleHintsContent" class="consoleHintsContent"/>
-    </div>
-</a:application>
