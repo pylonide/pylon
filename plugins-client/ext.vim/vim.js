@@ -73,11 +73,9 @@ var enableVim = function enableVim() {
                 editor.setKeyboardHandler(vimHandler);
                 editor.on("vimMode", vimHandler.$statusListener);
                 ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-                var cli = require("ext/console/console");
-                if (cli.hiddenInput) {
-                    cli.showInput();
-                    cliAutoOpened = true;
-                }
+                
+                //@todo Show Input
+                
                 cliCmds.addCommands(vimHandler);
             })
         }
@@ -152,6 +150,7 @@ module.exports = ext.register("ext/vim/vim", {
     // Enable accepts a `doEnable` argument which executes `disable` if false.
     enable: function(doEnable) {
         if (doEnable !== false) {
+            //@todo replace this by a new handler
             ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
             ide.addEventListener("consolecommand", cliCmds.onConsoleCommand);
             enableVim.call(this);

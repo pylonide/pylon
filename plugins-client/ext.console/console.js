@@ -167,21 +167,6 @@ module.exports = ext.register("ext/console/console", {
         };
     },
 
-    help: function(data) {
-        var words = Object.keys(commands.commands);
-        var tabs = "\t\t\t\t";
-
-        logger.logNodeStream(
-            words.sort()
-                .map(function(w) {
-                    if (!w)
-                        return "";
-                    return w + tabs + (commands.commands[w].hint || "");
-                }).join("\n"),
-            null, this.getLogStreamOutObject(data.tracer_id), ide
-        );
-    },
-
     clear: function() {
         var activePg = tabConsole.getPage();
         if (activePg.childNodes[0].tagName.indexOf("codeeditor") >=0) {
@@ -243,102 +228,6 @@ module.exports = ext.register("ext/console/console", {
         apf.setStyleClass(outputEl, "loading");
 
         return command_id_tracer;
-    },
-
-    evalInputCommand: function(line) {
-        if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults")
-            tabConsole.set("console");
-
-        parseLine || (parseLine = require("ext/console/parser"));
-        var argv = parseLine(line);
-        if (!argv || argv.length === 0) // no commmand line input
-            return;
-
-        // Replace any quotes in the command
-        argv[0] = argv[0].replace(/["'`]/g, "");
-        this.cliInputHistory.push(line);
-
-        if (line !== "clear" && line !== "newtab")
-        this.createOutputBlock(this.getPrompt(line));
-
-        var showConsole = true;
-        var cmd = argv[0];
-
-        if (!predefinedCmds)
-            predefinedCmds = require("ext/console/output");
-        var defCmd = predefinedCmds.getPredefinedOutput(argv);
-        if (defCmd !== "") {
-            this.markProcessAsCompleted(this.command_id_tracer);
-            logger.logNodeStream(defCmd, null,
-            this.getLogStreamOutObject(this.command_id_tracer), ide);
-            this.command_id_tracer++;
-        }
-        else {
-            var data = {
-                command: cmd,
-                argv: argv,
-                line: line,
-                cwd: this.getCwd(),
-                requireshandling: !commands.commands[cmd],
-                tracer_id: this.command_id_tracer,
-                extra : {
-                    command_id : this.command_id_tracer
-                }
-            };
-
-            if (cmd.trim() === "npm")
-                data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
-
-            showConsole = this.sendCommandToExtensions(cmd, data);
-        }
-
-        if (showConsole === true)
-            this.show();
-    },
-
-    sendCommandToExtensions : function(cmd, data) {
-        ide.dispatchEvent("track_action", {
-            type: "console",
-            cmd: cmd,
-            argv: data.argv
-        });
-
-        // If no local extensions handle the command, send it server-side for
-        // those extensions to handle it
-        if (ext.execCommand(cmd, data) !== true) {
-            var commandEvt = "consolecommand." + cmd;
-            var consoleEvt = "consolecommand";
-            var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
-            var consoleEvResult = ide.dispatchEvent(consoleEvt, { data: data });
-
-            if (commandEvResult !== false && consoleEvResult !== false) {
-                if (!ide.onLine) {
-                    this.write("Cannot send command to server. You are currently offline.", {
-                        tracer_id : this.command_id_tracer
-                    });
-                }
-                else {
-                    data.extra = {
-                        command_id : this.command_id_tracer,
-                        original_line : data.line,
-                        page_id : tabConsole.getPage().$uniqueId
-                    };
-
-                    tabConsole.getPage().setCaption(cmd);
-                    ide.send(data);
-                    this.command_id_tracer++;
-                    return true;
-                }
-            }
-            else {
-                // Return false to `evalInputCommand` to not show the output area
-                return false;
-            }
-        }
-
-        this.markProcessAsCompleted(data.tracer_id);
-        this.command_id_tracer++;
-        return true;
     },
 
     markProcessAsCompleted: function(id, idIsPid) {
