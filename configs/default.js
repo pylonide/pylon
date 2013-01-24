@@ -113,7 +113,6 @@ var config = [
             "ext/dbg-node/dbg-node",
             "ext/noderunner/noderunner", //Add location rule
             "ext/console/console",
-            "ext/terminal/terminal",
             "ext/tabbehaviors/tabbehaviors",
             "ext/tabsessions/tabsessions",
             //"ext/keybindings/keybindings",
