@@ -87,36 +87,13 @@ define(function(require, exports, module) {
     if (window.cloud9config.debug)
         console.info("Connecting", JSON.parse(window.cloud9config.smithIo));
 
-    var Consumer = require('vfs-socket/consumer').Consumer;
-    var consumer = new Consumer();
-
     SMITH_IO.connect(JSON.parse(window.cloud9config.smithIo), function(err, connection) {
         if (err)
             return console.error(err);
 
         ide.connection = connection;
 
-        // Log the smith traffic in the console
-//        var send = connection.transport.send;
-//        connection.transport.send = function (message) {
-//            if (Array.isArray(message)) {
-//                console.log("->", message);
-//            }
-//            return send.call(this, message);
-//        };
-//        connection.transport.on("message", function (message) {
-//            console.log("<-", message);
-//        });
-
         connection.on("connect", function() {
-
-            consumer.connect(connection.transport, function (err, vfs) {
-                if (err) throw err;
-                ide.vfs = vfs;
-                console.log(vfs);
-            });
-
-
             if (window.cloud9config.debug)
                 console.info("Connected");
 
