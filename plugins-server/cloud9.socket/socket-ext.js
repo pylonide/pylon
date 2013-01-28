@@ -1,10 +1,6 @@
 "use strict";
 
-var Worker = require('vfs-socket/worker').Worker;
 var ERROR = require("http-error");
-var dirname = require('path').dirname;
-
-
 
 module.exports = function setup(options, imports, register) {
 
@@ -13,36 +9,8 @@ module.exports = function setup(options, imports, register) {
     var PERMISSIONS = imports["workspace-permissions"];
     var TRANSPORT = imports["smith.transport.server"];
 
-    imports.static.addStatics([{
-        path: dirname(require.resolve("vfs-socket/consumer")),
-        mount: "/vfs-socket",
-        rjs: [
-            {
-                "name": "vfs-socket",
-                "location": "vfs-socket",
-                "main": "consumer.js"
-            }
-        ]
-    }]);
 
     TRANSPORT.on("connect", function(connection) {
-
-//        var send = connection.transport.send;
-//        connection.transport.send = function (message) {
-//            if (Array.isArray(message)) {
-//                console.log("-> " + require('util').inspect(message, false, 2, true));
-//            }
-//            return send.call(this, message);
-//        };
-//        connection.transport.on("message", function (message) {
-//            console.log("<- " + require('util').inspect(message, false, 2, true));
-//        });
-
-        var worker = new Worker(imports.vfs);
-        worker.connect(connection.transport);
-        worker.on("error", function (err) {
-            console.error(err.stack);
-        });
 
         connection.on("message", function(message) {
 
@@ -71,7 +39,7 @@ module.exports = function setup(options, imports, register) {
                         IDE.addUser(uid, userPermissions);
                         IDE.addClientConnection(uid, connection, message);
                     });
-                });
+                });            
             }
         });
     });
@@ -90,5 +58,7 @@ module.exports = function setup(options, imports, register) {
     };
 
 
-    register();
+    register(null, {
+        "workspace-socket": {}
+    });
 };
