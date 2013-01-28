@@ -29,7 +29,8 @@
         "architect": "0.1.4",
         "connect-architect": "0.0.6",
 
-        "smith": "0.1.9",
+        "smith": "0.1.17",
+        "vfs-socket": "0.3.11",
         "smith.io": "0.0.36",
         "vfs-architect": "0.0.2",
         "jsDAV": "0.2.4"
