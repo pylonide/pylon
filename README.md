@@ -40,21 +40,18 @@ Requirements:
   * NPM `>= 1.1.16`
 
 Install:
+```sh
+# Be sure you have sourcemint installed:
+npm install -g sm
 
-    # Be sure you have sourcemint installed:
+# Then:
+sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
 
-    npm install -g sm
-
-    # Then:
-
-    sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
-
-    # or
-
-    git clone https://github.com/ajaxorg/cloud9.git cloud9
-    cd cloud9
-    sm install
-
+# or
+git clone https://github.com/ajaxorg/cloud9.git cloud9
+cd cloud9
+sm install
+```
 
 
 The above install steps create a `cloud9` directory in your current directory. Just `cd` into it
