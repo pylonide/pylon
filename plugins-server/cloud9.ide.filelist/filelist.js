@@ -50,7 +50,7 @@ module.exports = function() {
             if (err || !meta.process)
                 return onExit(1, err);
 
-            var stderr = "";
+            var stderr = "", gotExitCode = false, gotClose = false;
             meta.process.stdout.on("data", function(data) {
                 onData(data);
             });
@@ -60,7 +60,21 @@ module.exports = function() {
             });
 
             meta.process.on("exit", function(code) {
-                onExit(code, stderr);
+                if (gotClose) {
+                    onExit(code, stderr);
+                }
+                else {
+                    gotExitCode = code;
+                }
+            });
+
+            meta.process.stdout.on("close", function(code) {
+                if (gotExitCode !== false) {
+                    onExit(gotExitCode, stderr);
+                }
+                else {
+                    gotClose = true;
+                }
             });
         });
     };

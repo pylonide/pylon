@@ -1,5 +1,6 @@
 "use strict";
 
+var util = require("util");
 var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
@@ -30,9 +31,10 @@ exports.factory = function(vfs) {
     };
 };
 
-var Runner = exports.Runner = ShellRunner;
+var Runner = exports.Runner = function(vfs, options, callback) {
+    ShellRunner.call(this, vfs, options, callback);
+};
 
-for (var prop in ShellRunner.prototype)
-    Runner.prototype[prop] = ShellRunner.prototype[prop];
+util.inherits(Runner, ShellRunner);
 
 Runner.prototype.name = "other";
