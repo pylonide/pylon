@@ -78,7 +78,7 @@ apf.aml.setElement("skin", apf.skin);
     }
     
     this.$propHandlers["name"] = function(value){
-        if (!this.attributes.getNamedItem("src")) {
+        if (!this.src && !this.attributes.getNamedItem("src")) {
             this.$path = apf.getAbsolutePath(apf.hostPath, value) + "/index.xml";
             getSkin.call(this, this.$path);
         }
