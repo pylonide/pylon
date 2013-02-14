@@ -481,6 +481,7 @@ apf.AmlElement = function(struct, tagName){
         include.options  = options;
         include.callback = options && options.callback || function(){
             _self.dispatchEvent("afteramlinserted", {src: amlDefNode});
+            include.destroy(true, true);
         };
         this.appendChild(include);
     };
