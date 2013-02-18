@@ -744,7 +744,8 @@ apf.BaseTree = function(){
             pContainer    = htmlNode.parentNode;
 
         //Remove htmlNodes from tree
-        containerNode.parentNode.removeChild(containerNode);
+        if (containerNode)
+            containerNode.parentNode.removeChild(containerNode);
         pContainer.removeChild(htmlNode);
 
         //Datagrid??
