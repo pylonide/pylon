@@ -18,7 +18,7 @@ if (configName.indexOf("-") === 0) {
 // If a password is given as a command line parameter, we hide it
 // in the title of the process instead of displaying it in plain
 // text.
-var title_parts = process.argv;
+var title_parts = process.argv.slice();
 title_parts.forEach(function(element, index, array) {
   if (element === '--password') {
     array[index+1] = 'xxxxxxxx';
