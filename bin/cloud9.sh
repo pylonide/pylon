@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CMD="$(readlink $0)"
+CMD="$(readlink -e $0)"
 CMD_DIR=`dirname "$CMD"`
 cd "$CMD_DIR/.."
 
