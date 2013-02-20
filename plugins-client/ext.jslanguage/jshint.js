@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/mode/javascript/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
+var JSResolver = require('ext/jslanguage/JSResolver').JSResolver;
 
 var disabledJSHintWarnings = [/Missing radix parameter./,
     /Bad for in variable '(.+)'./,
@@ -83,6 +84,10 @@ handler.analyzeSync = function(value, ast) {
             message: warning.reason
         });
     });
+
+    var resolver = new JSResolver(ast);
+    resolver.addResolutions(markers);
+
     return markers;
 };
 
