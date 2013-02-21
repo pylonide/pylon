@@ -85,7 +85,7 @@ handler.analyzeSync = function(value, ast) {
         });
     });
 
-    var resolver = new JSResolver(ast);
+    var resolver = new JSResolver(value, ast);
     resolver.addResolutions(markers);
 
     return markers;
