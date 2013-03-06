@@ -116,10 +116,15 @@ module.exports = {
                 
                 /* Select the annotation in the editor */
                 anno.select = function(){
+                    if (!(anno.pos.sl && anno.pos.sc && anno.pos.el && anno.pos.ec)){
+                        return;
+                    }
                     var startPos = { row: anno.pos.sl, column: anno.pos.sc };
                     var endPos = { row: anno.pos.el, column: anno.pos.ec };
-                    editor.getSelection().setSelectionRange(
-                        {start: startPos, end: endPos});
+                    if (startPos.row < endPos.row || startPos.column < endPos.column){
+                        editor.getSelection().setSelectionRange(
+                            {start: startPos, end: endPos});
+                    }
                 };
                 
                 /*
@@ -336,21 +341,17 @@ module.exports = {
     applyQuickfix : function(qfix){
         var amlEditor = editors.currentEditor.amlEditor;
         var doc = amlEditor.getSession().getDocument();
-        // TODO make the cursortarget default to current cursor position
-        var cursorTarget = {
-            line: 0,
-            column: 0
-        };
-        doc.setValue(qfix.appliedContent);
+
+        doc.applyDeltas(qfix.deltas);
         amlEditor.focus();
     
         if (qfix.cursorTarget){
-            cursorTarget = qfix.cursorTarget;
-        }
-        var selection = amlEditor.$editor.getSelection();
-        selection.clearSelection();
-        selection.moveCursorTo(cursorTarget.line,
+            var cursorTarget = qfix.cursorTarget;
+            var selection = amlEditor.$editor.getSelection();
+            selection.clearSelection();
+            selection.moveCursorTo(cursorTarget.line,
             cursorTarget.column, false);
+        }
     },
     
     onTextInput : function(text, pasted) {

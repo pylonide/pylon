@@ -7,19 +7,18 @@ define(function(require, exports, module) {
 * a label (short description, to be displayed in the list of resolutions), 
 * an image (to be displayed in the list of resolutions), 
 * a preview,
-* the applied content,
+* an array of deltas (containing the changes to be applied),
 * the position where the cursor should be after applying
 */
-var MarkerResolution = function(label, image, preview, appliedContent, cursorTarget){
+var MarkerResolution = function(label, image, preview, deltas, cursorTarget){
     return {
         label: label,
         image: image,
         preview: preview,
-        appliedContent: appliedContent,
+        deltas: deltas,
         cursorTarget: cursorTarget
     };
-};
-
+}; 
 
 exports.MarkerResolution = MarkerResolution;
 

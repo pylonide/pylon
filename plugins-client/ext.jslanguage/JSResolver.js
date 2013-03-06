@@ -2,6 +2,7 @@ define(function(require, exports, module) {
   "use strict";
 
   var markerResolution = require('ext/language/MarkerResolution').MarkerResolution;
+  var Range = require("ace/range").Range;
 
   var JSResolver = function(value, ast){
     this.addResolutions = function(markers){
@@ -34,30 +35,46 @@ define(function(require, exports, module) {
         console.log(marker.pos);
         var label = "Add semicolon";
         var image = "";
+        var row = marker.pos.sl;
+        var column = marker.pos.sc;
         
         var lines = value.split("\n");
-        var before = lines[marker.pos.sl].substring(0, marker.pos.sc);
-        var after = lines[marker.pos.sl].substring(marker.pos.sc);
-        lines[marker.pos.sl] = before + "; " + after;
+        var before = lines[row].substring(0, column);
+        var after = lines[row].substring(column);
         var preview = "<b>Add semicolon</b><p>" + before + "<b>; </b>" + after + "</p>";
-        var appliedContent = lines.join("\n");
         
-        return [markerResolution(label, image, preview, appliedContent)];
-    }; 
+        var insert = ";";
+        if (after.length){
+            insert += " ";
+        }
+
+        var delta = {
+            action: "insertText",
+            range: new Range(row, column, row, column + insert.length),
+            text: insert
+        };
+        
+        return [markerResolution(label, image, preview, [delta])];
+    };
     
     this.unnecessarySemicolon = function(marker){
         console.log(marker.pos);
         var label = "Remove semicolon";
         var image = "";
+        var row = marker.pos.sl;
+        var column = marker.pos.sc;
         
         var lines = value.split("\n");
-        var before = lines[marker.pos.sl].substring(0, marker.pos.sc);
-        var after = lines[marker.pos.sl].substring(marker.pos.sc + 1);
-        lines[marker.pos.sl] = before + after;
+        var before = lines[row].substring(0, column);
+        var after = lines[row].substring(column + 1);
         var preview = "<b>Remove semicolon</b><p>" + before + "<del>;</del>" + after + "</p>";
-        var appliedContent = lines.join("\n");
+
+        var delta = {
+            action: "removeText",
+            range: new Range(row, column, row, column + 1)
+        };
         
-        return [markerResolution(label, image, preview, appliedContent)];
+        return [markerResolution(label, image, preview, [delta])];
     };
 
   };

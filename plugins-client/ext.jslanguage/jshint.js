@@ -75,7 +75,7 @@ handler.analyzeSync = function(value, ast) {
             if(disabledJSHintWarnings[i].test(warning.reason))
                 return;
         markers.push({
-            pos: {
+            pos: { // TODO quickfix framework needs el/ec in order to be able to select the issue in the editor
                 sl: warning.line-1,
                 sc: warning.character-1
             },
