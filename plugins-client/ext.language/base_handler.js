@@ -229,6 +229,22 @@ module.exports = {
      */
     jumpToDefinition: function(doc, fullAst, pos, currentNode, callback) {
         callback();
+    },
+    
+    /**
+     * Invoked after markers were generated in analyze()
+     * @return marker array with attached resolutions
+     */
+    getResolutions: function(doc, fullAst, markers, callback) {
+        callback();
+    },
+    
+    /**
+     * @return true iff the resolver for this marker could generate
+     * at least one resolution for it
+     */
+    hasResolution: function(doc, fullAst, marker, callback) {
+        callback();
     }
 };
 
