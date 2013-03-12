@@ -19,6 +19,8 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
 var jshint = require("ext/jslanguage/jshint");
+var JSResolver = require('ext/jslanguage/JSResolver').JSResolver;
+
 require("treehugger/traverse"); // add traversal functions to trees
 
 var CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
@@ -259,6 +261,21 @@ var KEYWORDS = [
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
+
+handler.getResolutions = function(value, ast, markers, callback){
+    var resolver = new JSResolver(value, ast);
+    resolver.addResolutions(markers);
+    callback(markers);
+};
+
+handler.hasResolution = function(value, ast, marker) {
+    if (marker.resolutions && marker.resolutions.length){
+        return true;
+    }
+    var resolver = new JSResolver(value, ast);
+    return resolver.getType(marker);
+};
+
 
 var scopeId = 0;
 

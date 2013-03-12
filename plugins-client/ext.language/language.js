@@ -17,6 +17,7 @@ var UIWorkerClient = require("ace/worker/worker_client").UIWorkerClient;
 var useUIWorker = window.location && /[?&]noworker=1/.test(window.location.search);
 
 var complete = require("ext/language/complete");
+var quickfix = require("ext/language/quickfix");
 var marker = require("ext/language/marker");
 var refactor = require("ext/language/refactor");
 var outline = require("ext/language/outline");
@@ -92,6 +93,7 @@ module.exports = ext.register("ext/language/language", {
             outline.hook(_self, worker);
             keyhandler.hook(_self, worker);
             jumptodef.hook(_self, worker);
+            quickfix.hook(_self);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){

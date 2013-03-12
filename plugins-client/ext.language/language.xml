@@ -124,4 +124,27 @@
         </a:hbox>
     </a:bar>
     
+    <a:bar id="barQuickfixCont" skinset="language_skin" skin="codecomplete" width="600" visible="false">
+        <a:hbox id="txtQuickfixHolder" class="code_complete_text_holder" anchors="0 0 0 0" edge="5" width="290">
+            <a:text id="txtQuickfix" skin="codecomplete_text" flex="1" />
+            <a:scrollbar
+              for      = "txtQuickfix"
+              id       = "sbQuickfix"
+              margin   = "2"
+              skin     = "sbios"
+              width    = "7"
+              overflow2 = "auto"/>
+        </a:hbox>
+        <a:hbox class="code_complete_text_holder" anchors="0 0 0 330" edge="5" minheight="100">
+            <a:text id="txtQuickfixDoc" skin="codecompletedoc_text" flex="1" />
+            <a:scrollbar
+              for      = "txtQuickfixDoc"
+              id       = "sbQuickfixDoc"
+              margin   = "2"
+              skin     = "sbios"
+              width    = "7"
+              overflow2 = "auto"/>
+        </a:hbox>
+    </a:bar>
+    
 </a:application>

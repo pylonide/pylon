@@ -418,8 +418,15 @@ function asyncParForEach(array, fn, callback) {
                 asyncForEach(_self.handlers, function(handler, next) {
                     if (handler.handlesLanguage(part.language)) {
                         handler.analyze(part.value, ast, function(result) {
-                            if (result)
-                                partMarkers = partMarkers.concat(result);
+                            if (result){
+                                handler.getResolutions(part.value, ast, result, function(result2){
+                                    if (result2){
+                                        partMarkers = partMarkers.concat(result2);
+                                    }else{
+                                        partMarkers = partMarkers.concat(result);
+                                    }
+                                });
+                            }
                             next();
                         });
                     }
@@ -455,7 +462,7 @@ function asyncParForEach(array, fn, callback) {
             callback();
         });
     };
-
+    
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
         for (var i = 0; i < this.currentMarkers.length; i++) {

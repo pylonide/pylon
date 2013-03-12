@@ -74,7 +74,7 @@ handler.analyzeSync = function(value, ast) {
             if(disabledJSHintWarnings[i].test(warning.reason))
                 return;
         markers.push({
-            pos: {
+            pos: { // TODO quickfix framework needs el/ec in order to be able to select the issue in the editor
                 sl: warning.line-1,
                 sc: warning.character-1
             },
@@ -83,8 +83,10 @@ handler.analyzeSync = function(value, ast) {
             message: warning.reason
         });
     });
+
     return markers;
 };
+
 
 /**
  * Gets an object like { foo: true } for JSHint global comments
