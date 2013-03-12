@@ -506,8 +506,12 @@ handler.analyze = function(value, ast, callback) {
                 },
                 'Function(x, fargs, body)', function(b, node) {
                     if (inLoop && !inLoopAllowed) {
+                        var pos = this.getPos();
+                        // treehugger doesn't store info on the position of "function" token
+                        var line = handler.doc.getLine(pos.sl);
+                        var sc = line.substring(0, pos.sc).lastIndexOf("function");
                         markers.push({
-                            pos: { sl: this.getPos().sl, el: this.getPos().sl, sc: this.getPos().sc, ec: this.getPos().sc + "function".length },
+                            pos: { sl: pos.sl, el: pos.sl, sc: sc, ec: sc + "function".length },
                             level: 'warning',
                             type: 'warning',
                             message: "Function created in a loop."
