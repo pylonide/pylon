@@ -21,6 +21,7 @@ var vfsUrl = "/vfs";
 
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || process.env.IP || "localhost";
+var debugPort = argv.b || process.env.DEBUG_PORT || 5858;
 
 var useAuth = argv.username && argv.password;
 
@@ -186,7 +187,8 @@ var config = [
     },
     {
         packagePath: "./cloud9.run.node-debug",
-        listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
+        listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.",
+        debugPort: debugPort
     },
     "./cloud9.run.npm",
     "./cloud9.run.npmnode",
