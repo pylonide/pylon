@@ -945,7 +945,7 @@ apf.Class.prototype = new (function(){
             //Remove id from global js space
             try {
                 if (this.id || this.name)
-                    self[this.id || this.name] = null;
+                    delete self[this.id || this.name];
             }
             catch (ex) {}
             return;

@@ -536,7 +536,7 @@ apf.xmldb = new (function(){
 
         // @todo: only do this once! - should store on the undo object
         if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument) {
-            var oldNodeS = xmlNode;
+            var oldNodeS = newNode;
             newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
             if (oldNodeS.parentNode)
                 oldNodeS.parentNode.removeChild(oldNodeS);
