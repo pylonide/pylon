@@ -68,7 +68,7 @@ apf.runWebkit = function(){
                 var bytes = Array.prototype.map.call(string, function(c) {
                     return c.charCodeAt(0) & 0xff;
                 });
-                this.send(new Uint8Array(bytes).buffer);
+                this.send(new Uint8Array(bytes));
             };
         }
     }
