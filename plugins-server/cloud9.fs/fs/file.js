@@ -29,7 +29,7 @@ require("util").inherits(jsDAV_FS_File, jsDAV_FS_Node);
         var path = this.path;
         // is it a chunked upload?
         var size = handler.httpRequest.headers["x-file-size"];
-        if (size) {
+        if (size && size !== "undefined") {
             var parts = Util.splitPath(this.path);
             if (!handler.httpRequest.headers["x-file-name"])
                 handler.httpRequest.headers["x-file-name"] = parts[1];
