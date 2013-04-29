@@ -149,7 +149,7 @@ var config = [
         ]
     }, {
         packagePath: "vfs-architect/local",
-        root: path.dirname(projectDir)
+        root: "/"
     }, {
         packagePath: "vfs-architect/http-adapter",
         mount: vfsUrl,
