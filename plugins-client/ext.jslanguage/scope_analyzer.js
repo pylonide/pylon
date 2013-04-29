@@ -19,6 +19,8 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 var outline = require("ext/jslanguage/outline");
 var jshint = require("ext/jslanguage/jshint");
+var JSResolver = require('ext/jslanguage/JSResolver').JSResolver;
+
 require("treehugger/traverse"); // add traversal functions to trees
 
 var CALLBACK_METHODS = ["forEach", "map", "reduce", "filter", "every", "some"];
@@ -259,6 +261,21 @@ var KEYWORDS = [
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
+
+handler.getResolutions = function(value, ast, markers, callback){
+    var resolver = new JSResolver(value, ast);
+    resolver.addResolutions(markers);
+    callback(markers);
+};
+
+handler.hasResolution = function(value, ast, marker) {
+    if (marker.resolutions && marker.resolutions.length){
+        return true;
+    }
+    var resolver = new JSResolver(value, ast);
+    return resolver.getType(marker);
+};
+
 
 var scopeId = 0;
 
@@ -506,8 +523,12 @@ handler.analyze = function(value, ast, callback) {
                 },
                 'Function(x, fargs, body)', function(b, node) {
                     if (inLoop && !inLoopAllowed) {
+                        var pos = this.getPos();
+                        // treehugger doesn't store info on the position of "function" token
+                        var line = handler.doc.getLine(pos.sl);
+                        var sc = line.substring(0, pos.sc).lastIndexOf("function");
                         markers.push({
-                            pos: { sl: this.getPos().sl, el: this.getPos().sl, sc: this.getPos().sc, ec: this.getPos().sc + "function".length },
+                            pos: { sl: pos.sl, el: pos.sl, sc: sc, ec: sc + "function".length },
                             level: 'warning',
                             type: 'warning',
                             message: "Function created in a loop."
@@ -618,7 +639,7 @@ handler.analyze = function(value, ast, callback) {
                             return;
                         markers.push({
                             pos: decl.getPos(),
-                            type: 'unused',
+                            type: 'info',
                             level: 'info',
                             message: 'Unused variable.'
                         });

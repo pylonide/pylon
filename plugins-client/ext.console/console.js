@@ -97,11 +97,14 @@ module.exports = ext.register("ext/console/console", {
     },
 
     recreateLogStreamBlocks: function(serverProcs) {
+        var runners = window.cloud9config.runners;
         for (var spi in serverProcs) {
             if (this.pidToTracerMap[spi])
                 continue;
 
             var proc = serverProcs[spi];
+            if (runners.indexOf(proc.type) === -1)
+                continue;
 
             var original_line;
             var command_id;
@@ -435,6 +438,9 @@ module.exports = ext.register("ext/console/console", {
             extra = message.body.extra;
 
         if (extra) {
+            // leave its handling to linereport plugin
+            if (extra.linereport_id)
+                return;
             // If true, this client is receiving data about a command that did
             // not originate from it
             if (extra.command_id >= this.command_id_tracer)

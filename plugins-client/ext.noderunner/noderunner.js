@@ -24,9 +24,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     offline : false,
     autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
-    runners : window.cloud9config.runners.filter(function(runner) {
-        return runner != "other";
-    }),
+    runners : window.cloud9config.runners,
 
     NODE_VERSION: "auto",
 

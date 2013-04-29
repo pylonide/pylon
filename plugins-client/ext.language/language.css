@@ -18,20 +18,8 @@
 
 .language_highlight_info {
     position: absolute;
-    border-bottom: solid 1px #D3D3D3;
+    border-bottom: dotted 1px #999;
     z-index: 2000;
-}
-
-.language_highlight_unused {
-    position: absolute;
-    padding: 0;
-    border-bottom: solid 1px black;
-    margin: -.6em 0 0 0;
-    z-index: 2000;
-}
-
-.ace_dark .language_highlight_unused {
-    border-bottom: solid 1px white;
 }
 
 .language_highlight_occurrence_main {

@@ -1,7 +1,6 @@
 #!/bin/sh
 
-CMD="$0"
-CMD_DIR=`dirname "$CMD"`
+CMD_DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$CMD_DIR/.."
 
 make update
