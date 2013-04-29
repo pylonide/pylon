@@ -5,14 +5,14 @@ var argv = require('optimist').argv;
 var path = require("path");
 
 var clientExtensions = {};
-var clientDirs = fs.readdirSync(__dirname + "/../plugins-client");
+var clientDirs = fs.readdirSync(path.join(__dirname, "/../plugins-client"));
 for (var i = 0; i < clientDirs.length; i++) {
     var dir = clientDirs[i];
     if (dir.indexOf("ext.") !== 0)
         continue;
 
     var name = dir.split(".")[1];
-    clientExtensions[name] = __dirname + "/../plugins-client/" + dir;
+    clientExtensions[name] = path.join(__dirname, "../plugins-client/", dir);
 }
 
 var projectDir = (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd();
@@ -30,10 +30,6 @@ var config = [
         packagePath: "connect-architect/connect",
         port: port,
         host: host
-    }, {
-        packagePath: "./cloud9.sourcemint",
-        prefix: "/static/bundles",
-        plugins: clientExtensions
     }, {
         packagePath: "connect-architect/connect.static",
         prefix: "/static"

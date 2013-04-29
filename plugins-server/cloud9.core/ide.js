@@ -45,7 +45,7 @@ var Ide = module.exports = function(options) {
         plugins: options.plugins,
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: options.requirejsConfig,
-        projectName: options.projectName || this.workspaceDir.split("/").pop(),
+        projectName: options.projectName || Path.basename(this.workspaceDir),
         version: options.version,
         extra: options.extra,
         hosted: !!options.hosted,

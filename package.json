@@ -10,12 +10,9 @@
         "cli": "./scripts/help.js"
     },
 
-    "pm": "sm",
     "dependencies": {
         "connect": "1.8.7",
 
-        "sourcemint-loader-js": "0.x",
-        "sourcemint-platform-nodejs": "0.x",
         "http-error": "0.0.1",
         "simple-template": "0.0.1",
 
@@ -32,7 +29,14 @@
         "smith": "0.1.9",
         "smith.io": "0.0.36",
         "vfs-architect": "0.0.2",
-        "jsDAV": "0.2.4"
+        "jsDAV": "https://github.com/ajaxorg/jsDAV/tarball/209289355d69adde11dbcd0c83e6dd24a6d9184a",
+
+        "ace": "https://github.com/ajaxorg/ace/tarball/cc2a2c9e056c6d4049f8849ec3ad72974de37177",
+        "apf": "https://github.com/ajaxorg/apf/tarball/145f65bd24ae83f041418dd01a9c51d278045f3f",
+        "asyncjs": "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08",
+        "v8debug": "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52",
+        "packager": "https://github.com/ajaxorg/packager/tarball/bee2a82c6d5e2875024bfdc83937e98092ccf04f",
+        "treehugger": "https://github.com/ajaxorg/treehugger/tarball/b22d7ad712f76a7e7b1070ab339d567dfbf059b1"
     },
 
     "devDependencies": {
@@ -41,16 +45,6 @@
         "rimraf": "2.0.1",
         "vfs-local": "~0.3.4",
         "vfs-nodefs-adapter": "~0.3.0"
-    },
-
-    "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/cc2a2c9e056c6d4049f8849ec3ad72974de37177"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/145f65bd24ae83f041418dd01a9c51d278045f3f"],
-        "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/bee2a82c6d5e2875024bfdc83937e98092ccf04f"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/b22d7ad712f76a7e7b1070ab339d567dfbf059b1"],
-        "runjs":        ["npm", "https://github.com/c9/runjs/tarball/347ad9627fb4a1d63458bc66ea40f0bf1efbf05c"]
     },
 
     "repository" : {
