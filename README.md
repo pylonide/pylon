@@ -34,7 +34,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 ## Installation and Usage
 
-If installing on Windows, please refer to [Installation on Windows](##installation-on-windows-experimental).
+If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
 Requirements:
 
